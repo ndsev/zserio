@@ -28,6 +28,9 @@ public class BeginPackageTemplateData
 
         for (Map.Entry<Package, List<AstNode>> entry : nodesMap.entrySet())
             packages.add(new PackageSymbolOverviewTemplateData(context, entry.getKey(), entry.getValue()));
+
+        for (AstNode packageSymbol : nodesMap.get(pkg))
+            tocSymbols.add(SymbolTemplateDataCreator.createData(context, packageSymbol));
     }
 
     public String getCssDirectory()
@@ -68,6 +71,11 @@ public class BeginPackageTemplateData
     public Iterable<PackageSymbolOverviewTemplateData> getPackages()
     {
         return packages;
+    }
+
+    public Iterable<SymbolTemplateData> getTocSymbols()
+    {
+        return tocSymbols;
     }
 
     public static class PackageSymbolOverviewTemplateData implements
@@ -113,7 +121,7 @@ public class BeginPackageTemplateData
         }
 
         private final SymbolTemplateData symbol;
-        // we want to have sorted symbols in the symbol overview
+        // we want to have sorted symbols in symbol overview
         private final Set<SymbolTemplateData> packageSymbols = new TreeSet<SymbolTemplateData>();
     }
 
@@ -154,6 +162,9 @@ public class BeginPackageTemplateData
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;
     private final List<ImportTemplateData> importNodes = new ArrayList<ImportTemplateData>();
+    // we want to have sorted packages in symbol overview
     private final Set<PackageSymbolOverviewTemplateData> packages =
             new TreeSet<PackageSymbolOverviewTemplateData>();
+    // we want to have symbols in the order of definition in ToC
+    private final List<SymbolTemplateData> tocSymbols = new ArrayList<SymbolTemplateData>();
 }

@@ -16,6 +16,29 @@
     <link rel="stylesheet" href="${cssDirectory}/${stylesheetName}">
 
     <title>${symbol.name} documentation</title>
+
+    <script>
+      function setItemToStorage(storage, key, value) {
+        try { // handle eventual SecurityError
+          storage.setItem(key, value);
+        } catch (e) {
+          console.warn("Failed to set an item to the storage!", storage);
+        }
+      }
+
+      function getItemFromStorage(storage, key) {
+        try { // handle eventual SecurityError
+          return storage.getItem(key);
+        } catch (e) {
+          console.warn("Failed to get an item from the storage!", storage);
+          return null;
+        }
+      }
+
+      function isTocHidden() {
+        return getItemFromStorage(localStorage, "tocHidden") == "true";
+      }
+    </script>
   </head>
   <body>
 
@@ -27,19 +50,25 @@
       </div>
       <div class="navbar-nav navbar-center navbar-brand">Documentation for package ${symbol.name}</div>
       <button id="toc_button" type="button" class="btn navbar-nav navbar-right navbar-brand shadow-none">
-        <svg id="toc_collapsed_icon" style="display: none" width="1rem" height="1rem" viewBox="0 0 16 16" class="bi bi-chevron-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <svg id="toc_collapsed_icon" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
         </svg>
-        <svg id="toc_active_icon" width="1rem" height="1rem" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <svg id="toc_active_icon" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
         </svg>
       </button>
     </header>
+    <script>
+      if (isTocHidden())
+        document.getElementById("toc_active_icon").style.display = "none";
+      else
+        document.getElementById("toc_collapsed_icon").style.display = "none";
+    </script>
 
     <div class="container-fluid">
       <div class="row">
 
-        <div id="left_panel" class="col-2">
+        <div id="left_panel" class="col-2 order-1">
           <form id="search_form" role="search">
             <input id="search" class="form-control" type="text" autocomplete="off" spellcheck="false"
               placeholder="Search...">
@@ -60,7 +89,20 @@
           </nav>
         </div>
 
-        <main class="col-8 pl-md-3">
+        <div id="toc" class="col-2 order-3">
+          <nav class="nav flex-column">
+            <@symbol_toc_link symbol/><#nt>
+<#list tocSymbols as tocSymbol>
+            <@symbol_toc_link tocSymbol/><#nt>
+</#list>
+          </nav>
+        </div>
+        <script>
+          if (isTocHidden())
+            document.getElementById("toc").style.display = "none";
+        </script>
+
+        <main id="main" class="col-8 pl-3 order-2">
           <h1 id="${symbol.htmlLink.htmlAnchor}" class="anchor">${symbol.name}</h1>
           <@doc_comments docComments, 5, false/>
           <@imports importNodes, 5/>

@@ -3,15 +3,13 @@
           <@doc_comments docComments, 5, false/>
 
         </main>
-
-        <div id="toc" class="col-2 order-3">
-          <nav class="nav flex-column">
-            <@symbol_toc_link symbol/><#nt>
-<#list packageSymbols as packageSymbol>
-            <@symbol_toc_link packageSymbol/><#nt>
-</#list>
-          </nav>
-        </div>
+        <script>
+          if (isTocHidden()) {
+            let main = document.getElementById("main");
+            main.classList.remove("col-8");
+            main.classList.add("col-10");
+          }
+        </script>
 
       </div><!-- row -->
     </div><!-- container -->
@@ -33,7 +31,7 @@
         try {
           return new RegExp(terms.join(".*"), "i");
         } catch (e) {
-          return undefined;
+          return null;
         }
       }
 
@@ -105,20 +103,35 @@
         }
       }
 
+      function toggleToc() {
+        let toc = $("#toc");
+        toc.toggle();
+        $("#toc_collapsed_icon").toggle();
+        $("#toc_active_icon").toggle();
+        $("main").toggleClass("col-8");
+        $("main").toggleClass("col-10");
+
+        let hidden = toc.is(":hidden");
+        setItemToStorage(localStorage, "tocHidden", hidden);
+      }
+
       // custom hooks
       $(document).ready(function() {
         // re-apply current search value
-        let searchValue = sessionStorage.getItem("searchValue");
+        let searchValue = getItemFromStorage(sessionStorage, "searchValue");
         if (searchValue) {
           $("#search").val(searchValue);
           searchFilter(searchValue);
         }
 
         // re-apply current left panel scroll
-        let symbolOverviewScrollTop = sessionStorage.getItem("symbolOverviewScrollTop");
+        let symbolOverviewScrollTop = getItemFromStorage(sessionStorage, "symbolOverviewScrollTop");
         if (symbolOverviewScrollTop) {
           $('#symbol_overview').scrollTop(symbolOverviewScrollTop);
         }
+
+        // toc toggleable by the button
+        $("#toc_button").click(toggleToc);
 
         // bootstrap's scrollspy setup
         var scrollMarginTop = parseInt($('h1.anchor').css("scroll-margin-top"));
@@ -132,27 +145,18 @@
             $(this).val("");
 
           let value = $(this).val();
-          sessionStorage.setItem("searchValue", value);
+          setItemToStorage(sessionStorage, "searchValue", value);
           searchFilter(value);
         });
 
         // remember current symbol overview scroll position
         $(".nav-link").on("click", function() {
-          sessionStorage.setItem("symbolOverviewScrollTop", $('#symbol_overview').scrollTop());
+          setItemToStorage(sessionStorage, "symbolOverviewScrollTop", $('#symbol_overview').scrollTop());
         });
 
         // allow to collapse active package in the overview
         $(".nav-link-package.active").on("click", function() {
           $(this).siblings(".nav-symbols").toggleClass("collapsed");
-        })
-
-        // toggleable toc
-        $("#toc_button").click(function() {
-            $("#toc").toggle();
-            $("#toc_collapsed_icon").toggle();
-            $("#toc_active_icon").toggle();
-            $("main").toggleClass("col-8");
-            $("main").toggleClass("col-10");
         })
 
         // catch scrollspy's event that the active item has changed

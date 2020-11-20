@@ -67,7 +67,7 @@ class PackageEmitter extends DefaultTreeWalker
     @Override
     public void endPackage(Package pkg) throws ZserioExtensionException
     {
-        final EndPackageTemplateData templateData = new EndPackageTemplateData(context, pkg, nodesMap.get(pkg));
+        final EndPackageTemplateData templateData = new EndPackageTemplateData(context, pkg);
         DocFreeMarkerUtil.processTemplate("end_package.html.ftl", templateData, writer);
         writer.close();
     }
