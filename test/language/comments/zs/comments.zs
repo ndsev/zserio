@@ -13,6 +13,8 @@ import comments.classic_doc.unknown_tag.*;
 import comments.markdown_doc.bitmask_comments.*;
 import comments.markdown_doc.enum_comments.*;
 import comments.markdown_doc.indented_comments.*;
+import comments.markdown_doc.invalid_tags_comments.*;
+import comments.markdown_doc.linked_markdown.*;
 import comments.markdown_doc.links_in_comments.*;
 import comments.markdown_doc.package_comments.*;
 import comments.markdown_doc.sql_database_comments.*;

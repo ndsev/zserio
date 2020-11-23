@@ -21,17 +21,18 @@ ${I}</h2>
     <@doc_comments docComments, indent, false/>
 
     <@code_table_begin indent/>
-${I}  <tr><td colspan=3>struct ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+<#assign columnCount=(fields?has_content)?then(3, (functions?has_content)?then(2, 1))/>
+${I}  <tr><td colspan=${columnCount}>struct ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
         <#lt><@compound_parameters parameters/></td></tr>
-${I}  <tr><td colspan=3>{</td></tr>
-      <@compound_fields fields, indent+1/>
+${I}  <tr><td colspan=${columnCount}>{</td></tr>
+      <@compound_fields fields, columnCount, indent+1/>
 <#if functions?has_content>
     <#if fields?has_content>
-${I}  <tr><td colspan=3>&nbsp;</td></tr>
+${I}  <tr><td colspan=${columnCount}>&nbsp;</td></tr>
     </#if>
-      <@compound_functions functions, indent+1/>
+      <@compound_functions functions, columnCount, indent+1/>
 </#if>
-${I}  <tr><td colspan=3>};</td></tr>
+${I}  <tr><td colspan=${columnCount}>};</td></tr>
     <@code_table_end indent/>
     <@compound_member_details symbol, fields, indent/>
     <@compound_function_details symbol, functions, indent/>

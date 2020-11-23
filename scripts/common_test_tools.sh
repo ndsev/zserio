@@ -16,6 +16,13 @@ set_test_global_variables()
     # Zserio extra arguments
     ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS:-""}"
 
+    # vnu.jar HTML validator (disabled by default)
+    NU_HTML_VALIDATOR="${NU_HTML_VALIDATOR:-""}"
+    if [[ -n "${NU_HTML_VALIDATOR}" && ! -f "${NU_HTML_VALIDATOR}" ]] ; then
+        stderr_echo "Invalid NU HTML Validator! Set NU_HTML_VALIDATOR environment variable properly."
+        return 1
+    fi
+
     return 0
 }
 
@@ -26,6 +33,7 @@ print_test_help_env()
 Uses the following environment variables for testing:
     UNZIP               Unzip executable to use. Default is "unzip".
     ZSERIO_EXTRA_ARGS   Extra arguments to zserio tool. Default is empty.
+    NU_HTML_VALIDATOR   Path to NU HTML validator JAR file (vnu.jar).
 
 EOF
 }

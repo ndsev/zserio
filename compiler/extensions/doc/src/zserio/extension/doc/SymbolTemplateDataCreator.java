@@ -5,7 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import zserio.ast.AstNode;
+import zserio.ast.DocTagSee;
 import zserio.ast.Package;
+import zserio.ast.PackageSymbol;
+import zserio.ast.ScopeSymbol;
+import zserio.ast.SymbolReference;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
@@ -73,6 +77,29 @@ class SymbolTemplateDataCreator
         return createData(context, zserioType, member, AstNodeNameMapper.getName(member));
     }
 
+    public static SymbolTemplateData createData(TemplateDataContext context, DocTagSee docTagSee)
+    {
+        final String alias = docTagSee.getLinkAlias();
+        final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
+        final PackageSymbol referencedPackageSymbol = linkSymbolReference.getReferencedPackageSymbol();
+        final ScopeSymbol referencedScopeSymbol = linkSymbolReference.getReferencedScopeSymbol();
+        if (referencedPackageSymbol == null)
+        {
+            // this can happen if see tag link is invalid
+            return new SymbolTemplateData(alias, "Unknown link", new ArrayList<SymbolTemplateData>());
+        }
+        else if (referencedScopeSymbol == null)
+        {
+            return new SymbolTemplateData(alias, SymbolTemplateDataCreator.createData(context,
+                    referencedPackageSymbol));
+        }
+        else
+        {
+            return new SymbolTemplateData(alias, SymbolTemplateDataCreator.createData(context,
+                    (ZserioType)referencedPackageSymbol, referencedScopeSymbol));
+        }
+    }
+
     public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
             AstNode member, String memberName)
     {
@@ -108,6 +135,6 @@ class SymbolTemplateDataCreator
 
     private static String createHtmlAnchor(String typeName, String name)
     {
-        return typeName + "_" + name;
+        return typeName + "_" + name.replaceAll("\\s", "_");
     }
 }

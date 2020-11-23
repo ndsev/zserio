@@ -22,19 +22,20 @@ ${I}</h2>
     <@doc_comments docComments, indent, false/>
 
     <@code_table_begin indent/>
-${I}  <tr><td colspan=3>sql_table ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+<#assign columnCount=(fields?has_content)?then(3, (sqlConstraint?has_content)?then(2, 1))/>
+${I}  <tr><td colspan=${columnCount}>sql_table ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
         <@compound_parameters parameters/><#t>
         <#lt><#if virtualTableUsing?has_content> using ${virtualTableUsing}</#if></td></tr>
-${I}  <tr><td colspan=3>{</td></tr>
-      <@compound_fields fields, indent+1/>
+${I}  <tr><td colspan=${columnCount}>{</td></tr>
+      <@compound_fields fields, columnCount, indent+1/>
 <#if sqlConstraint?has_content>
-${I}  <tr><td colspan=3>&nbsp;</td></tr>
+${I}  <tr><td colspan=${columnCount}>&nbsp;</td></tr>
 ${I}  <tr>
 ${I}    <td class="indent"></td>
-${I}    <td colspan=2>sql ${sqlConstraint};</td>
+${I}    <td colspan=${columnCount-1}>sql ${sqlConstraint};</td>
 ${I}  </tr>
 </#if>
-${I}  <tr><td colspan=3>};</td></tr>
+${I}  <tr><td colspan=${columnCount}>};</td></tr>
     <@code_table_end indent/>
     <@compound_member_details symbol, fields, indent/>
     <@used_by symbol, usedBySymbols, indent/>

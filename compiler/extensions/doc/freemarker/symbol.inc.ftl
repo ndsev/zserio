@@ -24,7 +24,7 @@
 </#macro>
 
 <#macro symbol_toc_link symbol>
-    <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor}" title="${symbol.htmlTitle}">${symbol.name}</a><#t>
+    <a class="nav-link" href="#${symbol.htmlLink.htmlAnchor?url}" title="${symbol.htmlTitle}">${symbol.name}</a><#t>
 </#macro>
 
 <#macro symbol_template_parameters templateParameters>
@@ -84,5 +84,5 @@
 </#macro>
 
 <#macro symbol_html_link htmlLink>
-    <#if htmlLink.htmlPage??>${htmlLink.htmlPage}</#if><#if htmlLink.htmlAnchor??>#${htmlLink.htmlAnchor}</#if><#t>
+    <#if htmlLink.htmlPage??>${htmlLink.htmlPage}</#if><#if htmlLink.htmlAnchor??>#${htmlLink.htmlAnchor?url}</#if><#t>
 </#macro>

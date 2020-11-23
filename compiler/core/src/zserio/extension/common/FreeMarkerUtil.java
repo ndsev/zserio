@@ -34,6 +34,8 @@ public class FreeMarkerUtil
         {
             final Configuration newFreeMarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
             newFreeMarkerConfig.setClassForTemplateLoading(FreeMarkerUtil.class, "/freemarker/");
+            newFreeMarkerConfig.setOutputEncoding("UTF-8");
+
             freeMarkerConfig = newFreeMarkerConfig;
             amalgamatedDirectories = new HashSet<String>();
         }

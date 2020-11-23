@@ -1,12 +1,12 @@
 <#ftl output_format="HTML">
 <#include "symbol.inc.ftl">
-<#macro compound_fields fields indent>
+<#macro compound_fields fields columnCount indent>
     <#list fields as field>
-        <@compound_field field, indent/>
+        <@compound_field field, columnCount, indent/>
     </#list>
 </#macro>
 
-<#macro compound_field field indent>
+<#macro compound_field field columnCount indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#local typePrefix>
         <#if field.isVirtual>sql_virtual </#if><#t>
@@ -15,12 +15,12 @@
     </#local>
     <#if field.alignmentExpression?has_content>
 ${I}<tr>
-${I}  <td colspan=3>align(${field.alignmentExpression}):</td>
+${I}  <td colspan=${columnCount}>align(${field.alignmentExpression}):</td>
 ${I}</tr>
     </#if>
     <#if field.offsetExpression?has_content>
 ${I}<tr>
-${I}  <td colspan=3>${field.offsetExpression}:</td>
+${I}  <td colspan=${columnCount}>${field.offsetExpression}:</td>
 ${I}</tr>
     </#if>
 ${I}<tr>
@@ -48,27 +48,27 @@ ${I}  </td>
 ${I}</tr>
 </#macro>
 
-<#macro compound_functions functions indent>
+<#macro compound_functions functions columnCount indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#list functions as function>
 ${I}<tr>
 ${I}  <td class="indent empty"></td>
-${I}  <td colspan=2>
+${I}  <td colspan=${columnCount-1}>
 ${I}    function <@symbol_reference function.returnSymbol/> <#rt>
           <#lt><@symbol_reference function.symbol/>()
 ${I}  </td>
 ${I}</tr>
 ${I}<tr>
 ${I}  <td class="indent empty"></td>
-${I}  <td colspan=2>{</td>
+${I}  <td colspan=${columnCount-1}>{</td>
 ${I}</tr>
 ${I}<tr>
 ${I}  <td class="indent empty"></td>
-${I}  <td colspan=2 class="indent">return ${function.resultExpression};</td>
+${I}  <td colspan=${columnCount-1} class="indent">return ${function.resultExpression};</td>
 ${I}</tr>
 ${I}<tr>
 ${I}  <td class="indent empty"></td>
-${I}  <td colspan=2>}</td>
+${I}  <td colspan=${columnCount-1}>}</td>
 ${I}</tr>
     </#list>
 </#macro>

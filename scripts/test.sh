@@ -163,16 +163,33 @@ test_doc()
             for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
                 local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
                 local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
-                local TEST_ZS_SUBDIR="${TEST_ZS_RELDIR%/zs}"
-                if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_ZS_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
+                local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
+                local TEST_DOC_OUT_ZS_DIR="${TEST_DOC_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
+                if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
                     "${JAVA_BIN}" -jar "${ZSERIO_UNPACKED_RELEASE_DIR}/zserio.jar" \
                         -src "${TEST_ZS_DIR}" "${MAIN_ZS_FILE_NAME}" \
-                        -doc "${TEST_DOC_OUT_DIR}/${TEST_ZS_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}" \
+                        -doc "${TEST_DOC_OUT_ZS_DIR}" \
                         -withSvgDiagrams -setDotExecutable "${DOT}"
                     if [ $? -ne 0 ] ; then
                         stderr_echo "${MESSAGE} failed!"
                         return 1
                     fi
+                    if [ -n "${NU_HTML_VALIDATOR}" ] ; then
+                        echo "Running NU HTML Validator"
+                        local VNU_FILTER_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/vnu_filter.txt"
+                        local VNU_ARGS=()
+                        if [ -f "${VNU_FILTER_FILE}" ] ; then
+                            VNU_ARGS+=(--filterfile "${VNU_FILTER_FILE}")
+                        fi
+                        "${JAVA_BIN}" -jar "${NU_HTML_VALIDATOR}" --Werror --skip-non-html \
+                                      "${VNU_ARGS[@]}" \
+                                      "${TEST_DOC_OUT_ZS_DIR}"
+                        if [ $? -ne 0 ] ; then
+                            stderr_echo "${MESSAGE}: Generated HTML is not valid!"
+                            return 1
+                        fi
+                    fi
+
                     TOTAL_NUMBER_OF_TESTS=$((TOTAL_NUMBER_OF_TESTS+1))
                     echo
                 fi

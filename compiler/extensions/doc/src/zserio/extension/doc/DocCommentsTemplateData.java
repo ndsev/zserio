@@ -15,10 +15,6 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
-import zserio.ast.PackageSymbol;
-import zserio.ast.ScopeSymbol;
-import zserio.ast.SymbolReference;
-import zserio.ast.ZserioType;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -254,28 +250,7 @@ public class DocCommentsTemplateData
         {
             public DocTagSeeData(PackageTemplateDataContext context, DocTagSee docTagSee)
             {
-                final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
-                final PackageSymbol referencedPackageSymbol = linkSymbolReference.getReferencedPackageSymbol();
-                final ScopeSymbol referencedScopeSymbol = linkSymbolReference.getReferencedScopeSymbol();
-                SymbolTemplateData symbolData;
-                if (referencedPackageSymbol == null)
-                {
-                    // this can happen if see tag link is invalid
-                    symbolData = new SymbolTemplateData("", "unknownLink", "Unknown link", null,
-                            new ArrayList<SymbolTemplateData>());
-                }
-                else if (referencedScopeSymbol == null)
-                {
-                    symbolData = SymbolTemplateDataCreator.createData(context, referencedPackageSymbol);
-                }
-                else
-                {
-                    symbolData = SymbolTemplateDataCreator.createData(context,
-                            (ZserioType)referencedPackageSymbol, referencedScopeSymbol);
-                }
-
-                final String alias = docTagSee.getLinkAlias();
-                seeSymbol = new SymbolTemplateData(alias, symbolData);
+                seeSymbol = SymbolTemplateDataCreator.createData(context,  docTagSee);
             }
 
             public SymbolTemplateData getSeeSymbol()
@@ -330,7 +305,7 @@ public class DocCommentsTemplateData
         }
         else
         {
-            ZserioToolPrinter.printWarning(docComment, "Unkown documentation format!");
+            ZserioToolPrinter.printWarning(docComment, "Unknown documentation format!");
             return null;
         }
     }
