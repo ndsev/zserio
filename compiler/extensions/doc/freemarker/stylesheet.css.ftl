@@ -211,7 +211,7 @@ h3 {
   min-width: ${codeIndent}rem;
 }
 
-.main dd {
+#main dd {
   padding-left: 1em;
 }
 
@@ -219,7 +219,7 @@ h3 {
   color: ${deprecatedColor};
 }
 
-.main del {
+#main del {
   color: ${deprecatedColor};
 }
 
