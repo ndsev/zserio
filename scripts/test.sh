@@ -174,20 +174,16 @@ test_doc()
                         stderr_echo "${MESSAGE} failed!"
                         return 1
                     fi
-                    if [ -n "${NU_HTML_VALIDATOR}" ] ; then
-                        echo "Running NU HTML Validator"
-                        local VNU_FILTER_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/vnu_filter.txt"
-                        local VNU_ARGS=()
-                        if [ -f "${VNU_FILTER_FILE}" ] ; then
-                            VNU_ARGS+=(--filterfile "${VNU_FILTER_FILE}")
-                        fi
-                        "${JAVA_BIN}" -jar "${NU_HTML_VALIDATOR}" --Werror --skip-non-html \
-                                      "${VNU_ARGS[@]}" \
-                                      "${TEST_DOC_OUT_ZS_DIR}"
-                        if [ $? -ne 0 ] ; then
-                            stderr_echo "${MESSAGE}: Generated HTML is not valid!"
-                            return 1
-                        fi
+
+                    local FILTER_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/vnu_filter.txt"
+                    local VNU_ARGS=()
+                    if [[ ! -f "${VNU_FILTER_FILE}" && -f "${FILTER_FILE}" ]] ; then
+                        # apply only if global VNU_FILTER_FILE is not set
+                        VNU_ARGS+=(--filterfile "${FILTER_FILE}")
+                    fi
+                    run_vnu VNU_ARGS[@] "${TEST_DOC_OUT_ZS_DIR}"
+                    if [ $? -ne 0 ] ; then
+                        return 1
                     fi
 
                     TOTAL_NUMBER_OF_TESTS=$((TOTAL_NUMBER_OF_TESTS+1))

@@ -1,3 +1,5 @@
+.*Duplicate ID .comfortable-speed..*
+.*The first occurrence of ID .comfortable-speed. was here.*
 .*Element .(invalid|module). not allowed as child of element .p..*
 .*End tag .p. seen, but there were open elements.*
 .*Unclosed element .(invalid|module)..*

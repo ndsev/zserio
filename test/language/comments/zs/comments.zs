@@ -11,6 +11,7 @@ import comments.classic_doc.unknown_tag_matching_prefix.*;
 import comments.classic_doc.unknown_tag.*;
 
 import comments.markdown_doc.bitmask_comments.*;
+import comments.markdown_doc.duplicate_id.*;
 import comments.markdown_doc.enum_comments.*;
 import comments.markdown_doc.indented_comments.*;
 import comments.markdown_doc.invalid_tags_comments.*;

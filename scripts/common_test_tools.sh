@@ -16,12 +16,15 @@ set_test_global_variables()
     # Zserio extra arguments
     ZSERIO_EXTRA_ARGS="${ZSERIO_EXTRA_ARGS:-""}"
 
-    # vnu.jar HTML validator (disabled by default)
+    # vnu.jar HTML Validator (disabled by default)
     NU_HTML_VALIDATOR="${NU_HTML_VALIDATOR:-""}"
     if [[ -n "${NU_HTML_VALIDATOR}" && ! -f "${NU_HTML_VALIDATOR}" ]] ; then
         stderr_echo "Invalid NU HTML Validator! Set NU_HTML_VALIDATOR environment variable properly."
         return 1
     fi
+
+    # NU HTML Validator extra arguments
+    VNU_FILTER_FILE="${VNU_FILTER_FILE:-""}"
 
     return 0
 }
@@ -33,7 +36,8 @@ print_test_help_env()
 Uses the following environment variables for testing:
     UNZIP               Unzip executable to use. Default is "unzip".
     ZSERIO_EXTRA_ARGS   Extra arguments to zserio tool. Default is empty.
-    NU_HTML_VALIDATOR   Path to NU HTML validator JAR file (vnu.jar).
+    NU_HTML_VALIDATOR   Path to NU HTML Validator JAR file (vnu.jar).
+    VNU_FILTER_FILE     Filter file path to be used by NU HTML Validator. Default is empty.
 
 EOF
 }
@@ -106,6 +110,31 @@ run_zserio_tool()
     fi
 
     echo -e "FINISHED - ${MESSAGE}\n"
+
+    return 0
+}
+
+# Run NU HTML Validator if available
+run_vnu()
+{
+    exit_if_argc_ne $# 2
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local VNU_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local DOC_ROOT_DIR="$1"; shift
+
+    if [ -f "${VNU_FILTER_FILE}" ] ; then
+        VNU_ARGS+=(--filterfile "${VNU_FILTER_FILE}")
+    fi
+
+    if [ -n "${NU_HTML_VALIDATOR}" ] ; then
+        echo "Running NU HTML Validator"
+        "${JAVA_BIN}" -jar "${NU_HTML_VALIDATOR}" --Werror --skip-non-html \
+                      "${VNU_ARGS[@]}" "${DOC_ROOT_DIR}"
+        if [ $? -ne 0 ] ; then
+            stderr_echo "NU HTML Validator: HTML is not valid!"
+            return 1
+        fi
+    fi
 
     return 0
 }

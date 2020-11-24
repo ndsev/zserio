@@ -345,6 +345,15 @@ test()
         fi
     fi
 
+    # run NU HTML validator on generated HTML documentation
+    if [[ ${PARAM_DOC} == 1 ]] ; then
+        local VNU_ARGS=()
+        run_vnu VNU_ARGS[@] "${TEST_OUT_DIR}/doc"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
     return 0
 }
 
