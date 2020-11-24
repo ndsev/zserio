@@ -81,8 +81,9 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
 
     public static class CaseTemplateData
     {
-        public CaseTemplateData(PackageTemplateDataContext context, ChoiceType choiceType, ChoiceCase choiceCase,
-                Expression caseExpression, List<DocComment> docComments) throws ZserioExtensionException
+        public CaseTemplateData(PackageTemplateDataContext context, ChoiceType choiceType,
+                ChoiceCase choiceCase, Expression caseExpression, List<DocComment> docComments)
+                        throws ZserioExtensionException
         {
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             expression = docExpressionFormatter.formatGetter(caseExpression);

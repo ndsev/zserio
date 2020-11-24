@@ -54,8 +54,9 @@ public class EnumerationTemplateData extends HtmlTemplateData
             {
                 final ChoiceType choiceType = choiceCaseRef.getChoiceType();
                 final ChoiceCase choiceCase = choiceCaseRef.getChoiceCase();
+                final Expression caseExpression = choiceCaseRef.getChoiceCaseExpression().getExpression();
                 final SymbolTemplateData choiceCaseSymbol = SymbolTemplateDataCreator.createData(context,
-                        choiceType, choiceCase, enumItem.getName());
+                        choiceType, choiceCase, docExpressionFormatter.formatGetter(caseExpression));
                 final SymbolTemplateData choiceTypeSymbol = SymbolTemplateDataCreator.createData(context,
                         choiceType);
                 seeSymbols.add(new SeeSymbolTemplateData(choiceCaseSymbol, choiceTypeSymbol));

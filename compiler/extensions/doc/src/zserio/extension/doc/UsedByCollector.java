@@ -95,9 +95,11 @@ class UsedByCollector extends DefaultTreeWalker
             {
                 final Object symbolObject = choiceCaseExpression.getExpression().getExprSymbolObject();
                 if (symbolObject instanceof EnumItem)
-                    addEnumItemToUsedByMap((EnumItem)symbolObject, choiceType, choiceCase);
+                    addEnumItemToUsedByMap((EnumItem)symbolObject, choiceType, choiceCase,
+                            choiceCaseExpression);
                 else if (symbolObject instanceof BitmaskValue)
-                    addBitmaskValueToUsedByMap((BitmaskValue)symbolObject, choiceType, choiceCase);
+                    addBitmaskValueToUsedByMap((BitmaskValue)symbolObject, choiceType, choiceCase,
+                            choiceCaseExpression);
             }
         }
     }
@@ -249,10 +251,12 @@ class UsedByCollector extends DefaultTreeWalker
      */
     public static class ChoiceCaseReference implements Comparable<ChoiceCaseReference>
     {
-        public ChoiceCaseReference(ChoiceType choiceType, ChoiceCase choiceCase)
+        public ChoiceCaseReference(ChoiceType choiceType, ChoiceCase choiceCase,
+                ChoiceCaseExpression choiceCaseExpression)
         {
             this.choiceType = choiceType;
             this.choiceCase = choiceCase;
+            this.choiceCaseExpression = choiceCaseExpression;
         }
 
         @Override
@@ -288,8 +292,14 @@ class UsedByCollector extends DefaultTreeWalker
             return choiceCase;
         }
 
+        public ChoiceCaseExpression getChoiceCaseExpression()
+        {
+            return choiceCaseExpression;
+        }
+
         private final ChoiceType choiceType;
         private final ChoiceCase choiceCase;
+        private final ChoiceCaseExpression choiceCaseExpression;
     }
 
     private Set<AstNode> getUsedTypesForTemplate(ZserioTemplatableType template)
@@ -364,7 +374,8 @@ class UsedByCollector extends DefaultTreeWalker
         return usedByTypeSet;
     }
 
-    private void addEnumItemToUsedByMap(EnumItem enumItem, ChoiceType choiceType, ChoiceCase choiceCase)
+    private void addEnumItemToUsedByMap(EnumItem enumItem, ChoiceType choiceType, ChoiceCase choiceCase,
+            ChoiceCaseExpression choiceCaseExpression)
     {
         Set<ChoiceCaseReference> usedByChoices = enumItemUsedByChoiceMap.get(enumItem);
         if (usedByChoices == null)
@@ -373,11 +384,11 @@ class UsedByCollector extends DefaultTreeWalker
             enumItemUsedByChoiceMap.put(enumItem, usedByChoices);
         }
 
-        usedByChoices.add(new ChoiceCaseReference(choiceType, choiceCase));
+        usedByChoices.add(new ChoiceCaseReference(choiceType, choiceCase, choiceCaseExpression));
     }
 
     private void addBitmaskValueToUsedByMap(BitmaskValue bitmaskValue, ChoiceType choiceType,
-            ChoiceCase choiceCase)
+            ChoiceCase choiceCase, ChoiceCaseExpression choiceCaseExpression)
     {
         Set<ChoiceCaseReference> usedByChoices = bitmaskValueUsedByChoiceMap.get(bitmaskValue);
         if (usedByChoices == null)
@@ -386,7 +397,7 @@ class UsedByCollector extends DefaultTreeWalker
             bitmaskValueUsedByChoiceMap.put(bitmaskValue, usedByChoices);
         }
 
-        usedByChoices.add(new ChoiceCaseReference(choiceType, choiceCase));
+        usedByChoices.add(new ChoiceCaseReference(choiceType, choiceCase, choiceCaseExpression));
     }
 
     private static final Set<AstNode> EMPTY_USED_SET =
