@@ -6,17 +6,13 @@ import java.io.IOException;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
- * The class converts the generated dot files into svg format.
+ * Converter for the generated dot files into svg format.
+ *
+ * This class runs external dot executable which converts dot files into svg format. It offers as well simple
+ * test if the given dot executable works correctly.
  */
 class DotToSvgConverter
 {
-    /**
-     * Checks if the dot executable is available in the system.
-     *
-     * @param dotExecutable Dot executable to use.
-     *
-     * @return True if dot executable is available, otherwise false.
-     */
     public static boolean isDotExecAvailable(String dotExecutable)
     {
         final String commandWithArguments[] = { dotExecutable, "-V" };
@@ -31,15 +27,6 @@ class DotToSvgConverter
         }
     }
 
-    /**
-     * Converts the given dot file into svg file.
-     *
-     * @param dotExecutable Dot executable to use.
-     * @param inputDotFile Name of the dot file to convert.
-     * @param outputSvgFile Name of the svg file to generate.
-     *
-     * @throw ZserioExtensionException In case of fatal error.
-     */
     public static void convert(String dotExecutable, File inputDotFile, File outputSvgFile)
             throws ZserioExtensionException
     {

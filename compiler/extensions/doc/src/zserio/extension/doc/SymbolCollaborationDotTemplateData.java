@@ -8,6 +8,9 @@ import java.util.Map;
 import zserio.ast.AstNode;
 import zserio.ast.Package;
 
+/**
+ * FreeMarker template data for Symbol collaboration dot emitter.
+ */
 public class SymbolCollaborationDotTemplateData
 {
     public SymbolCollaborationDotTemplateData(TemplateDataContext context, AstNode symbol,

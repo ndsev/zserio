@@ -18,7 +18,7 @@ import zserio.ast.DocText;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * The documentation comments data used for FreeMarker template during documentation generation.
+ * FreeMarker template data for documentation comments in the package used by Package emitter.
  */
 public class DocCommentsTemplateData
 {
@@ -37,19 +37,11 @@ public class DocCommentsTemplateData
         this.isDeprecated = isDeprecated;
     }
 
-    /**
-     * Returns list of template data for particular documentation comments.
-     *
-     * @return List of documentation comments template data.
-     */
     public Iterable<DocCommentTemplateData> getCommentsList()
     {
         return commentsList;
     }
 
-    /**
-     * Returns true if the documented element is deprecated.
-     */
     public boolean getIsDeprecated()
     {
         return isDeprecated;
@@ -57,12 +49,6 @@ public class DocCommentsTemplateData
 
     public static class DocCommentTemplateData
     {
-        /**
-         * Constructor from classic documentation comment.
-         *
-         * @param context Template data context.
-         * @param docCommentClassic Classic documentation comment.
-         */
         public DocCommentTemplateData(PackageTemplateDataContext context, DocCommentClassic docCommentClassic)
         {
             boolean isDeprecated = false;
@@ -87,12 +73,6 @@ public class DocCommentsTemplateData
             this.markdownHtml = null;
         }
 
-        /**
-         * Constructor from markdown documentation comment.
-         *
-         * @param context TemplateDataContext.
-         * @param docCommentMarkdown Markdown documentation comment.
-         */
         public DocCommentTemplateData(PackageTemplateDataContext context, DocCommentMarkdown docCommentMarkdown)
         {
             isDeprecated = false;
@@ -102,33 +82,21 @@ public class DocCommentsTemplateData
                     docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
         }
 
-        /**
-         * Returns the documentation HTML rendered from markdown.
-         */
         public String getMarkdownHtml()
         {
             return markdownHtml;
         }
 
-        /**
-         * Returns the documentation comment paragraphs.
-         */
         public Iterable<DocParagraphData> getParagraphs()
         {
             return docParagraphs;
         }
 
-        /**
-         * Returns true if the documented element is deprecated.
-         */
         public boolean getIsDeprecated()
         {
             return isDeprecated;
         }
 
-        /**
-         * Helper class to model the documentation paragraph used for FreeMarker template.
-         */
         public static class DocParagraphData
         {
             public DocParagraphData(PackageTemplateDataContext context, DocParagraph docParagraph)
@@ -190,9 +158,6 @@ public class DocCommentsTemplateData
             private final List<DocElementData> docElements = new ArrayList<DocElementData>();
         }
 
-        /**
-         * Helper class to model the documentation multiline text used for FreeMarker template.
-         */
         public static class DocMultilineData
         {
             public DocMultilineData(PackageTemplateDataContext context, DocMultiline docMultiline)
@@ -211,9 +176,6 @@ public class DocCommentsTemplateData
                 return docLineElements;
             }
 
-            /**
-             * Helper class to model the documentation line element used for FreeMarker template.
-             */
             public static class DocLineElementData
             {
                 DocLineElementData(PackageTemplateDataContext context, DocLineElement docLineElement)
@@ -243,9 +205,6 @@ public class DocCommentsTemplateData
             private final List<DocLineElementData> docLineElements = new ArrayList<DocLineElementData>();
         }
 
-        /**
-         * Helper class to model the documentation see tag used for FreeMarker template.
-         */
         public static class DocTagSeeData
         {
             public DocTagSeeData(PackageTemplateDataContext context, DocTagSee docTagSee)
@@ -261,9 +220,6 @@ public class DocCommentsTemplateData
             private final SymbolTemplateData seeSymbol;
         }
 
-        /**
-         * Helper class to model the documentation param tag used for FreeMarker template.
-         */
         public static class DocTagParamData
         {
             public DocTagParamData(PackageTemplateDataContext context, DocTagParam docTagParam)

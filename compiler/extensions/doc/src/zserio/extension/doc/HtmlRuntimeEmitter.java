@@ -15,7 +15,10 @@ import java.util.jar.JarFile;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
- * Emits external files stored in Jar file used by generated HTML during runtime.
+ * HTML runtime emitter.
+ *
+ * It creates all external files stored in Jar file and used by generated HTML during runtime. For example,
+ * zserio logo picture in png format stored in Jar file.
  */
 class HtmlRuntimeEmitter
 {

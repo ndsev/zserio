@@ -5,7 +5,9 @@ import java.io.File;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
- * Emits CSS styles file.
+ * Style sheet emitter.
+ *
+ * The style sheet emitter creates CSS styles file.
  */
 class StylesheetEmitter
 {

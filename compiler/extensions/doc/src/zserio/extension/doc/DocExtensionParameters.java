@@ -6,7 +6,13 @@ import org.apache.commons.cli.OptionGroup;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ExtensionParameters;
 
-public class DocExtensionParameters
+/**
+ * Command line parameters for documentation extension.
+ *
+ * The class holds all command line parameters passed by core to the documentation extension, which are really
+ * used by documentation emitters.
+ */
+class DocExtensionParameters
 {
     public DocExtensionParameters(ExtensionParameters parameters) throws ZserioExtensionException
     {

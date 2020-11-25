@@ -6,7 +6,9 @@ import zserio.ast.Package;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
- * Emits index HTML file.
+ * HTML index emitter.
+ *
+ * This emitter creates main HTML index file.
  */
 class IndexEmitter
 {

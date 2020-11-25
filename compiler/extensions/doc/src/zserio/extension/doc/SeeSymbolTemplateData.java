@@ -1,5 +1,11 @@
 package zserio.extension.doc;
 
+/**
+ * FreeMarker template data for see symbol used by Package emitter.
+ *
+ * See symbol is used as an reference for example in description of the enumeration item which is used by some
+ * choice case.
+ */
 public class SeeSymbolTemplateData
 {
     public SeeSymbolTemplateData(SymbolTemplateData memberSymbol, SymbolTemplateData typeSymbol)

@@ -22,6 +22,15 @@ import zserio.ast.UnionType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Symbol collector.
+ *
+ * Symbol collector gathers all symbols in packages and builds a special map which maps package to the list
+ * of all symbols which belong to the package.
+ *
+ * This map is used by Package emitter to get all symbols in package at the beginning of package traversal to
+ * build symbol navigation pane.
+ */
 class SymbolCollector extends DefaultTreeWalker
 {
     public Map<Package, List<AstNode>> getNodesMap()

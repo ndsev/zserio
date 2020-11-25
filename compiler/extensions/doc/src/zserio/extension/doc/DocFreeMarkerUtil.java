@@ -6,6 +6,11 @@ import java.io.Writer;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker utility methods for documentation extension.
+ *
+ * The class provides location of FreeMarker templates for all documentation emitters.
+ */
 class DocFreeMarkerUtil
 {
     public static void processTemplate(String templateName, Object templateData, File outputFile)

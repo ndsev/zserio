@@ -3,6 +3,12 @@ package zserio.extension.doc;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 
+/**
+ * Mapper for package to the file name.
+ *
+ * This mapper returns file name which can be used to store data for the corresponding package. It properly
+ * handles default package which does not have any name.
+ */
 class PackageFileNameMapper
 {
     public static String getFileName(Package pkg)

@@ -6,7 +6,9 @@ import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
 
 /**
- * The extension which generates HTML documentation.
+ * The documentation extension.
+ *
+ * It generates HTML documentation together with SVG collaboration diagrams converted from generated dot files.
  */
 public class DocExtension implements Extension
 {

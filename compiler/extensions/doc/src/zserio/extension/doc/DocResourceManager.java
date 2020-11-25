@@ -16,6 +16,20 @@ import zserio.ast.Package;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.HashUtil;
 
+/**
+ * Documentation resource manager.
+ *
+ * Documentation resource manager manages all referenced resources found in Markdown documentation comments.
+ *
+ * Markdown documentation comments in schema can contain links to the following external resources:
+ *
+ * - to another valid zserio schema file (.zs)
+ * - to any external file (e.g. png)
+ * - to any other Markdown file (.md)
+ *
+ * This manager is handles properly each such link and it is responsible for copying of all corresponding
+ * resources to the output directory.
+ */
 class DocResourceManager
 {
     public DocResourceManager(PackageCollector packageCollector, String htmlContentDirectory,

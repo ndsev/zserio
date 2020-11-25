@@ -17,7 +17,10 @@ import zserio.ast.TemplateParameter;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
-public class CompoundTypeTemplateData extends HtmlTemplateData
+/**
+ * Base FreeMarker template data for compounds in the package used by Package emitter.
+ */
+public class CompoundTypeTemplateData extends PackageTemplateDataBase
 {
     public CompoundTypeTemplateData(PackageTemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException

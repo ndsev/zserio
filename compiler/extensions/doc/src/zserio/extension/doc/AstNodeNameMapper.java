@@ -38,6 +38,14 @@ import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.tools.ZserioToolPrinter;
 
+/**
+ * Mapper for AST node name.
+ *
+ * The class maps any AST node to its name in string format. For example, considering AST node for constant,
+ * it returns constant name.
+ *
+ * It returns valid string even if the name for the given AST node is unknown.
+ */
 class AstNodeNameMapper
 {
     public static String getName(AstNode node)

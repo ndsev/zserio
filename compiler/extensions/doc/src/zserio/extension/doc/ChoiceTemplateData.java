@@ -18,6 +18,9 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for choices in the package used by Package emitter.
+ */
 public class ChoiceTemplateData extends CompoundTypeTemplateData
 {
     public ChoiceTemplateData(PackageTemplateDataContext context, ChoiceType choiceType) throws ZserioExtensionException

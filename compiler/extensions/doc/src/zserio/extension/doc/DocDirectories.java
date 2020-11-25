@@ -2,6 +2,9 @@ package zserio.extension.doc;
 
 import java.io.File;
 
+/**
+ * Directory names created by this documentation extension.
+ */
 class DocDirectories
 {
     public static final String CONTENT_DIRECTORY = "content";

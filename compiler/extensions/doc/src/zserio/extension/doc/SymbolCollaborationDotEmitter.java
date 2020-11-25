@@ -9,7 +9,9 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.StringJoinUtil;
 
 /**
- * Emits symbol collaboration diagrams in DOT format per each Zserio symbol.
+ * Symbol collaboration dot emitter.
+ *
+ * Symbol collaboration dot emitter creates symbol collaboration diagrams in DOT format for each Zserio symbol.
  */
 class SymbolCollaborationDotEmitter
 {

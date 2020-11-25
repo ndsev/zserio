@@ -3,6 +3,11 @@ package zserio.extension.doc;
 import zserio.ast.Expression;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
 
+/**
+ * Expression formatting policy for documentation extension.
+ *
+ * The class formats expressions for documentation extension.
+ */
 class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
 {
     @Override

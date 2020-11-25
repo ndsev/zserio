@@ -24,6 +24,11 @@ import zserio.extension.common.FileUtil;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.StringJoinUtil;
 
+/**
+ * Package emitter.
+ *
+ * Package emitter creates main HTML for each package containing description of all package symbols.
+ */
 class PackageEmitter extends DefaultTreeWalker
 {
     public PackageEmitter(DocExtensionParameters docParameters, UsedByCollector usedByCollector,

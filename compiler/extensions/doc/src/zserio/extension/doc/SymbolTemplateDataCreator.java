@@ -4,16 +4,24 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.DocTagSee;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.SymbolReference;
+import zserio.ast.TemplateArgument;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
 
+/**
+ * Creator for FreeMarker template data for symbol used by Package emitter.
+ *
+ * This creator creates FreeMarker template data for symbol from AST node. It covers all necessary alternatives.
+ */
 class SymbolTemplateDataCreator
 {
     public static SymbolTemplateData createData(TemplateDataContext context, AstNode node)
@@ -21,8 +29,7 @@ class SymbolTemplateDataCreator
         final String name = AstNodeNameMapper.getName(node);
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
         final Package pkg = AstNodePackageMapper.getPackage(node);
-        final List<SymbolTemplateData> templateArguments =
-                AstNodeTemplateArgumentsMapper.getTemplateArguments(node, context);
+        final List<SymbolTemplateData> templateArguments = createTemplateArguments(context, node);
 
         if (pkg == null)
         {
@@ -136,5 +143,28 @@ class SymbolTemplateDataCreator
     private static String createHtmlAnchor(String typeName, String name)
     {
         return typeName + "_" + name.replaceAll("\\s", "_");
+    }
+
+    private static List<SymbolTemplateData> createTemplateArguments(TemplateDataContext context, AstNode node)
+    {
+        final ArrayList<SymbolTemplateData> templateArguments = new ArrayList<SymbolTemplateData>();
+
+        TypeReference typeReference = null;
+        if (node instanceof ArrayInstantiation)
+            typeReference = ((ArrayInstantiation)node).getElementTypeInstantiation().getTypeReference();
+        else if (node instanceof TypeInstantiation)
+            typeReference = ((TypeInstantiation)node).getTypeReference();
+        else if (node instanceof TypeReference)
+            typeReference = (TypeReference)node;
+        if (typeReference != null)
+        {
+            for (TemplateArgument templateArgument : typeReference.getTemplateArguments())
+            {
+                templateArguments.add(
+                        SymbolTemplateDataCreator.createData(context, templateArgument.getTypeReference()));
+            }
+        }
+
+        return templateArguments;
     }
 }

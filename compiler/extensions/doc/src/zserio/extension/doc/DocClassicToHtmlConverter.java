@@ -5,20 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The class converts the classic documentation comment text into HTML format.
+ * Converter for the classic documentation comment text into HTML format.
+ *
+ * The classic documentation comment text can contain HTML tags. These tags must be identified and passed
+ * through without escaping.
  */
 class DocClassicToHtmlConverter
 {
-    /**
-     * Converts invalid HTML characters in documentation comment text into escape sequences.
-     *
-     * Documentation comment text can contain HTML tags. These tags must be identified and passed through
-     * without escaping.
-     *
-     * @param text Documentation comment text to convert.
-     *
-     * @return Converted string for HTML.
-     */
     public static String convert(String text)
     {
         final StringBuilder output = new StringBuilder();

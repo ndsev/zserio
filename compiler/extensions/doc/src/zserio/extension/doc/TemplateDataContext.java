@@ -5,6 +5,11 @@ import java.io.File;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.tools.StringJoinUtil;
 
+/**
+ * Freemarker template data context for all emitters.
+ *
+ * Freemarker template data context holds all parameters used by Freemarker template data.
+ */
 class TemplateDataContext
 {
     public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,

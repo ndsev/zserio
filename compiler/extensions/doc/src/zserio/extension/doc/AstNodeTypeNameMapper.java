@@ -43,6 +43,14 @@ import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioType;
 import zserio.tools.ZserioToolPrinter;
 
+/**
+ * Mapper for AST node type.
+ *
+ * The class maps any AST node to its type in string format. For example, considering AST node for constant,
+ * it returns string "Constant".
+ *
+ * It returns valid string even if the type for the given AST node is unknown.
+ */
 class AstNodeTypeNameMapper
 {
     public static String getTypeName(AstNode node)

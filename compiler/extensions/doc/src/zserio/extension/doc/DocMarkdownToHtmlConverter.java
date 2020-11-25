@@ -27,6 +27,12 @@ import org.commonmark.ext.autolink.AutolinkExtension;
 import org.commonmark.ext.heading.anchor.HeadingAnchorExtension;
 import org.commonmark.ext.gfm.tables.TablesExtension;
 
+/**
+ * Converter for the Markdown documentation comment text into HTML format.
+ *
+ * The Markdown documentation comment text can contain HTML tags. These tags are processed directly by
+ * used Markdown renderer without any further preprocessing.
+ */
 class DocMarkdownToHtmlConverter
 {
     static String convert(DocResourceManager docResourceManager, AstLocation location, String markdown)

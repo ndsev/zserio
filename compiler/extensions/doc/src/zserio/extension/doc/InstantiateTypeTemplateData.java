@@ -3,7 +3,10 @@ package zserio.extension.doc;
 import zserio.ast.InstantiateType;
 import zserio.extension.common.ZserioExtensionException;
 
-public class InstantiateTypeTemplateData extends HtmlTemplateData
+/**
+ * FreeMarker template data for instantiate types in the package used by Package emitter.
+ */
+public class InstantiateTypeTemplateData extends PackageTemplateDataBase
 {
     public InstantiateTypeTemplateData(PackageTemplateDataContext context, InstantiateType instantiateType)
             throws ZserioExtensionException

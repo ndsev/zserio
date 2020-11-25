@@ -38,7 +38,21 @@ import zserio.extension.common.DefaultTreeWalker;
 import zserio.tools.HashUtil;
 
 /**
- * Abstraction which handles used by list for all available Zserio types.
+ * Used by collector.
+ *
+ * Used by collector gathers all symbols in packages and builds a special maps which
+ *
+ * - map symbol to the list of all symbols which use the symbol
+ * - map symbol to the list of all symbols which is used by the symbol
+ *
+ * These maps are used by Symbol collaboration dot emitter to get information for collaboration diagrams.
+ *
+ * Used by collector builds as well maps which
+ *
+ * - map enumeration item to the list of all choice cases which use the enumeration item
+ * - map bitmask value to the list of all choice cases which use the bitmask value
+ *
+ * These maps are used by Package emitter to get information for see symbols.
  */
 class UsedByCollector extends DefaultTreeWalker
 {

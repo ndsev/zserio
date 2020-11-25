@@ -3,7 +3,10 @@ package zserio.extension.doc;
 import zserio.ast.Constant;
 import zserio.extension.common.ZserioExtensionException;
 
-public class ConstantTemplateData extends HtmlTemplateData
+/**
+ * FreeMarker template data for constants in the package used by Package emitter.
+ */
+public class ConstantTemplateData extends PackageTemplateDataBase
 {
     public ConstantTemplateData(PackageTemplateDataContext context, Constant constant) throws ZserioExtensionException
     {

@@ -22,6 +22,14 @@ import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
 
+/**
+ * Mapper for AST node package.
+ *
+ * The class maps any AST node to its package. For example, considering AST node for constant, it returns
+ * the package where the constant is defined.
+ *
+ * It can return null if the package for given AST node is unknown.
+ */
 class AstNodePackageMapper
 {
     public static Package getPackage(AstNode node)

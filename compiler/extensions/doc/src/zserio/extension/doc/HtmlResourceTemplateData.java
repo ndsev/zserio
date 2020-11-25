@@ -1,5 +1,8 @@
 package zserio.extension.doc;
 
+/**
+ * FreeMarker template data for HTML resource emitter.
+ */
 public class HtmlResourceTemplateData
 {
     public HtmlResourceTemplateData(String title, String bodyContent)

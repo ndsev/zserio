@@ -5,7 +5,10 @@ import java.io.File;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
- * Emits an HTML resource.
+ * HTML resource emitter.
+ *
+ * HTML resource emitter creates valid standalone HTML file from the converted markdown documentation comment
+ * to HTML (which does not contain valid header or body).
  */
 class HtmlResourceEmitter
 {

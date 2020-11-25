@@ -7,7 +7,10 @@ import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.extension.common.ZserioExtensionException;
 
-public class ServiceTemplateData extends HtmlTemplateData
+/**
+ * FreeMarker template data for services in the package used by Package emitter.
+ */
+public class ServiceTemplateData extends PackageTemplateDataBase
 {
     public ServiceTemplateData(PackageTemplateDataContext context, ServiceType serviceType) throws ZserioExtensionException
     {

@@ -2,6 +2,11 @@ package zserio.extension.doc;
 
 import java.util.List;
 
+/**
+ * FreeMarker template data for symbol used by Package emitter.
+ *
+ * Symbol holds all information needed to show correct hyperlink to the symbol.
+ */
 public class SymbolTemplateData implements Comparable<SymbolTemplateData>
 {
     public SymbolTemplateData(String name, String htmlTitle, String htmlLinkPage,

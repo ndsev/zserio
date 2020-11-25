@@ -3,6 +3,9 @@ package zserio.extension.doc;
 import zserio.ast.Package;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for end of the package used by Package emitter.
+ */
 public class EndPackageTemplateData
 {
     public EndPackageTemplateData(PackageTemplateDataContext context, Package pkg)

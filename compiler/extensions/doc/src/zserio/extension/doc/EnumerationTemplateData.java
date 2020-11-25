@@ -11,7 +11,10 @@ import zserio.ast.Expression;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
-public class EnumerationTemplateData extends HtmlTemplateData
+/**
+ * FreeMarker template data for enumerations in the package used by Package emitter.
+ */
+public class EnumerationTemplateData extends PackageTemplateDataBase
 {
     public EnumerationTemplateData(PackageTemplateDataContext context, EnumType enumType) throws ZserioExtensionException
     {

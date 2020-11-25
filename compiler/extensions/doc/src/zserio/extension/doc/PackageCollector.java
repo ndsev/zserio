@@ -8,6 +8,15 @@ import java.util.Map;
 import zserio.ast.Package;
 import zserio.ast.ZserioAstWalker;
 
+/**
+ * Package collector.
+ *
+ * Package collector gathers all available packages and builds a special map which maps full source file name
+ * path to the package.
+ *
+ * This map is used by Documentation resource manager to find out referenced package in Markdown documentation
+ * comment (e.g. [my schema](zserio_source.zs)).
+ */
 class PackageCollector extends ZserioAstWalker
 {
     public Map<Path, Package> getPathToPackageMap()

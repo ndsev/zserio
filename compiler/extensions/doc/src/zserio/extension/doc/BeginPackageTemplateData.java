@@ -12,6 +12,9 @@ import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for beginning of the package used by Package emitter.
+ */
 public class BeginPackageTemplateData
 {
     public BeginPackageTemplateData(PackageTemplateDataContext context, Package pkg,
@@ -127,10 +130,12 @@ public class BeginPackageTemplateData
 
     public static class ImportTemplateData
     {
-        public ImportTemplateData(PackageTemplateDataContext context, Import importNode) throws ZserioExtensionException
+        public ImportTemplateData(PackageTemplateDataContext context, Import importNode)
+                throws ZserioExtensionException
         {
             docComments = new DocCommentsTemplateData(context, importNode.getDocComments());
-            importedPackageSymbol = SymbolTemplateDataCreator.createData(context, importNode.getImportedPackage());
+            importedPackageSymbol = SymbolTemplateDataCreator.createData(context,
+                    importNode.getImportedPackage());
             final PackageSymbol importedPackageSymbol = importNode.getImportedSymbol();
             importedSymbol = (importedPackageSymbol == null) ? null :
                 SymbolTemplateDataCreator.createData(context, importedPackageSymbol);

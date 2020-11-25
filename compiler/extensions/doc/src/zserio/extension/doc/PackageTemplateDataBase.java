@@ -7,9 +7,12 @@ import zserio.ast.AstNode;
 import zserio.ast.DocumentableAstNode;
 import zserio.extension.common.ZserioExtensionException;
 
-public class HtmlTemplateData
+/**
+ * Base FreeMarker template data for all symbols in the package used by Package emitter.
+ */
+public class PackageTemplateDataBase
 {
-    public HtmlTemplateData(PackageTemplateDataContext context, DocumentableAstNode astNode)
+    public PackageTemplateDataBase(PackageTemplateDataContext context, DocumentableAstNode astNode)
             throws ZserioExtensionException
     {
         this.docComments = new DocCommentsTemplateData(context, astNode.getDocComments());

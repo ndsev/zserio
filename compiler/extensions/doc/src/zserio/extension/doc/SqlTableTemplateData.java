@@ -5,6 +5,9 @@ import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for SQL tables in the package used by Package emitter.
+ */
 public class SqlTableTemplateData extends CompoundTypeTemplateData
 {
     public SqlTableTemplateData(PackageTemplateDataContext context, SqlTableType sqlTableType)

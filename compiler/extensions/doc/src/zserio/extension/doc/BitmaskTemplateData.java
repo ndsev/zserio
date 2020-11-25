@@ -11,7 +11,10 @@ import zserio.ast.Expression;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
-public class BitmaskTemplateData extends HtmlTemplateData
+/**
+ * FreeMarker template data for bitmasks in the package used by Package emitter.
+ */
+public class BitmaskTemplateData extends PackageTemplateDataBase
 {
     public BitmaskTemplateData(PackageTemplateDataContext context, BitmaskType bitmaskType) throws ZserioExtensionException
     {

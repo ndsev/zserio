@@ -8,7 +8,10 @@ import zserio.ast.PubsubType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
-public class PubsubTemplateData extends HtmlTemplateData
+/**
+ * FreeMarker template data for pubsubs in the package used by Package emitter.
+ */
+public class PubsubTemplateData extends PackageTemplateDataBase
 {
     public PubsubTemplateData(PackageTemplateDataContext context, PubsubType pubsubType) throws ZserioExtensionException
     {
