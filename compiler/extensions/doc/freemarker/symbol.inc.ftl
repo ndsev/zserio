@@ -1,4 +1,5 @@
 <#ftl output_format="HTML">
+<#include "html_path.inc.ftl">
 <#macro symbol_reference symbol suffix="" attrs="">
     <#if symbol.htmlLink??>
         <a <@symbol_reference_href_title symbol/> ${attrs?no_esc}>${symbol.name}${suffix}</a><#t>
@@ -84,5 +85,5 @@
 </#macro>
 
 <#macro symbol_html_link htmlLink>
-    <#if htmlLink.htmlPage??>${htmlLink.htmlPage}</#if><#if htmlLink.htmlAnchor??>#${htmlLink.htmlAnchor?url}</#if><#t>
+    <#if htmlLink.htmlPage??><@html_path htmlLink.htmlPage/></#if><#if htmlLink.htmlAnchor??>#${htmlLink.htmlAnchor?url}</#if><#t>
 </#macro>

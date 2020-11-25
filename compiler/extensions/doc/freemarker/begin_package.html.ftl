@@ -1,4 +1,5 @@
 <#ftl output_format="HTML">
+<#include "html_path.inc.ftl">
 <#include "doc_comment.inc.ftl">
 <#include "import.inc.ftl">
 <#include "symbol.inc.ftl">
@@ -10,10 +11,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="${cssDirectory}/bootstrap.min.css">
+    <link rel="stylesheet" href="<@html_path cssDirectory/>/bootstrap.min.css">
 
     <!-- Zserio Documentation CSS -->
-    <link rel="stylesheet" href="${cssDirectory}/${stylesheetName}">
+    <link rel="stylesheet" href="<@html_path cssDirectory/>/${stylesheetName}">
 
     <title>${symbol.name} documentation</title>
 
@@ -45,7 +46,7 @@
     <header id="header" class="navbar navbar-dark bg-dark sticky-top">
       <div class="navbar-nav navbar-left navbar-brand">
         <a href="https://zserio.org/" target="_blank">
-          <img class="logo" alt="zserio.org" src="${resourcesDirectory}/zserio.png"/>
+          <img class="logo" alt="zserio.org" src="<@html_path resourcesDirectory/>/zserio.png"/>
         </a>
       </div>
       <div class="navbar-nav navbar-center navbar-brand">Documentation for package ${symbol.name}</div>

@@ -1,10 +1,11 @@
 <#ftl output_format="HTML">
+<#include "html_path.inc.ftl">
 <!doctype html>
 <html lang="en">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <script>
-      window.location.href="${htmlLink.htmlPage}";
+      window.location.href="<@html_path htmlLink.htmlPage/>";
     </script>
     <title>${name} documentation</title>
   </head>
