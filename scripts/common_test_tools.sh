@@ -128,7 +128,8 @@ run_vnu()
 
     if [ -n "${NU_HTML_VALIDATOR}" ] ; then
         echo "Running NU HTML Validator"
-        "${JAVA_BIN}" -jar "${NU_HTML_VALIDATOR}" --Werror --skip-non-html \
+        # NU validator needs at least 512k of stack size
+        "${JAVA_BIN}" -Xss1024k -jar "${NU_HTML_VALIDATOR}" --Werror --skip-non-html \
                       "${VNU_ARGS[@]}" "${DOC_ROOT_DIR}"
         if [ $? -ne 0 ] ; then
             stderr_echo "NU HTML Validator: HTML is not valid!"
