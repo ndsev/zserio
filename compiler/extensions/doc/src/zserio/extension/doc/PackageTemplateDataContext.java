@@ -8,12 +8,25 @@ package zserio.extension.doc;
  */
 class PackageTemplateDataContext extends TemplateDataContext
 {
-    public PackageTemplateDataContext(DocExtensionParameters docParameters, UsedByCollector usedByCollector,
-            String htmlRootDirectory, DocResourceManager docResourceManager)
+    public PackageTemplateDataContext(DocExtensionParameters docParameters, String htmlRootDirectory,
+            UsedByCollector usedByCollector, UsedByChoiceCollector usedByChoiceCollector,
+            DocResourceManager docResourceManager)
     {
-        super(docParameters.getWithSvgDiagrams(), usedByCollector, htmlRootDirectory);
+        super(docParameters.getWithSvgDiagrams(), htmlRootDirectory);
 
+        this.usedByCollector = usedByCollector;
+        this.usedByChoiceCollector = usedByChoiceCollector;
         this.docResourceManager = docResourceManager;
+    }
+
+    public UsedByCollector getUsedByCollector()
+    {
+        return usedByCollector;
+    }
+
+    public UsedByChoiceCollector getUsedByChoiceCollector()
+    {
+        return usedByChoiceCollector;
     }
 
     public DocResourceManager getDocResourceManager()
@@ -21,5 +34,7 @@ class PackageTemplateDataContext extends TemplateDataContext
         return docResourceManager;
     }
 
+    private final UsedByCollector usedByCollector;
+    private final UsedByChoiceCollector usedByChoiceCollector;
     private final DocResourceManager docResourceManager;
 }

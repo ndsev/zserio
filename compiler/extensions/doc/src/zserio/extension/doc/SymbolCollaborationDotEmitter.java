@@ -20,10 +20,10 @@ class SymbolCollaborationDotEmitter
     {
         final String htmlRootDirectory = ".." + File.separator + ".." + File.separator + "..";
         final TemplateDataContext context = new TemplateDataContext(docParameters.getWithSvgDiagrams(),
-                usedByCollector, htmlRootDirectory);
+                htmlRootDirectory);
         final Set<AstNode> collaboratingNodes = usedByCollector.getCollaboratingNodes();
         for (AstNode node : collaboratingNodes)
-            emitDotDiagram(docParameters, context, node);
+            emitDotDiagram(docParameters, usedByCollector, context, node);
     }
 
     public static boolean svgSymbolCollaborationDiagramExists(AstNode node, UsedByCollector usedByCollector,
@@ -53,10 +53,9 @@ class SymbolCollaborationDotEmitter
                 typeName + "_" + name, File.separator);
     }
 
-    private static void emitDotDiagram(DocExtensionParameters docParameters, TemplateDataContext context,
-            AstNode node) throws ZserioExtensionException
+    private static void emitDotDiagram(DocExtensionParameters docParameters, UsedByCollector usedByCollector,
+            TemplateDataContext context, AstNode node) throws ZserioExtensionException
     {
-        final UsedByCollector usedByCollector = context.getUsedByCollector();
         final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(context,
                 node, usedByCollector.getUsedTypes(node), usedByCollector.getUsedByTypes(node));
         final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node,

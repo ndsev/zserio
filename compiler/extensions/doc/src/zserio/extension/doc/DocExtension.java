@@ -55,7 +55,7 @@ public class DocExtension implements Extension
         SymbolCollaborationDotEmitter.emit(docParameters, usedByCollector);
 
         // emit HTML index file
-        IndexEmitter.emit(docParameters, usedByCollector, rootNode.getRootPackage());
+        IndexEmitter.emit(docParameters, rootNode.getRootPackage());
 
         // collect package symbols
         final SymbolCollector symbolCollector = new SymbolCollector();
@@ -65,9 +65,13 @@ public class DocExtension implements Extension
         final PackageCollector packageCollector = new PackageCollector();
         rootNode.accept(packageCollector);
 
+        // collect used by choice information
+        final UsedByChoiceCollector usedByChoiceCollector = new UsedByChoiceCollector();
+        rootNode.walk(usedByChoiceCollector);
+
         // emit HTML files
-        final PackageEmitter packageEmitter = new PackageEmitter(docParameters, usedByCollector,
-                symbolCollector, packageCollector);
+        final PackageEmitter packageEmitter = new PackageEmitter(docParameters, symbolCollector,
+                packageCollector, usedByCollector, usedByChoiceCollector);
         rootNode.walk(packageEmitter);
     }
 }

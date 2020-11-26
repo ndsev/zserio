@@ -16,7 +16,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public class EnumerationTemplateData extends PackageTemplateDataBase
 {
-    public EnumerationTemplateData(PackageTemplateDataContext context, EnumType enumType) throws ZserioExtensionException
+    public EnumerationTemplateData(PackageTemplateDataContext context, EnumType enumType)
+            throws ZserioExtensionException
     {
         super(context, enumType);
 
@@ -52,8 +53,9 @@ public class EnumerationTemplateData extends PackageTemplateDataBase
             docComments = new DocCommentsTemplateData(context, enumItem.getDocComments());
 
             seeSymbols = new ArrayList<SeeSymbolTemplateData>();
-            final UsedByCollector usedByCollector = context.getUsedByCollector();
-            for (UsedByCollector.ChoiceCaseReference choiceCaseRef : usedByCollector.getUsedByChoices(enumItem))
+            final UsedByChoiceCollector usedByChoiceCollector = context.getUsedByChoiceCollector();
+            for (UsedByChoiceCollector.ChoiceCaseReference choiceCaseRef :
+                usedByChoiceCollector.getUsedByChoices(enumItem))
             {
                 final ChoiceType choiceType = choiceCaseRef.getChoiceType();
                 final ChoiceCase choiceCase = choiceCaseRef.getChoiceCase();

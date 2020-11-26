@@ -31,8 +31,9 @@ import zserio.tools.StringJoinUtil;
  */
 class PackageEmitter extends DefaultTreeWalker
 {
-    public PackageEmitter(DocExtensionParameters docParameters, UsedByCollector usedByCollector,
-            SymbolCollector symbolCollector, PackageCollector packageCollector)
+    public PackageEmitter(DocExtensionParameters docParameters, SymbolCollector symbolCollector,
+            PackageCollector packageCollector, UsedByCollector usedByCollector,
+            UsedByChoiceCollector usedByChoiceCollector)
     {
         super();
 
@@ -47,8 +48,8 @@ class PackageEmitter extends DefaultTreeWalker
         nodesMap = symbolCollector.getNodesMap();
 
         final String htmlRootDirectory = "..";
-        context = new PackageTemplateDataContext(docParameters, usedByCollector, htmlRootDirectory,
-                docResourceManager);
+        context = new PackageTemplateDataContext(docParameters, htmlRootDirectory, usedByCollector,
+                usedByChoiceCollector, docResourceManager);
     }
 
     @Override

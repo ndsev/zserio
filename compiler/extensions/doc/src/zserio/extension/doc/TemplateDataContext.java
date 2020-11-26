@@ -12,11 +12,9 @@ import zserio.tools.StringJoinUtil;
  */
 class TemplateDataContext
 {
-    public TemplateDataContext(boolean withSvgDiagrams, UsedByCollector usedByCollector,
-            String htmlRootDirectory)
+    public TemplateDataContext(boolean withSvgDiagrams, String htmlRootDirectory)
     {
         this.withSvgDiagrams = withSvgDiagrams;
-        this.usedByCollector = usedByCollector;
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
 
         contentDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.CONTENT_DIRECTORY);
@@ -30,11 +28,6 @@ class TemplateDataContext
     public boolean getWithSvgDiagrams()
     {
         return withSvgDiagrams;
-    }
-
-    public UsedByCollector getUsedByCollector()
-    {
-        return usedByCollector;
     }
 
     public ExpressionFormatter getExpressionFormatter()
@@ -73,7 +66,6 @@ class TemplateDataContext
     }
 
     private final boolean withSvgDiagrams;
-    private final UsedByCollector usedByCollector;
     private final ExpressionFormatter docExpressionFormatter;
 
     private final String contentDirectory;

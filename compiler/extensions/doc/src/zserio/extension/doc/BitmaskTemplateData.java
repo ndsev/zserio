@@ -16,7 +16,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public class BitmaskTemplateData extends PackageTemplateDataBase
 {
-    public BitmaskTemplateData(PackageTemplateDataContext context, BitmaskType bitmaskType) throws ZserioExtensionException
+    public BitmaskTemplateData(PackageTemplateDataContext context, BitmaskType bitmaskType)
+            throws ZserioExtensionException
     {
         super(context, bitmaskType);
 
@@ -53,10 +54,10 @@ public class BitmaskTemplateData extends PackageTemplateDataBase
 
             docComments = new DocCommentsTemplateData(context, bitmaskValue.getDocComments());
 
-            final UsedByCollector usedByCollector = context.getUsedByCollector();
+            final UsedByChoiceCollector usedByChoiceCollector = context.getUsedByChoiceCollector();
             seeSymbols = new ArrayList<SeeSymbolTemplateData>();
-            for (UsedByCollector.ChoiceCaseReference choiceCaseRef :
-                usedByCollector.getUsedByChoices(bitmaskValue))
+            for (UsedByChoiceCollector.ChoiceCaseReference choiceCaseRef :
+                usedByChoiceCollector.getUsedByChoices(bitmaskValue))
             {
                 final ChoiceType choiceType = choiceCaseRef.getChoiceType();
                 final ChoiceCase choiceCase = choiceCaseRef.getChoiceCase();
