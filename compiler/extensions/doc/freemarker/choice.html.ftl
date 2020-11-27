@@ -84,8 +84,8 @@ ${I}  </tr>
       <@choice_field caseMember.field, indent+1/>
     <#else>
 ${I}  <tr>
-${I}    <td colspan=${columnCount-1}></td>
-${I}    <td>;</td>
+${I}    <td class="indent empty"></td>
+${I}    <td class="indent" colspan=${columnCount-1}>;</td>
 ${I}  </tr>
     </#if>
 </#list>
@@ -100,8 +100,8 @@ ${I}  </tr>
 ${I}  <@choice_field defaultMember.field, indent+1/>
     <#else>
 ${I}  <tr>
-${I}    <td colspan=${columnCount-1}></td>
-${I}    <td>;</td>
+${I}    <td class="indent empty"></td>
+${I}    <td class="indent" colspan=${columnCount-1}>;</td>
 ${I}  </tr>
     </#if>
 </#if>
