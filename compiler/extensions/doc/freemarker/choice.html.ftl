@@ -135,28 +135,21 @@ ${I}      </dd>
     </#list>
 ${I}    </dl>
 ${I}  </dd>
+  <#if caseMember.field??>
 ${I}  <dt>
 ${I}    Member:
 ${I}  </dt>
 ${I}  <dd>
 ${I}    <dl>
-  <#if caseMember.field??>
 ${I}      <dt>
 ${I}        <span class="anchor" id="${caseMember.field.symbol.htmlLink.htmlAnchor}">${caseMember.field.symbol.name}:</span>
 ${I}      </dt>
 ${I}      <dd>
             <@doc_comments caseMember.field.docComments, indent+4/>
 ${I}      </dd>
-  <#else>
-${I}      <dt>
-${I}        <span>no member data</span>
-${I}      </dt>
-${I}      <dd>
-${I}        <br/>
-${I}      </dd>
-  </#if>
 ${I}    </dl>
 ${I}  </dd>
+  </#if>
 </#list>
 <#if defaultMember??>
 ${I}  <dt>
@@ -172,28 +165,21 @@ ${I}      <dd>
 ${I}      </dd>
 ${I}    </dl>
 ${I}  </dd>
+  <#if defaultMember.field??>
 ${I}  <dt>
 ${I}    Member:
 ${I}  </dt>
 ${I}  <dd>
 ${I}    <dl>
-  <#if defaultMember.field??>
 ${I}      <dt>
 ${I}        <span class="anchor" id="${defaultMember.field.symbol.htmlLink.htmlAnchor}">${defaultMember.field.symbol.name}:</span>
 ${I}      </dt>
 ${I}      <dd>
             <@doc_comments defaultMember.field.docComments, indent+4/>
 ${I}      </dd>
-  <#else>
-${I}      <dt>
-${I}        <span>no member data</span>
-${I}      </dt>
-${I}      <dd>
-${I}        <br/>
-${I}      </dd>
-  </#if>
 ${I}    </dl>
 ${I}  </dd>
+  </#if>
 </#if>
 ${I}</dl>
     <@compound_function_details symbol, functions, indent/>
