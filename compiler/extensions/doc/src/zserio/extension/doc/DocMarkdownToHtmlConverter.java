@@ -94,7 +94,7 @@ class DocMarkdownToHtmlConverter
             try
             {
                 final String mappedResource = docResourceManager.addResource(location, link.getDestination());
-                link.setDestination(mappedResource);
+                link.setDestination(convertToHtmlDestination(mappedResource));
             }
             catch (Exception e)
             {
@@ -110,7 +110,7 @@ class DocMarkdownToHtmlConverter
             try
             {
                 final String mappedResource = docResourceManager.addResource(location, image.getDestination());
-                image.setDestination(mappedResource);
+                image.setDestination(convertToHtmlDestination(mappedResource));
             }
             catch (Exception e)
             {
@@ -132,5 +132,10 @@ class DocMarkdownToHtmlConverter
             if (attributes.containsKey("id"))
                 attributes.put("class", "anchor-md");
         }
+    }
+
+    private static String convertToHtmlDestination(String destination)
+    {
+        return destination.replaceAll("\\\\", "/");
     }
 }
