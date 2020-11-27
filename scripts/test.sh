@@ -151,6 +151,7 @@ test_doc()
 
     local MESSAGE="Zserio documentation tests"
     echo "STARTING - ${MESSAGE}"
+    echo
 
     local TEST_DOC_OUT_DIR="${TEST_OUT_DIR}/doc"
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
@@ -166,10 +167,16 @@ test_doc()
                 local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
                 local TEST_DOC_OUT_ZS_DIR="${TEST_DOC_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
                 if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
-                    "${JAVA_BIN}" -jar "${ZSERIO_UNPACKED_RELEASE_DIR}/zserio.jar" \
-                        -src "${TEST_ZS_DIR}" "${MAIN_ZS_FILE_NAME}" \
-                        -doc "${TEST_DOC_OUT_ZS_DIR}" \
-                        -withSvgDiagrams -setDotExecutable "${DOT}"
+                    local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/doc_options.txt"
+                    if [[ -f "${OPTIONS_FILE}" ]] ; then
+                        local SWITCH_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
+                    else
+                        local SWITCH_WERROR=1
+                    fi
+                    local ZSERIO_ARGS=("-doc" "${TEST_DOC_OUT_ZS_DIR}" "-withSvgDiagrams" "-setDotExecutable" \
+                        "${DOT}")
+                    run_zserio_tool "${ZSERIO_UNPACKED_RELEASE_DIR}" "${TEST_DOC_OUT_ZS_DIR}" "${TEST_ZS_DIR}" \
+                        "${MAIN_ZS_FILE_NAME}" ${SWITCH_WERROR} ZSERIO_ARGS[@]
                     if [ $? -ne 0 ] ; then
                         stderr_echo "${MESSAGE} failed!"
                         return 1
@@ -187,11 +194,11 @@ test_doc()
                     fi
 
                     TOTAL_NUMBER_OF_TESTS=$((TOTAL_NUMBER_OF_TESTS+1))
-                    echo
                 fi
             done
         done
         echo "Total number of tests: ${TOTAL_NUMBER_OF_TESTS}"
+        echo
     fi
     echo -e "FINISHED - ${MESSAGE}\n"
 

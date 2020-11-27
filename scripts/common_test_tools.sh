@@ -82,18 +82,18 @@ run_zserio_tool()
     exit_if_argc_ne $# 6
     local ZSERIO_RELEASE_ROOT="$1"; shift
     local BUILD_DIR="$1"; shift # for logging
-    local ZSERIO_DIRECTORY="$1"; shift
+    local ZSERIO_SOURCE_DIRECTORY="$1"; shift
     local ZSERIO_SOURCE="$1"; shift
-    local WERROR="$1"; shift
+    local SWITCH_WERROR="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local ZSERIO_ARGS=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local ZSERIO="${ZSERIO_RELEASE_ROOT}/zserio.jar"
     local ZSERIO_LOG="${BUILD_DIR}/zserio_log.txt"
-    local MESSAGE="Compilation of zserio '${ZSERIO_DIRECTORY}/${ZSERIO_SOURCE}'"
+    local MESSAGE="Compilation of zserio '${ZSERIO_SOURCE_DIRECTORY}/${ZSERIO_SOURCE}'"
     echo "STARTING - ${MESSAGE}"
 
-    "${JAVA_BIN}" -jar "${ZSERIO}" ${ZSERIO_EXTRA_ARGS} "-src" "${ZSERIO_DIRECTORY}" "${ZSERIO_SOURCE}" \
+    "${JAVA_BIN}" -jar "${ZSERIO}" ${ZSERIO_EXTRA_ARGS} "-src" "${ZSERIO_SOURCE_DIRECTORY}" "${ZSERIO_SOURCE}" \
             "${ZSERIO_ARGS[@]}" 2>&1 | tee ${ZSERIO_LOG}
 
     if [ ${PIPESTATUS[0]} -ne 0 ] ; then
@@ -101,7 +101,7 @@ run_zserio_tool()
         return 1
     fi
 
-    if [ ${WERROR} -ne 0 ] ; then
+    if [ ${SWITCH_WERROR} -ne 0 ] ; then
         grep -q "\[WARNING\]" ${ZSERIO_LOG}
         if [ $? -eq 0 ] ; then
             stderr_echo "${MESSAGE} failed because warnings are treated as errors! "
