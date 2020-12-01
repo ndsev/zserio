@@ -31,6 +31,7 @@
 <#assign deprecatedColor="gray"/>
 <#assign headerNavColor="white"/>
 <#assign headerNavHoverColor="rgb(255,255,255,0.65)"/>
+<#assign codeDocColor="gray"/>
 <#-- stylesheet -->
 /* Hack due to the sticky header. */
 .anchor,
@@ -47,6 +48,9 @@ h2.anchor { /* symbols in package */
   /* set-up scroll to hide the border-top (horizontal line) */
   scroll-margin-top: ${headerHeight - symbolAnchorPaddingTop}rem;
   padding-top: ${symbolAnchorPaddingTop}rem;
+}
+.anchor-group {
+  scroll-margin-top: ${headerHeight}rem;
 }
 
 h1,
@@ -188,7 +192,7 @@ h3 {
   background-color: ${codeBackgroundColor};
   border-radius: 0.5rem;
   padding: 1rem;
-  width: max-content;
+  max-width: max-content;
   margin-bottom: 0.5rem;
 }
 
@@ -211,16 +215,33 @@ h3 {
   min-width: ${codeIndent}rem;
 }
 
+.code td.value-expression  {
+  padding-left: 1rem;
+}
+
+.code div.doc {
+  white-space: normal;
+  color: ${codeDocColor};
+}
+
+.code p:last-child {
+  margin-bottom: 0;
+}
+
+.code .btn {
+  margin: 0;
+  padding: 0;
+  margin-left: 0.2rem;
+  vertical-align: baseline;
+}
+
 #main dd {
   padding-left: 1em;
 }
 
 .deprecated {
   color: ${deprecatedColor};
-}
-
-#main del {
-  color: ${deprecatedColor};
+  text-decoration: line-through;
 }
 
 .svg {

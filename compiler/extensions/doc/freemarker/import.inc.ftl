@@ -10,7 +10,7 @@
                 <#if !importNode?is_first>
     <@code_table_end indent/>
                 </#if>
-    <@doc_comments importNode.docComments, indent, false/>
+    <@doc_comments importNode.docComments, indent/>
             </#if>
             <#if importNode.docComments.commentsList?has_content || importNode?is_first>
     <@code_table_begin indent/>

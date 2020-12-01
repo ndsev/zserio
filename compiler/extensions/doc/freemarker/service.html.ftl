@@ -7,39 +7,35 @@
 <#assign I>${""?left_pad(indent * 2)}</#assign>
 
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
-<#if docComments.isDeprecated>
-${I}  <span class="deprecated">(deprecated) </span>
-${I}  <del><i>Service</i> ${symbol.name}</del>
-<#else>
-${I}  <i>Service</i> ${symbol.name}
-</#if>
+${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>Service ${symbol.name}</span>
 ${I}</h2>
-    <@doc_comments docComments, indent, false/>
+    <@doc_comments docComments, indent/>
 
     <@code_table_begin indent/>
-${I}  <tr><td>service ${symbol.name}</td></tr>
-${I}  <tr><td>{</td></tr>
+${I}  <thead>
+${I}    <tr><td>
+${I}      service ${symbol.name}
+          <@doc_button indent+3/>
+${I}    </td></tr>
+${I}    <tr><td>{</td></tr>
+${I}  </thead>
 <#list methodList as method>
-${I}  <tr><td class="indent">
-${I}    <@symbol_reference method.responseSymbol/> <@symbol_reference method.symbol/><#rt>
-          <#lt>(<@symbol_reference method.requestSymbol/>);
-${I}  </td></tr>
+${I}  <tbody>
+<#if method.docComments.commentsList?has_content>
+${I}    <tr class="doc"><td class="indent">
+          <@doc_comments method.docComments, indent+3, true/>
+${I}    </td></tr>
+    </#if>
+${I}    <tr><td class="indent">
+${I}      <@symbol_reference method.responseSymbol/> <@symbol_reference method.symbol/><#rt>
+            <#lt>(<@symbol_reference method.requestSymbol/>);
+${I}    </td></tr>
+${I}  </tbody>
 </#list>
-${I}  <tr><td>};</td></tr>
+${I}  <tfoot>
+${I}    <tr><td>};</td></tr>
+${I}  </tfoot>
     <@code_table_end indent/>
-<#if methodList?has_content>
-
-${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_methods">Service methods</h3>
-
-${I}<dl>
-    <#list methodList as method>
-${I}  <dt><span class="anchor" id="${method.symbol.htmlLink.htmlAnchor}">${method.symbol.name}:</span></dt>
-${I}  <dd>
-        <@doc_comments method.docComments, indent+2/>
-${I}  </dd>
-    </#list>
-${I}</dl>
-</#if>
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>

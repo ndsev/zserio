@@ -1,6 +1,6 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
-          <@doc_comments docComments, 5, false/>
+          <@doc_comments docComments, 5/>
 
         </main>
         <script>
@@ -113,6 +113,11 @@
 
         let hidden = toc.is(":hidden");
         setItemToStorage(localStorage, "tocHidden", hidden);
+      }
+
+      function toggleDoc(button) {
+        // find all doc rows within the button's table
+        $(button).parents("table").find("tr.doc").toggle();
       }
 
       // custom hooks

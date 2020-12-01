@@ -8,19 +8,16 @@
 <#assign I>${""?left_pad(indent * 2)}</#assign>
 
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
-<#if docComments.isDeprecated>
-${I}  <span class="deprecated">(deprecated) </span>
-${I}  <del><i>Instantiate Type</i> ${symbol.name}</del>
-<#else>
-${I}  <i>Instantiate Type</i> ${symbol.name}
-</#if>
+${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>Instantiate Type ${symbol.name}</span>
 ${I}</h2>
-    <@doc_comments docComments, indent, false/>
+    <@doc_comments docComments, indent/>
 
     <@code_table_begin indent/>
-${I}  <tr><td>
-${I}    instantiate <@symbol_reference typeSymbol/> ${symbol.name};
-${I}  </td></tr>
+${I}  <tbody>
+${I}    <tr><td>
+${I}      instantiate <@symbol_reference typeSymbol/> ${symbol.name};
+${I}    </td></tr>
+${I}  </tbody>
     <@code_table_end indent/>
     <@used_by symbol, usedBySymbols, indent/>
 <#if collaborationDiagramSvg??>

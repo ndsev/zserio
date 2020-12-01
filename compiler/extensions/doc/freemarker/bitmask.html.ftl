@@ -8,41 +8,35 @@
 <#assign I>${""?left_pad(indent * 2)}</#assign>
 
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
-<#if docComments.isDeprecated>
-${I}  <span class="deprecated">(deprecated) </span>
-${I}  <del><i>Bitmask</i> ${symbol.name}</del>
-<#else>
-${I}  <i>Bitmask</i> ${symbol.name}
-</#if>
+${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>Bitmask ${symbol.name}</span>
 ${I}</h2>
-    <@doc_comments docComments, indent, false/>
+    <@doc_comments docComments, indent/>
 
     <@code_table_begin indent/>
-${I}  <tr><td colspan=3>bitmask <@symbol_reference typeSymbol/> ${symbol.name}</td></tr>
-${I}  <tr><td>{</td><td rowspan="${values?size+1}">&nbsp;</td><td></td></tr>
+${I}  <thead>
+${I}    <tr><td colspan=2>
+${I}      bitmask <@symbol_reference typeSymbol/> ${symbol.name}
+          <@doc_button indent+2/>
+${I}    </td></tr>
+${I}    <tr><td colspan=2>{</td></tr>
+${I}  </thead>
 <#list values as value>
-${I}  <tr>
-${I}    <td class="indent"><@symbol_reference value.symbol/></td>
-${I}    <td>= ${value.value}<#if value_has_next>,</#if></td>
-${I}  </tr>
+${I}  <tbody class="anchor-group" id="${value.symbol.htmlLink.htmlAnchor}">
+    <#if value.docComments.commentsList?has_content>
+${I}    <tr class="doc"><td colspan=2 class="indent">
+          <@doc_comments value.docComments, indent+3, true/>
+${I}    </td></tr>
+    </#if>
+${I}    <tr>
+${I}      <td class="indent"><@symbol_reference value.symbol/></td>
+${I}      <td class="value-expression">= ${value.value}<#if value_has_next>,</#if></td>
+${I}    </tr>
+${I}  </tbody>
 </#list>
-${I}  <tr><td colspan=3>};</td></tr>
+${I}  <tfoot>
+${I}    <tr><td colspan=2>};</td></tr>
+${I}  </tfoot>
     <@code_table_end indent/>
-
-${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_value_details">Value Details</h3>
-
-${I}<dl>
-<#list values as value>
-${I}  <dt><span class="anchor" id="${value.symbol.htmlLink.htmlAnchor}">${value.symbol.name}:</span></dt>
-${I}  <dd>
-        <@doc_comments value.docComments, indent+2/>
-    <#list value.seeSymbols as seeSymbol>
-${I}    <div class="doc"><span>see: </span>case <@symbol_reference seeSymbol.memberSymbol/> <#rt>
-          <#lt>(<@symbol_reference seeSymbol.typeSymbol/>)</div>
-    </#list>
-${I}  </dd>
-</#list>
-${I}</dl>
     <@used_by symbol, usedBySymbols, indent/>
 <#if collaborationDiagramSvgUrl??>
 

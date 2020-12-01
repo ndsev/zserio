@@ -7,39 +7,35 @@
 <#assign I>${""?left_pad(indent * 2)}</#assign>
 
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
-<#if docComments.isDeprecated>
-${I}  <span class="deprecated">(deprecated) </span>
-${I}  <del><i>Pubsub</i> ${symbol.name}</del>
-<#else>
-${I}  <i>Pubsub</i> ${symbol.name}
-</#if>
+${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>Pubsub ${symbol.name}</span>
 ${I}</h2>
-    <@doc_comments docComments, indent, false/>
+    <@doc_comments docComments, indent/>
 
     <@code_table_begin indent/>
-${I}  <tr><td>pubsub ${symbol.name}</td></tr>
-${I}  <tr><td>{</td></tr>
+${I}  <thead>
+${I}    <tr><td>
+${I}      pubsub ${symbol.name}
+          <@doc_button indent+3/>
+${I}    </td></tr>
+${I}    <tr><td>{</td></tr>
+${I}  </thead>
 <#list messageList as message>
-${I}  <tr><td class="indent">
-${I}    ${message.keyword}(${message.topicDefinition}) <#rt>
-          <#lt><@symbol_reference message.typeSymbol/> <@symbol_reference message.symbol/>;
-${I}  </td></tr>
+${I}  <tbody>
+    <#if message.docComments.commentsList?has_content>
+${I}    <tr class="doc"><td class="indent">
+          <@doc_comments message.docComments, indent+3, true/>
+${I}    </td></tr>
+    </#if>
+${I}    <tr><td class="indent">
+${I}      ${message.keyword}(${message.topicDefinition}) <#rt>
+            <#lt><@symbol_reference message.typeSymbol/> <@symbol_reference message.symbol/>;
+${I}    </td></tr>
+${I}  </tbody>
 </#list>
-${I}  <tr><td>};</td></tr>
+${I}  <tfoot>
+${I}    <tr><td>};</td></tr>
+${I}  </tfoot>
     <@code_table_end indent/>
-<#if messageList?has_content>
-
-${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_messages">Pubsub messages</h3>
-
-${I}<dl>
-    <#list messageList as message>
-${I}  <dt><span class="anchor" id="${message.symbol.htmlLink.htmlAnchor}">${message.symbol.name}:</span></dt>
-${I}  <dd>
-        <@doc_comments message.docComments, indent+2/>
-${I}  </dd>
-    </#list>
-${I}</dl>
-</#if>
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>

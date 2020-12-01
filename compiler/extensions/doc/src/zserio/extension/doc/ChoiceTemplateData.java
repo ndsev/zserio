@@ -89,8 +89,11 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
                         throws ZserioExtensionException
         {
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
-            expression = docExpressionFormatter.formatGetter(caseExpression);
-            symbol = SymbolTemplateDataCreator.createData(context, choiceType, choiceCase, expression);
+            final String expression = docExpressionFormatter.formatGetter(caseExpression);
+            final SymbolTemplateData caseSymbol =
+                    SymbolTemplateDataCreator.createData(context, choiceType, choiceCase, expression);
+            symbol = new SymbolTemplateData("case", caseSymbol); // use 'case' as the symbol alias
+            expressionSymbol = SymbolTemplateDataCreator.createData(context, caseExpression);
 
             this.docComments = new DocCommentsTemplateData(context, docComments);
 
@@ -111,9 +114,9 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             }
         }
 
-        public String getExpression()
+        public SymbolTemplateData getExpressionSymbol()
         {
-            return expression;
+            return expressionSymbol;
         }
 
         public SymbolTemplateData getSymbol()
@@ -131,8 +134,8 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
             return seeSymbol;
         }
 
-        private final String expression;
         private final SymbolTemplateData symbol;
+        private final SymbolTemplateData expressionSymbol;
         private final DocCommentsTemplateData docComments;
         private final SeeSymbolTemplateData seeSymbol;
     }

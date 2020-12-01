@@ -7,6 +7,7 @@ import java.util.List;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.DocTagSee;
+import zserio.ast.Expression;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
 import zserio.ast.ScopeSymbol;
@@ -16,6 +17,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
+import zserio.extension.common.ZserioExtensionException;
 
 /**
  * Creator for FreeMarker template data for symbol used by Package emitter.
@@ -76,6 +78,24 @@ class SymbolTemplateDataCreator
 
         return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor,
                 new ArrayList<SymbolTemplateData>());
+    }
+
+    public static SymbolTemplateData createData(TemplateDataContext context, Expression expression)
+            throws ZserioExtensionException
+    {
+        if (expression.getExprZserioType() != null && expression.getExprSymbolObject() != null)
+        {
+            return createData(context, expression.getExprZserioType(), expression.getExprSymbolObject());
+        }
+
+        final String name = context.getExpressionFormatter().formatGetter(expression);
+        String typeName = AstNodeTypeNameMapper.getTypeName(expression);
+        if (expression.getExprZserioType() != null)
+        {
+            typeName += " of type " + AstNodeNameMapper.getName(expression.getExprZserioType());
+        }
+
+        return new SymbolTemplateData(name, typeName, new ArrayList<SymbolTemplateData>());
     }
 
     public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,

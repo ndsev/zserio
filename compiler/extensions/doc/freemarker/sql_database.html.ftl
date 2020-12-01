@@ -8,23 +8,26 @@
 <#assign I>${""?left_pad(indent * 2)}</#assign>
 
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
-<#if docComments.isDeprecated>
-${I}  <span class="deprecated">(deprecated) </span>
-${I}  <del><i>SQL Database</i> ${symbol.name}</del>
-<#else>
-${I}  <i>SQL Database</i> ${symbol.name}
-</#if>
+${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>SQL Database ${symbol.name}</span>
 ${I}</h2>
-    <@doc_comments docComments, indent, false/>
+    <@doc_comments docComments, indent/>
 
-    <@code_table_begin indent/>
 <#assign columnCount=(fields?has_content)?then(3, 1)/>
-${I}  <tr><td colspan=${columnCount}>sql_database ${symbol.name}</td></tr>
-${I}  <tr><td colspan=${columnCount}>{</td></tr>
+    <@code_table_begin indent/>
+${I}  <thead>
+${I}    <tr>
+${I}      <td colspan=${columnCount}>
+${I}        sql_database ${symbol.name}
+            <@doc_button indent+4/>
+${I}      </td>
+${I}    </tr>
+${I}    <tr><td colspan=${columnCount}>{</td></tr>
+${I}  </thead>
       <@compound_fields fields, columnCount, indent+1/>
-${I}  <tr><td colspan=${columnCount}>};</td></tr>
+${I}  <tfoot>
+${I}    <tr><td colspan=${columnCount}>};</td></tr>
+${I}  </tfoot>
     <@code_table_end indent/>
-    <@compound_member_details symbol, fields, indent/>
 <#if collaborationDiagramSvg??>
 
     <@collaboration_diagram symbol, collaborationDiagramSvg, indent/>
