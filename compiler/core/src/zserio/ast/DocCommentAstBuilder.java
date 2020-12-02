@@ -13,9 +13,18 @@ import zserio.antlr.DocCommentParser;
  */
 class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
 {
-    DocCommentAstBuilder(Token docCommentToken)
+    /**
+     * Constructor.
+     *
+     * @param docCommentToken Classic documentation comment to construct from.
+     * @param isSticky True if the classic documentation comment is not followed by blank line.
+     * @param isOneLiner True if the documentation comment is on one line in the source.
+     */
+    DocCommentAstBuilder(Token docCommentToken, boolean isSticky, boolean isOneLiner)
     {
         this.docCommentToken = docCommentToken;
+        this.isSticky = isSticky;
+        this.isOneLiner = isOneLiner;
     }
 
     @Override
@@ -23,7 +32,7 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     {
         visitChildren(ctx);
 
-        return new DocCommentClassic(new AstLocation(docCommentToken), paragraphs);
+        return new DocCommentClassic(new AstLocation(docCommentToken), paragraphs, isSticky, isOneLiner);
     }
 
     @Override
@@ -156,6 +165,8 @@ class DocCommentAstBuilder extends DocCommentBaseVisitor<Object>
     }
 
     private final Token docCommentToken;
+    private final boolean isSticky;
+    private final boolean isOneLiner;
     private final List<DocParagraph> paragraphs = new ArrayList<DocParagraph>();
 
     private DocParagraph currentParagraph = null;

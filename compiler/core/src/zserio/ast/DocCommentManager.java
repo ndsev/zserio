@@ -75,14 +75,14 @@ class DocCommentManager
     /**
      * Finds appropriate documentation comments which belongs to the given terminal node.
      *
-     * @param ctx Terminal node.
+     * @param terminalNode Terminal node.
      *
-     * @return List of parsed documentation comment or null.
+     * @return List of parsed documentation comment.
      */
-    public List<DocComment> findDocComments(TerminalNode node)
+    public List<DocComment> findDocComments(TerminalNode terminalNode)
     {
-        final List<Token> docTokens = findDocTokensBefore(node);
-        return parseDocComments(docTokens);
+        return (terminalNode == null) ? new ArrayList<DocComment>() :
+            findDocCommentsBefore(terminalNode.getSymbol());
     }
 
     /**
@@ -90,12 +90,11 @@ class DocCommentManager
      *
      * @param ctx Parser context.
      *
-     * @return List of parsed documentation comment or null.
+     * @return List of parsed documentation comment.
      */
     public List<DocComment> findDocComments(ParserRuleContext ctx)
     {
-        final List<Token> docTokens = findDocTokensBefore(ctx);
-        return parseDocComments(docTokens);
+        return (ctx == null) ? new ArrayList<DocComment>() : findDocCommentsBefore(ctx.getStart());
     }
 
     /**
@@ -108,74 +107,69 @@ class DocCommentManager
      */
     public List<DocComment> findDocComments(ZserioParser.StructureFieldDefinitionContext ctx)
     {
-        List<Token> docTokens = new ArrayList<Token>();
+        List<DocComment> docComments = new ArrayList<DocComment>();
 
         // before field alignment
-        docTokens.addAll(findDocTokensBefore(ctx.fieldAlignment()));
+        docComments.addAll(findDocComments(ctx.fieldAlignment()));
         // before field offset
-        docTokens.addAll(findDocTokensBefore(ctx.fieldOffset()));
+        docComments.addAll(findDocComments(ctx.fieldOffset()));
         // before optional keyword
-        docTokens.addAll(findDocTokensBefore(ctx.OPTIONAL()));
+        docComments.addAll(findDocComments(ctx.OPTIONAL()));
         // before field type
-        docTokens.addAll(findDocTokensBefore(ctx.fieldTypeId()));
+        docComments.addAll(findDocComments(ctx.fieldTypeId()));
 
-        return parseDocComments(docTokens);
-    }
-
-    private List<Token> findDocTokensBefore(ParserRuleContext ctx)
-    {
-        return (ctx == null) ? new ArrayList<Token>() : findDocTokensBefore(ctx.getStart());
-    }
-
-    private List<Token> findDocTokensBefore(TerminalNode terminalNode)
-    {
-        return (terminalNode == null) ? new ArrayList<Token>() : findDocTokensBefore(terminalNode.getSymbol());
-    }
-
-    private List<Token> findDocTokensBefore(Token token)
-    {
-        if (currentTokenStream == null)
-            return null;
-
-        final int tokenIndex = token.getTokenIndex();
-        final List<Token> docTokens = currentTokenStream.getHiddenTokensToLeft(tokenIndex, ZserioLexer.DOC);
-        if (docTokens == null)
-            return new ArrayList<Token>();
-        for (Token docToken : docTokens)
-            currentUsedComments.add(docToken);
-        return docTokens;
-    }
-
-    private List<DocComment> parseDocComments(List<Token> docTokens)
-    {
-        List<DocComment> docComments = new ArrayList<DocComment>();
-        for (Token docToken : docTokens)
-        {
-            final DocComment docComment = parseDocComment(docToken);
-            if (docComment != null) // if parsed properly
-                docComments.add(docComment);
-        }
         return docComments;
     }
 
-    private DocComment parseDocComment(Token docCommentToken)
+    private List<DocComment> findDocCommentsBefore(Token token)
     {
-        if (docCommentToken.getType() == ZserioLexer.MARKDOWN_COMMENT)
-            return parseDocCommentMarkdown(docCommentToken);
-        else
-            return parseDocCommentClassic(docCommentToken);
+        final List<DocComment> docComments = new ArrayList<DocComment>();
+        if (currentTokenStream == null)
+            return docComments;
+
+        final int tokenIndex = token.getTokenIndex();
+        final List<Token> docCommentTokens = currentTokenStream.getHiddenTokensToLeft(tokenIndex,
+                ZserioLexer.DOC);
+        if (docCommentTokens == null)
+            return docComments;
+
+        final int numDocCommentTokens = docCommentTokens.size();
+        for (int i = 0; i < numDocCommentTokens; ++i)
+        {
+            final Token docCommentToken = docCommentTokens.get(i);
+            currentUsedComments.add(docCommentToken);
+
+            final Token followingToken = (i + 1 == numDocCommentTokens) ? token : docCommentTokens.get(i + 1);
+            final String[] docCommentLines = docCommentToken.getText().split("\\n");
+            final int lineAfterDocComment = docCommentToken.getLine() + docCommentLines.length;
+            final boolean isSticky = (followingToken.getLine() > lineAfterDocComment) ? false : true;
+            final DocComment docComment = parseDocComment(docCommentToken, docCommentLines, isSticky);
+            if (docComment != null) // if parsed properly
+                docComments.add(docComment);
+        }
+
+        return docComments;
     }
 
-    private DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken)
+    private static DocComment parseDocComment(Token docCommentToken, String[] docCommentLines, boolean isSticky)
+    {
+        final boolean isOneLiner = (docCommentLines.length == 1) ? true : false;
+        if (docCommentToken.getType() == ZserioLexer.MARKDOWN_COMMENT)
+            return parseDocCommentMarkdown(docCommentToken, docCommentLines, isSticky, isOneLiner);
+        else
+            return parseDocCommentClassic(docCommentToken, isSticky, isOneLiner);
+    }
+
+    private static DocCommentMarkdown parseDocCommentMarkdown(Token docCommentToken, String[] docCommentLines,
+            boolean isSticky, boolean isOneLiner)
     {
         String markdown = docCommentToken.getText();
-        final String[] lines = markdown.split("\\n");
-        if (lines.length > 1 && lines[0].trim().equals("/*!"))
+        if (docCommentLines.length > 1 && docCommentLines[0].trim().equals("/*!"))
         {
             // there are at least two lines and the first line contains only comment syntax "/*!"
             final int commentIndentInSpaces = new AstLocation(docCommentToken).getColumn() - 1;
-            final String indent = getFirstLineIndent(lines, commentIndentInSpaces);
-            if (!indent.isEmpty() && areLinesIndented(lines, indent))
+            final String indent = getFirstLineIndent(docCommentLines, commentIndentInSpaces);
+            if (!indent.isEmpty() && areLinesIndented(docCommentLines, indent))
             {
                 // strip the indent from each line, (?m) is multiline regex marker
                 markdown = markdown.replaceAll("(?m)^" + indent, "");
@@ -186,10 +180,10 @@ class DocCommentManager
                 .replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
                 .replaceFirst("!?\\*\\/$", ""); // strip comment marker from the end
 
-        return new DocCommentMarkdown(new AstLocation(docCommentToken), markdown);
+        return new DocCommentMarkdown(new AstLocation(docCommentToken), markdown, isSticky, isOneLiner);
     }
 
-    private String getFirstLineIndent(String[] lines, int numWhitespaces)
+    private static String getFirstLineIndent(String[] lines, int numWhitespaces)
     {
         String indent = "";
         for (int i = 1; i < lines.length; i++)
@@ -207,7 +201,7 @@ class DocCommentManager
         return indent;
     }
 
-    private boolean areLinesIndented(String[] lines, String indent)
+    private static boolean areLinesIndented(String[] lines, String indent)
     {
         for (int i = 1; i < lines.length; i++)
         {
@@ -218,7 +212,8 @@ class DocCommentManager
         return true;
     }
 
-    private DocCommentClassic parseDocCommentClassic(Token docCommentToken)
+    private static DocCommentClassic parseDocCommentClassic(Token docCommentToken, boolean isSticky,
+            boolean isOneLiner)
     {
         try
         {
@@ -245,7 +240,8 @@ class DocCommentManager
                 tree = parser.docComment();
             }
 
-            final DocCommentAstBuilder docCommentAstBuilder = new DocCommentAstBuilder(docCommentToken);
+            final DocCommentAstBuilder docCommentAstBuilder =
+                    new DocCommentAstBuilder(docCommentToken, isSticky, isOneLiner);
             final DocCommentClassic docComment = (DocCommentClassic)docCommentAstBuilder.visit(tree);
 
             return docComment;

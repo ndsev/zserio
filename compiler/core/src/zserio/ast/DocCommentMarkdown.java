@@ -10,10 +10,12 @@ public class DocCommentMarkdown extends DocComment
      *
      * @param location AST node location.
      * @param markdown Markdown documentation.
+     * @param isSticky True if the Markdown documentation comment is not followed by blank line.
+     * @param isOneLiner True if the documentation comment is on one line in the source.
      */
-    public DocCommentMarkdown(AstLocation location, String markdown)
+    public DocCommentMarkdown(AstLocation location, String markdown, boolean isSticky, boolean isOneLiner)
     {
-        super(location);
+        super(location, isSticky, isOneLiner);
 
         this.markdown = markdown;
     }

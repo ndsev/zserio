@@ -11,12 +11,15 @@ public class DocCommentClassic extends DocComment
     /**
      * Constructor.
      *
-     * @param location     AST node location.
-     * @param paragraphs   Doc comment paragraphs.
+     * @param location AST node location.
+     * @param paragraphs Doc comment paragraphs.
+     * @param isSticky True if the classic documentation comment is not followed by blank line.
+     * @param isOneLiner True if the documentation comment is on one line in the source.
      */
-    public DocCommentClassic(AstLocation location, List<DocParagraph> paragraphs)
+    public DocCommentClassic(AstLocation location, List<DocParagraph> paragraphs, boolean isSticky,
+            boolean isOneLiner)
     {
-        super(location);
+        super(location, isSticky, isOneLiner);
 
         this.paragraphs = paragraphs;
     }
