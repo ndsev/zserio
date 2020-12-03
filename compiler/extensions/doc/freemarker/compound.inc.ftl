@@ -15,11 +15,11 @@
         <#if field.isArrayImplicit>implicit </#if><#t>
     </#local>
 ${I}<tbody class="anchor-group" id="${field.symbol.htmlLink.htmlAnchor}">
-    <#if field.docComments.commentsList?has_content>
+    <#if hasDocComments(field.docComments)>
 ${I}  <tr class="doc">
 ${I}    <td class="indent empty"></td>
 ${I}    <td colspan=${columnCount-1}>
-          <@doc_comments field.docComments, indent+3, true/>
+          <@doc_comments_all field.docComments, indent+3/>
 ${I}    </td>
 ${I}  </tr>
     </#if>
@@ -63,11 +63,11 @@ ${I}</tbody>
     <#local I>${""?left_pad(indent * 2)}</#local>
     <#list functions as function>
 ${I}<tbody class="anchor-group" id="${function.symbol.htmlLink.htmlAnchor}">
-    <#if function.docComments.commentsList?has_content>
+    <#if hasDocComments(function.docComments)>
 ${I}  <tr class="doc">
 ${I}    <td class="indent empty"></td>
 ${I}    <td colspan=${columnCount-1}>
-          <@doc_comments function.docComments, indent+3, true/>
+          <@doc_comments_all function.docComments, indent+3/>
 ${I}    </td>
 ${I}  </tr>
     </#if>

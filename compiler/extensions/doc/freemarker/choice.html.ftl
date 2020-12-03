@@ -10,11 +10,11 @@
 <#macro choice_field field indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
 ${I}<tbody class="anchor-group" id="${field.symbol.htmlLink.htmlAnchor}">
-    <#if field.docComments.commentsList?has_content>
+    <#if hasDocComments(field.docComments)>
 ${I}  <tr class="doc">
 ${I}    <td class="indent empty"></td>
 ${I}    <td colspan=2 class="indent">
-          <@doc_comments field.docComments, indent+3, true/>
+          <@doc_comments_all field.docComments, indent+3/>
 ${I}    </td>
 ${I}  </tr>
     </#if>
@@ -44,12 +44,15 @@ ${I}  </tr>
 ${I}</tbody>
 </#macro>
 
+<#if hasFloatingDocComments(docComments)>
+    <@doc_comments_floating docComments, indent/>
+
+</#if>
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 ${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>
 ${I}    Choice<#if templateParameters?has_content> template</#if> ${symbol.name}
 ${I}  </span>
 ${I}</h2>
-    <@doc_comments docComments, indent/>
 
 <#function choiceColumnCount caseMemberList functions defaultMember>
     <#if defaultMember?has_content && defaultMember.field??>
@@ -68,6 +71,11 @@ ${I}</h2>
 <#assign columnCount=choiceColumnCount(caseMemberList, functions, defaultMember!"")/>
     <@code_table_begin indent/>
 ${I}  <thead>
+<#if hasStickyDocComments(docComments)>
+${I}    <tr class="doc"><td colspan=${columnCount}>
+          <@doc_comments_sticky docComments, indent+3/>
+${I}    </td></tr>
+</#if>
 ${I}    <tr>
 ${I}      <td colspan=${columnCount}>
 ${I}        choice <@symbol_reference symbol/><@compound_template_parameters templateParameters/><#rt>
@@ -80,10 +88,13 @@ ${I}  </thead>
 <#list caseMemberList as caseMember>
     <#list caseMember.caseList as case>
 ${I}  <tbody class="anchor-group" id="${case.symbol.htmlLink.htmlAnchor}">
-        <#if case.docComments.commentsList?has_content>
-${I}    <tr class="doc"><td class="indent empty"></td><td colspan=2>
-          <@doc_comments case.docComments, indent+3, true/>
-${I}    </td></tr>
+        <#if hasDocComments(case.docComments)>
+${I}    <tr class="doc">
+${I}      <td class="indent empty"></td>
+${I}      <td colspan=2>
+            <@doc_comments_all case.docComments, indent+4/>
+${I}      </td>
+${I}    </tr>
         </#if>
 ${I}    <tr>
 ${I}      <td class="indent empty"></td>
@@ -107,11 +118,11 @@ ${I}  </tbody>
 </#list>
 <#if defaultMember??>
 ${I}  <tbody class="anchor-group" id="${defaultMember.symbol.htmlLink.htmlAnchor}">
-    <#if defaultMember.docComments.commentsList?has_content>
+    <#if hasDocComments(defaultMember.docComments)>
 ${I}    <tr class="doc">
 ${I}      <td class="indent empty"></td>
 ${I}      <td colspan=2>
-            <@doc_comments defaultMember.docComments, indent+4, true/>
+            <@doc_comments_all defaultMember.docComments, indent+4/>
 ${I}      </td>
 ${I}    </tr>
     </#if>

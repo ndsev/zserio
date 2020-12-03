@@ -2,6 +2,7 @@ package zserio.extension.doc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import zserio.ast.DocComment;
 import zserio.ast.DocCommentClassic;
@@ -25,21 +26,36 @@ public class DocCommentsTemplateData
     public DocCommentsTemplateData(PackageTemplateDataContext context, List<DocComment> docComments)
     {
         boolean isDeprecated = false;
-        for (DocComment docComment : docComments)
+
+        int stickyCommentsIndex = docComments.size();
+        final ListIterator<DocComment> iterator = docComments.listIterator(docComments.size());
+        while (iterator.hasPrevious() && iterator.previous().isSticky())
+            --stickyCommentsIndex;
+
+        for (int i = 0; i < docComments.size(); ++i)
         {
+            final DocComment docComment = docComments.get(i);
             final DocCommentTemplateData docCommentData = createDocCommentTemplateData(context, docComment);
             if (docCommentData != null)
             {
                 isDeprecated |= docCommentData.getIsDeprecated();
-                commentsList.add(docCommentData);
+                if (i < stickyCommentsIndex)
+                    floatingCommentsList.add(docCommentData);
+                else
+                    stickyCommentsList.add(docCommentData);
             }
         }
         this.isDeprecated = isDeprecated;
     }
 
-    public Iterable<DocCommentTemplateData> getCommentsList()
+    public Iterable<DocCommentTemplateData> getFloatingCommentsList()
     {
-        return commentsList;
+        return floatingCommentsList;
+    }
+
+    public Iterable<DocCommentTemplateData> getStickyCommentsList()
+    {
+        return stickyCommentsList;
     }
 
     public boolean getIsDeprecated()
@@ -71,6 +87,7 @@ public class DocCommentsTemplateData
 
             this.isDeprecated = isDeprecated;
             this.markdownHtml = null;
+            this.isOneLiner = docCommentClassic.isOneLiner();
         }
 
         public DocCommentTemplateData(PackageTemplateDataContext context, DocCommentMarkdown docCommentMarkdown)
@@ -80,6 +97,8 @@ public class DocCommentsTemplateData
             final DocResourceManager docResourceManager = context.getDocResourceManager();
             markdownHtml = DocMarkdownToHtmlConverter.convert(docResourceManager,
                     docCommentMarkdown.getLocation(), docCommentMarkdown.getMarkdown());
+
+            this.isOneLiner = docCommentMarkdown.isOneLiner();
         }
 
         public String getMarkdownHtml()
@@ -95,6 +114,11 @@ public class DocCommentsTemplateData
         public boolean getIsDeprecated()
         {
             return isDeprecated;
+        }
+
+        public boolean getIsOneLiner()
+        {
+            return isOneLiner;
         }
 
         public static class DocParagraphData
@@ -246,6 +270,7 @@ public class DocCommentsTemplateData
         private final List<DocParagraphData> docParagraphs = new ArrayList<DocParagraphData>();
         private final String markdownHtml;
         private final boolean isDeprecated;
+        private final boolean isOneLiner;
     }
 
     private DocCommentTemplateData createDocCommentTemplateData(PackageTemplateDataContext context,
@@ -266,6 +291,7 @@ public class DocCommentsTemplateData
         }
     }
 
-    private final List<DocCommentTemplateData> commentsList = new ArrayList<DocCommentTemplateData>();
+    private final List<DocCommentTemplateData> floatingCommentsList = new ArrayList<DocCommentTemplateData>();
+    private final List<DocCommentTemplateData> stickyCommentsList = new ArrayList<DocCommentTemplateData>();
     private final boolean isDeprecated;
 }

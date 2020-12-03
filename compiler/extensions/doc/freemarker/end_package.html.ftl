@@ -1,7 +1,9 @@
 <#ftl output_format="HTML">
 <#include "doc_comment.inc.ftl">
-          <@doc_comments docComments, 5/>
+<#if hasDocComments(docComments)>
 
+          <@doc_comments_all docComments, 5, false/>
+</#if>
         </main>
         <script>
           if (isTocHidden()) {
@@ -117,7 +119,10 @@
 
       function toggleDoc(button) {
         // find all doc rows within the button's table
-        $(button).parents("table").find("tr.doc").toggle();
+        $(button).parents("table").find("tbody tr.doc").toggle();
+        let icon = $(button).find("use").attr("xlink:href");
+        icon = (icon == "#chat-left") ? "#chat-left-text" : "#chat-left";
+        $(button).find("use").attr("xlink:href", icon);
       }
 
       // custom hooks

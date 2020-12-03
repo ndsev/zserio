@@ -1,72 +1,89 @@
 <#ftl output_format="HTML">
 <#include "symbol.inc.ftl">
-<#macro doc_comments docComments indent useCommentMarker=false>
-    <#local I>${""?left_pad(indent * 2)}</#local>
-    <#if docComments.commentsList?has_content>
-        <#list docComments.commentsList as docComment>
-    <@doc_comment docComment, indent, useCommentMarker/>
+<#function hasDocComments docComments>
+    <#return hasFloatingDocComments(docComments) || hasStickyDocComments(docComments)>
+</#function>
+
+<#function hasFloatingDocComments docComments>
+    <#return docComments.floatingCommentsList?has_content>
+</#function>
+
+<#function hasStickyDocComments docComments>
+    <#return docComments.stickyCommentsList?has_content>
+</#function>
+
+<#macro doc_comments_all docComments indent isCode=true>
+    <@doc_comments_floating docComments, indent, isCode/>
+    <@doc_comments_sticky docComments, indent, isCode/>
+</#macro>
+
+<#macro doc_comments_floating docComments indent isCode=false>
+    <#if docComments.floatingCommentsList?has_content>
+        <#list docComments.floatingCommentsList as floatingDocComment>
+    <@doc_comment floatingDocComment, indent, isCode/>
         </#list>
     </#if>
 </#macro>
 
-<#macro doc_comment doc indent useCommentMarker>
+<#macro doc_comments_sticky docComments indent isCode=true>
+    <#if docComments.stickyCommentsList?has_content>
+        <#list docComments.stickyCommentsList as stickyDocComment>
+    <@doc_comment stickyDocComment, indent, isCode/>
+        </#list>
+    </#if>
+</#macro>
+
+<#macro doc_comment doc indent isCode>
     <#local I>${""?left_pad(indent * 2)}</#local>
+    <#local tagName=doc.isOneLiner?then("span","div")/>
     <#if doc.paragraphs?size == 0>
         <#if doc.markdownHtml??>
-    <@doc_markdown doc.markdownHtml, indent, useCommentMarker/>
+    <@doc_markdown doc, indent, isCode/>
         </#if>
     <#else>
 ${I}<div class="doc">
-        <#if useCommentMarker>
+        <#if isCode>
 ${I}  /**
         </#if>
         <#list doc.paragraphs as paragraph>
             <#list paragraph.elements as element>
                 <#if element.multiline??>
-${I}  <div>
+${I}  <${tagName}>
         <@doc_multiline_node element.multiline, indent+2/>
-${I}  </div>
+${I}  </${tagName}>
                 </#if>
                 <#if element.todoTag??>
 
-${I}  <div>
+${I}  <${tagName}>
 ${I}    <span>Todo:</span>
 ${I}    <@doc_multiline_node element.todoTag, indent+2/>
-${I}  </div>
+${I}  </${tagName}>
                 </#if>
                 <#if element.seeTag??>
-
-${I}  <div>
+${I}  <${tagName}>
 ${I}    <span>See:</span> <@symbol_reference element.seeTag.seeSymbol/>
-${I}  </div>
+${I}  </${tagName}>
                 </#if>
                 <#if element.paramTag??>
 
-${I}  <div>
+${I}  <${tagName}>
 ${I}    <span>Param: </span><code>${element.paramTag.name}</code>
         <@doc_multiline_node element.paramTag.description, indent+2/>
-${I}  </div>
+${I}  </${tagName}>
                 </#if>
             </#list>
         </#list>
         <#if doc.isDeprecated>
 
-${I}  <div>
+${I}  <${tagName}>
 ${I}    <span>Note:</span> This element is deprecated and is going to be invalid in the future versions.
-${I}  </div>
+${I}  </${tagName}>
         </#if>
-        <#if useCommentMarker>
+        <#if isCode>
 ${I}  */
         </#if>
 ${I}</div>
     </#if>
-</#macro>
-
-<#macro doc_button indent>
-    <#local I>${""?left_pad(indent * 2)}</#local>
-${I}<button class="btn shadow-none" onclick="toggleDoc(this);">
-${I}  <svg class="bi" width="12" height="12"><use xlink:href="#chat-left-text"/></svg>
-${I}</button>
 </#macro>
 
 <#macro doc_multiline_node multilineNode indent>
@@ -81,17 +98,32 @@ ${I}<@symbol_reference docLineElement.seeTag.seeSymbol/>
     </#list>
 </#macro>
 
-<#macro doc_markdown markdownHtml indent useCommentMarker>
+<#function getMarkdownHtml doc, isCode>
+    <#if isCode>
+        <#if doc.isOneLiner>
+            <#local markedMarkdownHtml=doc.markdownHtml?replace("^(<[^>]*>)", "$1/*! ", "r")>
+            <#local markedMarkdownHtml=markedMarkdownHtml?replace("(<[^>]*>)$", " */$1", "r")>
+            <#return markedMarkdownHtml>
+        <#else>
+            <#return "/*! ${doc.markdownHtml} */">
+        </#if>
+    <#else>
+        <#return doc.markdownHtml>
+    </#if>
+</#function>
+
+<#macro doc_markdown doc indent isCode>
     <#local I>${""?left_pad(indent * 2)}</#local>
 ${I}<div class="doc">
-    <#if useCommentMarker>
-${I}  /*!
-    </#if>
-    <#list markdownHtml?split("\r?\n", "rm") as htmlLine>
+    <#list getMarkdownHtml(doc, isCode)?split("\r?\n", "rm") as htmlLine>
 ${I}  ${htmlLine?no_esc}
     </#list>
-    <#if useCommentMarker>
-${I}  */
-    </#if>
 ${I}</div>
+</#macro>
+
+<#macro doc_button indent>
+    <#local I>${""?left_pad(indent * 2)}</#local>
+${I}<button class="btn shadow-none" onclick="toggleDoc(this);">
+${I}  <svg class="bi" width="12" height="12"><use xlink:href="#chat-left"/></svg>
+${I}</button>
 </#macro>

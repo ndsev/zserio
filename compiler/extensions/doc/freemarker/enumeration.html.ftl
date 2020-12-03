@@ -7,13 +7,21 @@
 <#assign indent = 5>
 <#assign I>${""?left_pad(indent * 2)}</#assign>
 
+<#if hasFloatingDocComments(docComments)>
+    <@doc_comments_floating docComments, indent/>
+
+</#if>
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
 ${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>Enumeration ${symbol.name}</span>
 ${I}</h2>
-    <@doc_comments docComments, indent/>
 
     <@code_table_begin indent/>
 ${I}  <thead>
+<#if hasStickyDocComments(docComments)>
+${I}    <tr class="doc"><td colspan=2>
+          <@doc_comments_sticky docComments, indent+3/>
+${I}    </td></tr>
+</#if>
 ${I}    <tr><td colspan=2>
 ${I}      enum <@symbol_reference typeSymbol/> <@symbol_reference symbol/>
           <@doc_button indent+3/>
@@ -22,9 +30,9 @@ ${I}    <tr><td colspan="2">{</td></tr>
 ${I}  </thead>
 <#list items as item>
 ${I}  <tbody class="anchor-group" id="${item.symbol.htmlLink.htmlAnchor}">
-    <#if item.docComments.commentsList?has_content>
+    <#if hasDocComments(item.docComments)>
 ${I}    <tr class="doc"><td colspan=2 class="indent">
-          <@doc_comments item.docComments, indent+3, true/>
+          <@doc_comments_all item.docComments, indent+3/>
 ${I}    </td></tr>
     </#if>
 ${I}    <tr>

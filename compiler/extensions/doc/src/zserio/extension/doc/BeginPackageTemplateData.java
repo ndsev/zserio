@@ -22,7 +22,7 @@ public class BeginPackageTemplateData
     {
         cssDirectory = context.getCssDirectory();
         resourcesDirectory = context.getResourcesDirectory();
-        packageAnchor = AstNodeTypeNameMapper.getTypeName(pkg);
+        isDefaultPackage = pkg.getPackageName().isEmpty();
         symbol = SymbolTemplateDataCreator.createData(context, pkg);
         docComments = new DocCommentsTemplateData(context, pkg.getDocComments());
 
@@ -51,9 +51,9 @@ public class BeginPackageTemplateData
         return StylesheetEmitter.STYLESHEET_FILE_NAME;
     }
 
-    public String getPackageAnchor()
+    public boolean getIsDefaultPackage()
     {
-        return packageAnchor;
+        return isDefaultPackage;
     }
 
     public SymbolTemplateData getSymbol()
@@ -163,7 +163,7 @@ public class BeginPackageTemplateData
 
     private final String cssDirectory;
     private final String resourcesDirectory;
-    private final String packageAnchor;
+    private final boolean isDefaultPackage;
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;
     private final List<ImportTemplateData> importNodes = new ArrayList<ImportTemplateData>();

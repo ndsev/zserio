@@ -4,7 +4,7 @@
 <#assign headerHeight=3.5/>
 <#assign headerLogoHeight=1/>
 <#assign anchorPaddingTop=0.25/>
-<#assign symbolAnchorPaddingTop=0.75/>
+<#assign headingAnchorPaddingTop=0.75/>
 <#assign leftPanelPaddingTop=0.25/>
 <#assign leftPanelPaddingBottom=leftPanelPaddingTop/>
 <#assign leftPanelPaddingLeft=1/>
@@ -41,30 +41,42 @@
 <#assign headerNavHoverColor="rgb(255,255,255,0.65)"/>
 <#assign codeDocColor="gray"/>
 <#-- stylesheet -->
-/* Hack due to the sticky header. */
-.anchor,
-.anchor-md {
+.anchor:not(h1):not(h2), /* anchors for zserio fields, functions, etc. */
+.anchor-md:not(h1):not(h2) { /* normal anchors from markdown */
   scroll-margin-top: ${headerHeight}rem;
   padding-top: ${anchorPaddingTop}rem;
 }
-h1.anchor { /* package heading */
+
+main > h1:first-child, /* package heading */
+main > .doc:first-child > h1:first-child {  /* floating comment before the package declaration  */
+  border-top: none;
   padding-top: 0; /* prevent scrolling above the anchor scroll */
   scroll-margin-top: ${headerHeight}rem;
 }
-h2.anchor { /* symbols in package */
+
+h1 { /* package name or headings from documentation */
+  border-top: 4px solid ${borderColorLight};
+  /* set-up scroll to hide the border-top (horizontal line) */
+  scroll-margin-top: calc(${headerHeight}rem - 4px);
+  padding-top: ${headingAnchorPaddingTop}rem;
+}
+
+h2 { /* symbols in package or doc headings */
   border-top: 3px solid ${borderColorLight};
   /* set-up scroll to hide the border-top (horizontal line) */
-  scroll-margin-top: ${headerHeight - symbolAnchorPaddingTop}rem;
-  padding-top: ${symbolAnchorPaddingTop}rem;
+  scroll-margin-top: calc(${headerHeight}rem - 3px);
+  padding-top: ${headingAnchorPaddingTop}rem;
 }
-.anchor-group {
+
+.code h1,
+.code h2 {
+  border-top: none;
+  padding-top: revert;
   scroll-margin-top: ${headerHeight}rem;
 }
 
-h1,
-h2,
-h3 {
-  margin-bottom: 1rem;
+.anchor-group {
+  scroll-margin-top: ${headerHeight}rem;
 }
 
 #header {
