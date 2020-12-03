@@ -70,7 +70,7 @@ ${I}</h2>
 ${I}  <thead>
 ${I}    <tr>
 ${I}      <td colspan=${columnCount}>
-${I}        choice ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+${I}        choice <@symbol_reference symbol/><@compound_template_parameters templateParameters/><#rt>
               <#lt><@compound_parameters parameters/> on ${selectorExpression}
             <@doc_button indent+4/>
 ${I}      </td>

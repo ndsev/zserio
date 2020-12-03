@@ -15,7 +15,7 @@ ${I}</h2>
     <@code_table_begin indent/>
 ${I}  <tbody>
 ${I}    <tr><td>
-${I}      const <@symbol_reference typeSymbol/> ${symbol.name} = ${value};
+${I}      const <@symbol_reference typeSymbol/> <@symbol_reference symbol/> = ${value};
 ${I}    </td></tr>
 ${I}  <tbody>
     <@code_table_end indent/>

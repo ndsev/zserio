@@ -15,7 +15,7 @@ ${I}</h2>
     <@code_table_begin indent/>
 ${I}  <thead>
 ${I}    <tr><td colspan=2>
-${I}      enum <@symbol_reference typeSymbol/> ${symbol.name}
+${I}      enum <@symbol_reference typeSymbol/> <@symbol_reference symbol/>
           <@doc_button indent+3/>
 ${I}    </td></tr>
 ${I}    <tr><td colspan="2">{</td></tr>

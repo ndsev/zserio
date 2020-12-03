@@ -17,7 +17,7 @@ ${I}</h2>
 ${I}  <thead>
 ${I}    <tr>
 ${I}      <td colspan=${columnCount}>
-${I}        sql_database ${symbol.name}
+${I}        sql_database <@symbol_reference symbol/>
             <@doc_button indent+4/>
 ${I}      </td>
 ${I}    </tr>

@@ -1,5 +1,6 @@
 package zserio.extension.doc;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,21 +10,35 @@ import java.util.List;
  */
 public class SymbolTemplateData implements Comparable<SymbolTemplateData>
 {
-    public SymbolTemplateData(String name, String htmlTitle, String htmlLinkPage,
+    public SymbolTemplateData(String name, String typeName, String htmlTitle, String htmlLinkPage,
+            String htmlLinkAnchor)
+    {
+        this(name, typeName, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor),
+                new ArrayList<SymbolTemplateData>());
+    }
+
+    public SymbolTemplateData(String name, String typeName, String htmlTitle, String htmlLinkPage,
             String htmlLinkAnchor, List<SymbolTemplateData> templateArguments)
     {
-        this(name, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor), templateArguments);
+        this(name, typeName, htmlTitle, new HtmlLink(htmlLinkPage, htmlLinkAnchor), templateArguments);
     }
 
-    public SymbolTemplateData(String name, String htmlTitle, List<SymbolTemplateData> templateArguments)
+    public SymbolTemplateData(String name, String typeName, String htmlTitle)
     {
-        this(name, htmlTitle, null, templateArguments);
+        this(name, typeName, htmlTitle, null, new ArrayList<SymbolTemplateData>());
     }
 
-    public SymbolTemplateData(String name, String htmlTitle, HtmlLink htmlLink,
+    public SymbolTemplateData(String name, String typeName, String htmlTitle,
+            List<SymbolTemplateData> templateArguments)
+    {
+        this(name, typeName, htmlTitle, null, templateArguments);
+    }
+
+    public SymbolTemplateData(String name, String typeName, String htmlTitle, HtmlLink htmlLink,
             List<SymbolTemplateData> templateArguments)
     {
         this.name = name;
+        this.typeName = typeName;
         this.htmlTitle = htmlTitle;
         this.htmlLink = htmlLink;
         this.templateArguments = templateArguments;
@@ -32,6 +47,7 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     public SymbolTemplateData(String alias, SymbolTemplateData other)
     {
         this.name = alias;
+        this.typeName = other.typeName;
         this.htmlTitle = other.htmlTitle;
         this.htmlLink = other.htmlLink;
         this.templateArguments = other.templateArguments;
@@ -41,6 +57,8 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     public int compareTo(SymbolTemplateData other)
     {
         int result = name.compareTo(other.name);
+        if (result == 0)
+            result = typeName.compareTo(other.typeName);
         if (result == 0)
             result = compareTemplateArguments(other);
         if (result == 0 && htmlLink != null && other.htmlLink != null)
@@ -61,7 +79,7 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     @Override
     public int hashCode()
     {
-        String hashString = name;
+        String hashString = name + typeName;
         if (htmlLink != null)
             hashString += htmlLink.getHtmlPage();
 
@@ -71,6 +89,11 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     public String getName()
     {
         return name;
+    }
+
+    public String getTypeName()
+    {
+        return typeName;
     }
 
     public String getHtmlTitle()
@@ -122,6 +145,7 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
     }
 
     private final String name;
+    private final String typeName;
     private final String htmlTitle;
     private final HtmlLink htmlLink;
     private final List<SymbolTemplateData> templateArguments;

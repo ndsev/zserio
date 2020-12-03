@@ -20,7 +20,7 @@ ${I}</h2>
 ${I}  <thead>
 ${I}    <tr>
 ${I}      <td colspan=${columnCount}>
-${I}        sql_table ${symbol.name}<#rt>
+${I}        sql_table <@symbol_reference symbol/><#rt>
               <@compound_template_parameters templateParameters/><@compound_parameters parameters/><#t>
               <#lt><#if virtualTableUsing?has_content> using ${virtualTableUsing}</#if>
             <@doc_button indent+4/>

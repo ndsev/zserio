@@ -36,7 +36,7 @@ class SymbolTemplateDataCreator
         if (pkg == null)
         {
             final String htmlTitle = typeName;
-            return new SymbolTemplateData(name, htmlTitle, templateArguments);
+            return new SymbolTemplateData(name, typeName, htmlTitle, templateArguments);
         }
         else
         {
@@ -44,7 +44,8 @@ class SymbolTemplateDataCreator
             final String htmlLinkPage = createHtmlLinkPage(context, pkg);
             final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
 
-            return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor, templateArguments);
+            return new SymbolTemplateData(name, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor,
+                    templateArguments);
         }
     }
 
@@ -76,8 +77,7 @@ class SymbolTemplateDataCreator
         final String htmlLinkPage = createHtmlLinkPage(context, pkg);
         final String htmlLinkAnchor = typeName;
 
-        return new SymbolTemplateData(name, htmlTitle, htmlLinkPage, htmlLinkAnchor,
-                new ArrayList<SymbolTemplateData>());
+        return new SymbolTemplateData(name, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
     }
 
     public static SymbolTemplateData createData(TemplateDataContext context, Expression expression)
@@ -95,7 +95,7 @@ class SymbolTemplateDataCreator
             typeName += " of type " + AstNodeNameMapper.getName(expression.getExprZserioType());
         }
 
-        return new SymbolTemplateData(name, typeName, new ArrayList<SymbolTemplateData>());
+        return new SymbolTemplateData(name, typeName, typeName);
     }
 
     public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
@@ -113,7 +113,7 @@ class SymbolTemplateDataCreator
         if (referencedPackageSymbol == null)
         {
             // this can happen if see tag link is invalid
-            return new SymbolTemplateData(alias, "Unknown link", new ArrayList<SymbolTemplateData>());
+            return new SymbolTemplateData(alias, "UnknownTypeName", "Unknown link");
         }
         else if (referencedScopeSymbol == null)
         {
@@ -142,8 +142,7 @@ class SymbolTemplateDataCreator
         final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + "_" +
                 createHtmlAnchor(memberTypeName, memberName);
 
-        return new SymbolTemplateData(memberName, htmlTitle, htmlLinkPage, htmlLinkAnchor,
-                new ArrayList<SymbolTemplateData>());
+        return new SymbolTemplateData(memberName, memberTypeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
     }
 
     private static String createHtmlTitle(String typeName, Package pkg)

@@ -19,7 +19,7 @@ ${I}</h2>
 ${I}  <thead>
 ${I}    <tr>
 ${I}      <td colspan=${columnCount}>
-${I}        union ${symbol.name}<@compound_template_parameters templateParameters/><#rt>
+${I}        union <@symbol_reference symbol/><@compound_template_parameters templateParameters/><#rt>
               <#lt><@compound_parameters parameters/><#nt>
             <@doc_button indent+4/>
 ${I}      </td>

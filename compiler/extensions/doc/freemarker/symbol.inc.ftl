@@ -1,15 +1,16 @@
 <#ftl output_format="HTML">
 <#include "html_path.inc.ftl">
-<#macro symbol_reference symbol suffix="" attrs="">
+<#macro symbol_reference symbol>
     <#if symbol.htmlLink??>
-        <a <@symbol_reference_href_title symbol/> ${attrs?no_esc}>${symbol.name}${suffix}</a><#t>
+        <a <@symbol_reference_class symbol/> <@symbol_reference_href_title symbol/>><#t>
+          ${symbol.name}</a><#t>
     <#else>
-        <span <@symbol_reference_href_title symbol/>>${symbol.name}</span><#t>
+        <span <@symbol_reference_class symbol/> <@symbol_reference_href_title symbol/>>${symbol.name}</span><#t>
     </#if>
     <#if symbol.templateArguments?has_content>
         &lt;<#t>
         <#list symbol.templateArguments as templateArgument>
-            <@symbol_reference templateArgument/><#if templateArgument?has_next>, </#if><#t>
+          <@symbol_reference templateArgument/><#if templateArgument?has_next>, </#if><#t>
         </#list>
         &gt;<#t>
     </#if>
@@ -64,6 +65,10 @@
         <td>&gt;</td><#t>
     </#if>
     </tr></table><#t>
+</#macro>
+
+<#macro symbol_reference_class symbol>
+    class="${symbol.typeName?lower_case}-token"<#t>
 </#macro>
 
 <#macro symbol_reference_href_title symbol>

@@ -14,7 +14,7 @@ ${I}</h2>
     <@code_table_begin indent/>
 ${I}  <thead>
 ${I}    <tr><td>
-${I}      pubsub ${symbol.name}
+${I}      pubsub <@symbol_reference symbol/>
           <@doc_button indent+3/>
 ${I}    </td></tr>
 ${I}    <tr><td>{</td></tr>

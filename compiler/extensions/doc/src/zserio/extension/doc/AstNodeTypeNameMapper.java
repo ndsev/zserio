@@ -308,7 +308,7 @@ class AstNodeTypeNameMapper
         @Override
         public void visitInstantiateType(InstantiateType templateInstantiation)
         {
-            typeName = "TemplateInstantiation";
+            typeName = "InstantiateType";
         }
 
         private String typeName = null;

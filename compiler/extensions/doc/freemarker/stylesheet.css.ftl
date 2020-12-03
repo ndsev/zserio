@@ -28,6 +28,14 @@
 <#assign codeBackgroundColor="rgb(0,0,0,0.05)"/>
 <#assign linkColor="rgb(0,0,0,0.65)"/>
 <#assign linkHoverColor="rgb(0,0,0,0.85)"/>
+<#assign tokenBlueColor="rgb(0,0,128,0.65)"/>
+<#assign tokenHoverBlueColor="rgb(0,0,128,0.85)"/>
+<#assign tokenVioletColor="rgb(128,0,128,0.65)"/>
+<#assign tokenHoverVioletColor="rgb(128,0,128,0.85)"/>
+<#assign tokenBrownColor="rgb(128,64,0,0.65)"/>
+<#assign tokenHoverBrownColor="rgb(128,64,0,0.85)"/>
+<#assign tokenGreenColor="rgb(0,128,0,0.65)"/>
+<#assign tokenHoverGreenColor="rgb(0,128,0,0.85)"/>
 <#assign deprecatedColor="gray"/>
 <#assign headerNavColor="white"/>
 <#assign headerNavHoverColor="rgb(255,255,255,0.65)"/>
@@ -233,6 +241,58 @@ h3 {
   padding: 0;
   margin-left: 0.2rem;
   vertical-align: baseline;
+}
+
+.code .constant-token,
+.code .enumitem-token,
+.code .bitmaskvalue-token {
+  color: ${tokenBlueColor};
+}
+
+.code .constant-token:hover,
+.code .enumitem-token:hover,
+.code .bitmaskvalue-token:hover {
+  color: ${tokenHoverBlueColor};
+}
+
+.code .subtype-token,
+.code .instantiatetype-token {
+  color: ${tokenVioletColor};
+}
+
+.code .subtype-token:hover,
+.code .instantiatetype-token:hover {
+  color: ${tokenHoverVioletColor};
+}
+
+.code .structure-token,
+.code .choice-token,
+.code .union-token,
+.code .sqltable-token,
+.code .sqldatabase-token,
+.code .service-token,
+.code .pubsub-token {
+  color: ${tokenBrownColor};
+}
+
+.code .structure-token:hover,
+.code .choice-token:hover,
+.code .union-token:hover,
+.code .sqltable-token:hover,
+.code .sqldatabase-token:hover,
+.code .service-token:hover,
+.code .pubsub-token:hover {
+  color: ${tokenHoverBrownColor};
+}
+
+.code .enum-token,
+.code .bitmask-token {
+  color: ${tokenGreenColor};
+}
+
+.code .enum-token:hover,
+.code .bitmask-token:hover {
+  color: ${tokenHoverGreenColor};
 }
 
 #main dd {
