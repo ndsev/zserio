@@ -44,15 +44,6 @@ public class SymbolTemplateData implements Comparable<SymbolTemplateData>
         this.templateArguments = templateArguments;
     }
 
-    public SymbolTemplateData(String alias, SymbolTemplateData other)
-    {
-        this.name = alias;
-        this.typeName = other.typeName;
-        this.htmlTitle = other.htmlTitle;
-        this.htmlLink = other.htmlLink;
-        this.templateArguments = other.templateArguments;
-    }
-
     @Override
     public int compareTo(SymbolTemplateData other)
     {

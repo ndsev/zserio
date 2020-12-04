@@ -90,9 +90,8 @@ public class ChoiceTemplateData extends CompoundTypeTemplateData
         {
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             final String expression = docExpressionFormatter.formatGetter(caseExpression);
-            final SymbolTemplateData caseSymbol =
-                    SymbolTemplateDataCreator.createData(context, choiceType, choiceCase, expression);
-            symbol = new SymbolTemplateData("case", caseSymbol); // use 'case' as the symbol alias
+
+            symbol = SymbolTemplateDataCreator.createData(context, choiceType, choiceCase, expression, "case");
             expressionSymbol = SymbolTemplateDataCreator.createData(context, caseExpression);
 
             this.docComments = new DocCommentsTemplateData(context, docComments);

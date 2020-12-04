@@ -28,6 +28,11 @@ class SymbolTemplateDataCreator
 {
     public static SymbolTemplateData createData(TemplateDataContext context, AstNode node)
     {
+        return createData(context, node, AstNodeNameMapper.getName(node));
+    }
+
+    public static SymbolTemplateData createData(TemplateDataContext context, AstNode node, String alias)
+    {
         final String name = AstNodeNameMapper.getName(node);
         final String typeName = AstNodeTypeNameMapper.getTypeName(node);
         final Package pkg = AstNodePackageMapper.getPackage(node);
@@ -36,7 +41,7 @@ class SymbolTemplateDataCreator
         if (pkg == null)
         {
             final String htmlTitle = typeName;
-            return new SymbolTemplateData(name, typeName, htmlTitle, templateArguments);
+            return new SymbolTemplateData(alias, typeName, htmlTitle, templateArguments);
         }
         else
         {
@@ -44,9 +49,39 @@ class SymbolTemplateDataCreator
             final String htmlLinkPage = createHtmlLinkPage(context, pkg);
             final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
 
-            return new SymbolTemplateData(name, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor,
+            return new SymbolTemplateData(alias, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor,
                     templateArguments);
         }
+    }
+
+    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
+            AstNode member)
+    {
+        return createData(context, zserioType, member, AstNodeNameMapper.getName(member));
+    }
+
+    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
+            AstNode member, String memberName)
+    {
+        return createData(context, zserioType, member, memberName, memberName);
+    }
+
+    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
+            AstNode member, String memberName, String allias)
+    {
+        final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
+
+        final Package zserioPackage = AstNodePackageMapper.getPackage(zserioType);
+        final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackage);
+
+        final String htmlLinkPage = createHtmlLinkPage(context, zserioPackage);
+
+        final String zserioTypeName = AstNodeTypeNameMapper.getTypeName(zserioType);
+        final String zserioName = zserioType.getName();
+        final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + "_" +
+                createHtmlAnchor(memberTypeName, memberName);
+
+        return new SymbolTemplateData(allias, memberTypeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
     }
 
     // in case of a template instantiation, use instantiation reference instead
@@ -83,25 +118,20 @@ class SymbolTemplateDataCreator
     public static SymbolTemplateData createData(TemplateDataContext context, Expression expression)
             throws ZserioExtensionException
     {
-        if (expression.getExprZserioType() != null && expression.getExprSymbolObject() != null)
-        {
-            return createData(context, expression.getExprZserioType(), expression.getExprSymbolObject());
-        }
-
+        final ZserioType expressionZserioType = expression.getExprZserioType();
+        final AstNode expressionSymbolObject = expression.getExprSymbolObject();
         final String name = context.getExpressionFormatter().formatGetter(expression);
-        String typeName = AstNodeTypeNameMapper.getTypeName(expression);
-        if (expression.getExprZserioType() != null)
+        if (expressionZserioType != null && expressionSymbolObject != null)
         {
-            typeName += " of type " + AstNodeNameMapper.getName(expression.getExprZserioType());
+            return createData(context, expressionZserioType, expressionSymbolObject,
+                    AstNodeNameMapper.getName(expressionSymbolObject), name);
         }
 
-        return new SymbolTemplateData(name, typeName, typeName);
-    }
+        final String typeName = AstNodeTypeNameMapper.getTypeName(expression);
+        final String htmlTitle = (expressionZserioType == null) ? typeName :
+            typeName + " of type " + AstNodeNameMapper.getName(expressionZserioType);
 
-    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
-            AstNode member)
-    {
-        return createData(context, zserioType, member, AstNodeNameMapper.getName(member));
+        return new SymbolTemplateData(name, typeName, htmlTitle);
     }
 
     public static SymbolTemplateData createData(TemplateDataContext context, DocTagSee docTagSee)
@@ -117,32 +147,13 @@ class SymbolTemplateDataCreator
         }
         else if (referencedScopeSymbol == null)
         {
-            return new SymbolTemplateData(alias, SymbolTemplateDataCreator.createData(context,
-                    referencedPackageSymbol));
+            return SymbolTemplateDataCreator.createData(context, referencedPackageSymbol, alias);
         }
         else
         {
-            return new SymbolTemplateData(alias, SymbolTemplateDataCreator.createData(context,
-                    (ZserioType)referencedPackageSymbol, referencedScopeSymbol));
+            return SymbolTemplateDataCreator.createData(context, (ZserioType)referencedPackageSymbol,
+                    referencedScopeSymbol, AstNodeNameMapper.getName(referencedScopeSymbol), alias);
         }
-    }
-
-    public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
-            AstNode member, String memberName)
-    {
-        final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
-
-        final Package zserioPackage = AstNodePackageMapper.getPackage(zserioType);
-        final String htmlTitle = createHtmlTitle(memberTypeName, zserioPackage);
-
-        final String htmlLinkPage = createHtmlLinkPage(context, zserioPackage);
-
-        final String zserioTypeName = AstNodeTypeNameMapper.getTypeName(zserioType);
-        final String zserioName = zserioType.getName();
-        final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + "_" +
-                createHtmlAnchor(memberTypeName, memberName);
-
-        return new SymbolTemplateData(memberName, memberTypeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
     }
 
     private static String createHtmlTitle(String typeName, Package pkg)
