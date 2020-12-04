@@ -93,6 +93,8 @@ run_zserio_tool()
     local MESSAGE="Compilation of zserio '${ZSERIO_SOURCE_DIRECTORY}/${ZSERIO_SOURCE}'"
     echo "STARTING - ${MESSAGE}"
 
+    # build directory must be created in advance because tee will fail to create a new zserio log file
+    mkdir -p "${BUILD_DIR}"
     "${JAVA_BIN}" -jar "${ZSERIO}" ${ZSERIO_EXTRA_ARGS} "-src" "${ZSERIO_SOURCE_DIRECTORY}" "${ZSERIO_SOURCE}" \
             "${ZSERIO_ARGS[@]}" 2>&1 | tee ${ZSERIO_LOG}
 
@@ -127,14 +129,16 @@ run_vnu()
     fi
 
     if [ -n "${NU_HTML_VALIDATOR}" ] ; then
-        echo "Running NU HTML Validator"
+        local MESSAGE="Validation of generated HTML in '${DOC_ROOT_DIR}'"
+        echo "STARTING - ${MESSAGE}"
         # NU validator needs at least 512k of stack size
         "${JAVA_BIN}" -Xss1024k -jar "${NU_HTML_VALIDATOR}" --Werror --skip-non-html \
                       "${VNU_ARGS[@]}" "${DOC_ROOT_DIR}"
         if [ $? -ne 0 ] ; then
-            stderr_echo "NU HTML Validator: HTML is not valid!"
+            stderr_echo "${MESSAGE} failed!"
             return 1
         fi
+        echo -e "FINISHED - ${MESSAGE}\n"
     fi
 
     return 0
