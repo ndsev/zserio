@@ -18,7 +18,7 @@ import zserio.extension.common.ZserioExtensionException;
  * HTML runtime emitter.
  *
  * It creates all external files stored in Jar file and used by generated HTML during runtime. For example,
- * zserio logo picture in png format stored in Jar file.
+ * bootstrap prerequisites stored in Jar file.
  */
 class HtmlRuntimeEmitter
 {
@@ -26,10 +26,7 @@ class HtmlRuntimeEmitter
     {
         try
         {
-            final String[] jarRuntimeSubdirs = {
-                    DocDirectories.CSS_DIRECTORY,
-                    DocDirectories.JS_DIRECTORY,
-                    DocDirectories.RESOURCES_DIRECTORY};
+            final String[] jarRuntimeSubdirs = { DocDirectories.CSS_DIRECTORY, DocDirectories.JS_DIRECTORY };
             for (String jarRuntimeSubdir : jarRuntimeSubdirs)
             {
                 final List<String> jarResources = getJarRuntimeResources(jarRuntimeSubdir);

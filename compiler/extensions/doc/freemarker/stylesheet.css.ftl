@@ -86,16 +86,21 @@ h2 { /* symbols in package or doc headings */
   padding-bottom: ${headerPaddingBottom}rem;
 }
 
-#header .logo {
-  height: ${headerLogoHeight}rem;
-}
-
-#header .logo:hover {
-  color: ${headerNavHoverColor};
-}
-
 #header .navbar-nav {
   color: ${headerNavColor};
+}
+
+#header #zserio-logo {
+  height: ${headerLogoHeight}rem;
+  color: ${headerNavColor};
+}
+
+#header #zserio-logo:hover #zserio-logo-serio {
+  fill: ${headerNavHoverColor};
+}
+
+#header #zserio-logo:hover #zserio-logo-z {
+  fill: rgba(255, 0, 0, 0.85);
 }
 
 .navbar-nav.navbar-center { /* custom bootstrap extension */
