@@ -165,7 +165,8 @@
         });
 
         // allow to collapse active package in the overview
-        $(".nav-link-package.active").on("click", function() {
+        $(".nav-link-package.active").on("click", function(e) {
+          e.preventDefault();
           $(this).siblings(".nav-symbols").toggleClass("collapsed");
         })
 
