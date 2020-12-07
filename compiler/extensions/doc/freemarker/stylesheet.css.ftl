@@ -214,6 +214,7 @@ h2 { /* symbols in package or doc headings */
   border-radius: 0.5rem;
   padding: 1rem;
   max-width: max-content;
+  min-width: min-content;
   margin-bottom: 0.5rem;
 }
 
@@ -223,7 +224,7 @@ h2 { /* symbols in package or doc headings */
 }
 
 .code td:last-child {
-  width: 100%; /* make last columns the only ones which are epanding to preserve whole table compact */
+  width: 100%; /* make last columns the only ones which are expanding to preserve whole table compact */
 }
 
 .code td.indent {
@@ -234,6 +235,7 @@ h2 { /* symbols in package or doc headings */
   padding-left: 0;
   width: ${codeIndent}rem;
   min-width: ${codeIndent}rem;
+  max-width: ${codeIndent}rem;
 }
 
 .code td.value-expression  {

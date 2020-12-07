@@ -65,6 +65,16 @@ class DocMarkdownToHtmlConverter
                             }
                         }
                 )
+                .attributeProviderFactory(
+                        new AttributeProviderFactory()
+                        {
+                            @Override
+                            public AttributeProvider create(AttributeProviderContext arg0)
+                            {
+                                return new ImageAttributeProvider();
+                            }
+                        }
+                )
                 .build();
 
         final String html = renderer.render(document);
@@ -111,6 +121,7 @@ class DocMarkdownToHtmlConverter
             {
                 final String mappedResource = docResourceManager.addResource(location, image.getDestination());
                 image.setDestination(convertToHtmlDestination(mappedResource));
+
             }
             catch (Exception e)
             {
@@ -131,6 +142,16 @@ class DocMarkdownToHtmlConverter
         {
             if (attributes.containsKey("id"))
                 attributes.put("class", "anchor-md");
+        }
+    }
+
+    private static class ImageAttributeProvider implements AttributeProvider
+    {
+        @Override
+        public void setAttributes(Node node, String tagName, Map<String, String> attributes)
+        {
+            if (node instanceof Image)
+                attributes.put("class", "img-fluid"); // bootstrap responsive image
         }
     }
 
