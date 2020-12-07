@@ -62,15 +62,15 @@ public class SymbolCollaborationDotTemplateData
 
     public static class PackageTemplateData
     {
-        public PackageTemplateData(String name)
+        public PackageTemplateData(TemplateDataContext context, Package pkg)
         {
-            this.name = name;
+            symbol = SymbolTemplateDataCreator.createData(context, pkg);
             symbols = new ArrayList<SymbolTemplateData>();
         }
 
-        public String getName()
+        public SymbolTemplateData getSymbol()
         {
-            return name;
+            return symbol;
         }
 
         public Iterable<SymbolTemplateData> getSymbols()
@@ -83,7 +83,7 @@ public class SymbolCollaborationDotTemplateData
             symbols.add(symbol);
         }
 
-        private final String name;
+        private final SymbolTemplateData symbol;
         private final List<SymbolTemplateData> symbols;
     }
 
@@ -118,8 +118,7 @@ public class SymbolCollaborationDotTemplateData
             PackageTemplateData packageTemplateData = packageToTemplateDataMap.get(packageNode);
             if (packageTemplateData == null)
             {
-                final String packageFileName = PackageFileNameMapper.getFileName(packageNode);
-                packageTemplateData = new PackageTemplateData(packageFileName);
+                packageTemplateData = new PackageTemplateData(context, packageNode);
                 packageToTemplateDataMap.put(packageNode, packageTemplateData);
             }
 

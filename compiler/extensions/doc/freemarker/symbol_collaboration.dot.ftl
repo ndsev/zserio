@@ -10,11 +10,11 @@ digraph ZSERIO
     tooltip="${symbol.name} collaboration diagram";
 <#list packages as package>
 
-    subgraph cluster_${package.name?replace(".", "_")}
+    subgraph "cluster_${package.symbol.name}"
     {
         style="dashed, rounded";
-        label="${package.name}";
-        tooltip="${package.name}";
+        label="${package.symbol.name}";
+        tooltip="${package.symbol.name}";
 
     <#list package.symbols as packageSymbol>
         <#if packageSymbol.htmlLink??>
