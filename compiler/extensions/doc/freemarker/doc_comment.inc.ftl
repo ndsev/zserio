@@ -124,6 +124,6 @@ ${I}</div>
 <#macro doc_button indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
 ${I}<button class="btn shadow-none" onclick="toggleDoc(this);">
-${I}  <svg class="bi" width="12" height="12"><use xlink:href="#chat-left"/></svg>
+${I}  <svg class="bi" width="1em" height="1em"><use xlink:href="#chat-left-text"/></svg>
 ${I}</button>
 </#macro>

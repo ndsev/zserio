@@ -108,8 +108,7 @@
       function toggleToc() {
         let toc = $("#toc");
         toc.toggle();
-        $("#toc_collapsed_icon").toggle();
-        $("#toc_active_icon").toggle();
+        toggleTocIcon();
         $("main").toggleClass("col-8");
         $("main").toggleClass("col-10");
 
@@ -120,6 +119,7 @@
       function toggleDoc(button) {
         // find all doc rows within the button's table
         $(button).parents("table").find("tbody tr.doc").toggle();
+        $(button).toggleClass("comments-hidden");
         let icon = $(button).find("use").attr("xlink:href");
         icon = (icon == "#chat-left") ? "#chat-left-text" : "#chat-left";
         $(button).find("use").attr("xlink:href", icon);

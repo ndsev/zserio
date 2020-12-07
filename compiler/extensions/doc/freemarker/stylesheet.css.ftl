@@ -254,6 +254,19 @@ h2 { /* symbols in package or doc headings */
   padding: 0;
   margin-left: 0.2rem;
   vertical-align: baseline;
+  color: ${linkColor};
+}
+
+.code .btn:hover {
+  color: ${linkHoverColor};
+}
+
+.code .btn.comments-hidden {
+    color: rgba(0,0,0,0.25);
+}
+
+.code .btn.comments-hidden:hover {
+    color: rgba(0,0,0,0.45);
 }
 
 .code .constant-token,

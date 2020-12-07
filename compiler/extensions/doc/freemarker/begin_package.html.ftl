@@ -40,12 +40,26 @@
       function isTocHidden() {
         return getItemFromStorage(localStorage, "tocHidden") == "true";
       }
+
+      function toggleTocIcon() {
+        let tocIcon = document.getElementById("toc_icon");
+        let useTag = tocIcon.getElementsByTagName("use")[0];
+        let icon = useTag.getAttribute("xlink:href");
+        icon = (icon == "#chevron-left") ? "#chevron-right" : "#chevron-left";
+        useTag.setAttribute("xlink:href", icon);
+      }
     </script>
   </head>
   <body>
 
     <!-- svg definitions -->
     <svg style="display: none">
+      <symbol viewBox="0 0 16 16" class="bi bi-chevron-left" fill="currentColor" id="chevron-left" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 010 .708L5.707 8l5.647 5.646a.5.5 0 01-.708.708l-6-6a.5.5 0 010-.708l6-6a.5.5 0 01.708 0z"/>
+      </symbol>
+      <symbol viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" id="chevron-right" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 01.708 0l6 6a.5.5 0 010 .708l-6 6a.5.5 0 01-.708-.708L10.293 8 4.646 2.354a.5.5 0 010-.708z"/>
+      </symbol>
       <symbol viewBox="0 0 16 16" class="bi bi-chat-left-text" fill="currentColor" id="chat-left-text" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" d="M14 1H2a1 1 0 00-1 1v11.586l2-2A2 2 0 014.414 11H14a1 1 0 001-1V2a1 1 0 00-1-1zM2 0a2 2 0 00-2 2v12.793a.5.5 0 00.854.353l2.853-2.853A1 1 0 014.414 12H14a2 2 0 002-2V2a2 2 0 00-2-2H2z"/>
         <path fill-rule="evenodd" d="M3 3.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zM3 6a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9A.5.5 0 013 6zm0 2.5a.5.5 0 01.5-.5h5a.5.5 0 010 1h-5a.5.5 0 01-.5-.5z"/></symbol><symbol viewBox="0 0 16 16" class="bi bi-chat-left-text-fill" fill="currentColor" id="chat-left-text-fill" xmlns="http://www.w3.org/2000/svg">
@@ -64,19 +78,12 @@
       </div>
       <div class="navbar-nav navbar-center navbar-brand">Documentation for package ${symbol.name}</div>
       <button id="toc_button" type="button" class="btn navbar-nav navbar-right navbar-brand shadow-none">
-        <svg id="toc_collapsed_icon" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-        </svg>
-        <svg id="toc_active_icon" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-chevron-right" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-        </svg>
+        <svg id="toc_icon" class="bi" width="1em" height="1em"><use xlink:href="#chevron-right"/></svg>
       </button>
     </header>
     <script>
       if (isTocHidden())
-        document.getElementById("toc_active_icon").style.display = "none";
-      else
-        document.getElementById("toc_collapsed_icon").style.display = "none";
+        toggleTocIcon();
     </script>
 
     <div class="container-fluid">
