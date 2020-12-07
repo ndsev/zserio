@@ -14,7 +14,9 @@ digraph ZSERIO
     {
         style="dashed, rounded";
         label="${package.symbol.name}";
-        tooltip="${package.symbol.name}";
+        tooltip="${package.symbol.htmlTitle}";
+        href="<@symbol_html_link package.symbol.htmlLink/>";
+        target="_parent";
 
     <#list package.symbols as packageSymbol>
         <#if packageSymbol.htmlLink??>

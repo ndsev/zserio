@@ -18,7 +18,7 @@
 
 <#macro symbol_overview_package_link symbol currentSymbol>
     <a class="nav-link nav-link-package<#if symbol.name == currentSymbol.name> active</#if>" <#t>
-      <@symbol_reference_href_title symbol/>>${symbol.name}</a><#t>
+      <@symbol_reference_href_title symbol, false/>>${symbol.name}</a><#t>
 </#macro>
 
 <#macro symbol_overview_link symbol>
@@ -71,24 +71,15 @@
     class="${symbol.typeName?lower_case}-token"<#t>
 </#macro>
 
-<#macro symbol_reference_href_title symbol>
+<#macro symbol_reference_href_title symbol useAnchor=true>
     <#if symbol.htmlLink??>
-        href="<@symbol_html_link symbol.htmlLink/>" title="${symbol.htmlTitle}"<#t>
+        href="<@symbol_html_link symbol.htmlLink, useAnchor/>" title="${symbol.htmlTitle}"<#t>
     <#else>
         title="${symbol.htmlTitle}"<#t>
     </#if>
 </#macro>
 
-<#macro symbol_reference_url symbol>
-    <#if symbol.htmlLink??>
-        URL="<@symbol_html_link symbol.htmlLink/>"<#t>
-    </#if>
-</#macro>
-
-<#macro symbol_reference_tooltip symbol>
-    tooltip="${symbol.htmlTitle}"<#t>
-</#macro>
-
-<#macro symbol_html_link htmlLink>
-    <#if htmlLink.htmlPage??><@html_path htmlLink.htmlPage/></#if><#if htmlLink.htmlAnchor??>#${htmlLink.htmlAnchor?url}</#if><#t>
+<#macro symbol_html_link htmlLink useAnchor=true>
+    <#if htmlLink.htmlPage??><@html_path htmlLink.htmlPage/></#if><#rt>
+      <#lt><#if useAnchor && htmlLink.htmlAnchor??>#${htmlLink.htmlAnchor?url}</#if><#t>
 </#macro>
