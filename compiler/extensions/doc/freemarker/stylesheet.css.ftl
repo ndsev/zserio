@@ -48,7 +48,8 @@
 }
 
 main > h1:first-child, /* package heading */
-main > .doc:first-child > h1:first-child {  /* floating comment before the package declaration  */
+main > .doc:first-child > h1:first-child, /* floating comment before the package declaration  */
+main > .doc:first-child > h2:first-child {
   border-top: none;
   padding-top: 0; /* prevent scrolling above the anchor scroll */
   scroll-margin-top: ${headerHeight}rem;

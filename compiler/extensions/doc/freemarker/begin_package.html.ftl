@@ -118,7 +118,7 @@
 
         <main id="main" class="col-8 pl-3 order-2">
 <#if hasFloatingDocComments(docComments)>
-          <@doc_comments_floating docComments, 5, false/>
+          <@doc_comments_floating docComments, 5/>
 
 </#if>
           <h1 id="${symbol.htmlLink.htmlAnchor}" class="anchor">${symbol.name}</h1>
@@ -128,7 +128,7 @@
             <tbody>
     <#if hasStickyDocComments(docComments)>
               <tr class="doc"><td>
-                <@doc_comments_sticky docComments, 8, false/>
+                <@doc_comments_sticky docComments, 8/>
               </td></tr>
     </#if>
               <tr><td>
