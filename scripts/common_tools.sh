@@ -231,7 +231,10 @@ activate_python_virtualenv()
         fi
     else
         if [ -z "${PYTHON_VIRTUALENV_ACTIVATE}" ] ; then
-            "${PYTHON}" -m virtualenv -p "${PYTHON}" "${PYTHON_VIRTUALENV_ROOT}"
+            # On Windows, virtualenv option -p does not accept python executable without '.exe' extension
+            local PYTHON_EXE
+            get_executable "${PYTHON}" PYTHON_EXE
+            "${PYTHON}" -m virtualenv -p "${PYTHON_EXE}" "${PYTHON_VIRTUALENV_ROOT}"
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to create virtualenv!"
                 return 1
@@ -768,7 +771,7 @@ get_host_platform()
     Linux)
         HOST="ubuntu"
         ;;
-    MINGW32*)
+    MINGW*|MSYS*)
         HOST="windows"
         ;;
     *)
@@ -848,4 +851,25 @@ posix_to_host_path()
     fi
 
     eval ${HOST_PATH_OUT}="'${POSIX_PATH}'"
+}
+
+# Returns executable according to the current host.
+#
+# On Linux the given executable is unchanged, on Windows the executable is appended by extension if it is given
+# without any extension.
+get_executable()
+{
+    exit_if_argc_lt $# 2
+    local EXECUTABLE="$1"; shift
+    local HOST_EXECUTABLE_OUT="$1"; shift
+
+    local HOST_PLATFORM
+    get_host_platform HOST_PLATFORM
+    if [[ "${HOST_PLATFORM}" == "windows"* ]] ; then
+        local HOST_EXECUTABLE="`ls --append-exe "${EXECUTABLE}"`"
+    else
+        local HOST_EXECUTABLE="${EXECUTABLE}"
+    fi
+
+    eval ${HOST_EXECUTABLE_OUT}="'${HOST_EXECUTABLE}'"
 }

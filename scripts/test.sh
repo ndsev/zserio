@@ -278,7 +278,7 @@ Description:
     Runs Zserio tests on Zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] [-e] ][-c] [-p] [-o <dir>] [-t <name>] package...
+    $0 [-h] [-e] [-c] [-p] [-o <dir>] [-t <name>] package...
 
 Arguments:
     -h, --help            Show this help.
