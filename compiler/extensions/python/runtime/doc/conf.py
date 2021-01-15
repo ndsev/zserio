@@ -14,7 +14,7 @@ import zserio
 
 project = 'Zserio'
 author = 'Eccam s.r.o.'
-copyright = 'Copyright (c) 2018, Navigation Data Standard e.v.'
+copyright = 'Copyright (c) 2018-2021, Navigation Data Standard e.v.'
 
 # The full version, including alpha/beta/rc tags
 release = zserio.VERSION_STRING
