@@ -22,7 +22,6 @@ import zserio.bitsizeof as bitsizeof
 import zserio.bitwriter as bitwriter
 import zserio.builtin as builtin
 import zserio.exception as exception
-import zserio.float as float
 import zserio.hashcode as hashcode
 import zserio.limits as limits
 import zserio.pubsub as pubsub
