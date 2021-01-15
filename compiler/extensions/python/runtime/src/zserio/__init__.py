@@ -13,13 +13,19 @@ from zserio.exception import PythonRuntimeException
 from zserio.service import ServiceInterface, ServiceException
 from zserio.pubsub import PubsubInterface, PubsubException
 
-import zserio.array
-import zserio.bitfield
-import zserio.bitposition
-import zserio.bitsizeof
-import zserio.builtin
-import zserio.float
-import zserio.hashcode
-import zserio.limits
+import zserio.array as array
+import zserio.bitbuffer as bitbuffer
+import zserio.bitfield as bitfield
+import zserio.bitposition as bitposition
+import zserio.bitreader as bitreader
+import zserio.bitsizeof as bitsizeof
+import zserio.bitwriter as bitwriter
+import zserio.builtin as builtin
+import zserio.exception as exception
+import zserio.float as float
+import zserio.hashcode as hashcode
+import zserio.limits as limits
+import zserio.pubsub as pubsub
+import zserio.service as service
 
 VERSION_STRING = "2.1.0"
