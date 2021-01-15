@@ -57,6 +57,8 @@ class ${name}:
     </#macro>
     def ${field.getterName}(self) -> ${field.pythonTypeName}:
         return self.<@field_member_name field/>
+
+    ${field.propertyName} = property(${field.getterName})
 </#list>
 
     def connection(self) -> apsw.Connection:

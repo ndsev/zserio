@@ -2,20 +2,20 @@ package zserio.extension.python;
 
 import zserio.ast.ChoiceType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
-public class ChoiceEmitter extends PythonDefaultEmitter
+public class ChoiceEmitter extends CompoundEmitter
 {
-    public ChoiceEmitter(String outputPath, ExtensionParameters extensionParameters)
+    public ChoiceEmitter(PythonExtensionParameters pythonParameters)
     {
-        super(outputPath, extensionParameters);
+        super(pythonParameters);
     }
 
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException
     {
-        final Object templateData = new ChoiceEmitterTemplateData(getTemplateDataContext(), choiceType);
-        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, choiceType);
+        final ChoiceEmitterTemplateData templateData =
+                new ChoiceEmitterTemplateData(getTemplateDataContext(), choiceType);
+        processCompoundTemplate(TEMPLATE_SOURCE_NAME, templateData, choiceType);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "Choice.py.ftl";

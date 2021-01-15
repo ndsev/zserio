@@ -2,13 +2,12 @@ package zserio.extension.python;
 
 import zserio.ast.Constant;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class ConstEmitter extends PythonDefaultEmitter
 {
-    public ConstEmitter(String outputPath, ExtensionParameters extensionParameters)
+    public ConstEmitter(PythonExtensionParameters pythonParameters)
     {
-        super(outputPath, extensionParameters);
+        super(pythonParameters);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package zserio.extension.python;
 
 import java.io.File;
+import java.util.List;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -8,15 +9,14 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 abstract class PythonDefaultEmitter extends DefaultTreeWalker
 {
-    public PythonDefaultEmitter(String outputPathName, ExtensionParameters extensionParameters)
+    public PythonDefaultEmitter(PythonExtensionParameters pythonParameters)
     {
-        this.outputPathName = outputPathName;
-        this.extensionParameters = extensionParameters;
-        this.context = new TemplateDataContext(extensionParameters);
+        this.outputPathName = pythonParameters.getOutputDir();
+        this.pythonParameters = pythonParameters;
+        this.context = new TemplateDataContext(pythonParameters);
     }
 
     @Override
@@ -27,17 +27,22 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
 
     protected boolean getWithPubsubCode()
     {
-        return extensionParameters.getWithPubsubCode();
+        return pythonParameters.getWithPubsubCode();
     }
 
     protected boolean getWithServiceCode()
     {
-        return extensionParameters.getWithServiceCode();
+        return pythonParameters.getWithServiceCode();
     }
 
     protected boolean getWithSqlCode()
     {
-        return extensionParameters.getWithSqlCode();
+        return pythonParameters.getWithSqlCode();
+    }
+
+    protected boolean getWithPythonPropPrefix()
+    {
+        return pythonParameters.getWithPythonPropPrefix();
     }
 
     protected TemplateDataContext getTemplateDataContext()
@@ -66,10 +71,15 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
                 false);
     }
 
+    protected List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
+    {
+        return FreeMarkerUtil.readFreemarkerTemplate(PYTHON_TEMPLATE_LOCATION + templateName);
+    }
+
     private static final String PYTHON_SOURCE_EXTENSION = ".py";
     private static final String PYTHON_TEMPLATE_LOCATION = "python/";
 
     private final String outputPathName;
-    private final ExtensionParameters extensionParameters;
+    private final PythonExtensionParameters pythonParameters;
     private final TemplateDataContext context;
 }

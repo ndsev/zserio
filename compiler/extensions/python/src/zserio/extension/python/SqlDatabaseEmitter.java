@@ -2,13 +2,12 @@ package zserio.extension.python;
 
 import zserio.ast.SqlDatabaseType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
-class SqlDatabaseEmitter extends PythonDefaultEmitter
+class SqlDatabaseEmitter extends CompoundEmitter
 {
-    public SqlDatabaseEmitter(String outputPath, ExtensionParameters extensionParameters)
+    public SqlDatabaseEmitter(PythonExtensionParameters pythonParameters)
     {
-        super(outputPath, extensionParameters);
+        super(pythonParameters);
     }
 
     @Override
@@ -16,9 +15,9 @@ class SqlDatabaseEmitter extends PythonDefaultEmitter
     {
         if (getWithSqlCode())
         {
-            final Object templateData = new SqlDatabaseEmitterTemplateData(getTemplateDataContext(),
-                    sqlDatabaseType);
-            processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlDatabaseType);
+            final SqlDatabaseEmitterTemplateData templateData =
+                    new SqlDatabaseEmitterTemplateData(getTemplateDataContext(), sqlDatabaseType);
+            processCompoundTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlDatabaseType);
         }
     }
 

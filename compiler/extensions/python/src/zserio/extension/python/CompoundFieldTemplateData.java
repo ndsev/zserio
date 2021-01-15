@@ -25,10 +25,13 @@ import zserio.extension.python.types.PythonNativeType;
 
 public final class CompoundFieldTemplateData
 {
-    public CompoundFieldTemplateData(PythonNativeMapper pythonNativeMapper, boolean withRangeCheckCode,
+    public CompoundFieldTemplateData(TemplateDataContext context,
             CompoundType parentType, Field field, ExpressionFormatter pythonExpressionFormatter,
             ImportCollector importCollector) throws ZserioExtensionException
     {
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
+        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
+
         name = field.getName();
 
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
@@ -38,6 +41,8 @@ public final class CompoundFieldTemplateData
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
+
+        propertyName = AccessorNameFormatter.getPropertyName(field, context.getWithPythonPropPrefix());
 
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
         final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
@@ -77,6 +82,11 @@ public final class CompoundFieldTemplateData
     public String getSetterName()
     {
         return setterName;
+    }
+
+    public String getPropertyName()
+    {
+        return propertyName;
     }
 
     public RangeCheck getRangeCheck()
@@ -554,6 +564,7 @@ public final class CompoundFieldTemplateData
     private final String pythonTypeName;
     private final String getterName;
     private final String setterName;
+    private final String propertyName;
 
     private final RangeCheck rangeCheck;
     private final Optional optional;

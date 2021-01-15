@@ -10,14 +10,16 @@ import zserio.extension.python.types.PythonNativeType;
 
 public final class CompoundParameterTemplateData
 {
-    public CompoundParameterTemplateData(CompoundType compoundType, PythonNativeMapper pythonNativeMapper,
+    public CompoundParameterTemplateData(TemplateDataContext context, CompoundType compoundType,
             ImportCollector importCollector) throws ZserioExtensionException
     {
         final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
         for (Parameter compoundParameterType : compoundParameterTypeList)
-            compoundParameterList.add(new CompoundParameter(compoundParameterType, pythonNativeMapper,
-                    importCollector));
+        {
+            compoundParameterList.add(new CompoundParameter(
+                    context, compoundParameterType, importCollector));
+        }
     }
 
     public Iterable<CompoundParameter> getList()
@@ -27,14 +29,16 @@ public final class CompoundParameterTemplateData
 
     public static class CompoundParameter
     {
-        public CompoundParameter(Parameter parameter, PythonNativeMapper pythonNativeMapper,
+        public CompoundParameter(TemplateDataContext context, Parameter parameter,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             name = parameter.getName();
-            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(parameter.getTypeReference());
+            final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(
+                    parameter.getTypeReference());
             importCollector.importType(nativeType);
             pythonTypeName = nativeType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(parameter);
+            propertyName = AccessorNameFormatter.getPropertyName(parameter, context.getWithPythonPropPrefix());
         }
 
         public String getName()
@@ -52,9 +56,15 @@ public final class CompoundParameterTemplateData
             return getterName;
         }
 
+        public String getPropertyName()
+        {
+            return propertyName;
+        }
+
         private final String name;
         private final String pythonTypeName;
         private final String getterName;
+        private final String propertyName;
     }
 
     private final List<CompoundParameter> compoundParameterList;

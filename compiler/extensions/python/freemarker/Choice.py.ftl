@@ -66,6 +66,8 @@ class ${name}:
 
     def ${parameter.getterName}(self) -> ${parameter.pythonTypeName}:
         <@compound_parameter_accessor parameter/>
+
+    ${parameter.propertyName} = property(${parameter.getterName})
 </#list>
 <#list fieldList as field>
 
@@ -76,6 +78,8 @@ class ${name}:
     def ${field.setterName}(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
         <@compound_setter_field field/>
     </#if>
+
+    ${field.propertyName} = property(${field.getterName}<#if withWriterCode>, ${field.setterName}</#if>)
 </#list>
 <#list compoundFunctionsData.list as function>
 

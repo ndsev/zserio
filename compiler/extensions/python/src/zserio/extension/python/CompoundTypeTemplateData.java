@@ -19,10 +19,9 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         importPackage("zserio");
 
         withRangeCheckCode = context.getWithRangeCheckCode();
-        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
-        compoundParametersData = new CompoundParameterTemplateData(compoundType, pythonNativeMapper, this);
-        compoundFunctionsData = new CompoundFunctionTemplateData(compoundType, pythonNativeMapper,
+        compoundParametersData = new CompoundParameterTemplateData(context, compoundType, this);
+        compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType,
                 pythonExpressionFormatter, this);
 
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
@@ -30,8 +29,10 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
-            fieldList.add(new CompoundFieldTemplateData(pythonNativeMapper, withRangeCheckCode,
-                    compoundType, fieldType, pythonExpressionFormatter, this));
+        {
+            fieldList.add(new CompoundFieldTemplateData(
+                    context, compoundType, fieldType, pythonExpressionFormatter, this));
+        }
     }
 
     public boolean getWithRangeCheckCode()

@@ -2,15 +2,15 @@ package zserio.extension.python;
 
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ExpressionFormattingPolicy;
-import zserio.tools.ExtensionParameters;
 
 final class TemplateDataContext
 {
-    public TemplateDataContext(ExtensionParameters extensionParameters)
+    public TemplateDataContext(PythonExtensionParameters pythonParameters)
     {
         pythonNativeMapper = new PythonNativeMapper();
-        withWriterCode = extensionParameters.getWithWriterCode();
-        withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
+        withWriterCode = pythonParameters.getWithWriterCode();
+        withRangeCheckCode = pythonParameters.getWithRangeCheckCode();
+        withPythonPropPrefix = pythonParameters.getWithPythonPropPrefix();
     }
 
     public PythonNativeMapper getPythonNativeMapper()
@@ -44,8 +44,14 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
+    public boolean getWithPythonPropPrefix()
+    {
+        return withPythonPropPrefix;
+    }
+
     private final PythonNativeMapper pythonNativeMapper;
 
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;
+    private final boolean withPythonPropPrefix;
 }

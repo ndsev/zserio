@@ -95,6 +95,8 @@ ${I}<#rt>
 
     def ${parameter.getterName}(self) -> ${parameter.pythonTypeName}:
         <@compound_parameter_accessor parameter/>
+
+    ${parameter.propertyName} = property(${parameter.getterName})
 </#list>
 <#list fieldList as field>
 
@@ -110,6 +112,8 @@ ${I}<#rt>
     def ${field.optional.indicatorName}(self) -> bool:
         return <#if field.optional.clause??>${field.optional.clause}<#else>not self.<@field_member_name field/> is None</#if>
     </#if>
+
+    ${field.propertyName} = property(${field.getterName}<#if withWriterCode>, ${field.setterName}</#if>)
 </#list>
 <#list compoundFunctionsData.list as function>
 

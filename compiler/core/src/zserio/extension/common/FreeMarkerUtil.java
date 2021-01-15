@@ -1,12 +1,17 @@
 package zserio.extension.common;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import freemarker.template.Configuration;
@@ -21,7 +26,7 @@ public class FreeMarkerUtil
     /**
      * Processes FreeMarker template with the provided data model and generates output.
      *
-     * @param templateName      The template name with the path relatively to "/freemarker" directory.
+     * @param templateName      The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
      * @param templateDataModel The template data model to apply.
      * @param outputWriter      The writer to use for generated output.
      *
@@ -33,7 +38,7 @@ public class FreeMarkerUtil
         if (freeMarkerConfig == null)
         {
             final Configuration newFreeMarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
-            newFreeMarkerConfig.setClassForTemplateLoading(FreeMarkerUtil.class, "/freemarker/");
+            newFreeMarkerConfig.setClassForTemplateLoading(FreeMarkerUtil.class, '/' + FREEMARKER_LOCATION);
             newFreeMarkerConfig.setOutputEncoding("UTF-8");
 
             freeMarkerConfig = newFreeMarkerConfig;
@@ -58,7 +63,7 @@ public class FreeMarkerUtil
     /**
      * Processes FreeMarker template with the provided data model and generates output.
      *
-     * @param templateName      The template name with the path relatively to "/freemarker" directory.
+     * @param templateName      The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
      * @param templateDataModel The template data model to apply.
      * @param outputFile        The output to be generated.
      *
@@ -73,7 +78,7 @@ public class FreeMarkerUtil
     /**
      * Processes FreeMarker template with the provided data model and generates output.
      *
-     * @param templateName      The template name with the path relatively to "/freemarker" directory.
+     * @param templateName      The template name with the path relatively to "/FREEMARKER_LOCATION" directory.
      * @param templateDataModel The template data model to apply.
      * @param outputFile        The output to be generated.
      * @param amalgamate        True if the generated output will be amalgamated to the output file.
@@ -128,6 +133,49 @@ public class FreeMarkerUtil
         }
     }
 
+    public static List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
+    {
+        final String fullTemplateName = FREEMARKER_LOCATION + templateName;
+        try (final BufferedReader reader = new BufferedReader(
+                new InputStreamReader(getFreemarkerTemplateStream(fullTemplateName), "UTF-8")))
+        {
+            final List<String> lines = new ArrayList<String>();
+            while (reader.ready())
+                lines.add(reader.readLine());
+            return lines;
+        }
+        catch (IOException e)
+        {
+            throw new ZserioExtensionException("Failed to read template '" +
+                    fullTemplateName + "': " + e.toString());
+        }
+    }
+
+    private static InputStream getFreemarkerTemplateStream(String templateName) throws ZserioExtensionException
+    {
+        InputStream resourceStream = null;
+        try
+        {
+            final ClassLoader classLoader = FreeMarkerUtil.class.getClassLoader();
+            resourceStream = classLoader.getResourceAsStream(templateName);
+        }
+        catch (Exception e)
+        {
+            throw new ZserioExtensionException("Failed to get resource file for template '" +
+                    templateName + "':" + e.getMessage());
+        }
+
+        if (resourceStream == null)
+        {
+            throw new ZserioExtensionException("Failed to get resource file for template '" +
+                    templateName + "'!");
+        }
+
+        return resourceStream;
+    }
+
     private static volatile Configuration freeMarkerConfig;
     private static Set<String> amalgamatedDirectories;
+
+    private static final String FREEMARKER_LOCATION = "freemarker/";
 }

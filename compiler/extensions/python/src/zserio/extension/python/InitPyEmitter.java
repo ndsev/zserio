@@ -7,13 +7,12 @@ import java.util.Set;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class InitPyEmitter extends PythonDefaultEmitter
 {
-    public InitPyEmitter (String outputPath, ExtensionParameters extensionParameters)
+    public InitPyEmitter (PythonExtensionParameters pythonParameters)
     {
-        super(outputPath, extensionParameters);
+        super(pythonParameters);
     }
 
     @Override

@@ -18,13 +18,12 @@ import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class ApiEmitter extends PythonDefaultEmitter
 {
-    public ApiEmitter(String outputPath, ExtensionParameters extensionParameters)
+    public ApiEmitter(PythonExtensionParameters pythonParameters)
     {
-        super(outputPath, extensionParameters);
+        super(pythonParameters);
     }
 
     @Override

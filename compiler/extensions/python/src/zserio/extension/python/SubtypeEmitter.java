@@ -2,13 +2,12 @@ package zserio.extension.python;
 
 import zserio.ast.Subtype;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class SubtypeEmitter extends PythonDefaultEmitter
 {
-    public SubtypeEmitter(String outputPath, ExtensionParameters extensionParameters)
+    public SubtypeEmitter(PythonExtensionParameters pythonParameters)
     {
-        super(outputPath, extensionParameters);
+        super(pythonParameters);
     }
 
     @Override

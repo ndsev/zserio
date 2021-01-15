@@ -2,20 +2,20 @@ package zserio.extension.python;
 
 import zserio.ast.StructureType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
-public class StructureEmitter extends PythonDefaultEmitter
+public class StructureEmitter extends CompoundEmitter
 {
-    public StructureEmitter(String outputPath, ExtensionParameters extensionParameters)
+    public StructureEmitter(PythonExtensionParameters pythonParameters)
     {
-        super(outputPath, extensionParameters);
+        super(pythonParameters);
     }
 
     @Override
     public void beginStructure(StructureType structureType) throws ZserioExtensionException
     {
-        final Object templateData = new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
-        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);
+        final StructureEmitterTemplateData templateData =
+                new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
+        processCompoundTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "Structure.py.ftl";

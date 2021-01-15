@@ -21,10 +21,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         importPackage("typing");
         importPackage("apsw");
 
-        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         fields = new ArrayList<DatabaseFieldData>();
         for (Field field: databaseType.getFields())
-            fields.add(new DatabaseFieldData(pythonNativeMapper, field, this));
+            fields.add(new DatabaseFieldData(context, field, this));
     }
 
     public Iterable<DatabaseFieldData> getFields()
@@ -34,17 +33,19 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static class DatabaseFieldData
     {
-        public DatabaseFieldData(PythonNativeMapper pythonNativeMapper, Field field,
+        public DatabaseFieldData(TemplateDataContext context, Field field,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
-            final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
+            final PythonNativeType nativeType =
+                    context.getPythonNativeMapper().getPythonType(fieldTypeInstantiation);
             importCollector.importType(nativeType);
 
             name = field.getName();
             pythonTypeName = nativeType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
+            propertyName = AccessorNameFormatter.getPropertyName(field, context.getWithPythonPropPrefix());
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
         }
@@ -64,6 +65,11 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return getterName;
         }
 
+        public String getPropertyName()
+        {
+            return propertyName;
+        }
+
         public boolean getIsWithoutRowIdTable()
         {
             return isWithoutRowIdTable;
@@ -72,6 +78,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         private final String name;
         private final String pythonTypeName;
         private final String getterName;
+        private final String propertyName;
         private final boolean isWithoutRowIdTable;
     }
 
