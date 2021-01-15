@@ -7,9 +7,10 @@ from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
                               getBitSizeOfVarInt64, getBitSizeOfVarInt,
                               getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
                               getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
-                              getBitSizeOfVarSize, INT64_MIN)
+                              getBitSizeOfVarSize)
 from zserio.exception import PythonRuntimeException
 from zserio.float import convertFloatToUInt16, convertFloatToUInt32, convertFloatToUInt64
+from zserio.limits import INT64_MIN
 
 class BitStreamWriter:
     """
