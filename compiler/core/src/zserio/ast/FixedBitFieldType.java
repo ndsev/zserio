@@ -19,7 +19,7 @@ public class FixedBitFieldType extends IntegerType implements FixedSizeType
      */
     public FixedBitFieldType(AstLocation location, String name, boolean isSigned, String bitSizeText)
     {
-        super(location, name);
+        super(location, name + ":" + bitSizeText);
 
         int bitSize = 0;
         try
