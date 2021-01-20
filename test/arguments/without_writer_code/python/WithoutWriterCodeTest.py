@@ -148,8 +148,8 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         # static constants
         self.assertTrue(hasattr(userType, "DATABASE_NAME"))
-        self.assertTrue(hasattr(userType, "europe_TABLE_NAME"))
-        self.assertTrue(hasattr(userType, "america_TABLE_NAME"))
+        self.assertTrue(hasattr(userType, "TABLE_NAME_europe"))
+        self.assertTrue(hasattr(userType, "TABLE_NAME_america"))
 
     def testRead(self):
         writer = zserio.BitStreamWriter()
