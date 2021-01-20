@@ -12,6 +12,8 @@ public class UserTypeTemplateData extends PythonTemplateData
 
         final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(type);
         name = nativeType.getName();
+
+        withPythonProperties = context.getWithPythonProperties();
     }
 
     public String getName()
@@ -19,5 +21,11 @@ public class UserTypeTemplateData extends PythonTemplateData
         return name;
     }
 
+    public boolean getWithPythonProperties()
+    {
+        return withPythonProperties;
+    }
+
     private final String name;
+    private final boolean withPythonProperties;
 }

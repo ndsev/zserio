@@ -10,7 +10,7 @@ final class TemplateDataContext
         pythonNativeMapper = new PythonNativeMapper();
         withWriterCode = pythonParameters.getWithWriterCode();
         withRangeCheckCode = pythonParameters.getWithRangeCheckCode();
-        withPythonPropPrefix = pythonParameters.getWithPythonPropPrefix();
+        withPythonProperties = pythonParameters.getWithPythonProperties();
     }
 
     public PythonNativeMapper getPythonNativeMapper()
@@ -21,7 +21,7 @@ final class TemplateDataContext
     public ExpressionFormatter getPythonExpressionFormatter(ImportCollector importCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new PythonExpressionFormattingPolicy(pythonNativeMapper, importCollector);
+                new PythonExpressionFormattingPolicy(this, importCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -29,7 +29,7 @@ final class TemplateDataContext
     public ExpressionFormatter getPythonSqlIndirectExpressionFormatter(ImportCollector importCollector)
     {
         final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new PythonSqlIndirectExpressionFormattingPolicy(pythonNativeMapper, importCollector);
+                new PythonSqlIndirectExpressionFormattingPolicy(this, importCollector);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -44,14 +44,14 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
-    public boolean getWithPythonPropPrefix()
+    public boolean getWithPythonProperties()
     {
-        return withPythonPropPrefix;
+        return withPythonProperties;
     }
 
     private final PythonNativeMapper pythonNativeMapper;
 
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;
-    private final boolean withPythonPropPrefix;
+    private final boolean withPythonProperties;
 }

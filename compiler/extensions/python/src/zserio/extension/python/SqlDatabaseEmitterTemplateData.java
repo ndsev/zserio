@@ -31,6 +31,11 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         return fields;
     }
 
+    public String getDatabaseNameConstant()
+    {
+        return DATABASE_NAME_CONSTANT;
+    }
+
     public static class DatabaseFieldData
     {
         public DatabaseFieldData(TemplateDataContext context, Field field,
@@ -45,7 +50,8 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             name = field.getName();
             pythonTypeName = nativeType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
-            propertyName = AccessorNameFormatter.getPropertyName(field, context.getWithPythonPropPrefix());
+            propertyName = AccessorNameFormatter.getPropertyName(field);
+            tableNameConstant = TABLE_NAME_CONSTANT_PREFIX + field.getName();
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
         }
@@ -70,6 +76,11 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return propertyName;
         }
 
+        public String getTableNameConstant()
+        {
+            return tableNameConstant;
+        }
+
         public boolean getIsWithoutRowIdTable()
         {
             return isWithoutRowIdTable;
@@ -79,8 +90,12 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         private final String pythonTypeName;
         private final String getterName;
         private final String propertyName;
+        private final String tableNameConstant;
         private final boolean isWithoutRowIdTable;
     }
 
     private final List<DatabaseFieldData> fields;
+    private static final String DATABASE_NAME_CONSTANT = "DATABASE_NAME";
+    // note that we need some prefix to prevent clashing
+    private static final String TABLE_NAME_CONSTANT_PREFIX = "TABLE_NAME_";
 }

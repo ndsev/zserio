@@ -64,22 +64,36 @@ class ${name}:
         return result
 <#list compoundParametersData.list as parameter>
 
-    def ${parameter.getterName}(self) -> ${parameter.pythonTypeName}:
+    <#if withPythonProperties>
+    @property
+    def ${parameter.propertyName}<#rt>
+    <#else>
+    def ${parameter.getterName}<#rt>
+    </#if>
+    <#lt>(self) -> ${parameter.pythonTypeName}:
         <@compound_parameter_accessor parameter/>
-
-    ${parameter.propertyName} = property(${parameter.getterName})
 </#list>
 <#list fieldList as field>
 
-    def ${field.getterName}(self) -> <@field_annotation_argument_type_name field, name/>:
+    <#if withPythonProperties>
+    @property
+    def ${field.propertyName}<#rt>
+    <#else>
+    def ${field.getterName}<#rt>
+    </#if>
+    <#lt>(self) -> <@field_annotation_argument_type_name field, name/>:
         <@compound_getter_field field/>
     <#if withWriterCode>
 
-    def ${field.setterName}(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
+        <#if withPythonProperties>
+    @${field.propertyName}.setter
+    def ${field.propertyName}<#rt>
+        <#else>
+    def ${field.setterName}<#rt>
+        </#if>
+    <#lt>(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
         <@compound_setter_field field/>
     </#if>
-
-    ${field.propertyName} = property(${field.getterName}<#if withWriterCode>, ${field.setterName}</#if>)
 </#list>
 <#list compoundFunctionsData.list as function>
 

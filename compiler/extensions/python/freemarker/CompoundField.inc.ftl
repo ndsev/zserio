@@ -374,10 +374,6 @@ ${I}                                        (self.<@field_member_name field/>, l
     ${field.name}_<#t>
 </#macro>
 
-<#macro choice_tag_name field>
-    CHOICE_${field.name}<#t>
-</#macro>
-
 <#function has_field_any_read_check_code field compoundName indent>
     <#local checkCode>
         <#if field.offset?? && !field.offset.containsIndex>

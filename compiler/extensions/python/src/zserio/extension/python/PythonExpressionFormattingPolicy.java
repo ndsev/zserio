@@ -18,10 +18,9 @@ import zserio.extension.common.ExpressionFormattingPolicy;
 
 public class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
-    public PythonExpressionFormattingPolicy(PythonNativeMapper pythonNativeMapper,
-            ImportCollector importCollector)
+    public PythonExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector)
     {
-        this.pythonNativeMapper = pythonNativeMapper;
+        this.context = context;
         this.importCollector = importCollector;
     }
 
@@ -326,13 +325,28 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
 
         if (isSetter)
         {
-            result.append(AccessorNameFormatter.getSetterName(field));
-            result.append(PYTHON_SETTER_FUNCTION_CALL);
+            if (context.getWithPythonProperties())
+            {
+                result.append(AccessorNameFormatter.getPropertyName(field));
+                result.append(PYTHON_PROPERTY_ASSIGNMENT);
+            }
+            else
+            {
+                result.append(AccessorNameFormatter.getSetterName(field));
+                result.append(PYTHON_SETTER_FUNCTION_CALL);
+            }
         }
         else
         {
-            result.append(AccessorNameFormatter.getGetterName(field));
-            result.append(PYTHON_GETTER_FUNCTION_CALL);
+            if (context.getWithPythonProperties())
+            {
+                result.append(AccessorNameFormatter.getPropertyName(field));
+            }
+            else
+            {
+                result.append(AccessorNameFormatter.getGetterName(field));
+                result.append(PYTHON_GETTER_FUNCTION_CALL);
+            }
         }
     }
 
@@ -341,8 +355,15 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         if (isMostLeftId)
             result.append(PYTHON_FUNCTION_CALL_PREFIX);
 
-        result.append(AccessorNameFormatter.getGetterName(param));
-        result.append(PYTHON_GETTER_FUNCTION_CALL);
+        if (context.getWithPythonProperties())
+        {
+            result.append(AccessorNameFormatter.getPropertyName(param));
+        }
+        else
+        {
+            result.append(AccessorNameFormatter.getGetterName(param));
+            result.append(PYTHON_GETTER_FUNCTION_CALL);
+        }
     }
 
     private void formatEnumItem(StringBuilder result, boolean isMostLeftId, EnumItem enumItem,
@@ -352,7 +373,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         if (isMostLeftId && exprType instanceof EnumType)
         {
             final EnumType enumType = (EnumType)exprType;
-            final PythonNativeType nativeEnumType = pythonNativeMapper.getPythonType(enumType);
+            final PythonNativeType nativeEnumType = context.getPythonNativeMapper().getPythonType(enumType);
             importCollector.importType(nativeEnumType);
             result.append(nativeEnumType.getFullName());
             result.append(".");
@@ -367,7 +388,8 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         if (isMostLeftId && exprType instanceof BitmaskType)
         {
             final BitmaskType bitmaskType = (BitmaskType)exprType;
-            final PythonNativeType nativeBitmaskType = pythonNativeMapper.getPythonType(bitmaskType);
+            final PythonNativeType nativeBitmaskType =
+                    context.getPythonNativeMapper().getPythonType(bitmaskType);
             importCollector.importType(nativeBitmaskType);
             result.append(nativeBitmaskType.getFullName());
             result.append(".");
@@ -376,9 +398,10 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         result.append(bitmaskValue.getName());
     }
 
-    private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType) throws ZserioExtensionException
+    private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
+            throws ZserioExtensionException
     {
-        final PythonNativeType resolvedNativeType = pythonNativeMapper.getPythonType(resolvedType);
+        final PythonNativeType resolvedNativeType = context.getPythonNativeMapper().getPythonType(resolvedType);
         importCollector.importType(resolvedNativeType);
         result.append(resolvedNativeType.getFullName());
     }
@@ -432,7 +455,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
 
     private void formatConstant(StringBuilder result, Constant constant) throws ZserioExtensionException
     {
-        final PythonNativeSymbol nativeSymbol = pythonNativeMapper.getPythonSymbol(constant);
+        final PythonNativeSymbol nativeSymbol = context.getPythonNativeMapper().getPythonSymbol(constant);
         result.append(nativeSymbol.getFullName());
         importCollector.importSymbol(nativeSymbol);
     }
@@ -458,7 +481,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         }
     }
 
-    private final PythonNativeMapper pythonNativeMapper;
+    private final TemplateDataContext context;
     private final ImportCollector importCollector;
 
     private final static String PYTHON_BINARY_LITERAL_PREFIX = "0b";
@@ -467,6 +490,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
 
     private final static String PYTHON_GETTER_FUNCTION_CALL = "()";
     private final static String PYTHON_SETTER_FUNCTION_CALL = "(value)";
+    private final static String PYTHON_PROPERTY_ASSIGNMENT = " = value";
 
     private final static String PYTHON_FUNCTION_CALL_PREFIX = "self.";
 }

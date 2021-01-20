@@ -45,23 +45,37 @@ class ${name}:
         return result
 <#list compoundParametersData.list as parameter>
 
-    def ${parameter.getterName}(self) -> ${parameter.pythonTypeName}:
+    <#if withPythonProperties>
+    @property
+    def ${parameter.propertyName}<#rt>
+    <#else>
+    def ${parameter.getterName}<#rt>
+    </#if>
+    <#lt>(self) -> ${parameter.pythonTypeName}:
         <@compound_parameter_accessor parameter/>
-
-    ${parameter.propertyName} = property(${parameter.getterName})
 </#list>
 <#list fieldList as field>
 
-    def ${field.getterName}(self) -> <@field_annotation_argument_type_name field, name/>:
+    <#if withPythonProperties>
+    @property
+    def ${field.propertyName}<#rt>
+    <#else>
+    def ${field.getterName}<#rt>
+    </#if>
+    <#lt>(self) -> <@field_annotation_argument_type_name field, name/>:
         <@compound_getter_field field/>
     <#if withWriterCode>
 
-    def ${field.setterName}(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
-        self._choiceTag = self.<@choice_tag_name field/>
+        <#if withPythonProperties>
+    @${field.propertyName}.setter
+    def ${field.propertyName}<#rt>
+        <#else>
+    def ${field.setterName}<#rt>
+        </#if>
+    <#lt>(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
+        self._choiceTag = self.${getChoiceTagName(field.name)}
         <@compound_setter_field field/>
     </#if>
-
-    ${field.propertyName} = property(${field.getterName}<#if withWriterCode>, ${field.setterName}</#if>)
 </#list>
 <#list compoundFunctionsData.list as function>
 
@@ -69,12 +83,15 @@ class ${name}:
         return ${function.resultExpression}
 </#list>
 
+    <#if withPythonProperties>
+    @property
+    </#if>
     def choiceTag(self) -> int:
         return self._choiceTag
 
 <#macro union_if memberActionMacroName>
     <#list fieldList as field>
-        <#if field?is_first>if <#else>elif </#if>self._choiceTag == self.<@choice_tag_name field/>:
+        <#if field?is_first>if <#else>elif </#if>self._choiceTag == self.${getChoiceTagName(field.name)}:
             <@.vars[memberActionMacroName] field, 3/>
     </#list>
         else:
@@ -148,7 +165,7 @@ class ${name}:
 </#list>
 
 <#list fieldList as field>
-    <@choice_tag_name field/> = ${field?index}
+    ${getChoiceTagName(field.name)} = ${field?index}
 </#list>
     <#-- Don't use CHOICE_UNDEFINED name because of clashing with generated tags from fields. -->
-    UNDEFINED_CHOICE = -1
+    ${undefinedChoiceTagName} = -1

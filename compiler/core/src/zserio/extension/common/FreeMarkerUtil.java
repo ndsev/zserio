@@ -133,6 +133,15 @@ public class FreeMarkerUtil
         }
     }
 
+    /**
+     * Gets all lines of the requested FreeMarker template.
+     *
+     * @param templateName Name of the FreeMarker template to read.
+     *
+     * @return List of lines read from FreeMarker template.
+     *
+     * @throws ZserioExtensionException When the template is not available.
+     */
     public static List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
     {
         final String fullTemplateName = FREEMARKER_LOCATION + templateName;

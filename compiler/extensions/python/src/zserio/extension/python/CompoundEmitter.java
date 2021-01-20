@@ -8,13 +8,14 @@ import java.util.regex.Pattern;
 
 import zserio.ast.CompoundType;
 import zserio.ast.SqlDatabaseType;
+import zserio.ast.UnionType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.CompoundParameterTemplateData.CompoundParameter;
 import zserio.tools.ZserioToolPrinter;
 
 /**
  * Base class for compound emitters, which provides checking for property names clashing with other generated
- * methods when -withoutPythonPropPrefix is used.
+ * methods when -withPythonProperties is used.
  */
 public class CompoundEmitter extends PythonDefaultEmitter
 {
@@ -26,15 +27,23 @@ public class CompoundEmitter extends PythonDefaultEmitter
     protected void processCompoundTemplate(String templateName, CompoundTypeTemplateData templateData,
             CompoundType compoundType) throws ZserioExtensionException
     {
-        if (!getWithPythonPropPrefix())
+        if (getWithPythonProperties())
             checkPropertyNames(templateName, templateData, compoundType);
         processSourceTemplate(templateName, templateData, compoundType);
+    }
+
+    protected void processCompoundTemplate(String templateName, UnionEmitterTemplateData templateData,
+            UnionType unionType) throws ZserioExtensionException
+    {
+        if (getWithPythonProperties())
+            checkPropertyNames(templateName, templateData, unionType);
+        processSourceTemplate(templateName, templateData, unionType);
     }
 
     protected void processCompoundTemplate(String templateName, SqlDatabaseEmitterTemplateData templateData,
             SqlDatabaseType sqlDatabaseType) throws ZserioExtensionException
     {
-        if (!getWithPythonPropPrefix())
+        if (getWithPythonProperties())
             checkPropertyNames(templateName, templateData, sqlDatabaseType);
         processSourceTemplate(templateName, templateData, sqlDatabaseType);
     }
@@ -42,30 +51,44 @@ public class CompoundEmitter extends PythonDefaultEmitter
     private void checkPropertyNames(String templateName, CompoundTypeTemplateData templateData,
             CompoundType compoundType) throws ZserioExtensionException
     {
-        // we must check properties names to prevent clashing
-        final Set<String> templateApiMethods = getTemplateApiMethods(templateName);
-        final Set<String> accessorMethods = getAccessorMethods(templateData);
+        // we must check properties names to prevent clashing with public symbols in generated API
+        final Set<String> apiSymbols = getTemplateApiMethods(templateName);
+        apiSymbols.addAll(getGeneratedApiSymbols(templateData));
 
         for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
-            checkPropertyName(fieldData.getPropertyName(), templateApiMethods, accessorMethods, compoundType);
+            checkPropertyName(fieldData.getPropertyName(), apiSymbols, compoundType);
 
         for (CompoundParameter paramData : templateData.getCompoundParametersData().getList())
-            checkPropertyName(paramData.getPropertyName(), templateApiMethods, accessorMethods, compoundType);
+            checkPropertyName(paramData.getPropertyName(), apiSymbols, compoundType);
+    }
+
+    private void checkPropertyNames(String templateName, UnionEmitterTemplateData templateData,
+            UnionType unionType) throws ZserioExtensionException
+    {
+        // we must check properties names to prevent clashing with public symbols in generated API
+        final Set<String> apiSymbols = getTemplateApiMethods(templateName);
+        apiSymbols.addAll(getGeneratedApiSymbols(templateData));
+
+        for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
+            checkPropertyName(fieldData.getPropertyName(), apiSymbols, unionType);
+
+        for (CompoundParameter paramData : templateData.getCompoundParametersData().getList())
+            checkPropertyName(paramData.getPropertyName(), apiSymbols, unionType);
     }
 
     private void checkPropertyNames(String templateName, SqlDatabaseEmitterTemplateData templateData,
             CompoundType compoundType) throws ZserioExtensionException
     {
-        // we must check properties names to prevent clashing
-        final Set<String> templateApiMethods = getTemplateApiMethods(templateName);
-        final Set<String> accessorMethods = getAccessorMethods(templateData);
+        // we must check properties names to prevent clashing with public symbols in generated API
+        final Set<String> apiSymbols = getTemplateApiMethods(templateName);
+        apiSymbols.addAll(getGeneratedApiSymbols(templateData));
 
         for (SqlDatabaseEmitterTemplateData.DatabaseFieldData fieldData : templateData.getFields())
-            checkPropertyName(fieldData.getPropertyName(), templateApiMethods, accessorMethods, compoundType);
+            checkPropertyName(fieldData.getPropertyName(), apiSymbols, compoundType);
     }
 
-    private void checkPropertyName(String propertyName, Set<String> apiMethods, Set<String> accessorMethods,
-            CompoundType compoundType) throws ZserioExtensionException
+    private void checkPropertyName(String propertyName, Set<String> apiMethods, CompoundType compoundType)
+            throws ZserioExtensionException
     {
         if (propertyName.startsWith("_"))
             throwPropertyNameError(propertyName, compoundType, "Property names cannot start with '_'!");
@@ -73,13 +96,7 @@ public class CompoundEmitter extends PythonDefaultEmitter
         if (apiMethods.contains(propertyName))
         {
             throwPropertyNameError(propertyName, compoundType,
-                    "Property name clashes with a generated API method!");
-        }
-
-        if (accessorMethods.contains(propertyName))
-        {
-            throwPropertyNameError(propertyName, compoundType,
-                    "Property name clashes with a generated accessor method!");
+                    "Property name clashes with generated API!");
         }
     }
 
@@ -88,8 +105,7 @@ public class CompoundEmitter extends PythonDefaultEmitter
     {
         ZserioToolPrinter.printError(compoundType.getLocation(),
                 "Property name clashing detected in '" + compoundType.getName() + "'! " +
-                "Consider to remove '-" + PythonExtensionParameters.OptionWithoutPythonPropPrefix +
-                "' option.");
+                "Consider to remove '-" + PythonExtensionParameters.OptionWithPythonProperties + "' option.");
 
         throw new ZserioExtensionException("Invalid property name '" + propertyName + "'! " + reason);
     }
@@ -112,44 +128,46 @@ public class CompoundEmitter extends PythonDefaultEmitter
         return templateMethods;
     }
 
-    private Set<String> getAccessorMethods(CompoundTypeTemplateData templateData)
+    private Set<String> getGeneratedApiSymbols(CompoundTypeTemplateData templateData)
     {
-        final Set<String> accessorMethods = new HashSet<String>();
+        final Set<String> generatedSymbols = new HashSet<String>();
 
+        // indicator methods for optional fields
         for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
         {
-            // we don't care about withWriterCode option,
-            // just check always to prevent later problems with clashing
-            accessorMethods.add(fieldData.getSetterName());
-            accessorMethods.add(fieldData.getGetterName());
             if (fieldData.getOptional() != null)
-                accessorMethods.add(fieldData.getOptional().getIndicatorName());
+                generatedSymbols.add(fieldData.getOptional().getIndicatorName());
         }
 
-        for (CompoundParameterTemplateData.CompoundParameter parameterData :
-                templateData.getCompoundParametersData().getList())
-        {
-            accessorMethods.add(parameterData.getGetterName());
-        }
-
+        // generated function names
         for (CompoundFunctionTemplateData.CompoundFunction functionData :
-            templateData.getCompoundFunctionsData().getList())
+                templateData.getCompoundFunctionsData().getList())
         {
-            accessorMethods.add(functionData.getName());
+            generatedSymbols.add(functionData.getName());
         }
 
-        return accessorMethods;
+        return generatedSymbols;
     }
 
-    private Set<String> getAccessorMethods(SqlDatabaseEmitterTemplateData templateData)
+    private Set<String> getGeneratedApiSymbols(UnionEmitterTemplateData templateData)
     {
-        final Set<String> accessorMethods = new HashSet<String>();
+        final Set<String> generatedSymbols = getGeneratedApiSymbols((CompoundTypeTemplateData)templateData);
 
+        generatedSymbols.add(templateData.getUndefinedChoiceTagName());
+        for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
+            generatedSymbols.add(templateData.getChoiceTagName(fieldData.getName()));
+
+        return generatedSymbols;
+    }
+
+    private Set<String> getGeneratedApiSymbols(SqlDatabaseEmitterTemplateData templateData)
+    {
+        final Set<String> generatedSymbols = new HashSet<String>();
+
+        generatedSymbols.add(templateData.getDatabaseNameConstant());
         for (SqlDatabaseEmitterTemplateData.DatabaseFieldData fieldData : templateData.getFields())
-        {
-            accessorMethods.add(fieldData.getGetterName());
-        }
+            generatedSymbols.add(fieldData.getTableNameConstant());
 
-        return accessorMethods;
+        return generatedSymbols;
     }
 }

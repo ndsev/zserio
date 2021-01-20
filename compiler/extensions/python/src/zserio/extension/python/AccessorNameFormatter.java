@@ -38,14 +38,14 @@ public class AccessorNameFormatter
         return field.getName() + "_";
     }
 
-    public static String getPropertyName(Field field, boolean withPythonPropPrefix)
+    public static String getPropertyName(Field field)
     {
-        return withPythonPropPrefix ? getAccessorName(PROPERTY_NAME_PREFIX, field.getName()) : field.getName();
+        return field.getName();
     }
 
-    public static String getPropertyName(Parameter param, boolean withPythonPropPrefix)
+    public static String getPropertyName(Parameter param)
     {
-        return withPythonPropPrefix ? getAccessorName(PROPERTY_NAME_PREFIX, param.getName()) : param.getName();
+        return param.getName();
     }
 
     private static String getAccessorName(String accessorNamePrefix, String memberName)
@@ -66,5 +66,4 @@ public class AccessorNameFormatter
     private static final String SETTER_NAME_PREFIX = "set";
     private static final String INDICATOR_NAME_PREFIX = "has";
     private static final String FUNCTION_NAME_PREFIX = "func";
-    private static final String PROPERTY_NAME_PREFIX = "prop";
 }

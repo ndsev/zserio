@@ -22,7 +22,7 @@ class PythonExtensionParameters
         withPubsubCode = parameters.getWithPubsubCode();
         withServiceCode = parameters.getWithServiceCode();
         withSqlCode = parameters.getWithSqlCode();
-        withPythonPropPrefix = !parameters.argumentExists(OptionWithoutPythonPropPrefix);
+        withPythonProperties = parameters.argumentExists(OptionWithPythonProperties);
         withRangeCheckCode = parameters.getWithRangeCheckCode();
     }
 
@@ -51,9 +51,9 @@ class PythonExtensionParameters
         return withSqlCode;
     }
 
-    public boolean getWithPythonPropPrefix()
+    public boolean getWithPythonProperties()
     {
-        return withPythonPropPrefix;
+        return withPythonProperties;
     }
 
     public boolean getWithRangeCheckCode()
@@ -68,15 +68,15 @@ class PythonExtensionParameters
         optionPython.setRequired(false);
         options.addOption(optionPython);
 
-        OptionGroup pythonPropPrefixGroup = new OptionGroup();
-        Option option = new Option(OptionWithPythonPropPrefix, false,
-                "add 'prop' prefix to python properties (default)");
-        pythonPropPrefixGroup.addOption(option);
-        option = new Option(OptionWithoutPythonPropPrefix, false,
-                "don't add 'prop' prefix to python properties (warn: possibly cause name clashing!)");
-        pythonPropPrefixGroup.addOption(option);
-        pythonPropPrefixGroup.setRequired(false);
-        options.addOptionGroup(pythonPropPrefixGroup);
+        OptionGroup pythonPropertiesGroup = new OptionGroup();
+        Option option = new Option(OptionWithPythonProperties, false,
+                "use python properties instead of getters and setters");
+        pythonPropertiesGroup.addOption(option);
+        option = new Option(OptionWithoutPythonProperties, false,
+                "use getters and setters(default)");
+        pythonPropertiesGroup.addOption(option);
+        pythonPropertiesGroup.setRequired(false);
+        options.addOptionGroup(pythonPropertiesGroup);
     }
 
     static boolean hasOptionPython(ExtensionParameters parameters)
@@ -85,14 +85,14 @@ class PythonExtensionParameters
     }
 
     final static String OptionPython = "python";
-    final static String OptionWithPythonPropPrefix = "withPythonPropPrefix";
-    final static String OptionWithoutPythonPropPrefix = "withoutPythonPropPrefix";
+    final static String OptionWithPythonProperties = "withPythonProperties";
+    final static String OptionWithoutPythonProperties = "withoutPythonProperties";
 
     private final String outputDir;
     private final boolean withWriterCode;
     private final boolean withPubsubCode;
     private final boolean withServiceCode;
     private final boolean withSqlCode;
-    private final boolean withPythonPropPrefix;
+    private final boolean withPythonProperties;
     private final boolean withRangeCheckCode;
 }

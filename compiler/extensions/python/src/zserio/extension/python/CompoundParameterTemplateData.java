@@ -38,7 +38,7 @@ public final class CompoundParameterTemplateData
             importCollector.importType(nativeType);
             pythonTypeName = nativeType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(parameter);
-            propertyName = AccessorNameFormatter.getPropertyName(parameter, context.getWithPythonPropPrefix());
+            propertyName = AccessorNameFormatter.getPropertyName(parameter);
         }
 
         public String getName()

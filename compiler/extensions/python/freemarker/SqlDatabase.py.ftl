@@ -52,15 +52,19 @@ class ${name}:
     <#macro field_member_name field>
         _${field.name}_<#t>
     </#macro>
-    <#macro field_table_name field>
-        ${field.name}_TABLE_NAME<#t>
-    </#macro>
-    def ${field.getterName}(self) -> ${field.pythonTypeName}:
+    <#if withPythonProperties>
+    @property
+    def ${field.propertyName}<#rt>
+    <#else>
+    def ${field.getterName}<#rt>
+    </#if>
+    <#lt>(self) -> ${field.pythonTypeName}:
         return self.<@field_member_name field/>
-
-    ${field.propertyName} = property(${field.getterName})
 </#list>
 
+    <#if withPythonProperties>
+    @property
+    </#if>
     def connection(self) -> apsw.Connection:
         return self._connection
 <#if withWriterCode>
@@ -78,7 +82,7 @@ class ${name}:
 
     <#list fields as field>
         <#if field.isWithoutRowIdTable>
-        if self.<@field_table_name field/> in withoutRowIdTableNamesBlackList:
+        if self.${field.tableNameConstant} in withoutRowIdTableNamesBlackList:
             self.<@field_member_name field/>.createOrdinaryRowIdTable()
         else:
             self.<@field_member_name field/>.createTable()
@@ -107,7 +111,7 @@ class ${name}:
     def _initTables(self, tableNameToAttachedDbNameMap: typing.Dict[str, str]) -> None:
 <#list fields as field>
         self.<@field_member_name field/> = ${field.pythonTypeName}(
-            self._connection, self.<@field_table_name field/>, tableNameToAttachedDbNameMap.get(self.<@field_table_name field/>))
+            self._connection, self.${field.tableNameConstant}, tableNameToAttachedDbNameMap.get(self.${field.tableNameConstant}))
 </#list>
 
     @staticmethod
@@ -124,7 +128,7 @@ class ${name}:
             cursor = self._connection.cursor()
             cursor.execute(sqlQuery)
 
-    DATABASE_NAME = "${name}"
+    ${databaseNameConstant} = "${name}"
 <#list fields as field>
-    <@field_table_name field/> = "${field.name}"
+    ${field.tableNameConstant} = "${field.name}"
 </#list>

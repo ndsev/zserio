@@ -42,7 +42,7 @@ public final class CompoundFieldTemplateData
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
 
-        propertyName = AccessorNameFormatter.getPropertyName(field, context.getWithPythonPropPrefix());
+        propertyName = AccessorNameFormatter.getPropertyName(field);
 
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
         final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
