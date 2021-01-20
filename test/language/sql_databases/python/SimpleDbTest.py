@@ -121,8 +121,8 @@ class SimpleDbTest(unittest.TestCase):
         self.assertEqual(self.WORLD_DB_NAME, self.api.WorldDb.DATABASE_NAME)
 
     def testGetTableNames(self):
-        self.assertEqual(self.EUROPE_TABLE_NAME, self.api.WorldDb.europe_TABLE_NAME)
-        self.assertEqual(self.AMERICA_TABLE_NAME, self.api.WorldDb.america_TABLE_NAME)
+        self.assertEqual(self.EUROPE_TABLE_NAME, self.api.WorldDb.TABLE_NAME_europe)
+        self.assertEqual(self.AMERICA_TABLE_NAME, self.api.WorldDb.TABLE_NAME_america)
 
     @staticmethod
     def _isTableInDb(database, tableName):
