@@ -49,7 +49,11 @@ class ${name}:
             <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/></#list>) -> '${name}':
         instance = cls(${constructorParamList})
     <#list fieldList as field>
+        <#if withPythonProperties>
+        instance.${field.propertyName} = <@field_argument_name field/>
+        <#else>
         instance.${field.setterName}(<@field_argument_name field/>)
+        </#if>
     </#list>
 
         return instance

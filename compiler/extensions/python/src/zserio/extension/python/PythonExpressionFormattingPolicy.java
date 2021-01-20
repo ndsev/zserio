@@ -163,11 +163,21 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     public UnaryExpressionFormatting getValueOf(Expression expr) throws ZserioExtensionException
     {
         if (expr.op1().getExprType() == Expression.ExpressionType.ENUM)
+        {
             return new UnaryExpressionFormatting("", ".value");
+        }
         else if (expr.op1().getExprType() == Expression.ExpressionType.BITMASK)
-            return new UnaryExpressionFormatting("(", ").getValue()");
+        {
+            // TODO[Mi-L@]: Use parentheses only when needed (i.e when applied on another expression)
+            if (context.getWithPythonProperties())
+                return new UnaryExpressionFormatting("(", ").value");
+            else
+                return new UnaryExpressionFormatting("(", ").getValue()");
+        }
         else
+        {
             throw new ZserioExtensionException("Unexpected expression in valueof operator!");
+        }
     }
 
     @Override
