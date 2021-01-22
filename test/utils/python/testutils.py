@@ -39,9 +39,14 @@ def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPac
 
     apiModule = "api"
     if hasPackage:
-        if topLevelPackage is None:
-            topLevelPackage = os.path.splitext(mainZsFile)[0]
-        apiModule = topLevelPackage + "." + apiModule
+        # we need to find out the first left most part of path
+        if topLevelPackage is not None:
+            apiModulePathPrefix = topLevelPackage.split(".")[0]
+        else:
+            mainZsWithoutExt = os.path.splitext(mainZsFile)[0]
+            apiModulePathPrefix = mainZsWithoutExt.split(os.sep)[0]
+
+        apiModule = apiModulePathPrefix + "." + apiModule
 
     if hasApi:
         return _importModule(apiDir, apiModule)
@@ -105,9 +110,13 @@ def _compileZserio(zsDef, apiDir, extraArgs=None):
                  "{sourceDir}".format(sourceDir=zsDef[0]),
                  zsDef[1]]
     zserioCmd += extraArgs
-    zserioResult = subprocess.call(zserioCmd)
-    if zserioResult != 0:
-        raise Exception("Zserio compilation failed!")
+    zserioResult = subprocess.run(zserioCmd, capture_output=True, text=True, check=False)
+    if zserioResult.stdout:
+        print(zserioResult.stdout)
+    if zserioResult.stderr:
+        print(zserioResult.stderr)
+    if zserioResult.returncode != 0:
+        raise ZserioCompilerError(zserioResult.stderr)
 
 def _importModule(path, modulePath):
     """
@@ -122,3 +131,26 @@ def _importModule(path, modulePath):
     api = importlib.import_module(modulePath)
     sys.path.remove(path)
     return api
+
+class ZserioCompilerError(Exception):
+    """
+    Zseiro compiler error.
+    """
+
+    def __init__(self, stderr):
+        """
+        Constructor.
+
+        :param stderr: Error output of the Zserio compiler.
+        """
+
+        super().__init__("Zserio compilation failed!")
+        self._stderr = stderr
+
+    @property
+    def stderr(self):
+        """
+        Error output of the Zserio compiler.
+        """
+
+        return self._stderr

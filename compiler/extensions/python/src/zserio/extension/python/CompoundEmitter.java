@@ -104,7 +104,7 @@ public class CompoundEmitter extends PythonDefaultEmitter
             throws ZserioExtensionException
     {
         ZserioToolPrinter.printError(compoundType.getLocation(),
-                "Property name clashing detected in '" + compoundType.getName() + "'! " +
+                "Property name error detected in '" + compoundType.getName() + "'! " +
                 "Consider to remove '-" + PythonExtensionParameters.OptionWithPythonProperties + "' option.");
 
         throw new ZserioExtensionException("Invalid property name '" + propertyName + "'! " + reason);
