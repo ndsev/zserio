@@ -33,10 +33,10 @@ jobs:
     - name: Install dependencies
       run: sudo apt-get install doxygen graphviz g++-multilib
     - name: Build Zserio
-      run: scripts/build.sh core python python_rt zserio
+      run: scripts/build.sh all-linux64 cpp_rt-linux32
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test.sh python
+          scripts/test.sh all-linux64 cpp-linux32
