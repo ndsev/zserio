@@ -20,15 +20,23 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install virtualenv
     - name: Workaround for 'Unable to connect to ppa.launchpad.net' failure during installation
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
     - name: Install dependencies
-      run: sudo apt-get install doxygen virtualenv graphviz g++-multilib
+      run: sudo apt-get install doxygen graphviz g++-multilib
     - name: Build Zserio
-      run: scripts/build.sh all-linux64 cpp_rt-linux32
+      run: scripts/build.sh core python python_rt zserio
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test.sh all-linux64 cpp-linux32
+          scripts/test.sh python
