@@ -161,8 +161,8 @@ check_python_version()
     local PYTHON_VERSION=$(${PYTHON_BIN} -V 2>&1 | cut -d\  -f 2)
     PYTHON_VERSION=(${PYTHON_VERSION//./ }) # python version as an array
     if [[ ${#PYTHON_VERSION[@]} -lt 2 || ${PYTHON_VERSION[0]} -lt 3 ]] ||
-       [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 5 ]] ; then
-        stderr_echo "Python 3.5+ is required! Current Python is '$(${PYTHON_BIN} -V 2>&1)'"
+       [[ ${PYTHON_VERSION[0]} -eq 3 && ${PYTHON_VERSION[1]} -lt 8 ]] ; then
+        stderr_echo "Python 3.8+ is required! Current Python is '$(${PYTHON_BIN} -V 2>&1)'"
         return 1
     fi
 
