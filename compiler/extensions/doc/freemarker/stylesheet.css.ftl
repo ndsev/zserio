@@ -199,11 +199,13 @@ h2 { /* symbols in package or doc headings */
   font-weight: bold;
 }
 
-.nav-link, a {
+.nav-link,
+a {
   color: ${linkColor};
 }
 
-.nav-link:hover, a:hover {
+.nav-link:hover,
+a:hover {
   color: ${linkHoverColor};
   text-decoration: none;
 }
@@ -330,6 +332,10 @@ h2 { /* symbols in package or doc headings */
 
 #main dd {
   padding-left: 1em;
+}
+
+#main code {
+  color: inherit; /* don't use pink color which is default from Bootstrap */
 }
 
 .deprecated {
