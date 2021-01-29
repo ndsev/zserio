@@ -136,7 +136,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         for i in range(NUM_ELEMENTS):
             data.append((i & 0x01) != 0)
 
-        return self.api.BoolIndexedOffsetArray.fromFields(offsets, SPACER_VALUE, data)
+        return self.api.BoolIndexedOffsetArray(offsets, SPACER_VALUE, data)
 
 NUM_ELEMENTS = 5
 

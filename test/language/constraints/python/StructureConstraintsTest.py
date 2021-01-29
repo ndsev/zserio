@@ -51,10 +51,10 @@ class StructureConstraintsTest(unittest.TestCase):
             structureConstraints.read(reader)
 
     def testWriteCorrectConstraints(self):
-        structureConstraints = self.api.StructureConstraints.fromFields(self.api.BasicColor.BLACK,
-                                                                        self.api.BasicColor.WHITE,
-                                                                        True,
-                                                                        self.api.ExtendedColor.PURPLE)
+        structureConstraints = self.api.StructureConstraints(self.api.BasicColor.BLACK,
+                                                             self.api.BasicColor.WHITE,
+                                                             True,
+                                                             self.api.ExtendedColor.PURPLE)
         writer = zserio.BitStreamWriter()
         structureConstraints.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())
@@ -65,28 +65,28 @@ class StructureConstraintsTest(unittest.TestCase):
         self.assertEqual(structureConstraints, readStructureConstraints)
 
     def testWriteWrongBlackConstraint(self):
-        structureConstraints = self.api.StructureConstraints.fromFields(self.api.BasicColor.RED,
-                                                                        self.api.BasicColor.WHITE,
-                                                                        True,
-                                                                        self.api.ExtendedColor.PURPLE)
+        structureConstraints = self.api.StructureConstraints(self.api.BasicColor.RED,
+                                                             self.api.BasicColor.WHITE,
+                                                             True,
+                                                             self.api.ExtendedColor.PURPLE)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
             structureConstraints.write(writer)
 
     def testWriteWrongWhiteConstraint(self):
-        structureConstraints = self.api.StructureConstraints.fromFields(self.api.BasicColor.BLACK,
-                                                                        self.api.BasicColor.RED,
-                                                                        True,
-                                                                        self.api.ExtendedColor.PURPLE)
+        structureConstraints = self.api.StructureConstraints(self.api.BasicColor.BLACK,
+                                                             self.api.BasicColor.RED,
+                                                             True,
+                                                             self.api.ExtendedColor.PURPLE)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
             structureConstraints.write(writer)
 
     def testWriteWrongPurpleConstraint(self):
-        structureConstraints = self.api.StructureConstraints.fromFields(self.api.BasicColor.BLACK,
-                                                                        self.api.BasicColor.WHITE,
-                                                                        True,
-                                                                        self.api.ExtendedColor.LIME)
+        structureConstraints = self.api.StructureConstraints(self.api.BasicColor.BLACK,
+                                                             self.api.BasicColor.WHITE,
+                                                             True,
+                                                             self.api.ExtendedColor.LIME)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
             structureConstraints.write(writer)

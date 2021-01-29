@@ -9,8 +9,8 @@ class InstantiateTemplateArgumentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_template_argument
 
     def testReadWrite(self):
-        instantiateTemplateArgument = self.api.InstantiateTemplateArgument.fromFields(
-            self.api.Other_Str.fromFields(self.api.Str.fromFields("test"))
+        instantiateTemplateArgument = self.api.InstantiateTemplateArgument(
+            self.api.Other_Str(self.api.Str("test"))
         )
 
         writer = zserio.BitStreamWriter()

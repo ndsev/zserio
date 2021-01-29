@@ -41,7 +41,7 @@ class BlobFieldWithChildrenInitializationTableTest(unittest.TestCase):
 
     def _createRow(self, i):
         testApi = self.api.blob_field_with_children_initialization_table
-        parameterizedArray = testApi.ParameterizedArray.fromFields(i, list(range(i)))
-        return (i, testApi.BlobWithChildrenInitialization.fromFields(i, parameterizedArray))
+        parameterizedArray = testApi.ParameterizedArray(i, list(range(i)))
+        return (i, testApi.BlobWithChildrenInitialization(i, parameterizedArray))
 
     NUM_ROWS = 5

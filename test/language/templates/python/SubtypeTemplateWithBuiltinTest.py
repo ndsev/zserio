@@ -9,8 +9,8 @@ class SubtypeTemplateWithBuiltinTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").subtype_template_with_builtin
 
     def testReadWrite(self):
-        subtypeTemplateWithBuiltin = self.api.SubtypeTemplateWithBuiltin.fromFields(
-            self.api.TestStructure_uint32.fromFields(13)
+        subtypeTemplateWithBuiltin = self.api.SubtypeTemplateWithBuiltin(
+            self.api.TestStructure_uint32(13)
         )
 
         writer = zserio.BitStreamWriter()

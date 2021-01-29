@@ -9,8 +9,8 @@ class StructTemplatedTemplateArgumentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").struct_templated_template_argument
 
     def testReadWrite(self):
-        structTemplatedTemplateArgument = self.api.StructTemplatedTemplateArgument.fromFields(
-            self.api.Field_Compound_uint32.fromFields(self.api.Compound_uint32.fromFields(42))
+        structTemplatedTemplateArgument = self.api.StructTemplatedTemplateArgument(
+            self.api.Field_Compound_uint32(self.api.Compound_uint32(42))
         )
 
         writer = zserio.BitStreamWriter()

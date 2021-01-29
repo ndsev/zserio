@@ -28,9 +28,9 @@ class StructureParamTest(unittest.TestCase):
         writer.writeBits(CONVERTED_CM_VALUE, 16)
 
     def _createMetresConverterCaller(self):
-        metresConverter = self.api.MetresConverter.fromFields(M_VALUE_TO_CONVERT, VALUE_A)
+        metresConverter = self.api.MetresConverter(metres_=M_VALUE_TO_CONVERT, a_=VALUE_A)
 
-        return self.api.MetresConverterCaller.fromFields(metresConverter, CONVERTED_CM_VALUE)
+        return self.api.MetresConverterCaller(metresConverter, CONVERTED_CM_VALUE)
 
 VALUE_A = 0xABCD
 M_VALUE_TO_CONVERT = 2

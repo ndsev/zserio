@@ -118,10 +118,10 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffsetStructureList = []
         for i in range(self.NUM_ELEMENTS):
             dataOffset = self.WRONG_DATA_OFFSET if createWrongOffsets else self.FIRST_DATA_OFFSET + i * 8
-            nestedOffsetStructureList.append(self.api.NestedOffsetStructure.fromFields(dataOffset, i))
+            nestedOffsetStructureList.append(self.api.NestedOffsetStructure(dataOffset, i))
 
-        nestedOffsetArrayStructure = self.api.NestedOffsetArrayStructure.fromFields(self.NUM_ELEMENTS,
-                                                                                    nestedOffsetStructureList)
+        nestedOffsetArrayStructure = self.api.NestedOffsetArrayStructure(self.NUM_ELEMENTS,
+                                                                         nestedOffsetStructureList)
 
         nestedOffsetUnion = self.api.NestedOffsetUnion()
         nestedOffsetUnion.setNestedOffsetArrayStructure(nestedOffsetArrayStructure)
@@ -130,8 +130,8 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffsetChoice.setNestedOffsetUnion(nestedOffsetUnion)
 
         terminatorOffset = self.WRONG_TERMINATOR_OFFSET if createWrongOffsets else self.TERMINATOR_OFFSET
-        nestedOffset = self.api.NestedOffset.fromFields(terminatorOffset, self.BOOL_VALUE, nestedOffsetChoice,
-                                                        self.TERMINATOR_VALUE)
+        nestedOffset = self.api.NestedOffset(terminatorOffset, self.BOOL_VALUE, nestedOffsetChoice,
+                                             self.TERMINATOR_VALUE)
 
         return nestedOffset
 

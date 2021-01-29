@@ -24,7 +24,7 @@ class UInt8RangeCheckTest(unittest.TestCase):
             self._checkUInt8Value(UINT8_UPPER_BOUND + 1)
 
     def _checkUInt8Value(self, value):
-        uint8RangeCheckCompound = self.api.UInt8RangeCheckCompound.fromFields(value)
+        uint8RangeCheckCompound = self.api.UInt8RangeCheckCompound(value)
         writer = zserio.BitStreamWriter()
         uint8RangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

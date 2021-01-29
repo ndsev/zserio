@@ -42,14 +42,14 @@ class UInt64OffsetTest(unittest.TestCase):
             uint64Offset.read(reader)
 
     def testWrite(self):
-        uint64Offset = self.api.UInt64Offset.fromFields(0, list(range(self.ARRAY_SIZE)), 0)
+        uint64Offset = self.api.UInt64Offset(0, list(range(self.ARRAY_SIZE)), 0)
         writer = zserio.BitStreamWriter()
         uint64Offset.write(writer)
         self.assertEqual(self.OFFSET, uint64Offset.getOffset())
         self.assertEqual(self.BIT_SIZE / 8, len(writer.getByteArray()))
 
     def testWriteWithPosition(self):
-        uint64Offset = self.api.UInt64Offset.fromFields(0, list(range(self.ARRAY_SIZE)), 0)
+        uint64Offset = self.api.UInt64Offset(0, list(range(self.ARRAY_SIZE)), 0)
         writer = zserio.BitStreamWriter()
         writer.writeBits(0, 3)
         uint64Offset.write(writer)
@@ -57,7 +57,7 @@ class UInt64OffsetTest(unittest.TestCase):
         self.assertEqual(self.BIT_SIZE / 8 + 1, len(writer.getByteArray()))
 
     def testWriteWrongOffsets(self):
-        uint64Offset = self.api.UInt64Offset.fromFields(self.WRONG_OFFSET, list(range(self.ARRAY_SIZE)), 0)
+        uint64Offset = self.api.UInt64Offset(self.WRONG_OFFSET, list(range(self.ARRAY_SIZE)), 0)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
             uint64Offset.write(writer, callInitializeOffsets=False)

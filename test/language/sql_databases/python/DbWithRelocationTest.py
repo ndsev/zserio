@@ -55,12 +55,12 @@ class DbWithRelocationTest(unittest.TestCase):
 
         # write to relocated table
         updateTileId = 1
-        writtenRows = [(updateTileId, self.api.Tile.fromFields(ord('a'), ord('A')))]
+        writtenRows = [(updateTileId, self.api.Tile(ord('a'), ord('A')))]
         relocatedTable = self._americaDb.getSlovakia()
         relocatedTable.write(writtenRows)
 
         # update it
-        updatedRows = [(updateTileId, self.api.Tile.fromFields(ord('b'), ord('B')))]
+        updatedRows = [(updateTileId, self.api.Tile(ord('b'), ord('B')))]
         updateCondition = "tileId=" + str(updateTileId)
         relocatedTable.update(updatedRows[0], updateCondition)
 
@@ -81,12 +81,12 @@ class DbWithRelocationTest(unittest.TestCase):
 
         # write to relocated table
         updateTileId = 1
-        writtenRows = [(updateTileId, self.api.Tile.fromFields(ord('c'), ord('C')))]
+        writtenRows = [(updateTileId, self.api.Tile(ord('c'), ord('C')))]
         relocatedTable = self._americaDb.getCzechia()
         relocatedTable.write(writtenRows)
 
         # update it
-        updatedRows = [(updateTileId, self.api.Tile.fromFields(ord('d'), ord('D')))]
+        updatedRows = [(updateTileId, self.api.Tile(ord('d'), ord('D')))]
         updateCondition = "tileId=" + str(updateTileId)
         relocatedTable.update(updatedRows[0], updateCondition)
 

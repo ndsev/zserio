@@ -95,13 +95,13 @@ class ExplicitEnumParamTest(unittest.TestCase):
 
     def _createEnumParamTableRow(self, rowId, name):
         values1 = [rowId for i in range(self.ENUM_PARAM_TABLE_COUNT1.value)]
-        testBlob1 = self.api.explicit_enum_param.TestBlob.fromFields(self.ENUM_PARAM_TABLE_COUNT1, values1)
+        testBlob1 = self.api.explicit_enum_param.TestBlob(self.ENUM_PARAM_TABLE_COUNT1, values1)
 
         values2 = [rowId + 1 for i in range(self.ENUM_PARAM_TABLE_COUNT2.value)]
-        testBlob2 = self.api.explicit_enum_param.TestBlob.fromFields(self.ENUM_PARAM_TABLE_COUNT2, values2)
+        testBlob2 = self.api.explicit_enum_param.TestBlob(self.ENUM_PARAM_TABLE_COUNT2, values2)
 
         values3 = [rowId + 2 for i in range(self.ENUM_PARAM_TABLE_COUNT1.value)]
-        testBlob3 = self.api.explicit_enum_param.TestBlob.fromFields(self.ENUM_PARAM_TABLE_COUNT1, values3)
+        testBlob3 = self.api.explicit_enum_param.TestBlob(self.ENUM_PARAM_TABLE_COUNT1, values3)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
 

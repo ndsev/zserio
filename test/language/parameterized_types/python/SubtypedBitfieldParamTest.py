@@ -20,11 +20,11 @@ class SubtypedBitfieldParamTest(unittest.TestCase):
         self.assertEqual(subtypedBitfieldParamHolder, readSubtypedBitfieldParamHolder)
 
     def _createSubtypedBitfieldParamHolder(self):
-        subtypedBitfieldParam = self.api.SubtypedBitfieldParam.fromFields(
+        subtypedBitfieldParam = self.api.SubtypedBitfieldParam(
             self.SUBTYPED_BITFIELD_PARAM, self.SUBTYPED_BITFIELD_PARAM_VALUE,
             self.SUBTYPED_BITFIELD_PARAM_EXTRA_VALUE)
 
-        return self.api.SubtypedBitfieldParamHolder.fromFields(subtypedBitfieldParam)
+        return self.api.SubtypedBitfieldParamHolder(subtypedBitfieldParam)
 
     def _checkSubtypedBitfieldParamHolderInStream(self, stream, subtypedBitfieldParamHolder):
         subtypedBitfieldParam = subtypedBitfieldParamHolder.getSubtypedBitfieldParam()

@@ -8,19 +8,24 @@ class OptionalRecursionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "optional_members.zs").optional_recursion
 
-    def testParamConstructor(self):
-        emptyBlock1 = self.api.Block(0)
-        self.assertEqual(0, emptyBlock1.getByteCount())
-        self.assertEqual(0, len(emptyBlock1.getDataBytes()))
-        self.assertEqual(0, emptyBlock1.getBlockTerminator())
-        self.assertEqual(None, emptyBlock1.getNextData())
+    def testConstructor(self):
+        emptyBlock = self.api.Block(0)
+        self.assertEqual(0, emptyBlock.getByteCount())
+        self.assertEqual(0, len(emptyBlock.getDataBytes()))
+        self.assertEqual(0, emptyBlock.getBlockTerminator())
+        self.assertEqual(None, emptyBlock.getNextData())
 
-    def testFromFields(self):
-        emptyBlock1 = self.api.Block.fromFields(0, [], 0, None)
-        self.assertEqual(0, emptyBlock1.getByteCount())
-        self.assertEqual(0, len(emptyBlock1.getDataBytes()))
-        self.assertEqual(0, emptyBlock1.getBlockTerminator())
-        self.assertEqual(None, emptyBlock1.getNextData())
+        emptyBlock = self.api.Block(0, [], 0, None)
+        self.assertEqual(0, emptyBlock.getByteCount())
+        self.assertEqual(0, len(emptyBlock.getDataBytes()))
+        self.assertEqual(0, emptyBlock.getBlockTerminator())
+        self.assertEqual(None, emptyBlock.getNextData())
+
+        emptyBlock = self.api.Block(byteCount_=0, dataBytes_=[], blockTerminator_=0, nextData_=None)
+        self.assertEqual(0, emptyBlock.getByteCount())
+        self.assertEqual(0, len(emptyBlock.getDataBytes()))
+        self.assertEqual(0, emptyBlock.getBlockTerminator())
+        self.assertEqual(None, emptyBlock.getNextData())
 
     def testEq(self):
         emptyBlock1 = self._createEmptyBlock()
@@ -99,15 +104,15 @@ class OptionalRecursionTest(unittest.TestCase):
         self.assertEqual(block12, readBlock12)
 
     def _createEmptyBlock(self):
-        return self.api.Block.fromFields(0, None, 0, None)
+        return self.api.Block(0, None, 0, None)
 
     def _createBlock(self, blockData):
-        return self.api.Block.fromFields(len(blockData), blockData, 0, None)
+        return self.api.Block(len(blockData), blockData, 0, None)
 
     def _createBlock12(self, block1Data, block2Data):
         block2 = self._createBlock(block2Data)
 
-        return self.api.Block.fromFields(len(block1Data), block1Data, len(block2Data), block2)
+        return self.api.Block(len(block1Data), block1Data, len(block2Data), block2)
 
     @staticmethod
     def _getBlockBitSize(blockData):

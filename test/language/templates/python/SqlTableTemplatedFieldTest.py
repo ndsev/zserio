@@ -18,13 +18,13 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
         sqlTableTemplatedFieldDb.createSchema()
 
         uint32Table = sqlTableTemplatedFieldDb.getUint32Table()
-        uint32TableRows = [(0, self.api.Data_uint32.fromFields(42))]
+        uint32TableRows = [(0, self.api.Data_uint32(42))]
         uint32Table.write(uint32TableRows)
 
         unionTable = sqlTableTemplatedFieldDb.getUnionTable()
         union1 = self.api.Union()
         union1.setValueString("string")
-        unionTableRows = [(13, self.api.Data_Union.fromFields(union1))]
+        unionTableRows = [(13, self.api.Data_Union(union1))]
         unionTable.write(unionTableRows)
 
         sqlTableTemplatedFieldDb.close()

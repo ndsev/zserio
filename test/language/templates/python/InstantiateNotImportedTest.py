@@ -9,9 +9,9 @@ class InstantiateNotImportedTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_not_imported
 
     def testReadWrite(self):
-        instantiateNotImported = self.api.InstantiateNotImported.fromFields(
-            self.api.pkg.Test_uint32.fromFields(13),
-            self.api.pkg.Test_string.fromFields("test")
+        instantiateNotImported = self.api.InstantiateNotImported(
+            self.api.pkg.Test_uint32(13),
+            self.api.pkg.Test_string("test")
         )
 
         writer = zserio.BitStreamWriter()

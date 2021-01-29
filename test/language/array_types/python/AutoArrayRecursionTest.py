@@ -64,10 +64,10 @@ class AutoArrayRecursionTest(unittest.TestCase):
     def _createAutoArrayRecursion(self, numElements):
         autoArray = []
         for i in range(1, numElements + 1):
-            element = self.api.AutoArrayRecursion.fromFields(i, [])
+            element = self.api.AutoArrayRecursion(i, [])
             autoArray.append(element)
 
-        return self.api.AutoArrayRecursion.fromFields(0, autoArray)
+        return self.api.AutoArrayRecursion(0, autoArray)
 
     def _checkAutoArrayRecursion(self, autoArrayRecursion, numElements):
         self.assertEqual(0, autoArrayRecursion.getId())

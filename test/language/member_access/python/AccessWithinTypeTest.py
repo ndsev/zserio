@@ -64,11 +64,11 @@ class AccessWithinTypeTest(unittest.TestCase):
             self.assertTrue(sentences[i] == expectedSentence)
 
     def _createMessage(self, numSentences, wrongArrayLength):
-        header = self.api.Header.fromFields(self.VERSION_VALUE, numSentences)
+        header = self.api.Header(self.VERSION_VALUE, numSentences)
         numStrings = numSentences - 1 if wrongArrayLength else numSentences
         sentences = [self.SENTENCE_PREFIX + str(i) for i in range(numStrings)]
 
-        return self.api.Message.fromFields(header, sentences)
+        return self.api.Message(header, sentences)
 
     VERSION_VALUE = 0xAB
     SENTENCE_PREFIX = "This is sentence #"

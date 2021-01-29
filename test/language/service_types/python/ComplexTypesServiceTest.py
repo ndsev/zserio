@@ -55,7 +55,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
             @staticmethod
             def _getLengthImpl(request, _context):
                 requestData = request.getData()
-                lengthResponse = cls.api.LengthResponse.fromFields(len(requestData.getData()))
+                lengthResponse = cls.api.LengthResponse(len(requestData.getData()))
                 return lengthResponse
 
             @staticmethod
@@ -65,7 +65,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
                     rgbModel = element.getRgb()
                     rgb = (rgbModel.getRed(), rgbModel.getGreen(), rgbModel.getBlue())
                     cmyk = _convertRgbToCmyk(rgb)
-                    cmykModel = cls.api.CMYKModel.fromFields(cmyk[0], cmyk[1], cmyk[2], cmyk[3])
+                    cmykModel = cls.api.CMYKModel(cmyk[0], cmyk[1], cmyk[2], cmyk[3])
                     cmykData.append(cmykModel)
                 response.getData().setCmykData(cmykData)
 
@@ -77,7 +77,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
                     cmyk = (cmykModel.getCyan(), cmykModel.getMagenta(), cmykModel.getYellow(),
                             cmykModel.getKey())
                     rgb = _convertCmykToRgb(cmyk)
-                    rgbModel = cls.api.RGBModel.fromFields(rgb[0], rgb[1], rgb[2])
+                    rgbModel = cls.api.RGBModel(rgb[0], rgb[1], rgb[2])
                     rgbData.append(rgbModel)
                 response.getData().setRgbData(rgbData)
 
@@ -101,13 +101,13 @@ class ComplexTypesServiceTest(unittest.TestCase):
         data = []
         for i in range(length):
             choice = self.api.ColorModelChoice(self.api.ColorModel.RGB)
-            choice.setRgb(self.api.RGBModel.fromFields(RGB_VALUES[i % 3][0],
-                                                       RGB_VALUES[i % 3][1],
-                                                       RGB_VALUES[i % 3][2]))
+            choice.setRgb(self.api.RGBModel(RGB_VALUES[i % 3][0],
+                                            RGB_VALUES[i % 3][1],
+                                            RGB_VALUES[i % 3][2]))
             data.append(choice)
 
-        requestData = self.api.RequestData.fromFields(self.api.ColorModel.RGB, offsets, data)
-        request = self.api.Request.fromFields(self.api.ColorModel.RGB, requestData)
+        requestData = self.api.RequestData(self.api.ColorModel.RGB, offsets, data)
+        request = self.api.Request(self.api.ColorModel.RGB, requestData)
 
         self.assertEqual(length, self.client.getLengthMethod(request).getLength())
 
@@ -127,14 +127,14 @@ class ComplexTypesServiceTest(unittest.TestCase):
         data = []
         for i in range(length):
             choice = self.api.ColorModelChoice(self.api.ColorModel.CMYK)
-            choice.setCmyk(self.api.CMYKModel.fromFields(CMYK_VALUES[i % 3][0],
-                                                         CMYK_VALUES[i % 3][1],
-                                                         CMYK_VALUES[i % 3][2],
-                                                         CMYK_VALUES[i % 3][3]))
+            choice.setCmyk(self.api.CMYKModel(CMYK_VALUES[i % 3][0],
+                                              CMYK_VALUES[i % 3][1],
+                                              CMYK_VALUES[i % 3][2],
+                                              CMYK_VALUES[i % 3][3]))
             data.append(choice)
 
-        requestData = self.api.RequestData.fromFields(self.api.ColorModel.CMYK, offsets, data)
-        request = self.api.Request.fromFields(self.api.ColorModel.CMYK, requestData)
+        requestData = self.api.RequestData(self.api.ColorModel.CMYK, offsets, data)
+        request = self.api.Request(self.api.ColorModel.CMYK, requestData)
 
         self.assertEqual(length, self.client.getLengthMethod(request).getLength())
 

@@ -9,9 +9,9 @@ class SubtypeTemplateWithCompoundTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").subtype_template_with_compound
 
     def testReadWrite(self):
-        subtypeTemplateWithCompound = self.api.SubtypeTemplateWithCompound.fromFields(
-            self.api.Compound.fromFields(13),
-            self.api.TemplateCompound_Compound.fromFields(self.api.Compound.fromFields(42))
+        subtypeTemplateWithCompound = self.api.SubtypeTemplateWithCompound(
+            self.api.Compound(13),
+            self.api.TemplateCompound_Compound(self.api.Compound(42))
         )
 
         writer = zserio.BitStreamWriter()

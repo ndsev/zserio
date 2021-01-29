@@ -9,8 +9,8 @@ class InstantiateTypeOnParameterizedTemplateTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_on_parameterized_template
 
     def testReadWrite(self):
-        instantiateTypeOnParameterizedTemplate = self.api.InstantiateTypeOnParameterizedTemplate.fromFields(
-            2, self.api.TestP.fromFields(2, self.api.Parameterized.fromFields(2, [13, 42]))
+        instantiateTypeOnParameterizedTemplate = self.api.InstantiateTypeOnParameterizedTemplate(
+            2, self.api.TestP(2, self.api.Parameterized(2, [13, 42]))
         )
 
         writer = zserio.BitStreamWriter()

@@ -8,19 +8,21 @@ class OneStringStructureTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "structure_types.zs").one_string_structure
 
-    def testEmptyConstructor(self):
+    def testConstructor(self):
         oneStringStructure = self.api.OneStringStructure()
         self.assertEqual("", oneStringStructure.getOneString())
+
+        oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
+        self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
+
+        oneStringStructure = self.api.OneStringStructure(oneString_=self.ONE_STRING)
+        self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         OneStringStructureTest._writeOneStringStructureToStream(writer, self.ONE_STRING)
         reader = zserio.BitStreamReader(writer.getByteArray())
         oneStringStructure = self.api.OneStringStructure.fromReader(reader)
-        self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
-
-    def testFromFields(self):
-        oneStringStructure = self.api.OneStringStructure.fromFields(self.ONE_STRING)
         self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
 
     def testEq(self):
@@ -51,17 +53,17 @@ class OneStringStructureTest(unittest.TestCase):
         self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
 
     def testBitSizeOf(self):
-        oneStringStructure = self.api.OneStringStructure.fromFields(self.ONE_STRING)
+        oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
         self.assertEqual(self.ONE_STRING_STRUCTURE_BIT_SIZE, oneStringStructure.bitSizeOf())
 
     def testInitializeOffsets(self):
-        oneStringStructure = self.api.OneStringStructure.fromFields(self.ONE_STRING)
+        oneStringStructure = self.api.OneStringStructure(oneString_=self.ONE_STRING)
         bitPosition = 1
         self.assertEqual(self.ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition,
                          oneStringStructure.initializeOffsets(bitPosition))
 
     def testReadWrite(self):
-        oneStringStructure = self.api.OneStringStructure.fromFields(self.ONE_STRING)
+        oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
         writer = zserio.BitStreamWriter()
         oneStringStructure.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

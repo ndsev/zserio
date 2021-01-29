@@ -9,9 +9,7 @@ class InstantiateOnlyNestedTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_only_nested
 
     def testReadWrite(self):
-        instantiateOnlyNested = self.api.InstantiateOnlyNested.fromFields(
-            self.api.pkg.Test_uint32.fromFields(self.api.N32.fromFields(13))
-        )
+        instantiateOnlyNested = self.api.InstantiateOnlyNested(self.api.pkg.Test_uint32(self.api.N32(13)))
 
         writer = zserio.BitStreamWriter()
         instantiateOnlyNested.write(writer)

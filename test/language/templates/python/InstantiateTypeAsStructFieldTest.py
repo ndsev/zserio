@@ -9,9 +9,7 @@ class InstantiateTypeAsStructFieldTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_as_struct_field
 
     def testReadWrite(self):
-        instantiateTypeAsStructField = self.api.InstantiateTypeAsStructField.fromFields(
-            self.api.Test32.fromFields(13)
-        )
+        instantiateTypeAsStructField = self.api.InstantiateTypeAsStructField(self.api.Test32(13))
 
         writer = zserio.BitStreamWriter()
         instantiateTypeAsStructField.write(writer)

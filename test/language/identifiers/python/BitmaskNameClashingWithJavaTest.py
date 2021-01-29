@@ -12,15 +12,11 @@ class BitmaskNameClashingWithJavaTest(unittest.TestCase):
         self.assertIsNone(bitmaskNameClashingWithJava.getStringField())
 
     def testBitSizeOf(self):
-        bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava.fromFields(
-            self.api.String.Values.WRITE
-        )
+        bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava(self.api.String.Values.WRITE)
         self.assertEqual(self.BIT_SIZE, bitmaskNameClashingWithJava.bitSizeOf())
 
     def testStr(self):
-        bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava.fromFields(
-            self.api.String.Values.READ
-        )
+        bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava(self.api.String.Values.READ)
         self.assertEqual("1[READ]", str(bitmaskNameClashingWithJava.getStringField()))
 
     BIT_SIZE = 8

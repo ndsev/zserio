@@ -136,7 +136,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         for i in range(NUM_ELEMENTS):
             data.append(i)
 
-        return self.api.Int14IndexedOffsetArray.fromFields(offsets, SPACER_VALUE, data)
+        return self.api.Int14IndexedOffsetArray(offsets, SPACER_VALUE, data)
 
 NUM_ELEMENTS = 5
 

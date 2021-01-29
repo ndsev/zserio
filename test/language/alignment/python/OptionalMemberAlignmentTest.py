@@ -9,15 +9,15 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "alignment.zs").optional_member_alignment
 
     def testBitSizeOfWithOptional(self):
-        optionalMemberAlignment = self.api.OptionalMemberAlignment.fromFields(True, 0x4433, 0x1122)
+        optionalMemberAlignment = self.api.OptionalMemberAlignment(True, 0x4433, 0x1122)
         self.assertEqual(self.WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE, optionalMemberAlignment.bitSizeOf())
 
     def testBitSizeOfWithoutOptional(self):
-        optionalMemberAlignment = self.api.OptionalMemberAlignment.fromFields(False, None, 0x7624)
+        optionalMemberAlignment = self.api.OptionalMemberAlignment(False, None, 0x7624)
         self.assertEqual(self.WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE, optionalMemberAlignment.bitSizeOf())
 
     def testInitializeOffsetsWithOptional(self):
-        optionalMemberAlignment = self.api.OptionalMemberAlignment.fromFields(True, 0x1111, 0x3333)
+        optionalMemberAlignment = self.api.OptionalMemberAlignment(True, 0x1111, 0x3333)
         for bitPosition in range(32):
             self.assertEqual(self.WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
                              optionalMemberAlignment.initializeOffsets(bitPosition))
@@ -27,7 +27,7 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
                          optionalMemberAlignment.initializeOffsets(bitPosition))
 
     def testInitializeOffsetsWithoutOptional(self):
-        optionalMemberAlignment = self.api.OptionalMemberAlignment.fromFields(False, None, 0x3334)
+        optionalMemberAlignment = self.api.OptionalMemberAlignment(field_=0x3334)
         bitPosition = 1
         self.assertEqual(self.WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
                          optionalMemberAlignment.initializeOffsets(bitPosition))
@@ -56,7 +56,7 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
         hasOptional = True
         optionalField = 0x9ADB
         field = 0x8ACD
-        optionalMemberAlignment = self.api.OptionalMemberAlignment.fromFields(hasOptional, optionalField, field)
+        optionalMemberAlignment = self.api.OptionalMemberAlignment(hasOptional, optionalField, field)
         writer = zserio.BitStreamWriter()
         optionalMemberAlignment.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())
@@ -67,7 +67,7 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
     def testWriteWithoutOptional(self):
         hasOptional = False
         field = 0x7ACF
-        optionalMemberAlignment = self.api.OptionalMemberAlignment.fromFields(hasOptional, None, field)
+        optionalMemberAlignment = self.api.OptionalMemberAlignment(hasOptional_=hasOptional, field_=field)
         writer = zserio.BitStreamWriter()
         optionalMemberAlignment.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

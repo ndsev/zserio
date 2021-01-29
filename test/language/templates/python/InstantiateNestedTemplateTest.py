@@ -9,9 +9,7 @@ class InstantiateNestedTemplateTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_nested_template
 
     def testReadWrite(self):
-        instantiateNestedTemplate = self.api.InstantiateNestedTemplate.fromFields(
-            self.api.TStr.fromFields(self.api.NStr.fromFields("test"))
-        )
+        instantiateNestedTemplate = self.api.InstantiateNestedTemplate(self.api.TStr(self.api.NStr("test")))
 
         writer = zserio.BitStreamWriter()
         instantiateNestedTemplate.write(writer)

@@ -76,8 +76,8 @@ class ColumnParamTableTest(unittest.TestCase):
         return rows
 
     def _createColumnParamTableRow(self, blobId, name):
-        blob = self.api.column_param_table.ParameterizedBlob.fromFields(blobId // 2,
-                                                                        self.PARAMETERIZED_BLOB_VALUE)
+        blob = self.api.column_param_table.ParameterizedBlob(param_=blobId // 2,
+                                                             value_=self.PARAMETERIZED_BLOB_VALUE)
 
         return (blobId, name, blob)
 

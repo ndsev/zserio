@@ -98,18 +98,15 @@ class MultipleExplicitParamsTest(unittest.TestCase):
     def _createMultipleParamsTableRow(self, rowId, name):
         values8 = [rowId for i in range(MULTIPLE_PARAMS_TABLE_COUNT1)]
         values16 = [rowId for i in range(MULTIPLE_PARAMS_TABLE_COUNT2)]
-        testBlob1 = self.api.multiple_explicit_params.TestBlob.fromFields(len(values8), len(values16),
-                                                                          values8, values16)
+        testBlob1 = self.api.multiple_explicit_params.TestBlob(len(values8), len(values16), values8, values16)
 
         values8 = [rowId + 1 for i in range(MULTIPLE_PARAMS_TABLE_COUNT)]
         values16 = [rowId + 1 for i in range(MULTIPLE_PARAMS_TABLE_COUNT)]
-        testBlob2 = self.api.multiple_explicit_params.TestBlob.fromFields(len(values8), len(values16),
-                                                                          values8, values16)
+        testBlob2 = self.api.multiple_explicit_params.TestBlob(len(values8), len(values16), values8, values16)
 
         values8 = [rowId + 2 for i in range(MULTIPLE_PARAMS_TABLE_COUNT1)]
         values16 = [rowId + 2 for i in range(MULTIPLE_PARAMS_TABLE_COUNT1)]
-        testBlob3 = self.api.multiple_explicit_params.TestBlob.fromFields(len(values8), len(values16),
-                                                                          values8, values16)
+        testBlob3 = self.api.multiple_explicit_params.TestBlob(len(values8), len(values16), values8, values16)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
 

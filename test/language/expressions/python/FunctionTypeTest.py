@@ -8,7 +8,7 @@ class FunctionTypeTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").function_type
 
     def testBitSizeOfWithOptional(self):
-        functionTypeExpression = self.api.FunctionTypeExpression.fromFields(self.api.Color.RED, True)
+        functionTypeExpression = self.api.FunctionTypeExpression(self.api.Color.RED, True)
         self.assertEqual(self.FUNCTION_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL,
                          functionTypeExpression.bitSizeOf())
 

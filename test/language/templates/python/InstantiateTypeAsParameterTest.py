@@ -9,9 +9,9 @@ class InstantiateTypeAsParameterTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_type_as_parameter
 
     def testReadWrite(self):
-        param = self.api.P32.fromFields(2)
-        instantiateTypeAsParameter = self.api.InstantiateTypeAsParameter.fromFields(
-            param, self.api.Parameterized_P32.fromFields(param, [13, 42])
+        param = self.api.P32(2)
+        instantiateTypeAsParameter = self.api.InstantiateTypeAsParameter(
+            param, self.api.Parameterized_P32(param, [13, 42])
         )
 
         writer = zserio.BitStreamWriter()

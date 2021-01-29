@@ -24,15 +24,15 @@ class ArrayElementParamTest(unittest.TestCase):
         blockList = []
         for i in range(self.NUM_BLOCKS):
             numItems = i + 1
-            blockHeader = self.api.BlockHeader.fromFields(numItems, 0)
+            blockHeader = self.api.BlockHeader(numItems, 0)
             blockHeaderList.append(blockHeader)
             itemList = []
             for j in range(numItems):
                 itemList.append(j * 2)
 
-            blockList.append(self.api.Block.fromFields(blockHeader, itemList))
+            blockList.append(self.api.Block(blockHeader, itemList))
 
-        return self.api.Database.fromFields(self.NUM_BLOCKS, blockHeaderList, blockList)
+        return self.api.Database(self.NUM_BLOCKS, blockHeaderList, blockList)
 
     def _checkDatabaseInStream(self, reader, database):
         numBlocks = database.getNumBlocks()

@@ -91,9 +91,9 @@ class BlobParamTableTest(unittest.TestCase):
         return rows
 
     def _createBlobParamTableRow(self, blobId, name):
-        parameters = self.api.blob_param_table.Parameters.fromFields(self.PARAMETERS_COUNT)
+        parameters = self.api.blob_param_table.Parameters(self.PARAMETERS_COUNT)
         array = list(range(self.PARAMETERS_COUNT))
-        blob = self.api.blob_param_table.ParameterizedBlob.fromFields(parameters, array)
+        blob = self.api.blob_param_table.ParameterizedBlob(parameters, array)
 
         return (blobId, name, parameters, blob)
 

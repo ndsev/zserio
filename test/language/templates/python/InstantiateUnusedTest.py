@@ -10,7 +10,7 @@ class InstantiateUnusedTest(unittest.TestCase):
 
     def testReadWrite(self):
         # check that unused template is instantiated via the instantiate command
-        u32 = self.api.U32.fromFields(13)
+        u32 = self.api.U32(13)
 
         writer = zserio.BitStreamWriter()
         u32.write(writer)

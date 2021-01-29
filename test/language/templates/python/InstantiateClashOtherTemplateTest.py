@@ -9,8 +9,8 @@ class InstantiateClashOtherTemplateTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_clash_other_template
 
     def testReadWrite(self):
-        instantiateClashOtherTemplate = self.api.InstantiateClashOtherTemplate.fromFields(
-            self.api.Test_uint32_99604043.fromFields(13))
+        instantiateClashOtherTemplate = self.api.InstantiateClashOtherTemplate(
+            self.api.Test_uint32_99604043(13))
 
         writer = zserio.BitStreamWriter()
         instantiateClashOtherTemplate.write(writer)

@@ -8,11 +8,24 @@ class SimpleStructureTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "structure_types.zs").simple_structure
 
-    def testEmptyConstructor(self):
+    def testConstructor(self):
         simpleStructure = self.api.SimpleStructure()
         self.assertEqual(0, simpleStructure.getNumberA())
         self.assertEqual(0, simpleStructure.getNumberB())
         self.assertEqual(0, simpleStructure.getNumberC())
+
+        numberA = 0x01
+        numberB = 0xAA
+        numberC = 0x55
+        simpleStructure = self.api.SimpleStructure(numberA, numberB, numberC)
+        self.assertEqual(numberA, simpleStructure.getNumberA())
+        self.assertEqual(numberB, simpleStructure.getNumberB())
+        self.assertEqual(numberC, simpleStructure.getNumberC())
+
+        simpleStructure = self.api.SimpleStructure(numberB_=numberB, numberA_=numberA, numberC_=numberC)
+        self.assertEqual(numberA, simpleStructure.getNumberA())
+        self.assertEqual(numberB, simpleStructure.getNumberB())
+        self.assertEqual(numberC, simpleStructure.getNumberC())
 
     def testFromReader(self):
         numberA = 0x07
@@ -22,15 +35,6 @@ class SimpleStructureTest(unittest.TestCase):
         SimpleStructureTest._writeSimpleStructureToStream(writer, numberA, numberB, numberC)
         reader = zserio.BitStreamReader(writer.getByteArray())
         simpleStructure = self.api.SimpleStructure.fromReader(reader)
-        self.assertEqual(numberA, simpleStructure.getNumberA())
-        self.assertEqual(numberB, simpleStructure.getNumberB())
-        self.assertEqual(numberC, simpleStructure.getNumberC())
-
-    def testFromFields(self):
-        numberA = 0x01
-        numberB = 0xAA
-        numberC = 0x55
-        simpleStructure = self.api.SimpleStructure.fromFields(numberA, numberB, numberC)
         self.assertEqual(numberA, simpleStructure.getNumberA())
         self.assertEqual(numberB, simpleStructure.getNumberB())
         self.assertEqual(numberC, simpleStructure.getNumberC())
@@ -95,14 +99,14 @@ class SimpleStructureTest(unittest.TestCase):
         numberA = 0x00
         numberB = 0x01
         numberC = 0x02
-        simpleStructure = self.api.SimpleStructure.fromFields(numberA, numberB, numberC)
+        simpleStructure = self.api.SimpleStructure(numberA, numberB, numberC)
         self.assertEqual(self.SIMPLE_STRUCTURE_BIT_SIZE, simpleStructure.bitSizeOf())
 
     def testInitializeOffsets(self):
         numberA = 0x05
         numberB = 0x10
         numberC = 0x44
-        simpleStructure = self.api.SimpleStructure.fromFields(numberA, numberB, numberC)
+        simpleStructure = self.api.SimpleStructure(numberA_=numberA, numberB_=numberB, numberC_=numberC)
         bitPosition = 1
         self.assertEqual(self.SIMPLE_STRUCTURE_BIT_SIZE + bitPosition,
                          simpleStructure.initializeOffsets(bitPosition))
@@ -111,7 +115,7 @@ class SimpleStructureTest(unittest.TestCase):
         numberA = 0x07
         numberB = 0x22
         numberC = 0x33
-        simpleStructure = self.api.SimpleStructure.fromFields(numberA, numberB, numberC)
+        simpleStructure = self.api.SimpleStructure(numberA, numberC_=numberC, numberB_=numberB)
         writer = zserio.BitStreamWriter()
         simpleStructure.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

@@ -9,9 +9,9 @@ class InstantiateViaImportTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_via_import
 
     def testReadWrite(self):
-        instantiateViaImport = self.api.InstantiateViaImport.fromFields(
-            self.api.pkg.U32.fromFields(13),
-            self.api.pkg.Test_string.fromFields("test")
+        instantiateViaImport = self.api.InstantiateViaImport(
+            self.api.pkg.U32(13),
+            self.api.pkg.Test_string("test")
         )
 
         writer = zserio.BitStreamWriter()

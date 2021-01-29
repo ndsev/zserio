@@ -136,7 +136,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         for i in range(NUM_ELEMENTS):
             data.append(i % 64)
 
-        return self.api.Bit5IndexedOffsetArray.fromFields(offsets, SPACER_VALUE, data)
+        return self.api.Bit5IndexedOffsetArray(offsets, SPACER_VALUE, data)
 
 NUM_ELEMENTS = 5
 

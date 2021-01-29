@@ -24,7 +24,7 @@ class Bit4RangeCheckTest(unittest.TestCase):
             self._checkBit4Value(BIT4_UPPER_BOUND + 1)
 
     def _checkBit4Value(self, value):
-        bit4RangeCheckCompound = self.api.Bit4RangeCheckCompound.fromFields(value)
+        bit4RangeCheckCompound = self.api.Bit4RangeCheckCompound(value_=value)
         writer = zserio.BitStreamWriter()
         bit4RangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

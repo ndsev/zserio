@@ -9,12 +9,10 @@ class StructTemplatedFieldTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").struct_templated_field
 
     def testReadWrite(self):
-        structTemplatedField = self.api.StructTemplatedField.fromFields(
-            self.api.Field_uint32.fromFields(13),
-            self.api.Field_Compound.fromFields(
-                self.api.Compound.fromFields(42)
-            ),
-            self.api.Field_string.fromFields("string")
+        structTemplatedField = self.api.StructTemplatedField(
+            self.api.Field_uint32(13),
+            self.api.Field_Compound(self.api.Compound(42)),
+            self.api.Field_string("string")
         )
 
         writer = zserio.BitStreamWriter()

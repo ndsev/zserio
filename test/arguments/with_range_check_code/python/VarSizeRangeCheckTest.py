@@ -24,7 +24,7 @@ class VarSizeRangeCheckTest(unittest.TestCase):
             self._checkVarSizeValue(VARSIZE_UPPER_BOUND + 1)
 
     def _checkVarSizeValue(self, value):
-        varSizeRangeCheckCompound = self.api.VarSizeRangeCheckCompound.fromFields(value)
+        varSizeRangeCheckCompound = self.api.VarSizeRangeCheckCompound(value)
         writer = zserio.BitStreamWriter()
         varSizeRangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

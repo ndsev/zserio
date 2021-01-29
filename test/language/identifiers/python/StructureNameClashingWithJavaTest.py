@@ -20,15 +20,15 @@ class StructureNameClashingWithJavaTest(unittest.TestCase):
 
 
     def testBitSizeOf(self):
-        structureNameClashingWithJava = self.api.StructureNameClashingWithJava.fromFields(
-            self.api.Byte.fromFields(0),
-            self.api.Short.fromFields(0),
-            self.api.Integer.fromFields(0),
-            self.api.Long.fromFields(0),
-            self.api.BigInteger.fromFields(0),
-            self.api.Float.fromFields(0.0),
-            self.api.Double.fromFields(0.0),
-            self.api.String.fromFields(""),
+        structureNameClashingWithJava = self.api.StructureNameClashingWithJava(
+            self.api.Byte(0),
+            self.api.Short(0),
+            self.api.Integer(0),
+            self.api.Long(0),
+            self.api.BigInteger(0),
+            self.api.Float(0.0),
+            self.api.Double(0.0),
+            self.api.String(""),
         )
         self.assertEqual(self.BIT_SIZE, structureNameClashingWithJava.bitSizeOf())
 

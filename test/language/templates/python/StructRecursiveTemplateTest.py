@@ -9,10 +9,10 @@ class StructRecursiveTemplateTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").struct_recursive_template
 
     def testReadWrite(self):
-        structRecursiveTemplate = self.api.StructRecursiveTemplate.fromFields(
-            self.api.Compound_Compound_uint32.fromFields(self.api.Compound_uint32.fromFields(42)),
-            self.api.Compound_Compound_Compound_string.fromFields(
-                self.api.Compound_Compound_string.fromFields(self.api.Compound_string.fromFields("string"))
+        structRecursiveTemplate = self.api.StructRecursiveTemplate(
+            self.api.Compound_Compound_uint32(self.api.Compound_uint32(42)),
+            self.api.Compound_Compound_Compound_string(
+                self.api.Compound_Compound_string(self.api.Compound_string("string"))
             )
         )
 

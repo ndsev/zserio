@@ -9,8 +9,8 @@ class StructureArrayParamTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "functions.zs").structure_array_param
 
         cls.CHILD_BIT_SIZE = 19
-        cls.CHILDREN = [cls.api.ChildStructure.fromFields(cls.CHILD_BIT_SIZE, 0xAABB),
-                        cls.api.ChildStructure.fromFields(cls.CHILD_BIT_SIZE, 0xCCDD)]
+        cls.CHILDREN = [cls.api.ChildStructure(cls.CHILD_BIT_SIZE, 0xAABB),
+                        cls.api.ChildStructure(cls.CHILD_BIT_SIZE, 0xCCDD)]
         cls.NUM_CHILDREN = len(cls.CHILDREN)
 
     def testParentStructure(self):
@@ -34,4 +34,4 @@ class StructureArrayParamTest(unittest.TestCase):
             writer.writeBits(childStructure.getValue(), childStructure.getBitSize())
 
     def _createParentStructure(self):
-        return self.api.ParentStructure.fromFields(self.NUM_CHILDREN, self.CHILDREN)
+        return self.api.ParentStructure(self.NUM_CHILDREN, self.CHILDREN)

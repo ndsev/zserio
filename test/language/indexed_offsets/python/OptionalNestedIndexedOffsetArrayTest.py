@@ -144,7 +144,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
                 offsets.append(currentOffset)
             currentOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
 
-        optionalNestedIndexedOffsetArray.setHeader(self.api.Header.fromFields(length, offsets))
+        optionalNestedIndexedOffsetArray.setHeader(self.api.Header(length, offsets))
 
         if length > 0:
             optionalNestedIndexedOffsetArray.setData(DATA)

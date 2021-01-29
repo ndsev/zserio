@@ -26,8 +26,8 @@ class StructureParentChildValueTest(unittest.TestCase):
         writer.writeBits(self.CHILD_VALUE, 32)
 
     def _createParentValue(self):
-        childValue = self.api.ChildValue.fromFields(self.CHILD_VALUE)
+        childValue = self.api.ChildValue(self.CHILD_VALUE)
 
-        return self.api.ParentValue.fromFields(childValue)
+        return self.api.ParentValue(childValue)
 
     CHILD_VALUE = 0xABCD

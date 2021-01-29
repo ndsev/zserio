@@ -8,15 +8,18 @@ class AutoOptionalTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "optional_members.zs").auto_optional
 
-    def testEmptyConstructor(self):
-        container1 = self.api.Container()
-        self.assertEqual(0, container1.getNonOptionalInt())
-        self.assertEqual(None, container1.getAutoOptionalInt())
+    def testConstructor(self):
+        container = self.api.Container()
+        self.assertEqual(0, container.getNonOptionalInt())
+        self.assertEqual(None, container.getAutoOptionalInt())
 
-    def testFromFields(self):
-        container1 = self.api.Container.fromFields(self.NON_OPTIONAL_INT_VALUE, None)
-        self.assertEqual(self.NON_OPTIONAL_INT_VALUE, container1.getNonOptionalInt())
-        self.assertEqual(None, container1.getAutoOptionalInt())
+        container = self.api.Container(self.NON_OPTIONAL_INT_VALUE)
+        self.assertEqual(self.NON_OPTIONAL_INT_VALUE, container.getNonOptionalInt())
+        self.assertEqual(None, container.getAutoOptionalInt())
+
+        container = self.api.Container(nonOptionalInt_=self.NON_OPTIONAL_INT_VALUE)
+        self.assertEqual(self.NON_OPTIONAL_INT_VALUE, container.getNonOptionalInt())
+        self.assertEqual(None, container.getAutoOptionalInt())
 
     def testEq(self):
         container1 = self.api.Container()

@@ -34,14 +34,14 @@ class AutoArrayTest(unittest.TestCase):
 
     def _checkBitSizeOf(self, numElements):
         uint8Array = list(range(numElements))
-        autoArray = self.api.AutoArray.fromFields(uint8Array)
+        autoArray = self.api.AutoArray(uint8Array)
         bitPosition = 2
         autoArrayBitSize = 8 + numElements * 8
         self.assertEqual(autoArrayBitSize, autoArray.bitSizeOf(bitPosition))
 
     def _checkInitializeOffsets(self, numElements):
         uint8Array = list(range(numElements))
-        autoArray = self.api.AutoArray.fromFields(uint8Array)
+        autoArray = self.api.AutoArray(uint8Array_=uint8Array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + 8 + numElements * 8
         self.assertEqual(expectedEndBitPosition, autoArray.initializeOffsets(bitPosition))
@@ -59,7 +59,7 @@ class AutoArrayTest(unittest.TestCase):
 
     def _checkWrite(self, numElements):
         uint8Array = list(range(numElements))
-        autoArray = self.api.AutoArray.fromFields(uint8Array)
+        autoArray = self.api.AutoArray(uint8Array)
         writer = zserio.BitStreamWriter()
         autoArray.write(writer)
 

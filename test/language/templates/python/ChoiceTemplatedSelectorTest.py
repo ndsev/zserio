@@ -15,7 +15,7 @@ class ChoiceTemplatedSelectorTest(unittest.TestCase):
         uint16Choice.setUint16Field(42)
         uint32Choice = self.api.TemplatedChoice_uint32_Shift32(selector32)
         uint32Choice.setStringField("string")
-        choiceTemplatedSelector = self.api.ChoiceTemplatedSelector.fromFields(
+        choiceTemplatedSelector = self.api.ChoiceTemplatedSelector(
             selector16, selector32, uint16Choice, uint32Choice
         )
 

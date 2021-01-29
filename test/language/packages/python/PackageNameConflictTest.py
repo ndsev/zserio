@@ -11,7 +11,7 @@ class PackageNameConflictTest(unittest.TestCase):
 
     def testPackageNameConflict(self):
         # just test that PackageNameConflict uses correct Blob
-        packageNameConflict = self.api.PackageNameConflict.fromFields(self.api.Blob.fromFields(13))
+        packageNameConflict = self.api.PackageNameConflict(self.api.Blob(13))
         writer = zserio.BitStreamWriter()
         packageNameConflict.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())
@@ -22,8 +22,9 @@ class PackageNameConflictTest(unittest.TestCase):
 
     def testPackageNameConflictInner(self):
         # just test that PackageNameConflict uses correct Blob
-        packageNameConflictInner = self.api.PackageNameConflictInner.fromFields(
-            self.api.package_name_conflict.Blob.fromFields("test"))
+        packageNameConflictInner = self.api.PackageNameConflictInner(
+            self.api.package_name_conflict.Blob("test")
+        )
         writer = zserio.BitStreamWriter()
         packageNameConflictInner.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

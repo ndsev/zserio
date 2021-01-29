@@ -9,12 +9,12 @@ class ExpressionEnumTemplateArgumentConflictTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").expression_enum_template_argument_conflict
 
     def testReadWrite(self):
-        enumTemplateArgumentConflict_Letters = self.api.EnumTemplateArgumentConflict_Letters.fromFields(False,
-                                                                                                        10)
+        enumTemplateArgumentConflict_Letters = self.api.EnumTemplateArgumentConflict_Letters(False, 10)
         self.assertTrue(enumTemplateArgumentConflict_Letters.hasExpressionField())
 
-        enumTemplateArgumentConflictHolder = (self.api.EnumTemplateArgumentConflictHolder.
-                                              fromFields(enumTemplateArgumentConflict_Letters))
+        enumTemplateArgumentConflictHolder = (
+            self.api.EnumTemplateArgumentConflictHolder(enumTemplateArgumentConflict_Letters)
+        )
         writer = zserio.BitStreamWriter()
         enumTemplateArgumentConflictHolder.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

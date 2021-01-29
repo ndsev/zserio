@@ -92,7 +92,7 @@ class ${name}:
     def ${field.setterName}<#rt>
         </#if>
     <#lt>(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
-        <@compound_setter_field field/>
+        <@compound_setter_field field, withWriterCode/>
     </#if>
 </#list>
 <#list compoundFunctionsData.list as function>

@@ -92,13 +92,13 @@ class ExplicitSimpleParamTest(unittest.TestCase):
 
     def _createSimpleParamTableRow(self, rowId, name):
         values1 = [rowId for i in range(SIMPLE_PARAM_TABLE_COUNT1)]
-        testBlob1 = self.api.explicit_simple_param.TestBlob.fromFields(len(values1), values1)
+        testBlob1 = self.api.explicit_simple_param.TestBlob(len(values1), values1)
 
         values2 = [rowId + 1 for i in range(SIMPLE_PARAM_TABLE_COUNT2)]
-        testBlob2 = self.api.explicit_simple_param.TestBlob.fromFields(len(values2), values2)
+        testBlob2 = self.api.explicit_simple_param.TestBlob(len(values2), values2)
 
         values3 = [rowId + 2 for i in range(SIMPLE_PARAM_TABLE_COUNT1)]
-        testBlob3 = self.api.explicit_simple_param.TestBlob.fromFields(len(values3), values3)
+        testBlob3 = self.api.explicit_simple_param.TestBlob(len(values3), values3)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
 

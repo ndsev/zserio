@@ -9,8 +9,8 @@ class StructTemplateClashOtherTypeTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").struct_template_clash_other_type
 
     def testReadWrite(self):
-        instantiationNameClashOtherType = self.api.InstantiationNameClashOtherType.fromFields(
-            self.api.Test_uint32_99604043.fromFields(42))
+        instantiationNameClashOtherType = self.api.InstantiationNameClashOtherType(
+            self.api.Test_uint32_99604043(42))
 
         writer = zserio.BitStreamWriter()
         instantiationNameClashOtherType.write(writer)

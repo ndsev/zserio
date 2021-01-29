@@ -137,10 +137,10 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
 
         data = []
         for i in range(NUM_ELEMENTS):
-            compound = self.api.Compound.fromFields(i, i % 8)
+            compound = self.api.Compound(i, i % 8)
             data.append(compound)
 
-        return self.api.CompoundIndexedOffsetArray.fromFields(offsets, SPACER_VALUE, data)
+        return self.api.CompoundIndexedOffsetArray(offsets, SPACER_VALUE, data)
 
 NUM_ELEMENTS = 5
 

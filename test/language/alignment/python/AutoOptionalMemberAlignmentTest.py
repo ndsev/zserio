@@ -9,17 +9,17 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "alignment.zs").auto_optional_member_alignment
 
     def testBitSizeOfWithOptional(self):
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromFields(0x4433, 0x1122)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(0x4433, 0x1122)
         self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
                          autoOptionalMemberAlignment.bitSizeOf())
 
     def testBitSizeOfWithoutOptional(self):
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromFields(None, 0x7624)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(None, 0x7624)
         self.assertEqual(self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
                          autoOptionalMemberAlignment.bitSizeOf())
 
     def testInitializeOffsetsWithOptional(self):
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromFields(0x1111, 0x3333)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(0x1111, 0x3333)
         for bitPosition in range(32):
             self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
                              autoOptionalMemberAlignment.initializeOffsets(bitPosition))
@@ -28,7 +28,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
                          autoOptionalMemberAlignment.initializeOffsets(bitPosition))
 
     def testInitializeOffsetsWithoutOptional(self):
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromFields(None, 0x3334)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(field_=0x3334)
         bitPosition = 1
         self.assertEqual(self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
                          autoOptionalMemberAlignment.initializeOffsets(bitPosition))
@@ -54,7 +54,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
     def testWriteWithOptional(self):
         autoOptionalField = 0x9ADB
         field = 0x8ACD
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromFields(autoOptionalField, field)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(autoOptionalField, field)
         writer = zserio.BitStreamWriter()
         autoOptionalMemberAlignment.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())
@@ -64,7 +64,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
 
     def testWriteWithoutOptional(self):
         field = 0x7ACF
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromFields(None, field)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(field_=field)
         writer = zserio.BitStreamWriter()
         autoOptionalMemberAlignment.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

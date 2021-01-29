@@ -8,9 +8,9 @@ class StructureArrayTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "functions.zs").structure_array
 
-        cls.ITEMS = [cls.api.Item.fromFields(1, 2),
-                     cls.api.Item.fromFields(3, 4),
-                     cls.api.Item.fromFields(5, 6)]
+        cls.ITEMS = [cls.api.Item(1, 2),
+                     cls.api.Item(3, 4),
+                     cls.api.Item(5, 6)]
         cls.NUM_ITEMS = len(cls.ITEMS)
 
     def testStructureArrayElement0(self):
@@ -32,7 +32,7 @@ class StructureArrayTest(unittest.TestCase):
         writer.writeBits(pos, 16)
 
     def _createStructureArray(self, pos):
-        return self.api.StructureArray.fromFields(self.NUM_ITEMS, self.ITEMS, pos)
+        return self.api.StructureArray(self.NUM_ITEMS, self.ITEMS, pos)
 
     def _checkStructureArray(self, pos):
         structureArray = self._createStructureArray(pos)

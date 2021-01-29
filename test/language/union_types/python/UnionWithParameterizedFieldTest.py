@@ -15,7 +15,7 @@ class UnionWithParameterizedFieldTest(unittest.TestCase):
 
     def testFromReader(self):
         testUnion = self.api.TestUnion()
-        testUnion.setArrayHolder(self.api.ArrayHolder.fromFields(10, list(range(10))))
+        testUnion.setArrayHolder(self.api.ArrayHolder(10, list(range(10))))
         writer = zserio.BitStreamWriter()
         testUnion.write(writer)
 

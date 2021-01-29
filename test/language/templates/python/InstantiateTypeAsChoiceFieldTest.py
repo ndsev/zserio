@@ -10,7 +10,7 @@ class InstantiateTypeAsChoiceFieldTest(unittest.TestCase):
 
     def testReadWrite(self):
         instantiateTypeAsChoiceField = self.api.InstantiateTypeAsChoiceField(True)
-        instantiateTypeAsChoiceField.setTest(self.api.Test32.fromFields(13))
+        instantiateTypeAsChoiceField.setTest(self.api.Test32(13))
 
         writer = zserio.BitStreamWriter()
         instantiateTypeAsChoiceField.write(writer)

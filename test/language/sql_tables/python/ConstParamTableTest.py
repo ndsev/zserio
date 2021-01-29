@@ -76,8 +76,8 @@ class ConstParamTableTest(unittest.TestCase):
         return rows
 
     def _createConstParamTableRow(self, blobId, name):
-        blob = self.api.const_param_table.ParameterizedBlob.fromFields(self.PARAMETERIZED_BLOB_PARAM,
-                                                                       self.PARAMETERIZED_BLOB_VALUE)
+        blob = self.api.const_param_table.ParameterizedBlob(self.PARAMETERIZED_BLOB_PARAM,
+                                                            self.PARAMETERIZED_BLOB_VALUE)
 
         return (blobId, name, blob)
 

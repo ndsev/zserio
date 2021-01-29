@@ -8,7 +8,7 @@ class UsedBeforeTypeTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").used_before_type
 
     def testBitSizeOfWithOptional(self):
-        usedBeforeTypeExpression = self.api.UsedBeforeTypeExpression.fromFields(self.api.Color.RED, True)
+        usedBeforeTypeExpression = self.api.UsedBeforeTypeExpression(self.api.Color.RED, True)
         self.assertEqual(self.USED_BEFORE_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL,
                          usedBeforeTypeExpression.bitSizeOf())
 

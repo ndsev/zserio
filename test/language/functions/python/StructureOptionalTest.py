@@ -32,7 +32,7 @@ class StructureOptionalTest(unittest.TestCase):
         valueConsumer = self.api.ValueConsumer(valueCalculator.funcValue())
         valueConsumer.setIsSmall(self._calculateValue(defaultValue, externalValue) < self.SMALL_VALUE_THRESHOLD)
 
-        return self.api.ValueConsumerCreator.fromFields(valueCalculator, valueConsumer)
+        return self.api.ValueConsumerCreator(valueCalculator, valueConsumer)
 
     def _checkValueConsumerCreator(self, defaultValue, externalValue):
         valueConsumerCreator = self._createValueConsumerCreator(defaultValue, externalValue)

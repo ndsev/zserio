@@ -8,11 +8,11 @@ class UnionArrayTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "functions.zs").union_array
 
-        cls.ITEMS = [cls.api.Item.fromFields(12, 13),
-                     cls.api.Item.fromFields(42, 18),
-                     cls.api.Item.fromFields(17, 14)]
+        cls.ITEMS = [cls.api.Item(12, 13),
+                     cls.api.Item(42, b_=18),
+                     cls.api.Item(a_=17, b_=14)]
         cls.NUM_ITEM_ELEMENTS = len(cls.ITEMS)
-        cls.EXPLICIT_ITEM = cls.api.Item.fromFields(27, 29)
+        cls.EXPLICIT_ITEM = cls.api.Item(27, 29)
 
     def testInnerElement0(self):
         self._checkInner(0)
@@ -53,7 +53,7 @@ class UnionArrayTest(unittest.TestCase):
         else:
             itemRef.setPosition(pos)
 
-        return self.api.Inner.fromFields(outerArray, itemRef)
+        return self.api.Inner(outerArray, itemRef)
 
     def _checkInner(self, pos):
         inner = self._createInner(pos)

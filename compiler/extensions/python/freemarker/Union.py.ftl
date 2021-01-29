@@ -74,7 +74,7 @@ class ${name}:
         </#if>
     <#lt>(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
         self._choiceTag = self.${getChoiceTagName(field.name)}
-        <@compound_setter_field field/>
+        <@compound_setter_field field, withWriterCode/>
     </#if>
 </#list>
 <#list compoundFunctionsData.list as function>

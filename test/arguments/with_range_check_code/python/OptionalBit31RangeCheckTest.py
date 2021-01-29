@@ -28,7 +28,8 @@ class OptionalBit31RangeCheckTest(unittest.TestCase):
         optionalBit31RangeCheckCompound.setValue(None)
 
     def _checkOptionalBit31Value(self, value):
-        optionalBit31RangeCheckCompound = self.api.OptionalBit31RangeCheckCompound.fromFields(True, value)
+        optionalBit31RangeCheckCompound = self.api.OptionalBit31RangeCheckCompound(hasOptional_=True,
+                                                                                   value_=value)
         writer = zserio.BitStreamWriter()
         optionalBit31RangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

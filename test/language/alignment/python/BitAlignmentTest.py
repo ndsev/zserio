@@ -100,12 +100,12 @@ class BitAlignmentTest(unittest.TestCase):
         self.assertEqual(self.ALIGNED64_FIELD_VALUE, bitAlignment.getAligned64Field())
 
     def _createBitAlignment(self):
-        return self.api.BitAlignment.fromFields(self.ALIGNED1_FIELD_VALUE, self.ALIGNED2_FIELD_VALUE,
-                                                self.ALIGNED3_FIELD_VALUE, self.ALIGNED4_FIELD_VALUE,
-                                                self.ALIGNED5_FIELD_VALUE, self.ALIGNED6_FIELD_VALUE,
-                                                self.ALIGNED7_FIELD_VALUE, self.ALIGNED8_FIELD_VALUE, 0,
-                                                self.ALIGNED16_FIELD_VALUE, 0, self.ALIGNED32_FIELD_VALUE, 0,
-                                                self.ALIGNED64_FIELD_VALUE)
+        return self.api.BitAlignment(self.ALIGNED1_FIELD_VALUE, self.ALIGNED2_FIELD_VALUE,
+                                     self.ALIGNED3_FIELD_VALUE, self.ALIGNED4_FIELD_VALUE,
+                                     self.ALIGNED5_FIELD_VALUE, self.ALIGNED6_FIELD_VALUE,
+                                     self.ALIGNED7_FIELD_VALUE, self.ALIGNED8_FIELD_VALUE, 0,
+                                     self.ALIGNED16_FIELD_VALUE, 0, self.ALIGNED32_FIELD_VALUE, 0,
+                                     self.ALIGNED64_FIELD_VALUE)
 
     BIT_ALIGNMENT_BIT_SIZE = 320
 

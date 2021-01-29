@@ -92,10 +92,10 @@ class ParameterOffsetTest(unittest.TestCase):
 
     def _createSchool(self, createWrongOffset):
         roomOffset = self.WRONG_ROOM_OFFSET if createWrongOffset else self.ROOM_OFFSET
-        offsetHolder = self.api.OffsetHolder.fromFields(roomOffset)
-        room = self.api.Room.fromFields(offsetHolder, self.ROOM_ID)
+        offsetHolder = self.api.OffsetHolder(roomOffset)
+        room = self.api.Room(offsetHolder, self.ROOM_ID)
 
-        return self.api.School.fromFields(self.SCHOOL_ID, offsetHolder, room)
+        return self.api.School(self.SCHOOL_ID, offsetHolder, room)
 
     SCHOOL_ID = 0x01
     ROOM_ID = 0x11

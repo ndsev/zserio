@@ -11,7 +11,7 @@ class ImplicitArrayInt24Test(unittest.TestCase):
     def testBitSizeOf(self):
         numElements = 44
         array = list(range(numElements))
-        implicitArray = self.api.ImplicitArray.fromFields(array)
+        implicitArray = self.api.ImplicitArray(array)
         bitPosition = 2
         implicitArrayBitSize = numElements * 24
         self.assertEqual(implicitArrayBitSize, implicitArray.bitSizeOf(bitPosition))
@@ -19,7 +19,7 @@ class ImplicitArrayInt24Test(unittest.TestCase):
     def testInitializeOffsets(self):
         numElements = 66
         array = list(range(numElements))
-        implicitArray = self.api.ImplicitArray.fromFields(array)
+        implicitArray = self.api.ImplicitArray(array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + numElements * 24
         self.assertEqual(expectedEndBitPosition, implicitArray.initializeOffsets(bitPosition))
@@ -39,7 +39,7 @@ class ImplicitArrayInt24Test(unittest.TestCase):
     def testWrite(self):
         numElements = 55
         array = list(range(numElements))
-        implicitArray = self.api.ImplicitArray.fromFields(array)
+        implicitArray = self.api.ImplicitArray(array)
         writer = zserio.BitStreamWriter()
         implicitArray.write(writer)
 

@@ -10,11 +10,11 @@ class ChoiceArrayTest(unittest.TestCase):
 
         cls.ELEMENT_A_FOR_EXTRA_VALUE = 20
         cls.EXTRA_VALUE = 4711
-        cls.ITEMS = [cls.api.Item.fromFields(12, 13),
-                     cls.api.Item.fromFields(cls.ELEMENT_A_FOR_EXTRA_VALUE, 18),
-                     cls.api.Item.fromFields(17, 14)]
+        cls.ITEMS = [cls.api.Item(12, 13),
+                     cls.api.Item(cls.ELEMENT_A_FOR_EXTRA_VALUE, 18),
+                     cls.api.Item(17, 14)]
         cls.NUM_ITEMS = len(cls.ITEMS)
-        cls.EXPLICIT_ITEM = cls.api.Item.fromFields(27, 29)
+        cls.EXPLICIT_ITEM = cls.api.Item(27, 29)
 
     def testChoiceArrayFunctionElement0(self):
         self._checkChoiceArrayFunction(0)

@@ -21,8 +21,7 @@ class SimpleParamTest(unittest.TestCase):
         self.assertTrue(item.hasExtraParam())
         self.assertEqual(self.ITEM_EXTRA_PARAM, item.getExtraParam())
 
-    def testFromFields(self):
-        item = self.api.Item.fromFields(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        item = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         self.assertEqual(self.ITEM_PARAM, item.getParam())
         self.assertTrue(item.hasExtraParam())
         self.assertEqual(self.ITEM_EXTRA_PARAM, item.getExtraParam())
@@ -44,24 +43,24 @@ class SimpleParamTest(unittest.TestCase):
         self.assertTrue(hash(item2) != hash(item3))
 
     def testBitSizeOf(self):
-        item1 = self.api.Item.fromFields(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        item1 = self.api.Item(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         self.assertEqual(self.ITEM_BIT_SIZE_WITHOUT_OPTIONAL, item1.bitSizeOf())
 
-        item2 = self.api.Item.fromFields(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        item2 = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         self.assertEqual(self.ITEM_BIT_SIZE_WITH_OPTIONAL, item2.bitSizeOf())
 
     def testInitializeOffsets(self):
-        item1 = self.api.Item.fromFields(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        item1 = self.api.Item(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         bitPosition = 1
         self.assertEqual(bitPosition + self.ITEM_BIT_SIZE_WITHOUT_OPTIONAL,
                          item1.initializeOffsets(bitPosition))
 
-        item2 = self.api.Item.fromFields(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        item2 = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         self.assertEqual(bitPosition + self.ITEM_BIT_SIZE_WITH_OPTIONAL, item2.initializeOffsets(bitPosition))
 
     def testReadWrite(self):
         version = self.HIGHER_VERSION
-        item = self.api.Item.fromFields(version, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
+        item = self.api.Item(version, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
 
         writer = zserio.BitStreamWriter()
         item.write(writer)

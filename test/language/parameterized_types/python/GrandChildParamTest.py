@@ -20,13 +20,13 @@ class GrandChildParamTest(unittest.TestCase):
         self.assertEqual(grandChildParam, readGrandChildParam)
 
     def _createGrandChildParam(self):
-        item = self.api.Item.fromFields(self.ITEM_CHOICE_HOLDER_HAS_ITEM, self.ITEM_PARAM,
-                                        self.ITEM_EXTRA_PARAM)
+        item = self.api.Item(self.ITEM_CHOICE_HOLDER_HAS_ITEM, self.ITEM_PARAM,
+                             self.ITEM_EXTRA_PARAM)
         itemChoice = self.api.ItemChoice(self.ITEM_CHOICE_HOLDER_HAS_ITEM)
         itemChoice.setItem(item)
-        itemChoiceHolder = self.api.ItemChoiceHolder.fromFields(itemChoice.getHasItem(), itemChoice)
+        itemChoiceHolder = self.api.ItemChoiceHolder(itemChoice.getHasItem(), itemChoice)
 
-        return self.api.GrandChildParam.fromFields(itemChoiceHolder)
+        return self.api.GrandChildParam(itemChoiceHolder)
 
     def _checkGrandChildParamInStream(self, stream, grandChildParam):
         itemChoiceHolder = grandChildParam.getItemChoiceHolder()

@@ -88,11 +88,10 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
 
     def _createSameAsFieldTableRow(self, rowId, name):
         values = [rowId for i in range(SAME_AS_FIELD_TABLE_COUNT)]
-        testBlob = self.api.explicit_same_as_field.TestBlob.fromFields(len(values), values)
+        testBlob = self.api.explicit_same_as_field.TestBlob(len(values), values)
 
         valuesExplicit = [rowId + 1 for i in range(SAME_AS_FIELD_TABLE_COUNT_EXPLICIT)]
-        testBlobExplicit = self.api.explicit_same_as_field.TestBlob.fromFields(len(valuesExplicit),
-                                                                               valuesExplicit)
+        testBlobExplicit = self.api.explicit_same_as_field.TestBlob(len(valuesExplicit), valuesExplicit)
 
         return (rowId, name, SAME_AS_FIELD_TABLE_COUNT, testBlob, testBlobExplicit)
 

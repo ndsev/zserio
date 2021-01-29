@@ -8,7 +8,7 @@ class ConstTypeTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").const_type
 
     def testBitSizeOfWithOptional(self):
-        constTypeExpression = self.api.ConstTypeExpression.fromFields(self.VALID_VALUE, self.ADDITIONAL_VALUE)
+        constTypeExpression = self.api.ConstTypeExpression(self.VALID_VALUE, self.ADDITIONAL_VALUE)
         self.assertEqual(self.CONST_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, constTypeExpression.bitSizeOf())
 
     def testBitSizeOfWithoutOptional(self):

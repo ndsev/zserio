@@ -8,13 +8,13 @@ class ValueOfOperatorTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").valueof_operator
 
     def testGetValueOfWhiteColor(self):
-        valueOfFunctions = self.api.ValueOfFunctions.fromFields(self.api.Color.WHITE)
+        valueOfFunctions = self.api.ValueOfFunctions(self.api.Color.WHITE)
         whiteColorValue = 1
         self.assertEqual(whiteColorValue, valueOfFunctions.funcGetValueOfColor())
         self.assertEqual(whiteColorValue, valueOfFunctions.funcGetValueOfWhiteColor())
 
     def testGetValueOfBlackColor(self):
-        valueOfFunctions = self.api.ValueOfFunctions.fromFields(self.api.Color.BLACK)
+        valueOfFunctions = self.api.ValueOfFunctions(self.api.Color.BLACK)
         blackColorValue = 2
         self.assertEqual(blackColorValue, valueOfFunctions.funcGetValueOfColor())
         self.assertEqual(blackColorValue, valueOfFunctions.funcGetValueOfBlackColor())

@@ -17,7 +17,7 @@ class InstantiateTypeAsSqlTableFieldTest(unittest.TestCase):
         test32Table = self.api.Test32Table(connection, "test32Table")
         test32Table.createTable()
 
-        rows = [(13, self.api.Test32.fromFields(42))]
+        rows = [(13, self.api.Test32(42))]
         test32Table.write(rows)
 
         readIterator = test32Table.read()

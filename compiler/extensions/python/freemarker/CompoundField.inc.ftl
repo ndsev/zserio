@@ -29,15 +29,15 @@ ${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name 
     </#if>
 </#macro>
 
-<#macro compound_setter_field field>
+<#macro compound_setter_field field withWriterCode>
     <#if field.array??>
         <#if field.optional??>
         if <@field_argument_name field/> is None:
             self.<@field_member_name field/> = None
         else:
-            self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field/>)
+            self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
         <#else>
-        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field/>)
+        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
         </#if>
     <#else>
         self.<@field_member_name field/> = <@field_argument_name field/>
@@ -180,14 +180,9 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader
     <@array_field_keyword_parameters field, withWriterCode/><#t>
 </#macro>
 
-<#macro array_field_constructor_parameters field>
+<#macro array_field_constructor_parameters field withWriterCode>
     <@array_field_traits_parameter field/><#t>
     , <@field_argument_name field/><#t>
-    <@array_field_keyword_parameters field, true/><#t>
-</#macro>
-
-<#macro array_field_default_constructor_parameters field withWriterCode>
-    <@array_field_traits_parameter field/><#t>
     <@array_field_keyword_parameters field, withWriterCode/><#t>
 </#macro>
 

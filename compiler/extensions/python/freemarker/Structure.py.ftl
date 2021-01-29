@@ -9,10 +9,10 @@ class ${name}:
 <#if constructorAnnotatedParamList?has_content || fieldList?has_content>
     def __init__(
             self<#if constructorAnnotatedParamList?has_content>,
-            <#lt>${constructorAnnotatedParamList}</#if>) -> None:
-        <@compound_constructor_parameter_assignments compoundParametersData/>
+            <#lt>${constructorAnnotatedParamList}</#if><#rt>
     <#list fieldList as field>
-        self.<@field_member_name field/> = <#rt>
+            <#lt>,
+            <#nt><@field_argument_name field/>: <@field_annotation_argument_type_name field, name/> = <#rt>
         <#if field.initializer??>
             ${field.initializer}<#t>
         <#elseif field.optional??>
@@ -20,16 +20,18 @@ class ${name}:
         <#else>
             <#if field.isBuiltinType>
             ${field.pythonTypeName}()<#t>
-            <#elseif field.array??>
-            zserio.array.Array(<@array_field_default_constructor_parameters field, withWriterCode/>)<#t>
             <#else>
             None<#t>
             </#if>
         </#if>
-            <#lt> # type: <@field_annotation_type_name field, name/>
     </#list>
-</#if>
+            <#lt>) -> None:
+        <@compound_constructor_parameter_assignments compoundParametersData/>
+    <#list fieldList as field>
+        <@compound_setter_field field, withWriterCode/>
+    </#list>
 
+</#if>
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
     @classmethod
     def fromReader(
@@ -40,24 +42,6 @@ class ${name}:
         instance.read(reader)
 
         return instance
-<#if withWriterCode && fieldList?has_content>
-
-    @classmethod
-    def fromFields(
-            cls: typing.Type['${name}']<#if constructorParamList?has_content>,
-            <#lt>${constructorAnnotatedParamList}</#if><#list fieldList as field>,
-            <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/></#list>) -> '${name}':
-        instance = cls(${constructorParamList})
-    <#list fieldList as field>
-        <#if withPythonProperties>
-        instance.${field.propertyName} = <@field_argument_name field/>
-        <#else>
-        instance.${field.setterName}(<@field_argument_name field/>)
-        </#if>
-    </#list>
-
-        return instance
-</#if>
 
 <#macro structure_compare_fields fieldList indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
@@ -125,7 +109,7 @@ ${I}<#rt>
     def ${field.setterName}<#rt>
         </#if>
     <#lt>(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
-        <@compound_setter_field field/>
+        <@compound_setter_field field, withWriterCode/>
     </#if>
     <#if field.optional??>
 

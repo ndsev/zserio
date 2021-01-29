@@ -9,12 +9,12 @@ class StructLongTemplateArgumentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").struct_long_template_argument
 
     def testReadWrite(self):
-        templ = self.api.\
-            TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_.fromFields(
-                self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringT"),
-                self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringU"),
-                self.api.ThisIsVeryVeryVeryLongNamedStructure.fromFields("StringV"))
-        structLongTemplateArgument = self.api.StructLongTemplateArgument.fromFields(templ)
+        templ = self.api.TemplatedStruct_ThisIsVeryVeryVeryLongNamedStructure_ThisIsVery_(
+            self.api.ThisIsVeryVeryVeryLongNamedStructure("StringT"),
+            self.api.ThisIsVeryVeryVeryLongNamedStructure("StringU"),
+            self.api.ThisIsVeryVeryVeryLongNamedStructure("StringV")
+        )
+        structLongTemplateArgument = self.api.StructLongTemplateArgument(templ)
 
         writer = zserio.BitStreamWriter()
         structLongTemplateArgument.write(writer)

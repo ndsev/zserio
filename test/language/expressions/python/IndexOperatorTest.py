@@ -50,7 +50,7 @@ class IndexOperatorTest(unittest.TestCase):
                 element.setField16(self.ELEMENTS[i])
             elements.append(element)
 
-        return self.api.ElementList.fromFields(len(elements), elements)
+        return self.api.ElementList(len(elements), elements)
 
     def _createReadElementList(self, elementList):
         writer = zserio.BitStreamWriter()

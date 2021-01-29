@@ -19,7 +19,7 @@ class SimpleServiceTest(unittest.TestCase):
                     context.seenByService = True
 
                 value = request.getValue()
-                response = cls.api.Response.fromFields(value**2)
+                response = cls.api.Response(value**2)
                 return response
 
         cls.Service = Service
@@ -36,7 +36,7 @@ class SimpleServiceTest(unittest.TestCase):
         self.assertEqual("powerOfTwo", self.api.SimpleService.Service.METHOD_NAMES[0])
 
     def testPowerOfTwo(self):
-        request = self.api.Request.fromFields(13)
+        request = self.api.Request(13)
         self.assertEqual(169, self.client.powerOfTwoMethod(request).getValue())
         request.setValue(-13)
         self.assertEqual(169, self.client.powerOfTwoMethod(request).getValue())
@@ -52,7 +52,7 @@ class SimpleServiceTest(unittest.TestCase):
     def testCallWithContext(self):
         fakeContext = FakeContext()
         self.assertFalse(fakeContext.seenByService)
-        request = self.api.Request.fromFields(10)
+        request = self.api.Request(10)
         response = self.client.powerOfTwoMethod(request, fakeContext)
         self.assertEqual(100, response.getValue())
         self.assertTrue(fakeContext.seenByService)

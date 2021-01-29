@@ -8,8 +8,7 @@ class FullEnumerationTypeTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").full_enumeration_type
 
     def testBitSizeOfWithOptional(self):
-        fullEnumerationTypeExpression = self.api.FullEnumerationTypeExpression.fromFields(self.api.Color.RED,
-                                                                                          True)
+        fullEnumerationTypeExpression = self.api.FullEnumerationTypeExpression(self.api.Color.RED, True)
         self.assertEqual(self.FULL_ENUMERATION_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL,
                          fullEnumerationTypeExpression.bitSizeOf())
 

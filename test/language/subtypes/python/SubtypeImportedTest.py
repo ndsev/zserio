@@ -9,8 +9,8 @@ class SubtypeImportedTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "subtypes.zs").subtype_imported
 
     def testReadWrite(self):
-        subtypeImported = self.api.SubtypeImported.fromFields(
-            self.api.pkg.SubTest.fromFields(13)
+        subtypeImported = self.api.SubtypeImported(
+            self.api.pkg.SubTest(13)
         )
 
         writer = zserio.BitStreamWriter()

@@ -314,7 +314,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
         self.assertEqual(allBuiltInTypes, readAllBuiltInTypes)
 
     def _getExternalBitBuffer(self):
-        externalStructure = self.api.ExternalStructure.fromFields(0xCD, 0x03)
+        externalStructure = self.api.ExternalStructure(value_=0xCD, rest_=0x03)
         writer = zserio.BitStreamWriter()
         externalStructure.write(writer)
 

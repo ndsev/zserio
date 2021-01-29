@@ -11,14 +11,14 @@ class OptionalArrayTest(unittest.TestCase):
         numElements = 4
         test = self.api.TestStruct()
         test.setHasData8(True)
-        test.setData8([self.api.Data8.fromFields(i) for i in range(numElements)])
+        test.setData8([self.api.Data8(i) for i in range(numElements)])
         self.assertEqual(numElements, len(test.getData8()))
 
     def testAutoData8(self):
         numElements = 5
         test = self.api.TestStruct()
         self.assertFalse(test.hasAutoData8())
-        test.setAutoData8([self.api.Data8.fromFields(i) for i in range(numElements)])
+        test.setAutoData8([self.api.Data8(i) for i in range(numElements)])
         self.assertTrue(test.hasAutoData8())
         self.assertEqual(numElements, len(test.getAutoData8()))
 

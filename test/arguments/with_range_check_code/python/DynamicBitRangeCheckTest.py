@@ -31,7 +31,7 @@ class DynamicBitRangeCheckTest(unittest.TestCase):
             self._checkDynamicBitValue(65, zserio.limits.UINT64_MAX)
 
     def _checkDynamicBitValue(self, numBits, value):
-        dynamicBitRangeCheckCompound = self.api.DynamicBitRangeCheckCompound.fromFields(numBits, value)
+        dynamicBitRangeCheckCompound = self.api.DynamicBitRangeCheckCompound(numBits_=numBits, value_=value)
         writer = zserio.BitStreamWriter()
         dynamicBitRangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

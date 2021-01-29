@@ -55,7 +55,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
             structureBitmaskConstraints.read(reader)
 
     def testWriteCorrectConstraints(self):
-        structureBitmaskConstraints = self.api.StructureBitmaskConstraints.fromFields(
+        structureBitmaskConstraints = self.api.StructureBitmaskConstraints(
             self.api.Availability.Values.COORD_X | self.api.Availability.Values.COORD_Y, 1, 1, 0
         )
         writer = zserio.BitStreamWriter()
@@ -68,7 +68,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
         self.assertEqual(structureBitmaskConstraints, readStructureBitmaskConstraints)
 
     def testWriteWrongCoordZConstraint(self):
-        structureBitmaskConstraints = self.api.StructureBitmaskConstraints.fromFields(
+        structureBitmaskConstraints = self.api.StructureBitmaskConstraints(
             self.api.Availability.Values.COORD_X | self.api.Availability.Values.COORD_Y, 1, 1, 1
         )
         writer = zserio.BitStreamWriter()
@@ -76,7 +76,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
             structureBitmaskConstraints.write(writer)
 
     def testWriteWrongCoordYConstraint(self):
-        structureBitmaskConstraints = self.api.StructureBitmaskConstraints.fromFields(
+        structureBitmaskConstraints = self.api.StructureBitmaskConstraints(
             self.api.Availability.Values.COORD_X | self.api.Availability.Values.COORD_Z, 1, 1, 1
         )
         writer = zserio.BitStreamWriter()
@@ -84,7 +84,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
             structureBitmaskConstraints.write(writer)
 
     def testWriteWrongCoordXConstraint(self):
-        structureBitmaskConstraints = self.api.StructureBitmaskConstraints.fromFields(
+        structureBitmaskConstraints = self.api.StructureBitmaskConstraints(
             self.api.Availability.Values.COORD_Y | self.api.Availability.Values.COORD_Z, 1, 1, 1
         )
         writer = zserio.BitStreamWriter()

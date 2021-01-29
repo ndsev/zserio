@@ -9,12 +9,12 @@ class CastUInt8ToUInt64Test(unittest.TestCase):
 
     def testUInt64ValueUsingUInt8Value(self):
         uint8Value = 0xBA
-        castUInt8ToUInt64Expression = self.api.CastUInt8ToUInt64Expression.fromFields(uint8Value, False)
+        castUInt8ToUInt64Expression = self.api.CastUInt8ToUInt64Expression(uint8Value, False)
         expectedUInt64Value = uint8Value
         self.assertEqual(expectedUInt64Value, castUInt8ToUInt64Expression.funcUint64Value())
 
     def testUint64ValueUsingConstant(self):
         uint8Value = 0xBA
-        castUInt8ToUInt64Expression = self.api.CastUInt8ToUInt64Expression.fromFields(uint8Value, True)
+        castUInt8ToUInt64Expression = self.api.CastUInt8ToUInt64Expression(uint8Value, useConstant_=True)
         expectedUInt64Value = 1
         self.assertEqual(expectedUInt64Value, castUInt8ToUInt64Expression.funcUint64Value())

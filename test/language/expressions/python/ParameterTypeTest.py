@@ -8,8 +8,8 @@ class ParameterTypeTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").parameter_type
 
     def testBitSizeOfWithOptional(self):
-        parameterTypeExpression = self.api.ParameterTypeExpression.fromFields(self.api.Color.RED,
-                                                                              self.VALUE, True)
+        parameterTypeExpression = self.api.ParameterTypeExpression(self.api.Color.RED,
+                                                                   self.VALUE, True)
         self.assertEqual(self.PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL,
                          parameterTypeExpression.bitSizeOf())
 

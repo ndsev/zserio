@@ -8,21 +8,28 @@ class OptionalArrayRecursionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "optional_members.zs").optional_array_recursion
 
-    def testEmptyConstructor(self):
-        emptyEmployee1 = self.api.Employee()
-        self.assertEqual("", emptyEmployee1.getName())
-        self.assertEqual(0, emptyEmployee1.getSalary())
-        self.assertEqual(None, emptyEmployee1.getTitle())
-        self.assertEqual(None, emptyEmployee1.getTeamMembers())
+    def testConstructor(self):
+        emptyEmployee = self.api.Employee()
+        self.assertEqual("", emptyEmployee.getName())
+        self.assertEqual(0, emptyEmployee.getSalary())
+        self.assertEqual(None, emptyEmployee.getTitle())
+        self.assertEqual(None, emptyEmployee.getTeamMembers())
 
-    def testFromFields(self):
-        teamMember1 = self.api.Employee.fromFields(self.EMPLOYEE_DEVELOPER1_NAME,
-                                                   self.EMPLOYEE_DEVELOPER1_SALARY,
-                                                   self.api.Title.DEVELOPER, None)
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember1.getName())
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember1.getSalary())
-        self.assertEqual(self.api.Title.DEVELOPER, teamMember1.getTitle())
-        self.assertEqual(None, teamMember1.getTeamMembers())
+        teamMember = self.api.Employee(self.EMPLOYEE_DEVELOPER1_NAME,
+                                       self.EMPLOYEE_DEVELOPER1_SALARY,
+                                       self.api.Title.DEVELOPER)
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.getName())
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.getSalary())
+        self.assertEqual(self.api.Title.DEVELOPER, teamMember.getTitle())
+        self.assertEqual(None, teamMember.getTeamMembers())
+
+        teamMember = self.api.Employee(name_=self.EMPLOYEE_DEVELOPER1_NAME,
+                                       salary_=self.EMPLOYEE_DEVELOPER1_SALARY,
+                                       title_=self.api.Title.DEVELOPER)
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.getName())
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.getSalary())
+        self.assertEqual(self.api.Title.DEVELOPER, teamMember.getTitle())
+        self.assertEqual(None, teamMember.getTeamMembers())
 
     def testEq(self):
         emptyEmployee1 = self.api.Employee()

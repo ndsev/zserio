@@ -8,12 +8,12 @@ class FieldTypeWithClashTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").field_type_with_clash
 
     def testBitSizeOfWithOptional(self):
-        containedType = self.api.ContainedType.fromFields(True)
-        fieldTypeExpression = self.api.FieldTypeExpression.fromFields(containedType, self.EXTRA_VALUE)
+        containedType = self.api.ContainedType(True)
+        fieldTypeExpression = self.api.FieldTypeExpression(containedType, self.EXTRA_VALUE)
         self.assertEqual(self.COMPOUND_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, fieldTypeExpression.bitSizeOf())
 
     def testBitSizeOfWithoutOptional(self):
-        containedType = self.api.ContainedType.fromFields(False)
+        containedType = self.api.ContainedType(False)
         fieldTypeExpression = self.api.FieldTypeExpression()
         fieldTypeExpression.setContainedType(containedType)
         self.assertEqual(self.COMPOUND_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,

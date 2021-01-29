@@ -31,7 +31,7 @@ class DynamicIntRangeCheckTest(unittest.TestCase):
             self._checkDynamicIntValue(65, zserio.limits.INT64_MAX)
 
     def _checkDynamicIntValue(self, numBits, value):
-        dynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound.fromFields(numBits, value)
+        dynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound(numBits_=numBits, value_=value)
         writer = zserio.BitStreamWriter()
         dynamicIntRangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

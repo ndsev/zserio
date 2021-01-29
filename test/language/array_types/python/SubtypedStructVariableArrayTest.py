@@ -10,9 +10,8 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         numElements = 33
-        compoundArray = [self.api.ArrayElement.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromFields(numElements,
-                                                                                      compoundArray)
+        compoundArray = [self.api.ArrayElement(i, "Name" + str(i)) for i in range(numElements)]
+        subtypedStructVariableArray = self.api.SubtypedStructVariableArray(numElements, compoundArray)
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
@@ -20,9 +19,8 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
 
     def testInitializeOffsets(self):
         numElements = 33
-        compoundArray = [self.api.ArrayElement.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromFields(numElements,
-                                                                                      compoundArray)
+        compoundArray = [self.api.ArrayElement(id_=i, name_="Name" + str(i)) for i in range(numElements)]
+        subtypedStructVariableArray = self.api.SubtypedStructVariableArray(numElements, compoundArray)
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
@@ -45,9 +43,8 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
 
     def testWrite(self):
         numElements = 33
-        compoundArray = [self.api.ArrayElement.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromFields(numElements,
-                                                                                      compoundArray)
+        compoundArray = [self.api.ArrayElement(i, "Name" + str(i)) for i in range(numElements)]
+        subtypedStructVariableArray = self.api.SubtypedStructVariableArray(numElements, compoundArray)
         writer = zserio.BitStreamWriter()
         subtypedStructVariableArray.write(writer)
 
@@ -63,9 +60,8 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
 
     def testWriteWrongArray(self):
         numElements = 33
-        compoundArray = [self.api.ArrayElement.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromFields(numElements + 1,
-                                                                                      compoundArray)
+        compoundArray = [self.api.ArrayElement(i, name_="Name" + str(i)) for i in range(numElements)]
+        subtypedStructVariableArray = self.api.SubtypedStructVariableArray(numElements + 1, compoundArray)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
             subtypedStructVariableArray.write(writer)

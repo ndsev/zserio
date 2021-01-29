@@ -10,8 +10,8 @@ class VariableArrayInt8Test(unittest.TestCase):
 
     def testBitSizeOf(self):
         numElements = 33
-        compoundArray = [self.api.TestStructure.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        variableArray = self.api.VariableArray.fromFields(numElements, compoundArray)
+        compoundArray = [self.api.TestStructure(i, "Name" + str(i)) for i in range(numElements)]
+        variableArray = self.api.VariableArray(numElements, compoundArray)
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
@@ -19,8 +19,8 @@ class VariableArrayInt8Test(unittest.TestCase):
 
     def testInitializeOffsets(self):
         numElements = 33
-        compoundArray = [self.api.TestStructure.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        variableArray = self.api.VariableArray.fromFields(numElements, compoundArray)
+        compoundArray = [self.api.TestStructure(i, "Name" + str(i)) for i in range(numElements)]
+        variableArray = self.api.VariableArray(numElements, compoundArray)
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
@@ -43,8 +43,8 @@ class VariableArrayInt8Test(unittest.TestCase):
 
     def testWrite(self):
         numElements = 33
-        compoundArray = [self.api.TestStructure.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        variableArray = self.api.VariableArray.fromFields(numElements, compoundArray)
+        compoundArray = [self.api.TestStructure(i, "Name" + str(i)) for i in range(numElements)]
+        variableArray = self.api.VariableArray(numElements, compoundArray)
         writer = zserio.BitStreamWriter()
         variableArray.write(writer)
 
@@ -60,8 +60,8 @@ class VariableArrayInt8Test(unittest.TestCase):
 
     def testWriteWrongArray(self):
         numElements = 33
-        compoundArray = [self.api.TestStructure.fromFields(i, "Name" + str(i)) for i in range(numElements)]
-        variableArray = self.api.VariableArray.fromFields(numElements + 1, compoundArray)
+        compoundArray = [self.api.TestStructure(i, "Name" + str(i)) for i in range(numElements)]
+        variableArray = self.api.VariableArray(numElements + 1, compoundArray)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
             variableArray.write(writer)

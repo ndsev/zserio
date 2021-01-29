@@ -9,8 +9,8 @@ class StructTemplateClashAcrossPackagesTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").struct_template_clash_across_packages
 
     def testReadWriteInPkg1(self):
-        instantiationInPkg1 = self.api.pkg1.InstantiationInPkg1.fromFields(
-            self.api.test_struct.TestStruct_Test_639610D0.fromFields(self.api.pkg1.Test.fromFields(42)))
+        instantiationInPkg1 = self.api.pkg1.InstantiationInPkg1(
+            self.api.test_struct.TestStruct_Test_639610D0(self.api.pkg1.Test(42)))
 
         writer = zserio.BitStreamWriter()
         instantiationInPkg1.write(writer)
@@ -20,8 +20,8 @@ class StructTemplateClashAcrossPackagesTest(unittest.TestCase):
         self.assertEqual(instantiationInPkg1, readInstantiationInPkg1)
 
     def testReadWriteInPkg2(self):
-        instantiationInPkg2 = self.api.pkg2.InstantiationInPkg2.fromFields(
-            self.api.test_struct.TestStruct_Test_67B82BA5.fromFields(self.api.pkg2.Test.fromFields("string")))
+        instantiationInPkg2 = self.api.pkg2.InstantiationInPkg2(
+            self.api.test_struct.TestStruct_Test_67B82BA5(self.api.pkg2.Test("string")))
 
         writer = zserio.BitStreamWriter()
         instantiationInPkg2.write(writer)

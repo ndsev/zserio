@@ -10,17 +10,11 @@ class FunctionTemplatedReturnTypeTest(unittest.TestCase):
 
     def testReadWrite(self):
         hasHolder = True
-        functionTemplatedReturnType = self.api.FunctionTemplatedReturnType.fromFields(
+        functionTemplatedReturnType = self.api.FunctionTemplatedReturnType(
             hasHolder,
-            self.api.TestStructure_uint32.fromFields(
-                hasHolder, None, self.api.Holder_uint32.fromFields(42)
-            ),
-            self.api.TestStructure_string.fromFields(
-                hasHolder, None, self.api.Holder_string.fromFields("string")
-            ),
-            self.api.TestStructure_float32.fromFields(
-                False, 4.2, None
-            )
+            self.api.TestStructure_uint32(hasHolder, holder_=self.api.Holder_uint32(42)),
+            self.api.TestStructure_string(hasHolder, holder_=self.api.Holder_string("string")),
+            self.api.TestStructure_float32(False, value_=4.2)
         )
 
         writer = zserio.BitStreamWriter()

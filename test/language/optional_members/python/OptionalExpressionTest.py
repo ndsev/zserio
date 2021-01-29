@@ -8,17 +8,22 @@ class OptionalExpressionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "optional_members.zs").optional_expression
 
-    def testEmptyConstructor(self):
-        container1 = self.api.Container()
-        self.assertEqual(None, container1.getBasicColor())
-        self.assertEqual(None, container1.getNumBlackTones())
-        self.assertEqual(None, container1.getBlackColor())
+    def testConstructor(self):
+        container = self.api.Container()
+        self.assertEqual(None, container.getBasicColor())
+        self.assertEqual(None, container.getNumBlackTones())
+        self.assertEqual(None, container.getBlackColor())
 
-    def testFromFields(self):
-        container1 = self.api.Container.fromFields(self.api.BasicColor.BLACK, self.NUM_BLACK_TONES, None)
-        self.assertEqual(self.api.BasicColor.BLACK, container1.getBasicColor())
-        self.assertEqual(self.NUM_BLACK_TONES, container1.getNumBlackTones())
-        self.assertEqual(None, container1.getBlackColor())
+        container = self.api.Container(self.api.BasicColor.BLACK, self.NUM_BLACK_TONES)
+        self.assertEqual(self.api.BasicColor.BLACK, container.getBasicColor())
+        self.assertEqual(self.NUM_BLACK_TONES, container.getNumBlackTones())
+        self.assertEqual(None, container.getBlackColor())
+
+        container = self.api.Container(basicColor_=self.api.BasicColor.BLACK,
+                                       numBlackTones_=self.NUM_BLACK_TONES)
+        self.assertEqual(self.api.BasicColor.BLACK, container.getBasicColor())
+        self.assertEqual(self.NUM_BLACK_TONES, container.getNumBlackTones())
+        self.assertEqual(None, container.getBlackColor())
 
     def testEq(self):
         container1 = self.api.Container()
@@ -126,7 +131,7 @@ class OptionalExpressionTest(unittest.TestCase):
         self.assertTrue(readContainer.hasBlackColor())
 
     def _createBlackColor(self, numBlackTones):
-        return self.api.BlackColor.fromFields(numBlackTones, [i + 1 for i in range(numBlackTones)])
+        return self.api.BlackColor(numBlackTones, [i + 1 for i in range(numBlackTones)])
 
     def _checkContainerInStream(self, reader, basicColor, numBlackTones):
         self.assertEqual(basicColor.value, reader.readBits(8))

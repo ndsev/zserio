@@ -95,16 +95,13 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
 
     def _createBitmaskParamTableRow(self, rowId, name):
         values1 = [rowId for i in range(self.BITMASK_PARAM_TABLE_COUNT1.getValue())]
-        testBlob1 = self.api.explicit_bitmask_param.TestBlob.fromFields(self.BITMASK_PARAM_TABLE_COUNT1,
-                                                                        values1)
+        testBlob1 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT1, values1)
 
         values2 = [rowId + 1 for i in range(self.BITMASK_PARAM_TABLE_COUNT2.getValue())]
-        testBlob2 = self.api.explicit_bitmask_param.TestBlob.fromFields(self.BITMASK_PARAM_TABLE_COUNT2,
-                                                                        values2)
+        testBlob2 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT2, values2)
 
         values3 = [rowId + 2 for i in range(self.BITMASK_PARAM_TABLE_COUNT1.getValue())]
-        testBlob3 = self.api.explicit_bitmask_param.TestBlob.fromFields(self.BITMASK_PARAM_TABLE_COUNT1,
-                                                                        values3)
+        testBlob3 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT1, values3)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
 

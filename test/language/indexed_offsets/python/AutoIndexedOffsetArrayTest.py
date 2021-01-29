@@ -138,7 +138,7 @@ class AutoIndexedOffsetArrayTest(unittest.TestCase):
         for i in range(NUM_ELEMENTS):
             data.append(i % 64)
 
-        return self.api.AutoIndexedOffsetArray.fromFields(offsets, SPACER_VALUE, data)
+        return self.api.AutoIndexedOffsetArray(offsets, SPACER_VALUE, data)
 
 NUM_ELEMENTS = 5
 

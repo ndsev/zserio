@@ -24,7 +24,7 @@ class Int7ArrayRangeCheckTest(unittest.TestCase):
             self._checkInt7ArrayValue(INT7_UPPER_BOUND + 1)
 
     def _checkInt7ArrayValue(self, value):
-        int7ArrayRangeCheckCompound = self.api.Int7ArrayRangeCheckCompound.fromFields(1, [value])
+        int7ArrayRangeCheckCompound = self.api.Int7ArrayRangeCheckCompound(1, array_=[value])
         writer = zserio.BitStreamWriter()
         int7ArrayRangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

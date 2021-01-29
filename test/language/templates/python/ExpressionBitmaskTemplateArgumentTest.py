@@ -9,10 +9,10 @@ class ExpressionBitmaskTemplateArgumentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").expression_bitmask_template_argument
 
     def testReadWrite(self):
-        bitmaskTemplateArgument_Permission = self.api.BitmaskTemplateArgument_Permission.fromFields(False, 10)
+        bitmaskTemplateArgument_Permission = self.api.BitmaskTemplateArgument_Permission(False, 10)
         self.assertTrue(bitmaskTemplateArgument_Permission.hasExpressionField())
 
-        bitmaskTemplateArgumentHolder = self.api.BitmaskTemplateArgumentHolder.fromFields(
+        bitmaskTemplateArgumentHolder = self.api.BitmaskTemplateArgumentHolder(
             bitmaskTemplateArgument_Permission
         )
         writer = zserio.BitStreamWriter()

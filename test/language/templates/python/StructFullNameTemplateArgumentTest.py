@@ -9,9 +9,9 @@ class StructFullNameTemplateArgumentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").struct_full_name_template_argument
 
     def testReadWrite(self):
-        structFullNameTemplateArgument = self.api.StructFullNameTemplateArgument.fromFields(
-            self.api.TemplatedStruct_Storage_08C0ED6D.fromFields(self.api.storage.Storage.fromFields(42)),
-            self.api.TemplatedStruct_Storage_A3A4B101.fromFields(self.api.Storage.fromFields("string"))
+        structFullNameTemplateArgument = self.api.StructFullNameTemplateArgument(
+            self.api.TemplatedStruct_Storage_08C0ED6D(self.api.storage.Storage(42)),
+            self.api.TemplatedStruct_Storage_A3A4B101(self.api.Storage("string"))
         )
 
         writer = zserio.BitStreamWriter()

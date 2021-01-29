@@ -8,7 +8,7 @@ class EnumerationTypeTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").enumeration_type
 
     def testBitSizeOfWithOptional(self):
-        enumerationTypeExpression = self.api.EnumerationTypeExpression.fromFields(self.api.Color.RED, True)
+        enumerationTypeExpression = self.api.EnumerationTypeExpression(self.api.Color.RED, isColorRed_=True)
         self.assertEqual(self.ENUMERATION_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL,
                          enumerationTypeExpression.bitSizeOf())
 

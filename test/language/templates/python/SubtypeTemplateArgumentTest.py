@@ -8,10 +8,10 @@ class SubtypeTemplateArgumentTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").subtype_template_argument
 
     def testBitSizeOf(self):
-        field_uint32 = self.api.Field_uint32.fromFields(10)
-        field_compound = self.api.Field_Compound.fromFields(self.api.Compound.fromFields(10))
-        subtypeTemplateArgument = self.api.SubtypeTemplateArgument.fromFields(field_uint32, field_uint32,
-                                                                              field_uint32, field_compound,
-                                                                              field_compound,
-                                                                              field_compound)
+        field_uint32 = self.api.Field_uint32(10)
+        field_compound = self.api.Field_Compound(self.api.Compound(10))
+        subtypeTemplateArgument = self.api.SubtypeTemplateArgument(field_uint32, field_uint32,
+                                                                   field_uint32, field_compound,
+                                                                   field_compound,
+                                                                   field_compound)
         self.assertEqual(192, subtypeTemplateArgument.bitSizeOf())

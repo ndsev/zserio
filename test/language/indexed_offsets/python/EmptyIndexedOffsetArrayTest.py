@@ -65,7 +65,7 @@ class EmptyIndexedOffsetArrayTest(unittest.TestCase):
         self.assertEqual(self.NUM_ELEMENTS, len(data))
 
     def _createEmptyIndexedOffsetArray(self):
-        return self.api.EmptyIndexedOffsetArray.fromFields([], self.SPACER_VALUE, [], self.FIELD_VALUE)
+        return self.api.EmptyIndexedOffsetArray([], self.SPACER_VALUE, [], self.FIELD_VALUE)
 
     NUM_ELEMENTS = 0
 

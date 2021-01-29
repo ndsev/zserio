@@ -8,7 +8,7 @@ class NegationOperatorTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "expressions.zs").negation_operator
 
     def testNegatedValue(self):
-        negationOperatorExpression = self.api.NegationOperatorExpression.fromFields(True)
+        negationOperatorExpression = self.api.NegationOperatorExpression(True)
         self.assertEqual(False, negationOperatorExpression.funcNegatedValue())
 
         negationOperatorExpression.setValue(False)

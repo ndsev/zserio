@@ -24,7 +24,7 @@ class VarIntRangeCheckTest(unittest.TestCase):
             self._checkVarIntValue(VARINT_UPPER_BOUND + 1)
 
     def _checkVarIntValue(self, value):
-        varIntRangeCheckCompound = self.api.VarIntRangeCheckCompound.fromFields(value)
+        varIntRangeCheckCompound = self.api.VarIntRangeCheckCompound(value)
         writer = zserio.BitStreamWriter()
         varIntRangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

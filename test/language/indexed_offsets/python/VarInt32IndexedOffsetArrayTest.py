@@ -135,7 +135,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         for i in range(NUM_ELEMENTS):
             data.append(i)
 
-        return self.api.VarInt32IndexedOffsetArray.fromFields(offsets, SPACER_VALUE, data)
+        return self.api.VarInt32IndexedOffsetArray(offsets, SPACER_VALUE, data)
 
     @staticmethod
     def _getVarInt32IndexedOffsetArrayBitSize():

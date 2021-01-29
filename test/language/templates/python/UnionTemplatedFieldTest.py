@@ -14,10 +14,8 @@ class UnionTemplatedFieldTest(unittest.TestCase):
         floatUnion = self.api.TemplatedUnion_float32_float64()
         floatUnion.setField2(4.2)
         compoundUnion = self.api.TemplatedUnion_Compound_uint16_Compound_uint32()
-        compoundUnion.setField3(self.api.Compound_Compound_uint16.fromFields(
-            self.api.Compound_uint16.fromFields(13)
-        ))
-        unionTemplatedField = self.api.UnionTemplatedField.fromFields(uintUnion, floatUnion, compoundUnion)
+        compoundUnion.setField3(self.api.Compound_Compound_uint16(self.api.Compound_uint16(13)))
+        unionTemplatedField = self.api.UnionTemplatedField(uintUnion, floatUnion, compoundUnion)
 
         writer = zserio.BitStreamWriter()
         unionTemplatedField.write(writer)

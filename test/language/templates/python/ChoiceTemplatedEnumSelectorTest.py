@@ -15,7 +15,7 @@ class ChoiceTemplatedEnumSelectorTest(unittest.TestCase):
         fromZeroChoice.setUint16Field(42)
         fromOneChoice = self.api.TemplatedChoice_EnumFromOne(selectorFromOne)
         fromOneChoice.setStringField("string")
-        choiceTemplatedEnumSelector = self.api.ChoiceTemplatedEnumSelector.fromFields(
+        choiceTemplatedEnumSelector = self.api.ChoiceTemplatedEnumSelector(
             selectorFromZero, selectorFromOne, fromZeroChoice, fromOneChoice
         )
 

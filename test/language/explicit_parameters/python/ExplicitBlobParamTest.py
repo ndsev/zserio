@@ -12,8 +12,8 @@ class ExplicitBlobParamTest(unittest.TestCase):
         test_api = cls.api.explicit_blob_param
         class BlobParamTableParameterProvider(test_api.BlobParamTable.IParameterProvider):
             def __init__(self):
-                self.header = test_api.Header.fromFields(BLOB_PARAM_TABLE_HEADER_COUNT)
-                self.blob = test_api.Header.fromFields(BLOB_PARAM_TABLE_BLOB_COUNT)
+                self.header = test_api.Header(BLOB_PARAM_TABLE_HEADER_COUNT)
+                self.blob = test_api.Header(BLOB_PARAM_TABLE_BLOB_COUNT)
 
             def getHeader(self, _row):
                 return self.header
@@ -93,17 +93,17 @@ class ExplicitBlobParamTest(unittest.TestCase):
         return rows
 
     def _createBlobParamTableRow(self, rowId, name):
-        header = self.api.explicit_blob_param.Header.fromFields(BLOB_PARAM_TABLE_HEADER_COUNT)
+        header = self.api.explicit_blob_param.Header(BLOB_PARAM_TABLE_HEADER_COUNT)
 
         values1 = [rowId for i in range(BLOB_PARAM_TABLE_HEADER_COUNT)]
-        testBlob1 = self.api.explicit_blob_param.TestBlob.fromFields(header, values1)
+        testBlob1 = self.api.explicit_blob_param.TestBlob(header, values1)
 
-        blob = self.api.explicit_blob_param.Header.fromFields(BLOB_PARAM_TABLE_BLOB_COUNT)
+        blob = self.api.explicit_blob_param.Header(BLOB_PARAM_TABLE_BLOB_COUNT)
         values2 = [rowId + 1 for i in range(BLOB_PARAM_TABLE_BLOB_COUNT)]
-        testBlob2 = self.api.explicit_blob_param.TestBlob.fromFields(blob, values2)
+        testBlob2 = self.api.explicit_blob_param.TestBlob(blob, values2)
 
         values3 = [rowId + 2 for i in range(BLOB_PARAM_TABLE_HEADER_COUNT)]
-        testBlob3 = self.api.explicit_blob_param.TestBlob.fromFields(header, values3)
+        testBlob3 = self.api.explicit_blob_param.TestBlob(header, values3)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
 

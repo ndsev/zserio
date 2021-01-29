@@ -9,9 +9,7 @@ class InstantiateSimpleTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "templates.zs").instantiate_simple
 
     def testReadWrite(self):
-        instantiateSimple = self.api.InstantiateSimple.fromFields(
-            self.api.U32.fromFields(13)
-        )
+        instantiateSimple = self.api.InstantiateSimple(self.api.U32(13))
 
         writer = zserio.BitStreamWriter()
         instantiateSimple.write(writer)

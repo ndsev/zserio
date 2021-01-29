@@ -24,7 +24,7 @@ class VarInt16RangeCheckTest(unittest.TestCase):
             self._checkVarInt16Value(VARINT16_UPPER_BOUND + 1)
 
     def _checkVarInt16Value(self, value):
-        varInt16RangeCheckCompound = self.api.VarInt16RangeCheckCompound.fromFields(value)
+        varInt16RangeCheckCompound = self.api.VarInt16RangeCheckCompound(value)
         writer = zserio.BitStreamWriter()
         varInt16RangeCheckCompound.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())
