@@ -63,7 +63,7 @@ public:
                 m_choiceTag = <@choice_tag_name field/>;
             </#list>
         else
-            throw ::zserio::CppRuntimeException("No match in union Union!");
+            throw ::zserio::CppRuntimeException("No match in union ${name}!");
         </#if>
     }
     </#if>

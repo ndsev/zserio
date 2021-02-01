@@ -22,8 +22,7 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
         uint32Table.write(uint32TableRows)
 
         unionTable = sqlTableTemplatedFieldDb.getUnionTable()
-        union1 = self.api.Union()
-        union1.setValueString("string")
+        union1 = self.api.Union(valueString_="string")
         unionTableRows = [(13, self.api.Data_Union(union1))]
         unionTable.write(unionTableRows)
 

@@ -8,9 +8,21 @@ class SimpleUnionTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "union_types.zs").simple_union
 
-    def testEmptyConstructor(self):
+    def testConstructor(self):
         simpleUnion = self.api.SimpleUnion()
         self.assertEqual(self.api.SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choiceTag())
+
+        simpleUnion = self.api.SimpleUnion(case2Field_=12)
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choiceTag())
+        self.assertEqual(12, simpleUnion.getCase2Field())
+
+        simpleUnion = self.api.SimpleUnion(case3Field_="test")
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case3Field, simpleUnion.choiceTag())
+        self.assertEqual("test", simpleUnion.getCase3Field())
+
+    def testAmbiguousConstructor(self):
+        with self.assertRaises(zserio.PythonRuntimeException):
+            self.api.SimpleUnion(case2Field_=12, case3Field_="test")
 
     def testEmptyConstructorBitSizeof(self):
         simpleUnion = self.api.SimpleUnion()
@@ -112,6 +124,9 @@ class SimpleUnionTest(unittest.TestCase):
         simpleUnion.setCase4Field(self.CASE4_FIELD)
         self.assertEqual(self.api.SimpleUnion.CHOICE_case4Field, simpleUnion.choiceTag())
 
+        simpleUnion = self.api.SimpleUnion(case2Field_=self.CASE2_FIELD)
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choiceTag())
+
     def testBitSizeOf(self):
         simpleUnion = self.api.SimpleUnion()
 
@@ -188,8 +203,7 @@ class SimpleUnionTest(unittest.TestCase):
         readSimpleUnion = self.api.SimpleUnion.fromReader(reader)
         self.assertTrue(simpleUnion == readSimpleUnion)
 
-        simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase3Field(self.CASE3_FIELD)
+        simpleUnion = self.api.SimpleUnion(case3Field_=self.CASE3_FIELD)
         writer = zserio.BitStreamWriter()
         simpleUnion.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray())

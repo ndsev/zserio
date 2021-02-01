@@ -29,18 +29,19 @@ ${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name 
     </#if>
 </#macro>
 
-<#macro compound_setter_field field withWriterCode>
+<#macro compound_setter_field field withWriterCode indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array??>
         <#if field.optional??>
-        if <@field_argument_name field/> is None:
-            self.<@field_member_name field/> = None
-        else:
-            self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
+${I}if <@field_argument_name field/> is None:
+${I}    self.<@field_member_name field/> = None
+${I}else:
+${I}    self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
         <#else>
-        self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
+${I}self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
         </#if>
     <#else>
-        self.<@field_member_name field/> = <@field_argument_name field/>
+${I}self.<@field_member_name field/> = <@field_argument_name field/>
     </#if>
 </#macro>
 
@@ -292,11 +293,7 @@ ${I}                                        (self.<@field_member_name field/>, l
 
 <#macro field_annotation_argument_type_name field compoundName>
     <#if field.array??>
-        <#if field.array.elementIsRecursive>
-            <#local arrayAnnotationType>typing.List['${compoundName}']</#local>
-        <#else>
-            <#local arrayAnnotationType>typing.List[${field.array.elementPythonTypeName}]</#local>
-        </#if>
+        <#local arrayAnnotationType><@field_annotation_array_argument_type_name field.array, compoundName/></#local>
         <#if field.optional??>
             typing.Optional[${arrayAnnotationType}]<#t>
         <#else>
@@ -304,6 +301,22 @@ ${I}                                        (self.<@field_member_name field/>, l
         </#if>
     <#else>
         <@field_annotation_type_name field, compoundName/>
+    </#if>
+</#macro>
+
+<#macro field_annotation_array_argument_type_name fieldArray compoundName>
+    <#if fieldArray.elementIsRecursive>
+        typing.List['${compoundName}']<#t>
+    <#else>
+        typing.List[${fieldArray.elementPythonTypeName}]<#t>
+    </#if>
+</#macro>
+
+<#macro field_annotation_argument_type_choice_name field compoundName>
+    <#if field.array??>
+        typing.Union[<@field_annotation_array_argument_type_name field.array, compoundName/>, None]<#t>
+    <#else>
+        typing.Union[${field.pythonTypeName}, None]<#t>
     </#if>
 </#macro>
 

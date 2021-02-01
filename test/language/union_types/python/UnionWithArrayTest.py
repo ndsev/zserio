@@ -13,6 +13,5 @@ class UnionWithArrayTest(unittest.TestCase):
         self.assertEqual(4, len(testUnion.getArray8()))
 
     def testArray16(self):
-        testUnion = self.api.TestUnion()
-        testUnion.setArray16([1, 2, 3, 4])
+        testUnion = self.api.TestUnion(array16_=[1, 2, 3, 4])
         self.assertEqual(4, len(testUnion.getArray16()))

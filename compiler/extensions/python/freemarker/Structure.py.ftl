@@ -28,7 +28,7 @@ class ${name}:
             <#lt>) -> None:
         <@compound_constructor_parameter_assignments compoundParametersData/>
     <#list fieldList as field>
-        <@compound_setter_field field, withWriterCode/>
+        <@compound_setter_field field, withWriterCode, 2/>
     </#list>
 
 </#if>
@@ -109,7 +109,7 @@ ${I}<#rt>
     def ${field.setterName}<#rt>
         </#if>
     <#lt>(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
-        <@compound_setter_field field, withWriterCode/>
+        <@compound_setter_field field, withWriterCode, 2/>
     </#if>
     <#if field.optional??>
 

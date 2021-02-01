@@ -30,9 +30,7 @@ class UnionWithParameterTest(unittest.TestCase):
             testUnion.write(writer) # raises exception
 
     def testFromReader(self):
-        testUnion = self.api.TestUnion(True)
-        case3FieldValue = -1
-        testUnion.setCase3Field(case3FieldValue)
+        testUnion = self.api.TestUnion(True, case3Field_=-1)
         writer = zserio.BitStreamWriter()
         testUnion.write(writer)
 
@@ -40,4 +38,4 @@ class UnionWithParameterTest(unittest.TestCase):
         readTestUnion = self.api.TestUnion.fromReader(reader, True)
         self.assertEqual(testUnion.choiceTag(), readTestUnion.choiceTag())
         self.assertEqual(testUnion.getCase3Field(), readTestUnion.getCase3Field())
-        self.assertEqual(case3FieldValue, readTestUnion.getCase3Field())
+        self.assertEqual(-1, readTestUnion.getCase3Field())

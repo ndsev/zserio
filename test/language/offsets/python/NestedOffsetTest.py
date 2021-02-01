@@ -123,8 +123,7 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffsetArrayStructure = self.api.NestedOffsetArrayStructure(self.NUM_ELEMENTS,
                                                                          nestedOffsetStructureList)
 
-        nestedOffsetUnion = self.api.NestedOffsetUnion()
-        nestedOffsetUnion.setNestedOffsetArrayStructure(nestedOffsetArrayStructure)
+        nestedOffsetUnion = self.api.NestedOffsetUnion(nestedOffsetArrayStructure_=nestedOffsetArrayStructure)
 
         nestedOffsetChoice = self.api.NestedOffsetChoice(self.BOOL_VALUE)
         nestedOffsetChoice.setNestedOffsetUnion(nestedOffsetUnion)
