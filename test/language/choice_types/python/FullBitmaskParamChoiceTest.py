@@ -8,10 +8,15 @@ class FullBitmaskParamChoiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "choice_types.zs").full_bitmask_param_choice
 
-    def testSelectorConstructor(self):
+    def testConstructor(self):
         selector = self.api.Selector.Values.BLACK
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector)
         self.assertEqual(selector, fullBitmaskParamChoice.getSelector())
+
+        selector = self.api.Selector.Values.WHITE
+        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector, white_=0xff)
+        self.assertEqual(selector, fullBitmaskParamChoice.getSelector())
+        self.assertEqual(0xff, fullBitmaskParamChoice.getWhite())
 
     def testFromReader(self):
         selector = self.api.Selector.Values.WHITE
@@ -113,9 +118,8 @@ class FullBitmaskParamChoiceTest(unittest.TestCase):
         self.assertEqual(fullBitmaskParamChoice, readFullBitmaskParamChoice)
 
         selector = self.api.Selector.Values.WHITE
-        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector)
         shortValue = 234
-        fullBitmaskParamChoice.setWhite(shortValue)
+        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector, white_=shortValue)
         writer = zserio.BitStreamWriter()
         fullBitmaskParamChoice.write(writer)
         readFullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector)

@@ -125,8 +125,7 @@ class NestedOffsetTest(unittest.TestCase):
 
         nestedOffsetUnion = self.api.NestedOffsetUnion(nestedOffsetArrayStructure_=nestedOffsetArrayStructure)
 
-        nestedOffsetChoice = self.api.NestedOffsetChoice(self.BOOL_VALUE)
-        nestedOffsetChoice.setNestedOffsetUnion(nestedOffsetUnion)
+        nestedOffsetChoice = self.api.NestedOffsetChoice(self.BOOL_VALUE, nestedOffsetUnion_=nestedOffsetUnion)
 
         terminatorOffset = self.WRONG_TERMINATOR_OFFSET if createWrongOffsets else self.TERMINATOR_OFFSET
         nestedOffset = self.api.NestedOffset(terminatorOffset, self.BOOL_VALUE, nestedOffsetChoice,

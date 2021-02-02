@@ -8,10 +8,15 @@ class BoolParamChoiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "choice_types.zs").bool_param_choice
 
-    def testSelectorConstructor(self):
+    def testConstructor(self):
         selector = True
         boolParamChoice = self.api.BoolParamChoice(selector)
         self.assertEqual(selector, boolParamChoice.getSelector())
+
+        selector = False
+        boolParamChoice = self.api.BoolParamChoice(selector, grey_=1234)
+        self.assertEqual(selector, boolParamChoice.getSelector())
+        self.assertEqual(1234, boolParamChoice.getGrey())
 
     def testFromReader(self):
         selector = False
@@ -101,9 +106,8 @@ class BoolParamChoiceTest(unittest.TestCase):
         self.assertEqual(boolParamChoice, readBoolParamChoice)
 
         selector = False
-        boolParamChoice = self.api.BoolParamChoice(selector)
         shortValue = 234
-        boolParamChoice.setGrey(shortValue)
+        boolParamChoice = self.api.BoolParamChoice(selector, grey_=shortValue)
         writer = zserio.BitStreamWriter()
         boolParamChoice.write(writer)
         readBoolParamChoice = self.api.BoolParamChoice(selector)

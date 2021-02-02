@@ -8,10 +8,14 @@ class BitmaskParamChoiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "choice_types.zs").bitmask_param_choice
 
-    def testSelectorConstructor(self):
+    def testConstructor(self):
         selector = self.api.Selector.Values.BLACK
         bitmaskParamChoice = self.api.BitmaskParamChoice(selector)
         self.assertEqual(selector, bitmaskParamChoice.getSelector())
+
+        bitmaskParamChoice = self.api.BitmaskParamChoice(selector, black_=42)
+        self.assertEqual(selector, bitmaskParamChoice.getSelector())
+        self.assertEqual(42, bitmaskParamChoice.getBlack())
 
     def testFromReader(self):
         selector = self.api.Selector.Values.WHITE
@@ -113,9 +117,8 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         self.assertEqual(bitmaskParamChoice, readBitmaskParamChoice)
 
         selector = self.api.Selector.Values.WHITE
-        bitmaskParamChoice = self.api.BitmaskParamChoice(selector)
         shortValue = 234
-        bitmaskParamChoice.setWhite(shortValue)
+        bitmaskParamChoice = self.api.BitmaskParamChoice(selector, white_=shortValue)
         writer = zserio.BitStreamWriter()
         bitmaskParamChoice.write(writer)
         readBitmaskParamChoice = self.api.BitmaskParamChoice(selector)

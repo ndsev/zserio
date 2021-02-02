@@ -16,7 +16,6 @@ class FunctionSelectorChoiceTest(unittest.TestCase):
 
     def testField16(self):
         selector = self.api.Selector(numBits_=16)
-        testChoice = self.api.TestChoice(selector)
-        testChoice.setField16(0x7F7F)
+        testChoice = self.api.TestChoice(selector, field16_=0x7F7F)
         self.assertEqual(0x7F7F, testChoice.getField16())
         self.assertEqual(16, testChoice.bitSizeOf())

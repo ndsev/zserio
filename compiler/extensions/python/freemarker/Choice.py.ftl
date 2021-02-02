@@ -34,9 +34,30 @@ class ${name}:
 <#assign constructorAnnotatedParamList><@compound_constructor_annotated_parameters compoundParametersData, 3/></#assign>
     def __init__(
             self<#if constructorAnnotatedParamList?has_content>,
-            <#lt>${constructorAnnotatedParamList}</#if>) -> None:
+            <#lt>${constructorAnnotatedParamList}</#if><#rt>
+<#if fieldList?has_content>
+            <#lt>,
+            *,
+    <#list fieldList as field>
+            <@field_argument_name field/>: <@field_annotation_argument_type_choice_name field, name/> = None<#rt>
+        <#if field?has_next>
+            <#lt>,
+        </#if>
+    </#list>
+</#if>
+            <#lt>) -> None:
         <@compound_constructor_parameter_assignments compoundParametersData/>
         self._choice = None # type: typing.Any
+<#if fieldList?has_content>
+    <#list fieldList as field>
+        if <@field_argument_name field/> is not None:
+        <#if !field?is_first>
+            if self._choice != None:
+                raise zserio.PythonRuntimeException("Calling constructor of choice ${name} is ambiguous!")
+        </#if>
+            <@compound_setter_field field, withWriterCode, 3/>
+     </#list>
+</#if>
 
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
     @classmethod

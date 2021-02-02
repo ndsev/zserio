@@ -8,10 +8,15 @@ class FullEnumParamChoiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "choice_types.zs").full_enum_param_choice
 
-    def testSelectorConstructor(self):
+    def testConstructor(self):
         selector = self.api.Selector.BLACK
         fullEnumParamChoice = self.api.FullEnumParamChoice(selector)
         self.assertEqual(selector, fullEnumParamChoice.getSelector())
+
+        selector = self.api.Selector.WHITE
+        fullEnumParamChoice = self.api.FullEnumParamChoice(selector, white_=123)
+        self.assertEqual(selector, fullEnumParamChoice.getSelector())
+        self.assertEqual(123, fullEnumParamChoice.getWhite())
 
     def testFromReader(self):
         selector = self.api.Selector.GREY
@@ -113,9 +118,8 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         self.assertEqual(fullEnumParamChoice, readFullEnumParamChoice)
 
         selector = self.api.Selector.GREY
-        fullEnumParamChoice = self.api.FullEnumParamChoice(selector)
         shortValue = 234
-        fullEnumParamChoice.setGrey(shortValue)
+        fullEnumParamChoice = self.api.FullEnumParamChoice(selector, grey_=shortValue)
         writer = zserio.BitStreamWriter()
         fullEnumParamChoice.write(writer)
         readFullEnumParamChoice = self.api.FullEnumParamChoice(selector)

@@ -30,9 +30,8 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         self.assertEqual(byteValueA, readDefaultEmptyChoiceA.getA())
         self.assertEqual(defaultEmptyChoiceA, readDefaultEmptyChoiceA)
 
-        defaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR)
         shortValueB = 234
-        defaultEmptyChoiceB.setB(shortValueB)
+        defaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR, b_=shortValueB)
         writer = zserio.BitStreamWriter()
         defaultEmptyChoiceB.write(writer)
         readDefaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR)

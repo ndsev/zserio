@@ -8,10 +8,15 @@ class UInt32ParamChoiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "choice_types.zs").uint32_param_choice
 
-    def testSelectorConstructor(self):
+    def testConstructor(self):
         selector = self.VARIANT_A_SELECTOR
         uint32ParamChoice = self.api.UInt32ParamChoice(selector)
         self.assertEqual(selector, uint32ParamChoice.getSelector())
+
+        selector = self.VARIANT_B_SELECTOR1
+        uint32ParamChoice = self.api.UInt32ParamChoice(selector, b_=1234)
+        self.assertEqual(selector, uint32ParamChoice.getSelector())
+        self.assertEqual(1234, uint32ParamChoice.getB())
 
     def testFromReader(self):
         selector = self.VARIANT_B_SELECTOR1
@@ -123,9 +128,8 @@ class UInt32ParamChoiceTest(unittest.TestCase):
         self.assertEqual(byteValueA, readUInt32ParamChoiceA.getA())
         self.assertEqual(uint32ParamChoiceA, readUInt32ParamChoiceA)
 
-        uint32ParamChoiceB = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1)
         shortValueB = 234
-        uint32ParamChoiceB.setB(shortValueB)
+        uint32ParamChoiceB = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1, b_=shortValueB)
         writer = zserio.BitStreamWriter()
         uint32ParamChoiceB.write(writer)
         readUInt32ParamChoiceB = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1)

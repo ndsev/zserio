@@ -8,9 +8,13 @@ class UInt64ParamChoiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "choice_types.zs").uint64_param_choice
 
-    def testSelectorConstructor(self):
+    def testConstructor(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         self.assertEqual(self.VARIANT_A_SELECTOR, uint64ParamChoice.getSelector())
+
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR, b_=1234)
+        self.assertEqual(self.VARIANT_B_SELECTOR, uint64ParamChoice.getSelector())
+        self.assertEqual(1234, uint64ParamChoice.getB())
 
     def testFromReader(self):
         selector = self.VARIANT_B_SELECTOR
@@ -103,9 +107,8 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         self.assertEqual(byteValue, readUInt64ParamChoice.getA())
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
 
-        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
         shortValue = 234
-        uint64ParamChoice.setB(shortValue)
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR, b_=shortValue)
         writer = zserio.BitStreamWriter()
         uint64ParamChoice.write(writer)
         readUInt64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)

@@ -12,8 +12,9 @@ class ChoiceTemplatedFieldTest(unittest.TestCase):
         selector = 0
         choice1 = self.api.TemplatedChoice_uint32_uint16(selector)
         choice1.setTemplatedField1(42)
-        choice2 = self.api.TemplatedChoice_Compound_uint32_uint16(selector)
-        choice2.setTemplatedField1(self.api.Compound_uint32(42))
+        choice2 = self.api.TemplatedChoice_Compound_uint32_uint16(
+            selector, templatedField1_=self.api.Compound_uint32(42)
+        )
         choiceTemplatedField = self.api.ChoiceTemplatedField(selector, choice1, choice2)
 
         writer = zserio.BitStreamWriter()

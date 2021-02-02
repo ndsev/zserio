@@ -15,9 +15,8 @@ class ExpressionSelectorChoiceTest(unittest.TestCase):
         self.assertEqual(8, expressionSelectorChoice.bitSizeOf())
 
     def testField16(self):
-        expressionSelectorChoice = self.api.ExpressionSelectorChoice(1)
         value16 = 0x7F7F
-        expressionSelectorChoice.setField16(value16)
+        expressionSelectorChoice = self.api.ExpressionSelectorChoice(1, field16_=value16)
         self.assertEqual(value16, expressionSelectorChoice.getField16())
         self.assertEqual(16, expressionSelectorChoice.bitSizeOf())
 
