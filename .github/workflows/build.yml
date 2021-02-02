@@ -1,4 +1,4 @@
-name: build-ubuntu_18_04
+name: build-ubuntu_16_04
 
 on:
   push:
@@ -8,8 +8,12 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-16.04
     env:
+      CPPCHECK_HOME: "${{github.workspace}}/cppcheck-1.90"
+      SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-3.1.12"
+      PYLINT_ENABLED: 1
+      PYLINT_EXTRA_ARGS: "--disable=wrong-import-order"
       MYPY_ENABLED: 1
     steps:
     - name: Checkout
@@ -31,7 +35,24 @@ jobs:
     - name: Workaround for 'Unable to connect to ppa.launchpad.net' failure during installation
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
     - name: Install dependencies
-      run: sudo apt-get install doxygen graphviz g++-multilib
+      run: sudo apt-get install cmake doxygen graphviz g++-multilib
+    - name: Install specific version of C++ static code analysis tool (cppcheck)
+      run: |
+        wget https://github.com/danmar/cppcheck/archive/1.90.tar.gz -P "${GITHUB_WORKSPACE}" -O cppcheck-1.90.tar.gz
+        tar -xf "${GITHUB_WORKSPACE}"/cppcheck-1.90.tar.gz
+        mkdir "${GITHUB_WORKSPACE}/cppcheck-1.90/build"
+        pushd "${GITHUB_WORKSPACE}/cppcheck-1.90/build"
+        cmake .. -DHAVE_RULES=ON -DUSE_MATCHCOMPILER=ON \
+               -DCMAKE_INSTALL_PREFIX="${GITHUB_WORKSPACE}"/cppcheck-1.90 \
+               -DCMAKE_INSTALL_BINDIR=. \
+               -DCMAKE_BUILD_TYPE=Release \
+               -DFILESDIR=.
+        cmake --build . --target install
+        popd
+    - name: Install specific version of Java static code analysis tool (spotbugs)
+      run: |
+        wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip -P "${GITHUB_WORKSPACE}"
+        unzip "${GITHUB_WORKSPACE}"/spotbugs-3.1.12.zip
     - name: Build Zserio
       run: scripts/build.sh all-linux64 cpp_rt-linux32
     - name: Pack Zserio release
