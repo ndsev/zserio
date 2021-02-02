@@ -60,22 +60,22 @@ class OptionalExpressionTest(unittest.TestCase):
     def testHasNumBlackTones(self):
         container = self.api.Container()
         container.setBasicColor(self.api.BasicColor.WHITE)
-        self.assertFalse(container.hasNumBlackTones())
+        self.assertFalse(container.isNumBlackTonesOptionalClauseMet())
 
         container.setBasicColor(self.api.BasicColor.BLACK)
         container.setNumBlackTones(self.NUM_BLACK_TONES)
-        self.assertTrue(container.hasNumBlackTones())
+        self.assertTrue(container.isNumBlackTonesOptionalClauseMet())
         self.assertEqual(self.NUM_BLACK_TONES, container.getNumBlackTones())
 
     def testHasBlackColor(self):
         container = self.api.Container()
         container.setBasicColor(self.api.BasicColor.WHITE)
-        self.assertFalse(container.hasBlackColor())
+        self.assertFalse(container.isBlackColorOptionalClauseMet())
 
         container.setBasicColor(self.api.BasicColor.BLACK)
         blackColor = self._createBlackColor(self.NUM_BLACK_TONES)
         container.setBlackColor(blackColor)
-        self.assertTrue(container.hasBlackColor())
+        self.assertTrue(container.isBlackColorOptionalClauseMet())
         self.assertTrue(blackColor == container.getBlackColor())
 
     def testBitSizeOf(self):
@@ -111,8 +111,8 @@ class OptionalExpressionTest(unittest.TestCase):
         reader.setBitPosition(0)
         readContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.api.BasicColor.WHITE, readContainer.getBasicColor())
-        self.assertFalse(readContainer.hasNumBlackTones())
-        self.assertFalse(readContainer.hasBlackColor())
+        self.assertFalse(readContainer.isNumBlackTonesOptionalClauseMet())
+        self.assertFalse(readContainer.isBlackColorOptionalClauseMet())
 
         container.setBasicColor(self.api.BasicColor.BLACK)
         container.setNumBlackTones(self.NUM_BLACK_TONES)
@@ -127,8 +127,8 @@ class OptionalExpressionTest(unittest.TestCase):
         self.assertEqual(self.api.BasicColor.BLACK, readContainer.getBasicColor())
         self.assertEqual(self.NUM_BLACK_TONES, readContainer.getNumBlackTones())
         self.assertTrue(blackColor == readContainer.getBlackColor())
-        self.assertTrue(readContainer.hasNumBlackTones())
-        self.assertTrue(readContainer.hasBlackColor())
+        self.assertTrue(readContainer.isNumBlackTonesOptionalClauseMet())
+        self.assertTrue(readContainer.isBlackColorOptionalClauseMet())
 
     def _createBlackColor(self, numBlackTones):
         return self.api.BlackColor(numBlackTones, [i + 1 for i in range(numBlackTones)])

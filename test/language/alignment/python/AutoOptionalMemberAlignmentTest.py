@@ -84,10 +84,10 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
 
     def _checkAutoOptionalMemberAlignment(self, autoOptionalMemberAlignment, autoOptionalField, field):
         if autoOptionalField is not None:
-            self.assertTrue(autoOptionalMemberAlignment.hasAutoOptionalField())
+            self.assertTrue(autoOptionalMemberAlignment.isAutoOptionalFieldSet())
             self.assertEqual(autoOptionalField, autoOptionalMemberAlignment.getAutoOptionalField())
         else:
-            self.assertFalse(autoOptionalMemberAlignment.hasAutoOptionalField())
+            self.assertFalse(autoOptionalMemberAlignment.isAutoOptionalFieldSet())
         self.assertEqual(field, autoOptionalMemberAlignment.getField())
 
     WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96

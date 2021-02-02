@@ -17,9 +17,9 @@ class OptionalArrayTest(unittest.TestCase):
     def testAutoData8(self):
         numElements = 5
         test = self.api.TestStruct()
-        self.assertFalse(test.hasAutoData8())
+        self.assertFalse(test.isAutoData8Set())
         test.setAutoData8([self.api.Data8(i) for i in range(numElements)])
-        self.assertTrue(test.hasAutoData8())
+        self.assertTrue(test.isAutoData8Set())
         self.assertEqual(numElements, len(test.getAutoData8()))
 
     def testData16(self):
@@ -32,7 +32,7 @@ class OptionalArrayTest(unittest.TestCase):
     def testAutoData16(self):
         numElements = 7
         test = self.api.TestStruct()
-        self.assertFalse(test.hasAutoData16())
+        self.assertFalse(test.isAutoData16Set())
         test.setAutoData16(list(range(numElements)))
-        self.assertTrue(test.hasAutoData16())
+        self.assertTrue(test.isAutoData16Set())
         self.assertEqual(numElements, len(test.getAutoData16()))

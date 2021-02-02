@@ -10,10 +10,10 @@ class ExpressionFullTemplateArgumentTest(unittest.TestCase):
 
     def testReadWrite(self):
         colorInternal = self.api.FullTemplateArgument_Color_7C6F461F(False, 10)
-        self.assertTrue(colorInternal.hasExpressionField())
+        self.assertTrue(colorInternal.isExpressionFieldOptionalClauseMet())
 
         colorExternal = (self.api.FullTemplateArgument_Color_6066EE71(False, 10))
-        self.assertFalse(colorExternal.hasExpressionField())
+        self.assertFalse(colorExternal.isExpressionFieldOptionalClauseMet())
 
         fullTemplateArgumentHolder = self.api.FullTemplateArgumentHolder(colorInternal, colorExternal)
         writer = zserio.BitStreamWriter()

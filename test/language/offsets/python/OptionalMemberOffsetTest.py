@@ -107,9 +107,9 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         self.assertEqual(optionalFieldOffset, optionalMemberOffset.getOptionalFieldOffset())
         if hasOptional:
             self.assertEqual(optionalField, optionalMemberOffset.getOptionalField())
-            self.assertTrue(optionalMemberOffset.hasOptionalField())
+            self.assertTrue(optionalMemberOffset.isOptionalFieldOptionalClauseMet())
         else:
-            self.assertFalse(optionalMemberOffset.hasOptionalField())
+            self.assertFalse(optionalMemberOffset.isOptionalFieldOptionalClauseMet())
         self.assertEqual(field, optionalMemberOffset.getField())
 
     WITH_OPTIONAL_MEMBER_OFFSET_BIT_SIZE = 104

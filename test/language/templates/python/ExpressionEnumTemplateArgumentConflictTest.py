@@ -10,7 +10,7 @@ class ExpressionEnumTemplateArgumentConflictTest(unittest.TestCase):
 
     def testReadWrite(self):
         enumTemplateArgumentConflict_Letters = self.api.EnumTemplateArgumentConflict_Letters(False, 10)
-        self.assertTrue(enumTemplateArgumentConflict_Letters.hasExpressionField())
+        self.assertTrue(enumTemplateArgumentConflict_Letters.isExpressionFieldOptionalClauseMet())
 
         enumTemplateArgumentConflictHolder = (
             self.api.EnumTemplateArgumentConflictHolder(enumTemplateArgumentConflict_Letters)

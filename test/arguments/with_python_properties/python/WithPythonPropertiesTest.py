@@ -35,7 +35,7 @@ class WithPythonPropertiesTest(unittest.TestCase):
         self._assertMethodNotPresent(userType, "setExtraParam")
         self._assertMethodNotPresent(userType, "getExtraParam")
 
-        self._assertMethodPresent(userType, "hasExtraParam")
+        self._assertMethodPresent(userType, "isExtraParamOptionalClauseMet")
 
         self._assertPropertyPresent(userType, "itemType", readOnly=True)
         self._assertPropertyPresent(userType, "param", readOnly=False)
@@ -83,8 +83,8 @@ class WithPythonPropertiesTest(unittest.TestCase):
         self._assertMethodNotPresent(userType, "getData")
         self._assertMethodNotPresent(userType, "setData")
 
-        self._assertMethodPresent(userType, "hasVersion")
-        self._assertMethodPresent(userType, "hasVersionString")
+        self._assertMethodPresent(userType, "isVersionOptionalClauseMet")
+        self._assertMethodPresent(userType, "isVersionStringOptionalClauseMet")
 
         self._assertPropertyPresent(userType, "versionAvailability", readOnly=False)
         self._assertPropertyPresent(userType, "version", readOnly=False)
@@ -130,7 +130,7 @@ class WithPythonPropertiesTest(unittest.TestCase):
                     extraParam.value32 = EXTRA_PARAM
                     self.assertEqual(extraParam.choiceTag, self.api.ExtraParamUnion.CHOICE_value32)
                     item.extraParam = extraParam
-                    self.assertTrue(item.hasExtraParam())
+                    self.assertTrue(item.isExtraParamOptionalClauseMet())
                     itemChoice.item = item
                 else:
                     itemChoice.param = PARAMS[j]

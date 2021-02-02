@@ -50,10 +50,10 @@ class AutoOptionalTest(unittest.TestCase):
     def testHasAutoOptionalInt(self):
         container = self.api.Container()
         container.setNonOptionalInt(self.NON_OPTIONAL_INT_VALUE)
-        self.assertFalse(container.hasAutoOptionalInt())
+        self.assertFalse(container.isAutoOptionalIntSet())
 
         container.setAutoOptionalInt(self.AUTO_OPTIONAL_INT_VALUE)
-        self.assertTrue(container.hasAutoOptionalInt())
+        self.assertTrue(container.isAutoOptionalIntSet())
 
     def testBitSizeOf(self):
         container = self.api.Container()
@@ -84,7 +84,7 @@ class AutoOptionalTest(unittest.TestCase):
         reader.setBitPosition(0)
         readNonOptionalContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.NON_OPTIONAL_INT_VALUE, readNonOptionalContainer.getNonOptionalInt())
-        self.assertFalse(readNonOptionalContainer.hasAutoOptionalInt())
+        self.assertFalse(readNonOptionalContainer.isAutoOptionalIntSet())
 
         container.setAutoOptionalInt(self.AUTO_OPTIONAL_INT_VALUE)
         writer = zserio.BitStreamWriter()
@@ -94,7 +94,7 @@ class AutoOptionalTest(unittest.TestCase):
         reader.setBitPosition(0)
         readAutoOptionalContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.NON_OPTIONAL_INT_VALUE, readAutoOptionalContainer.getNonOptionalInt())
-        self.assertTrue(readAutoOptionalContainer.hasAutoOptionalInt())
+        self.assertTrue(readAutoOptionalContainer.isAutoOptionalIntSet())
         self.assertEqual(self.AUTO_OPTIONAL_INT_VALUE, readAutoOptionalContainer.getAutoOptionalInt())
 
     def _checkContainerInStream(self, reader, nonOptionalIntValue, autoOptionalIntValue):

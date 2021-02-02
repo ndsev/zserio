@@ -56,10 +56,10 @@ class OptionalArrayRecursionTest(unittest.TestCase):
     def testHasTeamMembers(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                         self.api.Title.DEVELOPER)
-        self.assertFalse(employee.hasTeamMembers())
+        self.assertFalse(employee.isTeamMembersOptionalClauseMet())
 
         teamLead = self._createTeamLead()
-        self.assertTrue(teamLead.hasTeamMembers())
+        self.assertTrue(teamLead.isTeamMembersOptionalClauseMet())
 
     def testBitSizeOf(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,

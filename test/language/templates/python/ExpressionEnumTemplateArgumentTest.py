@@ -10,7 +10,7 @@ class ExpressionEnumTemplateArgumentTest(unittest.TestCase):
 
     def testReadWrite(self):
         enumTemplateArgument_Color = self.api.EnumTemplateArgument_Color(False, 10)
-        self.assertTrue(enumTemplateArgument_Color.hasExpressionField())
+        self.assertTrue(enumTemplateArgument_Color.isExpressionFieldOptionalClauseMet())
 
         enumTemplateArgumentHolder = self.api.EnumTemplateArgumentHolder(enumTemplateArgument_Color)
         writer = zserio.BitStreamWriter()

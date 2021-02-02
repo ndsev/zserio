@@ -10,7 +10,7 @@ class SimpleParamTest(unittest.TestCase):
 
     def testParameterConstructor(self):
         item = self.api.Item(self.LOWER_VERSION)
-        self.assertFalse(item.hasExtraParam())
+        self.assertFalse(item.isExtraParamOptionalClauseMet())
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
@@ -18,12 +18,12 @@ class SimpleParamTest(unittest.TestCase):
         reader = zserio.BitStreamReader(writer.getByteArray())
         item = self.api.Item.fromReader(reader, self.HIGHER_VERSION)
         self.assertEqual(self.ITEM_PARAM, item.getParam())
-        self.assertTrue(item.hasExtraParam())
+        self.assertTrue(item.isExtraParamOptionalClauseMet())
         self.assertEqual(self.ITEM_EXTRA_PARAM, item.getExtraParam())
 
         item = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         self.assertEqual(self.ITEM_PARAM, item.getParam())
-        self.assertTrue(item.hasExtraParam())
+        self.assertTrue(item.isExtraParamOptionalClauseMet())
         self.assertEqual(self.ITEM_EXTRA_PARAM, item.getExtraParam())
 
     def testEq(self):

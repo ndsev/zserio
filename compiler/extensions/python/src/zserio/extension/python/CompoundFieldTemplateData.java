@@ -204,9 +204,13 @@ public final class CompoundFieldTemplateData
 
     public static class Optional
     {
-        public Optional(Expression optionalClauseExpression, String indicatorName,
-                ExpressionFormatter pythonExpressionFormatter, boolean isRecursive) throws ZserioExtensionException
+        public Optional(Field field, ExpressionFormatter pythonExpressionFormatter,
+                boolean isRecursive) throws ZserioExtensionException
         {
+            final Expression optionalClauseExpression = field.getOptionalClauseExpr();
+            final boolean isAutoOptional = optionalClauseExpression == null;
+            final String indicatorName = AccessorNameFormatter.getIndicatorName(field, isAutoOptional);
+
             clause = (optionalClauseExpression == null) ? null :
                 pythonExpressionFormatter.formatGetter(optionalClauseExpression);
             this.indicatorName = indicatorName;
@@ -485,10 +489,8 @@ public final class CompoundFieldTemplateData
             return null;
 
         final boolean isRecursive = (baseFieldType == parentType);
-        final Expression optionalClauseExpression = field.getOptionalClauseExpr();
-        final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
 
-        return new Optional(optionalClauseExpression, indicatorName, pythonExpressionFormatter, isRecursive);
+        return new Optional(field, pythonExpressionFormatter, isRecursive);
     }
 
     private static String createAlignmentValue(Field field, ExpressionFormatter pythonExpressionFormatter)
