@@ -68,6 +68,10 @@ public class InputFileManager
     public void registerFile(String fileFullName)
     {
         inputFiles.add(fileFullName);
+
+        final long lastModifiedTime = new File(fileFullName).lastModified();
+        if (lastModifiedTime > this.lastModifiedTime)
+            this.lastModifiedTime = lastModifiedTime;
     }
 
     /**
@@ -80,6 +84,16 @@ public class InputFileManager
         return inputFiles.contains(fileFullName);
     }
 
+    /**
+     * Returns last modified timestamp of last modified Zserio source.
+     *
+     * @return Last modified timestamp (in milliseconds since epoch).
+     */
+    public long getLastModifiedTime()
+    {
+        return lastModifiedTime;
+    }
+
     private String getInputFileFullName(String inputFileName)
     {
         final String srcPathName = commandLineArguments.getSrcPathName();
@@ -90,4 +104,5 @@ public class InputFileManager
     private final CommandLineArguments commandLineArguments;
     private final Set<String> inputFiles = new HashSet<String>();
     private String inputFileExtension = "";
+    private long lastModifiedTime = 0L; // last modified timestamp (milliseconds since epoch)
 }

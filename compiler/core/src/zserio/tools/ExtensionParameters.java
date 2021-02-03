@@ -11,10 +11,12 @@ public class ExtensionParameters
      * Constructor from command line arguments and Zserio parser.
      *
      * @param commandLineArguments Command line arguments to construct from.
+     * @param lastModifiedTime Last modified timestamp of last modified Zserio source.
      */
-    public ExtensionParameters(CommandLineArguments commandLineArguments)
+    public ExtensionParameters(CommandLineArguments commandLineArguments, long lastModifiedTime)
     {
         this.commandLineArguments = commandLineArguments;
+        this.lastModifiedTime = lastModifiedTime;
     }
 
     /**
@@ -137,5 +139,26 @@ public class ExtensionParameters
         return commandLineArguments.getTopLevelPackageNameIds();
     }
 
+    /**
+     * Gets whether to ignore timestamps and thus always regenerate output.
+     *
+     * @return True if timestamps should be ignored.
+     */
+    public boolean getIgnoreTimestamps()
+    {
+        return commandLineArguments.getIgnoreTimestamps();
+    }
+
+    /**
+     * Gets last modified timestamp of last modified Zserio source.
+     *
+     * @return Last modified timestamp (in milliseconds since epoch).
+     */
+    public long getLastModifiedTime()
+    {
+        return lastModifiedTime;
+    }
+
     private final CommandLineArguments commandLineArguments;
+    private final long lastModifiedTime;
 }

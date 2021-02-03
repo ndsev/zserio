@@ -187,6 +187,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether to ignore timestamps and thus always regenerate output.
+     *
+     * @return True if timestamps should be ignored.
+     */
+    public boolean getIgnoreTimestamps()
+    {
+        return ignoreTimestampsOption;
+    }
+
+    /**
      * Returns true if command line arguments contain given option name.
      *
      * @param optionName Option name to check.
@@ -313,6 +323,10 @@ class CommandLineArguments
         option.setArgName("packageName");
         option.setRequired(false);
         options.addOption(option);
+
+        option = new Option(OptionNameIngoreTimestamps, false,
+                "ingore timestamps and always regenerate output");
+        options.addOption(option);
     }
 
     private void readOptions() throws ParseException
@@ -331,6 +345,7 @@ class CommandLineArguments
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
         withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
+        ignoreTimestampsOption = hasOption(OptionNameIngoreTimestamps);
 
         validateOptions();
 
@@ -443,6 +458,7 @@ class CommandLineArguments
     private static final String OptionNameWithoutWriterCode = "withoutWriterCode";
     private static final String OptionNameWithUnusedWarnings = "withUnusedWarnings";
     private static final String OptionNameWithoutUnusedWarnings = "withoutUnusedWarnings";
+    private static final String OptionNameIngoreTimestamps = "ignoreTimestamps";
 
     private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
 
@@ -462,4 +478,5 @@ class CommandLineArguments
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
     private boolean withUnusedWarningsOption;
+    private boolean ignoreTimestampsOption;
 }
