@@ -144,15 +144,15 @@ public class ZserioTool
 
     private Root parse() throws Exception
     {
-        final ZserioAstBuilder astBuilderVisitor = new ZserioAstBuilder(
-                commandLineArguments.getTopLevelPackageNameIds(), inputFileManager);
-
         final String inputFileName = commandLineArguments.getInputFileName();
-        final String inputFileFullName = inputFileManager.getFileFullName(inputFileName);
-        final Package parsedPackage = parsePackage(astBuilderVisitor, inputFileFullName);
-        parseImportedPackages(astBuilderVisitor, parsedPackage);
+        final ZserioAstBuilder astBuilder = new ZserioAstBuilder(
+                commandLineArguments.getTopLevelPackageNameIds(), inputFileName, inputFileManager);
 
-        final Root rootNode = astBuilderVisitor.getAst();
+        final String inputFileFullName = inputFileManager.getFileFullName(inputFileName);
+        final Package parsedPackage = parsePackage(astBuilder, inputFileFullName);
+        parseImportedPackages(astBuilder, parsedPackage);
+
+        final Root rootNode = astBuilder.getAst();
 
         final ZserioAstImporter importer = new ZserioAstImporter();
         rootNode.accept(importer);
@@ -178,8 +178,7 @@ public class ZserioTool
         return rootNode;
     }
 
-    private Package parsePackage(ZserioAstBuilder astBuilder,
-            String inputFileFullName) throws Exception
+    private Package parsePackage(ZserioAstBuilder astBuilder, String inputFileFullName) throws Exception
     {
         ZserioToolPrinter.printMessage("Parsing " + inputFileFullName);
 
@@ -205,8 +204,7 @@ public class ZserioTool
         return parsedPackage;
     }
 
-    private void parseImportedPackages(ZserioAstBuilder astBuilderVisitor,
-            Package parentPackage) throws Exception
+    private void parseImportedPackages(ZserioAstBuilder astBuilder, Package parentPackage) throws Exception
     {
         final Iterable<Import> imports = parentPackage.getImports();
         for (Import importNode : imports)
@@ -215,8 +213,8 @@ public class ZserioTool
             final String inputFileFullName = inputFileManager.getFileFullName(importedPackageName);
             if (!inputFileManager.isFileRegistered(inputFileFullName))
             {
-                final Package parsedPackage = parsePackage(astBuilderVisitor, inputFileFullName);
-                parseImportedPackages(astBuilderVisitor, parsedPackage);
+                final Package parsedPackage = parsePackage(astBuilder, inputFileFullName);
+                parseImportedPackages(astBuilder, parsedPackage);
             }
         }
     }

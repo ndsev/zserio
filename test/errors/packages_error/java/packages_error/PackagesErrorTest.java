@@ -42,6 +42,14 @@ public class PackagesErrorTest
     }
 
     @Test
+    public void defaultPackageWithDir()
+    {
+        final String error = "default_package.zs:1:1: Default package cannot be compiled with path! " +
+                "Consider to specify package name or set source path to 'default_package_with_path_error'.";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void importedDefaultPackage()
     {
         final String error = "imported_default_package_error.zs:4:8: Default package cannot be imported!";

@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -22,11 +23,14 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
      * Constructor.
      *
      * @param topLevelPackageNameIds List of top level package name identifiers given by command line option.
+     * @param inputFileName Input file name given by command line.
      * @param inputFileManager Input file manager.
      */
-    public ZserioAstBuilder(Iterable<String> topLevelPackageNameIds, InputFileManager inputFileManager)
+    public ZserioAstBuilder(Iterable<String> topLevelPackageNameIds, String inputFileName,
+            InputFileManager inputFileManager)
     {
         this.topLevelPackageNameIds = topLevelPackageNameIds;
+        this.inputFileName = inputFileName;
         this.inputFileManager = inputFileManager;
     }
 
@@ -83,6 +87,14 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         {
             // translation unit package already exists, this could happen only for default packages
             throw new ParserException(currentPackage, "Multiple default packages are not allowed!");
+        }
+        if (packageName.isEmpty())
+        {
+            // check if input file directory has been specified for default package
+            final String inputFileDirectory = new File(inputFileName).getParent();
+            if (inputFileDirectory != null)
+                throw new ParserException(currentPackage, "Default package cannot be compiled with path! " +
+                        "Consider to specify package name or set source path to '" + inputFileDirectory + "'.");
         }
 
         for (ZserioParser.LanguageDirectiveContext languageDirectiveCtx : ctx.languageDirective())
@@ -1174,6 +1186,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     private final Iterable<String> topLevelPackageNameIds;
+    private final String inputFileName;
     private final InputFileManager inputFileManager;
 
     private final DocCommentManager docCommentManager = new DocCommentManager();

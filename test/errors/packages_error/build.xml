@@ -14,6 +14,8 @@
         <testGen testName="packages_error" zsFile="ambiguous_single_symbol_import_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="packages_error" zsFile="ambiguous_single_type_import_error.zs" ignoreErrors="true"/>
+        <testGen testName="packages_error" zsFile="default_package_with_path_error/default_package.zs"
+            ignoreErrors="true"/>
         <testGen testName="packages_error" zsFile="imported_default_package_error.zs" ignoreErrors="true"/>
         <testGen testName="packages_error" zsFile="imported_unknown_single_type_error.zs" ignoreErrors="true"/>
         <testGen testName="packages_error" zsFile="multiple_default_package_error.zs" ignoreErrors="true"/>
