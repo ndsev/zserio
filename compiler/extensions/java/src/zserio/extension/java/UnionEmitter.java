@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.UnionType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class UnionEmitter extends JavaDefaultEmitter
 {
-    public UnionEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public UnionEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

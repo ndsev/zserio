@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.EnumType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class EnumerationEmitter extends JavaDefaultEmitter
 {
-    public EnumerationEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public EnumerationEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

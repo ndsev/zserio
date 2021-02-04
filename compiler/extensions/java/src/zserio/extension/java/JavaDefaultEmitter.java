@@ -1,6 +1,8 @@
 package zserio.extension.java;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -8,14 +10,12 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 abstract class JavaDefaultEmitter extends DefaultTreeWalker
 {
-    public JavaDefaultEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public JavaDefaultEmitter(JavaExtensionParameters javaParameters)
     {
         this.javaParameters = javaParameters;
-        this.extensionParameters = extensionParameters;
     }
 
     @Override
@@ -31,28 +31,33 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
 
         if (context == null)
         {
-            context = new TemplateDataContext(extensionParameters, pkg.getPackageName());
+            context = new TemplateDataContext(javaParameters, pkg.getPackageName());
         }
     }
 
     protected boolean getWithPubsubCode()
     {
-        return extensionParameters.getWithPubsubCode();
+        return javaParameters.getWithPubsubCode();
     }
 
     protected boolean getWithServiceCode()
     {
-        return extensionParameters.getWithServiceCode();
+        return javaParameters.getWithServiceCode();
     }
 
     protected boolean getWithSqlCode()
     {
-        return extensionParameters.getWithSqlCode();
+        return javaParameters.getWithSqlCode();
     }
 
     protected TemplateDataContext getTemplateDataContext()
     {
         return context;
+    }
+
+    protected Map<File, Boolean> getOutputFiles()
+    {
+        return outputFiles;
     }
 
     protected void processTemplate(String templateName, Object templateData, ZserioType zserioType)
@@ -76,16 +81,31 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
     private void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot) throws ZserioExtensionException
     {
-        final File outDir = new File(javaParameters.getJavaOutputDir(), packageName.toFilesystemPath());
+        final File outDir = new File(javaParameters.getOutputDir(), packageName.toFilesystemPath());
         final File outputFile = new File(outDir, outFileNameRoot + JAVA_SOURCE_EXTENSION);
-        FreeMarkerUtil.processTemplate(JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile, false);
+        if (addOutputFile(outputFile))
+        {
+            FreeMarkerUtil.processTemplate(JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile,
+                    false);
+        }
+    }
+
+    private boolean addOutputFile(File outputFile)
+    {
+        final long lastModifiedSourceTime = javaParameters.getLastModifiedSourceTime();
+        final boolean generate = javaParameters.getIngoreTimestamps() ||
+                lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();
+
+        outputFiles.put(outputFile, generate);
+
+        return generate;
     }
 
     private static final String JAVA_SOURCE_EXTENSION = ".java";
     private static final String JAVA_TEMPLATE_LOCATION = "java/";
 
     private final JavaExtensionParameters javaParameters;
-    private final ExtensionParameters extensionParameters;
 
     private TemplateDataContext context = null;
+    private final Map<File, Boolean> outputFiles = new HashMap<File, Boolean>();
 }

@@ -2,11 +2,10 @@ package zserio.extension.java;
 
 import zserio.ast.PackageName;
 import zserio.extension.common.ExpressionFormatter;
-import zserio.tools.ExtensionParameters;
 
 final class TemplateDataContext
 {
-    public TemplateDataContext(ExtensionParameters extensionParameters, PackageName rootPackageName)
+    public TemplateDataContext(JavaExtensionParameters javaParameters, PackageName rootPackageName)
     {
         javaNativeMapper = new JavaNativeMapper();
         javaRootPackageName = JavaFullNameFormatter.getFullName(rootPackageName);
@@ -22,9 +21,9 @@ final class TemplateDataContext
                 new JavaSqlIndirectExpressionFormattingPolicy(javaNativeMapper);
         javaSqlIndirectExpressionFormatter = new ExpressionFormatter(sqlIndirectPolicy);
 
-        withWriterCode = extensionParameters.getWithWriterCode();
-        withValidationCode = extensionParameters.getWithValidationCode();
-        withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
+        withWriterCode = javaParameters.getWithWriterCode();
+        withValidationCode = javaParameters.getWithValidationCode();
+        withRangeCheckCode = javaParameters.getWithRangeCheckCode();
     }
 
     public JavaNativeMapper getJavaNativeMapper()

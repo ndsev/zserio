@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.ServiceType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class ServiceEmitter extends JavaDefaultEmitter
 {
-    public ServiceEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public ServiceEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

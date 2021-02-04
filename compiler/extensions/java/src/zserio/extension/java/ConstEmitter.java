@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.Constant;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class ConstEmitter extends JavaDefaultEmitter
 {
-    public ConstEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public ConstEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.PubsubType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class PubsubEmitter extends JavaDefaultEmitter
 {
-    public PubsubEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public PubsubEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

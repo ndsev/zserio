@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.SqlDatabaseType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class SqlDatabaseEmitter extends JavaDefaultEmitter
 {
-    public SqlDatabaseEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public SqlDatabaseEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

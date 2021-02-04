@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.StructureType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class StructureEmitter extends JavaDefaultEmitter
 {
-    public StructureEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public StructureEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

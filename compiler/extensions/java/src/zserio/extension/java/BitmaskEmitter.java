@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.BitmaskType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class BitmaskEmitter extends JavaDefaultEmitter
 {
-    public BitmaskEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public BitmaskEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

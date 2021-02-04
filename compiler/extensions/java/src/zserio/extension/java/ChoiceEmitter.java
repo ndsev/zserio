@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.ChoiceType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class ChoiceEmitter extends JavaDefaultEmitter
 {
-    public ChoiceEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public ChoiceEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override

@@ -1,14 +1,15 @@
 package zserio.extension.java;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.cli.Option;
+import java.util.Map;
 
 import zserio.ast.Root;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * The extension which generates Java API sources.
@@ -30,45 +31,56 @@ public class JavaExtension implements Extension
     @Override
     public void registerOptions(org.apache.commons.cli.Options options)
     {
-        Option option = new Option(OptionJava, true, "generate Java sources");
-        option.setArgName("outputDir");
-        option.setRequired(false);
-        options.addOption(option);
+        JavaExtensionParameters.registerOptions(options);
     }
 
     @Override
     public boolean isEnabled(ExtensionParameters parameters)
     {
-        return parameters.argumentExists(OptionJava);
+        return JavaExtensionParameters.hasOptionJava(parameters);
     }
 
     @Override
     public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
-        final String outputDir = parameters.getCommandLineArg(OptionJava);
-        final JavaExtensionParameters javaParameters = new JavaExtensionParameters(outputDir);
-        generateJavaSources(javaParameters, parameters, rootNode);
-    }
+        final JavaExtensionParameters javaParameters = new JavaExtensionParameters(parameters);
 
-    private void generateJavaSources(JavaExtensionParameters javaParameters,
-            ExtensionParameters extensionParameters, Root rootNode) throws ZserioExtensionException
-    {
         final List<JavaDefaultEmitter> emitters = new ArrayList<JavaDefaultEmitter>();
-        emitters.add(new BitmaskEmitter(javaParameters, extensionParameters));
-        emitters.add(new EnumerationEmitter(javaParameters, extensionParameters));
-        emitters.add(new StructureEmitter(javaParameters, extensionParameters));
-        emitters.add(new ChoiceEmitter(javaParameters, extensionParameters));
-        emitters.add(new UnionEmitter(javaParameters, extensionParameters));
-        emitters.add(new SqlDatabaseEmitter(javaParameters, extensionParameters));
-        emitters.add(new SqlTableEmitter(javaParameters, extensionParameters));
-        emitters.add(new ConstEmitter(javaParameters, extensionParameters));
-        emitters.add(new ServiceEmitter(javaParameters, extensionParameters));
-        emitters.add(new PubsubEmitter(javaParameters, extensionParameters));
+        emitters.add(new BitmaskEmitter(javaParameters));
+        emitters.add(new EnumerationEmitter(javaParameters));
+        emitters.add(new StructureEmitter(javaParameters));
+        emitters.add(new ChoiceEmitter(javaParameters));
+        emitters.add(new UnionEmitter(javaParameters));
+        emitters.add(new SqlDatabaseEmitter(javaParameters));
+        emitters.add(new SqlTableEmitter(javaParameters));
+        emitters.add(new ConstEmitter(javaParameters));
+        emitters.add(new ServiceEmitter(javaParameters));
+        emitters.add(new PubsubEmitter(javaParameters));
 
         // emit Java code
         for (JavaDefaultEmitter emitter: emitters)
             rootNode.walk(emitter);
+
+        printReport(emitters);
     }
 
-    private static final String OptionJava = "java";
+    private void printReport(List<JavaDefaultEmitter> emitters)
+    {
+        int generated = 0;
+        int skipped = 0;
+
+        for (JavaDefaultEmitter javaEmitter : emitters)
+        {
+            for (Map.Entry<File, Boolean> entry : javaEmitter.getOutputFiles().entrySet())
+            {
+                if (entry.getValue())
+                    generated++;
+                else
+                    skipped++;
+            }
+        }
+
+        ZserioToolPrinter.printMessage("  Generated " + generated + " files" +
+                (skipped > 0 ? ", skipped " + skipped + " files" : ""));
+    }
 }

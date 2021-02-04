@@ -2,13 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.SqlTableType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 class SqlTableEmitter extends JavaDefaultEmitter
 {
-    public SqlTableEmitter(JavaExtensionParameters javaParameters, ExtensionParameters extensionParameters)
+    public SqlTableEmitter(JavaExtensionParameters javaParameters)
     {
-        super(javaParameters, extensionParameters);
+        super(javaParameters);
     }
 
     @Override
