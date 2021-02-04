@@ -1,7 +1,9 @@
 package zserio.extension.python;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.Options;
 
@@ -9,6 +11,7 @@ import zserio.ast.Root;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * The extension which generates Python API sources.
@@ -61,6 +64,30 @@ public class PythonExtension implements Extension
 
         // emit Python code
         for (PythonDefaultEmitter pythonEmitter: emitters)
+        {
             rootNode.walk(pythonEmitter);
+        }
+
+        printReport(emitters);
+    }
+
+    private void printReport(List<PythonDefaultEmitter> emitters)
+    {
+        int generated = 0;
+        int skipped = 0;
+
+        for (PythonDefaultEmitter pythonEmitter : emitters)
+        {
+            for (Map.Entry<File, Boolean> entry : pythonEmitter.getOutputFiles().entrySet())
+            {
+                if (entry.getValue())
+                    generated++;
+                else
+                    skipped++;
+            }
+        }
+
+        ZserioToolPrinter.printMessage("  Generated " + generated + " files" +
+                (skipped > 0 ? ", skipped " + skipped + " files" : ""));
     }
 }

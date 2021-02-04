@@ -1,7 +1,9 @@
 package zserio.extension.python;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -50,6 +52,11 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         return context;
     }
 
+    protected Map<File, Boolean> getOutputFiles()
+    {
+        return outputFiles;
+    }
+
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioExtensionException
     {
@@ -67,13 +74,27 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
     {
         final File outDir = new File(outputPathName, packageName.toFilesystemPath());
         final File outputFile = new File(outDir, outFileNameRoot + PYTHON_SOURCE_EXTENSION);
-        FreeMarkerUtil.processTemplate(PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile,
-                false);
+        if (addOutputFile(outputFile))
+        {
+            FreeMarkerUtil.processTemplate(PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile,
+                    false);
+        }
     }
 
     protected List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
     {
         return FreeMarkerUtil.readFreemarkerTemplate(PYTHON_TEMPLATE_LOCATION + templateName);
+    }
+
+    private boolean addOutputFile(File outputFile)
+    {
+        final long lastModifiedSourceTime = pythonParameters.getLastModifiedSourceTime();
+        final boolean generate = pythonParameters.getIngoreTimestamps() ||
+                lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();
+
+        outputFiles.put(outputFile, generate);
+
+        return generate;
     }
 
     private static final String PYTHON_SOURCE_EXTENSION = ".py";
@@ -82,4 +103,5 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
     private final String outputPathName;
     private final PythonExtensionParameters pythonParameters;
     private final TemplateDataContext context;
+    private final Map<File, Boolean> outputFiles = new HashMap<File, Boolean>();
 }
