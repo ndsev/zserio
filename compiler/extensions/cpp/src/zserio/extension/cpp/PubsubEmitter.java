@@ -2,13 +2,12 @@ package zserio.extension.cpp;
 
 import zserio.ast.PubsubType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class PubsubEmitter extends CppDefaultEmitter
 {
-    public PubsubEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public PubsubEmitter(CppExtensionParameters cppParameters)
     {
-        super(outPathName, extensionParameters);
+        super(cppParameters);
     }
 
     @Override

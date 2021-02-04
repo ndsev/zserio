@@ -1,7 +1,9 @@
 package zserio.extension.cpp;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -9,15 +11,14 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 abstract class CppDefaultEmitter extends DefaultTreeWalker
 {
-    public CppDefaultEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public CppDefaultEmitter(CppExtensionParameters cppParameters)
     {
-        this.outPathName = outPathName;
-        this.extensionParameters = extensionParameters;
-        this.context = new TemplateDataContext(extensionParameters);
+        this.outputPathName = cppParameters.getOutputDir();
+        this.cppParameters = cppParameters;
+        this.context = new TemplateDataContext(cppParameters);
     }
 
     @Override
@@ -59,34 +60,57 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
 
     protected boolean getWithPubsubCode()
     {
-        return extensionParameters.getWithPubsubCode();
+        return cppParameters.getWithPubsubCode();
     }
 
     protected boolean getWithServiceCode()
     {
-        return extensionParameters.getWithServiceCode();
+        return cppParameters.getWithServiceCode();
     }
 
     protected boolean getWithSourcesAmalgamation()
     {
-        return extensionParameters.getWithSourcesAmalgamation();
+        return cppParameters.getWithSourcesAmalgamation();
     }
 
     protected boolean getWithSqlCode()
     {
-        return extensionParameters.getWithSqlCode();
+        return cppParameters.getWithSqlCode();
+    }
+
+    protected Map<File, Boolean> getOutputFiles()
+    {
+        return outputFiles;
     }
 
     private void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
                     throws ZserioExtensionException
     {
-        final File outDir = new File(outPathName, packageName.toFilesystemPath());
+        final File outDir = new File(outputPathName, packageName.toFilesystemPath());
         final boolean amalgamate = (getWithSourcesAmalgamation() && requestAmalgamate);
         final String outFileNameWithoutExtension = (amalgamate) ? getAmalgamFileNameRoot() : outFileNameRoot;
         final File outputFile = new File(outDir, outFileNameWithoutExtension + outputExtension);
-        FreeMarkerUtil.processTemplate(CPP_TEMPLATE_LOCATION + templateName, templateData, outputFile,
-                amalgamate);
+        if (addOutputFile(outputFile))
+        {
+            FreeMarkerUtil.processTemplate(CPP_TEMPLATE_LOCATION + templateName, templateData, outputFile,
+                    amalgamate);
+        }
+    }
+
+    private boolean addOutputFile(File outputFile)
+    {
+        final Boolean alreadyGenerated = outputFiles.get(outputFile);
+        if (alreadyGenerated != null)
+            return alreadyGenerated;
+
+        final long lastModifiedSourceTime = cppParameters.getLastModifiedSourceTime();
+        final boolean generate = cppParameters.getIngoreTimestamps() ||
+                lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();
+
+        outputFiles.put(outputFile, generate);
+
+        return generate;
     }
 
     private String getAmalgamFileNameRoot()
@@ -124,9 +148,10 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
 
     private static final String CPP_DEFAULT_AMALGAM_FILE_NAME_ROOT = "Amalgamation";
 
-    private final String outPathName;
-    private final ExtensionParameters extensionParameters;
+    private final String outputPathName;
+    private final CppExtensionParameters cppParameters;
     private final TemplateDataContext context;
 
     private String packageSourceFileName = "";
+    private final Map<File, Boolean> outputFiles = new HashMap<File, Boolean>();
 }

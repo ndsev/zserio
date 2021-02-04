@@ -2,13 +2,12 @@ package zserio.extension.cpp;
 
 import zserio.ast.Constant;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class ConstEmitter extends CppDefaultEmitter
 {
-    public ConstEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public ConstEmitter(CppExtensionParameters cppParameters)
     {
-        super(outPathName, extensionParameters);
+        super(cppParameters);
     }
 
     @Override

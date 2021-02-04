@@ -92,6 +92,10 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
 
     private boolean addOutputFile(File outputFile)
     {
+        final Boolean alreadyGenerated = outputFiles.get(outputFile);
+        if (alreadyGenerated != null)
+            return alreadyGenerated;
+
         final long lastModifiedSourceTime = javaParameters.getLastModifiedSourceTime();
         final boolean generate = javaParameters.getIngoreTimestamps() ||
                 lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();

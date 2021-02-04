@@ -2,13 +2,12 @@ package zserio.extension.cpp;
 
 import zserio.ast.EnumType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class EnumerationEmitter extends CppDefaultEmitter
 {
-    public EnumerationEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public EnumerationEmitter(CppExtensionParameters cppParameters)
     {
-        super(outPathName, extensionParameters);
+        super(cppParameters);
     }
 
     @Override

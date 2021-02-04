@@ -2,15 +2,14 @@ package zserio.extension.cpp;
 
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ExpressionFormattingPolicy;
-import zserio.tools.ExtensionParameters;
 
 final class TemplateDataContext
 {
-    public TemplateDataContext(ExtensionParameters extensionParameters)
+    public TemplateDataContext(CppExtensionParameters cppParameters)
     {
         cppNativeMapper = new CppNativeMapper();
-        withWriterCode = extensionParameters.getWithWriterCode();
-        withRangeCheckCode = extensionParameters.getWithRangeCheckCode();
+        withWriterCode = cppParameters.getWithWriterCode();
+        withRangeCheckCode = cppParameters.getWithRangeCheckCode();
     }
 
     public CppNativeMapper getCppNativeMapper()

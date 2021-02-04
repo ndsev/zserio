@@ -2,13 +2,12 @@ package zserio.extension.cpp;
 
 import zserio.ast.SqlDatabaseType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class SqlDatabaseEmitter extends CppDefaultEmitter
 {
-    public SqlDatabaseEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public SqlDatabaseEmitter(CppExtensionParameters cppParameters)
     {
-        super(outPathName, extensionParameters);
+        super(cppParameters);
     }
 
     @Override

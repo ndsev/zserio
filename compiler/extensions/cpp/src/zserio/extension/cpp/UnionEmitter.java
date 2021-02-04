@@ -2,13 +2,12 @@ package zserio.extension.cpp;
 
 import zserio.ast.UnionType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class UnionEmitter extends CppDefaultEmitter
 {
-    public UnionEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public UnionEmitter(CppExtensionParameters cppParameters)
     {
-        super(outPathName, extensionParameters);
+        super(cppParameters);
     }
 
     @Override

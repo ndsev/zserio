@@ -2,13 +2,12 @@ package zserio.extension.cpp;
 
 import zserio.ast.ServiceType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class ServiceEmitter extends CppDefaultEmitter
 {
-    public ServiceEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public ServiceEmitter(CppExtensionParameters cppParameters)
     {
-        super(outPathName, extensionParameters);
+        super(cppParameters);
     }
 
     @Override

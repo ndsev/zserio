@@ -88,6 +88,10 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
 
     private boolean addOutputFile(File outputFile)
     {
+        final Boolean alreadyGenerated = outputFiles.get(outputFile);
+        if (alreadyGenerated != null)
+            return alreadyGenerated;
+
         final long lastModifiedSourceTime = pythonParameters.getLastModifiedSourceTime();
         final boolean generate = pythonParameters.getIngoreTimestamps() ||
                 lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();

@@ -2,13 +2,12 @@ package zserio.extension.cpp;
 
 import zserio.ast.StructureType;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ExtensionParameters;
 
 public class StructureEmitter extends CppDefaultEmitter
 {
-    public StructureEmitter(String outPathName, ExtensionParameters extensionParameters)
+    public StructureEmitter(CppExtensionParameters cppParameters)
     {
-        super(outPathName, extensionParameters);
+        super(cppParameters);
     }
 
     @Override

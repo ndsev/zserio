@@ -1,14 +1,17 @@
 package zserio.extension.cpp;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 
 import zserio.ast.Root;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * The extension which generates C++ API sources.
@@ -28,45 +31,59 @@ public class CppExtension implements Extension
     }
 
     @Override
-    public void registerOptions(org.apache.commons.cli.Options options)
+    public void registerOptions(Options options)
     {
-        if (!options.hasOption(OptionCpp))
-        {
-            Option option = new Option(OptionCpp, true, "generate C++ sources");
-            option.setArgName("outputDir");
-            option.setRequired(false);
-            options.addOption(option);
-        }
+        CppExtensionParameters.registerOptions(options);
     }
 
     @Override
     public boolean isEnabled(ExtensionParameters parameters)
     {
-        return parameters.argumentExists(OptionCpp);
+        return CppExtensionParameters.hasOptionCpp(parameters);
     }
 
     @Override
     public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
-        final String outputDir = parameters.getCommandLineArg(OptionCpp);
+        final CppExtensionParameters cppParameters = new CppExtensionParameters(parameters);
 
         final List<CppDefaultEmitter> emitters = new ArrayList<CppDefaultEmitter>();
-        emitters.add(new ConstEmitter(outputDir, parameters));
-        emitters.add(new SubtypeEmitter(outputDir, parameters));
-        emitters.add(new EnumerationEmitter(outputDir, parameters));
-        emitters.add(new BitmaskEmitter(outputDir, parameters));
-        emitters.add(new StructureEmitter(outputDir, parameters));
-        emitters.add(new ChoiceEmitter(outputDir, parameters));
-        emitters.add(new UnionEmitter(outputDir, parameters));
-        emitters.add(new SqlDatabaseEmitter(outputDir, parameters));
-        emitters.add(new SqlTableEmitter(outputDir, parameters));
-        emitters.add(new ServiceEmitter(outputDir, parameters));
-        emitters.add(new PubsubEmitter(outputDir, parameters));
+        emitters.add(new ConstEmitter(cppParameters));
+        emitters.add(new SubtypeEmitter(cppParameters));
+        emitters.add(new EnumerationEmitter(cppParameters));
+        emitters.add(new BitmaskEmitter(cppParameters));
+        emitters.add(new StructureEmitter(cppParameters));
+        emitters.add(new ChoiceEmitter(cppParameters));
+        emitters.add(new UnionEmitter(cppParameters));
+        emitters.add(new SqlDatabaseEmitter(cppParameters));
+        emitters.add(new SqlTableEmitter(cppParameters));
+        emitters.add(new ServiceEmitter(cppParameters));
+        emitters.add(new PubsubEmitter(cppParameters));
 
         // emit C++ code
         for (CppDefaultEmitter emitter: emitters)
             rootNode.walk(emitter);
+
+        printReport(emitters);
     }
 
-    private final static String OptionCpp = "cpp";
+    private void printReport(List<CppDefaultEmitter> emitters)
+    {
+        int generated = 0;
+        int skipped = 0;
+
+        for (CppDefaultEmitter cppEmitter : emitters)
+        {
+            for (Map.Entry<File, Boolean> entry : cppEmitter.getOutputFiles().entrySet())
+            {
+                if (entry.getValue())
+                    generated++;
+                else
+                    skipped++;
+            }
+        }
+
+        ZserioToolPrinter.printMessage("  Generated " + generated + " files" +
+                (skipped > 0 ? ", skipped " + skipped + " files" : ""));
+    }
 }

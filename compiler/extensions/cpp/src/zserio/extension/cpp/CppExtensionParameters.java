@@ -1,4 +1,4 @@
-package zserio.extension.java;
+package zserio.extension.cpp;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -6,22 +6,22 @@ import org.apache.commons.cli.Options;
 import zserio.tools.ExtensionParameters;
 
 /**
- * Command line parameters for Java extension.
+ * Command line parameters for C++ extension.
  *
- * The class holds all command line parameters passed by core to the Java extension, which are really
- * used by Java emitters.
+ * The class holds all command line parameters passed by core to the C++ extension, which are really
+ * used by C++ emitters.
  */
-public class JavaExtensionParameters
+public class CppExtensionParameters
 {
-    public JavaExtensionParameters(ExtensionParameters parameters)
+    public CppExtensionParameters(ExtensionParameters parameters)
     {
-        outputDir = parameters.getCommandLineArg(OptionJava);
+        outputDir = parameters.getCommandLineArg(OptionCpp);
         withWriterCode = parameters.getWithWriterCode();
         withPubsubCode = parameters.getWithPubsubCode();
         withServiceCode = parameters.getWithServiceCode();
         withSqlCode = parameters.getWithSqlCode();
-        withValidationCode = parameters.getWithValidationCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
+        withSourcesAmalgamation = parameters.getWithSourcesAmalgamation();
         ignoreTimestamps = parameters.getIgnoreTimestamps();
         lastModifiedSourceTime = parameters.getLastModifiedTime();
     }
@@ -51,14 +51,14 @@ public class JavaExtensionParameters
         return withSqlCode;
     }
 
-    public boolean getWithValidationCode()
-    {
-        return withValidationCode;
-    }
-
     public boolean getWithRangeCheckCode()
     {
         return withRangeCheckCode;
+    }
+
+    public boolean getWithSourcesAmalgamation()
+    {
+        return withSourcesAmalgamation;
     }
 
     public boolean getIngoreTimestamps()
@@ -73,26 +73,26 @@ public class JavaExtensionParameters
 
     static void registerOptions(Options options)
     {
-        Option option = new Option(OptionJava, true, "generate Java sources");
+        Option option = new Option(OptionCpp, true, "generate C++ sources");
         option.setArgName("outputDir");
         option.setRequired(false);
         options.addOption(option);
     }
 
-    static boolean hasOptionJava(ExtensionParameters parameters)
+    static boolean hasOptionCpp(ExtensionParameters parameters)
     {
-        return parameters.argumentExists(OptionJava);
+        return parameters.argumentExists(OptionCpp);
     }
 
-    private static final String OptionJava = "java";
+    private final static String OptionCpp = "cpp";
 
     private final String outputDir;
     private final boolean withWriterCode;
     private final boolean withPubsubCode;
     private final boolean withServiceCode;
     private final boolean withSqlCode;
-    private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
+    private final boolean withSourcesAmalgamation;
     private final boolean ignoreTimestamps;
     private final long lastModifiedSourceTime;
 }
