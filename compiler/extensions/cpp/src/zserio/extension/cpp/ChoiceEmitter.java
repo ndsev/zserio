@@ -1,13 +1,14 @@
 package zserio.extension.cpp;
 
 import zserio.ast.ChoiceType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class ChoiceEmitter extends CppDefaultEmitter
 {
-    public ChoiceEmitter(CppExtensionParameters cppParameters)
+    public ChoiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {
-        super(cppParameters);
+        super(outputFileManager, cppParameters);
     }
 
     @Override

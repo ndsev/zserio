@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.ServiceType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 class ServiceEmitter extends PythonDefaultEmitter
 {
-    public ServiceEmitter(PythonExtensionParameters pythonParameters)
+    public ServiceEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

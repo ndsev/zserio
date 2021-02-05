@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.BitmaskType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class BitmaskEmitter extends PythonDefaultEmitter
 {
-    public BitmaskEmitter(PythonExtensionParameters pythonParameters)
+    public BitmaskEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

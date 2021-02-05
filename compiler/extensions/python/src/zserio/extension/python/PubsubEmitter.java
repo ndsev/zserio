@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.PubsubType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 class PubsubEmitter extends PythonDefaultEmitter
 {
-    public PubsubEmitter(PythonExtensionParameters pythonParameters)
+    public PubsubEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

@@ -1,13 +1,14 @@
 package zserio.extension.java;
 
 import zserio.ast.ChoiceType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 class ChoiceEmitter extends JavaDefaultEmitter
 {
-    public ChoiceEmitter(JavaExtensionParameters javaParameters)
+    public ChoiceEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {
-        super(javaParameters);
+        super(outputFileManager, javaParameters);
     }
 
     @Override

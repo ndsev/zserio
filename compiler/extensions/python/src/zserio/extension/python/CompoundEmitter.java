@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import zserio.ast.CompoundType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.UnionType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.CompoundParameterTemplateData.CompoundParameter;
 import zserio.tools.ZserioToolPrinter;
@@ -19,9 +20,9 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class CompoundEmitter extends PythonDefaultEmitter
 {
-    public CompoundEmitter(PythonExtensionParameters pythonParameters)
+    public CompoundEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     protected void processCompoundTemplate(String templateName, CompoundTypeTemplateData templateData,

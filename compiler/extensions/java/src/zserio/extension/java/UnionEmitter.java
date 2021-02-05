@@ -1,13 +1,14 @@
 package zserio.extension.java;
 
 import zserio.ast.UnionType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 class UnionEmitter extends JavaDefaultEmitter
 {
-    public UnionEmitter(JavaExtensionParameters javaParameters)
+    public UnionEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {
-        super(javaParameters);
+        super(outputFileManager, javaParameters);
     }
 
     @Override

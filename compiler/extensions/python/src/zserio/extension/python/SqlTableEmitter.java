@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.SqlTableType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class SqlTableEmitter extends CompoundEmitter
 {
-    public SqlTableEmitter(PythonExtensionParameters pythonParameters)
+    public SqlTableEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

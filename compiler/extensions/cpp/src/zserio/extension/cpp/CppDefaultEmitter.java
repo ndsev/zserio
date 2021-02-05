@@ -1,22 +1,21 @@
 package zserio.extension.cpp;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 abstract class CppDefaultEmitter extends DefaultTreeWalker
 {
-    public CppDefaultEmitter(CppExtensionParameters cppParameters)
+    public CppDefaultEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {
-        this.outputPathName = cppParameters.getOutputDir();
+        this.outputFileManager = outputFileManager;
         this.cppParameters = cppParameters;
         this.context = new TemplateDataContext(cppParameters);
     }
@@ -78,39 +77,19 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
         return cppParameters.getWithSqlCode();
     }
 
-    protected Map<File, Boolean> getOutputFiles()
-    {
-        return outputFiles;
-    }
-
     private void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot, String outputExtension, boolean requestAmalgamate)
                     throws ZserioExtensionException
     {
-        final File outDir = new File(outputPathName, packageName.toFilesystemPath());
+        final File outDir = new File(cppParameters.getOutputDir(), packageName.toFilesystemPath());
         final boolean amalgamate = (getWithSourcesAmalgamation() && requestAmalgamate);
         final String outFileNameWithoutExtension = (amalgamate) ? getAmalgamFileNameRoot() : outFileNameRoot;
         final File outputFile = new File(outDir, outFileNameWithoutExtension + outputExtension);
-        if (addOutputFile(outputFile))
+        if (outputFileManager.addOutputFile(outputFile))
         {
             FreeMarkerUtil.processTemplate(CPP_TEMPLATE_LOCATION + templateName, templateData, outputFile,
                     amalgamate);
         }
-    }
-
-    private boolean addOutputFile(File outputFile)
-    {
-        final Boolean alreadyGenerated = outputFiles.get(outputFile);
-        if (alreadyGenerated != null)
-            return alreadyGenerated;
-
-        final long lastModifiedSourceTime = cppParameters.getLastModifiedSourceTime();
-        final boolean generate = cppParameters.getIngoreTimestamps() ||
-                lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();
-
-        outputFiles.put(outputFile, generate);
-
-        return generate;
     }
 
     private String getAmalgamFileNameRoot()
@@ -148,10 +127,9 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
 
     private static final String CPP_DEFAULT_AMALGAM_FILE_NAME_ROOT = "Amalgamation";
 
-    private final String outputPathName;
+    private final OutputFileManager outputFileManager;
     private final CppExtensionParameters cppParameters;
     private final TemplateDataContext context;
 
     private String packageSourceFileName = "";
-    private final Map<File, Boolean> outputFiles = new HashMap<File, Boolean>();
 }

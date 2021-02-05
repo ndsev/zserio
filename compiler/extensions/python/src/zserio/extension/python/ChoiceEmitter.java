@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.ChoiceType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class ChoiceEmitter extends CompoundEmitter
 {
-    public ChoiceEmitter(PythonExtensionParameters pythonParameters)
+    public ChoiceEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

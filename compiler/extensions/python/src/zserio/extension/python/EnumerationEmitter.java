@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.EnumType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class EnumerationEmitter extends PythonDefaultEmitter
 {
-    public EnumerationEmitter(PythonExtensionParameters pythonParameters)
+    public EnumerationEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

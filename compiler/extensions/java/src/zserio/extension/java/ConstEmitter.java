@@ -1,13 +1,14 @@
 package zserio.extension.java;
 
 import zserio.ast.Constant;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 class ConstEmitter extends JavaDefaultEmitter
 {
-    public ConstEmitter(JavaExtensionParameters javaParameters)
+    public ConstEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {
-        super(javaParameters);
+        super(outputFileManager, javaParameters);
     }
 
     @Override

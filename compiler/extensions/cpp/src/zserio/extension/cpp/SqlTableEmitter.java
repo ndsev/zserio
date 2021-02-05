@@ -1,13 +1,14 @@
 package zserio.extension.cpp;
 
 import zserio.ast.SqlTableType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class SqlTableEmitter extends CppDefaultEmitter
 {
-    public SqlTableEmitter(CppExtensionParameters cppParameters)
+    public SqlTableEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {
-        super(cppParameters);
+        super(outputFileManager, cppParameters);
     }
 
     @Override

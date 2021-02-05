@@ -1,20 +1,20 @@
 package zserio.extension.java;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 abstract class JavaDefaultEmitter extends DefaultTreeWalker
 {
-    public JavaDefaultEmitter(JavaExtensionParameters javaParameters)
+    public JavaDefaultEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {
+        this.outputFileManager = outputFileManager;
         this.javaParameters = javaParameters;
     }
 
@@ -55,11 +55,6 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
         return context;
     }
 
-    protected Map<File, Boolean> getOutputFiles()
-    {
-        return outputFiles;
-    }
-
     protected void processTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioExtensionException
     {
@@ -83,33 +78,18 @@ abstract class JavaDefaultEmitter extends DefaultTreeWalker
     {
         final File outDir = new File(javaParameters.getOutputDir(), packageName.toFilesystemPath());
         final File outputFile = new File(outDir, outFileNameRoot + JAVA_SOURCE_EXTENSION);
-        if (addOutputFile(outputFile))
+        if (outputFileManager.addOutputFile(outputFile))
         {
             FreeMarkerUtil.processTemplate(JAVA_TEMPLATE_LOCATION + templateName, templateData, outputFile,
                     false);
         }
     }
 
-    private boolean addOutputFile(File outputFile)
-    {
-        final Boolean alreadyGenerated = outputFiles.get(outputFile);
-        if (alreadyGenerated != null)
-            return alreadyGenerated;
-
-        final long lastModifiedSourceTime = javaParameters.getLastModifiedSourceTime();
-        final boolean generate = javaParameters.getIngoreTimestamps() ||
-                lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();
-
-        outputFiles.put(outputFile, generate);
-
-        return generate;
-    }
-
     private static final String JAVA_SOURCE_EXTENSION = ".java";
     private static final String JAVA_TEMPLATE_LOCATION = "java/";
 
+    private final OutputFileManager outputFileManager;
     private final JavaExtensionParameters javaParameters;
 
     private TemplateDataContext context = null;
-    private final Map<File, Boolean> outputFiles = new HashMap<File, Boolean>();
 }

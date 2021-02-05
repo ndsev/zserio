@@ -17,13 +17,14 @@ import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class ApiEmitter extends PythonDefaultEmitter
 {
-    public ApiEmitter(PythonExtensionParameters pythonParameters)
+    public ApiEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

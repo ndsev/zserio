@@ -1,13 +1,14 @@
 package zserio.extension.java;
 
 import zserio.ast.ServiceType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 class ServiceEmitter extends JavaDefaultEmitter
 {
-    public ServiceEmitter(JavaExtensionParameters javaParameters)
+    public ServiceEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {
-        super(javaParameters);
+        super(outputFileManager, javaParameters);
     }
 
     @Override

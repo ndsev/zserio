@@ -24,8 +24,6 @@ class PythonExtensionParameters
         withSqlCode = parameters.getWithSqlCode();
         withPythonProperties = parameters.argumentExists(OptionWithPythonProperties);
         withRangeCheckCode = parameters.getWithRangeCheckCode();
-        ignoreTimestamps = parameters.getIgnoreTimestamps();
-        lastModifiedSourceTime = parameters.getLastModifiedTime();
     }
 
     public String getOutputDir()
@@ -63,16 +61,6 @@ class PythonExtensionParameters
         return withRangeCheckCode;
     }
 
-    public boolean getIngoreTimestamps()
-    {
-        return ignoreTimestamps;
-    }
-
-    public long getLastModifiedSourceTime()
-    {
-        return lastModifiedSourceTime;
-    }
-
     static void registerOptions(Options options)
     {
         Option optionPython = new Option(OptionPython, true, "generate Python sources");
@@ -107,6 +95,4 @@ class PythonExtensionParameters
     private final boolean withSqlCode;
     private final boolean withPythonProperties;
     private final boolean withRangeCheckCode;
-    private final boolean ignoreTimestamps;
-    private final long lastModifiedSourceTime;
 }

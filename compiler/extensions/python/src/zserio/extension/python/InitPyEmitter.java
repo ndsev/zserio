@@ -6,13 +6,14 @@ import java.util.Set;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class InitPyEmitter extends PythonDefaultEmitter
 {
-    public InitPyEmitter (PythonExtensionParameters pythonParameters)
+    public InitPyEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

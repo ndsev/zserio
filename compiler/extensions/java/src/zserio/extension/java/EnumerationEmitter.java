@@ -1,13 +1,14 @@
 package zserio.extension.java;
 
 import zserio.ast.EnumType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 class EnumerationEmitter extends JavaDefaultEmitter
 {
-    public EnumerationEmitter(JavaExtensionParameters javaParameters)
+    public EnumerationEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)
     {
-        super(javaParameters);
+        super(outputFileManager, javaParameters);
     }
 
     @Override

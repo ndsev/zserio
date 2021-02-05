@@ -1,13 +1,14 @@
 package zserio.extension.cpp;
 
 import zserio.ast.Constant;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class ConstEmitter extends CppDefaultEmitter
 {
-    public ConstEmitter(CppExtensionParameters cppParameters)
+    public ConstEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {
-        super(cppParameters);
+        super(outputFileManager, cppParameters);
     }
 
     @Override

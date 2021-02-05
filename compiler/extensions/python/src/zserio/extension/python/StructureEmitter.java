@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.StructureType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class StructureEmitter extends CompoundEmitter
 {
-    public StructureEmitter(PythonExtensionParameters pythonParameters)
+    public StructureEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override

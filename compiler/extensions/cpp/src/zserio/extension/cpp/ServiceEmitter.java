@@ -1,13 +1,14 @@
 package zserio.extension.cpp;
 
 import zserio.ast.ServiceType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class ServiceEmitter extends CppDefaultEmitter
 {
-    public ServiceEmitter(CppExtensionParameters cppParameters)
+    public ServiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)
     {
-        super(cppParameters);
+        super(outputFileManager, cppParameters);
     }
 
     @Override

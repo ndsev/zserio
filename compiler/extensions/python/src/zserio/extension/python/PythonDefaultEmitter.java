@@ -1,22 +1,21 @@
 package zserio.extension.python;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 abstract class PythonDefaultEmitter extends DefaultTreeWalker
 {
-    public PythonDefaultEmitter(PythonExtensionParameters pythonParameters)
+    public PythonDefaultEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        this.outputPathName = pythonParameters.getOutputDir();
+        this.outputFileManager = outputFileManager;
         this.pythonParameters = pythonParameters;
         this.context = new TemplateDataContext(pythonParameters);
     }
@@ -52,11 +51,6 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         return context;
     }
 
-    protected Map<File, Boolean> getOutputFiles()
-    {
-        return outputFiles;
-    }
-
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioExtensionException
     {
@@ -72,9 +66,9 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
     protected void processTemplate(String templateName, Object templateData, PackageName packageName,
             String outFileNameRoot) throws ZserioExtensionException
     {
-        final File outDir = new File(outputPathName, packageName.toFilesystemPath());
+        final File outDir = new File(pythonParameters.getOutputDir(), packageName.toFilesystemPath());
         final File outputFile = new File(outDir, outFileNameRoot + PYTHON_SOURCE_EXTENSION);
-        if (addOutputFile(outputFile))
+        if (outputFileManager.addOutputFile(outputFile))
         {
             FreeMarkerUtil.processTemplate(PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile,
                     false);
@@ -86,26 +80,11 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         return FreeMarkerUtil.readFreemarkerTemplate(PYTHON_TEMPLATE_LOCATION + templateName);
     }
 
-    private boolean addOutputFile(File outputFile)
-    {
-        final Boolean alreadyGenerated = outputFiles.get(outputFile);
-        if (alreadyGenerated != null)
-            return alreadyGenerated;
-
-        final long lastModifiedSourceTime = pythonParameters.getLastModifiedSourceTime();
-        final boolean generate = pythonParameters.getIngoreTimestamps() ||
-                lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();
-
-        outputFiles.put(outputFile, generate);
-
-        return generate;
-    }
 
     private static final String PYTHON_SOURCE_EXTENSION = ".py";
     private static final String PYTHON_TEMPLATE_LOCATION = "python/";
 
-    private final String outputPathName;
+    private final OutputFileManager outputFileManager;
     private final PythonExtensionParameters pythonParameters;
     private final TemplateDataContext context;
-    private final Map<File, Boolean> outputFiles = new HashMap<File, Boolean>();
 }

@@ -1,13 +1,14 @@
 package zserio.extension.python;
 
 import zserio.ast.UnionType;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 public class UnionEmitter extends CompoundEmitter
 {
-    public UnionEmitter(PythonExtensionParameters pythonParameters)
+    public UnionEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
-        super(pythonParameters);
+        super(outputFileManager, pythonParameters);
     }
 
     @Override
