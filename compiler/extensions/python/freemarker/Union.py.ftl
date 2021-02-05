@@ -21,8 +21,8 @@ class ${name}:
 </#if>
             <#lt>) -> None:
         <@compound_constructor_parameter_assignments compoundParametersData/>
-        self._choiceTag = self.UNDEFINED_CHOICE # type: int
-        self._choice = None # type: typing.Any
+        self._choiceTag: int = self.UNDEFINED_CHOICE
+        self._choice: typing.Any = None
 <#if fieldList?has_content>
     <#list fieldList as field>
         if <@field_argument_name field/> is not None:

@@ -21,9 +21,9 @@ class BitStreamReader:
         :param buffer: Bytes-like buffer to read as a bit stream.
         """
 
-        self._buffer = buffer # type: bytes
-        self._bitPosition = 0 # type: int
-        self._bitSize = len(buffer) * 8 # type: int
+        self._buffer: bytes = buffer
+        self._bitPosition: int = 0
+        self._bitSize: int = len(buffer) * 8
 
     @classmethod
     def fromBitBuffer(cls: typing.Type['BitStreamReader'], bitBuffer: BitBuffer) -> 'BitStreamReader':

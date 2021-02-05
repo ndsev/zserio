@@ -22,8 +22,8 @@ class BitStreamWriter:
         Constructor.
         """
 
-        self._byteArray = bytearray() # type: bytearray
-        self._bitPosition = 0 # type: int
+        self._byteArray: bytearray = bytearray()
+        self._bitPosition: int = 0
 
     def writeBits(self, value: int, numBits: int) -> None:
         """

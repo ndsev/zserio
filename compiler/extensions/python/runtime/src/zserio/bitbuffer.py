@@ -30,8 +30,8 @@ class BitBuffer:
         elif len(buffer) * 8 < bitSize:
             raise PythonRuntimeException("BitBuffer: Bit size %d out of range for given buffer byte "
                                          "size %d!" % (bitSize, len(buffer)))
-        self._buffer = buffer # type: bytes
-        self._bitSize = bitSize # type: int
+        self._buffer: bytes = buffer
+        self._bitSize: int = bitSize
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BitBuffer):

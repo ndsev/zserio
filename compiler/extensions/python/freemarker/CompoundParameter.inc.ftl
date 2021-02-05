@@ -16,7 +16,7 @@ ${I}<@parameter_argument_name parameter/>: ${parameter.pythonTypeName}<#rt>
 
 <#macro compound_constructor_parameter_assignments compoundParametersData>
     <#list compoundParametersData.list as parameter>
-        self.<@parameter_member_name parameter/> = <@parameter_argument_name parameter/> # type: ${parameter.pythonTypeName}
+        self.<@parameter_member_name parameter/>: ${parameter.pythonTypeName} = <@parameter_argument_name parameter/>
     </#list>
 </#macro>
 

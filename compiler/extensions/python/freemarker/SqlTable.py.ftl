@@ -97,9 +97,9 @@ class ${name}:
 
 </#if>
     def __init__(self, connection: apsw.Connection, tableName: str, attachedDbName: str = None) -> None:
-        self._connection = connection # type: apsw.Connection
-        self._tableName = tableName # type: str
-        self._attachedDbName = attachedDbName # type: str
+        self._connection: apsw.Connection = connection
+        self._tableName: str = tableName
+        self._attachedDbName: str = attachedDbName
 <#if withWriterCode>
 
     def createTable(self) -> None:

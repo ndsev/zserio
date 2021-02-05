@@ -13,9 +13,9 @@
 
 class ${name}:
     def __init__(self, connection: apsw.Connection, tableToAttachedDbNameRelocationMap: typing.Dict[str, str] = None) -> None:
-        self._connection = connection # type: apsw.Connection
-        self._attachedDbNameList = [] # type: typing.Union[typing.List[str], typing.ValuesView[str]]
-        self._isExternal = True # type: bool
+        self._connection: apsw.Connection = connection
+        self._attachedDbNameList: typing.Union[typing.List[str], typing.ValuesView[str]] = []
+        self._isExternal: bool = True
         self._initTables(tableToAttachedDbNameRelocationMap if tableToAttachedDbNameRelocationMap else {})
 
     @classmethod
@@ -23,8 +23,8 @@ class ${name}:
         connection = apsw.Connection(fileName, apsw.SQLITE_OPEN_URI | <#rt>
             <#lt><#if withWriterCode>apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE<#else>apsw.SQLITE_OPEN_READONLY</#if>)
 
-        tableNameToAttachedDbNameMap = {} # type: typing.Dict[str, str]
-        dbFileNameToAttachedDbNameMap = {} # type: typing.Dict[str, str]
+        tableNameToAttachedDbNameMap: typing.Dict[str, str] = {}
+        dbFileNameToAttachedDbNameMap: typing.Dict[str, str] = {}
         if tableToDbFileNameRelocationMap:
             cursor = connection.cursor()
             for relocatedTableName, dbFileName in tableToDbFileNameRelocationMap.items():

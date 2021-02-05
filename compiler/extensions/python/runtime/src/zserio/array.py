@@ -41,12 +41,12 @@ class Array:
         :param checkOffsetMethod: Check offset method if mapped Zserio array is indexed offset array.
         """
 
-        self._rawArray = [] if rawArray is None else rawArray # type: typing.List
-        self._arrayTraits = arrayTraits # type: typing.Any
-        self._isAuto = isAuto # type: bool
-        self._isImplicit = isImplicit # type: bool
-        self._setOffsetMethod = setOffsetMethod # typing.Optional[typing.Callable[[int, int], None]]
-        self._checkOffsetMethod = checkOffsetMethod # typing.Optional[typing.Callable[[int, int], None]]
+        self._rawArray: typing.List = [] if rawArray is None else rawArray
+        self._arrayTraits: typing.Any = arrayTraits
+        self._isAuto: bool = isAuto
+        self._isImplicit: bool = isImplicit
+        self._setOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = setOffsetMethod
+        self._checkOffsetMethod: typing.Optional[typing.Callable[[int, int], None]] = checkOffsetMethod
 
     @classmethod
     def fromReader(cls: typing.Type['Array'],

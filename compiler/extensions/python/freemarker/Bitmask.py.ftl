@@ -90,7 +90,7 @@ class ${name}:
 
     class Values:
 <#list values as value>
-        ${value.name} = None # type: '${name}'
+        ${value.name}: '${name}' = None
 </#list>
 
 <#list values as value>
