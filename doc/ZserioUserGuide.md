@@ -225,13 +225,7 @@ Zserio Task Attribute   | Description
 ----------------------- | -------------------------------------------------------------------------------------
 `srcPath="path"`        | Path to source files. Required.
 `srcFile="file"`        | Input file, relative to `srcPath`. Required.
-`clean="boolean"`       | When set to `true`, all outputs will be removed at first. It requires output child node which specifies what to delete. Default is `false`.
 `ignoreError="boolean"` | When set to `true`, compilation error will be ignored and not reported to Ant. Default is `false`.
-`java="outDir"`         | Generates Java sources in `outDir`.
-`cpp="outDir"`          | Generates C++ sources in `outDir`.
-`python="outDir"`       | Generates Python sources in `outDir`.
-`doc="outDir"`          | Generates HTML documentation in `outDir`.
-`xml="outDir"`          | Generates XML representation of the input in `outDir`.
 
 The next section describes all supported Zserio task child nodes:
 
@@ -242,26 +236,6 @@ The next section describes all supported Zserio task child nodes:
 Adds a custom option of the form `-name=value` or `-name` if value is not specified. This node can be used
 
 multiple times.
-
-```
-<dependencies>
-    path-like-structure
-</dependencies>
-```
-
-Specifies dependencies. This is used only to avoid generating the output files if they have been generated
-already and all the dependencies are older than all the outputs. When omitted or empty, output files are
-always generated.
-
-```
-<output>
-    path-like-structure
-</output>
-```
-
-Specifies output files. This is used to avoid generating the output files if they have been generated already
-and all the dependencies are older than all the outputs. When omitted or empty, output files are always
-generated. Furthermore the list specifies what files to delete when clean attribute is set to true.
 
 ```
 <classpath>
@@ -279,13 +253,11 @@ extensions (like `zerio_java.jar`) and 3rd party libraries (like `antlr.jar`).
 The following demonstrates the usage of Zserio Ant task:
 
 ```
-<zserio srcPath="my_in_dir" srcFile="my.zs" java="my_out_dir">
+<zserio srcPath="my_in_dir" srcFile="my.zs">
     <arg name="withRangeCheckCode"/>
-    <output>
-        <fileset dir="my_out_dir" includes="**/*.java" erroronmissingdir="false"/>
-    </output>
+    <arg name="java" value="my_out_dir"/>
     <classpath>
-        <path refid="rds.my_classpath"/>
+        <path refid="my_classpath"/>
     </classpath>
 </zerio>
 ```

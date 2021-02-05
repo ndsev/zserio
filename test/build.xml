@@ -108,16 +108,13 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
         <sequential>
             <record name="${@{testName}.zs.log_file}" action="start" loglevel="warn"/>
 
-            <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}"
-                java="${@{testName}.zs.out_dir}" ignoreError="@{ignoreErrors}">
-                <output>
-                    <fileset dir="${@{testName}.zs.out_dir}" includes="**/*.java" erroronmissingdir="false"/>
-                </output>
+            <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}" ignoreError="@{ignoreErrors}">
                 <classpath>
                     <fileset dir="${zserio.jar_dir}">
                         <include name="*.jar"/>
                     </fileset>
                 </classpath>
+                <arg name="java" value="${@{testName}.zs.out_dir}"/>
                 <args/>
             </zserio>
 
