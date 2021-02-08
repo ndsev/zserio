@@ -42,7 +42,6 @@ public class FreeMarkerUtil
             newFreeMarkerConfig.setOutputEncoding("UTF-8");
 
             freeMarkerConfig = newFreeMarkerConfig;
-            amalgamatedDirectories = new HashSet<String>();
         }
 
         try
@@ -94,6 +93,7 @@ public class FreeMarkerUtil
         if (amalgamate)
         {
             final String outputDirName = outputFile.getParent();
+
             if (amalgamatedDirectories.contains(outputDirName))
                 append = true;
             else
@@ -184,7 +184,7 @@ public class FreeMarkerUtil
     }
 
     private static volatile Configuration freeMarkerConfig;
-    private static Set<String> amalgamatedDirectories;
+    private static Set<String> amalgamatedDirectories = new HashSet<String>();
 
     private static final String FREEMARKER_LOCATION = "freemarker/";
 }
