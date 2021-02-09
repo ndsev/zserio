@@ -9,7 +9,7 @@ else ()
     set(TOOLCHAIN_PREFIX_NAME "")
 endif ()
 
-# needed for find_xxxx command to search in ${TOOLCHAIN_ROOT)/lib(include) directories
+# needed for find_xxxx command to search in ${TOOLCHAIN_ROOT}/lib(include) directories
 set(CMAKE_SYSTEM_LIBRARY_PATH ${CMAKE_SYSTEM_LIBRARY_PATH} /lib)
 set(CMAKE_SYSTEM_INCLUDE_PATH ${CMAKE_SYSTEM_INCLUDE_PATH} /include)
 

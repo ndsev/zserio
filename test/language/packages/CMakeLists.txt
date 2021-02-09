@@ -123,6 +123,7 @@ add_test_sources(
     cpp/PackageNameConflictTest.cpp
 )
 
+add_test_dependencies(empty_file_zs)
 add_test_dependencies(packages_zs)
 add_test_dependencies(default_package_zs)
 add_test_dependencies(package_name_conflict_zs)

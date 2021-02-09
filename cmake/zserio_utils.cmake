@@ -98,30 +98,29 @@ function(zserio_add_library)
         endif ()
     endif ()
 
-    # handle special EMPTY case
+    # check if the library is header only
     if ("${VALUE_OUT_FILES}" STREQUAL "EMPTY")
-        set(TOUCH_EMPTY_COMMAND COMMAND ${CMAKE_COMMAND} -E touch EMPTY)
+        SET(VALUE_OUT_FILES "")
     endif ()
+    string(FIND "${VALUE_OUT_FILES}" ".cpp" SOURCE_FILE_POSITION)
 
-    add_custom_command(OUTPUT ${VALUE_OUT_FILES}
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${VALUE_OUT_DIR}
+    # set ${VALUE_OUT_FILES} as GENERATED
+    set_source_files_properties(${VALUE_OUT_FILES} PROPERTIES GENERATED TRUE)
+
+    # hack to always re-run Zserio compiler (Zserio itself can skip sources generations if it's not needed)
+    # - uses ${VALUE_TARGET}_ALWAYS_GENERATE output which will be never generated and thus it will always re-run
+    add_custom_command(OUTPUT ${VALUE_TARGET}_ALWAYS_GENERATE
         COMMAND ${CMAKE_COMMAND} -DJAVA_BIN=${JAVA_BIN}
             -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DCPP_DIR=${VALUE_ZSERIO_CPP_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
             -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
             -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
             -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
-        ${TOUCH_EMPTY_COMMAND}
-        DEPENDS ${ALL_SOURCES} ${VALUE_ZSERIO_CORE_DIR}/zserio_core.jar
-            ${VALUE_ZSERIO_CPP_DIR}/zserio_cpp.jar
-        COMMENT "Generating sources with Zserio")
-
-    # check if the library is header only
-    string(FIND "${VALUE_OUT_FILES}" ".cpp" SOURCE_FILE_POSITION)
+        COMMENT "Generating sources with Zserio from ${VALUE_MAIN_SOURCE}")
 
     # add a custom target for the generation step
     add_custom_target(${VALUE_TARGET}_generate
-        DEPENDS ${VALUE_OUT_FILES})
+        DEPENDS ${VALUE_TARGET}_ALWAYS_GENERATE)
 
     # add to custom "gen" target
     if (NOT TARGET gen)
@@ -130,7 +129,7 @@ function(zserio_add_library)
     add_dependencies(gen ${VALUE_TARGET}_generate)
 
     # delete whole directory even if Zserio generated a file that's not listed in ZSERIO_GENERATED_SOURCES
-    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${VALUE_OUT_DIR})
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${VALUE_OUT_DIR})
 
     if (MSVC)
         compiler_reset_warnings_as_errors()
@@ -139,13 +138,14 @@ function(zserio_add_library)
     endif ()
 
     # add a static library
-    if (MSVC AND SOURCE_FILE_POSITION EQUAL -1)
+    if (SOURCE_FILE_POSITION EQUAL -1)
         add_library(${VALUE_TARGET} INTERFACE)
         add_dependencies(${VALUE_TARGET} ${VALUE_TARGET}_generate)
         target_include_directories(${VALUE_TARGET} INTERFACE ${VALUE_OUT_DIR})
         target_link_libraries(${VALUE_TARGET} INTERFACE ZserioCppRuntime)
     else ()
         add_library(${VALUE_TARGET} STATIC ${VALUE_OUT_FILES})
+        add_dependencies(${VALUE_TARGET} ${VALUE_TARGET}_generate)
         target_include_directories(${VALUE_TARGET} PUBLIC ${VALUE_OUT_DIR})
         target_link_libraries(${VALUE_TARGET} PUBLIC ZserioCppRuntime)
         if (SOURCE_FILE_POSITION EQUAL -1)
@@ -159,12 +159,7 @@ function(zserio_add_library)
     # add cppcheck custom command (cppcheck fails if no sources to check are available)
     if (NOT(SOURCE_FILE_POSITION EQUAL -1))
         include(cppcheck_utils)
-        if (VALUE_ZSERIO_OPTIONS MATCHES "c\\+\\+98")
-            set(SUPPRESSION_SUBDIR "cpp98")
-        else ()
-            set(SUPPRESSION_SUBDIR "cpp")
-        endif ()
-        set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/${SUPPRESSION_SUBDIR}/CppcheckSuppressions.txt")
+        set(SUPPRESSION_FILE_NAME "${CMAKE_CURRENT_SOURCE_DIR}/cpp/CppcheckSuppressions.txt")
         cppcheck_add_custom_command(TARGET ${VALUE_TARGET}
                                     SOURCE_DIR "${VALUE_OUT_DIR}"
                                     INCLUDE_DIR "${VALUE_OUT_DIR}"
