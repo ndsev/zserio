@@ -50,12 +50,12 @@ TEST_F(OptionalExpressionTest, fieldConstructor)
     BlackColor blackColor;
     fillBlackColor(blackColor, NUM_BLACK_TONES);
     const Container containerWithOptionals(BasicColor::BLACK, NUM_BLACK_TONES, blackColor);
-    ASSERT_TRUE(containerWithOptionals.hasNumBlackTones());
-    ASSERT_TRUE(containerWithOptionals.hasBlackColor());
+    ASSERT_TRUE(containerWithOptionals.isNumBlackTonesUsed());
+    ASSERT_TRUE(containerWithOptionals.isBlackColorUsed());
 
     const Container containerWithoutOptionals(BasicColor::WHITE, zserio::NullOpt, zserio::NullOpt);
-    ASSERT_FALSE(containerWithoutOptionals.hasNumBlackTones());
-    ASSERT_FALSE(containerWithoutOptionals.hasBlackColor());
+    ASSERT_FALSE(containerWithoutOptionals.isNumBlackTonesUsed());
+    ASSERT_FALSE(containerWithoutOptionals.isBlackColorUsed());
 }
 
 TEST_F(OptionalExpressionTest, resetNumBlackTones)
@@ -63,23 +63,23 @@ TEST_F(OptionalExpressionTest, resetNumBlackTones)
     Container container;
     container.setBasicColor(BasicColor::BLACK);
     container.setNumBlackTones(NUM_BLACK_TONES);
-    ASSERT_TRUE(container.hasNumBlackTones());
+    ASSERT_TRUE(container.isNumBlackTonesUsed());
 
     ASSERT_NO_THROW(container.getNumBlackTones());
     container.resetNumBlackTones();
     ASSERT_THROW(container.getNumBlackTones(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalExpressionTest, hasNumBlackTones)
+TEST_F(OptionalExpressionTest, isNumBlackTonesUsed)
 {
     Container container;
     container.setBasicColor(BasicColor::WHITE);
-    ASSERT_FALSE(container.hasNumBlackTones());
+    ASSERT_FALSE(container.isNumBlackTonesUsed());
 
     container.setBasicColor(BasicColor::BLACK);
     const uint8_t numBlackTones = NUM_BLACK_TONES;
     container.setNumBlackTones(numBlackTones);
-    ASSERT_TRUE(container.hasNumBlackTones());
+    ASSERT_TRUE(container.isNumBlackTonesUsed());
     ASSERT_EQ(numBlackTones, container.getNumBlackTones());
 }
 
@@ -90,24 +90,24 @@ TEST_F(OptionalExpressionTest, resetBlackColor)
     BlackColor blackColor;
     fillBlackColor(blackColor, NUM_BLACK_TONES);
     container.setBlackColor(blackColor);
-    ASSERT_TRUE(container.hasBlackColor());
+    ASSERT_TRUE(container.isBlackColorUsed());
 
     ASSERT_NO_THROW(container.getBlackColor());
     container.resetBlackColor();
     ASSERT_THROW(container.getBlackColor(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalExpressionTest, hasBlackColor)
+TEST_F(OptionalExpressionTest, isBlackColorUsed)
 {
     Container container;
     container.setBasicColor(BasicColor::WHITE);
-    ASSERT_FALSE(container.hasBlackColor());
+    ASSERT_FALSE(container.isBlackColorUsed());
 
     container.setBasicColor(BasicColor::BLACK);
     BlackColor blackColor;
     fillBlackColor(blackColor, NUM_BLACK_TONES);
     container.setBlackColor(blackColor);
-    ASSERT_TRUE(container.hasBlackColor());
+    ASSERT_TRUE(container.isBlackColorUsed());
 }
 
 TEST_F(OptionalExpressionTest, bitSizeOf)
@@ -189,8 +189,8 @@ TEST_F(OptionalExpressionTest, write)
     Container readContainerWhite(readerWhite);
 
     ASSERT_EQ(BasicColor::WHITE, readContainerWhite.getBasicColor());
-    ASSERT_FALSE(readContainerWhite.hasNumBlackTones());
-    ASSERT_FALSE(readContainerWhite.hasBlackColor());
+    ASSERT_FALSE(readContainerWhite.isNumBlackTonesUsed());
+    ASSERT_FALSE(readContainerWhite.isBlackColorUsed());
 
     container.setBasicColor(BasicColor::BLACK);
     const uint8_t numBlackTones = NUM_BLACK_TONES;
@@ -208,8 +208,8 @@ TEST_F(OptionalExpressionTest, write)
     Container readContainerBlack(readerBlack);
 
     ASSERT_EQ(BasicColor::BLACK, readContainerBlack.getBasicColor());
-    ASSERT_TRUE(readContainerBlack.hasNumBlackTones());
-    ASSERT_TRUE(readContainerBlack.hasBlackColor());
+    ASSERT_TRUE(readContainerBlack.isNumBlackTonesUsed());
+    ASSERT_TRUE(readContainerBlack.isBlackColorUsed());
     ASSERT_EQ(numBlackTones, readContainerBlack.getNumBlackTones());
     ASSERT_EQ(numBlackTones, readContainerBlack.getBlackColor().getNumBlackTones());
     ASSERT_EQ(blackColor.getTones(), readContainerBlack.getBlackColor().getTones());

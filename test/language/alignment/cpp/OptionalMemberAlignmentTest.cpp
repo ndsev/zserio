@@ -35,11 +35,11 @@ protected:
         if (hasOptional)
         {
             ASSERT_EQ(optionalField, optionalMemberAlignment.getOptionalField());
-            ASSERT_TRUE(optionalMemberAlignment.hasOptionalField());
+            ASSERT_TRUE(optionalMemberAlignment.isOptionalFieldUsed());
         }
         else
         {
-            ASSERT_FALSE(optionalMemberAlignment.hasOptionalField());
+            ASSERT_FALSE(optionalMemberAlignment.isOptionalFieldUsed());
         }
 
         ASSERT_EQ(field, (int)optionalMemberAlignment.getField());

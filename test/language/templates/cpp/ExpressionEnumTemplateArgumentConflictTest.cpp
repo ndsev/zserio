@@ -10,7 +10,7 @@ namespace expression_enum_template_argument_conflict
 TEST(ExpressionEnumTemplateArgumentConflictTest, readWrite)
 {
     const EnumTemplateArgumentConflict_Letters enumTemplateArgumentConflict_Letters(false, 10);
-    ASSERT_TRUE(enumTemplateArgumentConflict_Letters.hasExpressionField());
+    ASSERT_TRUE(enumTemplateArgumentConflict_Letters.isExpressionFieldUsed());
 
     EnumTemplateArgumentConflictHolder enumTemplateArgumentConflictHolder(enumTemplateArgumentConflict_Letters);
     zserio::BitStreamWriter writer;

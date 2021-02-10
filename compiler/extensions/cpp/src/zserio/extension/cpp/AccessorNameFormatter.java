@@ -40,7 +40,7 @@ public class AccessorNameFormatter
 
     public static String getIndicatorName(Field field)
     {
-        return getAccessorName(INDICATOR_NAME_PREFIX, field.getName());
+        return getAccessorName(INDICATOR_NAME_PREFIX, field.getName(), INDICATOR_NAME_SUFFIX);
     }
 
     public static String getFunctionName(Function function)
@@ -50,6 +50,12 @@ public class AccessorNameFormatter
 
     private static String getAccessorName(String accessorNamePrefix, String memberName)
     {
+        return getAccessorName(accessorNamePrefix, memberName, "");
+    }
+
+    private static String getAccessorName(String accessorNamePrefix, String memberName,
+            String accessorNameSuffix)
+    {
         StringBuilder accessorName = new StringBuilder(accessorNamePrefix);
         if (!memberName.isEmpty())
         {
@@ -58,6 +64,8 @@ public class AccessorNameFormatter
             accessorName.append(firstMemberNameChar.toUpperCase(Locale.ENGLISH));
             accessorName.append(restMemberNameChars);
         }
+        if (!accessorNameSuffix.isEmpty())
+            accessorName.append(accessorNameSuffix);
 
         return accessorName.toString();
     }
@@ -66,6 +74,7 @@ public class AccessorNameFormatter
     private final static String SETTER_NAME_PREFIX = "set";
     private final static String READER_NAME_PREFIX = "read";
     private final static String RESETTER_NAME_PREFIX = "reset";
-    private final static String INDICATOR_NAME_PREFIX = "has";
+    private final static String INDICATOR_NAME_PREFIX = "is";
+    private final static String INDICATOR_NAME_SUFFIX = "Used";
     private final static String FUNCTION_NAME_PREFIX = "func";
 }

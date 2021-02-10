@@ -30,14 +30,14 @@ const size_t StructureNameClashingWithJavaTest::BIT_SIZE =
 TEST_F(StructureNameClashingWithJavaTest, emptyConstructor)
 {
     StructureNameClashingWithJava structureNameClashingWithJava;
-    ASSERT_FALSE(structureNameClashingWithJava.getByteField().hasValue());
-    ASSERT_FALSE(structureNameClashingWithJava.getShortField().hasValue());
-    ASSERT_FALSE(structureNameClashingWithJava.getIntegerField().hasValue());
-    ASSERT_FALSE(structureNameClashingWithJava.getLongField().hasValue());
-    ASSERT_FALSE(structureNameClashingWithJava.getBigIntegerField().hasValue());
-    ASSERT_FALSE(structureNameClashingWithJava.getFloatField().hasValue());
-    ASSERT_FALSE(structureNameClashingWithJava.getDoubleField().hasValue());
-    ASSERT_FALSE(structureNameClashingWithJava.getStringField().hasValue());
+    ASSERT_FALSE(structureNameClashingWithJava.getByteField().isValueUsed());
+    ASSERT_FALSE(structureNameClashingWithJava.getShortField().isValueUsed());
+    ASSERT_FALSE(structureNameClashingWithJava.getIntegerField().isValueUsed());
+    ASSERT_FALSE(structureNameClashingWithJava.getLongField().isValueUsed());
+    ASSERT_FALSE(structureNameClashingWithJava.getBigIntegerField().isValueUsed());
+    ASSERT_FALSE(structureNameClashingWithJava.getFloatField().isValueUsed());
+    ASSERT_FALSE(structureNameClashingWithJava.getDoubleField().isValueUsed());
+    ASSERT_FALSE(structureNameClashingWithJava.getStringField().isValueUsed());
 }
 
 TEST_F(StructureNameClashingWithJavaTest, bitSizeOf)

@@ -83,20 +83,20 @@ protected:
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
 
-        if (row1.hasName() && row2.hasName())
+        if (row1.isNameUsed() && row2.isNameUsed())
             ASSERT_EQ(row1.getName(), row2.getName());
         else
-            ASSERT_EQ(row1.hasName(), row2.hasName());
+            ASSERT_EQ(row1.isNameUsed(), row2.isNameUsed());
 
-        if (row1.hasParameters() && row2.hasParameters())
+        if (row1.isParametersUsed() && row2.isParametersUsed())
             ASSERT_EQ(row1.getParameters(), row2.getParameters());
         else
-            ASSERT_EQ(row1.hasParameters(), row2.hasParameters());
+            ASSERT_EQ(row1.isParametersUsed(), row2.isParametersUsed());
 
-        if (row1.hasBlob() && row2.hasBlob())
+        if (row1.isBlobUsed() && row2.isBlobUsed())
             ASSERT_EQ(row1.getBlob(), row2.getBlob());
         else
-            ASSERT_EQ(row1.hasBlob(), row2.hasBlob());
+            ASSERT_EQ(row1.isBlobUsed(), row2.isBlobUsed());
     }
 
     static void checkBlobParamTableRows(const std::vector<BlobParamTable::Row>& rows1,

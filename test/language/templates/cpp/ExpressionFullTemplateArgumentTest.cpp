@@ -10,9 +10,9 @@ namespace expression_full_template_argument
 TEST(ExpressionFullTemplateArgumentTest, readWrite)
 {
     const FullTemplateArgument_Color_7C6F461F colorInternal(false, 10);
-    ASSERT_TRUE(colorInternal.hasExpressionField());
+    ASSERT_TRUE(colorInternal.isExpressionFieldUsed());
     const FullTemplateArgument_Color_6066EE71 colorExternal(false, 10);
-    ASSERT_FALSE(colorExternal.hasExpressionField());
+    ASSERT_FALSE(colorExternal.isExpressionFieldUsed());
 
     FullTemplateArgumentHolder fullTemplateArgumentHolder(colorInternal, colorExternal);
     zserio::BitStreamWriter writer;

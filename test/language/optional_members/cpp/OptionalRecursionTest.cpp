@@ -83,22 +83,22 @@ TEST_F(OptionalRecursionTest, resetNextData)
 {
     Block block12;
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
-    ASSERT_TRUE(block12.hasNextData());
+    ASSERT_TRUE(block12.isNextDataUsed());
 
     ASSERT_NO_THROW(block12.getNextData());
     block12.resetNextData();
     ASSERT_THROW(block12.getNextData(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalRecursionTest, hasNextData)
+TEST_F(OptionalRecursionTest, isNextDataUsed)
 {
     Block block1;
     fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
-    ASSERT_FALSE(block1.hasNextData());
+    ASSERT_FALSE(block1.isNextDataUsed());
 
     Block block12;
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
-    ASSERT_TRUE(block12.hasNextData());
+    ASSERT_TRUE(block12.isNextDataUsed());
 }
 
 TEST_F(OptionalRecursionTest, bitSizeOf)

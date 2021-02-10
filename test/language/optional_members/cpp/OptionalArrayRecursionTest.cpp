@@ -95,20 +95,20 @@ TEST_F(OptionalArrayRecursionTest, resetTeamMembers)
 {
     Employee employee;
     fillTeamLead(employee);
-    ASSERT_TRUE(employee.hasTeamMembers());
+    ASSERT_TRUE(employee.isTeamMembersUsed());
 
     ASSERT_NO_THROW(employee.getTeamMembers());
     employee.resetTeamMembers();
     ASSERT_THROW(employee.getTeamMembers(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalArrayRecursionTest, hasTeamMembers)
+TEST_F(OptionalArrayRecursionTest, isTeamMembersUsed)
 {
     Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
-    ASSERT_FALSE(employee.hasTeamMembers());
+    ASSERT_FALSE(employee.isTeamMembersUsed());
 
     fillTeamLead(employee);
-    ASSERT_TRUE(employee.hasTeamMembers());
+    ASSERT_TRUE(employee.isTeamMembersUsed());
 }
 
 TEST_F(OptionalArrayRecursionTest, bitSizeOf)
@@ -186,7 +186,7 @@ TEST_F(OptionalArrayRecursionTest, writeTeamLead)
     ASSERT_EQ(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName());
     ASSERT_EQ(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
     ASSERT_EQ(Title::TEAM_LEAD, readTeamLead.getTitle());
-    ASSERT_TRUE(readTeamLead.hasTeamMembers());
+    ASSERT_TRUE(readTeamLead.isTeamMembersUsed());
     std::vector<Employee> teamMembers = readTeamLead.getTeamMembers();
     ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
 }

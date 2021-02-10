@@ -10,7 +10,7 @@ namespace expression_bitmask_template_argument
 TEST(ExpressionBitmaskTemplateArgumentTest, readWrite)
 {
     const BitmaskTemplateArgument_Permission bitmaskTemplateArgument_Permission(false, 10);
-    ASSERT_TRUE(bitmaskTemplateArgument_Permission.hasExpressionField());
+    ASSERT_TRUE(bitmaskTemplateArgument_Permission.isExpressionFieldUsed());
 
     BitmaskTemplateArgumentHolder bitmaskTemplateArgumentHolder(bitmaskTemplateArgument_Permission);
     zserio::BitStreamWriter writer;

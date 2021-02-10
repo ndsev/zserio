@@ -19,9 +19,9 @@ TEST(OptionalArrayTest, data8)
 TEST(OptionalArrayTest, autoData8)
 {
     TestStruct test;
-    ASSERT_FALSE(test.hasAutoData8());
+    ASSERT_FALSE(test.isAutoData8Used());
     test.setAutoData8(std::vector<Data8>(4));
-    ASSERT_TRUE(test.hasAutoData8());
+    ASSERT_TRUE(test.isAutoData8Used());
     ASSERT_EQ(4, test.getAutoData8().size());
 }
 
@@ -36,9 +36,9 @@ TEST(OptionalArrayTest, data16)
 TEST(OptionalArrayTest, autoData16)
 {
     TestStruct test;
-    ASSERT_FALSE(test.hasAutoData16());
+    ASSERT_FALSE(test.isAutoData16Used());
     test.setAutoData16(std::vector<int16_t>(4));
-    ASSERT_TRUE(test.hasAutoData16());
+    ASSERT_TRUE(test.isAutoData16Used());
     ASSERT_EQ(4, test.getAutoData16().size());
 }
 

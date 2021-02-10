@@ -56,7 +56,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, emptyConstructor)
     Item item;
     item.initialize(version);
     ASSERT_EQ(version, item.getVersion());
-    ASSERT_FALSE(item.hasExtraParam());
+    ASSERT_FALSE(item.isExtraParamUsed());
 }
 
 TEST_F(ParameterizedTypesSimpleParamTest, fieldConstructor)
@@ -65,13 +65,13 @@ TEST_F(ParameterizedTypesSimpleParamTest, fieldConstructor)
         Item item(ITEM_PARAM, zserio::NullOpt);
         ASSERT_FALSE(item.isInitialized());
         item.initialize(LOWER_VERSION);
-        ASSERT_FALSE(item.hasExtraParam());
+        ASSERT_FALSE(item.isExtraParamUsed());
     }
     {
         Item item(ITEM_PARAM, ITEM_EXTRA_PARAM);
         ASSERT_FALSE(item.isInitialized());
         item.initialize(HIGHER_VERSION);
-        ASSERT_TRUE(item.hasExtraParam());
+        ASSERT_TRUE(item.isExtraParamUsed());
         ASSERT_EQ(ITEM_EXTRA_PARAM, item.getExtraParam());
     }
 }
@@ -90,7 +90,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, bitStreamReaderConstructor)
     Item item(reader, version);
     ASSERT_EQ(version, item.getVersion());
     ASSERT_EQ(itemParam, item.getParam());
-    ASSERT_TRUE(item.hasExtraParam());
+    ASSERT_TRUE(item.isExtraParamUsed());
     ASSERT_EQ(itemExtraParam, item.getExtraParam());
 }
 
@@ -129,7 +129,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, moveConstructor)
 
     Item movedItem(std::move(item));
     ASSERT_EQ(ITEM_PARAM, movedItem.getParam());
-    ASSERT_FALSE(movedItem.hasExtraParam());
+    ASSERT_FALSE(movedItem.isExtraParamUsed());
 }
 
 TEST_F(ParameterizedTypesSimpleParamTest, moveAssignmentOperator)
@@ -140,7 +140,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, moveAssignmentOperator)
     Item movedItem;
     movedItem = std::move(item);
     ASSERT_EQ(ITEM_PARAM, movedItem.getParam());
-    ASSERT_TRUE(movedItem.hasExtraParam());
+    ASSERT_TRUE(movedItem.isExtraParamUsed());
     ASSERT_EQ(ITEM_EXTRA_PARAM, movedItem.getExtraParam());
 }
 

@@ -37,11 +37,11 @@ protected:
         if (hasOptional)
         {
             ASSERT_EQ(optionalField, optionalMemberOffset.getOptionalField());
-            ASSERT_TRUE(optionalMemberOffset.hasOptionalField());
+            ASSERT_TRUE(optionalMemberOffset.isOptionalFieldUsed());
         }
         else
         {
-            ASSERT_FALSE(optionalMemberOffset.hasOptionalField());
+            ASSERT_FALSE(optionalMemberOffset.isOptionalFieldUsed());
         }
 
         ASSERT_EQ(field, (int)optionalMemberOffset.getField());
