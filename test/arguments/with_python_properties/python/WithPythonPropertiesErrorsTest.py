@@ -77,7 +77,7 @@ class WithPythonPropertiesErrorsTest(unittest.TestCase):
             "errors/structure_indicator_property_clash_error.zs",
             [
                 "3:8: Property name error detected in 'TestStructure'!",
-                WithPythonPropertiesErrorsTest._getPropertyClashError("isFieldSet")
+                WithPythonPropertiesErrorsTest._getPropertyClashError("isFieldUsed")
             ]
         )
 

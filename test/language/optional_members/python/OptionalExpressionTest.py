@@ -57,25 +57,25 @@ class OptionalExpressionTest(unittest.TestCase):
         container2.setBlackColor(None)
         self.assertEqual(hash(container1), hash(container2))
 
-    def testHasNumBlackTones(self):
+    def testIsNumBlackTonesUsed(self):
         container = self.api.Container()
         container.setBasicColor(self.api.BasicColor.WHITE)
-        self.assertFalse(container.isNumBlackTonesOptionalClauseMet())
+        self.assertFalse(container.isNumBlackTonesUsed())
 
         container.setBasicColor(self.api.BasicColor.BLACK)
         container.setNumBlackTones(self.NUM_BLACK_TONES)
-        self.assertTrue(container.isNumBlackTonesOptionalClauseMet())
+        self.assertTrue(container.isNumBlackTonesUsed())
         self.assertEqual(self.NUM_BLACK_TONES, container.getNumBlackTones())
 
-    def testHasBlackColor(self):
+    def testIsBlackColorUsed(self):
         container = self.api.Container()
         container.setBasicColor(self.api.BasicColor.WHITE)
-        self.assertFalse(container.isBlackColorOptionalClauseMet())
+        self.assertFalse(container.isBlackColorUsed())
 
         container.setBasicColor(self.api.BasicColor.BLACK)
         blackColor = self._createBlackColor(self.NUM_BLACK_TONES)
         container.setBlackColor(blackColor)
-        self.assertTrue(container.isBlackColorOptionalClauseMet())
+        self.assertTrue(container.isBlackColorUsed())
         self.assertTrue(blackColor == container.getBlackColor())
 
     def testBitSizeOf(self):
@@ -111,8 +111,8 @@ class OptionalExpressionTest(unittest.TestCase):
         reader.setBitPosition(0)
         readContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.api.BasicColor.WHITE, readContainer.getBasicColor())
-        self.assertFalse(readContainer.isNumBlackTonesOptionalClauseMet())
-        self.assertFalse(readContainer.isBlackColorOptionalClauseMet())
+        self.assertFalse(readContainer.isNumBlackTonesUsed())
+        self.assertFalse(readContainer.isBlackColorUsed())
 
         container.setBasicColor(self.api.BasicColor.BLACK)
         container.setNumBlackTones(self.NUM_BLACK_TONES)
@@ -127,8 +127,8 @@ class OptionalExpressionTest(unittest.TestCase):
         self.assertEqual(self.api.BasicColor.BLACK, readContainer.getBasicColor())
         self.assertEqual(self.NUM_BLACK_TONES, readContainer.getNumBlackTones())
         self.assertTrue(blackColor == readContainer.getBlackColor())
-        self.assertTrue(readContainer.isNumBlackTonesOptionalClauseMet())
-        self.assertTrue(readContainer.isBlackColorOptionalClauseMet())
+        self.assertTrue(readContainer.isNumBlackTonesUsed())
+        self.assertTrue(readContainer.isBlackColorUsed())
 
     def _createBlackColor(self, numBlackTones):
         return self.api.BlackColor(numBlackTones, [i + 1 for i in range(numBlackTones)])

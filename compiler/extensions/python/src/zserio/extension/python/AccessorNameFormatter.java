@@ -23,10 +23,9 @@ public class AccessorNameFormatter
         return getAccessorName(SETTER_NAME_PREFIX, field.getName());
     }
 
-    public static String getIndicatorName(Field field, boolean isAutoOptional)
+    public static String getIndicatorName(Field field)
     {
-        return getAccessorName(INDICATOR_NAME_PREFIX, field.getName()) +
-                (isAutoOptional ? INDICATOR_NAME_SUFFIX_AUTO : INDICATOR_NAME_SUFFIX);
+        return getAccessorName(INDICATOR_NAME_PREFIX, field.getName(), INDICATOR_NAME_SUFFIX);
     }
 
     public static String getFunctionName(Function function)
@@ -51,6 +50,12 @@ public class AccessorNameFormatter
 
     private static String getAccessorName(String accessorNamePrefix, String memberName)
     {
+        return getAccessorName(accessorNamePrefix, memberName, "");
+    }
+
+    private static String getAccessorName(String accessorNamePrefix, String memberName,
+            String accessorNameSuffix)
+    {
         StringBuilder accessorName = new StringBuilder(accessorNamePrefix);
         if (!memberName.isEmpty())
         {
@@ -59,6 +64,8 @@ public class AccessorNameFormatter
             accessorName.append(firstMemberNameChar.toUpperCase(Locale.ENGLISH));
             accessorName.append(restMemberNameChars);
         }
+        if (!accessorNameSuffix.isEmpty())
+            accessorName.append(accessorNameSuffix);
 
         return accessorName.toString();
     }
@@ -66,7 +73,6 @@ public class AccessorNameFormatter
     private static final String GETTER_NAME_PREFIX = "get";
     private static final String SETTER_NAME_PREFIX = "set";
     private static final String INDICATOR_NAME_PREFIX = "is";
-    private static final String INDICATOR_NAME_SUFFIX = "OptionalClauseMet";
-    private static final String INDICATOR_NAME_SUFFIX_AUTO = "Set";
+    private static final String INDICATOR_NAME_SUFFIX = "Used";
     private static final String FUNCTION_NAME_PREFIX = "func";
 }

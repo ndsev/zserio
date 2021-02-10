@@ -10,7 +10,7 @@ class ExpressionBitmaskTemplateArgumentTest(unittest.TestCase):
 
     def testReadWrite(self):
         bitmaskTemplateArgument_Permission = self.api.BitmaskTemplateArgument_Permission(False, 10)
-        self.assertTrue(bitmaskTemplateArgument_Permission.isExpressionFieldOptionalClauseMet())
+        self.assertTrue(bitmaskTemplateArgument_Permission.isExpressionFieldUsed())
 
         bitmaskTemplateArgumentHolder = self.api.BitmaskTemplateArgumentHolder(
             bitmaskTemplateArgument_Permission

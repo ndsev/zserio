@@ -86,10 +86,10 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
     def _checkOptionalMemberAlignment(self, optionalMemberAlignment, hasOptional, optionalField, field):
         self.assertEqual(hasOptional, optionalMemberAlignment.getHasOptional())
         if hasOptional:
-            self.assertTrue(optionalMemberAlignment.isOptionalFieldOptionalClauseMet())
+            self.assertTrue(optionalMemberAlignment.isOptionalFieldUsed())
             self.assertEqual(optionalField, optionalMemberAlignment.getOptionalField())
         else:
-            self.assertFalse(optionalMemberAlignment.isOptionalFieldOptionalClauseMet())
+            self.assertFalse(optionalMemberAlignment.isOptionalFieldUsed())
         self.assertEqual(field, optionalMemberAlignment.getField())
 
     WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96
