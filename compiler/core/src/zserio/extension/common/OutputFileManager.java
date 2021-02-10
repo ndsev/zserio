@@ -69,7 +69,7 @@ public class OutputFileManager
         return generate;
     }
 
-    private final long lastModifiedSourceTime;
+    private final long lastModifiedSourceTime; // last modified time of Zserio sources and resources (e.g. jar)
     private final boolean ignoreTimestamps;
     private final Map<File, Boolean> outputFiles = new HashMap<File, Boolean>();
 }

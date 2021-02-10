@@ -69,9 +69,21 @@ public class InputFileManager
     {
         inputFiles.add(fileFullName);
 
-        final long lastModifiedTime = new File(fileFullName).lastModified();
-        if (lastModifiedTime > this.lastModifiedTime)
-            this.lastModifiedTime = lastModifiedTime;
+        if (!lastModifiedTimeError)
+        {
+            final long lastModifiedTime = new File(fileFullName).lastModified();
+            if (lastModifiedTime > this.lastModifiedTime)
+            {
+                this.lastModifiedTime = lastModifiedTime;
+            }
+            else if (lastModifiedTime == 0L)
+            {
+                lastModifiedTimeError = true;
+                this.lastModifiedTime = 0L;
+                ZserioToolPrinter.printWarning(
+                        "InputFileManager: Failed to get timestamp of source file: '" + fileFullName + "'!");
+            }
+        }
     }
 
     /**
@@ -105,4 +117,5 @@ public class InputFileManager
     private final Set<String> inputFiles = new HashSet<String>();
     private String inputFileExtension = "";
     private long lastModifiedTime = 0L; // last modified timestamp (milliseconds since epoch)
+    private boolean lastModifiedTimeError = false;
 }

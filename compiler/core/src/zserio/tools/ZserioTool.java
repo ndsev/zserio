@@ -108,6 +108,7 @@ public class ZserioTool
     private ZserioTool()
     {
         commandLineArguments = new CommandLineArguments();
+        resourceManager = new ResourceManager();
         inputFileManager = new InputFileManager(commandLineArguments);
         extensionManager = new ExtensionManager(commandLineArguments);
     }
@@ -138,7 +139,7 @@ public class ZserioTool
     {
         final Root rootNode = parse();
         final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments,
-                inputFileManager.getLastModifiedTime());
+                inputFileManager.getLastModifiedTime(), resourceManager.getLastModifiedTime());
         extensionManager.callExtensions(rootNode, parameters);
         ZserioToolPrinter.printMessage("Done");
     }
@@ -220,6 +221,7 @@ public class ZserioTool
         }
     }
 
+    private final ResourceManager resourceManager;
     private final InputFileManager inputFileManager;
     private final CommandLineArguments commandLineArguments;
     private final ExtensionManager extensionManager;

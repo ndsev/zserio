@@ -11,12 +11,16 @@ public class ExtensionParameters
      * Constructor from command line arguments and Zserio parser.
      *
      * @param commandLineArguments Command line arguments to construct from.
-     * @param lastModifiedTime Last modified timestamp of last modified Zserio source.
+     * @param lastModifiedSourceTime Last modified timestamp of last modified Zserio source.
+     * @param lastModifiedResourceTime Last modified timestamp of last modified Zserio resource (e.g. jar file).
      */
-    public ExtensionParameters(CommandLineArguments commandLineArguments, long lastModifiedTime)
+    public ExtensionParameters(CommandLineArguments commandLineArguments, long lastModifiedSourceTime,
+            long lastModifiedResourceTime)
     {
         this.commandLineArguments = commandLineArguments;
-        this.lastModifiedTime = lastModifiedTime;
+        this.lastModifiedTime = (lastModifiedSourceTime == 0L || lastModifiedResourceTime == 0L)
+                ? 0L
+                : Math.max(lastModifiedSourceTime, lastModifiedResourceTime);
     }
 
     /**
