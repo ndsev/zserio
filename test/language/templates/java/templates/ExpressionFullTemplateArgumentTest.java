@@ -25,11 +25,11 @@ public class ExpressionFullTemplateArgumentTest
     {
         final FullTemplateArgument_Color_7C6F461F colorInternal =
                 new FullTemplateArgument_Color_7C6F461F(false, 10);
-        assertTrue(colorInternal.hasExpressionField());
+        assertTrue(colorInternal.isExpressionFieldUsed());
 
         final FullTemplateArgument_Color_6066EE71 colorExternal =
                 new FullTemplateArgument_Color_6066EE71(false, 10);
-        assertFalse(colorExternal.hasExpressionField());
+        assertFalse(colorExternal.isExpressionFieldUsed());
 
         final FullTemplateArgumentHolder fullTemplateArgumentHolder =
                 new FullTemplateArgumentHolder(colorInternal, colorExternal);

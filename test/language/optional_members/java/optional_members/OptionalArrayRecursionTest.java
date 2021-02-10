@@ -29,14 +29,14 @@ public class OptionalArrayRecursionTest
     }
 
     @Test
-    public void hasTeamMembers()
+    public void isTeamMembersUsed()
     {
         final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
                 Title.DEVELOPER);
-        assertFalse(employee.hasTeamMembers());
+        assertFalse(employee.isTeamMembersUsed());
 
         final Employee teamLead = createTeamLead();
-        assertTrue(teamLead.hasTeamMembers());
+        assertTrue(teamLead.isTeamMembersUsed());
     }
 
     @Test

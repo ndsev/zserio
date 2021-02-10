@@ -207,12 +207,11 @@ public final class CompoundFieldTemplateData
         public Optional(Field field, ExpressionFormatter pythonExpressionFormatter,
                 boolean isRecursive) throws ZserioExtensionException
         {
+            final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
             final Expression optionalClauseExpression = field.getOptionalClauseExpr();
-            final boolean isAutoOptional = optionalClauseExpression == null;
-            final String indicatorName = AccessorNameFormatter.getIndicatorName(field, isAutoOptional);
-
             clause = (optionalClauseExpression == null) ? null :
                 pythonExpressionFormatter.formatGetter(optionalClauseExpression);
+
             this.indicatorName = indicatorName;
             this.isRecursive = isRecursive;
         }

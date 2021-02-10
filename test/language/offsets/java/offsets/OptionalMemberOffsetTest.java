@@ -151,11 +151,11 @@ public class OptionalMemberOffsetTest
         if (hasOptional)
         {
             assertEquals(optionalField, optionalMemberOffset.getOptionalField());
-            assertTrue(optionalMemberOffset.hasOptionalField());
+            assertTrue(optionalMemberOffset.isOptionalFieldUsed());
         }
         else
         {
-            assertFalse(optionalMemberOffset.hasOptionalField());
+            assertFalse(optionalMemberOffset.isOptionalFieldUsed());
         }
         assertEquals(field, optionalMemberOffset.getField());
     }

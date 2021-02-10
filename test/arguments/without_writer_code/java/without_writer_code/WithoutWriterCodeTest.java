@@ -109,7 +109,7 @@ public class WithoutWriterCodeTest
         assertMethodPresent(methods, "getExtraParam()");
         assertMethodPresent(methods, "getItemType()");
         assertMethodPresent(methods, "getParam()");
-        assertMethodPresent(methods, "hasExtraParam()");
+        assertMethodPresent(methods, "isExtraParamUsed()");
         assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader");
     }
 

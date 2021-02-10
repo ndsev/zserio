@@ -141,11 +141,11 @@ public class AutoOptionalMemberAlignmentTest
         if (autoOptionalField != null)
         {
             assertEquals(autoOptionalField, autoOptionalMemberAlignment.getAutoOptionalField());
-            assertTrue(autoOptionalMemberAlignment.hasAutoOptionalField());
+            assertTrue(autoOptionalMemberAlignment.isAutoOptionalFieldUsed());
         }
         else
         {
-            assertFalse(autoOptionalMemberAlignment.hasAutoOptionalField());
+            assertFalse(autoOptionalMemberAlignment.isAutoOptionalFieldUsed());
         }
         assertEquals(field, (int)autoOptionalMemberAlignment.getField());
     }

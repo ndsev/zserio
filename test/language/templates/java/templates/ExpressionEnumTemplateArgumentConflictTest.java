@@ -24,7 +24,7 @@ public class ExpressionEnumTemplateArgumentConflictTest
     {
         final EnumTemplateArgumentConflict_Letters enumTemplateArgumentConflict_Letters =
                 new EnumTemplateArgumentConflict_Letters(false, 10);
-        assertTrue(enumTemplateArgumentConflict_Letters.hasExpressionField());
+        assertTrue(enumTemplateArgumentConflict_Letters.isExpressionFieldUsed());
 
         final EnumTemplateArgumentConflictHolder enumTemplateArgumentConflictHolder =
                 new EnumTemplateArgumentConflictHolder(enumTemplateArgumentConflict_Letters);

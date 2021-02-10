@@ -19,7 +19,7 @@ public class SimpleParamTest
     public void parameterConstructor()
     {
         final Item item = new Item(LOWER_VERSION);
-        assertFalse(item.hasExtraParam());
+        assertFalse(item.isExtraParamUsed());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class SimpleParamTest
         writeItemToFile(file, version, ITEM_PARAM, ITEM_EXTRA_PARAM);
         final Item item = new Item(file, version);
         assertEquals(ITEM_PARAM, item.getParam());
-        assertFalse(item.hasExtraParam());
+        assertFalse(item.isExtraParamUsed());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class SimpleParamTest
         final BitStreamReader stream = new FileBitStreamReader(file);
         final Item item = new Item(stream, version);
         assertEquals(ITEM_PARAM, item.getParam());
-        assertTrue(item.hasExtraParam());
+        assertTrue(item.isExtraParamUsed());
         assertEquals(Long.valueOf(ITEM_EXTRA_PARAM), item.getExtraParam());
     }
 
@@ -51,7 +51,7 @@ public class SimpleParamTest
     {
         final Item item = new Item(HIGHER_VERSION, ITEM_PARAM, (long)ITEM_EXTRA_PARAM);
         assertEquals(ITEM_PARAM, item.getParam());
-        assertTrue(item.hasExtraParam());
+        assertTrue(item.isExtraParamUsed());
         assertEquals(Long.valueOf(ITEM_EXTRA_PARAM), item.getExtraParam());
     }
 

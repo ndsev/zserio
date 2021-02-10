@@ -25,14 +25,14 @@ public class AutoOptionalTest
     }
 
     @Test
-    public void hasAutoOptionalInt()
+    public void isAutoOptionalIntUsed()
     {
         final Container container = new Container();
         container.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
-        assertFalse(container.hasAutoOptionalInt());
+        assertFalse(container.isAutoOptionalIntUsed());
 
         container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
-        assertTrue(container.hasAutoOptionalInt());
+        assertTrue(container.isAutoOptionalIntUsed());
     }
 
     @Test
@@ -90,7 +90,7 @@ public class AutoOptionalTest
         checkContainerInFile(nonOptionalContainerFile, NON_OPTIONAL_INT_VALUE, null);
         final Container readNonOptionalContainer = new Container(nonOptionalContainerFile);
         assertEquals(NON_OPTIONAL_INT_VALUE, readNonOptionalContainer.getNonOptionalInt());
-        assertFalse(readNonOptionalContainer.hasAutoOptionalInt());
+        assertFalse(readNonOptionalContainer.isAutoOptionalIntUsed());
 
         container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
         final File autoOptionalContainerFile = new File("auto_optional.bin");
@@ -98,7 +98,7 @@ public class AutoOptionalTest
         checkContainerInFile(autoOptionalContainerFile, NON_OPTIONAL_INT_VALUE, AUTO_OPTIONAL_INT_VALUE);
         final Container readAutoOptionalContainer = new Container(autoOptionalContainerFile);
         assertEquals(NON_OPTIONAL_INT_VALUE, readAutoOptionalContainer.getNonOptionalInt());
-        assertTrue(readAutoOptionalContainer.hasAutoOptionalInt());
+        assertTrue(readAutoOptionalContainer.isAutoOptionalIntUsed());
         assertEquals(AUTO_OPTIONAL_INT_VALUE, (int) readAutoOptionalContainer.getAutoOptionalInt());
     }
 

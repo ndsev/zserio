@@ -23,7 +23,7 @@ public class ExpressionEnumTemplateArgumentTest
     public void readWrite() throws IOException
     {
         final EnumTemplateArgument_Color enumTemplateArgument_Color = new EnumTemplateArgument_Color(false, 10);
-        assertTrue(enumTemplateArgument_Color.hasExpressionField());
+        assertTrue(enumTemplateArgument_Color.isExpressionFieldUsed());
 
         final EnumTemplateArgumentHolder enumTemplateArgumentHolder =
                 new EnumTemplateArgumentHolder(enumTemplateArgument_Color);

@@ -140,11 +140,11 @@ public class OptionalMemberAlignmentTest
         if (hasOptional)
         {
             assertEquals(optionalField, optionalMemberAlignment.getOptionalField());
-            assertTrue(optionalMemberAlignment.hasOptionalField());
+            assertTrue(optionalMemberAlignment.isOptionalFieldUsed());
         }
         else
         {
-            assertFalse(optionalMemberAlignment.hasOptionalField());
+            assertFalse(optionalMemberAlignment.isOptionalFieldUsed());
         }
         assertEquals(field, (int)optionalMemberAlignment.getField());
     }

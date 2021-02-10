@@ -25,13 +25,13 @@ public class OptionalRecursionTest
     }
 
     @Test
-    public void hasNextData()
+    public void isNextDataUsed()
     {
         final Block block1 = createBlock(BLOCK1_DATA);
-        assertFalse(block1.hasNextData());
+        assertFalse(block1.isNextDataUsed());
 
         final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
-        assertTrue(block12.hasNextData());
+        assertTrue(block12.isNextDataUsed());
     }
 
     @Test

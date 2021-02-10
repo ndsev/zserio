@@ -31,29 +31,29 @@ public class OptionalExpressionTest
     }
 
     @Test
-    public void hasNumBlackTones()
+    public void isNumBlackTonesUsed()
     {
         final Container container = new Container();
         container.setBasicColor(BasicColor.WHITE);
-        assertFalse(container.hasNumBlackTones());
+        assertFalse(container.isNumBlackTonesUsed());
 
         container.setBasicColor(BasicColor.BLACK);
         container.setNumBlackTones(NUM_BLACK_TONES);
-        assertTrue(container.hasNumBlackTones());
+        assertTrue(container.isNumBlackTonesUsed());
         assertEquals(NUM_BLACK_TONES, (short)container.getNumBlackTones());
     }
 
     @Test
-    public void hasBlackColor()
+    public void isBlackColorUsed()
     {
         final Container container = new Container();
         container.setBasicColor(BasicColor.WHITE);
-        assertFalse(container.hasBlackColor());
+        assertFalse(container.isBlackColorUsed());
 
         container.setBasicColor(BasicColor.BLACK);
         final BlackColor blackColor = createBlackColor(NUM_BLACK_TONES);
         container.setBlackColor(blackColor);
-        assertTrue(container.hasBlackColor());
+        assertTrue(container.isBlackColorUsed());
         assertTrue(blackColor.equals(container.getBlackColor()));
     }
 
@@ -119,8 +119,8 @@ public class OptionalExpressionTest
         checkContainerInFile(whiteContainerFile, BasicColor.WHITE, NUM_BLACK_TONES);
         Container readContainer = new Container(whiteContainerFile);
         assertEquals(BasicColor.WHITE, readContainer.getBasicColor());
-        assertFalse(readContainer.hasNumBlackTones());
-        assertFalse(readContainer.hasBlackColor());
+        assertFalse(readContainer.isNumBlackTonesUsed());
+        assertFalse(readContainer.isBlackColorUsed());
 
         container.setBasicColor(BasicColor.BLACK);
         container.setNumBlackTones(NUM_BLACK_TONES);
@@ -133,8 +133,8 @@ public class OptionalExpressionTest
         assertEquals(BasicColor.BLACK, readContainer.getBasicColor());
         assertEquals(NUM_BLACK_TONES, (short)readContainer.getNumBlackTones());
         assertTrue(blackColor.equals(readContainer.getBlackColor()));
-        assertTrue(readContainer.hasNumBlackTones());
-        assertTrue(readContainer.hasBlackColor());
+        assertTrue(readContainer.isNumBlackTonesUsed());
+        assertTrue(readContainer.isBlackColorUsed());
     }
 
     private static BlackColor createBlackColor(short numBlackTones)

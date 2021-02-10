@@ -26,9 +26,9 @@ public class OptionalArrayTest
     public void autoData8()
     {
         final TestStruct test = new TestStruct();
-        assertFalse(test.hasAutoData8());
+        assertFalse(test.isAutoData8Used());
         test.setAutoData8(new ObjectArray<Data8>(4));
-        assertTrue(test.hasAutoData8());
+        assertTrue(test.isAutoData8Used());
 
         // we just need to test that getter for ObjectArray<?> doesn't fire a warning
         assertEquals(4, test.getAutoData8().length());
@@ -49,9 +49,9 @@ public class OptionalArrayTest
     public void autoData16()
     {
         final TestStruct test = new TestStruct();
-        assertFalse(test.hasAutoData16());
+        assertFalse(test.isAutoData16Used());
         test.setAutoData16(new ShortArray(4));
-        assertTrue(test.hasAutoData16());
+        assertTrue(test.isAutoData16Used());
 
         // we just need to test that getter for ShortArray doesn't fire a warning
         assertEquals(4, test.getAutoData16().length());

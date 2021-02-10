@@ -24,7 +24,7 @@ public class ExpressionBitmaskTemplateArgumentTest
     {
         final BitmaskTemplateArgument_Permission bitmaskTemplateArgument_Permission =
                 new BitmaskTemplateArgument_Permission(false, 10);
-        assertTrue(bitmaskTemplateArgument_Permission.hasExpressionField());
+        assertTrue(bitmaskTemplateArgument_Permission.isExpressionFieldUsed());
 
         final BitmaskTemplateArgumentHolder bitmaskTemplateArgumentHolder =
                 new BitmaskTemplateArgumentHolder(bitmaskTemplateArgument_Permission);
