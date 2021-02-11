@@ -1,7 +1,11 @@
 package zserio.extension.python;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -18,6 +22,7 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         this.outputFileManager = outputFileManager;
         this.pythonParameters = pythonParameters;
         this.context = new TemplateDataContext(pythonParameters);
+        this.generatorDescription = context.getGeneratorDescription().split("\\n");
     }
 
     @Override
@@ -68,11 +73,16 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
     {
         final File outDir = new File(pythonParameters.getOutputDir(), packageName.toFilesystemPath());
         final File outputFile = new File(outDir, outFileNameRoot + PYTHON_SOURCE_EXTENSION);
-        if (outputFileManager.addOutputFile(outputFile))
+
+        final boolean generate = !outputFileManager.checkTimestamps(outputFile) ||
+                !checkGeneratorDescription(outputFile);
+        if (generate)
         {
             FreeMarkerUtil.processTemplate(PYTHON_TEMPLATE_LOCATION + templateName, templateData, outputFile,
                     false);
         }
+
+        outputFileManager.registerOutputFile(outputFile, generate);
     }
 
     protected List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
@@ -80,6 +90,19 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         return FreeMarkerUtil.readFreemarkerTemplate(PYTHON_TEMPLATE_LOCATION + templateName);
     }
 
+    private boolean checkGeneratorDescription(File outputFile)
+    {
+        try (final Stream<String> lines = Files.lines(outputFile.toPath()))
+        {
+            final String[] generatorDescriptionCandidate =
+                    lines.limit(generatorDescription.length).toArray(String[]::new);
+            return Arrays.equals(generatorDescription, generatorDescriptionCandidate);
+        }
+        catch (IOException e)
+        {
+            return false;
+        }
+    }
 
     private static final String PYTHON_SOURCE_EXTENSION = ".py";
     private static final String PYTHON_TEMPLATE_LOCATION = "python/";
@@ -87,4 +110,5 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
     private final OutputFileManager outputFileManager;
     private final PythonExtensionParameters pythonParameters;
     private final TemplateDataContext context;
+    private final String[] generatorDescription;
 }

@@ -1,5 +1,7 @@
 package zserio.extension.java;
 
+import java.util.StringJoiner;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
@@ -22,8 +24,21 @@ public class JavaExtensionParameters
         withSqlCode = parameters.getWithSqlCode();
         withValidationCode = parameters.getWithValidationCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
-        ignoreTimestamps = parameters.getIgnoreTimestamps();
-        lastModifiedSourceTime = parameters.getLastModifiedTime();
+
+        final StringJoiner description = new StringJoiner(", ");
+        if (withWriterCode)
+            description.add("writerCode");
+        if (withPubsubCode)
+            description.add("pubsubCode");
+        if (withServiceCode)
+            description.add("serviceCode");
+        if (withSqlCode)
+            description.add("sqlCode");
+        if (withValidationCode)
+            description.add("validationCode");
+        if (withRangeCheckCode)
+            description.add("rangeCheckCode");
+        parametersDescription = description.toString();
     }
 
     public String getOutputDir()
@@ -61,14 +76,9 @@ public class JavaExtensionParameters
         return withRangeCheckCode;
     }
 
-    public boolean getIngoreTimestamps()
+    public String getParametersDescription()
     {
-        return ignoreTimestamps;
-    }
-
-    public long getLastModifiedSourceTime()
-    {
-        return lastModifiedSourceTime;
+        return parametersDescription;
     }
 
     static void registerOptions(Options options)
@@ -93,6 +103,5 @@ public class JavaExtensionParameters
     private final boolean withSqlCode;
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
-    private final boolean ignoreTimestamps;
-    private final long lastModifiedSourceTime;
+    private final String parametersDescription;
 }

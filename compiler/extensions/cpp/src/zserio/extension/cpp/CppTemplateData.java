@@ -10,7 +10,7 @@ public abstract class CppTemplateData implements IncludeCollector
 {
     public CppTemplateData(TemplateDataContext context)
     {
-        generatorDescription = "Zserio C++ extension version " + CppExtensionVersion.VERSION_STRING;
+        generatorDescription = context.getGeneratorDescription();
 
         withWriterCode = context.getWithWriterCode();
 

@@ -14,6 +14,7 @@ public class PythonTemplateData implements ImportCollector
     public PythonTemplateData(TemplateDataContext context)
     {
         withWriterCode = context.getWithWriterCode();
+        generatorDescription = context.getGeneratorDescription();
     }
 
     public String getGeneratorDescription()
@@ -130,10 +131,8 @@ public class PythonTemplateData implements ImportCollector
         private final String packagePath;
     }
 
-    private static final String generatorDescription =
-            "Zserio Python extension version " + PythonExtensionVersion.VERSION_STRING;
-
     private final boolean withWriterCode;
+    private final String generatorDescription;
 
     // keep ordering to have system imports before application imports
     private final LinkedHashSet<String> packageImports = new LinkedHashSet<String>();

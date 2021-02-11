@@ -1,7 +1,11 @@
 package zserio.extension.cpp;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import zserio.ast.Package;
 import zserio.ast.PackageName;
@@ -18,6 +22,7 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
         this.outputFileManager = outputFileManager;
         this.cppParameters = cppParameters;
         this.context = new TemplateDataContext(cppParameters);
+        this.generatorDescription = context.getGeneratorDescription().split("\\n");
     }
 
     @Override
@@ -85,10 +90,44 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
         final boolean amalgamate = (getWithSourcesAmalgamation() && requestAmalgamate);
         final String outFileNameWithoutExtension = (amalgamate) ? getAmalgamFileNameRoot() : outFileNameRoot;
         final File outputFile = new File(outDir, outFileNameWithoutExtension + outputExtension);
-        if (outputFileManager.addOutputFile(outputFile))
+
+        if (amalgamate)
         {
-            FreeMarkerUtil.processTemplate(CPP_TEMPLATE_LOCATION + templateName, templateData, outputFile,
-                    amalgamate);
+            final Boolean fileInfo = outputFileManager.getOutputFileInfo(outputFile);
+            if (fileInfo != null) // already registered
+            {
+                if (fileInfo) // not skipped
+                {
+                    FreeMarkerUtil.processTemplate(
+                            CPP_TEMPLATE_LOCATION + templateName, templateData, outputFile, amalgamate);
+                }
+                return;
+            }
+            // else seen for the first time, normally generate
+        }
+
+        final boolean generate = !outputFileManager.checkTimestamps(outputFile) ||
+                !checkGeneratorDescription(outputFile);
+        if (generate)
+        {
+            FreeMarkerUtil.processTemplate(
+                    CPP_TEMPLATE_LOCATION + templateName, templateData, outputFile, amalgamate);
+        }
+
+        outputFileManager.registerOutputFile(outputFile, generate);
+    }
+
+    private boolean checkGeneratorDescription(File outputFile)
+    {
+        try (final Stream<String> lines = Files.lines(outputFile.toPath()))
+        {
+            final String[] generatorDescriptionCandidate =
+                    lines.limit(generatorDescription.length).toArray(String[]::new);
+            return Arrays.equals(generatorDescription, generatorDescriptionCandidate);
+        }
+        catch (IOException e)
+        {
+            return false;
         }
     }
 
@@ -130,6 +169,7 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
     private final OutputFileManager outputFileManager;
     private final CppExtensionParameters cppParameters;
     private final TemplateDataContext context;
+    private final String[] generatorDescription;
 
     private String packageSourceFileName = "";
 }

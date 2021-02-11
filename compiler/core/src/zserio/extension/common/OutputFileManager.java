@@ -47,26 +47,66 @@ public class OutputFileManager
     }
 
     /**
-     * Adds new output file.
+     * Checks file's timestamps against timestamps of Zserio sources and resources (e.g. jar file).
      *
-     * If the output file already exists, it checks whether it should be regenerated based on its timestamp.
+     * When the file is newer than Zserio sources and resources, then it's up to date and its generation
+     * can be safely skipped, if any other circumstances (e.g. extension parameters) were not changed.
+     * It's the responsibility of each extension to decide whether it's safe to skip the generation.
      *
-     * @param outputFile Output file to add.
+     * @param outputFile Output file to check.
      *
-     * @return True if the output file shall be newly generated.
+     * @return True if the output file is newer than Zserio sources and resources, False otherwise.
      */
-    public boolean addOutputFile(File outputFile)
+    public boolean checkTimestamps(File outputFile)
     {
-        final Boolean alreadyGenerated = outputFiles.get(outputFile);
-        if (alreadyGenerated != null)
-            return alreadyGenerated;
+        if (ignoreTimestamps || lastModifiedSourceTime == 0L)
+            return false;
 
-        final boolean generate = ignoreTimestamps ||
-                lastModifiedSourceTime == 0L || lastModifiedSourceTime > outputFile.lastModified();
+        return outputFile.lastModified() > lastModifiedSourceTime;
+    }
 
-        outputFiles.put(outputFile, generate);
+    /**
+     * Registers an output file.
+     *
+     * @param outputFile Output file to register.
+     * @param generated True if file is newly generated, False if the file generation is skipped.
+     *
+     * @throws ZserioExtensionException if the outputFile is already registered.
+     */
+    public void registerOutputFile(File outputFile, boolean generated) throws ZserioExtensionException
+    {
+        if (outputFiles.put(outputFile, generated) != null)
+        {
+            throw new ZserioExtensionException(
+                    "OutputFileManager: File '" + outputFile + "' already registered!");
+        }
+    }
 
-        return generate;
+    /**
+     * Registers newly generated output file.
+     *
+     * Overloaded function provided for convenience.
+     *
+     * @param outputFile Output file to register.
+     *
+     * @throws ZserioExtensionException if the outputFile is already registered.
+     */
+    public void registerOutputFile(File outputFile) throws ZserioExtensionException
+    {
+        registerOutputFile(outputFile, true);
+    }
+
+    /**
+     * Gets information about an output file.
+     *
+     * @param outputFile Output file to get info for.
+     *
+     * @return True if the file is being generated, False if it has been skipped and null if it's not yet
+     *         registered.
+     */
+    public Boolean getOutputFileInfo(File outputFile)
+    {
+        return outputFiles.get(outputFile);
     }
 
     private final long lastModifiedSourceTime; // last modified time of Zserio sources and resources (e.g. jar)

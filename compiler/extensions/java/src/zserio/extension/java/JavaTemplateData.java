@@ -4,7 +4,7 @@ public class JavaTemplateData
 {
     public JavaTemplateData(TemplateDataContext context)
     {
-        generatorDescription = "Zserio Java extension version " + JavaExtensionVersion.VERSION_STRING;
+        generatorDescription = context.getGeneratorDescription();
     }
 
     public String getGeneratorDescription()

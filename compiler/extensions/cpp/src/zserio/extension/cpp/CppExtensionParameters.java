@@ -1,5 +1,7 @@
 package zserio.extension.cpp;
 
+import java.util.StringJoiner;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
@@ -22,8 +24,21 @@ public class CppExtensionParameters
         withSqlCode = parameters.getWithSqlCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
         withSourcesAmalgamation = parameters.getWithSourcesAmalgamation();
-        ignoreTimestamps = parameters.getIgnoreTimestamps();
-        lastModifiedSourceTime = parameters.getLastModifiedTime();
+
+        final StringJoiner description = new StringJoiner(", ");
+        if (withWriterCode)
+            description.add("writerCode");
+        if (withPubsubCode)
+            description.add("pubsubCode");
+        if (withServiceCode)
+            description.add("serviceCode");
+        if (withSqlCode)
+            description.add("sqlCode");
+        if (withRangeCheckCode)
+            description.add("rangeCheckCode");
+        if (withSourcesAmalgamation)
+            description.add("sourcesAmalgamation");
+        parametersDescription = description.toString();
     }
 
     public String getOutputDir()
@@ -61,14 +76,9 @@ public class CppExtensionParameters
         return withSourcesAmalgamation;
     }
 
-    public boolean getIngoreTimestamps()
+    public String getParametersDescription()
     {
-        return ignoreTimestamps;
-    }
-
-    public long getLastModifiedSourceTime()
-    {
-        return lastModifiedSourceTime;
+        return parametersDescription;
     }
 
     static void registerOptions(Options options)
@@ -93,6 +103,5 @@ public class CppExtensionParameters
     private final boolean withSqlCode;
     private final boolean withRangeCheckCode;
     private final boolean withSourcesAmalgamation;
-    private final boolean ignoreTimestamps;
-    private final long lastModifiedSourceTime;
+    private final String parametersDescription;
 }

@@ -1,5 +1,4 @@
 <#include "CompoundField.inc.ftl">
-
 <#macro range_check rangeCheckData compoundName>
     <#if rangeCheckData.setterRangeData??>
         <#local rangeData=rangeCheckData.setterRangeData>

@@ -1,5 +1,7 @@
 package zserio.extension.python;
 
+import java.util.StringJoiner;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
@@ -24,6 +26,21 @@ class PythonExtensionParameters
         withSqlCode = parameters.getWithSqlCode();
         withPythonProperties = parameters.argumentExists(OptionWithPythonProperties);
         withRangeCheckCode = parameters.getWithRangeCheckCode();
+
+        final StringJoiner description = new StringJoiner(", ");
+        if (withWriterCode)
+            description.add("writerCode");
+        if (withPubsubCode)
+            description.add("pubsubCode");
+        if (withServiceCode)
+            description.add("serviceCode");
+        if (withSqlCode)
+            description.add("sqlCode");
+        if (withPythonProperties)
+            description.add("pythonProperties");
+        if (withRangeCheckCode)
+            description.add("rangeCheckCode");
+        parametersDescription = description.toString();
     }
 
     public String getOutputDir()
@@ -61,6 +78,11 @@ class PythonExtensionParameters
         return withRangeCheckCode;
     }
 
+    public String getParametersDescription()
+    {
+        return parametersDescription;
+    }
+
     static void registerOptions(Options options)
     {
         Option optionPython = new Option(OptionPython, true, "generate Python sources");
@@ -95,4 +117,5 @@ class PythonExtensionParameters
     private final boolean withSqlCode;
     private final boolean withPythonProperties;
     private final boolean withRangeCheckCode;
+    private final String parametersDescription;
 }

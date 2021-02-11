@@ -289,8 +289,7 @@ public class ChoiceType extends CompoundType
                 for (EnumItem unhandledEnumItem : unhandledEnumItems)
                 {
                     ZserioToolPrinter.printWarning(this, "Enumeration value '" +
-                            unhandledEnumItem.getName() + "' is not handled in choice '" + getName() +
-                            "'.");
+                            unhandledEnumItem.getName() + "' is not handled in choice '" + getName() + "'.");
                 }
             }
         }
