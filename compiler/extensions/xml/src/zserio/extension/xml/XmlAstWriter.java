@@ -630,7 +630,7 @@ public class XmlAstWriter implements ZserioAstVisitor
         currentXmlElement.appendChild(instantiationsXmlElements);
     }
 
-    private Document xmlDoc = null;
+    private final Document xmlDoc;
     private Element currentXmlElement = null;
     private String rootExprElementName = null;
 }

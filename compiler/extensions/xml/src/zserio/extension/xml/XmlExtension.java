@@ -7,6 +7,7 @@ import org.apache.commons.cli.Options;
 
 import zserio.ast.Root;
 import zserio.extension.common.FileUtil;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
@@ -43,6 +44,7 @@ public class XmlExtension implements Extension
     @Override
     public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
+        final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final String outputDir = parameters.getCommandLineArg(OptionXml);
 
         final File outputFile = new File(outputDir, "abstract_syntax_tree.xml");
@@ -51,6 +53,9 @@ public class XmlExtension implements Extension
         final XmlAstWriter xmlAstWriter = new XmlAstWriter();
         rootNode.accept(xmlAstWriter);
         xmlAstWriter.save(outputFile);
+        outputFileManager.registerOutputFile(outputFile);
+
+        outputFileManager.printReport();
     }
 
     private final static String OptionXml = "xml";
