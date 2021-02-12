@@ -72,7 +72,7 @@ class UInt64OffsetTest(unittest.TestCase):
             writer.writeSignedBits(i, 8)
         writer.writeSignedBits(0, 32)
 
-        return zserio.BitStreamReader(writer.getByteArray())
+        return zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
     ARRAY_SIZE = 13
     OFFSET = 8 + 1 + 13

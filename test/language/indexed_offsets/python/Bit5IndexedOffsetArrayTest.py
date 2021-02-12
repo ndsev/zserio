@@ -42,7 +42,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         Bit5IndexedOffsetArrayTest._writeBit5IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         bit5IndexedOffsetArray = self.api.Bit5IndexedOffsetArray()
         bit5IndexedOffsetArray.read(reader)
         self._checkBit5IndexedOffsetArray(bit5IndexedOffsetArray)
@@ -51,7 +51,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         Bit5IndexedOffsetArrayTest._writeBit5IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         bit5IndexedOffsetArray = self.api.Bit5IndexedOffsetArray()
         with self.assertRaises(zserio.PythonRuntimeException):
             bit5IndexedOffsetArray.read(reader)
@@ -62,7 +62,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bit5IndexedOffsetArray.write(writer)
         self._checkBit5IndexedOffsetArray(bit5IndexedOffsetArray)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBit5IndexedOffsetArray = self.api.Bit5IndexedOffsetArray.fromReader(reader)
         self._checkBit5IndexedOffsetArray(readBit5IndexedOffsetArray)
         self.assertTrue(bit5IndexedOffsetArray == readBit5IndexedOffsetArray)

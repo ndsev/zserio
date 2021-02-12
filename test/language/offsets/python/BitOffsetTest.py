@@ -39,7 +39,7 @@ class BitOffsetTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         self._writeBitOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         bitOffset = self.api.BitOffset.fromReader(reader)
         self._checkBitOffset(bitOffset)
 
@@ -47,7 +47,7 @@ class BitOffsetTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         self._writeBitOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         with self.assertRaises(zserio.PythonRuntimeException):
             bitOffset = self.api.BitOffset.fromReader(reader)
             self._checkBitOffset(bitOffset)
@@ -58,7 +58,7 @@ class BitOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitOffset.write(writer)
         self._checkBitOffset(bitOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBitOffset = self.api.BitOffset.fromReader(reader)
         self._checkBitOffset(readBitOffset)
         self.assertTrue(bitOffset == readBitOffset)

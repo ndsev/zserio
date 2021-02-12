@@ -17,7 +17,7 @@ class ExpressionEnumTemplateArgumentConflictTest(unittest.TestCase):
         )
         writer = zserio.BitStreamWriter()
         enumTemplateArgumentConflictHolder.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readEnumTemplateArgumentConflictHolder = self.api.EnumTemplateArgumentConflictHolder()
         readEnumTemplateArgumentConflictHolder.read(reader)
         self.assertEqual(enumTemplateArgumentConflictHolder, readEnumTemplateArgumentConflictHolder)

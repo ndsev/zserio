@@ -14,7 +14,7 @@ class StructTemplateClashAcrossPackagesTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiationInPkg1.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiationInPkg1 = self.api.pkg1.InstantiationInPkg1()
         readInstantiationInPkg1.read(reader)
         self.assertEqual(instantiationInPkg1, readInstantiationInPkg1)
@@ -25,7 +25,7 @@ class StructTemplateClashAcrossPackagesTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiationInPkg2.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiationInPkg2 = self.api.pkg2.InstantiationInPkg2()
         readInstantiationInPkg2.read(reader)
         self.assertEqual(instantiationInPkg2, readInstantiationInPkg2)

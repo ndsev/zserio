@@ -18,7 +18,7 @@ class StructTemplateClashTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiationNameClash.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiationNameClash = self.api.InstantiationNameClash()
         readInstantiationNameClash.read(reader)
         self.assertEqual(instantiationNameClash, readInstantiationNameClash)

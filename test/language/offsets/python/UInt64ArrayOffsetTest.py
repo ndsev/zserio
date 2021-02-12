@@ -96,7 +96,7 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
         for i in range(self.VALUES_SIZE):
             writer.writeSignedBits(0, 32)
 
-        return zserio.BitStreamReader(writer.getByteArray())
+        return zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
     ARRAY_SIZE = 13
     VALUES_SIZE = 42

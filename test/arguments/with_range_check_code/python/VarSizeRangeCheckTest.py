@@ -25,10 +25,8 @@ class VarSizeRangeCheckTest(unittest.TestCase):
 
     def _checkVarSizeValue(self, value):
         varSizeRangeCheckCompound = self.api.VarSizeRangeCheckCompound(value)
-        writer = zserio.BitStreamWriter()
-        varSizeRangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readVarSizeRangeCheckCompound = self.api.VarSizeRangeCheckCompound.fromReader(reader)
+        bitBuffer = zserio.serialize(varSizeRangeCheckCompound)
+        readVarSizeRangeCheckCompound = zserio.deserialize(self.api.VarSizeRangeCheckCompound, bitBuffer)
         self.assertEqual(varSizeRangeCheckCompound, readVarSizeRangeCheckCompound)
 
 VARSIZE_LOWER_BOUND = zserio.limits.VARSIZE_MIN

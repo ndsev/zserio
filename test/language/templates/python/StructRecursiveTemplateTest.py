@@ -18,7 +18,7 @@ class StructRecursiveTemplateTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structRecursiveTemplate.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readStructRecursiveTemplate = self.api.StructRecursiveTemplate()
         readStructRecursiveTemplate.read(reader)
         self.assertEqual(structRecursiveTemplate, readStructRecursiveTemplate)

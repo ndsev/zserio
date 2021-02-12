@@ -84,7 +84,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         employee.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                     self.api.Title.DEVELOPER)
 
@@ -98,7 +98,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         teamLead = self._createTeamLead()
         writer = zserio.BitStreamWriter()
         teamLead.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkTeamLeadInStream(reader)
 
         reader.setBitPosition(0)

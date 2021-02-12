@@ -13,7 +13,7 @@ class ChoiceConstraintsTest(unittest.TestCase):
         value8 = self.VALUE8_CORRECT_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, selector, value8, 0)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         choiceConstraints = self.api.ChoiceConstraints(selector)
         choiceConstraints.read(reader)
@@ -25,7 +25,7 @@ class ChoiceConstraintsTest(unittest.TestCase):
         value8 = self.VALUE8_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, selector, value8, 0)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         choiceConstraints = self.api.ChoiceConstraints(selector)
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -36,7 +36,7 @@ class ChoiceConstraintsTest(unittest.TestCase):
         value16 = self.VALUE16_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, selector, 0, value16)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         choiceConstraints = self.api.ChoiceConstraints(selector)
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -48,10 +48,8 @@ class ChoiceConstraintsTest(unittest.TestCase):
         choiceConstraints = self.api.ChoiceConstraints(selector)
         choiceConstraints.setValue16(value16)
 
-        writer = zserio.BitStreamWriter()
-        choiceConstraints.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readChoiceConstraints = self.api.ChoiceConstraints.fromReader(reader, selector)
+        bitBuffer = zserio.serialize(choiceConstraints)
+        readChoiceConstraints = zserio.deserialize(self.api.ChoiceConstraints, bitBuffer, selector)
         self.assertEqual(selector, readChoiceConstraints.getSelector())
         self.assertEqual(value16, readChoiceConstraints.getValue16())
         self.assertEqual(choiceConstraints, readChoiceConstraints)

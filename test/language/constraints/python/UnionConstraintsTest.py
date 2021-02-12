@@ -12,7 +12,7 @@ class UnionConstraintsTest(unittest.TestCase):
         value8 = self.VALUE8_CORRECT_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self._writeValue8(writer, value8)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         unionConstraints = self.api.UnionConstraints()
         unionConstraints.read(reader)
@@ -23,7 +23,7 @@ class UnionConstraintsTest(unittest.TestCase):
         value8 = self.VALUE8_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self._writeValue8(writer, value8)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         unionConstraints = self.api.UnionConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -33,7 +33,7 @@ class UnionConstraintsTest(unittest.TestCase):
         value16 = self.VALUE16_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self._writeValue16(writer, value16)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         unionConstraints = self.api.UnionConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -44,10 +44,8 @@ class UnionConstraintsTest(unittest.TestCase):
         unionConstraints = self.api.UnionConstraints()
         unionConstraints.setValue16(value16)
 
-        writer = zserio.BitStreamWriter()
-        unionConstraints.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readUnionConstraints = self.api.UnionConstraints.fromReader(reader)
+        bitBuffer = zserio.serialize(unionConstraints)
+        readUnionConstraints = zserio.deserialize(self.api.UnionConstraints, bitBuffer)
         self.assertEqual(self.api.UnionConstraints.CHOICE_value16, readUnionConstraints.choiceTag())
         self.assertEqual(value16, readUnionConstraints.getValue16())
         self.assertEqual(unionConstraints, readUnionConstraints)

@@ -25,10 +25,8 @@ class VarInt32RangeCheckTest(unittest.TestCase):
 
     def _checkVarInt32Value(self, value):
         varInt32RangeCheckCompound = self.api.VarInt32RangeCheckCompound(value_=value)
-        writer = zserio.BitStreamWriter()
-        varInt32RangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readVarInt32RangeCheckCompound = self.api.VarInt32RangeCheckCompound.fromReader(reader)
+        bitBuffer = zserio.serialize(varInt32RangeCheckCompound)
+        readVarInt32RangeCheckCompound = zserio.deserialize(self.api.VarInt32RangeCheckCompound, bitBuffer)
         self.assertEqual(varInt32RangeCheckCompound, readVarInt32RangeCheckCompound)
 
 VARINT32_LOWER_BOUND = zserio.limits.VARINT32_MIN

@@ -44,8 +44,9 @@ class StructureOptionalTest(unittest.TestCase):
         expectedWriter = zserio.BitStreamWriter()
         self._writeValueConsumerCreatorToStream(expectedWriter, defaultValue, externalValue)
         self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
+        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readValueConsumerCreator = self.api.ValueConsumerCreator.fromReader(reader)
         self.assertEqual(valueConsumerCreator, readValueConsumerCreator)
 

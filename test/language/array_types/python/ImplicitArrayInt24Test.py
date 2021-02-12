@@ -28,7 +28,7 @@ class ImplicitArrayInt24Test(unittest.TestCase):
         numElements = 99
         writer = zserio.BitStreamWriter()
         ImplicitArrayInt24Test._writeImplicitArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         implicitArray = self.api.ImplicitArray.fromReader(reader)
 
         array = implicitArray.getArray()
@@ -40,11 +40,8 @@ class ImplicitArrayInt24Test(unittest.TestCase):
         numElements = 55
         array = list(range(numElements))
         implicitArray = self.api.ImplicitArray(array)
-        writer = zserio.BitStreamWriter()
-        implicitArray.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readImplicitArray = self.api.ImplicitArray.fromReader(reader)
+        bitBuffer = zserio.serialize(implicitArray)
+        readImplicitArray = zserio.deserialize(self.api.ImplicitArray, bitBuffer)
         readArray = readImplicitArray.getArray()
         self.assertEqual(numElements, len(readArray))
         for i in range(numElements):

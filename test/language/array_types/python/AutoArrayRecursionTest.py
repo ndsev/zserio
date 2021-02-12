@@ -48,17 +48,14 @@ class AutoArrayRecursionTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         AutoArrayRecursionTest._writeAutoArrayRecursionToStream(writer, numElements)
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         autoArrayRecursion = self.api.AutoArrayRecursion.fromReader(reader)
         self._checkAutoArrayRecursion(autoArrayRecursion, numElements)
 
     def _checkWrite(self, numElements):
         autoArrayRecursion = self._createAutoArrayRecursion(numElements)
-        writer = zserio.BitStreamWriter()
-        autoArrayRecursion.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readAutoArrayRecursion = self.api.AutoArrayRecursion.fromReader(reader)
+        bitBuffer = zserio.serialize(autoArrayRecursion)
+        readAutoArrayRecursion = zserio.deserialize(self.api.AutoArrayRecursion, bitBuffer)
         self._checkAutoArrayRecursion(readAutoArrayRecursion, numElements)
 
     def _createAutoArrayRecursion(self, numElements):

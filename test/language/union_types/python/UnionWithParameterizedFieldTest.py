@@ -22,9 +22,6 @@ class UnionWithParameterizedFieldTest(unittest.TestCase):
     def testFromReader(self):
         testUnion = self.api.TestUnion()
         testUnion.setArrayHolder(self.api.ArrayHolder(10, list(range(10))))
-        writer = zserio.BitStreamWriter()
-        testUnion.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readTestUnion = self.api.TestUnion.fromReader(reader)
+        bitBuffer = zserio.serialize(testUnion)
+        readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer)
         self.assertEqual(10, readTestUnion.getArrayHolder().getSize())

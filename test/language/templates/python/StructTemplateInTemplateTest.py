@@ -16,7 +16,7 @@ class StructTemplateInTemplateTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structTemplateInTemplate.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readStructTemplateInTemplate = self.api.StructTemplateInTemplate()
         readStructTemplateInTemplate.read(reader)
         self.assertEqual(structTemplateInTemplate, readStructTemplateInTemplate)

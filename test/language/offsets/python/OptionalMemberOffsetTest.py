@@ -47,7 +47,7 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(writer, hasOptional,
                                                                     self.OPTIONAL_FIELD_OFFSET, optionalField,
                                                                     field)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         optionalMemberOffset = self.api.OptionalMemberOffset.fromReader(reader)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
                                         optionalField, field)
@@ -59,7 +59,7 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(writer, hasOptional, optionalFieldOffset,
                                                                     None, field)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         optionalMemberOffset = self.api.OptionalMemberOffset.fromReader(reader)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, optionalFieldOffset, None, field)
 
@@ -74,7 +74,7 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         optionalMemberOffset.write(writer)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
                                         optionalField, field)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readOptionalMemberOffset = self.api.OptionalMemberOffset.fromReader(reader)
         self._checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
                                         optionalField, field)
@@ -85,10 +85,8 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         optionalFieldOffset = 0xABCE
         field = 0x7ACF
         optionalMemberOffset = self.api.OptionalMemberOffset(hasOptional, optionalFieldOffset, None, field)
-        writer = zserio.BitStreamWriter()
-        optionalMemberOffset.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readOptionalMemberOffset = self.api.OptionalMemberOffset.fromReader(reader)
+        bitBuffer = zserio.serialize(optionalMemberOffset)
+        readOptionalMemberOffset = zserio.deserialize(self.api.OptionalMemberOffset, bitBuffer)
         self._checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, optionalFieldOffset, None, field)
         self.assertTrue(optionalMemberOffset == readOptionalMemberOffset)
 

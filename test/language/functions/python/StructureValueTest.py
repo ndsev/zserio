@@ -59,8 +59,9 @@ class StructureValueTest(unittest.TestCase):
         expectedWriter = zserio.BitStreamWriter()
         self._writeCustomVarIntToStream(expectedWriter, value)
         self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
+        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readcustomVarInt = self.api.CustomVarInt.fromReader(reader)
         self.assertEqual(customVarInt, readcustomVarInt)
 

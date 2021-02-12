@@ -25,10 +25,8 @@ class Int4RangeCheckTest(unittest.TestCase):
 
     def _checkInt4Value(self, value):
         int4RangeCheckCompound = self.api.Int4RangeCheckCompound(value)
-        writer = zserio.BitStreamWriter()
-        int4RangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readInt4RangeCheckCompound = self.api.Int4RangeCheckCompound.fromReader(reader)
+        bitBuffer = zserio.serialize(int4RangeCheckCompound)
+        readInt4RangeCheckCompound = zserio.deserialize(self.api.Int4RangeCheckCompound, bitBuffer)
         self.assertEqual(int4RangeCheckCompound, readInt4RangeCheckCompound)
 
 INT4_LOWER_BOUND = -8

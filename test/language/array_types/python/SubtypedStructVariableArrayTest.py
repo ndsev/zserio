@@ -30,7 +30,7 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
         numElements = 59
         writer = zserio.BitStreamWriter()
         SubtypedStructVariableArrayTest._writeSubtypedStructVariableArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromReader(reader)
 
         self.assertEqual(numElements, subtypedStructVariableArray.getNumElements())
@@ -45,11 +45,8 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
         numElements = 33
         compoundArray = [self.api.ArrayElement(i, "Name" + str(i)) for i in range(numElements)]
         subtypedStructVariableArray = self.api.SubtypedStructVariableArray(numElements, compoundArray)
-        writer = zserio.BitStreamWriter()
-        subtypedStructVariableArray.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readSubtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromReader(reader)
+        bitBuffer = zserio.serialize(subtypedStructVariableArray)
+        readSubtypedStructVariableArray = zserio.deserialize(self.api.SubtypedStructVariableArray, bitBuffer)
         self.assertEqual(numElements, readSubtypedStructVariableArray.getNumElements())
         readCompoundArray = readSubtypedStructVariableArray.getCompoundArray()
         self.assertEqual(numElements, len(readCompoundArray))

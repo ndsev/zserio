@@ -13,7 +13,7 @@ class InstantiateSimpleTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateSimple.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiateSimple = self.api.InstantiateSimple()
         readInstantiateSimple.read(reader)
         self.assertEqual(instantiateSimple, readInstantiateSimple)

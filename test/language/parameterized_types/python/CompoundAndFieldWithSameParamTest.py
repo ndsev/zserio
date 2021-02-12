@@ -13,12 +13,12 @@ class CompoundAndFieldWithSameParamTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeItemToStream(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         compound = self.api.Compound.fromReader(reader, self.PARAM)
         self.assertEqual(self.FIELD1, compound.getField1().getValue())
         self.assertEqual(self.FIELD2, compound.getField2().getValue())
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         sameParamTest = self.api.SameParamTest.fromReader(reader)
         self.assertEqual(self.PARAM, sameParamTest.getCompound().getParam())
         self.assertEqual(self.FIELD1, sameParamTest.getCompound().getField1().getValue())

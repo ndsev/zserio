@@ -43,7 +43,8 @@ class StructureArrayTest(unittest.TestCase):
         expectedWriter = zserio.BitStreamWriter()
         self._writeStructureArrayToStream(expectedWriter, pos)
         self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
+        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readStructureArray = self.api.StructureArray.fromReader(reader)
         self.assertEqual(structureArray, readStructureArray)

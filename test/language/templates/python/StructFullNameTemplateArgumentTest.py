@@ -16,7 +16,7 @@ class StructFullNameTemplateArgumentTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structFullNameTemplateArgument.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readStructFullNameTemplateArgument = self.api.StructFullNameTemplateArgument()
         readStructFullNameTemplateArgument.read(reader)
         self.assertEqual(structFullNameTemplateArgument, readStructFullNameTemplateArgument)

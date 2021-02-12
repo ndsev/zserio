@@ -7,6 +7,18 @@ from zserio.exception import PythonRuntimeException
 
 class BitStreamReaderTest(unittest.TestCase):
 
+    def testConstructor(self):
+        reader = BitStreamReader(bytes([0xAE, 0xEA, 0x80]), 17)
+        self.assertEqual(0xAE, reader.readBits(8))
+        self.assertEqual(0xEA, reader.readBits(8))
+        self.assertEqual(0x01, reader.readBits(1))
+        with self.assertRaises(PythonRuntimeException):
+            reader.readBits(1) # no more bits available
+
+    def testConstructorWrongBitSize(self):
+        with self.assertRaises(PythonRuntimeException):
+            BitStreamReader(bytes([0xAE]), 9)
+
     def testFromBitBuffer(self):
         bitBuffer = BitBuffer(bytes([0xAE, 0xEA, 0x80]), 17)
         reader = BitStreamReader.fromBitBuffer(bitBuffer)
@@ -204,16 +216,14 @@ class BitStreamReaderTest(unittest.TestCase):
         self.assertEqual(4, reader.getBitPosition())
 
     def testSetBitPosition(self):
-        reader = BitStreamReader(bytes(1))
+        reader = BitStreamReader(bytes(1), 7)
         reader.setBitPosition(0)
         self.assertEqual(0, reader.getBitPosition())
         reader.setBitPosition(7)
         self.assertEqual(7, reader.getBitPosition())
-        reader.setBitPosition(8)
-        self.assertEqual(8, reader.getBitPosition())
 
         with self.assertRaises(PythonRuntimeException):
-            reader.setBitPosition(9)
+            reader.setBitPosition(8)
         with self.assertRaises(PythonRuntimeException):
             reader.setBitPosition(-1)
 

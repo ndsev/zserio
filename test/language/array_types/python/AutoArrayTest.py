@@ -49,7 +49,7 @@ class AutoArrayTest(unittest.TestCase):
     def _checkRead(self, numElements):
         writer = zserio.BitStreamWriter()
         AutoArrayTest._writeAutoArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         autoArray = self.api.AutoArray.fromReader(reader)
 
         uint8Array = autoArray.getUint8Array()
@@ -60,11 +60,8 @@ class AutoArrayTest(unittest.TestCase):
     def _checkWrite(self, numElements):
         uint8Array = list(range(numElements))
         autoArray = self.api.AutoArray(uint8Array)
-        writer = zserio.BitStreamWriter()
-        autoArray.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readAutoArray = self.api.AutoArray.fromReader(reader)
+        bitBuffer = zserio.serialize(autoArray)
+        readAutoArray = zserio.deserialize(self.api.AutoArray, bitBuffer)
         readUint8Array = readAutoArray.getUint8Array()
         self.assertEqual(numElements, len(readUint8Array))
         for i in range(numElements):

@@ -25,7 +25,7 @@ class FixedArrayTest(unittest.TestCase):
     def testRead(self):
         writer = zserio.BitStreamWriter()
         self._writeFixedArrayToStream(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         fixedArray = self.api.FixedArray.fromReader(reader)
 
         uint8Array = fixedArray.getUint8Array()
@@ -36,11 +36,8 @@ class FixedArrayTest(unittest.TestCase):
     def testWrite(self):
         uint8Array = list(range(self.FIXED_ARRAY_LENGTH))
         fixedArray = self.api.FixedArray(uint8Array)
-        writer = zserio.BitStreamWriter()
-        fixedArray.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readFixedArray = self.api.FixedArray.fromReader(reader)
+        bitBuffer = zserio.serialize(fixedArray)
+        readFixedArray = zserio.deserialize(self.api.FixedArray, bitBuffer)
         readUint8Array = readFixedArray.getUint8Array()
         self.assertEqual(self.FIXED_ARRAY_LENGTH, len(readUint8Array))
         for i in range(self.FIXED_ARRAY_LENGTH):

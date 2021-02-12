@@ -15,7 +15,7 @@ class InstantiateTypeOnParameterizedTemplateTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateTypeOnParameterizedTemplate.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiateTypeOnParameterizedTemplate = self.api.InstantiateTypeOnParameterizedTemplate()
         readInstantiateTypeOnParameterizedTemplate.read(reader)
         self.assertEqual(instantiateTypeOnParameterizedTemplate, readInstantiateTypeOnParameterizedTemplate)

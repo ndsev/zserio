@@ -16,7 +16,7 @@ class InstantiateViaSingleImportTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateViaSingleImport.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiateViaSingleImport = self.api.InstantiateViaSingleImport()
         readInstantiateViaSingleImport.read(reader)
         self.assertEqual(instantiateViaSingleImport, readInstantiateViaSingleImport)

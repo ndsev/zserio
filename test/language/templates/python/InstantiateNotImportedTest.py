@@ -16,7 +16,7 @@ class InstantiateNotImportedTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateNotImported.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiateNotImported = self.api.InstantiateNotImported()
         readInstantiateNotImported.read(reader)
         self.assertEqual(instantiateNotImported, readInstantiateNotImported)

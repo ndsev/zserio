@@ -85,7 +85,7 @@ class OptionalRecursionTest(unittest.TestCase):
         block1 = self._createBlock(self.BLOCK1_DATA)
         writer = zserio.BitStreamWriter()
         block1.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkBlockInStream(reader, self.BLOCK1_DATA)
 
         reader.setBitPosition(0)
@@ -96,7 +96,7 @@ class OptionalRecursionTest(unittest.TestCase):
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
         writer = zserio.BitStreamWriter()
         block12.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkBlock12InStream(reader, self.BLOCK1_DATA, self.BLOCK2_DATA)
 
         reader.setBitPosition(0)

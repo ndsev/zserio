@@ -43,7 +43,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         VarInt32IndexedOffsetArrayTest._writeVarInt32IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         varInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray()
         varInt32IndexedOffsetArray.read(reader)
         self._checkVarInt32IndexedOffsetArray(varInt32IndexedOffsetArray)
@@ -52,7 +52,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         VarInt32IndexedOffsetArrayTest._writeVarInt32IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         varInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray()
         with self.assertRaises(zserio.PythonRuntimeException):
             varInt32IndexedOffsetArray.read(reader)
@@ -63,7 +63,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         varInt32IndexedOffsetArray.write(writer)
         self._checkVarInt32IndexedOffsetArray(varInt32IndexedOffsetArray)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readVarInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray.fromReader(reader)
         self._checkVarInt32IndexedOffsetArray(readVarInt32IndexedOffsetArray)
         self.assertTrue(varInt32IndexedOffsetArray == readVarInt32IndexedOffsetArray)

@@ -15,7 +15,7 @@ class SimpleParamTest(unittest.TestCase):
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         self._writeItemToStream(writer, self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         item = self.api.Item.fromReader(reader, self.HIGHER_VERSION)
         self.assertEqual(self.ITEM_PARAM, item.getParam())
         self.assertTrue(item.isExtraParamUsed())
@@ -65,7 +65,7 @@ class SimpleParamTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         item.write(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkItemInStream(reader, item, version)
         reader.setBitPosition(0)
 

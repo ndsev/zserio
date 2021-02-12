@@ -27,8 +27,7 @@ class BitfieldConstBitmaskTest(unittest.TestCase):
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         writer.writeBits(WRITE_VALUE, self.PERMISSION_BITSIZEOF)
-        byteArray = writer.getByteArray()
-        reader = zserio.BitStreamReader(byteArray)
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         permission = self.api.Permission.fromReader(reader)
         self.assertEqual(self.api.Permission.Values.WRITE, permission)
 
@@ -133,7 +132,7 @@ class BitfieldConstBitmaskTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         permission.write(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readPermission = self.api.Permission.fromReader(reader)
         self.assertEqual(permission, readPermission)
 

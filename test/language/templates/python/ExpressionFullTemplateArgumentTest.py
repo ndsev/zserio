@@ -18,7 +18,7 @@ class ExpressionFullTemplateArgumentTest(unittest.TestCase):
         fullTemplateArgumentHolder = self.api.FullTemplateArgumentHolder(colorInternal, colorExternal)
         writer = zserio.BitStreamWriter()
         fullTemplateArgumentHolder.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readFullTemplateArgumentHolder = self.api.FullTemplateArgumentHolder()
         readFullTemplateArgumentHolder.read(reader)
         self.assertEqual(fullTemplateArgumentHolder, readFullTemplateArgumentHolder)

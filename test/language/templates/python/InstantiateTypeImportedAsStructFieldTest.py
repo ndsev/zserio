@@ -15,7 +15,7 @@ class InstantiateTypeImportedAsStructFieldTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateTypeImportedAsStructField.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiateTypeImportedAsStructField = self.api.InstantiateTypeImportedAsStructField()
         readInstantiateTypeImportedAsStructField.read(reader)
         self.assertEqual(instantiateTypeImportedAsStructField, readInstantiateTypeImportedAsStructField)

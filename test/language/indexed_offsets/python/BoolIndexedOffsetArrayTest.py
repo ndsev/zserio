@@ -42,7 +42,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         BoolIndexedOffsetArrayTest._writeBoolIndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         boolIndexedOffsetArray = self.api.BoolIndexedOffsetArray()
         boolIndexedOffsetArray.read(reader)
         self._checkBoolIndexedOffsetArray(boolIndexedOffsetArray)
@@ -51,7 +51,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         BoolIndexedOffsetArrayTest._writeBoolIndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         boolIndexedOffsetArray = self.api.BoolIndexedOffsetArray()
         with self.assertRaises(zserio.PythonRuntimeException):
             boolIndexedOffsetArray.read(reader)
@@ -62,7 +62,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         boolIndexedOffsetArray.write(writer)
         self._checkBoolIndexedOffsetArray(boolIndexedOffsetArray)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBoolIndexedOffsetArray = self.api.BoolIndexedOffsetArray.fromReader(reader)
         self._checkBoolIndexedOffsetArray(readBoolIndexedOffsetArray)
         self.assertTrue(boolIndexedOffsetArray == readBoolIndexedOffsetArray)

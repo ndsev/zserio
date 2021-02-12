@@ -12,7 +12,7 @@ class SubtypedBitfieldParamTest(unittest.TestCase):
         subtypedBitfieldParamHolder = self._createSubtypedBitfieldParamHolder()
         writer = zserio.BitStreamWriter()
         subtypedBitfieldParamHolder.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkSubtypedBitfieldParamHolderInStream(reader, subtypedBitfieldParamHolder)
 
         reader.setBitPosition(0)

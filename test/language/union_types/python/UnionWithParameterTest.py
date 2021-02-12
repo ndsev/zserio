@@ -13,10 +13,8 @@ class UnionWithParameterTest(unittest.TestCase):
         self.assertTrue(testUnion.getCase1Allowed())
 
         testUnion.setCase1Field(11)
-        writer = zserio.BitStreamWriter()
-        testUnion.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readTestUnion = self.api.TestUnion.fromReader(reader, True)
+        bitBuffer = zserio.serialize(testUnion)
+        readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer, True)
         self.assertEqual(testUnion.getCase1Allowed(), readTestUnion.getCase1Allowed())
         self.assertEqual(testUnion.getCase1Field(), readTestUnion.getCase1Field())
 
@@ -31,11 +29,8 @@ class UnionWithParameterTest(unittest.TestCase):
 
     def testFromReader(self):
         testUnion = self.api.TestUnion(True, case3Field_=-1)
-        writer = zserio.BitStreamWriter()
-        testUnion.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readTestUnion = self.api.TestUnion.fromReader(reader, True)
+        bitBuffer = zserio.serialize(testUnion)
+        readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer, True)
         self.assertEqual(testUnion.choiceTag(), readTestUnion.choiceTag())
         self.assertEqual(testUnion.getCase3Field(), readTestUnion.getCase3Field())
         self.assertEqual(-1, readTestUnion.getCase3Field())

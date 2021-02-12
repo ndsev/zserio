@@ -12,7 +12,7 @@ class ArrayElementParamTest(unittest.TestCase):
         database = self._createDatabase()
         writer = zserio.BitStreamWriter()
         database.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkDatabaseInStream(reader, database)
 
         reader.setBitPosition(0)

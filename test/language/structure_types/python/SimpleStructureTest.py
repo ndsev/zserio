@@ -33,7 +33,7 @@ class SimpleStructureTest(unittest.TestCase):
         numberC = 0x7F
         writer = zserio.BitStreamWriter()
         SimpleStructureTest._writeSimpleStructureToStream(writer, numberA, numberB, numberC)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleStructure = self.api.SimpleStructure.fromReader(reader)
         self.assertEqual(numberA, simpleStructure.getNumberA())
         self.assertEqual(numberB, simpleStructure.getNumberB())
@@ -118,7 +118,7 @@ class SimpleStructureTest(unittest.TestCase):
         simpleStructure = self.api.SimpleStructure(numberA, numberC_=numberC, numberB_=numberB)
         writer = zserio.BitStreamWriter()
         simpleStructure.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readSimpleStructure = self.api.SimpleStructure()
         readSimpleStructure.read(reader)
         self.assertEqual(numberA, readSimpleStructure.getNumberA())

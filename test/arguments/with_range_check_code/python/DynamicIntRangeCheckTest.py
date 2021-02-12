@@ -32,10 +32,8 @@ class DynamicIntRangeCheckTest(unittest.TestCase):
 
     def _checkDynamicIntValue(self, numBits, value):
         dynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound(numBits_=numBits, value_=value)
-        writer = zserio.BitStreamWriter()
-        dynamicIntRangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readDynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound.fromReader(reader)
+        bitBuffer = zserio.serialize(dynamicIntRangeCheckCompound)
+        readDynamicIntRangeCheckCompound = zserio.deserialize(self.api.DynamicIntRangeCheckCompound, bitBuffer)
         self.assertEqual(dynamicIntRangeCheckCompound, readDynamicIntRangeCheckCompound)
 
 NUM_BITS = 10

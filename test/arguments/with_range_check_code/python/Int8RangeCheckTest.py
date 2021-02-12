@@ -25,10 +25,8 @@ class Int8RangeCheckTest(unittest.TestCase):
 
     def _checkInt8Value(self, value):
         int8RangeCheckCompound = self.api.Int8RangeCheckCompound(value_=value)
-        writer = zserio.BitStreamWriter()
-        int8RangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readInt8RangeCheckCompound = self.api.Int8RangeCheckCompound.fromReader(reader)
+        bitBuffer = zserio.serialize(int8RangeCheckCompound)
+        readInt8RangeCheckCompound = zserio.deserialize(self.api.Int8RangeCheckCompound, bitBuffer)
         self.assertEqual(int8RangeCheckCompound, readInt8RangeCheckCompound)
 
 INT8_LOWER_BOUND = -128

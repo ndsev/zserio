@@ -39,7 +39,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(writer, autoOptionalField,
                                                                                   field)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
         self._checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, autoOptionalField, field)
 
@@ -47,7 +47,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         field = 0x2222
         writer = zserio.BitStreamWriter()
         AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(writer, None, field)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
         self._checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, None, field)
 
@@ -55,20 +55,16 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         autoOptionalField = 0x9ADB
         field = 0x8ACD
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(autoOptionalField, field)
-        writer = zserio.BitStreamWriter()
-        autoOptionalMemberAlignment.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readAutoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
+        bitBuffer = zserio.serialize(autoOptionalMemberAlignment)
+        readAutoOptionalMemberAlignment = zserio.deserialize(self.api.AutoOptionalMemberAlignment, bitBuffer)
         self._checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, autoOptionalField, field)
         self.assertTrue(autoOptionalMemberAlignment == readAutoOptionalMemberAlignment)
 
     def testWriteWithoutOptional(self):
         field = 0x7ACF
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(field_=field)
-        writer = zserio.BitStreamWriter()
-        autoOptionalMemberAlignment.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readAutoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
+        bitBuffer = zserio.serialize(autoOptionalMemberAlignment)
+        readAutoOptionalMemberAlignment = zserio.deserialize(self.api.AutoOptionalMemberAlignment, bitBuffer)
         self._checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, None, field)
         self.assertTrue(autoOptionalMemberAlignment == readAutoOptionalMemberAlignment)
 

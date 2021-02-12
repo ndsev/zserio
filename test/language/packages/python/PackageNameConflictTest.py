@@ -12,10 +12,8 @@ class PackageNameConflictTest(unittest.TestCase):
     def testPackageNameConflict(self):
         # just test that PackageNameConflict uses correct Blob
         packageNameConflict = self.api.PackageNameConflict(self.api.Blob(13))
-        writer = zserio.BitStreamWriter()
-        packageNameConflict.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readPackageNameConflict = self.api.PackageNameConflict.fromReader(reader)
+        bitBuffer = zserio.serialize(packageNameConflict)
+        readPackageNameConflict = zserio.deserialize(self.api.PackageNameConflict, bitBuffer)
 
         self.assertEqual(13, packageNameConflict.getBlob().getValue())
         self.assertEqual(packageNameConflict.getBlob().getValue(), readPackageNameConflict.getBlob().getValue())
@@ -25,10 +23,8 @@ class PackageNameConflictTest(unittest.TestCase):
         packageNameConflictInner = self.api.PackageNameConflictInner(
             self.api.package_name_conflict.Blob("test")
         )
-        writer = zserio.BitStreamWriter()
-        packageNameConflictInner.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readPackageNameConflictInner = self.api.PackageNameConflictInner.fromReader(reader)
+        bitBuffer = zserio.serialize(packageNameConflictInner)
+        readPackageNameConflictInner = zserio.deserialize(self.api.PackageNameConflictInner, bitBuffer)
 
         self.assertEqual("test", packageNameConflictInner.getBlob().getValue())
         self.assertEqual(packageNameConflictInner.getBlob().getValue(),

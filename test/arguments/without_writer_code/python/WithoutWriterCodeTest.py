@@ -155,7 +155,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeTile(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         tile = self.api.Tile()
         tile.read(reader)
 
@@ -166,7 +166,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         self._writeTile(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         tile = self.api.Tile.fromReader(reader)
 
         self._checkTile(tile)

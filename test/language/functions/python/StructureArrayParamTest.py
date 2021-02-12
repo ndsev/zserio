@@ -22,8 +22,9 @@ class StructureArrayParamTest(unittest.TestCase):
         expectedWriter = zserio.BitStreamWriter()
         self._writeParentStructureToStream(expectedWriter)
         self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
+        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readParentStructure = self.api.ParentStructure.fromReader(reader)
         self.assertEqual(parentStructure, readParentStructure)
 

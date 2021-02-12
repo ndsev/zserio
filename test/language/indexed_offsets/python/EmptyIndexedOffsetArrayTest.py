@@ -35,7 +35,7 @@ class EmptyIndexedOffsetArrayTest(unittest.TestCase):
     def testRead(self):
         writer = zserio.BitStreamWriter()
         self._writeEmptyIndexedOffsetArrayToStream(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         emptyIndexedOffsetArray = self.api.EmptyIndexedOffsetArray()
         emptyIndexedOffsetArray.read(reader)
         self._checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray)
@@ -45,7 +45,7 @@ class EmptyIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         emptyIndexedOffsetArray.write(writer)
         self._checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readEmptyIndexedOffsetArray = self.api.EmptyIndexedOffsetArray.fromReader(reader)
         self._checkEmptyIndexedOffsetArray(readEmptyIndexedOffsetArray)
         self.assertTrue(emptyIndexedOffsetArray == readEmptyIndexedOffsetArray)

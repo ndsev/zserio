@@ -68,8 +68,9 @@ class UnionArrayTest(unittest.TestCase):
         expectedWriter = zserio.BitStreamWriter()
         self._writeInnerToStream(expectedWriter, pos)
         self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
+        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInner = self.api.Inner.fromReader(reader)
 
         self.assertEqual(inner, readInner)

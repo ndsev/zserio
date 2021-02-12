@@ -12,7 +12,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
                               self.api.ExtendedColor.PURPLE)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         structureConstraints = self.api.StructureConstraints()
         structureConstraints.read(reader)
@@ -24,7 +24,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.RED, self.api.BasicColor.WHITE,
                               self.api.ExtendedColor.PURPLE)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         structureConstraints = self.api.StructureConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -34,7 +34,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.RED,
                               self.api.ExtendedColor.PURPLE)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         structureConstraints = self.api.StructureConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -44,7 +44,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
                               self.api.ExtendedColor.LIME)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         structureConstraints = self.api.StructureConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -55,10 +55,8 @@ class StructureConstraintsTest(unittest.TestCase):
                                                              self.api.BasicColor.WHITE,
                                                              True,
                                                              self.api.ExtendedColor.PURPLE)
-        writer = zserio.BitStreamWriter()
-        structureConstraints.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readStructureConstraints = self.api.StructureConstraints.fromReader(reader)
+        bitBuffer = zserio.serialize(structureConstraints)
+        readStructureConstraints = zserio.deserialize(self.api.StructureConstraints, bitBuffer)
         self.assertEqual(self.api.BasicColor.BLACK, readStructureConstraints.getBlackColor())
         self.assertEqual(self.api.BasicColor.WHITE, readStructureConstraints.getWhiteColor())
         self.assertEqual(self.api.ExtendedColor.PURPLE, readStructureConstraints.getPurpleColor())

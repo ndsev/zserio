@@ -46,7 +46,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         OptionalIndexedOffsetArrayTest._writeOptionalIndexedOffsetArrayToStream(writer, hasOptional,
                                                                                 writeWrongOffsets)
         optionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray()
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         optionalIndexedOffsetArray.read(reader)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
 
@@ -57,7 +57,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         OptionalIndexedOffsetArrayTest._writeOptionalIndexedOffsetArrayToStream(writer, hasOptional,
                                                                                 writeWrongOffsets)
         optionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray()
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         optionalIndexedOffsetArray.read(reader)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
 
@@ -68,7 +68,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         optionalIndexedOffsetArray.write(writer)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readOptionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray.fromReader(reader)
         self._checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional)
         self.assertTrue(optionalIndexedOffsetArray == readOptionalIndexedOffsetArray)
@@ -77,10 +77,8 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         hasOptional = False
         createWrongOffsets = False
         optionalIndexedOffsetArray = self._createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets)
-        writer = zserio.BitStreamWriter()
-        optionalIndexedOffsetArray.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readOptionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray.fromReader(reader)
+        bitBuffer = zserio.serialize(optionalIndexedOffsetArray)
+        readOptionalIndexedOffsetArray = zserio.deserialize(self.api.OptionalIndexedOffsetArray, bitBuffer)
         self._checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional)
         self.assertTrue(optionalIndexedOffsetArray == readOptionalIndexedOffsetArray)
 

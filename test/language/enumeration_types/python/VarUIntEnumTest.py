@@ -18,8 +18,7 @@ class UInt8EnumTest(unittest.TestCase):
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         writer.writeVarUInt(self.api.DarkColor.DARK_GREEN.value)
-        byteArray = writer.getByteArray()
-        reader = zserio.BitStreamReader(byteArray)
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         color = self.api.DarkColor.fromReader(reader)
         self.assertEqual(DARK_GREEN_VALUE, color.value)
 
@@ -39,8 +38,7 @@ class UInt8EnumTest(unittest.TestCase):
     def testWrite(self):
         writer = zserio.BitStreamWriter()
         self.api.DarkColor.DARK_RED.write(writer)
-        byteArray = writer.getByteArray()
-        reader = zserio.BitStreamReader(byteArray)
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self.assertEqual(DARK_RED_VALUE, reader.readVarUInt())
 
 DARK_COLOR_NONE_BITSIZEOF = 8

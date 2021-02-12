@@ -15,7 +15,7 @@ class SubtypeImportedTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         subtypeImported.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readSubtypeImported = self.api.SubtypeImported()
         readSubtypeImported.read(reader)
         self.assertEqual(subtypeImported, readSubtypeImported)

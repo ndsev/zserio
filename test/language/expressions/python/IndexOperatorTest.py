@@ -53,10 +53,8 @@ class IndexOperatorTest(unittest.TestCase):
         return self.api.ElementList(len(elements), elements)
 
     def _createReadElementList(self, elementList):
-        writer = zserio.BitStreamWriter()
-        elementList.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readElementList = self.api.ElementList.fromReader(reader)
+        bitBuffer = zserio.serialize(elementList)
+        readElementList = zserio.deserialize(self.api.ElementList, bitBuffer)
 
         return readElementList
 

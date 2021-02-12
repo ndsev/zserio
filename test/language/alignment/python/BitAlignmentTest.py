@@ -39,16 +39,14 @@ class BitAlignmentTest(unittest.TestCase):
     def testRead(self):
         writer = zserio.BitStreamWriter()
         self._writeBitAlignmentToStream(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         bitAlignment = self.api.BitAlignment.fromReader(reader)
         self._checkBitAlignment(bitAlignment)
 
     def testWrite(self):
         bitAlignment = self._createBitAlignment()
-        writer = zserio.BitStreamWriter()
-        bitAlignment.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readBitAlignment = self.api.BitAlignment.fromReader(reader)
+        bitBuffer = zserio.serialize(bitAlignment)
+        readBitAlignment = zserio.deserialize(self.api.BitAlignment, bitBuffer)
         self._checkBitAlignment(readBitAlignment)
         self.assertTrue(bitAlignment == readBitAlignment)
 

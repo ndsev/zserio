@@ -37,7 +37,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         writeWrongOffset = False
         writer = zserio.BitStreamWriter()
         self._writeAutoArrayHolderToStream(writer, writeWrongOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         autoArrayHolder = self.api.AutoArrayHolder.fromReader(reader)
         self._checkAutoArrayHolder(autoArrayHolder)
 
@@ -45,7 +45,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         writeWrongOffset = True
         writer = zserio.BitStreamWriter()
         self._writeAutoArrayHolderToStream(writer, writeWrongOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         with self.assertRaises(zserio.PythonRuntimeException):
             autoArrayHolder = self.api.AutoArrayHolder.fromReader(reader)
             self._checkAutoArrayHolder(autoArrayHolder)
@@ -56,7 +56,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         autoArrayHolder.write(writer)
         self._checkAutoArrayHolder(autoArrayHolder)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readAutoArrayHolder = self.api.AutoArrayHolder.fromReader(reader)
         self._checkAutoArrayHolder(readAutoArrayHolder)
         self.assertTrue(autoArrayHolder == readAutoArrayHolder)

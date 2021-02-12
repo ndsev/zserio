@@ -13,6 +13,8 @@ from zserio.exception import PythonRuntimeException
 from zserio.service import ServiceInterface, ServiceException
 from zserio.pubsub import PubsubInterface, PubsubException
 
+from zserio.serialization import serialize, deserialize, serializeToBytes, deserializeBytes
+
 import zserio.array as array
 import zserio.bitbuffer as bitbuffer
 import zserio.bitfield as bitfield

@@ -25,10 +25,8 @@ class VarUInt64RangeCheckTest(unittest.TestCase):
 
     def _checkVarUInt64Value(self, value):
         varUInt64RangeCheckCompound = self.api.VarUInt64RangeCheckCompound(value)
-        writer = zserio.BitStreamWriter()
-        varUInt64RangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readVarUInt64RangeCheckCompound = self.api.VarUInt64RangeCheckCompound.fromReader(reader)
+        bitBuffer = zserio.serialize(varUInt64RangeCheckCompound)
+        readVarUInt64RangeCheckCompound = zserio.deserialize(self.api.VarUInt64RangeCheckCompound, bitBuffer)
         self.assertEqual(varUInt64RangeCheckCompound, readVarUInt64RangeCheckCompound)
 
 VARUINT64_LOWER_BOUND = zserio.limits.VARUINT64_MIN

@@ -13,7 +13,7 @@ class InstantiateNestedTemplateTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateNestedTemplate.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiateNestedTemplate = self.api.InstantiateNestedTemplate()
         readInstantiateNestedTemplate.read(reader)
         self.assertEqual(instantiateNestedTemplate, readInstantiateNestedTemplate)

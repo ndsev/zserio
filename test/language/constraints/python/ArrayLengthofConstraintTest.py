@@ -11,7 +11,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
     def testReadCorrectLength(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.CORRECT_LENGTH)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         arrayLengthofConstraint.read(reader)
@@ -20,7 +20,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
     def testReadWrongLengthLess(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.WRONG_LENGTH_LESS)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -29,7 +29,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
     def testReadWrongLengthGreater(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.WRONG_LENGTH_GREATER)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
 
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -39,10 +39,8 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         arrayLengthofConstraint.setArray(list(range(self.CORRECT_LENGTH)))
 
-        writer = zserio.BitStreamWriter()
-        arrayLengthofConstraint.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readArrayLengthofConstraint = self.api.ArrayLengthofConstraint.fromReader(reader)
+        bitBuffer = zserio.serialize(arrayLengthofConstraint)
+        readArrayLengthofConstraint = zserio.deserialize(self.api.ArrayLengthofConstraint, bitBuffer)
         self.assertEqual(self.CORRECT_LENGTH, len(readArrayLengthofConstraint.getArray()))
         self.assertEqual(arrayLengthofConstraint, readArrayLengthofConstraint)
 

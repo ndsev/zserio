@@ -27,10 +27,9 @@ class ChoiceBit4RangeCheckTest(unittest.TestCase):
         selector = True
         choiceBit4RangeCheckCompound = self.api.ChoiceBit4RangeCheckCompound(selector)
         choiceBit4RangeCheckCompound.setValue(value)
-        writer = zserio.BitStreamWriter()
-        choiceBit4RangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readChoiceBit4RangeCheckCompound = self.api.ChoiceBit4RangeCheckCompound.fromReader(reader, selector)
+        bitBuffer = zserio.serialize(choiceBit4RangeCheckCompound)
+        readChoiceBit4RangeCheckCompound = zserio.deserialize(self.api.ChoiceBit4RangeCheckCompound, bitBuffer,
+                                                              selector)
         self.assertEqual(choiceBit4RangeCheckCompound, readChoiceBit4RangeCheckCompound)
 
 BIT4_LOWER_BOUND = 0

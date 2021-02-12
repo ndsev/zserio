@@ -26,10 +26,8 @@ class UnionInt4RangeCheckTest(unittest.TestCase):
     def _checkUnionInt4Value(self, value):
         unionInt4RangeCheckCompound = self.api.UnionInt4RangeCheckCompound()
         unionInt4RangeCheckCompound.setValue(value)
-        writer = zserio.BitStreamWriter()
-        unionInt4RangeCheckCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readUnionInt4RangeCheckCompound = self.api.UnionInt4RangeCheckCompound.fromReader(reader)
+        bitBuffer = zserio.serialize(unionInt4RangeCheckCompound)
+        readUnionInt4RangeCheckCompound = zserio.deserialize(self.api.UnionInt4RangeCheckCompound, bitBuffer)
         self.assertEqual(unionInt4RangeCheckCompound, readUnionInt4RangeCheckCompound)
 
 INT4_LOWER_BOUND = -8

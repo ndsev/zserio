@@ -45,6 +45,6 @@ class EmptyStructureTest(unittest.TestCase):
         emptyStructure.write(writer)
         byteArray = writer.getByteArray()
         self.assertEqual(0, len(byteArray))
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readEmptyStructure = self.api.EmptyStructure.fromReader(reader)
         self.assertEqual(emptyStructure, readEmptyStructure)

@@ -22,7 +22,7 @@ class BitBuffer:
 
         :param buffer: Bytes-like buffer to construct from.
         :param bitSize: Number of bits stored in buffer to use.
-        :raises PythonRuntimeException: If the numBits is invalid number of the reading goes behind the stream.
+        :raises PythonRuntimeException: If bitSize is out of range.
         """
 
         if bitSize is None:

@@ -37,7 +37,7 @@ class NestedOffsetTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         self._writeNestedOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         nestedOffset = self.api.NestedOffset.fromReader(reader)
         self._checkNestedOffset(nestedOffset)
 
@@ -45,7 +45,7 @@ class NestedOffsetTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         self._writeNestedOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         with self.assertRaises(zserio.PythonRuntimeException):
             self.api.NestedOffset.fromReader(reader)
 
@@ -55,7 +55,7 @@ class NestedOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         nestedOffset.write(writer)
         self._checkNestedOffset(nestedOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readNestedOffset = self.api.NestedOffset.fromReader(reader)
         self._checkNestedOffset(readNestedOffset)
         self.assertTrue(nestedOffset == readNestedOffset)

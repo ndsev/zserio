@@ -308,7 +308,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         allBuiltInTypes.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readAllBuiltInTypes = self.api.AllBuiltInTypes()
         readAllBuiltInTypes.read(reader)
         self.assertEqual(allBuiltInTypes, readAllBuiltInTypes)

@@ -14,16 +14,21 @@ class BitStreamReader:
     Bit stream reader.
     """
 
-    def __init__(self, buffer: bytes) -> None:
+    def __init__(self, buffer: bytes, bitSize: typing.Optional[int] = None) -> None:
         """
         Constructs bit stream reader from bytes buffer.
 
+        Because bit buffer size does not have to be byte aligned (divisible by 8), it's possible that not all
+        bits of the last byte are used. In this case, only most significant bits of the corresponded size are
+        used.
+
         :param buffer: Bytes-like buffer to read as a bit stream.
+        :param bitSize: Number of bits stored in buffer to use.
+        :raises PythonRuntimeException: If bitSize is out of range.
         """
 
-        self._buffer: bytes = buffer
+        self._bitBuffer: BitBuffer = BitBuffer(buffer, bitSize)
         self._bitPosition: int = 0
-        self._bitSize: int = len(buffer) * 8
 
     @classmethod
     def fromBitBuffer(cls: typing.Type['BitStreamReader'], bitBuffer: BitBuffer) -> 'BitStreamReader':
@@ -33,8 +38,7 @@ class BitStreamReader:
         :param bitBuffer: Bit buffer to read as a bit stream.
         """
 
-        instance = cls(bitBuffer.getBuffer())
-        instance._bitSize = bitBuffer.getBitSize()
+        instance = cls(bitBuffer.getBuffer(), bitBuffer.getBitSize())
 
         return instance
 
@@ -63,13 +67,14 @@ class BitStreamReader:
 
         endBitPosition = self._bitPosition + numBits
 
-        if endBitPosition > self._bitSize:
+        if endBitPosition > self._bitBuffer.getBitSize():
             raise PythonRuntimeException("BitStreamReader: Reading behind the stream!")
 
         startByte = self._bitPosition // 8
         endByte = (endBitPosition - 1) // 8
 
-        value = int.from_bytes(self._buffer[startByte : endByte + 1], byteorder='big', signed=False)
+        buffer = self._bitBuffer.getBuffer()
+        value = int.from_bytes(buffer[startByte : endByte + 1], byteorder='big', signed=False)
 
         lastBits = endBitPosition % 8
         if lastBits != 0:
@@ -484,7 +489,8 @@ class BitStreamReader:
             # we are aligned to byte
             self.setBitPosition(beginBitPosition + numBytesToRead * 8)
             beginBytePosition = beginBitPosition // 8
-            readBuffer[0:numBytesToRead] = self._buffer[beginBytePosition:beginBytePosition + numBytesToRead]
+            buffer = self._bitBuffer.getBuffer()
+            readBuffer[0:numBytesToRead] = buffer[beginBytePosition:beginBytePosition + numBytesToRead]
 
         if numRestBits != 0:
             readBuffer[numBytesToRead] = self.readBits(numRestBits) << (8 - numRestBits)
@@ -510,7 +516,7 @@ class BitStreamReader:
 
         if bitPosition < 0:
             raise PythonRuntimeException("BitStreamReader: Cannot set negative bit position!")
-        if bitPosition > len(self._buffer) * 8:
+        if bitPosition > self._bitBuffer.getBitSize():
             raise PythonRuntimeException("BitStreamReader: Setting bit position behind the stream!")
 
         self._bitPosition = bitPosition
@@ -534,7 +540,7 @@ class BitStreamReader:
         :returns: Buffer bit size.
         """
 
-        return self._bitSize
+        return self._bitBuffer.getBitSize()
 
 VARINT_SIGN_1 = 0x80
 VARINT_BYTE_1 = 0x3f

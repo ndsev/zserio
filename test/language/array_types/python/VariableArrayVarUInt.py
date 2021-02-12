@@ -30,7 +30,7 @@ class VariableArrayVarUIntTest(unittest.TestCase):
         numElements = 59
         writer = zserio.BitStreamWriter()
         VariableArrayVarUIntTest._writeVariableArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         variableArray = self.api.VariableArray.fromReader(reader)
 
         self.assertEqual(numElements, variableArray.getNumElements())
@@ -45,11 +45,8 @@ class VariableArrayVarUIntTest(unittest.TestCase):
         numElements = 33
         compoundArray = [self.api.TestStructure(id_=i, name_="Name" + str(i)) for i in range(numElements)]
         variableArray = self.api.VariableArray(numElements_=numElements, compoundArray_=compoundArray)
-        writer = zserio.BitStreamWriter()
-        variableArray.write(writer)
-
-        reader = zserio.BitStreamReader(writer.getByteArray())
-        readVariableArray = self.api.VariableArray.fromReader(reader)
+        bitBuffer = zserio.serialize(variableArray)
+        readVariableArray = zserio.deserialize(self.api.VariableArray, bitBuffer)
         self.assertEqual(numElements, readVariableArray.getNumElements())
         readCompoundArray = readVariableArray.getCompoundArray()
         self.assertEqual(numElements, len(readCompoundArray))

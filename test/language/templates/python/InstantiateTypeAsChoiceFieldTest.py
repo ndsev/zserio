@@ -14,7 +14,7 @@ class InstantiateTypeAsChoiceFieldTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateTypeAsChoiceField.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiateTypeAsChoiceField = self.api.InstantiateTypeAsChoiceField(True)
         readInstantiateTypeAsChoiceField.read(reader)
         self.assertEqual(instantiateTypeAsChoiceField, readInstantiateTypeAsChoiceField)

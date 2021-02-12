@@ -29,7 +29,6 @@ class GifTest(unittest.TestCase):
         self.assertEqual(self.GIF_SCREEN_BITS_OF_COLOR_RESOLUTION, screenDescriptor.getBitsOfColorResulution())
         self.assertEqual(self.GIF_SCREEN_BITS_PER_PIXEL, screenDescriptor.getBitsPerPixel())
 
-
     ONE_PIX_GIF_FILE_NAME = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data", "1pix.gif")
 
     GIF_FILE_FORMAT = "GIF"

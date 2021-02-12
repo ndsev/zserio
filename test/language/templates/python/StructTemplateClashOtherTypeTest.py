@@ -14,7 +14,7 @@ class StructTemplateClashOtherTypeTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiationNameClashOtherType.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readInstantiationNameClashOtherType = self.api.InstantiationNameClashOtherType()
         readInstantiationNameClashOtherType.read(reader)
         self.assertEqual(instantiationNameClashOtherType, readInstantiationNameClashOtherType)

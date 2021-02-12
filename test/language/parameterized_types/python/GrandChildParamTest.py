@@ -12,7 +12,7 @@ class GrandChildParamTest(unittest.TestCase):
         grandChildParam = self._createGrandChildParam()
         writer = zserio.BitStreamWriter()
         grandChildParam.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkGrandChildParamInStream(reader, grandChildParam)
 
         reader.setBitPosition(0)

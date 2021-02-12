@@ -17,8 +17,9 @@ class StructureParamTest(unittest.TestCase):
         expectedWriter = zserio.BitStreamWriter()
         StructureParamTest._writeMetresConverterCallerToStream(expectedWriter)
         self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
+        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
 
-        reader = zserio.BitStreamReader(writer.getByteArray())
+        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readMetresConverterCaller = self.api.MetresConverterCaller.fromReader(reader)
         self.assertEqual(metresConverterCaller, readMetresConverterCaller)
 
