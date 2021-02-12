@@ -21,6 +21,7 @@ import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FileUtil;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.StringJoinUtil;
 
@@ -31,19 +32,21 @@ import zserio.tools.StringJoinUtil;
  */
 class PackageEmitter extends DefaultTreeWalker
 {
-    public PackageEmitter(DocExtensionParameters docParameters, SymbolCollector symbolCollector,
-            PackageCollector packageCollector, UsedByCollector usedByCollector,
+    public PackageEmitter(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
+            SymbolCollector symbolCollector, PackageCollector packageCollector, UsedByCollector usedByCollector,
             UsedByChoiceCollector usedByChoiceCollector)
     {
         super();
+
+        this.outputFileManager = outputFileManager;
 
         final String outputDir = docParameters.getOutputDir();
         htmlContentDirectory = StringJoinUtil.joinStrings(outputDir, DocDirectories.CONTENT_DIRECTORY,
                 File.separator);
         final String docResourceDirectory = StringJoinUtil.joinStrings(outputDir,
                 DocDirectories.DOC_RESOURCES_DIRECTORY, File.separator);
-        final DocResourceManager docResourceManager = new DocResourceManager(packageCollector,
-                htmlContentDirectory, docResourceDirectory);
+        final DocResourceManager docResourceManager = new DocResourceManager(outputFileManager,
+                packageCollector, htmlContentDirectory, docResourceDirectory);
 
         nodesMap = symbolCollector.getNodesMap();
 
@@ -68,6 +71,8 @@ class PackageEmitter extends DefaultTreeWalker
 
         final BeginPackageTemplateData templateData = new BeginPackageTemplateData(context, pkg, nodesMap);
         DocFreeMarkerUtil.processTemplate("begin_package.html.ftl", templateData, writer);
+
+        outputFileManager.registerOutputFile(outputFile);
     }
 
     @Override
@@ -173,6 +178,7 @@ class PackageEmitter extends DefaultTreeWalker
 
     private static final String HTML_FILE_EXTENSION = ".html";
 
+    private final OutputFileManager outputFileManager;
     private final String htmlContentDirectory;
     private final Map<Package, List<AstNode>> nodesMap;
     private final PackageTemplateDataContext context;

@@ -2,6 +2,7 @@ package zserio.extension.doc;
 
 import java.io.File;
 
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -11,11 +12,13 @@ import zserio.extension.common.ZserioExtensionException;
  */
 class StylesheetEmitter
 {
-    static void emit(DocExtensionParameters docParameters) throws ZserioExtensionException
+    static void emit(OutputFileManager outputFileManager,
+            DocExtensionParameters docParameters) throws ZserioExtensionException
     {
         final File outputDirectory = new File(docParameters.getOutputDir(), DocDirectories.CSS_DIRECTORY);
         final File outputFile = new File(outputDirectory, STYLESHEET_FILE_NAME);
         DocFreeMarkerUtil.processTemplate(STYLESHEET_TEMPLATE_SOURCE_NAME, null, outputFile);
+        outputFileManager.registerOutputFile(outputFile);
     }
 
     static final String STYLESHEET_FILE_NAME = "stylesheet.css";

@@ -1,6 +1,7 @@
 package zserio.extension.doc;
 
 import zserio.ast.Root;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
@@ -39,23 +40,24 @@ public class DocExtension implements Extension
     @Override
     public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
+        final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final DocExtensionParameters docParameters = new DocExtensionParameters(parameters);
 
         // emit external files needed by HTML during runtime
-        HtmlRuntimeEmitter.emit(docParameters);
+        HtmlRuntimeEmitter.emit(outputFileManager, docParameters);
 
         // emit CSS styles file
-        StylesheetEmitter.emit(docParameters);
+        StylesheetEmitter.emit(outputFileManager, docParameters);
 
         // collect used by information
         final UsedByCollector usedByCollector = new UsedByCollector();
         rootNode.walk(usedByCollector);
 
         // emit DOT files
-        SymbolCollaborationDotEmitter.emit(docParameters, usedByCollector);
+        SymbolCollaborationDotEmitter.emit(outputFileManager, docParameters, usedByCollector);
 
         // emit HTML index file
-        IndexEmitter.emit(docParameters, rootNode.getRootPackage());
+        IndexEmitter.emit(outputFileManager, docParameters, rootNode.getRootPackage());
 
         // collect package symbols
         final SymbolCollector symbolCollector = new SymbolCollector();
@@ -70,8 +72,10 @@ public class DocExtension implements Extension
         rootNode.walk(usedByChoiceCollector);
 
         // emit HTML files
-        final PackageEmitter packageEmitter = new PackageEmitter(docParameters, symbolCollector,
-                packageCollector, usedByCollector, usedByChoiceCollector);
+        final PackageEmitter packageEmitter = new PackageEmitter(outputFileManager, docParameters,
+                symbolCollector, packageCollector, usedByCollector, usedByChoiceCollector);
         rootNode.walk(packageEmitter);
+
+        outputFileManager.printReport();
     }
 }

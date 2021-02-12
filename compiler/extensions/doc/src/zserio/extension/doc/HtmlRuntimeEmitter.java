@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -22,7 +23,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 class HtmlRuntimeEmitter
 {
-    static void emit(DocExtensionParameters docParameters) throws ZserioExtensionException
+    static void emit(OutputFileManager outputFileManager,
+            DocExtensionParameters docParameters) throws ZserioExtensionException
     {
         try
         {
@@ -31,7 +33,10 @@ class HtmlRuntimeEmitter
             {
                 final List<String> jarResources = getJarRuntimeResources(jarRuntimeSubdir);
                 for (String jarResource : jarResources)
-                    extractJarResource(jarResource, docParameters.getOutputDir(), jarRuntimeSubdir);
+                {
+                    extractJarResource(
+                            jarResource, outputFileManager, docParameters.getOutputDir(), jarRuntimeSubdir);
+                }
             }
         }
         catch (IOException exception)
@@ -69,8 +74,8 @@ class HtmlRuntimeEmitter
         return availableResources;
     }
 
-    private static void extractJarResource(String jarResource, String outputDir, String outputSubDir)
-            throws IOException
+    private static void extractJarResource(String jarResource, OutputFileManager outputFileManager,
+            String outputDir, String outputSubDir) throws IOException, ZserioExtensionException
     {
         FileOutputStream writer = null;
         final InputStream reader = HtmlRuntimeEmitter.class.getResourceAsStream("/" + jarResource);
@@ -88,6 +93,8 @@ class HtmlRuntimeEmitter
                 int bytesRead = 0;
                 while ((bytesRead = reader.read(buffer)) != -1)
                     writer.write(buffer, 0, bytesRead);
+
+                outputFileManager.registerOutputFile(outputFile);
             }
         }
         finally

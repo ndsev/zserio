@@ -3,6 +3,7 @@ package zserio.extension.doc;
 import java.io.File;
 
 import zserio.ast.Package;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -12,8 +13,8 @@ import zserio.extension.common.ZserioExtensionException;
  */
 class IndexEmitter
 {
-    public static void emit(DocExtensionParameters docParameters, Package rootPackage)
-            throws ZserioExtensionException
+    public static void emit(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
+            Package rootPackage) throws ZserioExtensionException
     {
         final String htmlRootDirectory = ".";
         final TemplateDataContext context = new TemplateDataContext(docParameters.getWithSvgDiagrams(),
@@ -21,6 +22,7 @@ class IndexEmitter
         final SymbolTemplateData templateData = SymbolTemplateDataCreator.createData(context, rootPackage);
         final File outputFile = new File(docParameters.getOutputDir(), INDEX_FILE_NAME);
         DocFreeMarkerUtil.processTemplate(INDEX_TEMPLATE_SOURCE_NAME, templateData, outputFile);
+        outputFileManager.registerOutputFile(outputFile);
     }
 
     private static final String INDEX_FILE_NAME = "index.html";

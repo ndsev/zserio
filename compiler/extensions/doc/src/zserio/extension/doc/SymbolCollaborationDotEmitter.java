@@ -5,6 +5,7 @@ import java.util.Set;
 
 import zserio.ast.AstNode;
 import zserio.ast.Package;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.StringJoinUtil;
 
@@ -15,15 +16,15 @@ import zserio.tools.StringJoinUtil;
  */
 class SymbolCollaborationDotEmitter
 {
-    public static void emit(DocExtensionParameters docParameters, UsedByCollector usedByCollector)
-            throws ZserioExtensionException
+    public static void emit(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
+            UsedByCollector usedByCollector) throws ZserioExtensionException
     {
         final String htmlRootDirectory = ".." + File.separator + ".." + File.separator + "..";
         final TemplateDataContext context = new TemplateDataContext(docParameters.getWithSvgDiagrams(),
                 htmlRootDirectory);
         final Set<AstNode> collaboratingNodes = usedByCollector.getCollaboratingNodes();
         for (AstNode node : collaboratingNodes)
-            emitDotDiagram(docParameters, usedByCollector, context, node);
+            emitDotDiagram(outputFileManager, docParameters, usedByCollector, context, node);
     }
 
     public static boolean svgSymbolCollaborationDiagramExists(AstNode node, UsedByCollector usedByCollector,
@@ -53,21 +54,28 @@ class SymbolCollaborationDotEmitter
                 typeName + "_" + name, File.separator);
     }
 
-    private static void emitDotDiagram(DocExtensionParameters docParameters, UsedByCollector usedByCollector,
-            TemplateDataContext context, AstNode node) throws ZserioExtensionException
+    private static void emitDotDiagram(OutputFileManager outputFileManager,
+            DocExtensionParameters docParameters, UsedByCollector usedByCollector, TemplateDataContext context,
+            AstNode node) throws ZserioExtensionException
     {
         final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(context,
                 node, usedByCollector.getUsedTypes(node), usedByCollector.getUsedByTypes(node));
         final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node,
                 DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
         final String outputDir = docParameters.getOutputDir();
+
         final File outputDotFile = new File(outputDir, dotHtmlLink);
-        final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node,
-                DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
-        final File outputSvgFile = new File(outputDir, svgHtmlLink);
         DocFreeMarkerUtil.processTemplate(TEMPLATE_SOURCE_NAME, templateData, outputDotFile);
+        outputFileManager.registerOutputFile(outputDotFile);
+
         if (docParameters.getWithSvgDiagrams())
+        {
+            final String svgHtmlLink = getSvgSymbolCollaborationHtmlLink(node,
+                    DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
+            final File outputSvgFile = new File(outputDir, svgHtmlLink);
             DotToSvgConverter.convert(docParameters.getDotExecutable(), outputDotFile, outputSvgFile);
+            outputFileManager.registerOutputFile(outputSvgFile);
+        }
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "symbol_collaboration.dot.ftl";

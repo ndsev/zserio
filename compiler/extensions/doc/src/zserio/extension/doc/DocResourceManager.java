@@ -13,6 +13,7 @@ import java.util.HashSet;
 
 import zserio.ast.AstLocation;
 import zserio.ast.Package;
+import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.HashUtil;
 
@@ -32,11 +33,12 @@ import zserio.tools.HashUtil;
  */
 class DocResourceManager
 {
-    public DocResourceManager(PackageCollector packageCollector, String htmlContentDirectory,
-            String docResourceDirectory)
+    public DocResourceManager(OutputFileManager outputFileManager, PackageCollector packageCollector,
+            String htmlContentDirectory, String docResourceDirectory)
     {
         this.packageCollector = packageCollector;
 
+        this.outputFileManager = outputFileManager;
         contentDir = Paths.get(htmlContentDirectory).toAbsolutePath();
         resourcesDir = Paths.get(docResourceDirectory).toAbsolutePath();
 
@@ -113,8 +115,8 @@ class DocResourceManager
                             StandardCharsets.UTF_8);
                     final String bodyContent = DocMarkdownToHtmlConverter.convert(this,
                             new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
-                    HtmlResourceEmitter.emit(dstResource.getPath().toString(), dstResource.getFileName(),
-                            srcResource.getFileName(), bodyContent);
+                    HtmlResourceEmitter.emit(outputFileManager, dstResource.getPath().toString(),
+                            dstResource.getFileName(), srcResource.getFileName(), bodyContent);
                 }
                 catch (ZserioExtensionException e)
                 {
@@ -130,6 +132,7 @@ class DocResourceManager
             {
                 Files.copy(srcResource.getFullPath(), dstResource.getFullPath(),
                         StandardCopyOption.REPLACE_EXISTING);
+                outputFileManager.registerOutputFile(dstResource.getFullPath().toFile());
             }
         }
         catch (IOException e)
@@ -279,6 +282,7 @@ class DocResourceManager
     private final static String MARKDOWN_EXTENSION = ".md";
     private final static String HTML_EXTENSION = ".html";
 
+    private final OutputFileManager outputFileManager;
     private final PackageCollector packageCollector;
     private final Path contentDir;
     private final Path resourcesDir;
