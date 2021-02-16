@@ -26,6 +26,16 @@ set_test_global_variables()
     # NU HTML Validator extra arguments
     VNU_FILTER_FILE="${VNU_FILTER_FILE:-""}"
 
+    # Configuration of xmllint - disabled by default
+    XMLLINT_ENABLED="${XMLLINT_ENABLED:-0}"
+    if [[ ${XMLLINT_ENABLED} == 1 ]] ; then
+        XMLLINT="${XMLLINT:-xmllint}"
+        if [ ! -f "`which "${XMLLINT}"`" ] ; then
+            stderr_echo "Cannot find xmllint. Set XMLLINT environment variable or disable xmllint."
+            return 1
+        fi
+    fi
+
     return 0
 }
 
@@ -38,6 +48,8 @@ Uses the following environment variables for testing:
     ZSERIO_EXTRA_ARGS   Extra arguments to zserio tool. Default is empty.
     NU_HTML_VALIDATOR   Path to NU HTML Validator JAR file (vnu.jar).
     VNU_FILTER_FILE     Filter file path to be used by NU HTML Validator. Default is empty.
+    XMLLINT_ENABLED     Defines whether to run xmllint in xml tests. Default is 0 (disabled).
+    XMLLINT             Executable of xmllint to use. Default is "xmllint".
 
 EOF
 }
@@ -116,6 +128,28 @@ run_zserio_tool()
     return 0
 }
 
+# Run xmllint if enabled
+run_xmllint()
+{
+    exit_if_argc_ne $# 1
+    local XML_FILE="$1"; shift
+
+    if [ ${XMLLINT_ENABLED} -ne 0 ] ; then
+        local MESSAGE="XML Validation of '${XML_FILE}'"
+        echo "STARTING - ${MESSAGE}"
+        ${XMLLINT} --format "${XML_FILE}" > /dev/null
+        if [ $? -ne 0 ] ; then
+            stderr_echo "${MESSAGE} failed!"
+            return 1
+        fi
+        echo -e "FINISHED - ${MESSAGE}\n"
+    else
+        echo -e "XML Validation is disabled.\n"
+    fi
+
+    return 0
+}
+
 # Run NU HTML Validator if available
 run_vnu()
 {
@@ -139,6 +173,8 @@ run_vnu()
             return 1
         fi
         echo -e "FINISHED - ${MESSAGE}\n"
+    else
+        echo -e "HTML Validation is disabled.\n"
     fi
 
     return 0

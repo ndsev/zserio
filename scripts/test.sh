@@ -7,7 +7,7 @@ source "${SCRIPT_DIR}/common_test_tools.sh"
 test_cpp()
 {
     exit_if_argc_ne $# 7
-    local ZSERIO_UNPACKED_RELEASE_DIR="$1"; shift
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
@@ -29,7 +29,7 @@ test_cpp()
     if [[ "${CPP_TEST_NAME}" == "" ]]; then
         CPP_TEST_NAME="*"
     fi
-    local CMAKE_ARGS=("-DZSERIO_RELEASE_ROOT=${ZSERIO_UNPACKED_RELEASE_DIR}"
+    local CMAKE_ARGS=("-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
                       "-DZSERIO_TEST_NAME=${CPP_TEST_NAME}")
     local CTEST_ARGS=()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
@@ -52,7 +52,7 @@ test_cpp()
 test_java()
 {
     exit_if_argc_ne $# 5
-    local ZSERIO_UNPACKED_RELEASE_DIR="$1"; shift
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local SWITCH_CLEAN="$1"; shift
@@ -60,7 +60,7 @@ test_java()
 
     local MESSAGE="Zserio Java tests"
     echo "STARTING - ${MESSAGE}"
-    local ANT_ARGS=("-Dzserio.release_dir=${ZSERIO_UNPACKED_RELEASE_DIR}"
+    local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                     "-Dzserio_java_test.build_dir=${TEST_OUT_DIR}/java")
     if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
         ANT_ARGS+=("-Dzserio_java_test.filter=${SWITCH_TEST_NAME}")
@@ -84,7 +84,7 @@ test_java()
 test_python()
 {
     exit_if_argc_ne $# 7
-    local ZSERIO_UNPACKED_RELEASE_DIR="$1"; shift
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
     local TEST_SRC_DIR="$1"; shift
@@ -103,7 +103,7 @@ test_python()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         rm -rf "${TEST_OUT_DIR}/python"
     else
-        local TEST_ARGS=("--release_dir=${ZSERIO_UNPACKED_RELEASE_DIR}"
+        local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                          "--build_dir=${TEST_OUT_DIR}/python"
                          "--java=${JAVA_BIN}")
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
@@ -139,11 +139,68 @@ test_python()
     return 0
 }
 
+# Run Zserio XML tests.
+test_xml()
+{
+    exit_if_argc_ne $# 5
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
+    local TEST_SRC_DIR="$1"; shift
+    local TEST_OUT_DIR="$1"; shift
+    local SWITCH_CLEAN="$1"; shift
+    local SWITCH_TEST_NAME="$1"; shift
+
+    local MESSAGE="Zserio XML tests"
+    echo "STARTING - ${MESSAGE}"
+    echo
+
+    local TEST_XML_OUT_DIR="${TEST_OUT_DIR}/xml"
+    if [[ ${SWITCH_CLEAN} == 1 ]] ; then
+        rm -rf "${TEST_XML_OUT_DIR}"
+    else
+        local TOTAL_NUMBER_OF_TESTS=0
+        local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}" -path '*/zs' ! -path '*errors*'`
+        for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
+            local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
+            for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
+                local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
+                local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
+                local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
+                local TEST_XML_OUT_ZS_DIR="${TEST_XML_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
+                if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
+                    local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/xml_options.txt"
+                    if [[ -f "${OPTIONS_FILE}" ]] ; then
+                        local SWITCH_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
+                    else
+                        local SWITCH_WERROR=1
+                    fi
+                    local ZSERIO_ARGS=("-xml" "${TEST_XML_OUT_ZS_DIR}")
+                    run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_XML_OUT_ZS_DIR}" "${TEST_ZS_DIR}" \
+                        "${MAIN_ZS_FILE_NAME}" ${SWITCH_WERROR} ZSERIO_ARGS[@]
+                    if [ $? -ne 0 ] ; then
+                        stderr_echo "${MESSAGE} failed!"
+                        return 1
+                    fi
+
+                    run_xmllint "${TEST_XML_OUT_ZS_DIR}/abstract_syntax_tree.xml"
+                    if [ $? -ne 0 ] ; then
+                        return 1
+                    fi
+                fi
+            done
+        done
+        echo "Total number of tests: ${TOTAL_NUMBER_OF_TESTS}"
+        echo
+    fi
+    echo -e "FINISHED - ${MESSAGE}\n"
+
+    return 0
+}
+
 # Run Zserio documentation tests.
 test_doc()
 {
     exit_if_argc_ne $# 5
-    local ZSERIO_UNPACKED_RELEASE_DIR="$1"; shift
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local SWITCH_CLEAN="$1"; shift
@@ -175,7 +232,7 @@ test_doc()
                     fi
                     local ZSERIO_ARGS=("-doc" "${TEST_DOC_OUT_ZS_DIR}" "-withSvgDiagrams" "-setDotExecutable" \
                         "${DOT}")
-                    run_zserio_tool "${ZSERIO_UNPACKED_RELEASE_DIR}" "${TEST_DOC_OUT_ZS_DIR}" "${TEST_ZS_DIR}" \
+                    run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_DOC_OUT_ZS_DIR}" "${TEST_ZS_DIR}" \
                         "${MAIN_ZS_FILE_NAME}" ${SWITCH_WERROR} ZSERIO_ARGS[@]
                     if [ $? -ne 0 ] ; then
                         stderr_echo "${MESSAGE} failed!"
@@ -209,8 +266,7 @@ test_doc()
 test()
 {
     exit_if_argc_ne $# 11
-    local ZSERIO_RELEASE_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
@@ -218,22 +274,16 @@ test()
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
     local PARAM_JAVA="$1"; shift
     local PARAM_PYTHON="$1"; shift
+    local PARAM_XML="$1"; shift
     local PARAM_DOC="$1"; shift
     local SWITCH_CLEAN="$1"; shift
     local SWITCH_TEST_NAME="$1"; shift
 
     local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test"
 
-    # unpack testing release
-    local ZSERIO_UNPACKED_RELEASE_DIR
-    unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" ZSERIO_UNPACKED_RELEASE_DIR
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-
     # run Zserio C++ tests
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
-        test_cpp "${ZSERIO_UNPACKED_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" \
+        test_cpp "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" \
             CPP_TARGETS[@] ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
         if [ $? -ne 0 ] ; then
             return 1
@@ -242,7 +292,7 @@ test()
 
     # run Zserio Java tests
     if [[ ${PARAM_JAVA} != 0 ]] ; then
-        test_java "${ZSERIO_UNPACKED_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
+        test_java "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
             "${SWITCH_TEST_NAME}"
         if [ $? -ne 0 ] ; then
             return 1
@@ -251,8 +301,17 @@ test()
 
     # run Zserio Python tests
     if [[ ${PARAM_PYTHON} != 0 ]]; then
-        test_python "${ZSERIO_UNPACKED_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
+        test_python "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
             "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
+    # run Zserio XML tests
+    if [[ ${PARAM_XML} != 0 ]]; then
+        test_xml "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
+            "${SWITCH_TEST_NAME}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -260,7 +319,7 @@ test()
 
     # run Zserio documentation tests
     if [[ ${PARAM_DOC} != 0 ]]; then
-        test_doc "${ZSERIO_UNPACKED_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
+        test_doc "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
             "${SWITCH_TEST_NAME}"
         if [ $? -ne 0 ] ; then
             return 1
@@ -300,6 +359,7 @@ Package can be a combination of:
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
     java                  Zserio Java tests.
     python                Zserio Python tests.
+    xml                   Zserio XML tests.
     doc                   Zserio documentation tests.
     all-linux32           Zserio tests - all available linux32 packages.
     all-linux64           Zserio tests - all available linux64 packages.
@@ -325,10 +385,11 @@ EOF
 # 2 - Help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 7
+    exit_if_argc_lt $# 8
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
+    local PARAM_XML_OUT="$1"; shift
     local PARAM_DOC_OUT="$1"; shift
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
@@ -337,6 +398,7 @@ parse_arguments()
 
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
+    eval ${PARAM_XML_OUT}=0
     eval ${PARAM_DOC_OUT}=0
     eval ${SWITCH_CLEAN_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
@@ -414,6 +476,10 @@ parse_arguments()
                 eval ${PARAM_PYTHON_OUT}=1
                 ;;
 
+            "xml")
+                eval ${PARAM_XML_OUT}=1
+                ;;
+
             "doc")
                 eval ${PARAM_DOC_OUT}=1
                 ;;
@@ -422,6 +488,7 @@ parse_arguments()
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1
+                eval ${PARAM_XML_OUT}=1
                 eval ${PARAM_DOC_OUT}=1
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -436,6 +503,7 @@ parse_arguments()
     if [[ ${NUM_CPP_TARGETS} -eq 0 &&
           ${!PARAM_JAVA_OUT} == 0 &&
           ${!PARAM_PYTHON_OUT} == 0 &&
+          ${!PARAM_XML_OUT} == 0 &&
           ${!PARAM_DOC_OUT} == 0 &&
           ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         stderr_echo "Package to test is not specified!"
@@ -456,12 +524,13 @@ main()
     local PARAM_CPP_TARGET_ARRAY=()
     local PARAM_JAVA
     local PARAM_PYTHON
+    local PARAM_XML
     local PARAM_DOC
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
     local SWITCH_TEST_NAME
-    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_DOC PARAM_OUT_DIR \
+    parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_OUT_DIR \
                     SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_NAME $@
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
@@ -517,6 +586,24 @@ main()
         fi
     fi
 
+    # purge if requested and then create test output directory
+    local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
+    local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test"
+    if [[ ${SWITCH_PURGE} == 1 ]] ; then
+        echo "Purging test directory."
+        echo
+        rm -rf "${TEST_OUT_DIR}/"
+
+        if [[ ${#PARAM_CPP_TARGET_ARRAY[@]} == 0 &&
+              ${PARAM_JAVA} == 0 &&
+              ${PARAM_PYTHON} == 0 &&
+              ${PARAM_XML} == 0 &&
+              ${PARAM_DOC} == 0 ]] ; then
+            return 0 # purge only
+        fi
+    fi
+    mkdir -p "${TEST_OUT_DIR}"
+
     # get Zserio release directory
     local ZSERIO_RELEASE_DIR
     local ZSERIO_VERSION
@@ -525,24 +612,21 @@ main()
         return 1
     fi
 
-    # purge if requested and then create test output directory
-    local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
-    local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test"
-    if [[ ${SWITCH_PURGE} == 1 ]] ; then
-        echo "Purging test directory."
-        echo
-        rm -rf "${TEST_OUT_DIR}/"
-    fi
-    mkdir -p "${TEST_OUT_DIR}"
-
     # print information
     echo "Testing release: ${ZSERIO_RELEASE_DIR}"
     echo "Test output directory: ${TEST_OUT_DIR}"
     echo
 
+    # unpack testing release
+    local UNPACKED_ZSERIO_RELEASE_DIR
+    unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" UNPACKED_ZSERIO_RELEASE_DIR
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     # run test
-    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
-         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_DOC} \
+    test "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${TEST_OUT_DIR}" \
+         PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} ${PARAM_DOC} \
          ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
     if [ $? -ne 0 ] ; then
         return 1
@@ -551,4 +635,6 @@ main()
     return 0
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]] ; then
+    main "$@"
+fi

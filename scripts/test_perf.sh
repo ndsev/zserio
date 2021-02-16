@@ -442,11 +442,10 @@ EOF
 }
 
 # Run zserio performance tests.
-test()
+test_perf()
 {
-    exit_if_argc_ne $# 15
-    local ZSERIO_RELEASE_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
+    exit_if_argc_ne $# 14
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
@@ -463,13 +462,6 @@ test()
     local SWITCH_TEST_CONFIG="$1"; shift
 
     convert_to_absolute_path "${SWITCH_BLOB_PATH}" SWITCH_BLOB_PATH
-
-    # unpack testing release
-    local UNPACKED_ZSERIO_RELEASE_DIR
-    unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" UNPACKED_ZSERIO_RELEASE_DIR
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
 
     # generate sources using zserio
     local ZSERIO_ARGS=()
@@ -571,7 +563,7 @@ Arguments:
     -h, --help              Show this help.
     -e, --help-env          Show help for enviroment variables.
     -p, --purge             Purge test build directory.
-    -o <dir>, --output-directory <dir>  
+    -o <dir>, --output-directory <dir>
                             Output directory where tests will be run.
     -d <dir>, --source-dir <dir>
                             Directory with zserio sources. Default is ".".
@@ -946,11 +938,18 @@ main()
     echo "Test config: ${SWITCH_TEST_CONFIG}"
     echo
 
+    # unpack testing release
+    local UNPACKED_ZSERIO_RELEASE_DIR
+    unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" UNPACKED_ZSERIO_RELEASE_DIR
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     # run test
-    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
-         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
-         "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" "${SWITCH_BLOB_NAME}" \
-         "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
+    test_perf "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
+              "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} \
+              "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" "${SWITCH_BLOB_NAME}" \
+              "${SWITCH_BLOB_FILE}" ${SWITCH_NUM_ITERATIONS} ${SWITCH_TEST_CONFIG}
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -958,4 +957,6 @@ main()
     return 0
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]] ; then
+    main "$@"
+fi

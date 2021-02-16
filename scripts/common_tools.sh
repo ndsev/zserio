@@ -356,7 +356,7 @@ Uses the following environment variables for building:
     DOXYGEN                Doxygen executable to use. Default is 'doxygen".
     JAVAC_BIN              Java compiler executable to use. Default is "javac".
     JAVA_BIN               Java executable to use. Default is "java".
-    PYTHON                 Python 3.5+ executable. Default is "python".
+    PYTHON                 Python 3.5+ executable to use. Default is "python".
     PYTHON_VIRTUALENV      Custom python virtualenv to use. Default is empty string.
     DOT                    Dot executable to use. Default is "dot".
     FIND                   Bash command find to use. Default is "/usr/bin/find".

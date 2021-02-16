@@ -42,8 +42,8 @@ public class OutputFileManager
                 skipped++;
         }
 
-        ZserioToolPrinter.printMessage("  Generated " + generated + " files" +
-                (skipped > 0 ? ", skipped " + skipped + " files" : ""));
+        ZserioToolPrinter.printMessage("  Generated " + generated + " file" + (generated == 1 ? "" : "s")  +
+                (skipped > 0 ? ", skipped " + skipped + " file" + (skipped == 1 ? "" : "s") : ""));
     }
 
     /**

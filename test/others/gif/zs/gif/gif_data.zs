@@ -96,7 +96,7 @@ struct GraphicControlExtension
 {
     uint8           byteCount : byteCount == 4;
 
-    bit:3           _null_  : _null_ == 0;
+    bit:3           null_  : null_ == 0;
     DisposalMethod  disposalMethod;
     bit:1           userInput;
     bit:1           transparentColor;
@@ -161,9 +161,9 @@ struct ImageDescriptor(GifVersion version)
 
     bit:1       localColorMapFollows;
     bit:1       interlacedFormatted;
-    bit:1       _null1_  if version == GifVersion.V87A : _null1_ == 0;
+    bit:1       null1_  if version == GifVersion.V87A : null1_ == 0;
     bit:1       sortFlag if version == GifVersion.V89A;
-    bit:2       _null2_ : _null2_ == 0;
+    bit:2       null2_ : null2_ == 0;
     bit:3       bitsPerPixel;
 
     RgbColor    localColorMap[1 << (bitsPerPixel+1)] if localColorMapFollows == 1;

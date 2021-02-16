@@ -211,11 +211,10 @@ EOF
 }
 
 # Run zserio tests.
-test()
+test_zs()
 {
     exit_if_argc_ne $# 14
-    local ZSERIO_RELEASE_DIR="$1"; shift
-    local ZSERIO_VERSION="$1"; shift
+    local UNPACKED_ZSERIO_RELEASE_DIR="$1"; shift
     local ZSERIO_PROJECT_ROOT="$1"; shift
     local ZSERIO_BUILD_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
@@ -229,34 +228,38 @@ test()
     local SWITCH_SOURCE="$1"; shift
     local SWITCH_TEST_NAME="$1"; shift
     local SWITCH_WERROR="$1"; shift
-
-    # unpack testing release
-    local UNPACKED_ZSERIO_RELEASE_DIR
-    unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" UNPACKED_ZSERIO_RELEASE_DIR
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
+    local SWITCH_CLEAN="$1"; shift
 
     # generate sources using zserio
     local ZSERIO_ARGS=()
     if [[ ${#CPP_TARGETS[@]} -ne 0 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/cpp"
+        if [ ${SWITCH_CLEAN} -ne 0 ] ; then
+            rm -rf "${TEST_OUT_DIR}/cpp"
+        fi
         ZSERIO_ARGS+=("-cpp" "${TEST_OUT_DIR}/cpp/gen")
     fi
     if [[ ${PARAM_JAVA} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/java"
+        if [ ${SWITCH_CLEAN} -ne 0 ] ; then
+            rm -rf "${TEST_OUT_DIR}/java"
+        fi
         ZSERIO_ARGS+=("-java" "${TEST_OUT_DIR}/java/gen")
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/python"
+        if [ ${SWITCH_CLEAN} -ne 0 ] ; then
+            rm -rf "${TEST_OUT_DIR}/python"
+        fi
         ZSERIO_ARGS+=("-python" "${TEST_OUT_DIR}/python/gen")
     fi
     if [[ ${PARAM_XML} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/xml"
+        if [ ${SWITCH_CLEAN} -ne 0 ] ; then
+            rm -rf "${TEST_OUT_DIR}/xml"
+        fi
         ZSERIO_ARGS+=("-xml" "${TEST_OUT_DIR}/xml")
     fi
     if [[ ${PARAM_DOC} == 1 ]] ; then
-        rm -rf "${TEST_OUT_DIR}/doc"
+        if [ ${SWITCH_CLEAN} -ne 0 ] ; then
+            rm -rf "${TEST_OUT_DIR}/doc"
+        fi
         ZSERIO_ARGS+=("-doc" "${TEST_OUT_DIR}/doc")
     fi
 
@@ -345,6 +348,14 @@ test()
         fi
     fi
 
+    # run xmllint validator on generated XML
+    if [[ ${PARAM_XML} == 1 ]] ; then
+        run_xmllint "${TEST_OUT_DIR}/xml/abstract_syntax_tree.xml"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
     # run NU HTML validator on generated HTML documentation
     if [[ ${PARAM_DOC} == 1 ]] ; then
         local VNU_ARGS=()
@@ -365,7 +376,7 @@ Description:
     Tests given zserio sources with zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] [-w] ]generator... -s test.zs
+    $0 [-h] [-e] [-p] [-o <dir>] [-d <dir>] [-t <name>] [-w] generator... -s test.zs
 
 Arguments:
     -h, --help            Show this help.
@@ -559,17 +570,6 @@ parse_arguments()
         esac
     done
 
-    if [[ ${NUM_CPP_TARGETS} == 0 &&
-          ${!PARAM_JAVA_OUT} == 0 &&
-          ${!PARAM_PYTHON_OUT} == 0 &&
-          ${!PARAM_DOC_OUT} == 0 &&
-          ${!PARAM_XML_OUT} == 0 &&
-          ${!SWITCH_PURGE_OUT} == 0 ]] ; then
-        stderr_echo "Generator to test is not specified!"
-        echo
-        return 1
-    fi
-
     if [[ "${!SWITCH_SOURCE_OUT}" == "" && ${!SWITCH_PURGE_OUT} == 0 ]] ; then
         stderr_echo "Main zserio source is not set!"
         echo
@@ -653,6 +653,13 @@ main()
         fi
     fi
 
+    if [[ ${PARAM_DOC} != 0 ]] ; then
+        set_global_doc_variables "${ZSERIO_PROJECT_ROOT}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
+    fi
+
     # purge if requested and then create test output directory
     local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
     local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test_zs/${SWITCH_TEST_NAME}"
@@ -666,7 +673,7 @@ main()
               ${PARAM_PYTHON} == 0 &&
               ${PARAM_XML} == 0 &&
               ${PARAM_DOC} == 0 ]] ; then
-            return 0  # purge only
+            return 0 # purge only
         fi
     fi
     mkdir -p "${TEST_OUT_DIR}"
@@ -684,10 +691,18 @@ main()
     echo "Test output directory: ${TEST_OUT_DIR}"
     echo
 
+    # unpack testing release
+    local UNPACKED_ZSERIO_RELEASE_DIR
+    unpack_release "${TEST_OUT_DIR}" "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" UNPACKED_ZSERIO_RELEASE_DIR
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     # run test
-    test "${ZSERIO_RELEASE_DIR}" "${ZSERIO_VERSION}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
-         "${TEST_OUT_DIR}" PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} ${PARAM_DOC} \
-         ${SWITCH_DIRECTORY} ${SWITCH_SOURCE} ${SWITCH_TEST_NAME} ${SWITCH_WERROR}
+    local CLEAN=1
+    test_zs "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${TEST_OUT_DIR}" \
+            PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} ${PARAM_DOC} \
+            "${SWITCH_DIRECTORY}" "${SWITCH_SOURCE}" "${SWITCH_TEST_NAME}" ${SWITCH_WERROR} ${CLEAN}
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -695,4 +710,6 @@ main()
     return 0
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]] ; then
+    main "$@"
+fi
