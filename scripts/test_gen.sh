@@ -557,6 +557,7 @@ main()
         return 0
     elif [ ${PARSE_RESULT} -eq 3 ] ; then
         print_test_help_env
+        print_test_zs_help_env
         print_help_env
         return 0
     elif [ ${PARSE_RESULT} -ne 0 ] ; then
@@ -573,6 +574,11 @@ main()
     fi
 
     set_test_global_variables
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    set_test_zs_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi

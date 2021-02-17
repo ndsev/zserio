@@ -3,6 +3,25 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_test_tools.sh"
 
+# Set and check test_zs global variables.
+set_test_zs_global_variables()
+{
+    # Configure treating of warnings as errors in C++ (enabled by default)
+    CPP_WERROR="${CPP_WERROR:-1}"
+
+    return 0
+}
+
+# Print help on the environment variables used for the tests scripts.
+print_test_zs_help_env()
+{
+cat << EOF
+Uses the following environment variables for testing:
+    CPP_WERROR          Treat warnings as errors in C++. Default is 1.
+
+EOF
+}
+
 # Generate Ant build.xml file
 generate_ant_file()
 {
@@ -169,6 +188,12 @@ target_include_directories(\${PROJECT_NAME} SYSTEM PRIVATE \${SQLITE_INCDIR})
 target_link_libraries(\${PROJECT_NAME} \${SQLITE_LIBRARY})"
     fi
 
+    local WERROR_SETUP
+    if [ ${CPP_WERROR} -ne 0 ] ; then
+        WERROR_SETUP="
+compiler_set_warnings_as_errors()"
+    fi
+
     cat > ${BUILD_DIR}/CMakeLists.txt << EOF
 cmake_minimum_required(VERSION 2.8.12.2)
 project(test_zs_${TEST_NAME})
@@ -186,8 +211,7 @@ include(cmake_utils)
 include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
-compiler_set_warnings()
-compiler_set_warnings_as_errors()${SQLITE_SETUP}
+compiler_set_warnings()${WERROR_SETUP}${SQLITE_SETUP}
 
 # add zserio runtime library
 include(zserio_utils)
@@ -612,6 +636,7 @@ main()
         return 0
     elif [ ${PARSE_RESULT} -eq 3 ] ; then
         print_test_help_env
+        print_test_zs_help_env
         print_help_env
         return 0
     elif [ ${PARSE_RESULT} -ne 0 ] ; then
@@ -628,6 +653,11 @@ main()
     fi
 
     set_test_global_variables
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    set_test_zs_global_variables
     if [ $? -ne 0 ] ; then
         return 1
     fi

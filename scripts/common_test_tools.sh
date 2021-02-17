@@ -26,7 +26,7 @@ set_test_global_variables()
     # NU HTML Validator extra arguments
     VNU_FILTER_FILE="${VNU_FILTER_FILE:-""}"
 
-    # Configuration of xmllint - disabled by default
+    # Configuration of xmllint (disabled by default)
     XMLLINT_ENABLED="${XMLLINT_ENABLED:-0}"
     if [[ ${XMLLINT_ENABLED} == 1 ]] ; then
         XMLLINT="${XMLLINT:-xmllint}"
@@ -46,7 +46,7 @@ print_test_help_env()
 Uses the following environment variables for testing:
     UNZIP               Unzip executable to use. Default is "unzip".
     ZSERIO_EXTRA_ARGS   Extra arguments to zserio tool. Default is empty.
-    NU_HTML_VALIDATOR   Path to NU HTML Validator JAR file (vnu.jar).
+    NU_HTML_VALIDATOR   Path to NU HTML Validator jar file (vnu.jar).
     VNU_FILTER_FILE     Filter file path to be used by NU HTML Validator. Default is empty.
     XMLLINT_ENABLED     Defines whether to run xmllint in xml tests. Default is 0 (disabled).
     XMLLINT             Executable of xmllint to use. Default is "xmllint".
