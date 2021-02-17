@@ -260,7 +260,7 @@ test_gen()
     # C++ note: Almalgamated C++ files will be overriden by newly generated sources thanks to well choosen
     #           example to compile. It's enough to remove just one Gif.cpp which will not be newly generated.
     if [[ "${CPP_GENERATOR}" != "" ]] ; then
-        rm "${TEST_OUT_DIR}/cpp/gen/Gif.cpp"
+        rm "${TEST_OUT_DIR}/cpp/gen/gif/Gif.cpp"
     fi
 
     CLEAN=0
