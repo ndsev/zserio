@@ -17,7 +17,7 @@ endfunction()
 
 function(compiler_get_warnings_as_errors_setup VARNAME)
     if (CMAKE_COMPILER_IS_GNUCXX)
-        set(TESTED_VERSIONS "4.4.3" "4.5.4" "5.4.0" "7.4.0")
+        set(TESTED_VERSIONS "4.4.3" "4.5.4" "5.4.0" "7.4.0" "7.5.0")
         list(FIND TESTED_VERSIONS "${CMAKE_CXX_COMPILER_VERSION}" TESTED_VERSION_INDEX)
         if (NOT (TESTED_VERSION_INDEX EQUAL -1))
             set(WARNINGS_SETUP "-Werror")
