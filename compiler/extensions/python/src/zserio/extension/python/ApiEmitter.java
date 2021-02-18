@@ -8,6 +8,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
+import zserio.ast.PackageSymbol;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
@@ -52,57 +53,57 @@ public class ApiEmitter extends PythonDefaultEmitter
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException
     {
-        addTypeMapping(choiceType);
+        addPackageSymbolMapping(choiceType);
     }
 
     @Override
     public void beginConst(Constant constant) throws ZserioExtensionException
     {
-        addSymbolMapping(constant.getName(), constant.getPackage().getPackageName());
+        addPackageSymbolMapping(constant);
     }
 
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioExtensionException
     {
-        addTypeMapping(enumType);
+        addPackageSymbolMapping(enumType);
     }
 
     @Override
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioExtensionException
     {
-        addTypeMapping(bitmaskType);
+        addPackageSymbolMapping(bitmaskType);
     }
 
     @Override
     public void beginSubtype(Subtype subtype) throws ZserioExtensionException
     {
-        addTypeMapping(subtype);
+        addPackageSymbolMapping(subtype);
     }
 
     @Override
     public void beginUnion(UnionType unionType) throws ZserioExtensionException
     {
-        addTypeMapping(unionType);
+        addPackageSymbolMapping(unionType);
     }
 
     @Override
     public void beginStructure(StructureType structureType) throws ZserioExtensionException
     {
-        addTypeMapping(structureType);
+        addPackageSymbolMapping(structureType);
     }
 
     @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
     {
         if (getWithSqlCode())
-            addTypeMapping(sqlTableType);
+            addPackageSymbolMapping(sqlTableType);
     }
 
     @Override
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioExtensionException
     {
         if (getWithSqlCode())
-            addTypeMapping(sqlDatabaseType);
+            addPackageSymbolMapping(sqlDatabaseType);
     }
 
     @Override
@@ -116,7 +117,7 @@ public class ApiEmitter extends PythonDefaultEmitter
     public void beginPubsub(PubsubType pubsubType) throws ZserioExtensionException
     {
         if (getWithPubsubCode())
-            addTypeMapping(pubsubType);
+            addPackageSymbolMapping(pubsubType);
     }
 
     private void addEmptyPackageMapping() throws ZserioExtensionException
@@ -157,21 +158,14 @@ public class ApiEmitter extends PythonDefaultEmitter
         packageTemplateData.addModule(zserioType);
     }
 
-    private void addTypeMapping(ZserioType zserioType) throws ZserioExtensionException
+    private void addPackageSymbolMapping(PackageSymbol packageSymbol) throws ZserioExtensionException
     {
-        final PackageName packageName = zserioType.getPackage().getPackageName();
+        final String symbolName = packageSymbol.getName();
+        final PackageName packageName = packageSymbol.getPackage().getPackageName();
         final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
         if (packageTemplateData == null)
             throw new ZserioExtensionException("ApiEmitter: Package not yet mapped!");
-        packageTemplateData.addType(zserioType);
-    }
-
-    private void addSymbolMapping(String zserioSymbolName, PackageName packageName) throws ZserioExtensionException
-    {
-        final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
-        if (packageTemplateData == null)
-            throw new ZserioExtensionException("ApiEmitter: Package not yet mapped!");
-        packageTemplateData.addSymbol(zserioSymbolName);
+        packageTemplateData.addPackageSymbol(symbolName);
     }
 
     private static final String API_TEMPLATE = "api.py.ftl";

@@ -36,14 +36,9 @@ public class ApiEmitterTemplateData extends PythonTemplateData
         return modules;
     }
 
-    public Iterable<String> getSymbols()
+    public Iterable<String> getPackageSymbols()
     {
-        return symbols;
-    }
-
-    public Iterable<String> getTypes()
-    {
-        return types;
+        return packageSymbols;
     }
 
     public void addSubpackage(String subpackage)
@@ -56,19 +51,13 @@ public class ApiEmitterTemplateData extends PythonTemplateData
         modules.add(zserioType.getName());
     }
 
-    public void addSymbol(String symbolName)
+    public void addPackageSymbol(String symbolName)
     {
-        symbols.add(symbolName);
-    }
-
-    public void addType(ZserioType zserioType)
-    {
-        types.add(zserioType.getName());
+        packageSymbols.add(symbolName);
     }
 
     final PackageName packageName;
     final Set<String> subpackages = new TreeSet<String>();
     final List<String> modules = new ArrayList<String>();
-    final List<String> symbols = new ArrayList<String>();
-    final List<String> types = new ArrayList<String>();
+    final List<String> packageSymbols = new ArrayList<String>();
 }
