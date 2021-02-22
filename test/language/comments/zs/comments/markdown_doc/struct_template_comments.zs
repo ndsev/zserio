@@ -6,10 +6,10 @@ package comments.markdown_doc.struct_template_comments;
 
 This defines template which accepts one template parameter.
 
-*/
+!*/
 struct Field<T>
 {
-    /*! Example of the usage of template parameter. */
+    /*! Example of the usage of template parameter. !*/
     T value;
 };
 
@@ -19,10 +19,10 @@ struct Field<T>
 
 Description of some compound type.
 
-*/
+!*/
 struct Compound
 {
-    /*! Description of some field. */
+    /*! Description of some field. !*/
     uint32 value;
 };
 
@@ -32,15 +32,15 @@ struct Compound
 
 This structure uses template instantiations.
 
-*/
+!*/
 struct StructTemplatedField
 {
-    /*! Template instantiation using template argument uint32. */
+    /*! Template instantiation using template argument uint32. !*/
     Field<uint32>   uint32Field;
 
-    /*! Template instantiation using template argument Compound. */
+    /*! Template instantiation using template argument Compound. !*/
     Field<Compound> compoundField;
 
-    /*! Template instantiation using template argument string. */
+    /*! Template instantiation using template argument string. !*/
     Field<string>   stringField;
 };

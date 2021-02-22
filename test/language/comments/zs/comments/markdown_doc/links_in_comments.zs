@@ -14,6 +14,6 @@ This is an example of embedded picture:
 
 ![NDS Logo](../../../data/logo.png)
 
-*/
+!*/
 
 subtype uint32 VALUE;

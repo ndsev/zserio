@@ -176,6 +176,12 @@ class DocCommentManager
             }
         }
 
+        if (!markdown.endsWith("!*/"))
+        {
+            ZserioToolPrinter.printWarning(new AstLocation(docCommentToken),
+                    "Markdown documentation comment should be terminated by '!*/'!");
+        }
+
         markdown = markdown
                 .replaceFirst("^\\/\\*!", "") // strip comment marker from beginning
                 .replaceFirst("!?\\*\\/$", ""); // strip comment marker from the end

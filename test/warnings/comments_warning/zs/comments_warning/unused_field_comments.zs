@@ -58,7 +58,7 @@ struct MultipleComments
     /** Used comment. */
     offset2:
         /** Used comment. */
-        optional /** Used comment. */ int32 /*! # Unused markdown comment */ field2;
+        optional /** Used comment. */ int32 /*! # Unused markdown comment !*/ field2;
 
     /** Used comment. */
     optional /** Used comment. */ int32 field3;
@@ -88,7 +88,7 @@ struct MultipleUnmaskedComments
 
 struct MultipleFieldComments
 {
-    /*! Used markdown comment. */
+    /*! Used markdown comment. !*/
     /** Used comment. */
     /** Used comment. */
     int32 field;

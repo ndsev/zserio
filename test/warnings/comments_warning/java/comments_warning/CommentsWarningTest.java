@@ -18,6 +18,25 @@ public class CommentsWarningTest
     }
 
     @Test
+    public void markdownCommentWithWrongTerminator()
+    {
+        assertTrue(zserioWarnings.isPresent("markdown_comment_with_wrong_terminator.zs:3:1: " +
+                "Markdown documentation comment should be terminated by '!*/'!"));
+
+        assertTrue(zserioWarnings.isPresent("markdown_comment_with_wrong_terminator.zs:7:1: " +
+                "Markdown documentation comment should be terminated by '!*/'!"));
+
+        assertTrue(zserioWarnings.isPresent("markdown_comment_with_wrong_terminator.zs:21:1: " +
+                "Markdown documentation comment should be terminated by '!*/'!"));
+
+        assertTrue(zserioWarnings.isPresent("markdown_comment_with_wrong_terminator.zs:26:5: " +
+                "Markdown documentation comment should be terminated by '!*/'!"));
+
+        assertTrue(zserioWarnings.isPresent("markdown_comment_with_wrong_terminator.zs:38:5: " +
+                "Markdown documentation comment should be terminated by '!*/'!"));
+    }
+
+    @Test
     public void unresolvedSeeTagReference()
     {
         assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:8:4: " +
@@ -57,7 +76,7 @@ public class CommentsWarningTest
     @Test
     public void checkNumberOfWarnings()
     {
-        final int expectedNumberOfWarnings = 7;
+        final int expectedNumberOfWarnings = 12;
         assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
     }
 

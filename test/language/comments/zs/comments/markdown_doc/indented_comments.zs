@@ -16,15 +16,15 @@ package comments.markdown_doc.indented_comments;
     !*/
 enum bit:2 Direction
 {
-    /*! No traffic flow allowed. */
+    /*! No traffic flow allowed. !*/
     NONE,
 
-    /*! Traffic allowed from start to end node. */
+    /*! Traffic allowed from start to end node. !*/
     POSITIVE,
 
-    /*! Traffic allowed from end to start node. */
+    /*! Traffic allowed from end to start node. !*/
     NEGATIVE,
 
-    /*! Traffic allowed in both directions. */
+    /*! Traffic allowed in both directions. !*/
     BOTH
 };

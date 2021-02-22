@@ -6,10 +6,10 @@ package comments.markdown_doc.sql_database_comments;
 
 Sql table comment.
 
-*/
+!*/
 sql_table Table
 {
-    /*! Id comment. */
+    /*! Id comment. !*/
     int32 id sql "PRIMARY KEY NOT NULL";
 };
 
@@ -19,9 +19,9 @@ sql_table Table
 
 DB comment.
 
-*/
+!*/
 sql_database Db
 {
-    /*! Table field comment. */
+    /*! Table field comment. !*/
     Table table;
 };

@@ -1092,7 +1092,7 @@ Thus, generators have no access to these comments.
 
 Documentation comments are not filtered out during compilation and they can be used for generation of zserio
 schema documentation or for documentation of generated code. These comments might be associated
-to the subsequent type or field definition. 
+to the subsequent type or field definition.
 
 Documentation comments are further divided to two types:
 
@@ -1261,7 +1261,8 @@ future versions of the schema. It has the following format:
 ### Markdown Documentation Comments
 
 To support generation of documentation, multi-line comments starting with `/*!` are treated as special
-markdown documentation comments.
+markdown documentation comments. It's recommended to terminate markdown comments with `!*/` and Zserio
+fires a warning when the comment is terminated differently.
 
 **Example**
 
@@ -1280,7 +1281,7 @@ Name        | Description
 Structure1  | This describes Structure1 in detail.
 Structure2  | This describes Structure2 in detail.
 
-*/
+!*/
 ```
 
 If whole markdown documentation comment is indented according to the starting `/*!` which is single at separate
@@ -1303,7 +1304,7 @@ line, it is rendered without indentation.
     Structure1  | This describes Structure1 in detail.
     Structure2  | This describes Structure2 in detail.
 
-    */
+    !*/
 ```
 
 [top](#language-guide)
