@@ -168,10 +168,17 @@ test_xml()
                 local TEST_XML_OUT_ZS_DIR="${TEST_XML_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
                 if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
                     local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/xml_options.txt"
+                    local SWITCH_WERROR=1
+                    local SWITCH_XMLLINT=1
                     if [[ -f "${OPTIONS_FILE}" ]] ; then
-                        local SWITCH_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
-                    else
-                        local SWITCH_WERROR=1
+                        local OPTION_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
+                        if [ -n "${OPTION_WERROR}" ] ; then
+                            SWITCH_WERROR=${OPTION_WERROR}
+                        fi
+                        local OPTION_XMLLINT=`grep 'XMLLINT' "${OPTIONS_FILE}" | cut -d= -f 2`
+                        if [ -n "${OPTION_XMLLINT}" ] ; then
+                            SWITCH_XMLLINT=${OPTION_XMLLINT}
+                        fi
                     fi
                     local ZSERIO_ARGS=("-xml" "${TEST_XML_OUT_ZS_DIR}")
                     run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_XML_OUT_ZS_DIR}" "${TEST_ZS_DIR}" \
@@ -181,9 +188,11 @@ test_xml()
                         return 1
                     fi
 
-                    run_xmllint "${TEST_XML_OUT_ZS_DIR}/abstract_syntax_tree.xml"
-                    if [ $? -ne 0 ] ; then
-                        return 1
+                    if [ ${SWITCH_XMLLINT} -ne 0 ] ; then
+                        run_xmllint "${TEST_XML_OUT_ZS_DIR}/abstract_syntax_tree.xml"
+                        if [ $? -ne 0 ] ; then
+                            return 1
+                        fi
                     fi
                 fi
             done
@@ -225,10 +234,12 @@ test_doc()
                 local TEST_DOC_OUT_ZS_DIR="${TEST_DOC_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
                 if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
                     local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/doc_options.txt"
+                    local SWITCH_WERROR=1
                     if [[ -f "${OPTIONS_FILE}" ]] ; then
-                        local SWITCH_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
-                    else
-                        local SWITCH_WERROR=1
+                        local OPTION_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
+                        if [ -n "${OPTION_WERROR}" ] ; then
+                            SWITCH_WERROR=${OPTION_WERROR}
+                        fi
                     fi
                     local ZSERIO_ARGS=("-doc" "${TEST_DOC_OUT_ZS_DIR}" "-withSvgDiagrams" "-setDotExecutable" \
                         "${DOT}")
