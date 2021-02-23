@@ -184,8 +184,6 @@ public class ZserioTool
     {
         ZserioToolPrinter.printMessage("Parsing " + inputFileFullName);
 
-        inputFileManager.registerFile(inputFileFullName);
-
         final CharStream inputStream = CharStreams.fromFileName(inputFileFullName, Charset.forName("UTF-8"));
         final ParseErrorListener parseErrorListener = new ParseErrorListener();
         final ZserioLexer lexer = new ZserioLexer(inputStream);
@@ -202,6 +200,9 @@ public class ZserioTool
         parseTreeChecker.visit(tree);
 
         final Package parsedPackage = (Package)astBuilder.visit(tree, tokenStream);
+
+        // register after successful parsing to prevent timestamp warning to be fired before parsing errors
+        inputFileManager.registerFile(inputFileFullName);
 
         return parsedPackage;
     }
