@@ -61,3 +61,7 @@ jobs:
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
           scripts/test.sh all-linux64 cpp-linux32
+    - name: Run Zserio integration tests for repeated generation
+      run: |
+          unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
+          scripts/test_gen.sh all-linux64 cpp-linux32
