@@ -194,6 +194,8 @@ test_xml()
                             return 1
                         fi
                     fi
+
+                    TOTAL_NUMBER_OF_TESTS=$((TOTAL_NUMBER_OF_TESTS+1))
                 fi
             done
         done
