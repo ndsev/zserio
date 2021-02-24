@@ -29,4 +29,4 @@ import zserio.limits as limits
 import zserio.pubsub as pubsub
 import zserio.service as service
 
-VERSION_STRING = "2.1.0"
+VERSION_STRING = "2.2.0"
