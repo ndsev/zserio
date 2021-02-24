@@ -1,4 +1,4 @@
-package service_types_error;
+package pubsub_types_error;
 
 import static org.junit.Assert.*;
 

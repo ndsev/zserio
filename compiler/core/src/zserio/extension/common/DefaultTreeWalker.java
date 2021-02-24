@@ -88,6 +88,6 @@ public abstract class DefaultTreeWalker implements TreeWalker
     {}
 
     @Override
-    public void beginInstantiateType(InstantiateType pubsub) throws ZserioExtensionException
+    public void beginInstantiateType(InstantiateType instantiateType) throws ZserioExtensionException
     {}
 }

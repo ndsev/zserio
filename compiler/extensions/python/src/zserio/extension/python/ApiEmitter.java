@@ -169,7 +169,7 @@ public class ApiEmitter extends PythonDefaultEmitter
     }
 
     private static final String API_TEMPLATE = "api.py.ftl";
-    private static final String API_FILENAME_ROOT = "api";
+    static final String API_FILENAME_ROOT = "api";
 
     private final TreeMap<PackageName, ApiEmitterTemplateData> packageMapping =
             new TreeMap<PackageName, ApiEmitterTemplateData>();

@@ -72,7 +72,7 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
             String outFileNameRoot) throws ZserioExtensionException
     {
         final File outDir = new File(pythonParameters.getOutputDir(), packageName.toFilesystemPath());
-        final File outputFile = new File(outDir, outFileNameRoot + PYTHON_SOURCE_EXTENSION);
+        final File outputFile = new File(outDir, getOutputFileName(outFileNameRoot));
 
         final boolean generate = !outputFileManager.checkTimestamps(outputFile) ||
                 !checkGeneratorDescription(outputFile);
@@ -88,6 +88,11 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
     protected List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
     {
         return FreeMarkerUtil.readFreemarkerTemplate(PYTHON_TEMPLATE_LOCATION + templateName);
+    }
+
+    static String getOutputFileName(String outFileNameRoot)
+    {
+        return outFileNameRoot + PYTHON_SOURCE_EXTENSION;
     }
 
     private boolean checkGeneratorDescription(File outputFile)
