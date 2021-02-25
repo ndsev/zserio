@@ -103,18 +103,18 @@ def _runPylintOnAllSources(args, testDirs):
     for testDir in testDirs:
         testSources = [os.path.join(testDir, child) for child in os.listdir(testDir) if child.endswith(".py")]
 
+        testSuiteName = getTestSuiteName(testDir)
+        print(testSuiteName)
+
+        print("    test files...")
+        pylintResult = _runPylint(testSources, pylintOptions, testDisableOption)
+        if pylintResult != 0:
+            return pylintResult
+
         apiDir = getApiDir(testDir)
         if os.path.isdir(apiDir):
             apiSources = [os.path.join(apiDir, child) for child in os.listdir(apiDir)
                           if child.endswith(".py") or os.path.isdir(os.path.join(apiDir, child))]
-
-            testSuiteName = getTestSuiteName(testDir)
-            print(testSuiteName)
-
-            print("    test files...")
-            pylintResult = _runPylint(testSources, pylintOptions, testDisableOption)
-            if pylintResult != 0:
-                return pylintResult
 
             sys.path.append(apiDir)
 
