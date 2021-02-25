@@ -178,7 +178,8 @@ def _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath):
 
         mypyArgsForTest = list(mypyArgs)
         _loadMypyExtraArgsFile(testDir, mypyArgsForTest)
-        mypyArgsForTest.append(apiDir)
+        if os.path.exists(apiDir):
+            mypyArgsForTest.append(apiDir)
         mypyArgsForTest.append(testDir)
 
         mypyResult = api.run(mypyArgsForTest)
