@@ -1,4 +1,4 @@
-package errors.sql_database_invalid_property_name_reserved_error;
+package property_names.sql_database_invalid_property_name_reserved_error;
 
 sql_table TestTable
 {

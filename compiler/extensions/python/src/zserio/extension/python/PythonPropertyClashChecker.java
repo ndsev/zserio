@@ -6,54 +6,80 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.SqlDatabaseType;
+import zserio.ast.SqlTableType;
+import zserio.ast.StructureType;
 import zserio.ast.UnionType;
-import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.CompoundParameterTemplateData.CompoundParameter;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * Base class for compound emitters, which provides checking for property names clashing with other generated
- * methods when -withPythonProperties is used.
+ * Checks that Python code generator will not produce any clashes with generated properties.
  */
-public class CompoundEmitter extends PythonDefaultEmitter
+class PythonPropertyClashChecker extends DefaultTreeWalker
 {
-    public CompoundEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
+    PythonPropertyClashChecker(TemplateDataContext context)
     {
-        super(outputFileManager, pythonParameters);
+        this.context = context;
     }
 
-    protected void processCompoundTemplate(String templateName, CompoundTypeTemplateData templateData,
-            CompoundType compoundType) throws ZserioExtensionException
+    @Override
+    public boolean traverseTemplateInstantiations()
     {
-        if (getWithPythonProperties())
-            checkPropertyNames(templateName, templateData, compoundType);
-        processSourceTemplate(templateName, templateData, compoundType);
+        return true;
     }
 
-    protected void processCompoundTemplate(String templateName, UnionEmitterTemplateData templateData,
-            UnionType unionType) throws ZserioExtensionException
+    @Override
+    public void beginStructure(StructureType structureType) throws ZserioExtensionException
     {
-        if (getWithPythonProperties())
-            checkPropertyNames(templateName, templateData, unionType);
-        processSourceTemplate(templateName, templateData, unionType);
+        final StructureEmitterTemplateData templateData =
+                new StructureEmitterTemplateData(context, structureType);
+
+        checkPropertyNames(structureType, templateData, StructureEmitter.TEMPLATE_SOURCE_NAME);
     }
 
-    protected void processCompoundTemplate(String templateName, SqlDatabaseEmitterTemplateData templateData,
-            SqlDatabaseType sqlDatabaseType) throws ZserioExtensionException
+    @Override
+    public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException
     {
-        if (getWithPythonProperties())
-            checkPropertyNames(templateName, templateData, sqlDatabaseType);
-        processSourceTemplate(templateName, templateData, sqlDatabaseType);
+        final ChoiceEmitterTemplateData templateData =
+                new ChoiceEmitterTemplateData(context, choiceType);
+
+        checkPropertyNames(choiceType, templateData, ChoiceEmitter.TEMPLATE_SOURCE_NAME);
     }
 
-    private void checkPropertyNames(String templateName, CompoundTypeTemplateData templateData,
-            CompoundType compoundType) throws ZserioExtensionException
+    @Override
+    public void beginUnion(UnionType unionType) throws ZserioExtensionException
+    {
+        final UnionEmitterTemplateData templateData =
+                new UnionEmitterTemplateData(context, unionType);
+
+        checkPropertyNames(unionType, templateData, UnionEmitter.TEMPLATE_SOURCE_NAME);
+    }
+
+    @Override
+    public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
+    {
+        // we don't need to check SQL tables
+    }
+
+    @Override
+    public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioExtensionException
+    {
+        final SqlDatabaseEmitterTemplateData templateData =
+                new SqlDatabaseEmitterTemplateData(context, sqlDatabaseType);
+
+        checkPropertyNames(sqlDatabaseType, templateData, SqlDatabaseEmitter.TEMPLATE_SOURCE_NAME);
+    }
+
+    private void checkPropertyNames(CompoundType compoundType, CompoundTypeTemplateData templateData,
+            String templateSourceName) throws ZserioExtensionException
     {
         // we must check properties names to prevent clashing with public symbols in generated API
-        final Set<String> apiSymbols = getTemplateApiMethods(templateName);
+        final Set<String> apiSymbols = getTemplateApiMethods(templateSourceName);
         apiSymbols.addAll(getGeneratedApiSymbols(templateData));
 
         for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
@@ -63,11 +89,11 @@ public class CompoundEmitter extends PythonDefaultEmitter
             checkPropertyName(paramData.getPropertyName(), apiSymbols, compoundType);
     }
 
-    private void checkPropertyNames(String templateName, UnionEmitterTemplateData templateData,
-            UnionType unionType) throws ZserioExtensionException
+    private void checkPropertyNames(UnionType unionType, UnionEmitterTemplateData templateData,
+            String templateSourceName) throws ZserioExtensionException
     {
         // we must check properties names to prevent clashing with public symbols in generated API
-        final Set<String> apiSymbols = getTemplateApiMethods(templateName);
+        final Set<String> apiSymbols = getTemplateApiMethods(templateSourceName);
         apiSymbols.addAll(getGeneratedApiSymbols(templateData));
 
         for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
@@ -77,15 +103,16 @@ public class CompoundEmitter extends PythonDefaultEmitter
             checkPropertyName(paramData.getPropertyName(), apiSymbols, unionType);
     }
 
-    private void checkPropertyNames(String templateName, SqlDatabaseEmitterTemplateData templateData,
-            CompoundType compoundType) throws ZserioExtensionException
+    private void checkPropertyNames(SqlDatabaseType sqlDatabaseType,
+            SqlDatabaseEmitterTemplateData templateData,
+            String templateSourceName) throws ZserioExtensionException
     {
         // we must check properties names to prevent clashing with public symbols in generated API
-        final Set<String> apiSymbols = getTemplateApiMethods(templateName);
+        final Set<String> apiSymbols = getTemplateApiMethods(templateSourceName);
         apiSymbols.addAll(getGeneratedApiSymbols(templateData));
 
         for (SqlDatabaseEmitterTemplateData.DatabaseFieldData fieldData : templateData.getFields())
-            checkPropertyName(fieldData.getPropertyName(), apiSymbols, compoundType);
+            checkPropertyName(fieldData.getPropertyName(), apiSymbols, sqlDatabaseType);
     }
 
     private void checkPropertyName(String propertyName, Set<String> apiMethods, CompoundType compoundType)
@@ -101,7 +128,7 @@ public class CompoundEmitter extends PythonDefaultEmitter
         }
     }
 
-    void throwPropertyNameError(String propertyName, CompoundType compoundType, String reason)
+    private void throwPropertyNameError(String propertyName, CompoundType compoundType, String reason)
             throws ZserioExtensionException
     {
         ZserioToolPrinter.printError(compoundType.getLocation(),
@@ -114,7 +141,7 @@ public class CompoundEmitter extends PythonDefaultEmitter
     private Set<String> getTemplateApiMethods(String templateName) throws ZserioExtensionException
     {
         final Set<String> templateMethods = new HashSet<String>();
-        final List<String> templateLines = readFreemarkerTemplate(templateName);
+        final List<String> templateLines = PythonDefaultEmitter.readFreemarkerTemplate(templateName);
         for (String line : templateLines)
         {
             // we need to get only public methods which are part of the generated API, clashing with other
@@ -171,4 +198,6 @@ public class CompoundEmitter extends PythonDefaultEmitter
 
         return generatedSymbols;
     }
+
+    private final TemplateDataContext context;
 }

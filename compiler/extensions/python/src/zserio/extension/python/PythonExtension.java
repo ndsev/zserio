@@ -46,7 +46,7 @@ public class PythonExtension implements Extension
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final PythonExtensionParameters pythonParameters = new PythonExtensionParameters(parameters);
 
-        check(rootNode);
+        check(rootNode, pythonParameters);
 
         final List<PythonDefaultEmitter> emitters = new ArrayList<PythonDefaultEmitter>();
         emitters.add(new ConstEmitter(outputFileManager, pythonParameters));
@@ -70,9 +70,19 @@ public class PythonExtension implements Extension
         outputFileManager.printReport();
     }
 
-    private void check(Root rootNode) throws ZserioExtensionException
+    private void check(Root rootNode, PythonExtensionParameters pythonParameters)
+            throws ZserioExtensionException
     {
         final PythonApiClashChecker pythonApiClashChecker = new PythonApiClashChecker();
         rootNode.walk(pythonApiClashChecker);
+
+        if (pythonParameters.getWithPythonProperties())
+        {
+            final TemplateDataContext context = new TemplateDataContext(pythonParameters);
+
+            final PythonPropertyClashChecker pythonPropertyClashChecker =
+                    new PythonPropertyClashChecker(context);
+            rootNode.walk(pythonPropertyClashChecker);
+        }
     }
 }

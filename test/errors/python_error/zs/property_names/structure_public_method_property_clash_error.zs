@@ -1,4 +1,4 @@
-package errors.structure_public_method_property_clash_error;
+package property_names.structure_public_method_property_clash_error;
 
 struct TestStructure
 {

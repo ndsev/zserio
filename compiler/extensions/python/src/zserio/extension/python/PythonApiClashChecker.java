@@ -21,7 +21,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * Checks that generates Python code will not produce any clashes with auto-generated API helpers.
+ * Checks that Python code generator will not produce any clashes with auto-generated API helpers.
  */
 class PythonApiClashChecker extends DefaultTreeWalker
 {

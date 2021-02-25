@@ -4,7 +4,7 @@ import zserio.ast.UnionType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class UnionEmitter extends CompoundEmitter
+public class UnionEmitter extends PythonDefaultEmitter
 {
     public UnionEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
@@ -16,8 +16,8 @@ public class UnionEmitter extends CompoundEmitter
     {
         final UnionEmitterTemplateData templateData =
                 new UnionEmitterTemplateData(getTemplateDataContext(), unionType);
-        processCompoundTemplate(TEMPLATE_SOURCE_NAME, templateData, unionType);
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, unionType);
     }
 
-    private static final String TEMPLATE_SOURCE_NAME = "Union.py.ftl";
+    static final String TEMPLATE_SOURCE_NAME = "Union.py.ftl";
 }

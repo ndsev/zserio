@@ -1,4 +1,4 @@
-package errors.union_function_property_clash_error;
+package property_names.union_function_property_clash_error;
 
 union TestUnion
 {

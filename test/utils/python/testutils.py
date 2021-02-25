@@ -83,6 +83,45 @@ def getTestSuiteName(testDir):
     firstDir = os.path.split(testDir)[1]
     return os.path.join(firstDir, secondDir)
 
+def compileErroneousZserio(testFile, mainZsFile, errors, extraArgs=None):
+    testDir = os.path.dirname(testFile) # current test directory
+    zsDir = os.path.join(testDir, "..", "zs") # directory where test zs files are located
+    zsDef = (zsDir, mainZsFile)
+    apiDir = getApiDir(testDir)
+    try:
+        _compileZserio(zsDef, apiDir, extraArgs)
+    except ZserioCompilerError as zserioCompilerError:
+        errors[mainZsFile] = zserioCompilerError.stderr
+
+def assertErrorsPresent(test, mainZsFile, expectedErrors):
+    test.assertIn(mainZsFile, test.errors, msg=("No error found for '%s'!" % mainZsFile))
+    errors = test.errors[mainZsFile]
+    for expectedError in expectedErrors:
+        test.assertIn(expectedError, errors)
+
+class ZserioCompilerError(Exception):
+    """
+    Zseiro compiler error.
+    """
+
+    def __init__(self, stderr):
+        """
+        Constructor.
+
+        :param stderr: Error output of the Zserio compiler.
+        """
+
+        super().__init__("Zserio compilation failed!")
+        self._stderr = stderr
+
+    @property
+    def stderr(self):
+        """
+        Error output of the Zserio compiler.
+        """
+
+        return self._stderr
+
 def _compileZserio(zsDef, apiDir, extraArgs=None):
     """
     Compiles test zserio sources for the current python test file (i.e. test suite) and
@@ -131,26 +170,3 @@ def _importModule(path, modulePath):
     api = importlib.import_module(modulePath)
     sys.path.remove(path)
     return api
-
-class ZserioCompilerError(Exception):
-    """
-    Zseiro compiler error.
-    """
-
-    def __init__(self, stderr):
-        """
-        Constructor.
-
-        :param stderr: Error output of the Zserio compiler.
-        """
-
-        super().__init__("Zserio compilation failed!")
-        self._stderr = stderr
-
-    @property
-    def stderr(self):
-        """
-        Error output of the Zserio compiler.
-        """
-
-        return self._stderr

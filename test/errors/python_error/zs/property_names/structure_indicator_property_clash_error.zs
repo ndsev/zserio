@@ -1,4 +1,4 @@
-package errors.structure_indicator_property_clash_error;
+package property_names.structure_indicator_property_clash_error;
 
 struct TestStructure
 {

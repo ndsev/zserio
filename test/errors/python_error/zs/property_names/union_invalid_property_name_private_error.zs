@@ -1,4 +1,4 @@
-package errors.union_invalid_property_name_private_error;
+package property_names.union_invalid_property_name_private_error;
 
 union TestUnion
 {

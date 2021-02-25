@@ -4,7 +4,7 @@ import zserio.ast.SqlDatabaseType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-class SqlDatabaseEmitter extends CompoundEmitter
+class SqlDatabaseEmitter extends PythonDefaultEmitter
 {
     public SqlDatabaseEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
@@ -18,9 +18,9 @@ class SqlDatabaseEmitter extends CompoundEmitter
         {
             final SqlDatabaseEmitterTemplateData templateData =
                     new SqlDatabaseEmitterTemplateData(getTemplateDataContext(), sqlDatabaseType);
-            processCompoundTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlDatabaseType);
+            processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlDatabaseType);
         }
     }
 
-    private static final String TEMPLATE_SOURCE_NAME = "SqlDatabase.py.ftl";
+    static final String TEMPLATE_SOURCE_NAME = "SqlDatabase.py.ftl";
 }

@@ -85,7 +85,7 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         outputFileManager.registerOutputFile(outputFile, generate);
     }
 
-    protected List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
+    protected static List<String> readFreemarkerTemplate(String templateName) throws ZserioExtensionException
     {
         return FreeMarkerUtil.readFreemarkerTemplate(PYTHON_TEMPLATE_LOCATION + templateName);
     }

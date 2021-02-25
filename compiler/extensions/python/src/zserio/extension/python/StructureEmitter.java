@@ -4,7 +4,7 @@ import zserio.ast.StructureType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class StructureEmitter extends CompoundEmitter
+public class StructureEmitter extends PythonDefaultEmitter
 {
     public StructureEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
@@ -16,8 +16,8 @@ public class StructureEmitter extends CompoundEmitter
     {
         final StructureEmitterTemplateData templateData =
                 new StructureEmitterTemplateData(getTemplateDataContext(), structureType);
-        processCompoundTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, structureType);
     }
 
-    private static final String TEMPLATE_SOURCE_NAME = "Structure.py.ftl";
+    static final String TEMPLATE_SOURCE_NAME = "Structure.py.ftl";
 }

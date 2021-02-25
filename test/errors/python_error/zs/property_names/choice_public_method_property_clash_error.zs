@@ -1,4 +1,4 @@
-package errors.choice_public_method_property_clash_error;
+package property_names.choice_public_method_property_clash_error;
 
 choice TestChoice(uint32 param) on param
 {

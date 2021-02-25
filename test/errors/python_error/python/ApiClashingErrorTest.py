@@ -1,26 +1,26 @@
 import unittest
 
-from testutils import getZserioApi, ZserioCompilerError
+from testutils import compileErroneousZserio, assertErrorsPresent
 
 class ApiClashingErrorTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.errors = {}
-        cls._compileErroneousZserio("api_clashing/bitmask_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/choice_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/const_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/enumeration_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/instantiate_type_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/pubsub_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/service_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/sql_database_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/sql_table_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/structure_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/subtype_with_api_clash_error.zs")
-        cls._compileErroneousZserio("api_clashing/union_with_api_clash_error.zs")
+        compileErroneousZserio(__file__, "api_clashing/bitmask_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/choice_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/const_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/enumeration_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/instantiate_type_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/pubsub_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/service_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/sql_database_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/sql_table_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/structure_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/subtype_with_api_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "api_clashing/union_with_api_clash_error.zs", cls.errors)
 
     def testBitmaskWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/bitmask_with_api_clash_error.zs",
             [
                 "3:15: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -30,7 +30,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testChoiceWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/choice_with_api_clash_error.zs",
             [
                 "3:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -40,7 +40,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testConstWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/const_with_api_clash_error.zs",
             [
                 "3:14: Cannot generate python source 'API.py' for symbol 'API', " +
@@ -50,7 +50,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testEnumerationWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/enumeration_with_api_clash_error.zs",
             [
                 "3:12: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -60,7 +60,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testInstantiateTypeWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/instantiate_type_with_api_clash_error.zs",
             [
                 "8:33: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -70,7 +70,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testPubsubWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/pubsub_with_api_clash_error.zs",
             [
                 "15:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -80,7 +80,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testServiceWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/service_with_api_clash_error.zs",
             [
                 "13:9: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -90,7 +90,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testSqlDatabaseWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/sql_database_with_api_clash_error.zs",
             [
                 "9:14: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -100,7 +100,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testSqlTableWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/sql_table_with_api_clash_error.zs",
             [
                 "3:11: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -110,7 +110,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testStructureWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/structure_with_api_clash_error.zs",
             [
                 "3:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -120,7 +120,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testSubtypeWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/subtype_with_api_clash_error.zs",
             [
                 "3:17: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -130,7 +130,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         )
 
     def testUnionWithApiClash(self):
-        self._assertErrorsPresent(
+        assertErrorsPresent(self,
             "api_clashing/union_with_api_clash_error.zs",
             [
                 "3:7: Cannot generate python source 'Api.py' for symbol 'Api', " +
@@ -138,16 +138,3 @@ class ApiClashingErrorTest(unittest.TestCase):
                 "Python Generator: Clash in generated code detected!"
             ]
         )
-
-    def _assertErrorsPresent(self, mainZsFile, expectedErrors):
-        self.assertIn(mainZsFile, self.errors, msg=("No error found for '%s'!" % mainZsFile))
-        error = self.errors[mainZsFile]
-        for expectedError in expectedErrors:
-            self.assertIn(expectedError, error)
-
-    @classmethod
-    def _compileErroneousZserio(cls, mainZsFile):
-        try:
-            getZserioApi(__file__, mainZsFile)
-        except ZserioCompilerError as zserioCompilerError:
-            cls.errors[mainZsFile] = zserioCompilerError.stderr

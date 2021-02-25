@@ -4,7 +4,7 @@ import zserio.ast.ChoiceType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class ChoiceEmitter extends CompoundEmitter
+public class ChoiceEmitter extends PythonDefaultEmitter
 {
     public ChoiceEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
@@ -16,8 +16,8 @@ public class ChoiceEmitter extends CompoundEmitter
     {
         final ChoiceEmitterTemplateData templateData =
                 new ChoiceEmitterTemplateData(getTemplateDataContext(), choiceType);
-        processCompoundTemplate(TEMPLATE_SOURCE_NAME, templateData, choiceType);
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, choiceType);
     }
 
-    private static final String TEMPLATE_SOURCE_NAME = "Choice.py.ftl";
+    static final String TEMPLATE_SOURCE_NAME = "Choice.py.ftl";
 }

@@ -4,7 +4,7 @@ import zserio.ast.SqlTableType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class SqlTableEmitter extends CompoundEmitter
+public class SqlTableEmitter extends PythonDefaultEmitter
 {
     public SqlTableEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {
