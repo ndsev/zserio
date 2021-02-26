@@ -52,19 +52,12 @@ class ${name}:
     <#macro field_member_name field>
         _${field.name}_<#t>
     </#macro>
-    <#if withPythonProperties>
     @property
-    def ${field.propertyName}<#rt>
-    <#else>
-    def ${field.getterName}<#rt>
-    </#if>
-    <#lt>(self) -> ${field.pythonTypeName}:
+    def ${field.propertyName}(self) -> ${field.pythonTypeName}:
         return self.<@field_member_name field/>
 </#list>
 
-    <#if withPythonProperties>
     @property
-    </#if>
     def connection(self) -> apsw.Connection:
         return self._connection
 <#if withWriterCode>

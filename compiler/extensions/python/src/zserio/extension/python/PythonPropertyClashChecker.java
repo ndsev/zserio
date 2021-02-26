@@ -133,8 +133,7 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
     {
         ZserioToolPrinter.printError(compoundType.getLocation(),
                 "Property name error detected in '" + compoundType.getName() + "'! " +
-                "Consider to remove '-" + PythonExtensionParameters.OptionWithPythonProperties + "' option.");
-
+                "Please choose diferent name.");
         throw new ZserioExtensionException("Invalid property name '" + propertyName + "'! " + reason);
     }
 

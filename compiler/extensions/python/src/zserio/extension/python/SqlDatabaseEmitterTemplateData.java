@@ -49,7 +49,6 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
             name = field.getName();
             pythonTypeName = nativeType.getFullName();
-            getterName = AccessorNameFormatter.getGetterName(field);
             propertyName = AccessorNameFormatter.getPropertyName(field);
             tableNameConstant = TABLE_NAME_CONSTANT_PREFIX + field.getName();
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
@@ -64,11 +63,6 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public String getPythonTypeName()
         {
             return pythonTypeName;
-        }
-
-        public String getGetterName()
-        {
-            return getterName;
         }
 
         public String getPropertyName()
@@ -88,7 +82,6 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String pythonTypeName;
-        private final String getterName;
         private final String propertyName;
         private final String tableNameConstant;
         private final boolean isWithoutRowIdTable;

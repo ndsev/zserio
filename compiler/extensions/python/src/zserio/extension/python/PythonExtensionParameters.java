@@ -3,7 +3,6 @@ package zserio.extension.python;
 import java.util.StringJoiner;
 
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
 import zserio.extension.common.ZserioExtensionException;
@@ -24,7 +23,6 @@ class PythonExtensionParameters
         withPubsubCode = parameters.getWithPubsubCode();
         withServiceCode = parameters.getWithServiceCode();
         withSqlCode = parameters.getWithSqlCode();
-        withPythonProperties = parameters.argumentExists(OptionWithPythonProperties);
         withRangeCheckCode = parameters.getWithRangeCheckCode();
 
         final StringJoiner description = new StringJoiner(", ");
@@ -36,8 +34,6 @@ class PythonExtensionParameters
             description.add("serviceCode");
         if (withSqlCode)
             description.add("sqlCode");
-        if (withPythonProperties)
-            description.add("pythonProperties");
         if (withRangeCheckCode)
             description.add("rangeCheckCode");
         parametersDescription = description.toString();
@@ -68,11 +64,6 @@ class PythonExtensionParameters
         return withSqlCode;
     }
 
-    public boolean getWithPythonProperties()
-    {
-        return withPythonProperties;
-    }
-
     public boolean getWithRangeCheckCode()
     {
         return withRangeCheckCode;
@@ -89,16 +80,6 @@ class PythonExtensionParameters
         optionPython.setArgName("outputDir");
         optionPython.setRequired(false);
         options.addOption(optionPython);
-
-        OptionGroup pythonPropertiesGroup = new OptionGroup();
-        Option option = new Option(OptionWithPythonProperties, false,
-                "use python properties instead of getters and setters");
-        pythonPropertiesGroup.addOption(option);
-        option = new Option(OptionWithoutPythonProperties, false,
-                "use getters and setters(default)");
-        pythonPropertiesGroup.addOption(option);
-        pythonPropertiesGroup.setRequired(false);
-        options.addOptionGroup(pythonPropertiesGroup);
     }
 
     static boolean hasOptionPython(ExtensionParameters parameters)
@@ -107,15 +88,12 @@ class PythonExtensionParameters
     }
 
     final static String OptionPython = "python";
-    final static String OptionWithPythonProperties = "withPythonProperties";
-    final static String OptionWithoutPythonProperties = "withoutPythonProperties";
 
     private final String outputDir;
     private final boolean withWriterCode;
     private final boolean withPubsubCode;
     private final boolean withServiceCode;
     private final boolean withSqlCode;
-    private final boolean withPythonProperties;
     private final boolean withRangeCheckCode;
     private final String parametersDescription;
 }

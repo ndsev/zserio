@@ -81,34 +81,20 @@ ${I}<#rt>
         return result
 <#list compoundParametersData.list as parameter>
 
-    <#if withPythonProperties>
     @property
-    def ${parameter.propertyName}<#rt>
-    <#else>
-    def ${parameter.getterName}<#rt>
-    </#if>
-    <#lt>(self) -> ${parameter.pythonTypeName}:
+    def ${parameter.propertyName}(self) -> ${parameter.pythonTypeName}:
         <@compound_parameter_accessor parameter/>
 </#list>
 <#list fieldList as field>
 
-    <#if withPythonProperties>
     @property
-    def ${field.propertyName}<#rt>
-    <#else>
-    def ${field.getterName}<#rt>
-    </#if>
-    <#lt>(self) -> <@field_annotation_argument_type_name field, name/>:
+    def ${field.propertyName}(self) -> <@field_annotation_argument_type_name field, name/>:
         <@compound_getter_field field/>
     <#if withWriterCode>
 
-        <#if withPythonProperties>
     @${field.propertyName}.setter
-    def ${field.propertyName}<#rt>
-        <#else>
-    def ${field.setterName}<#rt>
-        </#if>
-    <#lt>(self, <@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
+    def ${field.propertyName}(self, <#rt>
+            <#lt><@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
         <@compound_setter_field field, withWriterCode, 2/>
     </#if>
     <#if field.optional??>

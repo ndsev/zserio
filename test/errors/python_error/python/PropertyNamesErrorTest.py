@@ -7,49 +7,44 @@ class PropertyNamesErrorTest(unittest.TestCase):
     def setUpClass(cls):
         cls.errors = {}
 
-        extraArgs = ["-withPythonProperties"]
-
-        compileErroneousZserio(__file__, "property_names/choice_function_property_clash_error.zs", cls.errors,
-                               extraArgs)
+        compileErroneousZserio(__file__, "property_names/choice_function_property_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "property_names/choice_invalid_property_name_private_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/choice_invalid_property_name_reserved_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/choice_public_method_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/structure_function_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/structure_indicator_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/structure_invalid_property_name_private_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/structure_invalid_property_name_reserved_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/structure_public_method_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/sql_database_connection_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/sql_database_invalid_property_name_reserved_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__,
                                "property_names/sql_database_table_name_constant_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/sql_database_public_method_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/template_invalid_property_name_private_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/template_public_method_property_clash_error.zs",
-                               cls.errors, extraArgs)
-        compileErroneousZserio(__file__, "property_names/union_choice_tag_property_clash_error.zs", cls.errors,
-                               extraArgs)
-        compileErroneousZserio(__file__, "property_names/union_function_property_clash_error.zs", cls.errors,
-                               extraArgs)
+                               cls.errors)
+        compileErroneousZserio(__file__, "property_names/union_choice_tag_property_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "property_names/union_function_property_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "property_names/union_invalid_property_name_private_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/union_invalid_property_name_reserved_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
         compileErroneousZserio(__file__, "property_names/union_public_method_property_clash_error.zs",
-                               cls.errors, extraArgs)
+                               cls.errors)
 
     def testChoiceFunctionPropertyClash(self):
         assertErrorsPresent(self,

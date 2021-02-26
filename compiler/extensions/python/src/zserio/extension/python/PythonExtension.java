@@ -76,13 +76,10 @@ public class PythonExtension implements Extension
         final PythonApiClashChecker pythonApiClashChecker = new PythonApiClashChecker();
         rootNode.walk(pythonApiClashChecker);
 
-        if (pythonParameters.getWithPythonProperties())
-        {
-            final TemplateDataContext context = new TemplateDataContext(pythonParameters);
+        final TemplateDataContext context = new TemplateDataContext(pythonParameters);
 
-            final PythonPropertyClashChecker pythonPropertyClashChecker =
-                    new PythonPropertyClashChecker(context);
-            rootNode.walk(pythonPropertyClashChecker);
-        }
+        final PythonPropertyClashChecker pythonPropertyClashChecker =
+                new PythonPropertyClashChecker(context);
+        rootNode.walk(pythonPropertyClashChecker);
     }
 }

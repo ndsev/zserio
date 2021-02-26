@@ -39,9 +39,6 @@ public final class CompoundFieldTemplateData
         importCollector.importType(nativeType);
         pythonTypeName = nativeType.getFullName();
 
-        getterName = AccessorNameFormatter.getGetterName(field);
-        setterName = AccessorNameFormatter.getSetterName(field);
-
         propertyName = AccessorNameFormatter.getPropertyName(field);
 
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
@@ -72,16 +69,6 @@ public final class CompoundFieldTemplateData
     public String getPythonTypeName()
     {
         return pythonTypeName;
-    }
-
-    public String getGetterName()
-    {
-        return getterName;
-    }
-
-    public String getSetterName()
-    {
-        return setterName;
     }
 
     public String getPropertyName()
@@ -563,8 +550,6 @@ public final class CompoundFieldTemplateData
 
     private final String name;
     private final String pythonTypeName;
-    private final String getterName;
-    private final String setterName;
     private final String propertyName;
 
     private final RangeCheck rangeCheck;

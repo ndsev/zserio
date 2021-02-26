@@ -46,11 +46,6 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         return pythonParameters.getWithSqlCode();
     }
 
-    protected boolean getWithPythonProperties()
-    {
-        return pythonParameters.getWithPythonProperties();
-    }
-
     protected TemplateDataContext getTemplateDataContext()
     {
         return context;

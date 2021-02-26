@@ -80,12 +80,8 @@ class ${name}:
                                               <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 </#if>
 
-    <#if withPythonProperties>
     @property
     def value(self) -> int:
-    <#else>
-    def getValue(self) -> int:
-    </#if>
         return self._value
 
     class Values:

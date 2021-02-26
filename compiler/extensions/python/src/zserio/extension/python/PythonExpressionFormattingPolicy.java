@@ -169,10 +169,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         else if (expr.op1().getExprType() == Expression.ExpressionType.BITMASK)
         {
             // TODO[Mi-L@]: Use parentheses only when needed (i.e when applied on another expression)
-            if (context.getWithPythonProperties())
-                return new UnaryExpressionFormatting("(", ").value");
-            else
-                return new UnaryExpressionFormatting("(", ").getValue()");
+            return new UnaryExpressionFormatting("(", ").value");
         }
         else
         {
@@ -335,28 +332,12 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
 
         if (isSetter)
         {
-            if (context.getWithPythonProperties())
-            {
-                result.append(AccessorNameFormatter.getPropertyName(field));
-                result.append(PYTHON_PROPERTY_ASSIGNMENT);
-            }
-            else
-            {
-                result.append(AccessorNameFormatter.getSetterName(field));
-                result.append(PYTHON_SETTER_FUNCTION_CALL);
-            }
+            result.append(AccessorNameFormatter.getPropertyName(field));
+            result.append(PYTHON_PROPERTY_ASSIGNMENT);
         }
         else
         {
-            if (context.getWithPythonProperties())
-            {
-                result.append(AccessorNameFormatter.getPropertyName(field));
-            }
-            else
-            {
-                result.append(AccessorNameFormatter.getGetterName(field));
-                result.append(PYTHON_GETTER_FUNCTION_CALL);
-            }
+            result.append(AccessorNameFormatter.getPropertyName(field));
         }
     }
 
@@ -365,15 +346,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         if (isMostLeftId)
             result.append(PYTHON_FUNCTION_CALL_PREFIX);
 
-        if (context.getWithPythonProperties())
-        {
-            result.append(AccessorNameFormatter.getPropertyName(param));
-        }
-        else
-        {
-            result.append(AccessorNameFormatter.getGetterName(param));
-            result.append(PYTHON_GETTER_FUNCTION_CALL);
-        }
+        result.append(AccessorNameFormatter.getPropertyName(param));
     }
 
     private void formatEnumItem(StringBuilder result, boolean isMostLeftId, EnumItem enumItem,
@@ -498,8 +471,6 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     private final static String PYTHON_HEXADECIMAL_LITERAL_PREFIX = "0x";
     private final static String PYTHON_OCTAL_LITERAL_PREFIX = "0o";
 
-    private final static String PYTHON_GETTER_FUNCTION_CALL = "()";
-    private final static String PYTHON_SETTER_FUNCTION_CALL = "(value)";
     private final static String PYTHON_PROPERTY_ASSIGNMENT = " = value";
 
     private final static String PYTHON_FUNCTION_CALL_PREFIX = "self.";
