@@ -10,13 +10,13 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
 
     def testSelectorConstructor(self):
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(1)
-        self.assertEqual(1, emptyChoiceWithCase.getSelector())
+        self.assertEqual(1, emptyChoiceWithCase.selector)
 
     def testFromReader(self):
         selector = 1
         reader = zserio.BitStreamReader([])
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase.fromReader(reader, selector)
-        self.assertEqual(selector, emptyChoiceWithCase.getSelector())
+        self.assertEqual(selector, emptyChoiceWithCase.selector)
         self.assertEqual(0, emptyChoiceWithCase.bitSizeOf())
 
     def testEq(self):
@@ -36,7 +36,7 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
     def testGetSelector(self):
         selector = 1
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(selector)
-        self.assertEqual(selector, emptyChoiceWithCase.getSelector())
+        self.assertEqual(selector, emptyChoiceWithCase.selector)
 
     def testBitSizeOf(self):
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(1)
@@ -52,7 +52,7 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
         reader = zserio.BitStreamReader([])
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(selector)
         emptyChoiceWithCase.read(reader)
-        self.assertEqual(selector, emptyChoiceWithCase.getSelector())
+        self.assertEqual(selector, emptyChoiceWithCase.selector)
         self.assertEqual(0, emptyChoiceWithCase.bitSizeOf())
 
     def testWrite(self):

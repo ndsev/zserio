@@ -21,7 +21,7 @@ class BlobParamTableTest(unittest.TestCase):
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
-        testTable = self._database.getBlobParamTable()
+        testTable = self._database.blob_param_table
         testTable.deleteTable()
         self.assertFalse(self._isTableInDb())
 
@@ -29,7 +29,7 @@ class BlobParamTableTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getBlobParamTable()
+        testTable = self._database.blob_param_table
 
         writtenRows = self._createBlobParamTableRows()
         testTable.write(writtenRows)
@@ -43,7 +43,7 @@ class BlobParamTableTest(unittest.TestCase):
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
-        testTable = self._database.getBlobParamTable()
+        testTable = self._database.blob_param_table
 
         writtenRows = self._createBlobParamTableRows()
         testTable.write(writtenRows)
@@ -55,7 +55,7 @@ class BlobParamTableTest(unittest.TestCase):
             self.assertEqual(writtenRows[expectedRowNum], readRow)
 
     def testUpdate(self):
-        testTable = self._database.getBlobParamTable()
+        testTable = self._database.blob_param_table
 
         writtenRows = self._createBlobParamTableRows()
         testTable.write(writtenRows)
@@ -70,7 +70,7 @@ class BlobParamTableTest(unittest.TestCase):
             self.assertEqual(updateRow, readRow)
 
     def testNullValues(self):
-        testTable = self._database.getBlobParamTable()
+        testTable = self._database.blob_param_table
 
         writtenRows = self._createBlobParamTableRowsWithNullValues()
         testTable.write(writtenRows)
@@ -111,7 +111,7 @@ class BlobParamTableTest(unittest.TestCase):
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + self.TABLE_NAME + "'"
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == self.TABLE_NAME:
                 return True
 

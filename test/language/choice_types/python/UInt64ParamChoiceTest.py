@@ -10,11 +10,11 @@ class UInt64ParamChoiceTest(unittest.TestCase):
 
     def testConstructor(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
-        self.assertEqual(self.VARIANT_A_SELECTOR, uint64ParamChoice.getSelector())
+        self.assertEqual(self.VARIANT_A_SELECTOR, uint64ParamChoice.selector)
 
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR, b_=1234)
-        self.assertEqual(self.VARIANT_B_SELECTOR, uint64ParamChoice.getSelector())
-        self.assertEqual(1234, uint64ParamChoice.getB())
+        self.assertEqual(self.VARIANT_B_SELECTOR, uint64ParamChoice.selector)
+        self.assertEqual(1234, uint64ParamChoice.b)
 
     def testFromReader(self):
         selector = self.VARIANT_B_SELECTOR
@@ -23,8 +23,8 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         UInt64ParamChoiceTest._writeUInt64ParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         uint64ParamChoice = self.api.UInt64ParamChoice.fromReader(reader, selector)
-        self.assertEqual(selector, uint64ParamChoice.getSelector())
-        self.assertEqual(value, uint64ParamChoice.getB())
+        self.assertEqual(selector, uint64ParamChoice.selector)
+        self.assertEqual(value, uint64ParamChoice.b)
 
     def testEq(self):
         uint64ParamChoice1 = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
@@ -32,14 +32,14 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         self.assertTrue(uint64ParamChoice1 == uint64ParamChoice2)
 
         value = 99
-        uint64ParamChoice1.setA(value)
+        uint64ParamChoice1.a = value
         self.assertFalse(uint64ParamChoice1 == uint64ParamChoice2)
 
-        uint64ParamChoice2.setA(value)
+        uint64ParamChoice2.a = value
         self.assertTrue(uint64ParamChoice1 == uint64ParamChoice2)
 
         diffValue = value + 1
-        uint64ParamChoice2.setA(diffValue)
+        uint64ParamChoice2.a = diffValue
         self.assertFalse(uint64ParamChoice1 == uint64ParamChoice2)
 
     def testHash(self):
@@ -48,37 +48,37 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         self.assertEqual(hash(uint64ParamChoice1), hash(uint64ParamChoice2))
 
         value = 99
-        uint64ParamChoice1.setA(value)
+        uint64ParamChoice1.a = value
         self.assertTrue(hash(uint64ParamChoice1) != hash(uint64ParamChoice2))
 
-        uint64ParamChoice2.setA(value)
+        uint64ParamChoice2.a = value
         self.assertEqual(hash(uint64ParamChoice1), hash(uint64ParamChoice2))
 
         diffValue = value + 1
-        uint64ParamChoice2.setA(diffValue)
+        uint64ParamChoice2.a = diffValue
         self.assertTrue(hash(uint64ParamChoice1) != hash(uint64ParamChoice2))
 
     def testGetSelector(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_C_SELECTOR)
-        self.assertEqual(self.VARIANT_C_SELECTOR, uint64ParamChoice.getSelector())
+        self.assertEqual(self.VARIANT_C_SELECTOR, uint64ParamChoice.selector)
 
     def testGetSetA(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         value = 99
-        uint64ParamChoice.setA(value)
-        self.assertEqual(value, uint64ParamChoice.getA())
+        uint64ParamChoice.a = value
+        self.assertEqual(value, uint64ParamChoice.a)
 
     def testGetSetB(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
         value = 234
-        uint64ParamChoice.setB(value)
-        self.assertEqual(value, uint64ParamChoice.getB())
+        uint64ParamChoice.b = value
+        self.assertEqual(value, uint64ParamChoice.b)
 
     def testGetSetC(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_C_SELECTOR)
         value = 23456
-        uint64ParamChoice.setC(value)
-        self.assertEqual(value, uint64ParamChoice.getC())
+        uint64ParamChoice.c = value
+        self.assertEqual(value, uint64ParamChoice.c)
 
     def testBitSizeOf(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
@@ -98,13 +98,13 @@ class UInt64ParamChoiceTest(unittest.TestCase):
     def testReadWrite(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         byteValue = 99
-        uint64ParamChoice.setA(byteValue)
+        uint64ParamChoice.a = byteValue
         writer = zserio.BitStreamWriter()
         uint64ParamChoice.write(writer)
         readUInt64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readUInt64ParamChoice.read(reader)
-        self.assertEqual(byteValue, readUInt64ParamChoice.getA())
+        self.assertEqual(byteValue, readUInt64ParamChoice.a)
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
 
         shortValue = 234
@@ -114,7 +114,7 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         readUInt64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readUInt64ParamChoice.read(reader)
-        self.assertEqual(shortValue, readUInt64ParamChoice.getB())
+        self.assertEqual(shortValue, readUInt64ParamChoice.b)
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
 
     @staticmethod

@@ -32,18 +32,18 @@ class ChoiceArrayTest(unittest.TestCase):
         writer.writeBits(self.NUM_ITEMS, 16)
 
         for item in self.ITEMS:
-            writer.writeBits(item.getA(), 8)
-            writer.writeBits(item.getB(), 8)
+            writer.writeBits(item.a, 8)
+            writer.writeBits(item.b, 8)
 
         isExplicit = 1 if pos >= self.NUM_ITEMS else 0
         writer.writeBits(isExplicit, 8)
         if isExplicit != 0:
-            writer.writeBits(self.EXPLICIT_ITEM.getA(), 8)
-            writer.writeBits(self.EXPLICIT_ITEM.getB(), 8)
-            elementA = self.EXPLICIT_ITEM.getA()
+            writer.writeBits(self.EXPLICIT_ITEM.a, 8)
+            writer.writeBits(self.EXPLICIT_ITEM.b, 8)
+            elementA = self.EXPLICIT_ITEM.a
         else:
             writer.writeBits(pos, 16)
-            elementA = self.ITEMS[pos].getA()
+            elementA = self.ITEMS[pos].a
 
         if elementA == self.ELEMENT_A_FOR_EXTRA_VALUE:
             writer.writeSignedBits(self.EXTRA_VALUE, 32)
@@ -51,32 +51,32 @@ class ChoiceArrayTest(unittest.TestCase):
     def _createInner(self, pos):
         outerArray = self.api.OuterArray()
 
-        outerArray.setNumElements(self.NUM_ITEMS)
-        outerArray.setValues(self.ITEMS)
+        outerArray.num_elements = self.NUM_ITEMS
+        outerArray.values = self.ITEMS
 
         inner = self.api.Inner()
-        inner.setOuterArray(outerArray)
+        inner.outer_array = outerArray
 
         isExplicit = 1 if pos >= self.NUM_ITEMS else 0
-        inner.setIsExplicit(isExplicit)
+        inner.is_explicit = isExplicit
 
-        itemRef = self.api.ItemRef(inner.getIsExplicit(), outerArray)
+        itemRef = self.api.ItemRef(inner.is_explicit, outerArray)
         if isExplicit != 0:
-            itemRef.setItem(self.EXPLICIT_ITEM)
-            elementA = self.EXPLICIT_ITEM.getA()
+            itemRef.item = self.EXPLICIT_ITEM
+            elementA = self.EXPLICIT_ITEM.a
         else:
-            itemRef.setPos(pos)
-            elementA = self.ITEMS[pos].getA()
-        inner.setRef(itemRef)
+            itemRef.pos = pos
+            elementA = self.ITEMS[pos].a
+        inner.ref = itemRef
 
         if elementA == self.ELEMENT_A_FOR_EXTRA_VALUE:
-            inner.setExtra(self.EXTRA_VALUE)
+            inner.extra = self.EXTRA_VALUE
 
         return inner
 
     def _checkChoiceArrayFunction(self, pos):
         inner = self._createInner(pos)
-        readElement = inner.getRef().funcGetElement()
+        readElement = inner.ref.funcGetElement()
         if pos >= self.NUM_ITEMS:
             self.assertEqual(self.EXPLICIT_ITEM, readElement)
         else:

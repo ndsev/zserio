@@ -11,12 +11,12 @@ class BoolParamChoiceTest(unittest.TestCase):
     def testConstructor(self):
         selector = True
         boolParamChoice = self.api.BoolParamChoice(selector)
-        self.assertEqual(selector, boolParamChoice.getSelector())
+        self.assertEqual(selector, boolParamChoice.selector)
 
         selector = False
         boolParamChoice = self.api.BoolParamChoice(selector, grey_=1234)
-        self.assertEqual(selector, boolParamChoice.getSelector())
-        self.assertEqual(1234, boolParamChoice.getGrey())
+        self.assertEqual(selector, boolParamChoice.selector)
+        self.assertEqual(1234, boolParamChoice.grey)
 
     def testFromReader(self):
         selector = False
@@ -25,8 +25,8 @@ class BoolParamChoiceTest(unittest.TestCase):
         BoolParamChoiceTest._writeBoolParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         boolParamChoice = self.api.BoolParamChoice.fromReader(reader, selector)
-        self.assertEqual(selector, boolParamChoice.getSelector())
-        self.assertEqual(value, boolParamChoice.getGrey())
+        self.assertEqual(selector, boolParamChoice.selector)
+        self.assertEqual(value, boolParamChoice.grey)
 
     def testEq(self):
         enumParamChoice1 = self.api.BoolParamChoice(True)
@@ -34,14 +34,14 @@ class BoolParamChoiceTest(unittest.TestCase):
         self.assertTrue(enumParamChoice1 == enumParamChoice2)
 
         value = 99
-        enumParamChoice1.setBlack(value)
+        enumParamChoice1.black = value
         self.assertFalse(enumParamChoice1 == enumParamChoice2)
 
-        enumParamChoice2.setBlack(value)
+        enumParamChoice2.black = value
         self.assertTrue(enumParamChoice1 == enumParamChoice2)
 
         diffValue = value + 1
-        enumParamChoice2.setBlack(diffValue)
+        enumParamChoice2.black = diffValue
         self.assertFalse(enumParamChoice1 == enumParamChoice2)
 
     def testHash(self):
@@ -50,32 +50,32 @@ class BoolParamChoiceTest(unittest.TestCase):
         self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
 
         value = 99
-        enumParamChoice1.setBlack(value)
+        enumParamChoice1.black = value
         self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
 
-        enumParamChoice2.setBlack(value)
+        enumParamChoice2.black = value
         self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
 
         diffValue = value + 1
-        enumParamChoice2.setBlack(diffValue)
+        enumParamChoice2.black = diffValue
         self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
 
     def testGetSelector(self):
         selector = True
         boolParamChoice = self.api.BoolParamChoice(selector)
-        self.assertEqual(selector, boolParamChoice.getSelector())
+        self.assertEqual(selector, boolParamChoice.selector)
 
     def testGetSetBlack(self):
         boolParamChoice = self.api.BoolParamChoice(True)
         value = 99
-        boolParamChoice.setBlack(value)
-        self.assertEqual(value, boolParamChoice.getBlack())
+        boolParamChoice.black = value
+        self.assertEqual(value, boolParamChoice.black)
 
     def testGetSetGrey(self):
         boolParamChoice = self.api.BoolParamChoice(False)
         value = 234
-        boolParamChoice.setGrey(value)
-        self.assertEqual(value, boolParamChoice.getGrey())
+        boolParamChoice.grey = value
+        self.assertEqual(value, boolParamChoice.grey)
 
     def testBitSizeOf(self):
         boolParamChoice = self.api.BoolParamChoice(True)
@@ -96,13 +96,13 @@ class BoolParamChoiceTest(unittest.TestCase):
         selector = True
         boolParamChoice = self.api.BoolParamChoice(selector)
         byteValue = 99
-        boolParamChoice.setBlack(byteValue)
+        boolParamChoice.black = byteValue
         writer = zserio.BitStreamWriter()
         boolParamChoice.write(writer)
         readBoolParamChoice = self.api.BoolParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBoolParamChoice.read(reader)
-        self.assertEqual(byteValue, readBoolParamChoice.getBlack())
+        self.assertEqual(byteValue, readBoolParamChoice.black)
         self.assertEqual(boolParamChoice, readBoolParamChoice)
 
         selector = False
@@ -113,7 +113,7 @@ class BoolParamChoiceTest(unittest.TestCase):
         readBoolParamChoice = self.api.BoolParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBoolParamChoice.read(reader)
-        self.assertEqual(shortValue, readBoolParamChoice.getGrey())
+        self.assertEqual(shortValue, readBoolParamChoice.grey)
         self.assertEqual(boolParamChoice, readBoolParamChoice)
 
     @staticmethod

@@ -36,7 +36,7 @@ class ExplicitEnumParamTest(unittest.TestCase):
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
-        testTable = self._database.getEnumParamTable()
+        testTable = self._database.enum_param_table
         testTable.deleteTable()
         self.assertFalse(self._isTableInDb())
 
@@ -44,7 +44,7 @@ class ExplicitEnumParamTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getEnumParamTable()
+        testTable = self._database.enum_param_table
 
         writtenRows = self._createEnumParamTableRows()
         testTable.write(writtenRows)
@@ -58,7 +58,7 @@ class ExplicitEnumParamTest(unittest.TestCase):
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
-        testTable = self._database.getEnumParamTable()
+        testTable = self._database.enum_param_table
 
         writtenRows = self._createEnumParamTableRows()
         testTable.write(writtenRows)
@@ -71,7 +71,7 @@ class ExplicitEnumParamTest(unittest.TestCase):
             self._checkEnumParamTableRow(writtenRows[expectedRowNum], readRow)
 
     def testUpdate(self):
-        testTable = self._database.getEnumParamTable()
+        testTable = self._database.enum_param_table
 
         writtenRows = self._createEnumParamTableRows()
         testTable.write(writtenRows)
@@ -111,12 +111,12 @@ class ExplicitEnumParamTest(unittest.TestCase):
         # check reused explicit count1 parameter
         blob1 = row2[2]
         blob3 = row2[4]
-        self.assertEqual(blob1.getCount(), blob3.getCount())
+        self.assertEqual(blob1.count, blob3.count)
 
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'"
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == TABLE_NAME:
                 return True
 

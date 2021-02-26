@@ -9,10 +9,10 @@ class ChoiceWithArrayTest(unittest.TestCase):
 
     def testArray8(self):
         testChoice = self.api.TestChoice(8)
-        testChoice.setArray8([self.api.Data8(), self.api.Data8(), self.api.Data8(), self.api.Data8()])
-        self.assertEqual(4, len(testChoice.getArray8()))
+        testChoice.array8 = [self.api.Data8(), self.api.Data8(), self.api.Data8(), self.api.Data8()]
+        self.assertEqual(4, len(testChoice.array8))
 
     def testArray16(self):
         testChoice = self.api.TestChoice(16)
-        testChoice.setArray16([1, 2, 3, 4])
-        self.assertEqual(4, len(testChoice.getArray16()))
+        testChoice.array16 = [1, 2, 3, 4]
+        self.assertEqual(4, len(testChoice.array16))

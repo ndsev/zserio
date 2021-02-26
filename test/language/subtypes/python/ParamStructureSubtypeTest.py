@@ -11,12 +11,12 @@ class ParamStructureSubtypeTest(unittest.TestCase):
         # just check that ParameterizedSubtype is defined and that it's same as the ParameterizedStruct
         parameterizedSubtypeStruct = self.api.ParameterizedSubtypeStruct()
         length = 2
-        parameterizedSubtypeStruct.setLength(length)
+        parameterizedSubtypeStruct.length = length
 
         parameterizedSubtype = self.api.ParameterizedSubtype(length, list(range(length)))
-        parameterizedSubtypeStruct.setParameterizedSubtype(parameterizedSubtype)
-        self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.getParameterizedSubtype())
+        parameterizedSubtypeStruct.parameterized_subtype = parameterizedSubtype
+        self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.parameterized_subtype)
 
-        parameterizedSubtypeStruct.setParameterizedSubtypeArray([parameterizedSubtype for i in range(length)])
+        parameterizedSubtypeStruct.parameterized_subtype_array = [parameterizedSubtype for i in range(length)]
         for i in range(length):
-            self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.getParameterizedSubtypeArray()[i])
+            self.assertEqual(parameterizedSubtype, parameterizedSubtypeStruct.parameterized_subtype_array[i])

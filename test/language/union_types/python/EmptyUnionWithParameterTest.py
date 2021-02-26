@@ -10,12 +10,12 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
 
     def testParamConstructor(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
-        self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.getParam())
+        self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
 
     def testFromReader(self):
         reader = zserio.BitStreamReader([])
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter.fromReader(reader, self.PARAM_VALUE1)
-        self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.getParam())
+        self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
         self.assertEqual(0, emptyUnionWithParameter.bitSizeOf())
 
     def testEq(self):
@@ -34,7 +34,7 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
 
     def testChoiceTag(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
-        self.assertEqual(self.api.EmptyUnionWithParameter.UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag())
+        self.assertEqual(self.api.EmptyUnionWithParameter.UNDEFINED_CHOICE, emptyUnionWithParameter.choice_tag)
 
     def testBitSizeOf(self):
         bitPosition = 1
@@ -50,7 +50,7 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
         reader = zserio.BitStreamReader([])
         emptyUnionWithParameter.read(reader)
-        self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.getParam())
+        self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
         self.assertEqual(0, emptyUnionWithParameter.bitSizeOf())
 
     def testWrite(self):

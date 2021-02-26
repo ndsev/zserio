@@ -33,13 +33,13 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromReader(reader)
 
-        self.assertEqual(numElements, subtypedStructVariableArray.getNumElements())
-        compoundArray = subtypedStructVariableArray.getCompoundArray()
+        self.assertEqual(numElements, subtypedStructVariableArray.num_elements)
+        compoundArray = subtypedStructVariableArray.compound_array
         self.assertEqual(numElements, len(compoundArray))
         for i in range(numElements):
             testStructure = compoundArray[i]
-            self.assertEqual(i, testStructure.getId())
-            self.assertTrue(testStructure.getName() == "Name" + str(i))
+            self.assertEqual(i, testStructure.id)
+            self.assertTrue(testStructure.name == "Name" + str(i))
 
     def testWrite(self):
         numElements = 33
@@ -47,13 +47,13 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
         subtypedStructVariableArray = self.api.SubtypedStructVariableArray(numElements, compoundArray)
         bitBuffer = zserio.serialize(subtypedStructVariableArray)
         readSubtypedStructVariableArray = zserio.deserialize(self.api.SubtypedStructVariableArray, bitBuffer)
-        self.assertEqual(numElements, readSubtypedStructVariableArray.getNumElements())
-        readCompoundArray = readSubtypedStructVariableArray.getCompoundArray()
+        self.assertEqual(numElements, readSubtypedStructVariableArray.num_elements)
+        readCompoundArray = readSubtypedStructVariableArray.compound_array
         self.assertEqual(numElements, len(readCompoundArray))
         for i in range(numElements):
             readArrayElement = readCompoundArray[i]
-            self.assertEqual(i, readArrayElement.getId())
-            self.assertTrue(readArrayElement.getName() == "Name" + str(i))
+            self.assertEqual(i, readArrayElement.id)
+            self.assertTrue(readArrayElement.name == "Name" + str(i))
 
     def testWriteWrongArray(self):
         numElements = 33

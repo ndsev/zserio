@@ -24,7 +24,7 @@ class FunctionTemplatedReturnTypeTest(unittest.TestCase):
         readFunctionTemplatedReturnType.read(reader)
 
         # float compare is a problem here, so hack the correct value
-        self.assertAlmostEqual(4.2, readFunctionTemplatedReturnType.getFloatTest().getValue(), delta=0.001)
-        readFunctionTemplatedReturnType.getFloatTest().setValue(4.2)
+        self.assertAlmostEqual(4.2, readFunctionTemplatedReturnType.float_test.value, delta=0.001)
+        readFunctionTemplatedReturnType.float_test.value = 4.2
 
         self.assertEqual(functionTemplatedReturnType, readFunctionTemplatedReturnType)

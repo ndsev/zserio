@@ -32,7 +32,7 @@ class StructureArrayParamTest(unittest.TestCase):
         writer.writeBits(self.NUM_CHILDREN, 8)
 
         for childStructure in self.CHILDREN:
-            writer.writeBits(childStructure.getValue(), childStructure.getBitSize())
+            writer.writeBits(childStructure.value, childStructure.bit_size)
 
     def _createParentStructure(self):
         return self.api.ParentStructure(self.NUM_CHILDREN, self.CHILDREN)

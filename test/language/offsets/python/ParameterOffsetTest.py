@@ -82,13 +82,13 @@ class ParameterOffsetTest(unittest.TestCase):
         writer.writeBits(self.ROOM_ID, 16)
 
     def _checkSchool(self, school, bitPosition=0):
-        self.assertEqual(self.SCHOOL_ID, school.getSchoolId())
+        self.assertEqual(self.SCHOOL_ID, school.school_id)
 
         expectedRoomOffset = (self.ROOM_OFFSET if (bitPosition == 0) else
                               self.ROOM_OFFSET + (bitPosition // 8) + 1)
-        self.assertEqual(expectedRoomOffset, school.getOffsetHolder().getRoomOffset())
+        self.assertEqual(expectedRoomOffset, school.offset_holder.room_offset)
 
-        self.assertEqual(self.ROOM_ID, school.getRoom().getRoomId())
+        self.assertEqual(self.ROOM_ID, school.room.room_id)
 
     def _createSchool(self, createWrongOffset):
         roomOffset = self.WRONG_ROOM_OFFSET if createWrongOffset else self.ROOM_OFFSET

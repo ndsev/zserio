@@ -15,19 +15,19 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         DefaultEmptyChoiceTest._writeDefaultEmptyChoiceToStream(writer, tag, value)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         defaultEmptyChoice = self.api.DefaultEmptyChoice.fromReader(reader, tag)
-        self.assertEqual(tag, defaultEmptyChoice.getTag())
-        self.assertEqual(value, defaultEmptyChoice.getB())
+        self.assertEqual(tag, defaultEmptyChoice.tag)
+        self.assertEqual(value, defaultEmptyChoice.b)
 
     def testReadWrite(self):
         defaultEmptyChoiceA = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99
-        defaultEmptyChoiceA.setA(byteValueA)
+        defaultEmptyChoiceA.a = byteValueA
         writer = zserio.BitStreamWriter()
         defaultEmptyChoiceA.write(writer)
         readDefaultEmptyChoiceA = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readDefaultEmptyChoiceA.read(reader)
-        self.assertEqual(byteValueA, readDefaultEmptyChoiceA.getA())
+        self.assertEqual(byteValueA, readDefaultEmptyChoiceA.a)
         self.assertEqual(defaultEmptyChoiceA, readDefaultEmptyChoiceA)
 
         shortValueB = 234
@@ -37,7 +37,7 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         readDefaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readDefaultEmptyChoiceB.read(reader)
-        self.assertEqual(shortValueB, readDefaultEmptyChoiceB.getB())
+        self.assertEqual(shortValueB, readDefaultEmptyChoiceB.b)
         self.assertEqual(defaultEmptyChoiceB, readDefaultEmptyChoiceB)
 
         defaultEmptyChoiceDefault = self.api.DefaultEmptyChoice(self.DEFAULT_SELECTOR)

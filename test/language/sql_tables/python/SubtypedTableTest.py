@@ -21,13 +21,13 @@ class SubtypedTableTest(unittest.TestCase):
     def testSubtypedTable(self):
         self.assertTrue(self._isTableInDb())
 
-        subtypedTable = self._database.getSubtypedTable()
+        subtypedTable = self._database.subtyped_table
         self.assertTrue(subtypedTable is not None)
 
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + self.TABLE_NAME + "'"
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == self.TABLE_NAME:
                 return True
 

@@ -11,7 +11,7 @@ class IndexOperatorTest(unittest.TestCase):
     def testZeroLength(self):
         elementList = self._createElementList(0)
         self.assertEqual(self.LENGTH_SIZE, elementList.bitSizeOf())
-        self.assertEqual(0, self._createReadElementList(elementList).getLength())
+        self.assertEqual(0, self._createReadElementList(elementList).length)
 
     def testOneElement(self):
         length = 1
@@ -45,9 +45,9 @@ class IndexOperatorTest(unittest.TestCase):
             isEven = i % 2 + 1 == 2
             element = self.api.Element(isEven)
             if isEven:
-                element.setField8(self.ELEMENTS[i])
+                element.field8 = self.ELEMENTS[i]
             else:
-                element.setField16(self.ELEMENTS[i])
+                element.field16 = self.ELEMENTS[i]
             elements.append(element)
 
         return self.api.ElementList(len(elements), elements)
@@ -59,11 +59,11 @@ class IndexOperatorTest(unittest.TestCase):
         return readElementList
 
     def _checkElements(self, elementList, length):
-        self.assertEqual(length, elementList.getLength())
+        self.assertEqual(length, elementList.length)
         for i in range(length):
             isEven = i % 2 + 1 == 2
-            element = elementList.getElements()[i]
-            self.assertEqual(self.ELEMENTS[i], element.getField8() if isEven else element.getField16())
+            element = elementList.elements[i]
+            self.assertEqual(self.ELEMENTS[i], element.field8 if isEven else element.field16)
 
     ELEMENTS = [11, 33, 55, 77]
     LENGTH_SIZE = 16

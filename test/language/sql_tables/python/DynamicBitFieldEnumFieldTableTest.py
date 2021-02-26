@@ -20,7 +20,7 @@ class DynamicBitFieldEnumFieldTableTest(unittest.TestCase):
         self._database.close()
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getDynamicBitFieldEnumFieldTable()
+        testTable = self._database.dynamic_bit_field_enum_field_table
 
         writtenRows = self._createRows()
         testTable.write(writtenRows)

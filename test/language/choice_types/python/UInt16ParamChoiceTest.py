@@ -11,12 +11,12 @@ class UInt16ParamChoiceTest(unittest.TestCase):
     def testConstructor(self):
         selector = self.VARIANT_A_SELECTOR
         uint16ParamChoice = self.api.UInt16ParamChoice(selector)
-        self.assertEqual(selector, uint16ParamChoice.getSelector())
+        self.assertEqual(selector, uint16ParamChoice.selector)
 
         selector = self.VARIANT_B_SELECTOR1
         uint16ParamChoice = self.api.UInt16ParamChoice(selector, b_=1234)
-        self.assertEqual(selector, uint16ParamChoice.getSelector())
-        self.assertEqual(1234, uint16ParamChoice.getB())
+        self.assertEqual(selector, uint16ParamChoice.selector)
+        self.assertEqual(1234, uint16ParamChoice.b)
 
     def testFromReader(self):
         selector = self.VARIANT_B_SELECTOR1
@@ -25,8 +25,8 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         UInt16ParamChoiceTest._writeUInt16ParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         uint16ParamChoice = self.api.UInt16ParamChoice.fromReader(reader, selector)
-        self.assertEqual(selector, uint16ParamChoice.getSelector())
-        self.assertEqual(value, uint16ParamChoice.getB())
+        self.assertEqual(selector, uint16ParamChoice.selector)
+        self.assertEqual(value, uint16ParamChoice.b)
 
     def testEq(self):
         uint16ParamChoice1 = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
@@ -34,14 +34,14 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         self.assertTrue(uint16ParamChoice1 == uint16ParamChoice2)
 
         value = 99
-        uint16ParamChoice1.setA(value)
+        uint16ParamChoice1.a = value
         self.assertFalse(uint16ParamChoice1 == uint16ParamChoice2)
 
-        uint16ParamChoice2.setA(value)
+        uint16ParamChoice2.a = value
         self.assertTrue(uint16ParamChoice1 == uint16ParamChoice2)
 
         diffValue = value + 1
-        uint16ParamChoice2.setA(diffValue)
+        uint16ParamChoice2.a = diffValue
         self.assertFalse(uint16ParamChoice1 == uint16ParamChoice2)
 
     def testHash(self):
@@ -50,48 +50,48 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         self.assertEqual(hash(uint16ParamChoice1), hash(uint16ParamChoice2))
 
         value = 99
-        uint16ParamChoice1.setA(value)
+        uint16ParamChoice1.a = value
         self.assertTrue(hash(uint16ParamChoice1) != hash(uint16ParamChoice2))
 
-        uint16ParamChoice2.setA(value)
+        uint16ParamChoice2.a = value
         self.assertEqual(hash(uint16ParamChoice1), hash(uint16ParamChoice2))
 
         diffValue = value + 1
-        uint16ParamChoice2.setA(diffValue)
+        uint16ParamChoice2.a = diffValue
         self.assertTrue(hash(uint16ParamChoice1) != hash(uint16ParamChoice2))
 
     def testGetSelector(self):
         selector = self.EMPTY_SELECTOR2
         uint16ParamChoice = self.api.UInt16ParamChoice(selector)
-        self.assertEqual(selector, uint16ParamChoice.getSelector())
+        self.assertEqual(selector, uint16ParamChoice.selector)
 
     def testGetSetA(self):
         uint16ParamChoice = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
         value = 99
-        uint16ParamChoice.setA(value)
-        self.assertEqual(value, uint16ParamChoice.getA())
+        uint16ParamChoice.a = value
+        self.assertEqual(value, uint16ParamChoice.a)
 
     def testGetSetB(self):
         uint16ParamChoice = self.api.UInt16ParamChoice(self.VARIANT_B_SELECTOR3)
         value = 234
-        uint16ParamChoice.setB(value)
-        self.assertEqual(value, uint16ParamChoice.getB())
+        uint16ParamChoice.b = value
+        self.assertEqual(value, uint16ParamChoice.b)
 
     def testGetSetC(self):
         uint16ParamChoice = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
         value = 65535
-        uint16ParamChoice.setC(value)
-        self.assertEqual(value, uint16ParamChoice.getC())
+        uint16ParamChoice.c = value
+        self.assertEqual(value, uint16ParamChoice.c)
 
     def testBitSizeOf(self):
         uint16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99
-        uint16ParamChoiceA.setA(byteValueA)
+        uint16ParamChoiceA.a = byteValueA
         self.assertEqual(8, uint16ParamChoiceA.bitSizeOf())
 
         uint16ParamChoiceB = self.api.UInt16ParamChoice(self.VARIANT_B_SELECTOR2)
         shortValueB = 234
-        uint16ParamChoiceB.setB(shortValueB)
+        uint16ParamChoiceB.b = shortValueB
         self.assertEqual(16, uint16ParamChoiceB.bitSizeOf())
 
         uint16ParamChoiceEmpty = self.api.UInt16ParamChoice(self.EMPTY_SELECTOR1)
@@ -99,7 +99,7 @@ class UInt16ParamChoiceTest(unittest.TestCase):
 
         uint16ParamChoiceC = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
         intValueC = 65535
-        uint16ParamChoiceC.setC(intValueC)
+        uint16ParamChoiceC.c = intValueC
         self.assertEqual(32, uint16ParamChoiceC.bitSizeOf())
 
     def testInitializeOffsets(self):
@@ -119,13 +119,13 @@ class UInt16ParamChoiceTest(unittest.TestCase):
     def testReadWrite(self):
         uint16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99
-        uint16ParamChoiceA.setA(byteValueA)
+        uint16ParamChoiceA.a = byteValueA
         writer = zserio.BitStreamWriter()
         uint16ParamChoiceA.write(writer)
         readUInt16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readUInt16ParamChoiceA.read(reader)
-        self.assertEqual(byteValueA, readUInt16ParamChoiceA.getA())
+        self.assertEqual(byteValueA, readUInt16ParamChoiceA.a)
         self.assertEqual(uint16ParamChoiceA, readUInt16ParamChoiceA)
 
         shortValueB = 234
@@ -135,18 +135,18 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         readUInt16ParamChoiceB = self.api.UInt16ParamChoice(self.VARIANT_B_SELECTOR1)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readUInt16ParamChoiceB.read(reader)
-        self.assertEqual(shortValueB, readUInt16ParamChoiceB.getB())
+        self.assertEqual(shortValueB, readUInt16ParamChoiceB.b)
         self.assertEqual(uint16ParamChoiceB, readUInt16ParamChoiceB)
 
         uint16ParamChoiceC = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
         intValueC = 65535
-        uint16ParamChoiceC.setC(intValueC)
+        uint16ParamChoiceC.c = intValueC
         writer = zserio.BitStreamWriter()
         uint16ParamChoiceC.write(writer)
         readUInt16ParamChoiceC = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readUInt16ParamChoiceC.read(reader)
-        self.assertEqual(intValueC, readUInt16ParamChoiceC.getC())
+        self.assertEqual(intValueC, readUInt16ParamChoiceC.c)
         self.assertEqual(uint16ParamChoiceC, readUInt16ParamChoiceC)
 
     @staticmethod

@@ -25,7 +25,7 @@ class OptionalBit31RangeCheckTest(unittest.TestCase):
 
     def testOptionalBit31None(self):
         optionalBit31RangeCheckCompound = self.api.OptionalBit31RangeCheckCompound()
-        optionalBit31RangeCheckCompound.setValue(None)
+        optionalBit31RangeCheckCompound.value = None
 
     def _checkOptionalBit31Value(self, value):
         optionalBit31RangeCheckCompound = self.api.OptionalBit31RangeCheckCompound(hasOptional_=True,

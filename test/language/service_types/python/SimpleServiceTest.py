@@ -18,7 +18,7 @@ class SimpleServiceTest(unittest.TestCase):
                 if context:
                     context.seenByService = True
 
-                value = request.getValue()
+                value = request.value
                 response = cls.api.Response(value**2)
                 return response
 
@@ -37,13 +37,13 @@ class SimpleServiceTest(unittest.TestCase):
 
     def testPowerOfTwo(self):
         request = self.api.Request(13)
-        self.assertEqual(169, self.client.powerOfTwoMethod(request).getValue())
-        request.setValue(-13)
-        self.assertEqual(169, self.client.powerOfTwoMethod(request).getValue())
-        request.setValue(2)
-        self.assertEqual(4, self.client.powerOfTwoMethod(request).getValue())
-        request.setValue(-2)
-        self.assertEqual(4, self.client.powerOfTwoMethod(request).getValue())
+        self.assertEqual(169, self.client.powerOfTwoMethod(request).value)
+        request.value = -13
+        self.assertEqual(169, self.client.powerOfTwoMethod(request).value)
+        request.value = 2
+        self.assertEqual(4, self.client.powerOfTwoMethod(request).value)
+        request.value = -2
+        self.assertEqual(4, self.client.powerOfTwoMethod(request).value)
 
     def testInvalidServiceMethod(self):
         with self.assertRaises(zserio.ServiceException):
@@ -54,5 +54,5 @@ class SimpleServiceTest(unittest.TestCase):
         self.assertFalse(fakeContext.seenByService)
         request = self.api.Request(10)
         response = self.client.powerOfTwoMethod(request, fakeContext)
-        self.assertEqual(100, response.getValue())
+        self.assertEqual(100, response.value)
         self.assertTrue(fakeContext.seenByService)

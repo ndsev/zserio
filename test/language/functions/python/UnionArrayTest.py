@@ -30,28 +30,28 @@ class UnionArrayTest(unittest.TestCase):
         writer.writeBits(self.NUM_ITEM_ELEMENTS, 16)
 
         for item in self.ITEMS:
-            writer.writeBits(item.getA(), 8)
-            writer.writeBits(item.getB(), 8)
+            writer.writeBits(item.a, 8)
+            writer.writeBits(item.b, 8)
 
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
         writer.writeVarSize(0 if isExplicit != 0 else 1)
         if isExplicit != 0:
-            writer.writeBits(self.EXPLICIT_ITEM.getA(), 8)
-            writer.writeBits(self.EXPLICIT_ITEM.getB(), 8)
+            writer.writeBits(self.EXPLICIT_ITEM.a, 8)
+            writer.writeBits(self.EXPLICIT_ITEM.b, 8)
         else:
             writer.writeBits(pos, 16)
 
     def _createInner(self, pos):
         outerArray = self.api.OuterArray()
-        outerArray.setNumElements(self.NUM_ITEM_ELEMENTS)
-        outerArray.setValues(self.ITEMS)
+        outerArray.num_elements = self.NUM_ITEM_ELEMENTS
+        outerArray.values = self.ITEMS
 
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
         itemRef = self.api.ItemRef(outerArray)
         if isExplicit != 0:
-            itemRef.setItem(self.EXPLICIT_ITEM)
+            itemRef.item = self.EXPLICIT_ITEM
         else:
-            itemRef.setPosition(pos)
+            itemRef.position = pos
 
         return self.api.Inner(outerArray, itemRef)
 
@@ -59,9 +59,9 @@ class UnionArrayTest(unittest.TestCase):
         inner = self._createInner(pos)
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
         if isExplicit != 0:
-            self.assertEqual(self.EXPLICIT_ITEM, inner.getRef().funcGetItem())
+            self.assertEqual(self.EXPLICIT_ITEM, inner.ref.funcGetItem())
         else:
-            self.assertEqual(self.ITEMS[pos], inner.getRef().funcGetElement())
+            self.assertEqual(self.ITEMS[pos], inner.ref.funcGetElement())
 
         writer = zserio.BitStreamWriter()
         inner.write(writer)

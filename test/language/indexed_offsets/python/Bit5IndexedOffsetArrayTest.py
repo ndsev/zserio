@@ -104,7 +104,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
                 writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE)
 
     def _checkOffsets(self, bit5IndexedOffsetArray, offsetShift):
-        offsets = bit5IndexedOffsetArray.getOffsets()
+        offsets = bit5IndexedOffsetArray.offsets
         self.assertEqual(NUM_ELEMENTS, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for offset in offsets:
@@ -115,9 +115,9 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         offsetShift = 0
         self._checkOffsets(bit5IndexedOffsetArray, offsetShift)
 
-        self.assertEqual(SPACER_VALUE, bit5IndexedOffsetArray.getSpacer())
+        self.assertEqual(SPACER_VALUE, bit5IndexedOffsetArray.spacer)
 
-        data = bit5IndexedOffsetArray.getData()
+        data = bit5IndexedOffsetArray.data
         self.assertEqual(NUM_ELEMENTS, len(data))
         for i in range(NUM_ELEMENTS):
             self.assertEqual(i % 64, data[i])

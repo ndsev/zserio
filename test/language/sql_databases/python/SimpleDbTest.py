@@ -52,19 +52,19 @@ class SimpleDbTest(unittest.TestCase):
     def testClose(self):
         database = self.api.WorldDb.fromFile(self._fileName)
         database.close()
-        self.assertEqual(None, database.connection())
+        self.assertEqual(None, database.connection)
 
     def testTableGetters(self):
         database = self.api.WorldDb.fromFile(self._fileName)
         database.createSchema()
 
         self.assertTrue(self._isTableInDb(database, self.EUROPE_TABLE_NAME))
-        europeTable = database.getEurope()
+        europeTable = database.europe
         europeTable.deleteTable()
         self.assertFalse(self._isTableInDb(database, self.EUROPE_TABLE_NAME))
 
         self.assertTrue(self._isTableInDb(database, self.AMERICA_TABLE_NAME))
-        americaTable = database.getAmerica()
+        americaTable = database.america
         americaTable.deleteTable()
         self.assertFalse(self._isTableInDb(database, self.AMERICA_TABLE_NAME))
 
@@ -74,7 +74,7 @@ class SimpleDbTest(unittest.TestCase):
         database = self.api.WorldDb.fromFile(self._fileName)
         database.createSchema()
 
-        connection = database.connection()
+        connection = database.connection
         cursor = connection.cursor()
         for tableName in self._tableNames:
             sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
@@ -89,7 +89,7 @@ class SimpleDbTest(unittest.TestCase):
 
         for tableName in self._tableNames:
             sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
-            for row in database.connection().cursor().execute(sqlQuery):
+            for row in database.connection.cursor().execute(sqlQuery):
                 self.assertEqual(tableName, row[0])
 
         database.close()
@@ -128,7 +128,7 @@ class SimpleDbTest(unittest.TestCase):
     def _isTableInDb(database, tableName):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
-        for row in database.connection().cursor().execute(sqlQuery):
+        for row in database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == tableName:
                 return True
 

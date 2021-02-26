@@ -17,11 +17,11 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
         sqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.fromFile(self._fileName)
         sqlTableTemplatedFieldDb.createSchema()
 
-        uint32Table = sqlTableTemplatedFieldDb.getUint32Table()
+        uint32Table = sqlTableTemplatedFieldDb.uint32_table
         uint32TableRows = [(0, self.api.Data_uint32(42))]
         uint32Table.write(uint32TableRows)
 
-        unionTable = sqlTableTemplatedFieldDb.getUnionTable()
+        unionTable = sqlTableTemplatedFieldDb.union_table
         union1 = self.api.Union(valueString_="string")
         unionTableRows = [(13, self.api.Data_Union(union1))]
         unionTable.write(unionTableRows)
@@ -29,11 +29,11 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
         sqlTableTemplatedFieldDb.close()
 
         readSqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.fromFile(self._fileName)
-        readUint32TableIterator = readSqlTableTemplatedFieldDb.getUint32Table().read()
+        readUint32TableIterator = readSqlTableTemplatedFieldDb.uint32_table.read()
         readUint32TableRows = []
         for row in readUint32TableIterator:
             readUint32TableRows.append(row)
-        readUnionTableIterator = readSqlTableTemplatedFieldDb.getUnionTable().read()
+        readUnionTableIterator = readSqlTableTemplatedFieldDb.union_table.read()
         readUnionTableRows = []
         for row in readUnionTableIterator:
             readUnionTableRows.append(row)

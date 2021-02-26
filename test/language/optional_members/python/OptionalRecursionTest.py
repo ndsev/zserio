@@ -10,22 +10,22 @@ class OptionalRecursionTest(unittest.TestCase):
 
     def testConstructor(self):
         emptyBlock = self.api.Block(0)
-        self.assertEqual(0, emptyBlock.getByteCount())
-        self.assertEqual(0, len(emptyBlock.getDataBytes()))
-        self.assertEqual(0, emptyBlock.getBlockTerminator())
-        self.assertEqual(None, emptyBlock.getNextData())
+        self.assertEqual(0, emptyBlock.byte_count)
+        self.assertEqual(0, len(emptyBlock.data_bytes))
+        self.assertEqual(0, emptyBlock.block_terminator)
+        self.assertEqual(None, emptyBlock.next_data)
 
         emptyBlock = self.api.Block(0, [], 0, None)
-        self.assertEqual(0, emptyBlock.getByteCount())
-        self.assertEqual(0, len(emptyBlock.getDataBytes()))
-        self.assertEqual(0, emptyBlock.getBlockTerminator())
-        self.assertEqual(None, emptyBlock.getNextData())
+        self.assertEqual(0, emptyBlock.byte_count)
+        self.assertEqual(0, len(emptyBlock.data_bytes))
+        self.assertEqual(0, emptyBlock.block_terminator)
+        self.assertEqual(None, emptyBlock.next_data)
 
         emptyBlock = self.api.Block(byteCount_=0, dataBytes_=[], blockTerminator_=0, nextData_=None)
-        self.assertEqual(0, emptyBlock.getByteCount())
-        self.assertEqual(0, len(emptyBlock.getDataBytes()))
-        self.assertEqual(0, emptyBlock.getBlockTerminator())
-        self.assertEqual(None, emptyBlock.getNextData())
+        self.assertEqual(0, emptyBlock.byte_count)
+        self.assertEqual(0, len(emptyBlock.data_bytes))
+        self.assertEqual(0, emptyBlock.block_terminator)
+        self.assertEqual(None, emptyBlock.next_data)
 
     def testEq(self):
         emptyBlock1 = self._createEmptyBlock()

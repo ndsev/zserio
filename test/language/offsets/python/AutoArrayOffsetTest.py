@@ -87,11 +87,11 @@ class AutoArrayOffsetTest(unittest.TestCase):
     def _checkAutoArrayHolder(self, autoArrayHolder, bitPosition=0):
         expectedAutoArrayOffset = (self.AUTO_ARRAY_OFFSET if (bitPosition == 0) else
                                    self.AUTO_ARRAY_OFFSET + (bitPosition // 8))
-        self.assertEqual(expectedAutoArrayOffset, autoArrayHolder.getAutoArrayOffset())
+        self.assertEqual(expectedAutoArrayOffset, autoArrayHolder.auto_array_offset)
 
-        self.assertEqual(self.FORCED_ALIGNMENT_VALUE, autoArrayHolder.getForceAlignment())
+        self.assertEqual(self.FORCED_ALIGNMENT_VALUE, autoArrayHolder.force_alignment)
 
-        autoArray = autoArrayHolder.getAutoArray()
+        autoArray = autoArrayHolder.auto_array
         self.assertEqual(self.AUTO_ARRAY_LENGTH, len(autoArray))
         for i in range(self.AUTO_ARRAY_LENGTH):
             self.assertEqual(i, autoArray[i])

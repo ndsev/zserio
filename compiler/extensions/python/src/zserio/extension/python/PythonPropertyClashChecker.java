@@ -148,9 +148,7 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
             final Pattern lineWithDef = Pattern.compile("\\s{4}def ([a-zA-Z]\\w+).*");
             final Matcher defMatcher = lineWithDef.matcher(line);
             if (defMatcher.find())
-            {
                 templateMethods.add(defMatcher.group(1));
-            }
         }
         return templateMethods;
     }

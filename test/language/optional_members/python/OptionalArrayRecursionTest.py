@@ -10,26 +10,26 @@ class OptionalArrayRecursionTest(unittest.TestCase):
 
     def testConstructor(self):
         emptyEmployee = self.api.Employee()
-        self.assertEqual("", emptyEmployee.getName())
-        self.assertEqual(0, emptyEmployee.getSalary())
-        self.assertEqual(None, emptyEmployee.getTitle())
-        self.assertEqual(None, emptyEmployee.getTeamMembers())
+        self.assertEqual("", emptyEmployee.name)
+        self.assertEqual(0, emptyEmployee.salary)
+        self.assertEqual(None, emptyEmployee.title)
+        self.assertEqual(None, emptyEmployee.team_members)
 
         teamMember = self.api.Employee(self.EMPLOYEE_DEVELOPER1_NAME,
                                        self.EMPLOYEE_DEVELOPER1_SALARY,
                                        self.api.Title.DEVELOPER)
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.getName())
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.getSalary())
-        self.assertEqual(self.api.Title.DEVELOPER, teamMember.getTitle())
-        self.assertEqual(None, teamMember.getTeamMembers())
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.name)
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.salary)
+        self.assertEqual(self.api.Title.DEVELOPER, teamMember.title)
+        self.assertEqual(None, teamMember.team_members)
 
         teamMember = self.api.Employee(name_=self.EMPLOYEE_DEVELOPER1_NAME,
                                        salary_=self.EMPLOYEE_DEVELOPER1_SALARY,
                                        title_=self.api.Title.DEVELOPER)
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.getName())
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.getSalary())
-        self.assertEqual(self.api.Title.DEVELOPER, teamMember.getTitle())
-        self.assertEqual(None, teamMember.getTeamMembers())
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, teamMember.name)
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, teamMember.salary)
+        self.assertEqual(self.api.Title.DEVELOPER, teamMember.title)
+        self.assertEqual(None, teamMember.team_members)
 
     def testEq(self):
         emptyEmployee1 = self.api.Employee()
@@ -90,9 +90,9 @@ class OptionalArrayRecursionTest(unittest.TestCase):
 
         reader.setBitPosition(0)
         readEmployee = self.api.Employee.fromReader(reader)
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, readEmployee.getName())
-        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, readEmployee.getSalary())
-        self.assertEqual(self.api.Title.DEVELOPER, readEmployee.getTitle())
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, readEmployee.name)
+        self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, readEmployee.salary)
+        self.assertEqual(self.api.Title.DEVELOPER, readEmployee.title)
 
     def testWriteTeamLead(self):
         teamLead = self._createTeamLead()
@@ -103,16 +103,16 @@ class OptionalArrayRecursionTest(unittest.TestCase):
 
         reader.setBitPosition(0)
         readTeamLead = self.api.Employee.fromReader(reader)
-        self.assertEqual(self.EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName())
-        self.assertEqual(self.EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary())
-        self.assertEqual(self.api.Title.TEAM_LEAD, readTeamLead.getTitle())
-        self.assertEqual(self.NUM_DEVELOPERS, len(readTeamLead.getTeamMembers()))
+        self.assertEqual(self.EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.name)
+        self.assertEqual(self.EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.salary)
+        self.assertEqual(self.api.Title.TEAM_LEAD, readTeamLead.title)
+        self.assertEqual(self.NUM_DEVELOPERS, len(readTeamLead.team_members))
 
     def _createEmployee(self, name, salary, title):
         employee = self.api.Employee()
-        employee.setName(name)
-        employee.setSalary(salary)
-        employee.setTitle(title)
+        employee.name = name
+        employee.salary = salary
+        employee.title = title
 
         return employee
 
@@ -124,7 +124,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
                                            self.api.Title.DEVELOPER)
         teamMember2 = self._createEmployee(self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY,
                                            self.api.Title.DEVELOPER)
-        teamLead.setTeamMembers([teamMember1, teamMember2])
+        teamLead.team_members = [teamMember1, teamMember2]
 
         return teamLead
 

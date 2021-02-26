@@ -36,7 +36,7 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
-        testTable = self._database.getBitmaskParamTable()
+        testTable = self._database.bitmask_param_table
         testTable.deleteTable()
         self.assertFalse(self._isTableInDb())
 
@@ -44,7 +44,7 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getBitmaskParamTable()
+        testTable = self._database.bitmask_param_table
 
         writtenRows = self._createBitmaskParamTableRows()
         testTable.write(writtenRows)
@@ -58,7 +58,7 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
-        testTable = self._database.getBitmaskParamTable()
+        testTable = self._database.bitmask_param_table
 
         writtenRows = self._createBitmaskParamTableRows()
         testTable.write(writtenRows)
@@ -71,7 +71,7 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
             self._checkBitmaskParamTableRow(writtenRows[expectedRowNum], readRow)
 
     def testUpdate(self):
-        testTable = self._database.getBitmaskParamTable()
+        testTable = self._database.bitmask_param_table
 
         writtenRows = self._createBitmaskParamTableRows()
         testTable.write(writtenRows)
@@ -94,13 +94,13 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
         return rows
 
     def _createBitmaskParamTableRow(self, rowId, name):
-        values1 = [rowId for i in range(self.BITMASK_PARAM_TABLE_COUNT1.getValue())]
+        values1 = [rowId for i in range(self.BITMASK_PARAM_TABLE_COUNT1.value)]
         testBlob1 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT1, values1)
 
-        values2 = [rowId + 1 for i in range(self.BITMASK_PARAM_TABLE_COUNT2.getValue())]
+        values2 = [rowId + 1 for i in range(self.BITMASK_PARAM_TABLE_COUNT2.value)]
         testBlob2 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT2, values2)
 
-        values3 = [rowId + 2 for i in range(self.BITMASK_PARAM_TABLE_COUNT1.getValue())]
+        values3 = [rowId + 2 for i in range(self.BITMASK_PARAM_TABLE_COUNT1.value)]
         testBlob3 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT1, values3)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
@@ -111,12 +111,12 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
         # check reused explicit count1 parameter
         blob1 = row2[2]
         blob3 = row2[4]
-        self.assertEqual(blob1.getCount(), blob3.getCount())
+        self.assertEqual(blob1.count, blob3.count)
 
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'"
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == TABLE_NAME:
                 return True
 

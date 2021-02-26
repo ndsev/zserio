@@ -14,7 +14,7 @@ class FunctionTypeTest(unittest.TestCase):
 
     def testBitSizeOfWithoutOptional(self):
         functionTypeExpression = self.api.FunctionTypeExpression()
-        functionTypeExpression.setColor(self.api.Color.BLUE)
+        functionTypeExpression.color = self.api.Color.BLUE
         self.assertEqual(self.FUNCTION_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
                          functionTypeExpression.bitSizeOf())
 

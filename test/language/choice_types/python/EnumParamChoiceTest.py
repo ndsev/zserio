@@ -11,12 +11,12 @@ class EnumParamChoiceTest(unittest.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.BLACK
         enumParamChoice = self.api.EnumParamChoice(selector)
-        self.assertEqual(selector, enumParamChoice.getSelector())
+        self.assertEqual(selector, enumParamChoice.selector)
 
         selector = self.api.Selector.GREY
         enumParamChoice = self.api.EnumParamChoice(selector, grey_=1234)
-        self.assertEqual(selector, enumParamChoice.getSelector())
-        self.assertEqual(1234, enumParamChoice.getGrey())
+        self.assertEqual(selector, enumParamChoice.selector)
+        self.assertEqual(1234, enumParamChoice.grey)
 
     def testFromReader(self):
         selector = self.api.Selector.GREY
@@ -25,8 +25,8 @@ class EnumParamChoiceTest(unittest.TestCase):
         self._writeEnumParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         enumParamChoice = self.api.EnumParamChoice.fromReader(reader, selector)
-        self.assertEqual(selector, enumParamChoice.getSelector())
-        self.assertEqual(value, enumParamChoice.getGrey())
+        self.assertEqual(selector, enumParamChoice.selector)
+        self.assertEqual(value, enumParamChoice.grey)
 
     def testEq(self):
         enumParamChoice1 = self.api.EnumParamChoice(self.api.Selector.BLACK)
@@ -34,14 +34,14 @@ class EnumParamChoiceTest(unittest.TestCase):
         self.assertTrue(enumParamChoice1 == enumParamChoice2)
 
         value = 99
-        enumParamChoice1.setBlack(value)
+        enumParamChoice1.black = value
         self.assertFalse(enumParamChoice1 == enumParamChoice2)
 
-        enumParamChoice2.setBlack(value)
+        enumParamChoice2.black = value
         self.assertTrue(enumParamChoice1 == enumParamChoice2)
 
         diffValue = value + 1
-        enumParamChoice2.setBlack(diffValue)
+        enumParamChoice2.black = diffValue
         self.assertFalse(enumParamChoice1 == enumParamChoice2)
 
     def testHash(self):
@@ -50,38 +50,38 @@ class EnumParamChoiceTest(unittest.TestCase):
         self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
 
         value = 99
-        enumParamChoice1.setBlack(value)
+        enumParamChoice1.black = value
         self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
 
-        enumParamChoice2.setBlack(value)
+        enumParamChoice2.black = value
         self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
 
         diffValue = value + 1
-        enumParamChoice2.setBlack(diffValue)
+        enumParamChoice2.black = diffValue
         self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
 
     def testGetSelector(self):
         selector = self.api.Selector.BLACK
         enumParamChoice = self.api.EnumParamChoice(selector)
-        self.assertEqual(selector, enumParamChoice.getSelector())
+        self.assertEqual(selector, enumParamChoice.selector)
 
     def testGetSetBlack(self):
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.BLACK)
         value = 99
-        enumParamChoice.setBlack(value)
-        self.assertEqual(value, enumParamChoice.getBlack())
+        enumParamChoice.black = value
+        self.assertEqual(value, enumParamChoice.black)
 
     def testGetSetGrey(self):
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.GREY)
         value = 234
-        enumParamChoice.setGrey(value)
-        self.assertEqual(value, enumParamChoice.getGrey())
+        enumParamChoice.grey = value
+        self.assertEqual(value, enumParamChoice.grey)
 
     def testGetSetWhite(self):
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.WHITE)
         value = 65535
-        enumParamChoice.setWhite(value)
-        self.assertEqual(value, enumParamChoice.getWhite())
+        enumParamChoice.white = value
+        self.assertEqual(value, enumParamChoice.white)
 
     def testBitSizeOf(self):
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.BLACK)
@@ -108,13 +108,13 @@ class EnumParamChoiceTest(unittest.TestCase):
         selector = self.api.Selector.BLACK
         enumParamChoice = self.api.EnumParamChoice(selector)
         byteValue = 99
-        enumParamChoice.setBlack(byteValue)
+        enumParamChoice.black = byteValue
         writer = zserio.BitStreamWriter()
         enumParamChoice.write(writer)
         readEnumParamChoice = self.api.EnumParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readEnumParamChoice.read(reader)
-        self.assertEqual(byteValue, readEnumParamChoice.getBlack())
+        self.assertEqual(byteValue, readEnumParamChoice.black)
         self.assertEqual(enumParamChoice, readEnumParamChoice)
 
         selector = self.api.Selector.GREY
@@ -125,19 +125,19 @@ class EnumParamChoiceTest(unittest.TestCase):
         readEnumParamChoice = self.api.EnumParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readEnumParamChoice.read(reader)
-        self.assertEqual(shortValue, readEnumParamChoice.getGrey())
+        self.assertEqual(shortValue, readEnumParamChoice.grey)
         self.assertEqual(enumParamChoice, readEnumParamChoice)
 
         selector = self.api.Selector.WHITE
         enumParamChoice = self.api.EnumParamChoice(selector)
         intValue = 65535
-        enumParamChoice.setWhite(intValue)
+        enumParamChoice.white = intValue
         writer = zserio.BitStreamWriter()
         enumParamChoice.write(writer)
         readEnumParamChoice = self.api.EnumParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readEnumParamChoice.read(reader)
-        self.assertEqual(intValue, readEnumParamChoice.getWhite())
+        self.assertEqual(intValue, readEnumParamChoice.white)
         self.assertEqual(enumParamChoice, readEnumParamChoice)
 
     def _writeEnumParamChoiceToStream(self, writer, selector, value):

@@ -52,10 +52,10 @@ class AccessWithinTypeTest(unittest.TestCase):
             writer.writeString(self.SENTENCE_PREFIX + str(i))
 
     def _checkMessage(self, message, numSentences):
-        self.assertEqual(self.VERSION_VALUE, message.getHeader().getVersion())
-        self.assertEqual(numSentences, message.getHeader().getNumSentences())
+        self.assertEqual(self.VERSION_VALUE, message.header.version)
+        self.assertEqual(numSentences, message.header.num_sentences)
 
-        sentences = message.getSentences()
+        sentences = message.sentences
         self.assertEqual(numSentences, len(sentences))
         for i in range(numSentences):
             expectedSentence = self.SENTENCE_PREFIX + str(i)

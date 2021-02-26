@@ -1,6 +1,7 @@
 package zserio.extension.python;
 
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import zserio.ast.Field;
 import zserio.ast.Function;
@@ -25,12 +26,12 @@ public class AccessorNameFormatter
 
     public static String getPropertyName(Field field)
     {
-        return field.getName();
+        return camelCaseToSnakeCase(field.getName());
     }
 
     public static String getPropertyName(Parameter param)
     {
-        return param.getName();
+        return camelCaseToSnakeCase(param.getName());
     }
 
     private static String getAccessorName(String accessorNamePrefix, String memberName)
@@ -55,7 +56,17 @@ public class AccessorNameFormatter
         return accessorName.toString();
     }
 
+    private static String camelCaseToSnakeCase(String camelCase)
+    {
+        return CAMEL_CASE_PATTERN.matcher(camelCase)
+                .replaceAll(REPLACEMENT_WITH_UNDERSCORE)
+                .toLowerCase(Locale.ENGLISH);
+    }
+
     private static final String INDICATOR_NAME_PREFIX = "is";
     private static final String INDICATOR_NAME_SUFFIX = "Used";
     private static final String FUNCTION_NAME_PREFIX = "func";
+
+    private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([a-z0-9])([A-Z])");
+    private static final String REPLACEMENT_WITH_UNDERSCORE = "$1_$2";
 }

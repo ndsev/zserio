@@ -104,7 +104,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
                 writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE)
 
     def _checkOffsets(self, int14IndexedOffsetArray, offsetShift):
-        offsets = int14IndexedOffsetArray.getOffsets()
+        offsets = int14IndexedOffsetArray.offsets
         self.assertEqual(NUM_ELEMENTS, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for offset in offsets:
@@ -115,9 +115,9 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         offsetShift = 0
         self._checkOffsets(int14IndexedOffsetArray, offsetShift)
 
-        self.assertEqual(SPACER_VALUE, int14IndexedOffsetArray.getSpacer())
+        self.assertEqual(SPACER_VALUE, int14IndexedOffsetArray.spacer)
 
-        data = int14IndexedOffsetArray.getData()
+        data = int14IndexedOffsetArray.data
         self.assertEqual(NUM_ELEMENTS, len(data))
         for i in range(NUM_ELEMENTS):
             self.assertEqual(i, data[i])

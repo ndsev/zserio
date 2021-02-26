@@ -15,7 +15,7 @@ class FullConstTypeTest(unittest.TestCase):
 
     def testBitSizeOfWithoutOptional(self):
         fullConstTypeExpression = self.api.FullConstTypeExpression()
-        fullConstTypeExpression.setValue(self.FULL_INVALID_VALUE)
+        fullConstTypeExpression.value = self.FULL_INVALID_VALUE
         self.assertEqual(self.FULL_CONST_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
                          fullConstTypeExpression.bitSizeOf())
 

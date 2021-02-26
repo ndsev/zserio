@@ -10,15 +10,15 @@ class SimpleUnionTest(unittest.TestCase):
 
     def testConstructor(self):
         simpleUnion = self.api.SimpleUnion()
-        self.assertEqual(self.api.SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choiceTag())
+        self.assertEqual(self.api.SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choice_tag)
 
         simpleUnion = self.api.SimpleUnion(case2Field_=12)
-        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choiceTag())
-        self.assertEqual(12, simpleUnion.getCase2Field())
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choice_tag)
+        self.assertEqual(12, simpleUnion.case2_field)
 
         simpleUnion = self.api.SimpleUnion(case3Field_="test")
-        self.assertEqual(self.api.SimpleUnion.CHOICE_case3Field, simpleUnion.choiceTag())
-        self.assertEqual("test", simpleUnion.getCase3Field())
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case3Field, simpleUnion.choice_tag)
+        self.assertEqual("test", simpleUnion.case3_field)
 
     def testAmbiguousConstructor(self):
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -34,127 +34,127 @@ class SimpleUnionTest(unittest.TestCase):
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case1Field)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
-        self.assertEqual(self.CASE1_FIELD, simpleUnion.getCase1Field())
+        self.assertEqual(self.CASE1_FIELD, simpleUnion.case1_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case2Field)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
-        self.assertEqual(self.CASE2_FIELD, simpleUnion.getCase2Field())
+        self.assertEqual(self.CASE2_FIELD, simpleUnion.case2_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case3Field)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
-        self.assertEqual(self.CASE3_FIELD, simpleUnion.getCase3Field())
+        self.assertEqual(self.CASE3_FIELD, simpleUnion.case3_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case4Field)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
-        self.assertEqual(self.CASE4_FIELD, simpleUnion.getCase4Field())
+        self.assertEqual(self.CASE4_FIELD, simpleUnion.case4_field)
 
     def testEq(self):
         simpleUnion11 = self.api.SimpleUnion()
         simpleUnion12 = self.api.SimpleUnion()
         simpleUnion13 = self.api.SimpleUnion()
         self.assertTrue(simpleUnion11 == simpleUnion12)
-        simpleUnion11.setCase1Field(self.CASE1_FIELD)
-        simpleUnion12.setCase1Field(self.CASE1_FIELD)
-        simpleUnion13.setCase1Field(self.CASE1_FIELD + 1)
+        simpleUnion11.case1_field = self.CASE1_FIELD
+        simpleUnion12.case1_field = self.CASE1_FIELD
+        simpleUnion13.case1_field = self.CASE1_FIELD + 1
         self.assertTrue(simpleUnion11 == simpleUnion12)
         self.assertFalse(simpleUnion11 == simpleUnion13)
 
         simpleUnion21 = self.api.SimpleUnion()
-        simpleUnion21.setCase2Field(self.CASE2_FIELD)
+        simpleUnion21.case2_field = self.CASE2_FIELD
         simpleUnion22 = self.api.SimpleUnion()
-        simpleUnion22.setCase2Field(self.CASE2_FIELD)
+        simpleUnion22.case2_field = self.CASE2_FIELD
         simpleUnion23 = self.api.SimpleUnion()
-        simpleUnion23.setCase2Field(self.CASE2_FIELD - 1)
+        simpleUnion23.case2_field = self.CASE2_FIELD - 1
         self.assertTrue(simpleUnion21 == simpleUnion22)
         self.assertFalse(simpleUnion21 == simpleUnion23)
         self.assertFalse(simpleUnion21 == simpleUnion11)
 
         simpleUnion4 = self.api.SimpleUnion()
-        simpleUnion4.setCase4Field(self.CASE1_FIELD) # same value as simpleUnion11, but different choice
+        simpleUnion4.case4_field = self.CASE1_FIELD # same value as simpleUnion11, but different choice
         self.assertFalse(simpleUnion11 == simpleUnion4)
 
     def testHash(self):
         simpleUnion1 = self.api.SimpleUnion()
         simpleUnion2 = self.api.SimpleUnion()
         self.assertEqual(hash(simpleUnion1), hash(simpleUnion2))
-        simpleUnion1.setCase1Field(self.CASE1_FIELD)
+        simpleUnion1.case1_field = self.CASE1_FIELD
         self.assertNotEqual(hash(simpleUnion1), hash(simpleUnion2))
-        simpleUnion2.setCase4Field(self.CASE4_FIELD)
+        simpleUnion2.case4_field = self.CASE4_FIELD
         self.assertNotEqual(hash(simpleUnion1), hash(simpleUnion2))
-        simpleUnion2.setCase4Field(self.CASE1_FIELD) # same value as simpleUnion1
+        simpleUnion2.case4_field = self.CASE1_FIELD # same value as simpleUnion1
         self.assertNotEqual(hash(simpleUnion1), hash(simpleUnion2))
-        simpleUnion1.setCase4Field(self.CASE1_FIELD) # same value as simpleUnion2
+        simpleUnion1.case4_field = self.CASE1_FIELD # same value as simpleUnion2
         self.assertEqual(hash(simpleUnion1), hash(simpleUnion2))
 
     def testGetSetCase1Field(self):
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase1Field(self.CASE1_FIELD)
-        self.assertEqual(self.CASE1_FIELD, simpleUnion.getCase1Field())
+        simpleUnion.case1_field = self.CASE1_FIELD
+        self.assertEqual(self.CASE1_FIELD, simpleUnion.case1_field)
 
     def testGetSetCase2Field(self):
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase2Field(self.CASE2_FIELD)
-        self.assertEqual(self.CASE2_FIELD, simpleUnion.getCase2Field())
+        simpleUnion.case2_field = self.CASE2_FIELD
+        self.assertEqual(self.CASE2_FIELD, simpleUnion.case2_field)
 
     def testGetSetCase3Field(self):
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase3Field(self.CASE3_FIELD)
-        self.assertEqual(self.CASE3_FIELD, simpleUnion.getCase3Field())
+        simpleUnion.case3_field = self.CASE3_FIELD
+        self.assertEqual(self.CASE3_FIELD, simpleUnion.case3_field)
 
     def testGetSetCase4Field(self):
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase4Field(self.CASE4_FIELD)
-        self.assertEqual(self.CASE4_FIELD, simpleUnion.getCase4Field())
+        simpleUnion.case4_field = self.CASE4_FIELD
+        self.assertEqual(self.CASE4_FIELD, simpleUnion.case4_field)
 
     def testChoiceTag(self):
         simpleUnion = self.api.SimpleUnion()
-        self.assertEqual(self.api.SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choiceTag())
-        simpleUnion.setCase1Field(self.CASE1_FIELD)
-        self.assertEqual(self.api.SimpleUnion.CHOICE_case1Field, simpleUnion.choiceTag())
-        simpleUnion.setCase2Field(self.CASE2_FIELD)
-        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choiceTag())
-        simpleUnion.setCase3Field(self.CASE3_FIELD)
-        self.assertEqual(self.api.SimpleUnion.CHOICE_case3Field, simpleUnion.choiceTag())
-        simpleUnion.setCase4Field(self.CASE4_FIELD)
-        self.assertEqual(self.api.SimpleUnion.CHOICE_case4Field, simpleUnion.choiceTag())
+        self.assertEqual(self.api.SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choice_tag)
+        simpleUnion.case1_field = self.CASE1_FIELD
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case1Field, simpleUnion.choice_tag)
+        simpleUnion.case2_field = self.CASE2_FIELD
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choice_tag)
+        simpleUnion.case3_field = self.CASE3_FIELD
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case3Field, simpleUnion.choice_tag)
+        simpleUnion.case4_field = self.CASE4_FIELD
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case4Field, simpleUnion.choice_tag)
 
         simpleUnion = self.api.SimpleUnion(case2Field_=self.CASE2_FIELD)
-        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choiceTag())
+        self.assertEqual(self.api.SimpleUnion.CHOICE_case2Field, simpleUnion.choice_tag)
 
     def testBitSizeOf(self):
         simpleUnion = self.api.SimpleUnion()
 
-        simpleUnion.setCase1Field(self.CASE1_FIELD)
+        simpleUnion.case1_field = self.CASE1_FIELD
         self.assertEqual(self.UNION_CASE1_BIT_SIZE, simpleUnion.bitSizeOf())
 
-        simpleUnion.setCase2Field(self.CASE2_FIELD)
+        simpleUnion.case2_field = self.CASE2_FIELD
         self.assertEqual(self.UNION_CASE2_BIT_SIZE, simpleUnion.bitSizeOf())
 
-        simpleUnion.setCase3Field(self.CASE3_FIELD)
+        simpleUnion.case3_field = self.CASE3_FIELD
         self.assertEqual(self.UNION_CASE3_BIT_SIZE, simpleUnion.bitSizeOf())
 
-        simpleUnion.setCase4Field(self.CASE4_FIELD)
+        simpleUnion.case4_field = self.CASE4_FIELD
         self.assertEqual(self.UNION_CASE4_BIT_SIZE, simpleUnion.bitSizeOf())
 
     def testInitializeOffsets(self):
         bitPosition = 1
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase1Field(self.CASE1_FIELD)
+        simpleUnion.case1_field = self.CASE1_FIELD
         self.assertEqual(bitPosition + self.UNION_CASE1_BIT_SIZE, simpleUnion.initializeOffsets(bitPosition))
 
-        simpleUnion.setCase2Field(self.CASE2_FIELD)
+        simpleUnion.case2_field = self.CASE2_FIELD
         self.assertEqual(bitPosition + self.UNION_CASE2_BIT_SIZE, simpleUnion.initializeOffsets(bitPosition))
 
-        simpleUnion.setCase3Field(self.CASE3_FIELD)
+        simpleUnion.case3_field = self.CASE3_FIELD
         self.assertEqual(bitPosition + self.UNION_CASE3_BIT_SIZE, simpleUnion.initializeOffsets(bitPosition))
 
-        simpleUnion.setCase4Field(self.CASE4_FIELD)
+        simpleUnion.case4_field = self.CASE4_FIELD
         self.assertEqual(bitPosition + self.UNION_CASE4_BIT_SIZE, simpleUnion.initializeOffsets(bitPosition))
 
     def testRead(self):
@@ -163,38 +163,38 @@ class SimpleUnionTest(unittest.TestCase):
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
-        self.assertEqual(self.CASE1_FIELD, simpleUnion.getCase1Field())
+        self.assertEqual(self.CASE1_FIELD, simpleUnion.case1_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case2Field)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
-        self.assertEqual(self.CASE2_FIELD, simpleUnion.getCase2Field())
+        self.assertEqual(self.CASE2_FIELD, simpleUnion.case2_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case3Field)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
-        self.assertEqual(self.CASE3_FIELD, simpleUnion.getCase3Field())
+        self.assertEqual(self.CASE3_FIELD, simpleUnion.case3_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case4Field)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
-        self.assertEqual(self.CASE4_FIELD, simpleUnion.getCase4Field())
+        self.assertEqual(self.CASE4_FIELD, simpleUnion.case4_field)
 
     def testWrite(self):
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase1Field(self.CASE1_FIELD)
+        simpleUnion.case1_field = self.CASE1_FIELD
         bitBuffer = zserio.serialize(simpleUnion)
         readSimpleUnion = zserio.deserialize(self.api.SimpleUnion, bitBuffer)
         self.assertTrue(simpleUnion == readSimpleUnion)
 
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase2Field(self.CASE2_FIELD)
+        simpleUnion.case2_field = self.CASE2_FIELD
         bitBuffer = zserio.serialize(simpleUnion)
         readSimpleUnion = zserio.deserialize(self.api.SimpleUnion, bitBuffer)
         self.assertTrue(simpleUnion == readSimpleUnion)
@@ -205,7 +205,7 @@ class SimpleUnionTest(unittest.TestCase):
         self.assertTrue(simpleUnion == readSimpleUnion)
 
         simpleUnion = self.api.SimpleUnion()
-        simpleUnion.setCase4Field(self.CASE4_FIELD)
+        simpleUnion.case4_field = self.CASE4_FIELD
         bitBuffer = zserio.serialize(simpleUnion)
         readSimpleUnion = zserio.deserialize(self.api.SimpleUnion, bitBuffer)
         self.assertTrue(simpleUnion == readSimpleUnion)

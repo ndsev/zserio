@@ -35,23 +35,23 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "__xor__")
         self._assertMethodPresent(userType, "__invert__")
         self._assertMethodPresent(userType, "bitSizeOf")
-        self._assertMethodPresent(userType, "getValue")
+
+        self._assertPropertyPresent(userType, "value", readOnly=True)
 
     def testExtraParamUnionMethods(self):
         userType = self.api.ExtraParamUnion
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
         self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "setValue16")
-        self._assertMethodNotPresent(userType, "setValue32")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
         self._assertMethodPresent(userType, "fromReader")
         self._assertMethodPresent(userType, "bitSizeOf")
-        self._assertMethodPresent(userType, "choiceTag")
-        self._assertMethodPresent(userType, "getValue16")
-        self._assertMethodPresent(userType, "getValue32")
+
+        self._assertPropertyPresent(userType, "choice_tag", readOnly=True)
+        self._assertPropertyPresent(userType, "value16", readOnly=True)
+        self._assertPropertyPresent(userType, "value32", readOnly=True)
 
     def testItemMethods(self):
         userType = self.api.Item
@@ -59,32 +59,30 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodNotPresent(userType, "initializeOffsets")
         self._assertMethodNotPresent(userType, "write")
         self._assertMethodNotPresent(userType, "fromFields")
-        self._assertMethodNotPresent(userType, "setParam")
-        self._assertMethodNotPresent(userType, "setExtraParam")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
         self._assertMethodPresent(userType, "fromReader")
         self._assertMethodPresent(userType, "bitSizeOf")
-        self._assertMethodPresent(userType, "getItemType")
-        self._assertMethodPresent(userType, "getParam")
-        self._assertMethodPresent(userType, "getExtraParam")
+
+        self._assertPropertyPresent(userType, "item_type", readOnly=True)
+        self._assertPropertyPresent(userType, "param", readOnly=True)
+        self._assertPropertyPresent(userType, "extra_param", readOnly=True)
 
     def testItemChoiceMethods(self):
         userType = self.api.ItemChoice
 
         self._assertMethodNotPresent(userType, "initializeOffsets")
         self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "setItem")
-        self._assertMethodNotPresent(userType, "setParam")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
         self._assertMethodPresent(userType, "fromReader")
         self._assertMethodPresent(userType, "bitSizeOf")
-        self._assertMethodPresent(userType, "getHasItem")
-        self._assertMethodPresent(userType, "getItem")
-        self._assertMethodPresent(userType, "getParam")
+
+        self._assertPropertyPresent(userType, "has_item", readOnly=True)
+        self._assertPropertyPresent(userType, "item", readOnly=True)
+        self._assertPropertyPresent(userType, "param", readOnly=True)
 
     def testItemChoiceHolderMethods(self):
         userType = self.api.ItemChoiceHolder
@@ -92,15 +90,14 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodNotPresent(userType, "initializeOffsets")
         self._assertMethodNotPresent(userType, "write")
         self._assertMethodNotPresent(userType, "fromFields")
-        self._assertMethodNotPresent(userType, "setHasItem")
-        self._assertMethodNotPresent(userType, "setItemChoice")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
         self._assertMethodPresent(userType, "fromReader")
         self._assertMethodPresent(userType, "bitSizeOf")
-        self._assertMethodPresent(userType, "getHasItem")
-        self._assertMethodPresent(userType, "getItemChoice")
+
+        self._assertPropertyPresent(userType, "has_item", readOnly=True)
+        self._assertPropertyPresent(userType, "item_choice", readOnly=True)
 
     def testTileMethods(self):
         userType = self.api.Tile
@@ -108,19 +105,16 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodNotPresent(userType, "initializeOffsets")
         self._assertMethodNotPresent(userType, "write")
         self._assertMethodNotPresent(userType, "fromFields")
-        self._assertMethodNotPresent(userType, "setVersion")
-        self._assertMethodNotPresent(userType, "setNumElementsOffset")
-        self._assertMethodNotPresent(userType, "setNumElements")
-        self._assertMethodNotPresent(userType, "setData")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
         self._assertMethodPresent(userType, "fromReader")
         self._assertMethodPresent(userType, "bitSizeOf")
-        self._assertMethodPresent(userType, "getVersion")
-        self._assertMethodPresent(userType, "getNumElementsOffset")
-        self._assertMethodPresent(userType, "getNumElements")
-        self._assertMethodPresent(userType, "getData")
+
+        self._assertPropertyPresent(userType, "version", readOnly=True)
+        self._assertPropertyPresent(userType, "num_elements_offset", readOnly=True)
+        self._assertPropertyPresent(userType, "num_elements", readOnly=True)
+        self._assertPropertyPresent(userType, "data", readOnly=True)
 
     def testGeoMapTableMethods(self):
         userType = self.api.GeoMapTable
@@ -142,9 +136,10 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "fromFile")
         self._assertMethodPresent(userType, "close")
-        self._assertMethodPresent(userType, "getEurope")
-        self._assertMethodPresent(userType, "getAmerica")
-        self._assertMethodPresent(userType, "connection")
+
+        self._assertPropertyPresent(userType, "europe", readOnly=True)
+        self._assertPropertyPresent(userType, "america", readOnly=True)
+        self._assertPropertyPresent(userType, "connection", readOnly=True)
 
         # static constants
         self.assertTrue(hasattr(userType, "DATABASE_NAME"))
@@ -176,7 +171,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         worldDb = self.api.WorldDb(connection)
 
-        europe = worldDb.getEurope()
+        europe = worldDb.europe
         europeRows = europe.read()
         count = 0
         for row in europeRows:
@@ -185,7 +180,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
             count += 1
         self.assertEqual(1, count)
 
-        america = worldDb.getAmerica()
+        america = worldDb.america
         americaRows = america.read()
         count = 0
         for row in americaRows:
@@ -244,27 +239,27 @@ class WithoutWriterCodeTest(unittest.TestCase):
                 writer.writeBits(PARAMS[i], 16)
 
     def _checkTile(self, tile):
-        self.assertEqual(VERSION, tile.getVersion())
-        self.assertEqual(NUM_ELEMENTS, tile.getNumElements())
+        self.assertEqual(VERSION, tile.version)
+        self.assertEqual(NUM_ELEMENTS, tile.num_elements)
 
-        data = tile.getData()
+        data = tile.data
         self.assertEqual(NUM_ELEMENTS, len(data))
 
         # element 0
-        self.assertTrue(data[0].getHasItem())
-        itemChoice0 = data[0].getItemChoice()
-        self.assertTrue(itemChoice0.getHasItem())
-        item0 = itemChoice0.getItem()
-        self.assertEqual(PARAMS[0], item0.getParam())
-        self.assertEqual(self.api.ItemType.WITH_EXTRA_PARAM, item0.getItemType())
-        self.assertEqual(self.api.ExtraParamUnion.CHOICE_value32, item0.getExtraParam().choiceTag())
-        self.assertEqual(EXTRA_PARAM, item0.getExtraParam().getValue32())
+        self.assertTrue(data[0].has_item)
+        itemChoice0 = data[0].item_choice
+        self.assertTrue(itemChoice0.has_item)
+        item0 = itemChoice0.item
+        self.assertEqual(PARAMS[0], item0.param)
+        self.assertEqual(self.api.ItemType.WITH_EXTRA_PARAM, item0.item_type)
+        self.assertEqual(self.api.ExtraParamUnion.CHOICE_value32, item0.extra_param.choice_tag)
+        self.assertEqual(EXTRA_PARAM, item0.extra_param.value32)
 
         # element 1
-        self.assertFalse(data[1].getHasItem())
-        itemChoice1 = data[1].getItemChoice()
-        self.assertFalse(itemChoice1.getHasItem())
-        self.assertEqual(PARAMS[1], itemChoice1.getParam())
+        self.assertFalse(data[1].has_item)
+        itemChoice1 = data[1].item_choice
+        self.assertFalse(itemChoice1.has_item)
+        self.assertEqual(PARAMS[1], itemChoice1.param)
 
     def _assertMethodNotPresent(self, userType, method):
         self.assertFalse(hasattr(userType, method),
@@ -273,6 +268,31 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def _assertMethodPresent(self, userType, method):
         self.assertTrue(hasattr(userType, method),
                         msg=("Method '%s' is not present in '%s'!" % (method, userType.__name__)))
+
+    def _assertPropertyPresent(self, userType, prop, *, readOnly):
+        self.assertTrue(
+            hasattr(userType, prop),
+            msg=("Property '%s' is not present in '%s'!" % (prop, userType.__name__))
+        )
+        propAttr = getattr(userType, prop)
+        self.assertTrue(
+            isinstance(propAttr, property),
+            msg=("Attribute '%s' is not a property in '%s'!" % (prop, userType.__name__))
+        )
+        self.assertIsNotNone(
+            propAttr.fget,
+            msg=("Property '%s' getter is not set in '%s'!" % (prop, userType.__name__))
+        )
+        if readOnly:
+            self.assertIsNone(
+                propAttr.fset,
+                msg=("Read-only property '%s' setter is set in '%s'!" % (prop, userType.__name__))
+            )
+        else:
+            self.assertIsNotNone(
+                propAttr.fset,
+                msg=("Property '%s' setter is not set in '%s'!" % (prop, userType.__name__))
+            )
 
 TILE_ID_EUROPE = 99
 TILE_ID_AMERICA = 11

@@ -35,21 +35,21 @@ class ArrayElementParamTest(unittest.TestCase):
         return self.api.Database(self.NUM_BLOCKS, blockHeaderList, blockList)
 
     def _checkDatabaseInStream(self, reader, database):
-        numBlocks = database.getNumBlocks()
+        numBlocks = database.num_blocks
         self.assertEqual(numBlocks, reader.readBits(16))
 
-        headers = database.getHeaders()
+        headers = database.headers
         expectedOffset = self.FIRST_BYTE_OFFSET
         for i in range(numBlocks):
             numItems = reader.readBits(16)
-            self.assertEqual(headers[i].getNumItems(), numItems)
+            self.assertEqual(headers[i].num_items, numItems)
             self.assertEqual(expectedOffset, reader.readBits(32))
             expectedOffset += 8 * numItems
 
-        blocks = database.getBlocks()
+        blocks = database.blocks
         for i in range(numBlocks):
-            numItems = headers[i].getNumItems()
-            items = blocks[i].getItems()
+            numItems = headers[i].num_items
+            items = blocks[i].items
             for j in range(numItems):
                 self.assertEqual(items[j], reader.readSignedBits(64))
 

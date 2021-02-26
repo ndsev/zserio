@@ -10,35 +10,35 @@ class OptionalExpressionTest(unittest.TestCase):
 
     def testConstructor(self):
         container = self.api.Container()
-        self.assertEqual(None, container.getBasicColor())
-        self.assertEqual(None, container.getNumBlackTones())
-        self.assertEqual(None, container.getBlackColor())
+        self.assertEqual(None, container.basic_color)
+        self.assertEqual(None, container.num_black_tones)
+        self.assertEqual(None, container.black_color)
 
         container = self.api.Container(self.api.BasicColor.BLACK, self.NUM_BLACK_TONES)
-        self.assertEqual(self.api.BasicColor.BLACK, container.getBasicColor())
-        self.assertEqual(self.NUM_BLACK_TONES, container.getNumBlackTones())
-        self.assertEqual(None, container.getBlackColor())
+        self.assertEqual(self.api.BasicColor.BLACK, container.basic_color)
+        self.assertEqual(self.NUM_BLACK_TONES, container.num_black_tones)
+        self.assertEqual(None, container.black_color)
 
         container = self.api.Container(basicColor_=self.api.BasicColor.BLACK,
                                        numBlackTones_=self.NUM_BLACK_TONES)
-        self.assertEqual(self.api.BasicColor.BLACK, container.getBasicColor())
-        self.assertEqual(self.NUM_BLACK_TONES, container.getNumBlackTones())
-        self.assertEqual(None, container.getBlackColor())
+        self.assertEqual(self.api.BasicColor.BLACK, container.basic_color)
+        self.assertEqual(self.NUM_BLACK_TONES, container.num_black_tones)
+        self.assertEqual(None, container.black_color)
 
     def testEq(self):
         container1 = self.api.Container()
         container2 = self.api.Container()
         self.assertTrue(container1 == container2)
 
-        container1.setBasicColor(self.api.BasicColor.WHITE)
-        container2.setBasicColor(self.api.BasicColor.BLACK)
-        container2.setNumBlackTones(self.NUM_BLACK_TONES)
-        container2.setBlackColor(self._createBlackColor(self.NUM_BLACK_TONES))
+        container1.basic_color = self.api.BasicColor.WHITE
+        container2.basic_color = self.api.BasicColor.BLACK
+        container2.num_black_tones = self.NUM_BLACK_TONES
+        container2.black_color = self._createBlackColor(self.NUM_BLACK_TONES)
         self.assertFalse(container1 == container2)
 
-        container2.setBasicColor(self.api.BasicColor.WHITE)
-        container2.setNumBlackTones(None)
-        container2.setBlackColor(None)
+        container2.basic_color = self.api.BasicColor.WHITE
+        container2.num_black_tones = None
+        container2.black_color = None
         self.assertTrue(container1 == container2)
 
     def testHash(self):
@@ -46,87 +46,87 @@ class OptionalExpressionTest(unittest.TestCase):
         container2 = self.api.Container()
         self.assertEqual(hash(container1), hash(container2))
 
-        container1.setBasicColor(self.api.BasicColor.WHITE)
-        container2.setBasicColor(self.api.BasicColor.BLACK)
-        container2.setNumBlackTones(self.NUM_BLACK_TONES)
-        container2.setBlackColor(self._createBlackColor(self.NUM_BLACK_TONES))
+        container1.basic_color = self.api.BasicColor.WHITE
+        container2.basic_color = self.api.BasicColor.BLACK
+        container2.num_black_tones = self.NUM_BLACK_TONES
+        container2.black_color = self._createBlackColor(self.NUM_BLACK_TONES)
         self.assertTrue(hash(container1) != hash(container2))
 
-        container2.setBasicColor(self.api.BasicColor.WHITE)
-        container2.setNumBlackTones(None)
-        container2.setBlackColor(None)
+        container2.basic_color = self.api.BasicColor.WHITE
+        container2.num_black_tones = None
+        container2.black_color = None
         self.assertEqual(hash(container1), hash(container2))
 
     def testIsNumBlackTonesUsed(self):
         container = self.api.Container()
-        container.setBasicColor(self.api.BasicColor.WHITE)
+        container.basic_color = self.api.BasicColor.WHITE
         self.assertFalse(container.isNumBlackTonesUsed())
 
-        container.setBasicColor(self.api.BasicColor.BLACK)
-        container.setNumBlackTones(self.NUM_BLACK_TONES)
+        container.basic_color = self.api.BasicColor.BLACK
+        container.num_black_tones = self.NUM_BLACK_TONES
         self.assertTrue(container.isNumBlackTonesUsed())
-        self.assertEqual(self.NUM_BLACK_TONES, container.getNumBlackTones())
+        self.assertEqual(self.NUM_BLACK_TONES, container.num_black_tones)
 
     def testIsBlackColorUsed(self):
         container = self.api.Container()
-        container.setBasicColor(self.api.BasicColor.WHITE)
+        container.basic_color = self.api.BasicColor.WHITE
         self.assertFalse(container.isBlackColorUsed())
 
-        container.setBasicColor(self.api.BasicColor.BLACK)
+        container.basic_color = self.api.BasicColor.BLACK
         blackColor = self._createBlackColor(self.NUM_BLACK_TONES)
-        container.setBlackColor(blackColor)
+        container.black_color = blackColor
         self.assertTrue(container.isBlackColorUsed())
-        self.assertTrue(blackColor == container.getBlackColor())
+        self.assertTrue(blackColor == container.black_color)
 
     def testBitSizeOf(self):
         container = self.api.Container()
-        container.setBasicColor(self.api.BasicColor.WHITE)
+        container.basic_color = self.api.BasicColor.WHITE
         self.assertEqual(self.CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL, container.bitSizeOf())
 
-        container.setBasicColor(self.api.BasicColor.BLACK)
-        container.setNumBlackTones(self.NUM_BLACK_TONES)
-        container.setBlackColor(self._createBlackColor(self.NUM_BLACK_TONES))
+        container.basic_color = self.api.BasicColor.BLACK
+        container.num_black_tones = self.NUM_BLACK_TONES
+        container.black_color = self._createBlackColor(self.NUM_BLACK_TONES)
         self.assertEqual(self.CONTAINER_BIT_SIZE_WITH_OPTIONAL, container.bitSizeOf())
 
     def testInitializeOffsets(self):
         container = self.api.Container()
-        container.setBasicColor(self.api.BasicColor.WHITE)
+        container.basic_color = self.api.BasicColor.WHITE
         bitPosition = 1
         self.assertEqual(bitPosition + self.CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL,
                          container.initializeOffsets(bitPosition))
 
-        container.setBasicColor(self.api.BasicColor.BLACK)
-        container.setNumBlackTones(self.NUM_BLACK_TONES)
-        container.setBlackColor(self._createBlackColor(self.NUM_BLACK_TONES))
+        container.basic_color = self.api.BasicColor.BLACK
+        container.num_black_tones = self.NUM_BLACK_TONES
+        container.black_color = self._createBlackColor(self.NUM_BLACK_TONES)
         self.assertEqual(bitPosition + self.CONTAINER_BIT_SIZE_WITH_OPTIONAL,
                          container.initializeOffsets(bitPosition))
 
     def testWrite(self):
         container = self.api.Container()
-        container.setBasicColor(self.api.BasicColor.WHITE)
+        container.basic_color = self.api.BasicColor.WHITE
         writer = zserio.BitStreamWriter()
         container.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkContainerInStream(reader, self.api.BasicColor.WHITE, self.NUM_BLACK_TONES)
         reader.setBitPosition(0)
         readContainer = self.api.Container.fromReader(reader)
-        self.assertEqual(self.api.BasicColor.WHITE, readContainer.getBasicColor())
+        self.assertEqual(self.api.BasicColor.WHITE, readContainer.basic_color)
         self.assertFalse(readContainer.isNumBlackTonesUsed())
         self.assertFalse(readContainer.isBlackColorUsed())
 
-        container.setBasicColor(self.api.BasicColor.BLACK)
-        container.setNumBlackTones(self.NUM_BLACK_TONES)
+        container.basic_color = self.api.BasicColor.BLACK
+        container.num_black_tones = self.NUM_BLACK_TONES
         blackColor = self._createBlackColor(self.NUM_BLACK_TONES)
-        container.setBlackColor(blackColor)
+        container.black_color = blackColor
         writer = zserio.BitStreamWriter()
         container.write(writer)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         self._checkContainerInStream(reader, self.api.BasicColor.BLACK, self.NUM_BLACK_TONES)
         reader.setBitPosition(0)
         readContainer = self.api.Container.fromReader(reader)
-        self.assertEqual(self.api.BasicColor.BLACK, readContainer.getBasicColor())
-        self.assertEqual(self.NUM_BLACK_TONES, readContainer.getNumBlackTones())
-        self.assertTrue(blackColor == readContainer.getBlackColor())
+        self.assertEqual(self.api.BasicColor.BLACK, readContainer.basic_color)
+        self.assertEqual(self.NUM_BLACK_TONES, readContainer.num_black_tones)
+        self.assertTrue(blackColor == readContainer.black_color)
         self.assertTrue(readContainer.isNumBlackTonesUsed())
         self.assertTrue(readContainer.isBlackColorUsed())
 

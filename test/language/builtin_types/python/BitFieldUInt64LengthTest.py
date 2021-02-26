@@ -12,9 +12,9 @@ class BitFieldUInt64LengthTest(unittest.TestCase):
     def testBitSizeOf(self):
         container = self.api.Container()
         bitFieldLength = 33
-        container.setLength(bitFieldLength)
-        container.setUnsignedBitField(zserio.limits.UINT32_MAX + 1)
-        container.setSignedBitField(zserio.limits.INT32_MAX + 1)
+        container.length = bitFieldLength
+        container.unsigned_bit_field = zserio.limits.UINT32_MAX + 1
+        container.signed_bit_field = zserio.limits.INT32_MAX + 1
 
         expectedBitSizeOfContainer = 64 + 33 + 33
         self.assertEqual(expectedBitSizeOfContainer, container.bitSizeOf())
@@ -22,9 +22,9 @@ class BitFieldUInt64LengthTest(unittest.TestCase):
     def testReadWrite(self):
         container = self.api.Container()
         bitFieldLength = 33
-        container.setLength(bitFieldLength)
-        container.setUnsignedBitField(zserio.limits.UINT32_MAX + 1)
-        container.setSignedBitField(zserio.limits.INT32_MAX + 1)
+        container.length = bitFieldLength
+        container.unsigned_bit_field = zserio.limits.UINT32_MAX + 1
+        container.signed_bit_field = zserio.limits.INT32_MAX + 1
 
         writer = zserio.BitStreamWriter()
         container.write(writer)

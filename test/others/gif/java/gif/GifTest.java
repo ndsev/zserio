@@ -37,7 +37,7 @@ public class GifTest
         assertEquals(GIF_SCREEN_WIDTH, screenDescriptor.getWidth());
         assertEquals(GIF_SCREEN_HEIGHT, screenDescriptor.getHeight());
         assertEquals(GIF_SCREEN_BG_COLOR, screenDescriptor.getBgColor());
-        assertEquals(GIF_SCREEN_BITS_OF_COLOR_RESOLUTION, screenDescriptor.getBitsOfColorResulution());
+        assertEquals(GIF_SCREEN_BITS_OF_COLOR_RESOLUTION, screenDescriptor.getBitsOfColorResolution());
         assertEquals(GIF_SCREEN_BITS_PER_PIXEL, screenDescriptor.getBitsPerPixel());
     }
 
@@ -58,7 +58,7 @@ public class GifTest
         System.out.format(alignment + "Size: %1$d x %2$d%n", gifFile.getScreen().getWidth(),
                 gifFile.getScreen().getHeight());
         System.out.format(alignment + "Back color: %1$d%n", gifFile.getScreen().getBgColor());
-        System.out.format(alignment + "Color res.: %1$d%n", gifFile.getScreen().getBitsOfColorResulution());
+        System.out.format(alignment + "Color res.: %1$d%n", gifFile.getScreen().getBitsOfColorResolution());
         System.out.format(alignment + "Bits per pixel: %1$d%n", gifFile.getScreen().getBitsPerPixel());
         if (gifFile.getScreen().getGlobalColorMapFollows() == 1)
         {

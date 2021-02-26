@@ -10,6 +10,6 @@ class UInt16SubtypeTest(unittest.TestCase):
     def testSubtype(self):
         identifier = self.api.Identifier(0xFFFF)
         testStructure = self.api.TestStructure()
-        testStructure.setIdentifier(identifier)
-        readIdentifier = testStructure.getIdentifier()
+        testStructure.identifier = identifier
+        readIdentifier = testStructure.identifier
         self.assertEqual(identifier, readIdentifier)

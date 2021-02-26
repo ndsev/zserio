@@ -13,7 +13,7 @@ class ConstTypeTest(unittest.TestCase):
 
     def testBitSizeOfWithoutOptional(self):
         constTypeExpression = self.api.ConstTypeExpression()
-        constTypeExpression.setValue(self.INVALID_VALUE)
+        constTypeExpression.value = self.INVALID_VALUE
         self.assertEqual(self.CONST_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, constTypeExpression.bitSizeOf())
 
     CONST_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 10

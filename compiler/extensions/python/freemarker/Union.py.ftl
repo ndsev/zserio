@@ -92,7 +92,7 @@ class ${name}:
 </#list>
 
     @property
-    def choiceTag(self) -> int:
+    def choice_tag(self) -> int:
         return self._choiceTag
 
 <#macro union_if memberActionMacroName>

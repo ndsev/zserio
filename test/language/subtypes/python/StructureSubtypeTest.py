@@ -11,11 +11,11 @@ class StructureSubtypeTest(unittest.TestCase):
         identifier = 0xFFFF
         name = "Name"
         student = self.api.Student()
-        student.setIdentifier(identifier)
-        student.setName(name)
+        student.identifier = identifier
+        student.name = name
 
         subtypeStructure = self.api.SubtypeStructure()
-        subtypeStructure.setStudent(student)
-        readStudent = subtypeStructure.getStudent()
+        subtypeStructure.student = student
+        readStudent = subtypeStructure.student
 
         self.assertEqual(student, readStudent)

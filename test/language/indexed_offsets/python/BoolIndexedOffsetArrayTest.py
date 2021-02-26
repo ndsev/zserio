@@ -104,7 +104,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
                 writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE)
 
     def _checkOffsets(self, boolIndexedOffsetArray, offsetShift):
-        offsets = boolIndexedOffsetArray.getOffsets()
+        offsets = boolIndexedOffsetArray.offsets
         self.assertEqual(NUM_ELEMENTS, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for offset in offsets:
@@ -115,9 +115,9 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         offsetShift = 0
         self._checkOffsets(boolIndexedOffsetArray, offsetShift)
 
-        self.assertEqual(SPACER_VALUE, boolIndexedOffsetArray.getSpacer())
+        self.assertEqual(SPACER_VALUE, boolIndexedOffsetArray.spacer)
 
-        data = boolIndexedOffsetArray.getData()
+        data = boolIndexedOffsetArray.data
         self.assertEqual(NUM_ELEMENTS, len(data))
         for i in range(NUM_ELEMENTS):
             self.assertEqual((i & 0x01) != 0, data[i])

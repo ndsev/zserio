@@ -10,30 +10,30 @@ class OneStringStructureTest(unittest.TestCase):
 
     def testConstructor(self):
         oneStringStructure = self.api.OneStringStructure()
-        self.assertEqual("", oneStringStructure.getOneString())
+        self.assertEqual("", oneStringStructure.one_string)
 
         oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
-        self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
+        self.assertEqual(self.ONE_STRING, oneStringStructure.one_string)
 
         oneStringStructure = self.api.OneStringStructure(oneString_=self.ONE_STRING)
-        self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
+        self.assertEqual(self.ONE_STRING, oneStringStructure.one_string)
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         OneStringStructureTest._writeOneStringStructureToStream(writer, self.ONE_STRING)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         oneStringStructure = self.api.OneStringStructure.fromReader(reader)
-        self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
+        self.assertEqual(self.ONE_STRING, oneStringStructure.one_string)
 
     def testEq(self):
         oneStringStructure1 = self.api.OneStringStructure()
         oneStringStructure2 = self.api.OneStringStructure()
         self.assertTrue(oneStringStructure1 == oneStringStructure2)
 
-        oneStringStructure1.setOneString(self.ONE_STRING)
+        oneStringStructure1.one_string = self.ONE_STRING
         self.assertFalse(oneStringStructure1 == oneStringStructure2)
 
-        oneStringStructure2.setOneString(self.ONE_STRING)
+        oneStringStructure2.one_string = self.ONE_STRING
         self.assertTrue(oneStringStructure1 == oneStringStructure2)
 
     def testHash(self):
@@ -41,16 +41,16 @@ class OneStringStructureTest(unittest.TestCase):
         oneStringStructure2 = self.api.OneStringStructure()
         self.assertEqual(hash(oneStringStructure1), hash(oneStringStructure2))
 
-        oneStringStructure1.setOneString(self.ONE_STRING)
+        oneStringStructure1.one_string = self.ONE_STRING
         self.assertTrue(hash(oneStringStructure1) != hash(oneStringStructure2))
 
-        oneStringStructure2.setOneString(self.ONE_STRING)
+        oneStringStructure2.one_string = self.ONE_STRING
         self.assertEqual(hash(oneStringStructure1), hash(oneStringStructure2))
 
     def testGetSetOneString(self):
         oneStringStructure = self.api.OneStringStructure()
-        oneStringStructure.setOneString(self.ONE_STRING)
-        self.assertEqual(self.ONE_STRING, oneStringStructure.getOneString())
+        oneStringStructure.one_string = self.ONE_STRING
+        self.assertEqual(self.ONE_STRING, oneStringStructure.one_string)
 
     def testBitSizeOf(self):
         oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
@@ -69,7 +69,7 @@ class OneStringStructureTest(unittest.TestCase):
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readOneStringStructure = self.api.OneStringStructure()
         readOneStringStructure.read(reader)
-        self.assertEqual(self.ONE_STRING, readOneStringStructure.getOneString())
+        self.assertEqual(self.ONE_STRING, readOneStringStructure.one_string)
         self.assertTrue(oneStringStructure == readOneStringStructure)
 
     @staticmethod

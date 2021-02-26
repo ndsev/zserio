@@ -38,7 +38,7 @@ class MultipleExplicitParamsTest(unittest.TestCase):
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
-        testTable = self._database.getMultipleParamsTable()
+        testTable = self._database.multiple_params_table
         testTable.deleteTable()
         self.assertFalse(self._isTableInDb())
 
@@ -46,7 +46,7 @@ class MultipleExplicitParamsTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getMultipleParamsTable()
+        testTable = self._database.multiple_params_table
 
         writtenRows = self._createMultipleParamsTableRows()
         testTable.write(writtenRows)
@@ -60,7 +60,7 @@ class MultipleExplicitParamsTest(unittest.TestCase):
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
-        testTable = self._database.getMultipleParamsTable()
+        testTable = self._database.multiple_params_table
 
         writtenRows = self._createMultipleParamsTableRows()
         testTable.write(writtenRows)
@@ -73,7 +73,7 @@ class MultipleExplicitParamsTest(unittest.TestCase):
             self._checkMultipleParamsTableRow(writtenRows[expectedRowNum], readRow)
 
     def testUpdate(self):
-        testTable = self._database.getMultipleParamsTable()
+        testTable = self._database.multiple_params_table
 
         writtenRows = self._createMultipleParamsTableRows()
         testTable.write(writtenRows)
@@ -116,13 +116,13 @@ class MultipleExplicitParamsTest(unittest.TestCase):
         # check reused explicit count1 parameter
         blob1 = row2[2]
         blob3 = row2[4]
-        self.assertEqual(blob1.getCount8(), blob3.getCount8())
-        self.assertEqual(blob1.getCount8(), blob3.getCount16())
+        self.assertEqual(blob1.count8, blob3.count8)
+        self.assertEqual(blob1.count8, blob3.count16)
 
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'"
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == TABLE_NAME:
                 return True
 

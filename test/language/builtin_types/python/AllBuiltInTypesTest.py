@@ -12,299 +12,299 @@ class AllBuiltInTypesTest(unittest.TestCase):
 
     def testUint8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setUint8Type(zserio.limits.UINT8_MAX)
-        self.assertEqual(zserio.limits.UINT8_MAX, allBuiltInTypes.getUint8Type())
+        allBuiltInTypes.uint8_type = zserio.limits.UINT8_MAX
+        self.assertEqual(zserio.limits.UINT8_MAX, allBuiltInTypes.uint8_type)
 
     def testUint16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setUint16Type(zserio.limits.UINT16_MAX)
-        self.assertEqual(zserio.limits.UINT16_MAX, allBuiltInTypes.getUint16Type())
+        allBuiltInTypes.uint16_type = zserio.limits.UINT16_MAX
+        self.assertEqual(zserio.limits.UINT16_MAX, allBuiltInTypes.uint16_type)
 
     def testUint32Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setUint32Type(zserio.limits.UINT32_MAX)
-        self.assertEqual(zserio.limits.UINT32_MAX, allBuiltInTypes.getUint32Type())
+        allBuiltInTypes.uint32Type = zserio.limits.UINT32_MAX
+        self.assertEqual(zserio.limits.UINT32_MAX, allBuiltInTypes.uint32Type)
 
     def testUint64Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setUint64Type(zserio.limits.UINT64_MAX)
-        self.assertEqual(zserio.limits.UINT64_MAX, allBuiltInTypes.getUint64Type())
+        allBuiltInTypes.uint64_type = zserio.limits.UINT64_MAX
+        self.assertEqual(zserio.limits.UINT64_MAX, allBuiltInTypes.uint64_type)
 
     def testInt8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setInt8Type(zserio.limits.INT8_MAX)
-        self.assertEqual(zserio.limits.INT8_MAX, allBuiltInTypes.getInt8Type())
+        allBuiltInTypes.int8_type = zserio.limits.INT8_MAX
+        self.assertEqual(zserio.limits.INT8_MAX, allBuiltInTypes.int8_type)
 
     def testInt16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setInt16Type(zserio.limits.INT16_MAX)
-        self.assertEqual(zserio.limits.INT16_MAX, allBuiltInTypes.getInt16Type())
+        allBuiltInTypes.int16_type = zserio.limits.INT16_MAX
+        self.assertEqual(zserio.limits.INT16_MAX, allBuiltInTypes.int16_type)
 
     def testInt32Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setInt32Type(zserio.limits.INT32_MAX)
-        self.assertEqual(zserio.limits.INT32_MAX, allBuiltInTypes.getInt32Type())
+        allBuiltInTypes.int32_type = zserio.limits.INT32_MAX
+        self.assertEqual(zserio.limits.INT32_MAX, allBuiltInTypes.int32_type)
 
     def testInt64Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setInt64Type(zserio.limits.INT64_MAX)
-        self.assertEqual(zserio.limits.INT64_MAX, allBuiltInTypes.getInt64Type())
+        allBuiltInTypes.int64_type = zserio.limits.INT64_MAX
+        self.assertEqual(zserio.limits.INT64_MAX, allBuiltInTypes.int64_type)
 
     def testBitField7Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxBitfield7Type = 0x7F
-        allBuiltInTypes.setBitfield7Type(maxBitfield7Type)
-        self.assertEqual(maxBitfield7Type, allBuiltInTypes.getBitfield7Type())
+        allBuiltInTypes.bitfield7_type = maxBitfield7Type
+        self.assertEqual(maxBitfield7Type, allBuiltInTypes.bitfield7_type)
 
     def testBitField8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxBitfield8Type = zserio.limits.UINT8_MAX
-        allBuiltInTypes.setBitfield8Type(maxBitfield8Type)
-        self.assertEqual(maxBitfield8Type, allBuiltInTypes.getBitfield8Type())
+        allBuiltInTypes.bitfield8_type = maxBitfield8Type
+        self.assertEqual(maxBitfield8Type, allBuiltInTypes.bitfield8_type)
 
     def testBitField15Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxBitfield15Type = 0x7FFF
-        allBuiltInTypes.setBitfield15Type(maxBitfield15Type)
-        self.assertEqual(maxBitfield15Type, allBuiltInTypes.getBitfield15Type())
+        allBuiltInTypes.bitfield15_type = maxBitfield15Type
+        self.assertEqual(maxBitfield15Type, allBuiltInTypes.bitfield15_type)
 
     def testBitField16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxBitfield16Type = zserio.limits.UINT16_MAX
-        allBuiltInTypes.setBitfield16Type(maxBitfield16Type)
-        self.assertEqual(maxBitfield16Type, allBuiltInTypes.getBitfield16Type())
+        allBuiltInTypes.bitfield16_type = maxBitfield16Type
+        self.assertEqual(maxBitfield16Type, allBuiltInTypes.bitfield16_type)
 
     def testBitField31Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxBitfield31Type = 0x7FFFFFFF
-        allBuiltInTypes.setBitfield31Type(maxBitfield31Type)
-        self.assertEqual(maxBitfield31Type, allBuiltInTypes.getBitfield31Type())
+        allBuiltInTypes.bitfield31_type = maxBitfield31Type
+        self.assertEqual(maxBitfield31Type, allBuiltInTypes.bitfield31_type)
 
     def testBitField32Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxBitfield32Type = zserio.limits.UINT32_MAX
-        allBuiltInTypes.setBitfield32Type(maxBitfield32Type)
-        self.assertEqual(maxBitfield32Type, allBuiltInTypes.getBitfield32Type())
+        allBuiltInTypes.bitfield32_type = maxBitfield32Type
+        self.assertEqual(maxBitfield32Type, allBuiltInTypes.bitfield32_type)
 
     def testBitField63Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxBitfield63Type = 0x7FFFFFFFFFFFFFFF
-        allBuiltInTypes.setBitfield63Type(maxBitfield63Type)
-        self.assertEqual(maxBitfield63Type, allBuiltInTypes.getBitfield63Type())
+        allBuiltInTypes.bitfield63_type = maxBitfield63Type
+        self.assertEqual(maxBitfield63Type, allBuiltInTypes.bitfield63_type)
 
     def testVariableBitfieldType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxVariableBitfieldType = zserio.limits.UINT64_MAX
-        allBuiltInTypes.setVariableBitfieldType(maxVariableBitfieldType)
-        self.assertEqual(maxVariableBitfieldType, allBuiltInTypes.getVariableBitfieldType())
+        allBuiltInTypes.variable_bitfield_type = maxVariableBitfieldType
+        self.assertEqual(maxVariableBitfieldType, allBuiltInTypes.variable_bitfield_type)
 
     def testVariableBitField8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         maxVariableBitfield8Type = zserio.limits.UINT8_MAX
-        allBuiltInTypes.setVariableBitfield8Type(maxVariableBitfield8Type)
-        self.assertEqual(maxVariableBitfield8Type, allBuiltInTypes.getVariableBitfield8Type())
+        allBuiltInTypes.variable_bitfield8_type = maxVariableBitfield8Type
+        self.assertEqual(maxVariableBitfield8Type, allBuiltInTypes.variable_bitfield8_type)
 
     def testIntField8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setIntfield8Type(zserio.limits.INT8_MAX)
-        self.assertEqual(zserio.limits.INT8_MAX, allBuiltInTypes.getIntfield8Type())
+        allBuiltInTypes.intfield8_type = zserio.limits.INT8_MAX
+        self.assertEqual(zserio.limits.INT8_MAX, allBuiltInTypes.intfield8_type)
 
     def testIntField16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setIntfield16Type(zserio.limits.INT16_MAX)
-        self.assertEqual(zserio.limits.INT16_MAX, allBuiltInTypes.getIntfield16Type())
+        allBuiltInTypes.intfield16_type = zserio.limits.INT16_MAX
+        self.assertEqual(zserio.limits.INT16_MAX, allBuiltInTypes.intfield16_type)
 
     def testIntField32Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setIntfield32Type(zserio.limits.INT32_MAX)
-        self.assertEqual(zserio.limits.INT32_MAX, allBuiltInTypes.getIntfield32Type())
+        allBuiltInTypes.intfield32_type = zserio.limits.INT32_MAX
+        self.assertEqual(zserio.limits.INT32_MAX, allBuiltInTypes.intfield32_type)
 
     def testIntField64Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setIntfield64Type(zserio.limits.INT64_MAX)
-        self.assertEqual(zserio.limits.INT64_MAX, allBuiltInTypes.getIntfield64Type())
+        allBuiltInTypes.intfield64_type = zserio.limits.INT64_MAX
+        self.assertEqual(zserio.limits.INT64_MAX, allBuiltInTypes.intfield64_type)
 
     def testVariableIntfieldType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVariableIntfieldType(zserio.limits.INT16_MAX)
-        self.assertEqual(zserio.limits.INT16_MAX, allBuiltInTypes.getVariableIntfieldType())
+        allBuiltInTypes.variable_intfield_type = zserio.limits.INT16_MAX
+        self.assertEqual(zserio.limits.INT16_MAX, allBuiltInTypes.variable_intfield_type)
 
     def testVariableIntField8Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVariableIntfield8Type(zserio.limits.INT8_MAX)
-        self.assertEqual(zserio.limits.INT8_MAX, allBuiltInTypes.getVariableIntfield8Type())
+        allBuiltInTypes.variable_intfield8_type = zserio.limits.INT8_MAX
+        self.assertEqual(zserio.limits.INT8_MAX, allBuiltInTypes.variable_intfield8_type)
 
     def testFloat16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setFloat16Type(sys.float_info.max)
-        self.assertEqual(sys.float_info.max, allBuiltInTypes.getFloat16Type())
+        allBuiltInTypes.float16_type = sys.float_info.max
+        self.assertEqual(sys.float_info.max, allBuiltInTypes.float16_type)
 
     def testFloat32Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setFloat32Type(sys.float_info.max)
-        self.assertEqual(sys.float_info.max, allBuiltInTypes.getFloat32Type())
+        allBuiltInTypes.float32_type = sys.float_info.max
+        self.assertEqual(sys.float_info.max, allBuiltInTypes.float32_type)
 
     def testFloat64Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setFloat64Type(sys.float_info.max)
-        self.assertEqual(sys.float_info.max, allBuiltInTypes.getFloat64Type())
+        allBuiltInTypes.float64_type = sys.float_info.max
+        self.assertEqual(sys.float_info.max, allBuiltInTypes.float64_type)
 
     def testVaruint16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVaruint16Type(zserio.limits.VARUINT16_MAX)
-        self.assertEqual(zserio.limits.VARUINT16_MAX, allBuiltInTypes.getVaruint16Type())
+        allBuiltInTypes.varuint16_type = zserio.limits.VARUINT16_MAX
+        self.assertEqual(zserio.limits.VARUINT16_MAX, allBuiltInTypes.varuint16_type)
 
     def testVaruint32Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVaruint32Type(zserio.limits.VARUINT32_MAX)
-        self.assertEqual(zserio.limits.VARUINT32_MAX, allBuiltInTypes.getVaruint32Type())
+        allBuiltInTypes.varuint32_type = zserio.limits.VARUINT32_MAX
+        self.assertEqual(zserio.limits.VARUINT32_MAX, allBuiltInTypes.varuint32_type)
 
     def testVaruint64Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVaruint64Type(zserio.limits.VARUINT64_MAX)
-        self.assertEqual(zserio.limits.VARUINT64_MAX, allBuiltInTypes.getVaruint64Type())
+        allBuiltInTypes.varuint64_type = zserio.limits.VARUINT64_MAX
+        self.assertEqual(zserio.limits.VARUINT64_MAX, allBuiltInTypes.varuint64_type)
 
     def testVaruintType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVaruintType(zserio.limits.VARUINT_MIN)
-        self.assertEqual(zserio.limits.VARUINT_MIN, allBuiltInTypes.getVaruintType())
+        allBuiltInTypes.varuint_type = zserio.limits.VARUINT_MIN
+        self.assertEqual(zserio.limits.VARUINT_MIN, allBuiltInTypes.varuint_type)
 
-        allBuiltInTypes.setVaruintType(zserio.limits.VARUINT_MAX)
-        self.assertEqual(zserio.limits.VARUINT_MAX, allBuiltInTypes.getVaruintType())
+        allBuiltInTypes.varuint_type = zserio.limits.VARUINT_MAX
+        self.assertEqual(zserio.limits.VARUINT_MAX, allBuiltInTypes.varuint_type)
 
     def testVarsizeType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MIN)
-        self.assertEqual(zserio.limits.VARSIZE_MIN, allBuiltInTypes.getVarsizeType())
+        allBuiltInTypes.varsize_type = zserio.limits.VARSIZE_MIN
+        self.assertEqual(zserio.limits.VARSIZE_MIN, allBuiltInTypes.varsize_type)
 
-        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MAX)
-        self.assertEqual(zserio.limits.VARSIZE_MAX, allBuiltInTypes.getVarsizeType())
+        allBuiltInTypes.varsize_type = zserio.limits.VARSIZE_MAX
+        self.assertEqual(zserio.limits.VARSIZE_MAX, allBuiltInTypes.varsize_type)
 
     def testVarint16Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVarint16Type(zserio.limits.VARINT16_MAX)
-        self.assertEqual(zserio.limits.VARINT16_MAX, allBuiltInTypes.getVarint16Type())
+        allBuiltInTypes.varint16_type = zserio.limits.VARINT16_MAX
+        self.assertEqual(zserio.limits.VARINT16_MAX, allBuiltInTypes.varint16_type)
 
     def testVarint32Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVarint32Type(zserio.limits.VARINT32_MAX)
-        self.assertEqual(zserio.limits.VARINT32_MAX, allBuiltInTypes.getVarint32Type())
+        allBuiltInTypes.varint32_type = zserio.limits.VARINT32_MAX
+        self.assertEqual(zserio.limits.VARINT32_MAX, allBuiltInTypes.varint32_type)
 
     def testVarint64Type(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVarint64Type(zserio.limits.VARINT64_MAX)
-        self.assertEqual(zserio.limits.VARINT64_MAX, allBuiltInTypes.getVarint64Type())
+        allBuiltInTypes.varint64_type = zserio.limits.VARINT64_MAX
+        self.assertEqual(zserio.limits.VARINT64_MAX, allBuiltInTypes.varint64_type)
 
     def testVarintType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setVarintType(zserio.limits.VARINT_MIN)
-        self.assertEqual(zserio.limits.VARINT_MIN, allBuiltInTypes.getVarintType())
+        allBuiltInTypes.varint_type = zserio.limits.VARINT_MIN
+        self.assertEqual(zserio.limits.VARINT_MIN, allBuiltInTypes.varint_type)
 
-        allBuiltInTypes.setVarintType(zserio.limits.VARINT_MAX)
-        self.assertEqual(zserio.limits.VARINT_MAX, allBuiltInTypes.getVarintType())
+        allBuiltInTypes.varint_type = zserio.limits.VARINT_MAX
+        self.assertEqual(zserio.limits.VARINT_MAX, allBuiltInTypes.varint_type)
 
     def testBoolType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setBoolType(True)
-        self.assertTrue(allBuiltInTypes.getBoolType())
-        allBuiltInTypes.setBoolType(False)
-        self.assertFalse(allBuiltInTypes.getBoolType())
+        allBuiltInTypes.bool_type = True
+        self.assertTrue(allBuiltInTypes.bool_type)
+        allBuiltInTypes.bool_type = False
+        self.assertFalse(allBuiltInTypes.bool_type)
 
     def testStringType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         testString = "TEST"
-        allBuiltInTypes.setStringType(testString)
-        self.assertEqual(testString, allBuiltInTypes.getStringType())
+        allBuiltInTypes.string_type = testString
+        self.assertEqual(testString, allBuiltInTypes.string_type)
 
     def testExternType(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
         testExtern = self._getExternalBitBuffer()
-        allBuiltInTypes.setExternType(testExtern)
-        self.assertEqual(testExtern, allBuiltInTypes.getExternType())
+        allBuiltInTypes.extern_type = testExtern
+        self.assertEqual(testExtern, allBuiltInTypes.extern_type)
 
     def testBitSizeOf(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setBoolType(True)
-        allBuiltInTypes.setUint8Type(1)
-        allBuiltInTypes.setUint16Type(zserio.limits.UINT16_MAX)
-        allBuiltInTypes.setUint32Type(zserio.limits.UINT32_MAX)
-        allBuiltInTypes.setUint64Type(zserio.limits.UINT64_MAX)
-        allBuiltInTypes.setInt8Type(zserio.limits.INT8_MAX)
-        allBuiltInTypes.setInt16Type(zserio.limits.INT16_MAX)
-        allBuiltInTypes.setInt32Type(zserio.limits.INT32_MAX)
-        allBuiltInTypes.setInt64Type(zserio.limits.INT64_MAX)
-        allBuiltInTypes.setBitfield7Type(0x7F)
-        allBuiltInTypes.setBitfield8Type(zserio.limits.UINT8_MAX)
-        allBuiltInTypes.setBitfield15Type(0x7FFF)
-        allBuiltInTypes.setBitfield16Type(zserio.limits.UINT16_MAX)
-        allBuiltInTypes.setBitfield31Type(0x7FFFFFFF)
-        allBuiltInTypes.setBitfield32Type(zserio.limits.UINT32_MAX)
-        allBuiltInTypes.setBitfield63Type(0x7FFFFFFFFFFFFFFF)
-        allBuiltInTypes.setVariableBitfieldType(1)
-        allBuiltInTypes.setVariableBitfield8Type(zserio.limits.UINT8_MAX)
-        allBuiltInTypes.setIntfield8Type(zserio.limits.INT8_MAX)
-        allBuiltInTypes.setIntfield16Type(zserio.limits.INT16_MAX)
-        allBuiltInTypes.setIntfield32Type(zserio.limits.INT32_MAX)
-        allBuiltInTypes.setIntfield64Type(zserio.limits.INT64_MAX)
-        allBuiltInTypes.setVariableIntfieldType(1)
-        allBuiltInTypes.setVariableIntfield8Type(zserio.limits.INT8_MAX)
-        allBuiltInTypes.setFloat16Type(sys.float_info.max)
-        allBuiltInTypes.setFloat32Type(sys.float_info.max)
-        allBuiltInTypes.setFloat64Type(sys.float_info.max)
-        allBuiltInTypes.setVaruint16Type(zserio.limits.VARUINT16_MAX)
-        allBuiltInTypes.setVaruint32Type(zserio.limits.VARUINT32_MAX)
-        allBuiltInTypes.setVaruint64Type(zserio.limits.VARUINT64_MAX)
-        allBuiltInTypes.setVaruintType(zserio.limits.VARUINT_MAX)
-        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MAX)
-        allBuiltInTypes.setVarint16Type(zserio.limits.VARINT16_MAX)
-        allBuiltInTypes.setVarint32Type(zserio.limits.VARINT32_MAX)
-        allBuiltInTypes.setVarint64Type(zserio.limits.VARINT64_MAX)
-        allBuiltInTypes.setVarintType(zserio.limits.VARINT_MAX)
-        allBuiltInTypes.setStringType("TEST")
-        allBuiltInTypes.setExternType(self._getExternalBitBuffer())
+        allBuiltInTypes.bool_type = True
+        allBuiltInTypes.uint8_type = 1
+        allBuiltInTypes.uint16_type = zserio.limits.UINT16_MAX
+        allBuiltInTypes.uint32_type = zserio.limits.UINT32_MAX
+        allBuiltInTypes.uint64_type = zserio.limits.UINT64_MAX
+        allBuiltInTypes.int8_type = zserio.limits.INT8_MAX
+        allBuiltInTypes.int16_type = zserio.limits.INT16_MAX
+        allBuiltInTypes.int32_type = zserio.limits.INT32_MAX
+        allBuiltInTypes.int64_type = zserio.limits.INT64_MAX
+        allBuiltInTypes.bitfield7_type = 0x7F
+        allBuiltInTypes.bitfield8_type = zserio.limits.UINT8_MAX
+        allBuiltInTypes.bitfield15_type = 0x7FFF
+        allBuiltInTypes.bitfield16_type = zserio.limits.UINT16_MAX
+        allBuiltInTypes.bitfield31_type = 0x7FFFFFFF
+        allBuiltInTypes.bitfield32_type = zserio.limits.UINT32_MAX
+        allBuiltInTypes.bitfield63_type = 0x7FFFFFFFFFFFFFFF
+        allBuiltInTypes.variable_bitfield_type = 1
+        allBuiltInTypes.variable_bitfield8_type = zserio.limits.UINT8_MAX
+        allBuiltInTypes.intfield8_type = zserio.limits.INT8_MAX
+        allBuiltInTypes.intfield16_type = zserio.limits.INT16_MAX
+        allBuiltInTypes.intfield32_type = zserio.limits.INT32_MAX
+        allBuiltInTypes.intfield64_type = zserio.limits.INT64_MAX
+        allBuiltInTypes.variable_intfield_type = 1
+        allBuiltInTypes.variable_intfield8_type = zserio.limits.INT8_MAX
+        allBuiltInTypes.float16_type = sys.float_info.max
+        allBuiltInTypes.float32_type = sys.float_info.max
+        allBuiltInTypes.float64_type = sys.float_info.max
+        allBuiltInTypes.varuint16_type = zserio.limits.VARUINT16_MAX
+        allBuiltInTypes.varuint32_type = zserio.limits.VARUINT32_MAX
+        allBuiltInTypes.varuint64_type = zserio.limits.VARUINT64_MAX
+        allBuiltInTypes.varuint_type = zserio.limits.VARUINT_MAX
+        allBuiltInTypes.varsize_type = zserio.limits.VARSIZE_MAX
+        allBuiltInTypes.varint16_type = zserio.limits.VARINT16_MAX
+        allBuiltInTypes.varint32_type = zserio.limits.VARINT32_MAX
+        allBuiltInTypes.varint64_type = zserio.limits.VARINT64_MAX
+        allBuiltInTypes.varint_type = zserio.limits.VARINT_MAX
+        allBuiltInTypes.string_type = "TEST"
+        allBuiltInTypes.extern_type =  self._getExternalBitBuffer()
         expectedBitSizeOf = 1142
         self.assertEqual(expectedBitSizeOf, allBuiltInTypes.bitSizeOf())
 
     def testReadWrite(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()
-        allBuiltInTypes.setBoolType(True)
-        allBuiltInTypes.setUint8Type(8)
-        allBuiltInTypes.setUint16Type(zserio.limits.UINT16_MAX)
-        allBuiltInTypes.setUint32Type(zserio.limits.UINT32_MAX)
-        allBuiltInTypes.setUint64Type(zserio.limits.UINT64_MAX)
-        allBuiltInTypes.setInt8Type(zserio.limits.INT8_MAX)
-        allBuiltInTypes.setInt16Type(zserio.limits.INT16_MAX)
-        allBuiltInTypes.setInt32Type(zserio.limits.INT32_MAX)
-        allBuiltInTypes.setInt64Type(zserio.limits.INT64_MAX)
-        allBuiltInTypes.setBitfield7Type(0x7F)
-        allBuiltInTypes.setBitfield8Type(zserio.limits.UINT8_MAX)
-        allBuiltInTypes.setBitfield15Type(0x7FFF)
-        allBuiltInTypes.setBitfield16Type(zserio.limits.UINT16_MAX)
-        allBuiltInTypes.setBitfield31Type(0x7FFFFFFF)
-        allBuiltInTypes.setBitfield32Type(zserio.limits.UINT32_MAX)
-        allBuiltInTypes.setBitfield63Type(0x7FFFFFFFFFFFFFFF)
-        allBuiltInTypes.setVariableBitfieldType(zserio.limits.UINT8_MAX)
-        allBuiltInTypes.setVariableBitfield8Type(zserio.limits.UINT8_MAX)
-        allBuiltInTypes.setIntfield8Type(zserio.limits.INT8_MAX)
-        allBuiltInTypes.setIntfield16Type(zserio.limits.INT16_MAX)
-        allBuiltInTypes.setIntfield32Type(zserio.limits.INT32_MAX)
-        allBuiltInTypes.setIntfield64Type(zserio.limits.INT64_MAX)
-        allBuiltInTypes.setVariableIntfieldType(zserio.limits.INT8_MAX)
-        allBuiltInTypes.setVariableIntfield8Type(zserio.limits.INT8_MAX)
-        allBuiltInTypes.setFloat16Type(1.0)
-        allBuiltInTypes.setFloat32Type(1.0)
-        allBuiltInTypes.setFloat64Type(sys.float_info.max)
-        allBuiltInTypes.setVaruint16Type(zserio.limits.VARUINT16_MAX)
-        allBuiltInTypes.setVaruint32Type(zserio.limits.VARUINT32_MAX)
-        allBuiltInTypes.setVaruint64Type(zserio.limits.VARUINT64_MAX)
-        allBuiltInTypes.setVaruintType(zserio.limits.VARUINT_MAX)
-        allBuiltInTypes.setVarsizeType(zserio.limits.VARSIZE_MAX)
-        allBuiltInTypes.setVarint16Type(zserio.limits.VARINT16_MAX)
-        allBuiltInTypes.setVarint32Type(zserio.limits.VARINT32_MAX)
-        allBuiltInTypes.setVarint64Type(zserio.limits.VARINT64_MAX)
-        allBuiltInTypes.setVarintType(zserio.limits.VARINT_MAX)
-        allBuiltInTypes.setStringType("TEST")
-        allBuiltInTypes.setExternType(self._getExternalBitBuffer())
+        allBuiltInTypes.bool_type = True
+        allBuiltInTypes.uint8_type = 8
+        allBuiltInTypes.uint16_type = zserio.limits.UINT16_MAX
+        allBuiltInTypes.uint32_type = zserio.limits.UINT32_MAX
+        allBuiltInTypes.uint64_type = zserio.limits.UINT64_MAX
+        allBuiltInTypes.int8_type = zserio.limits.INT8_MAX
+        allBuiltInTypes.int16_type = zserio.limits.INT16_MAX
+        allBuiltInTypes.int32_type = zserio.limits.INT32_MAX
+        allBuiltInTypes.int64_type = zserio.limits.INT64_MAX
+        allBuiltInTypes.bitfield7_type = 0x7F
+        allBuiltInTypes.bitfield8_type = zserio.limits.UINT8_MAX
+        allBuiltInTypes.bitfield15_type = 0x7FFF
+        allBuiltInTypes.bitfield16_type = zserio.limits.UINT16_MAX
+        allBuiltInTypes.bitfield31_type = 0x7FFFFFFF
+        allBuiltInTypes.bitfield32_type = zserio.limits.UINT32_MAX
+        allBuiltInTypes.bitfield63_type = 0x7FFFFFFFFFFFFFFF
+        allBuiltInTypes.variable_bitfield_type = zserio.limits.UINT8_MAX
+        allBuiltInTypes.variable_bitfield8_type = zserio.limits.UINT8_MAX
+        allBuiltInTypes.intfield8_type = zserio.limits.INT8_MAX
+        allBuiltInTypes.intfield16_type = zserio.limits.INT16_MAX
+        allBuiltInTypes.intfield32_type = zserio.limits.INT32_MAX
+        allBuiltInTypes.intfield64_type = zserio.limits.INT64_MAX
+        allBuiltInTypes.variable_intfield_type = zserio.limits.INT8_MAX
+        allBuiltInTypes.variable_intfield8_type = zserio.limits.INT8_MAX
+        allBuiltInTypes.float16_type = 1.0
+        allBuiltInTypes.float32_type = 1.0
+        allBuiltInTypes.float64_type = sys.float_info.max
+        allBuiltInTypes.varuint16_type = zserio.limits.VARUINT16_MAX
+        allBuiltInTypes.varuint32_type = zserio.limits.VARUINT32_MAX
+        allBuiltInTypes.varuint64_type = zserio.limits.VARUINT64_MAX
+        allBuiltInTypes.varuint_type = zserio.limits.VARUINT_MAX
+        allBuiltInTypes.varsize_type = zserio.limits.VARSIZE_MAX
+        allBuiltInTypes.varint16_type = zserio.limits.VARINT16_MAX
+        allBuiltInTypes.varint32_type = zserio.limits.VARINT32_MAX
+        allBuiltInTypes.varint64_type = zserio.limits.VARINT64_MAX
+        allBuiltInTypes.varint_type = zserio.limits.VARINT_MAX
+        allBuiltInTypes.string_type = "TEST"
+        allBuiltInTypes.extern_type = self._getExternalBitBuffer()
 
         writer = zserio.BitStreamWriter()
         allBuiltInTypes.write(writer)

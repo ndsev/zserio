@@ -25,7 +25,7 @@ class UnionInt4RangeCheckTest(unittest.TestCase):
 
     def _checkUnionInt4Value(self, value):
         unionInt4RangeCheckCompound = self.api.UnionInt4RangeCheckCompound()
-        unionInt4RangeCheckCompound.setValue(value)
+        unionInt4RangeCheckCompound.value = value
         bitBuffer = zserio.serialize(unionInt4RangeCheckCompound)
         readUnionInt4RangeCheckCompound = zserio.deserialize(self.api.UnionInt4RangeCheckCompound, bitBuffer)
         self.assertEqual(unionInt4RangeCheckCompound, readUnionInt4RangeCheckCompound)

@@ -29,7 +29,7 @@ class EmptyUnionTest(unittest.TestCase):
 
     def testChoiceTag(self):
         emptyUnion = self.api.EmptyUnion()
-        self.assertEqual(self.api.EmptyUnion.UNDEFINED_CHOICE, emptyUnion.choiceTag())
+        self.assertEqual(self.api.EmptyUnion.UNDEFINED_CHOICE, emptyUnion.choice_tag)
 
     def testBitSizeOf(self):
         bitPosition = 1

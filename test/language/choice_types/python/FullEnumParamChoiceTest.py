@@ -11,12 +11,12 @@ class FullEnumParamChoiceTest(unittest.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.BLACK
         fullEnumParamChoice = self.api.FullEnumParamChoice(selector)
-        self.assertEqual(selector, fullEnumParamChoice.getSelector())
+        self.assertEqual(selector, fullEnumParamChoice.selector)
 
         selector = self.api.Selector.WHITE
         fullEnumParamChoice = self.api.FullEnumParamChoice(selector, white_=123)
-        self.assertEqual(selector, fullEnumParamChoice.getSelector())
-        self.assertEqual(123, fullEnumParamChoice.getWhite())
+        self.assertEqual(selector, fullEnumParamChoice.selector)
+        self.assertEqual(123, fullEnumParamChoice.white)
 
     def testFromReader(self):
         selector = self.api.Selector.GREY
@@ -25,8 +25,8 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         self._writeFullEnumParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         fullEnumParamChoice = self.api.FullEnumParamChoice.fromReader(reader, selector)
-        self.assertEqual(selector, fullEnumParamChoice.getSelector())
-        self.assertEqual(value, fullEnumParamChoice.getGrey())
+        self.assertEqual(selector, fullEnumParamChoice.selector)
+        self.assertEqual(value, fullEnumParamChoice.grey)
 
     def testEq(self):
         enumParamChoice1 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
@@ -34,14 +34,14 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         self.assertTrue(enumParamChoice1 == enumParamChoice2)
 
         value = 99
-        enumParamChoice1.setBlack(value)
+        enumParamChoice1.black = value
         self.assertFalse(enumParamChoice1 == enumParamChoice2)
 
-        enumParamChoice2.setBlack(value)
+        enumParamChoice2.black = value
         self.assertTrue(enumParamChoice1 == enumParamChoice2)
 
         diffValue = value + 1
-        enumParamChoice2.setBlack(diffValue)
+        enumParamChoice2.black = diffValue
         self.assertFalse(enumParamChoice1 == enumParamChoice2)
 
     def testHash(self):
@@ -50,38 +50,38 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
 
         value = 99
-        enumParamChoice1.setBlack(value)
+        enumParamChoice1.black = value
         self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
 
-        enumParamChoice2.setBlack(value)
+        enumParamChoice2.black = value
         self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
 
         diffValue = value + 1
-        enumParamChoice2.setBlack(diffValue)
+        enumParamChoice2.black = diffValue
         self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
 
     def testGetSelector(self):
         selector = self.api.Selector.BLACK
         fullEnumParamChoice = self.api.FullEnumParamChoice(selector)
-        self.assertEqual(selector, fullEnumParamChoice.getSelector())
+        self.assertEqual(selector, fullEnumParamChoice.selector)
 
     def testGetSetBlack(self):
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
         value = 99
-        fullEnumParamChoice.setBlack(value)
-        self.assertEqual(value, fullEnumParamChoice.getBlack())
+        fullEnumParamChoice.black = value
+        self.assertEqual(value, fullEnumParamChoice.black)
 
     def testGetSetGrey(self):
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.GREY)
         value = 234
-        fullEnumParamChoice.setGrey(value)
-        self.assertEqual(value, fullEnumParamChoice.getGrey())
+        fullEnumParamChoice.grey = value
+        self.assertEqual(value, fullEnumParamChoice.grey)
 
     def testGetSetWhite(self):
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.WHITE)
         value = 65535
-        fullEnumParamChoice.setWhite(value)
-        self.assertEqual(value, fullEnumParamChoice.getWhite())
+        fullEnumParamChoice.white = value
+        self.assertEqual(value, fullEnumParamChoice.white)
 
     def testBitSizeOf(self):
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
@@ -108,13 +108,13 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         selector = self.api.Selector.BLACK
         fullEnumParamChoice = self.api.FullEnumParamChoice(selector)
         byteValue = 99
-        fullEnumParamChoice.setBlack(byteValue)
+        fullEnumParamChoice.black = byteValue
         writer = zserio.BitStreamWriter()
         fullEnumParamChoice.write(writer)
         readFullEnumParamChoice = self.api.FullEnumParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readFullEnumParamChoice.read(reader)
-        self.assertEqual(byteValue, readFullEnumParamChoice.getBlack())
+        self.assertEqual(byteValue, readFullEnumParamChoice.black)
         self.assertEqual(fullEnumParamChoice, readFullEnumParamChoice)
 
         selector = self.api.Selector.GREY
@@ -125,19 +125,19 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         readFullEnumParamChoice = self.api.FullEnumParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readFullEnumParamChoice.read(reader)
-        self.assertEqual(shortValue, readFullEnumParamChoice.getGrey())
+        self.assertEqual(shortValue, readFullEnumParamChoice.grey)
         self.assertEqual(fullEnumParamChoice, readFullEnumParamChoice)
 
         selector = self.api.Selector.WHITE
         fullEnumParamChoice = self.api.FullEnumParamChoice(selector)
         intValue = 65535
-        fullEnumParamChoice.setWhite(intValue)
+        fullEnumParamChoice.white = intValue
         writer = zserio.BitStreamWriter()
         fullEnumParamChoice.write(writer)
         readFullEnumParamChoice = self.api.FullEnumParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readFullEnumParamChoice.read(reader)
-        self.assertEqual(intValue, readFullEnumParamChoice.getWhite())
+        self.assertEqual(intValue, readFullEnumParamChoice.white)
         self.assertEqual(fullEnumParamChoice, readFullEnumParamChoice)
 
     def _writeFullEnumParamChoiceToStream(self, writer, selector, value):

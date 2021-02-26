@@ -21,7 +21,7 @@ class Fts3VirtualTableTest(unittest.TestCase):
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
-        testTable = self._database.getFts3VirtualTable()
+        testTable = self._database.fts3_virtual_table
         testTable.deleteTable()
         self.assertFalse(self._isTableInDb())
 
@@ -29,7 +29,7 @@ class Fts3VirtualTableTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getFts3VirtualTable()
+        testTable = self._database.fts3_virtual_table
 
         writtenRows = self._createFts3VirtualTableRows()
         testTable.write(writtenRows)
@@ -42,7 +42,7 @@ class Fts3VirtualTableTest(unittest.TestCase):
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
-        testTable = self._database.getFts3VirtualTable()
+        testTable = self._database.fts3_virtual_table
 
         writtenRows = self._createFts3VirtualTableRows()
         testTable.write(writtenRows)
@@ -55,7 +55,7 @@ class Fts3VirtualTableTest(unittest.TestCase):
             self.assertEqual(writtenRows[expectedRowNum], readRow)
 
     def testUpdate(self):
-        testTable = self._database.getFts3VirtualTable()
+        testTable = self._database.fts3_virtual_table
 
         writtenRows = self._createFts3VirtualTableRows()
         testTable.write(writtenRows)
@@ -83,7 +83,7 @@ class Fts3VirtualTableTest(unittest.TestCase):
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + self.TABLE_NAME + "'"
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == self.TABLE_NAME:
                 return True
 

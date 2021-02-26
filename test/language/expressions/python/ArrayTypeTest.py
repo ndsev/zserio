@@ -13,7 +13,7 @@ class ArrayTypeTest(unittest.TestCase):
 
     def testBitSizeOfWithoutOptional(self):
         arrayTypeExpression = self.api.ArrayTypeExpression()
-        arrayTypeExpression.setArray([1, 1])
+        arrayTypeExpression.array = [1, 1]
         self.assertEqual(self.ARRAY_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, arrayTypeExpression.bitSizeOf())
 
     ARRAY_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 17

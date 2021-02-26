@@ -10,19 +10,19 @@ class UnionWithParameterTest(unittest.TestCase):
 
     def testParamConstructor(self):
         testUnion = self.api.TestUnion(True)
-        self.assertTrue(testUnion.getCase1Allowed())
+        self.assertTrue(testUnion.case1_allowed)
 
-        testUnion.setCase1Field(11)
+        testUnion.case1_field = 11
         bitBuffer = zserio.serialize(testUnion)
         readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer, True)
-        self.assertEqual(testUnion.getCase1Allowed(), readTestUnion.getCase1Allowed())
-        self.assertEqual(testUnion.getCase1Field(), readTestUnion.getCase1Field())
+        self.assertEqual(testUnion.case1_allowed, readTestUnion.case1_allowed)
+        self.assertEqual(testUnion.case1_field, readTestUnion.case1_field)
 
     def testParamConstructorCase1Forbidden(self):
         testUnion = self.api.TestUnion(False)
-        self.assertFalse(testUnion.getCase1Allowed())
+        self.assertFalse(testUnion.case1_allowed)
 
-        testUnion.setCase1Field(11)
+        testUnion.case1_field = 11
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
             testUnion.write(writer) # raises exception
@@ -31,6 +31,6 @@ class UnionWithParameterTest(unittest.TestCase):
         testUnion = self.api.TestUnion(True, case3Field_=-1)
         bitBuffer = zserio.serialize(testUnion)
         readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer, True)
-        self.assertEqual(testUnion.choiceTag(), readTestUnion.choiceTag())
-        self.assertEqual(testUnion.getCase3Field(), readTestUnion.getCase3Field())
-        self.assertEqual(-1, readTestUnion.getCase3Field())
+        self.assertEqual(testUnion.choice_tag, readTestUnion.choice_tag)
+        self.assertEqual(testUnion.case3_field, readTestUnion.case3_field)
+        self.assertEqual(-1, readTestUnion.case3_field)

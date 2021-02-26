@@ -176,7 +176,7 @@ class BitfieldEnumTest(unittest.TestCase):
         self.assertEqual(self.api.Permission.Values.READ, self.api.READ_PERMISSION)
 
     def testConstantDefinedByBitmaskValueof(self):
-        self.assertEqual(self.api.Permission.Values.READ.getValue(), self.api.READ_PERMISSION_VALUE)
+        self.assertEqual(self.api.Permission.Values.READ.value, self.api.READ_PERMISSION_VALUE)
 
     def testSubtypeToBitmaskConstant(self):
         self.assertEqual(self.api.PermissionSubtype.Values.READ, self.api.SUBTYPE_READ_PERMISSION)

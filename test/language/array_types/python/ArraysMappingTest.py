@@ -13,109 +13,109 @@ class ArraysMappingTest(unittest.TestCase):
         arraysMapping = self.api.ArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.setUint8Array(intArray)
-        arraysMapping.setUint16Array(intArray)
-        arraysMapping.setUint32Array(intArray)
-        arraysMapping.setUint64Array(intArray)
+        arraysMapping.uint8_array = intArray
+        arraysMapping.uint16_array = intArray
+        arraysMapping.uint32_array = intArray
+        arraysMapping.uint64_array = intArray
 
     def testSignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.setInt8Array(intArray)
-        arraysMapping.setInt16Array(intArray)
-        arraysMapping.setInt32Array(intArray)
-        arraysMapping.setInt64Array(intArray)
+        arraysMapping.int8_array = intArray
+        arraysMapping.int16_array = intArray
+        arraysMapping.int32_array = intArray
+        arraysMapping.int64_array = intArray
 
     def testUnsignedBitfieldArrays(self):
         arraysMapping = self.api.ArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.setBitfield8Array(intArray)
-        arraysMapping.setBitfield16Array(intArray)
-        arraysMapping.setBitfield32Array(intArray)
-        arraysMapping.setBitfield63Array(intArray)
-        arraysMapping.setUint8Value(8)
-        arraysMapping.setVariableBitfieldLongArray(intArray)
-        arraysMapping.setVariableBitfieldIntArray(intArray)
-        arraysMapping.setVariableBitfieldShortArray(intArray)
-        arraysMapping.setVariableBitfieldByteArray(intArray)
+        arraysMapping.bitfield8_array = intArray
+        arraysMapping.bitfield16_array = intArray
+        arraysMapping.bitfield32_array = intArray
+        arraysMapping.bitfield63_array = intArray
+        arraysMapping.uint8_value = 8
+        arraysMapping.variable_bitfield_long_array = intArray
+        arraysMapping.variable_bitfield_int_array = intArray
+        arraysMapping.variable_bitfield_short_array = intArray
+        arraysMapping.variable_bitfield_byte_array = intArray
 
     def testSignedBitfieldArrays(self):
         arraysMapping = self.api.ArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.setIntfield8Array(intArray)
-        arraysMapping.setIntfield16Array(intArray)
-        arraysMapping.setIntfield32Array(intArray)
-        arraysMapping.setIntfield64Array(intArray)
-        arraysMapping.setUint8Value(8)
-        arraysMapping.setVariableIntfieldLongArray(intArray)
-        arraysMapping.setVariableIntfieldIntArray(intArray)
-        arraysMapping.setVariableIntfieldShortArray(intArray)
-        arraysMapping.setVariableIntfieldByteArray(intArray)
+        arraysMapping.intfield8_array = intArray
+        arraysMapping.intfield16_array = intArray
+        arraysMapping.intfield32_array = intArray
+        arraysMapping.intfield64_array = intArray
+        arraysMapping.uint8_value = 8
+        arraysMapping.variable_intfield_long_array = intArray
+        arraysMapping.variable_intfield_int_array = intArray
+        arraysMapping.variable_intfield_short_array = intArray
+        arraysMapping.variable_intfield_byte_array = intArray
 
     def testFloatArrays(self):
         arraysMapping = self.api.ArraysMapping()
         floatArray = [i / (i + 1) for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.setFloat16Array(floatArray)
-        arraysMapping.setFloat32Array(floatArray)
-        arraysMapping.setFloat64Array(floatArray)
+        arraysMapping.float16_array = floatArray
+        arraysMapping.float32_array = floatArray
+        arraysMapping.float64_array = floatArray
 
     def testVariableUnsignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.setVaruint16Array(intArray)
-        arraysMapping.setVaruint32Array(intArray)
-        arraysMapping.setVaruint64Array(intArray)
-        arraysMapping.setVaruintArray(intArray)
-        arraysMapping.setVarsizeArray(intArray)
+        arraysMapping.varuint16_array = intArray
+        arraysMapping.varuint32_array = intArray
+        arraysMapping.varuint64_array = intArray
+        arraysMapping.varuint_array = intArray
+        arraysMapping.varsize_array = intArray
 
     def testVariableSignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.setVarint16Array(intArray)
-        arraysMapping.setVarint32Array(intArray)
-        arraysMapping.setVarint64Array(intArray)
-        arraysMapping.setVarintArray(intArray)
+        arraysMapping.varint16_array = intArray
+        arraysMapping.varint32_array = intArray
+        arraysMapping.varint64_array = intArray
+        arraysMapping.varint_array = intArray
 
     def testBoolArray(self):
         arraysMapping = self.api.ArraysMapping()
         boolArray = [i % 2 == 0 for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.setBoolArray(boolArray)
+        arraysMapping.bool_array = boolArray
 
     def testStringArrays(self):
         arraysMapping = self.api.ArraysMapping()
         stringArray = ["Test" + str(i) for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.setStringArray(stringArray)
+        arraysMapping.string_array = stringArray
 
     def testExternArrays(self):
         arraysMapping = self.api.ArraysMapping()
         externArray = [zserio.BitBuffer(bytes([0xCD, 0x03]), 10)
                        for i in range(self.FIXED_ARRAY_LENGTH)]
-        arraysMapping.setExternArray(externArray)
+        arraysMapping.extern_array = externArray
 
     def testCompoundArray(self):
         arraysMapping = self.api.ArraysMapping()
         compoundArray = [self.api.TestStructure() for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.setCompoundArray(compoundArray)
+        arraysMapping.compound_array = compoundArray
 
     def testEnumArray(self):
         arraysMapping = self.api.ArraysMapping()
         enumArray = [self.api.TestEnum(self.api.TestEnum.VALUE1) for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.setEnumArray(enumArray)
+        arraysMapping.enum_array = enumArray
 
     def testBitmaskArray(self):
         arraysMapping = self.api.ArraysMapping()
         bitmaskArray = [self.api.TestBitmask.Values.MASK1 for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.setBitmaskArray(bitmaskArray)
+        arraysMapping.bitmask_array = bitmaskArray
 
     FIXED_ARRAY_LENGTH = 5

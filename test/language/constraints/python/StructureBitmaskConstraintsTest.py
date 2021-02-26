@@ -20,9 +20,9 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
         structureBitmaskConstraints.read(reader)
-        self.assertEqual(1, structureBitmaskConstraints.getCoordX())
-        self.assertEqual(1, structureBitmaskConstraints.getCoordY())
-        self.assertEqual(1, structureBitmaskConstraints.getCoordZ())
+        self.assertEqual(1, structureBitmaskConstraints.coord_x)
+        self.assertEqual(1, structureBitmaskConstraints.coord_y)
+        self.assertEqual(1, structureBitmaskConstraints.coord_z)
 
     def testReadWrongCoordZConstraint(self):
         writer = zserio.BitStreamWriter()
@@ -60,9 +60,9 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
         )
         bitBuffer = zserio.serialize(structureBitmaskConstraints)
         readStructureBitmaskConstraints = zserio.deserialize(self.api.StructureBitmaskConstraints, bitBuffer)
-        self.assertEqual(1, readStructureBitmaskConstraints.getCoordX())
-        self.assertEqual(1, readStructureBitmaskConstraints.getCoordY())
-        self.assertEqual(0, readStructureBitmaskConstraints.getCoordZ())
+        self.assertEqual(1, readStructureBitmaskConstraints.coord_x)
+        self.assertEqual(1, readStructureBitmaskConstraints.coord_y)
+        self.assertEqual(0, readStructureBitmaskConstraints.coord_z)
         self.assertEqual(structureBitmaskConstraints, readStructureBitmaskConstraints)
 
     def testWriteWrongCoordZConstraint(self):
@@ -91,7 +91,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
 
     @staticmethod
     def _write(writer, mask, x, y, z):
-        writer.writeBits(mask.getValue(), 3)
+        writer.writeBits(mask.value, 3)
         writer.writeBits(x, 8)
         writer.writeBits(y, 8)
         writer.writeBits(z, 8)

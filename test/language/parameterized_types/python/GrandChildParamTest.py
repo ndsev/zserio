@@ -23,18 +23,18 @@ class GrandChildParamTest(unittest.TestCase):
         item = self.api.Item(self.ITEM_CHOICE_HOLDER_HAS_ITEM, self.ITEM_PARAM,
                              self.ITEM_EXTRA_PARAM)
         itemChoice = self.api.ItemChoice(self.ITEM_CHOICE_HOLDER_HAS_ITEM)
-        itemChoice.setItem(item)
-        itemChoiceHolder = self.api.ItemChoiceHolder(itemChoice.getHasItem(), itemChoice)
+        itemChoice.item = item
+        itemChoiceHolder = self.api.ItemChoiceHolder(itemChoice.has_item, itemChoice)
 
         return self.api.GrandChildParam(itemChoiceHolder)
 
     def _checkGrandChildParamInStream(self, stream, grandChildParam):
-        itemChoiceHolder = grandChildParam.getItemChoiceHolder()
-        self.assertEqual(itemChoiceHolder.getHasItem(), stream.readBool())
+        itemChoiceHolder = grandChildParam.item_choice_holder
+        self.assertEqual(itemChoiceHolder.has_item, stream.readBool())
 
-        item = itemChoiceHolder.getItemChoice().getItem()
-        self.assertEqual(item.getParam(), stream.readBits(16))
-        self.assertEqual(item.getExtraParam(), stream.readBits(32))
+        item = itemChoiceHolder.item_choice.item
+        self.assertEqual(item.param, stream.readBits(16))
+        self.assertEqual(item.extra_param, stream.readBits(32))
 
     ITEM_CHOICE_HOLDER_HAS_ITEM = True
     ITEM_PARAM = 0xAABB

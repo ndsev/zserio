@@ -65,7 +65,7 @@ TEST_F(GifTest, OnePixGif)
     ASSERT_EQ(expectedGifScreenBgColor, screenDescriptor.getBgColor());
 
     const uint8_t expectedScreenBitsOfColorResolution = 7;
-    ASSERT_EQ(expectedScreenBitsOfColorResolution, screenDescriptor.getBitsOfColorResulution());
+    ASSERT_EQ(expectedScreenBitsOfColorResolution, screenDescriptor.getBitsOfColorResolution());
 
     const uint8_t expectedScreenBitsPerPixel = 7;
     ASSERT_EQ(expectedScreenBitsPerPixel, screenDescriptor.getBitsPerPixel());

@@ -20,7 +20,7 @@ class BlobFieldWithChildrenInitializationTableTest(unittest.TestCase):
         self._database.close()
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getBlobFieldWithChildrenInitializationTable()
+        testTable = self._database.blob_field_with_children_initialization_table
 
         writtenRows = self._createRows()
         testTable.write(writtenRows)

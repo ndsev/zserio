@@ -55,13 +55,13 @@ class EmptyIndexedOffsetArrayTest(unittest.TestCase):
         writer.writeBits(self.FIELD_VALUE, 6)
 
     def _checkEmptyIndexedOffsetArray(self, emptyIndexedOffsetArray):
-        offsets = emptyIndexedOffsetArray.getOffsets()
+        offsets = emptyIndexedOffsetArray.offsets
         self.assertEqual(self.NUM_ELEMENTS, len(offsets))
 
-        self.assertEqual(self.SPACER_VALUE, emptyIndexedOffsetArray.getSpacer())
-        self.assertEqual(self.FIELD_VALUE, emptyIndexedOffsetArray.getField())
+        self.assertEqual(self.SPACER_VALUE, emptyIndexedOffsetArray.spacer)
+        self.assertEqual(self.FIELD_VALUE, emptyIndexedOffsetArray.field)
 
-        data = emptyIndexedOffsetArray.getData()
+        data = emptyIndexedOffsetArray.data
         self.assertEqual(self.NUM_ELEMENTS, len(data))
 
     def _createEmptyIndexedOffsetArray(self):

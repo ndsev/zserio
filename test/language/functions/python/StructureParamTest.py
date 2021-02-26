@@ -10,7 +10,7 @@ class StructureParamTest(unittest.TestCase):
 
     def testMetresConverterCaller(self):
         metresConverterCaller = self._createMetresConverterCaller()
-        self.assertEqual(CONVERTED_CM_VALUE, metresConverterCaller.getCm())
+        self.assertEqual(CONVERTED_CM_VALUE, metresConverterCaller.cm)
 
         writer = zserio.BitStreamWriter()
         metresConverterCaller.write(writer)

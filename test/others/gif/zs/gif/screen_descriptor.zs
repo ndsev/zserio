@@ -9,7 +9,7 @@ struct ScreenDescriptor(GifVersion version)
     uint16      height;
 
     bit:1       globalColorMapFollows;
-    bit:3       bitsOfColorResulution;
+    bit:3       bitsOfColorResolution;
     bit:1       null1_          if version == GifVersion.V87A : null1_ == 0;
     bit:1       sortFlag         if version == GifVersion.V89A;
     bit:3       bitsPerPixel;

@@ -11,5 +11,5 @@ class NegationOperatorTest(unittest.TestCase):
         negationOperatorExpression = self.api.NegationOperatorExpression(True)
         self.assertEqual(False, negationOperatorExpression.funcNegatedValue())
 
-        negationOperatorExpression.setValue(False)
+        negationOperatorExpression.value = False
         self.assertEqual(True, negationOperatorExpression.funcNegatedValue())

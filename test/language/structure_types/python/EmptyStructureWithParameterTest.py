@@ -10,13 +10,13 @@ class EmptyStructureTest(unittest.TestCase):
 
     def testParamConstructor(self):
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(1)
-        self.assertEqual(1, emptyStructureWithParameter.getParam())
+        self.assertEqual(1, emptyStructureWithParameter.param)
 
     def testFromReader(self):
         param = 1
         reader = zserio.BitStreamReader([])
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter.fromReader(reader, param)
-        self.assertEqual(param, emptyStructureWithParameter.getParam())
+        self.assertEqual(param, emptyStructureWithParameter.param)
         self.assertEqual(0, emptyStructureWithParameter.bitSizeOf())
 
     def testEq(self):
@@ -36,7 +36,7 @@ class EmptyStructureTest(unittest.TestCase):
     def testGetParam(self):
         param = 1
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(param)
-        self.assertEqual(param, emptyStructureWithParameter.getParam())
+        self.assertEqual(param, emptyStructureWithParameter.param)
 
     def testBitSizeOf(self):
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(1)
@@ -52,7 +52,7 @@ class EmptyStructureTest(unittest.TestCase):
         reader = zserio.BitStreamReader([])
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(param)
         emptyStructureWithParameter.read(reader)
-        self.assertEqual(param, emptyStructureWithParameter.getParam())
+        self.assertEqual(param, emptyStructureWithParameter.param)
         self.assertEqual(0, emptyStructureWithParameter.bitSizeOf())
 
     def testWrite(self):

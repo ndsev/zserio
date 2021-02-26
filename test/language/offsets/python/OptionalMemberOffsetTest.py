@@ -101,14 +101,14 @@ class OptionalMemberOffsetTest(unittest.TestCase):
 
     def _checkOptionalMemberOffset(self, optionalMemberOffset, hasOptional, optionalFieldOffset, optionalField,
                                    field):
-        self.assertEqual(hasOptional, optionalMemberOffset.getHasOptional())
-        self.assertEqual(optionalFieldOffset, optionalMemberOffset.getOptionalFieldOffset())
+        self.assertEqual(hasOptional, optionalMemberOffset.has_optional)
+        self.assertEqual(optionalFieldOffset, optionalMemberOffset.optional_field_offset)
         if hasOptional:
-            self.assertEqual(optionalField, optionalMemberOffset.getOptionalField())
+            self.assertEqual(optionalField, optionalMemberOffset.optional_field)
             self.assertTrue(optionalMemberOffset.isOptionalFieldUsed())
         else:
             self.assertFalse(optionalMemberOffset.isOptionalFieldUsed())
-        self.assertEqual(field, optionalMemberOffset.getField())
+        self.assertEqual(field, optionalMemberOffset.field)
 
     WITH_OPTIONAL_MEMBER_OFFSET_BIT_SIZE = 104
     WITHOUT_OPTIONAL_MEMBER_OFFSET_BIT_SIZE = 65

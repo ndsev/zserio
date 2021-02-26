@@ -26,7 +26,7 @@ class ChoiceBit4RangeCheckTest(unittest.TestCase):
     def _checkChoiceBit4Value(self, value):
         selector = True
         choiceBit4RangeCheckCompound = self.api.ChoiceBit4RangeCheckCompound(selector)
-        choiceBit4RangeCheckCompound.setValue(value)
+        choiceBit4RangeCheckCompound.value = value
         bitBuffer = zserio.serialize(choiceBit4RangeCheckCompound)
         readChoiceBit4RangeCheckCompound = zserio.deserialize(self.api.ChoiceBit4RangeCheckCompound, bitBuffer,
                                                               selector)

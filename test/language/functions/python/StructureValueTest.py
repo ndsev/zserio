@@ -39,13 +39,13 @@ class StructureValueTest(unittest.TestCase):
     def _createCustomVarInt(self, value):
         customVarInt = self.api.CustomVarInt()
         if value <= self.MAX_ONE_BYTE_VALUE:
-            customVarInt.setVal1(value)
+            customVarInt.val1 = value
         elif value <= 0xFFFF:
-            customVarInt.setVal1(self.TWO_BYTES_INDICATOR)
-            customVarInt.setVal2(value)
+            customVarInt.val1 = self.TWO_BYTES_INDICATOR
+            customVarInt.val2 = value
         else:
-            customVarInt.setVal1(self.FOUR_BYTES_INDICATOR)
-            customVarInt.setVal3(value)
+            customVarInt.val1 = self.FOUR_BYTES_INDICATOR
+            customVarInt.val3 = value
 
         return customVarInt
 

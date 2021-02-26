@@ -12,7 +12,7 @@ class BitfieldConstBitmaskTest(unittest.TestCase):
 
     def testEmptyConstructor(self):
         permission = self.api.Permission()
-        self.assertEqual(0, permission.getValue())
+        self.assertEqual(0, permission.value)
 
     def testFromValue(self):
         permission = self.api.Permission.fromValue(WRITE_VALUE)
@@ -48,8 +48,8 @@ class BitfieldConstBitmaskTest(unittest.TestCase):
         self.assertFalse(write == self.api.Permission.Values.READ)
         self.assertFalse(self.api.Permission.Values.READ == write)
 
-        self.assertTrue(read == self.api.Permission.fromValue(read.getValue())) # copy
-        self.assertTrue(write == self.api.Permission.fromValue(write.getValue())) # copy
+        self.assertTrue(read == self.api.Permission.fromValue(read.value)) # copy
+        self.assertTrue(write == self.api.Permission.fromValue(write.value)) # copy
 
         self.assertFalse(read == write)
 
@@ -81,7 +81,7 @@ class BitfieldConstBitmaskTest(unittest.TestCase):
         self.assertEqual(read, read | self.api.Permission.Values.NONE)
         self.assertEqual(write, self.api.Permission.Values.NONE | write)
 
-        self.assertEqual(READ_VALUE | WRITE_VALUE, (read | write).getValue())
+        self.assertEqual(READ_VALUE | WRITE_VALUE, (read | write).value)
 
     def testAnd(self):
         read = self.api.Permission.Values.READ
@@ -101,7 +101,7 @@ class BitfieldConstBitmaskTest(unittest.TestCase):
         write = self.api.Permission.Values.WRITE
 
         self.assertEqual(read ^ write, self.api.Permission.Values.READ ^ self.api.Permission.Values.WRITE)
-        self.assertEqual(READ_VALUE ^ WRITE_VALUE, (read ^ write).getValue())
+        self.assertEqual(READ_VALUE ^ WRITE_VALUE, (read ^ write).value)
         self.assertEqual(read, (read ^ write) & read)
         self.assertEqual(write, (read ^ write) & write)
         self.assertEqual(self.api.Permission.Values.NONE, read ^ read)
@@ -137,9 +137,9 @@ class BitfieldConstBitmaskTest(unittest.TestCase):
         self.assertEqual(permission, readPermission)
 
     def testGetValue(self):
-        self.assertEqual(NONE_VALUE, self.api.Permission.Values.NONE.getValue())
-        self.assertEqual(READ_VALUE, self.api.Permission.Values.READ.getValue())
-        self.assertEqual(WRITE_VALUE, self.api.Permission.Values.WRITE.getValue())
+        self.assertEqual(NONE_VALUE, self.api.Permission.Values.NONE.value)
+        self.assertEqual(READ_VALUE, self.api.Permission.Values.READ.value)
+        self.assertEqual(WRITE_VALUE, self.api.Permission.Values.WRITE.value)
 
 NONE_VALUE = 0
 READ_VALUE = 2

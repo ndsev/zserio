@@ -20,7 +20,7 @@ class SubtypedBoolFieldTableTest(unittest.TestCase):
         self._database.close()
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getSubtypedBoolFieldTable()
+        testTable = self._database.subtyped_bool_field_table
 
         writtenRows = self._createRows()
         testTable.write(writtenRows)

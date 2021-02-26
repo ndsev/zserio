@@ -15,7 +15,7 @@ class ParameterTypeTest(unittest.TestCase):
 
     def testBitSizeOfWithoutOptional(self):
         parameterTypeExpression = self.api.ParameterTypeExpression(self.api.Color.BLUE)
-        parameterTypeExpression.setValue(self.VALUE)
+        parameterTypeExpression.value = self.VALUE
         self.assertEqual(self.PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
                          parameterTypeExpression.bitSizeOf())
 

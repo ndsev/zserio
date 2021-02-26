@@ -10,22 +10,22 @@ class SimpleStructureTest(unittest.TestCase):
 
     def testConstructor(self):
         simpleStructure = self.api.SimpleStructure()
-        self.assertEqual(0, simpleStructure.getNumberA())
-        self.assertEqual(0, simpleStructure.getNumberB())
-        self.assertEqual(0, simpleStructure.getNumberC())
+        self.assertEqual(0, simpleStructure.number_a)
+        self.assertEqual(0, simpleStructure.number_b)
+        self.assertEqual(0, simpleStructure.number_c)
 
         numberA = 0x01
         numberB = 0xAA
         numberC = 0x55
         simpleStructure = self.api.SimpleStructure(numberA, numberB, numberC)
-        self.assertEqual(numberA, simpleStructure.getNumberA())
-        self.assertEqual(numberB, simpleStructure.getNumberB())
-        self.assertEqual(numberC, simpleStructure.getNumberC())
+        self.assertEqual(numberA, simpleStructure.number_a)
+        self.assertEqual(numberB, simpleStructure.number_b)
+        self.assertEqual(numberC, simpleStructure.number_c)
 
         simpleStructure = self.api.SimpleStructure(numberB_=numberB, numberA_=numberA, numberC_=numberC)
-        self.assertEqual(numberA, simpleStructure.getNumberA())
-        self.assertEqual(numberB, simpleStructure.getNumberB())
-        self.assertEqual(numberC, simpleStructure.getNumberC())
+        self.assertEqual(numberA, simpleStructure.number_a)
+        self.assertEqual(numberB, simpleStructure.number_b)
+        self.assertEqual(numberC, simpleStructure.number_c)
 
     def testFromReader(self):
         numberA = 0x07
@@ -35,9 +35,9 @@ class SimpleStructureTest(unittest.TestCase):
         SimpleStructureTest._writeSimpleStructureToStream(writer, numberA, numberB, numberC)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         simpleStructure = self.api.SimpleStructure.fromReader(reader)
-        self.assertEqual(numberA, simpleStructure.getNumberA())
-        self.assertEqual(numberB, simpleStructure.getNumberB())
-        self.assertEqual(numberC, simpleStructure.getNumberC())
+        self.assertEqual(numberA, simpleStructure.number_a)
+        self.assertEqual(numberB, simpleStructure.number_b)
+        self.assertEqual(numberC, simpleStructure.number_c)
 
     def testEq(self):
         simpleStructure1 = self.api.SimpleStructure()
@@ -47,15 +47,15 @@ class SimpleStructureTest(unittest.TestCase):
         numberA = 0x03
         numberB = 0xDE
         numberC = 0x55
-        simpleStructure1.setNumberA(numberA)
-        simpleStructure1.setNumberB(numberB)
-        simpleStructure1.setNumberC(numberC)
-        simpleStructure2.setNumberA(numberA)
-        simpleStructure2.setNumberB(numberB + 1)
-        simpleStructure2.setNumberC(numberC)
+        simpleStructure1.number_a = numberA
+        simpleStructure1.number_b = numberB
+        simpleStructure1.number_c = numberC
+        simpleStructure2.number_a = numberA
+        simpleStructure2.number_b = numberB + 1
+        simpleStructure2.number_c = numberC
         self.assertFalse(simpleStructure1 == simpleStructure2)
 
-        simpleStructure2.setNumberB(numberB)
+        simpleStructure2.number_b = numberB
         self.assertTrue(simpleStructure1 == simpleStructure2)
 
     def testHash(self):
@@ -66,34 +66,34 @@ class SimpleStructureTest(unittest.TestCase):
         numberA = 0x04
         numberB = 0xCD
         numberC = 0x57
-        simpleStructure1.setNumberA(numberA)
-        simpleStructure1.setNumberB(numberB)
-        simpleStructure1.setNumberC(numberC)
-        simpleStructure2.setNumberA(numberA)
-        simpleStructure2.setNumberB(numberB + 1)
-        simpleStructure2.setNumberC(numberC)
+        simpleStructure1.number_a = numberA
+        simpleStructure1.number_b = numberB
+        simpleStructure1.number_c = numberC
+        simpleStructure2.number_a = numberA
+        simpleStructure2.number_b = numberB + 1
+        simpleStructure2.number_c = numberC
         self.assertTrue(hash(simpleStructure1) != hash(simpleStructure2))
 
-        simpleStructure2.setNumberB(numberB)
+        simpleStructure2.number_b = numberB
         self.assertEqual(hash(simpleStructure1), hash(simpleStructure2))
 
     def testGetSetNumberA(self):
         simpleStructure = self.api.SimpleStructure()
         numberA = 0x02
-        simpleStructure.setNumberA(numberA)
-        self.assertEqual(numberA, simpleStructure.getNumberA())
+        simpleStructure.number_a = numberA
+        self.assertEqual(numberA, simpleStructure.number_a)
 
     def testGetSetNumberB(self):
         simpleStructure = self.api.SimpleStructure()
         numberB = 0x23
-        simpleStructure.setNumberB(numberB)
-        self.assertEqual(numberB, simpleStructure.getNumberB())
+        simpleStructure.number_b = numberB
+        self.assertEqual(numberB, simpleStructure.number_b)
 
     def testGetSetNumberC(self):
         simpleStructure = self.api.SimpleStructure()
         numberC = 0x11
-        simpleStructure.setNumberC(numberC)
-        self.assertEqual(numberC, simpleStructure.getNumberC())
+        simpleStructure.number_c = numberC
+        self.assertEqual(numberC, simpleStructure.number_c)
 
     def testBitSizeOf(self):
         numberA = 0x00
@@ -121,9 +121,9 @@ class SimpleStructureTest(unittest.TestCase):
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readSimpleStructure = self.api.SimpleStructure()
         readSimpleStructure.read(reader)
-        self.assertEqual(numberA, readSimpleStructure.getNumberA())
-        self.assertEqual(numberB, readSimpleStructure.getNumberB())
-        self.assertEqual(numberC, readSimpleStructure.getNumberC())
+        self.assertEqual(numberA, readSimpleStructure.number_a)
+        self.assertEqual(numberB, readSimpleStructure.number_b)
+        self.assertEqual(numberC, readSimpleStructure.number_c)
         self.assertTrue(simpleStructure == readSimpleStructure)
 
     @staticmethod

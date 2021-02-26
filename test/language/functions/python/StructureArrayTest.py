@@ -26,8 +26,8 @@ class StructureArrayTest(unittest.TestCase):
         writer.writeBits(self.NUM_ITEMS, 16)
 
         for item in self.ITEMS:
-            writer.writeBits(item.getA(), 8)
-            writer.writeBits(item.getB(), 8)
+            writer.writeBits(item.a, 8)
+            writer.writeBits(item.b, 8)
 
         writer.writeBits(pos, 16)
 

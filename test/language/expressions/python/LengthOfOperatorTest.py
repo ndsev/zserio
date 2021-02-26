@@ -10,18 +10,18 @@ class LengthOfOperatorTest(unittest.TestCase):
     def testGetLengthOfFixedArray(self):
         lengthOfFunctions = self.api.LengthOfFunctions()
         fixedArrayLength = 10
-        lengthOfFunctions.setFixedArray(list(range(fixedArrayLength)))
+        lengthOfFunctions.fixed_array = list(range(fixedArrayLength))
         self.assertEqual(fixedArrayLength, lengthOfFunctions.funcGetLengthOfFixedArray())
 
     def testGetLengthOfVariableArray(self):
         lengthOfFunctions = self.api.LengthOfFunctions()
         variableArrayLength = 11
-        lengthOfFunctions.setNumElements(variableArrayLength)
-        lengthOfFunctions.setVariableArray(list(range(variableArrayLength)))
+        lengthOfFunctions.num_elements = variableArrayLength
+        lengthOfFunctions.variable_array = list(range(variableArrayLength))
         self.assertEqual(variableArrayLength, lengthOfFunctions.funcGetLengthOfVariableArray())
 
     def testGetLengthOfImplicitArray(self):
         lengthOfFunctions = self.api.LengthOfFunctions()
         implicitArrayLength = 12
-        lengthOfFunctions.setImplicitArray(list(range(implicitArrayLength)))
+        lengthOfFunctions.implicit_array = list(range(implicitArrayLength))
         self.assertEqual(implicitArrayLength, lengthOfFunctions.funcGetLengthOfImplicitArray())

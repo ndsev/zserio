@@ -14,7 +14,7 @@ class FullEnumerationTypeTest(unittest.TestCase):
 
     def testBitSizeOfWithoutOptional(self):
         fullEnumerationTypeExpression = self.api.FullEnumerationTypeExpression()
-        fullEnumerationTypeExpression.setColor(self.api.Color.BLUE)
+        fullEnumerationTypeExpression.color = self.api.Color.BLUE
         self.assertEqual(self.FULL_ENUMERATION_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
                          fullEnumerationTypeExpression.bitSizeOf())
 

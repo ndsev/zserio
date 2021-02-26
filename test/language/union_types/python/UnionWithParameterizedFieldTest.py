@@ -10,18 +10,18 @@ class UnionWithParameterizedFieldTest(unittest.TestCase):
 
     def testConstructor(self):
         testUnion = self.api.TestUnion()
-        testUnion.setArrayHolder(self.api.ArrayHolder(10))
-        self.assertEqual(10, testUnion.getArrayHolder().getSize())
+        testUnion.array_holder = self.api.ArrayHolder(10)
+        self.assertEqual(10, testUnion.array_holder.size)
 
         testUnion = self.api.TestUnion(field_=13)
-        self.assertEqual(self.api.TestUnion.CHOICE_field, testUnion.choiceTag())
+        self.assertEqual(self.api.TestUnion.CHOICE_field, testUnion.choice_tag)
 
         testUnion = self.api.TestUnion(arrayHolder_=self.api.ArrayHolder(10))
-        self.assertEqual(10, testUnion.getArrayHolder().getSize())
+        self.assertEqual(10, testUnion.array_holder.size)
 
     def testFromReader(self):
         testUnion = self.api.TestUnion()
-        testUnion.setArrayHolder(self.api.ArrayHolder(10, list(range(10))))
+        testUnion.array_holder = self.api.ArrayHolder(10, list(range(10)))
         bitBuffer = zserio.serialize(testUnion)
         readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer)
-        self.assertEqual(10, readTestUnion.getArrayHolder().getSize())
+        self.assertEqual(10, readTestUnion.array_holder.size)

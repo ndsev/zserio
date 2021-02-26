@@ -80,13 +80,13 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
         writer.writeBits(field, 32)
 
     def _checkOptionalMemberAlignment(self, optionalMemberAlignment, hasOptional, optionalField, field):
-        self.assertEqual(hasOptional, optionalMemberAlignment.getHasOptional())
+        self.assertEqual(hasOptional, optionalMemberAlignment.has_optional)
         if hasOptional:
             self.assertTrue(optionalMemberAlignment.isOptionalFieldUsed())
-            self.assertEqual(optionalField, optionalMemberAlignment.getOptionalField())
+            self.assertEqual(optionalField, optionalMemberAlignment.optional_field)
         else:
             self.assertFalse(optionalMemberAlignment.isOptionalFieldUsed())
-        self.assertEqual(field, optionalMemberAlignment.getField())
+        self.assertEqual(field, optionalMemberAlignment.field)
 
     WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96
     WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 33

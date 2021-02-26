@@ -102,7 +102,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         writer.writeBits(FIELD_VALUE, 6)
 
     def _checkOffsets(self, optionalIndexedOffsetArray, offsetShift):
-        offsets = optionalIndexedOffsetArray.getOffsets()
+        offsets = optionalIndexedOffsetArray.offsets
         self.assertEqual(NUM_ELEMENTS, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for i in range(NUM_ELEMENTS):
@@ -113,15 +113,15 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         offsetShift = 0
         self._checkOffsets(optionalIndexedOffsetArray, offsetShift)
 
-        self.assertEqual(hasOptional, optionalIndexedOffsetArray.getHasOptional())
+        self.assertEqual(hasOptional, optionalIndexedOffsetArray.has_optional)
 
         if hasOptional:
-            data = optionalIndexedOffsetArray.getData()
+            data = optionalIndexedOffsetArray.data
             self.assertEqual(NUM_ELEMENTS, len(data))
             for i in range(NUM_ELEMENTS):
                 self.assertTrue(DATA[i] == data[i])
 
-        self.assertEqual(FIELD_VALUE, optionalIndexedOffsetArray.getField())
+        self.assertEqual(FIELD_VALUE, optionalIndexedOffsetArray.field)
 
     def _createOptionalIndexedOffsetArray(self, hasOptional, createWrongOffsets):
         optionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray()
@@ -135,13 +135,13 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
                 offsets.append(currentOffset)
             currentOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
 
-        optionalIndexedOffsetArray.setOffsets(offsets)
-        optionalIndexedOffsetArray.setHasOptional(hasOptional)
+        optionalIndexedOffsetArray.offsets = offsets
+        optionalIndexedOffsetArray.has_optional = hasOptional
 
         if hasOptional:
-            optionalIndexedOffsetArray.setData(DATA)
+            optionalIndexedOffsetArray.data = DATA
 
-        optionalIndexedOffsetArray.setField(FIELD_VALUE)
+        optionalIndexedOffsetArray.field = FIELD_VALUE
 
         return optionalIndexedOffsetArray
 

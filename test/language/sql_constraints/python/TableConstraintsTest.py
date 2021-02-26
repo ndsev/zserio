@@ -15,7 +15,7 @@ class TableConstraintsTest(unittest.TestCase):
             os.remove(self._fileName)
         self._database = self.api.TestDb.fromFile(self._fileName)
         self._database.createSchema()
-        self._constraintsTable = self._database.getTableConstraintsTable()
+        self._constraintsTable = self._database.table_constraints_table
 
     def tearDown(self):
         self._database.close()

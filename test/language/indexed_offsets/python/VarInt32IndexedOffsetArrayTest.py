@@ -103,7 +103,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
             writer.writeVarInt32(i)
 
     def _checkOffsets(self, varInt32IndexedOffsetArray, offsetShift):
-        offsets = varInt32IndexedOffsetArray.getOffsets()
+        offsets = varInt32IndexedOffsetArray.offsets
         self.assertEqual(NUM_ELEMENTS, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for i in range(NUM_ELEMENTS):
@@ -114,9 +114,9 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         offsetShift = 0
         self._checkOffsets(varInt32IndexedOffsetArray, offsetShift)
 
-        self.assertEqual(SPACER_VALUE, varInt32IndexedOffsetArray.getSpacer())
+        self.assertEqual(SPACER_VALUE, varInt32IndexedOffsetArray.spacer)
 
-        data = varInt32IndexedOffsetArray.getData()
+        data = varInt32IndexedOffsetArray.data
         self.assertEqual(NUM_ELEMENTS, len(data))
         for i in range(NUM_ELEMENTS):
             self.assertEqual(i, data[i])

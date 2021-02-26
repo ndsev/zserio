@@ -9,9 +9,9 @@ class UnionWithArrayTest(unittest.TestCase):
 
     def testArray8(self):
         testUnion = self.api.TestUnion()
-        testUnion.setArray8([self.api.Data8(), self.api.Data8(), self.api.Data8(), self.api.Data8()])
-        self.assertEqual(4, len(testUnion.getArray8()))
+        testUnion.array8 = [self.api.Data8(), self.api.Data8(), self.api.Data8(), self.api.Data8()]
+        self.assertEqual(4, len(testUnion.array8))
 
     def testArray16(self):
         testUnion = self.api.TestUnion(array16_=[1, 2, 3, 4])
-        self.assertEqual(4, len(testUnion.getArray16()))
+        self.assertEqual(4, len(testUnion.array16))

@@ -18,22 +18,22 @@ class UInt64OffsetTest(unittest.TestCase):
 
     def testInitializeOffsets(self):
         uint64Offset = self.api.UInt64Offset()
-        uint64Offset.setArray(list(range(self.ARRAY_SIZE)))
+        uint64Offset.array = list(range(self.ARRAY_SIZE))
         uint64Offset.initializeOffsets(0)
-        self.assertEqual(self.OFFSET, uint64Offset.getOffset())
+        self.assertEqual(self.OFFSET, uint64Offset.offset)
 
     def testInitializeOffsetsWithPosition(self):
         uint64Offset = self.api.UInt64Offset()
-        uint64Offset.setArray(list(range(self.ARRAY_SIZE)))
+        uint64Offset.array = list(range(self.ARRAY_SIZE))
         uint64Offset.initializeOffsets(3)
         # 3 bits start position + 5 bits alignment -> + 1 byte
-        self.assertEqual(self.OFFSET + 1, uint64Offset.getOffset())
+        self.assertEqual(self.OFFSET + 1, uint64Offset.offset)
 
     def testRead(self):
         reader = self._createReader(False)
         uint64Offset = self.api.UInt64Offset()
         uint64Offset.read(reader)
-        self.assertEqual(self.OFFSET, uint64Offset.getOffset())
+        self.assertEqual(self.OFFSET, uint64Offset.offset)
 
     def testReadWrongOffsets(self):
         reader = self._createReader(True)
@@ -45,7 +45,7 @@ class UInt64OffsetTest(unittest.TestCase):
         uint64Offset = self.api.UInt64Offset(0, list(range(self.ARRAY_SIZE)), 0)
         writer = zserio.BitStreamWriter()
         uint64Offset.write(writer)
-        self.assertEqual(self.OFFSET, uint64Offset.getOffset())
+        self.assertEqual(self.OFFSET, uint64Offset.offset)
         self.assertEqual(self.BIT_SIZE / 8, len(writer.getByteArray()))
 
     def testWriteWithPosition(self):
@@ -53,7 +53,7 @@ class UInt64OffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         writer.writeBits(0, 3)
         uint64Offset.write(writer)
-        self.assertEqual(self.OFFSET + 1, uint64Offset.getOffset())
+        self.assertEqual(self.OFFSET + 1, uint64Offset.offset)
         self.assertEqual(self.BIT_SIZE / 8 + 1, len(writer.getByteArray()))
 
     def testWriteWrongOffsets(self):

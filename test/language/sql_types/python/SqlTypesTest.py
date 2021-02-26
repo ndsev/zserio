@@ -89,7 +89,7 @@ class SqlTypesTest(unittest.TestCase):
         sqlQuery = "PRAGMA table_info(" + self.TABLE_NAME + ")"
 
         # get table info
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             columnName = row[1]
             columnType = row[2]
             columnTypes[columnName] = columnType

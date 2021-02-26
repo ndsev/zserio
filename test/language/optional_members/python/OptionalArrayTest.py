@@ -10,29 +10,29 @@ class OptionalArrayTest(unittest.TestCase):
     def testData8(self):
         numElements = 4
         test = self.api.TestStruct()
-        test.setHasData8(True)
-        test.setData8([self.api.Data8(i) for i in range(numElements)])
-        self.assertEqual(numElements, len(test.getData8()))
+        test.has_data8 = True
+        test.data8 = [self.api.Data8(i) for i in range(numElements)]
+        self.assertEqual(numElements, len(test.data8))
 
     def testAutoData8(self):
         numElements = 5
         test = self.api.TestStruct()
         self.assertFalse(test.isAutoData8Used())
-        test.setAutoData8([self.api.Data8(i) for i in range(numElements)])
+        test.auto_data8 = [self.api.Data8(i) for i in range(numElements)]
         self.assertTrue(test.isAutoData8Used())
-        self.assertEqual(numElements, len(test.getAutoData8()))
+        self.assertEqual(numElements, len(test.auto_data8))
 
     def testData16(self):
         numElements = 6
         test = self.api.TestStruct()
-        test.setHasData8(False)
-        test.setData16(list(range(numElements)))
-        self.assertEqual(numElements, len(test.getData16()))
+        test.has_data8 = False
+        test.data16 = list(range(numElements))
+        self.assertEqual(numElements, len(test.data16))
 
     def testAutoData16(self):
         numElements = 7
         test = self.api.TestStruct()
         self.assertFalse(test.isAutoData16Used())
-        test.setAutoData16(list(range(numElements)))
+        test.auto_data16 = list(range(numElements))
         self.assertTrue(test.isAutoData16Used())
-        self.assertEqual(numElements, len(test.getAutoData16()))
+        self.assertEqual(numElements, len(test.auto_data16))

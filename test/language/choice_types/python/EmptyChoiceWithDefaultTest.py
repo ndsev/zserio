@@ -10,13 +10,13 @@ class EmptyChoiceWithDefaultTest(unittest.TestCase):
 
     def testSelectorConstructor(self):
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(1)
-        self.assertEqual(1, emptyChoiceWithDefault.getSelector())
+        self.assertEqual(1, emptyChoiceWithDefault.selector)
 
     def testFromReader(self):
         selector = 1
         reader = zserio.BitStreamReader([])
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault.fromReader(reader, selector)
-        self.assertEqual(selector, emptyChoiceWithDefault.getSelector())
+        self.assertEqual(selector, emptyChoiceWithDefault.selector)
         self.assertEqual(0, emptyChoiceWithDefault.bitSizeOf())
 
     def testEq(self):
@@ -36,7 +36,7 @@ class EmptyChoiceWithDefaultTest(unittest.TestCase):
     def testGetSelector(self):
         selector = 1
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(selector)
-        self.assertEqual(selector, emptyChoiceWithDefault.getSelector())
+        self.assertEqual(selector, emptyChoiceWithDefault.selector)
 
     def testBitSizeOf(self):
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(1)
@@ -52,7 +52,7 @@ class EmptyChoiceWithDefaultTest(unittest.TestCase):
         reader = zserio.BitStreamReader([])
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(selector)
         emptyChoiceWithDefault.read(reader)
-        self.assertEqual(selector, emptyChoiceWithDefault.getSelector())
+        self.assertEqual(selector, emptyChoiceWithDefault.selector)
         self.assertEqual(0, emptyChoiceWithDefault.bitSizeOf())
 
     def testWrite(self):

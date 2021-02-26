@@ -17,8 +17,8 @@ class ChoiceConstraintsTest(unittest.TestCase):
 
         choiceConstraints = self.api.ChoiceConstraints(selector)
         choiceConstraints.read(reader)
-        self.assertEqual(selector, choiceConstraints.getSelector())
-        self.assertEqual(value8, choiceConstraints.getValue8())
+        self.assertEqual(selector, choiceConstraints.selector)
+        self.assertEqual(value8, choiceConstraints.value8)
 
     def testReadWrongValue8Constraint(self):
         selector = True
@@ -46,19 +46,19 @@ class ChoiceConstraintsTest(unittest.TestCase):
         selector = False
         value16 = self.VALUE16_CORRECT_CONSTRAINT
         choiceConstraints = self.api.ChoiceConstraints(selector)
-        choiceConstraints.setValue16(value16)
+        choiceConstraints.value16 = value16
 
         bitBuffer = zserio.serialize(choiceConstraints)
         readChoiceConstraints = zserio.deserialize(self.api.ChoiceConstraints, bitBuffer, selector)
-        self.assertEqual(selector, readChoiceConstraints.getSelector())
-        self.assertEqual(value16, readChoiceConstraints.getValue16())
+        self.assertEqual(selector, readChoiceConstraints.selector)
+        self.assertEqual(value16, readChoiceConstraints.value16)
         self.assertEqual(choiceConstraints, readChoiceConstraints)
 
     def testWriteWrongValue8Constraint(self):
         selector = True
         value8 = self.VALUE8_WRONG_CONSTRAINT
         choiceConstraints = self.api.ChoiceConstraints(selector)
-        choiceConstraints.setValue8(value8)
+        choiceConstraints.value8 = value8
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -68,7 +68,7 @@ class ChoiceConstraintsTest(unittest.TestCase):
         selector = False
         value16 = self.VALUE16_WRONG_CONSTRAINT
         choiceConstraints = self.api.ChoiceConstraints(selector)
-        choiceConstraints.setValue16(value16)
+        choiceConstraints.value16 = value16
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):

@@ -125,58 +125,58 @@ class BitOffsetTest(unittest.TestCase):
         writer.writeBits(self.FIELD8_VALUE, 8)
 
     def _checkOffsets(self, bitOffset, offsetShift):
-        self.assertEqual(self.FIELD1_OFFSET + offsetShift, bitOffset.getField1Offset())
-        self.assertEqual(self.FIELD2_OFFSET + offsetShift, bitOffset.getField2Offset())
-        self.assertEqual(self.FIELD3_OFFSET + offsetShift, bitOffset.getField3Offset())
-        self.assertEqual(self.FIELD4_OFFSET + offsetShift, bitOffset.getField4Offset())
-        self.assertEqual(self.FIELD5_OFFSET + offsetShift, bitOffset.getField5Offset())
-        self.assertEqual(self.FIELD6_OFFSET + offsetShift, bitOffset.getField6Offset())
-        self.assertEqual(self.FIELD7_OFFSET + offsetShift, bitOffset.getField7Offset())
-        self.assertEqual(self.FIELD8_OFFSET + offsetShift, bitOffset.getField8Offset())
+        self.assertEqual(self.FIELD1_OFFSET + offsetShift, bitOffset.field1_offset)
+        self.assertEqual(self.FIELD2_OFFSET + offsetShift, bitOffset.field2_offset)
+        self.assertEqual(self.FIELD3_OFFSET + offsetShift, bitOffset.field3_offset)
+        self.assertEqual(self.FIELD4_OFFSET + offsetShift, bitOffset.field4_offset)
+        self.assertEqual(self.FIELD5_OFFSET + offsetShift, bitOffset.field5_offset)
+        self.assertEqual(self.FIELD6_OFFSET + offsetShift, bitOffset.field6_offset)
+        self.assertEqual(self.FIELD7_OFFSET + offsetShift, bitOffset.field7_offset)
+        self.assertEqual(self.FIELD8_OFFSET + offsetShift, bitOffset.field8_offset)
 
     def _checkBitOffset(self, bitOffset):
         offsetShift = 0
         self._checkOffsets(bitOffset, offsetShift)
 
-        self.assertEqual(self.FIELD1_VALUE, bitOffset.getField1())
-        self.assertEqual(self.FIELD2_VALUE, bitOffset.getField2())
-        self.assertEqual(self.FIELD3_VALUE, bitOffset.getField3())
-        self.assertEqual(self.FIELD4_VALUE, bitOffset.getField4())
-        self.assertEqual(self.FIELD5_VALUE, bitOffset.getField5())
-        self.assertEqual(self.FIELD6_VALUE, bitOffset.getField6())
-        self.assertEqual(self.FIELD7_VALUE, bitOffset.getField7())
-        self.assertEqual(self.FIELD8_VALUE, bitOffset.getField8())
+        self.assertEqual(self.FIELD1_VALUE, bitOffset.field1)
+        self.assertEqual(self.FIELD2_VALUE, bitOffset.field2)
+        self.assertEqual(self.FIELD3_VALUE, bitOffset.field3)
+        self.assertEqual(self.FIELD4_VALUE, bitOffset.field4)
+        self.assertEqual(self.FIELD5_VALUE, bitOffset.field5)
+        self.assertEqual(self.FIELD6_VALUE, bitOffset.field6)
+        self.assertEqual(self.FIELD7_VALUE, bitOffset.field7)
+        self.assertEqual(self.FIELD8_VALUE, bitOffset.field8)
 
     def _createBitOffset(self, createWrongOffsets):
         bitOffset = self.api.BitOffset()
 
         if createWrongOffsets:
-            bitOffset.setField1Offset(self.WRONG_FIELD1_OFFSET)
-            bitOffset.setField2Offset(self.WRONG_FIELD2_OFFSET)
-            bitOffset.setField3Offset(self.WRONG_FIELD3_OFFSET)
-            bitOffset.setField4Offset(self.WRONG_FIELD4_OFFSET)
-            bitOffset.setField5Offset(self.WRONG_FIELD5_OFFSET)
-            bitOffset.setField6Offset(self.WRONG_FIELD6_OFFSET)
-            bitOffset.setField7Offset(self.WRONG_FIELD7_OFFSET)
-            bitOffset.setField8Offset(self.WRONG_FIELD8_OFFSET)
+            bitOffset.field1_offset = self.WRONG_FIELD1_OFFSET
+            bitOffset.field2_offset = self.WRONG_FIELD2_OFFSET
+            bitOffset.field3_offset = self.WRONG_FIELD3_OFFSET
+            bitOffset.field4_offset = self.WRONG_FIELD4_OFFSET
+            bitOffset.field5_offset = self.WRONG_FIELD5_OFFSET
+            bitOffset.field6_offset = self.WRONG_FIELD6_OFFSET
+            bitOffset.field7_offset = self.WRONG_FIELD7_OFFSET
+            bitOffset.field8_offset = self.WRONG_FIELD8_OFFSET
         else:
-            bitOffset.setField1Offset(self.FIELD1_OFFSET)
-            bitOffset.setField2Offset(self.FIELD2_OFFSET)
-            bitOffset.setField3Offset(self.FIELD3_OFFSET)
-            bitOffset.setField4Offset(self.FIELD4_OFFSET)
-            bitOffset.setField5Offset(self.FIELD5_OFFSET)
-            bitOffset.setField6Offset(self.FIELD6_OFFSET)
-            bitOffset.setField7Offset(self.FIELD7_OFFSET)
-            bitOffset.setField8Offset(self.FIELD8_OFFSET)
+            bitOffset.field1_offset = self.FIELD1_OFFSET
+            bitOffset.field2_offset = self.FIELD2_OFFSET
+            bitOffset.field3_offset = self.FIELD3_OFFSET
+            bitOffset.field4_offset = self.FIELD4_OFFSET
+            bitOffset.field5_offset = self.FIELD5_OFFSET
+            bitOffset.field6_offset = self.FIELD6_OFFSET
+            bitOffset.field7_offset = self.FIELD7_OFFSET
+            bitOffset.field8_offset = self.FIELD8_OFFSET
 
-        bitOffset.setField1(self.FIELD1_VALUE)
-        bitOffset.setField2(self.FIELD2_VALUE)
-        bitOffset.setField3(self.FIELD3_VALUE)
-        bitOffset.setField4(self.FIELD4_VALUE)
-        bitOffset.setField5(self.FIELD5_VALUE)
-        bitOffset.setField6(self.FIELD6_VALUE)
-        bitOffset.setField7(self.FIELD7_VALUE)
-        bitOffset.setField8(self.FIELD8_VALUE)
+        bitOffset.field1 = self.FIELD1_VALUE
+        bitOffset.field2 = self.FIELD2_VALUE
+        bitOffset.field3 = self.FIELD3_VALUE
+        bitOffset.field4 = self.FIELD4_VALUE
+        bitOffset.field5 = self.FIELD5_VALUE
+        bitOffset.field6 = self.FIELD6_VALUE
+        bitOffset.field7 = self.FIELD7_VALUE
+        bitOffset.field8 = self.FIELD8_VALUE
 
         return bitOffset
 

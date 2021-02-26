@@ -20,7 +20,7 @@ class SubtypedBitmaskFieldTableTest(unittest.TestCase):
         self._database.close()
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getSubtypedBitmaskFieldTable()
+        testTable = self._database.subtyped_bitmask_field_table
 
         writtenRows = self._createRows()
         testTable.write(writtenRows)

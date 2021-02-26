@@ -15,7 +15,7 @@ class FieldTypeWithClashTest(unittest.TestCase):
     def testBitSizeOfWithoutOptional(self):
         containedType = self.api.ContainedType(False)
         fieldTypeExpression = self.api.FieldTypeExpression()
-        fieldTypeExpression.setContainedType(containedType)
+        fieldTypeExpression.contained_type = containedType
         self.assertEqual(self.COMPOUND_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
                          fieldTypeExpression.bitSizeOf())
 

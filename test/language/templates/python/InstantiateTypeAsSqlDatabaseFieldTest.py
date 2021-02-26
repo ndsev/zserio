@@ -19,11 +19,11 @@ class InstantiateTypeAsSqlDatabaseFieldTest(unittest.TestCase):
             self._fileName)
         instantiateTypeAsSqlDatabaseFieldDb.createSchema()
 
-        stringTable = instantiateTypeAsSqlDatabaseFieldDb.getStringTable()
+        stringTable = instantiateTypeAsSqlDatabaseFieldDb.string_table
         stringTableRows = [(0, "test")]
         stringTable.write(stringTableRows)
 
-        otherStringTable = instantiateTypeAsSqlDatabaseFieldDb.getOtherStringTable()
+        otherStringTable = instantiateTypeAsSqlDatabaseFieldDb.other_string_table
         otherStringTableRows = [(13, "other test")]
         otherStringTable.write(otherStringTableRows)
 
@@ -31,11 +31,11 @@ class InstantiateTypeAsSqlDatabaseFieldTest(unittest.TestCase):
 
         readInstantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.fromFile(
             self._fileName)
-        readStringTableIterator = readInstantiateTypeAsSqlDatabaseFieldDb.getStringTable().read()
+        readStringTableIterator = readInstantiateTypeAsSqlDatabaseFieldDb.string_table.read()
         readStringTableRows = []
         for row in readStringTableIterator:
             readStringTableRows.append(row)
-        readOtherStringTableIterator = readInstantiateTypeAsSqlDatabaseFieldDb.getOtherStringTable().read()
+        readOtherStringTableIterator = readInstantiateTypeAsSqlDatabaseFieldDb.other_string_table.read()
         readOtherStringTableRows = []
         for row in readOtherStringTableIterator:
             readOtherStringTableRows.append(row)

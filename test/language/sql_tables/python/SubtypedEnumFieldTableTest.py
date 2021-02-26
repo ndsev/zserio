@@ -20,7 +20,7 @@ class SubtypedEnumFieldTableTest(unittest.TestCase):
         self._database.close()
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getSubtypedEnumFieldTable()
+        testTable = self._database.subtyped_enum_field_table
 
         writtenRows = self._createRows()
         testTable.write(writtenRows)

@@ -31,19 +31,19 @@ class DbWithRelocationTest(unittest.TestCase):
         self._europeDb.close()
 
     def testTableGetters(self):
-        germanyTable = self._europeDb.getGermany()
+        germanyTable = self._europeDb.germany
         self.assertNotEqual(None, germanyTable)
 
-        usaTable = self._americaDb.getUsa()
+        usaTable = self._americaDb.usa
         self.assertNotEqual(None, usaTable)
 
-        canadaTable = self._americaDb.getCanada()
+        canadaTable = self._americaDb.canada
         self.assertNotEqual(None, canadaTable)
 
-        slovakiaTable = self._americaDb.getSlovakia()
+        slovakiaTable = self._americaDb.slovakia
         self.assertNotEqual(None, slovakiaTable)
 
-        czechiaTable = self._americaDb.getCzechia()
+        czechiaTable = self._americaDb.czechia
         self.assertNotEqual(None, czechiaTable)
 
     def testRelocatedSlovakiaTable(self):
@@ -56,7 +56,7 @@ class DbWithRelocationTest(unittest.TestCase):
         # write to relocated table
         updateTileId = 1
         writtenRows = [(updateTileId, self.api.Tile(ord('a'), ord('A')))]
-        relocatedTable = self._americaDb.getSlovakia()
+        relocatedTable = self._americaDb.slovakia
         relocatedTable.write(writtenRows)
 
         # update it
@@ -82,7 +82,7 @@ class DbWithRelocationTest(unittest.TestCase):
         # write to relocated table
         updateTileId = 1
         writtenRows = [(updateTileId, self.api.Tile(ord('c'), ord('C')))]
-        relocatedTable = self._americaDb.getCzechia()
+        relocatedTable = self._americaDb.czechia
         relocatedTable.write(writtenRows)
 
         # update it
@@ -103,7 +103,7 @@ class DbWithRelocationTest(unittest.TestCase):
                                  "AmericaDb_" + self.RELOCATED_SLOVAKIA_TABLE_NAME,
                                  "AmericaDb_" + self.RELOCATED_CZECHIA_TABLE_NAME]
         sqlQuery = "PRAGMA database_list"
-        rows = self._americaDb.connection().cursor().execute(sqlQuery)
+        rows = self._americaDb.connection.cursor().execute(sqlQuery)
         for row in rows:
             self.assertIn(row[1], attachedDatabaseNames)
             attachedDatabaseNames.remove(row[1])
@@ -114,7 +114,7 @@ class DbWithRelocationTest(unittest.TestCase):
     def _isTableInDb(database, tableName):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
-        rows = database.connection().cursor().execute(sqlQuery)
+        rows = database.connection.cursor().execute(sqlQuery)
         for row in rows:
             if len(row) == 1 and row[0] == tableName:
                 return True

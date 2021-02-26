@@ -24,7 +24,7 @@ class SimpleWithoutRowIdTableTest(unittest.TestCase):
         self.assertFalse(self._isColumnInTable("rowid", self.TABLE_NAME))
 
     def testCreateOrdinaryRowIdTable(self):
-        testTable = self._database.getSimpleWithoutRowIdTable()
+        testTable = self._database.simple_without_row_id_table
         testTable.createOrdinaryRowIdTable()
         self.assertTrue(self._isColumnInTable("rowid", self.TABLE_NAME))
 
@@ -38,7 +38,7 @@ class SimpleWithoutRowIdTableTest(unittest.TestCase):
 
         # try select to check if hidden column exists
         try:
-            self._database.connection().cursor().execute(sqlQuery)
+            self._database.connection.cursor().execute(sqlQuery)
             return True
         except apsw.SQLError:
             return False

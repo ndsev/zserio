@@ -105,7 +105,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
                 writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE)
 
     def _checkOffsets(self, compoundIndexedOffsetArray, offsetShift):
-        offsets = compoundIndexedOffsetArray.getOffsets()
+        offsets = compoundIndexedOffsetArray.offsets
         self.assertEqual(NUM_ELEMENTS, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for offset in offsets:
@@ -116,14 +116,14 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         offsetShift = 0
         self._checkOffsets(compoundIndexedOffsetArray, offsetShift)
 
-        self.assertEqual(SPACER_VALUE, compoundIndexedOffsetArray.getSpacer())
+        self.assertEqual(SPACER_VALUE, compoundIndexedOffsetArray.spacer)
 
-        data = compoundIndexedOffsetArray.getData()
+        data = compoundIndexedOffsetArray.data
         self.assertEqual(NUM_ELEMENTS, len(data))
         for i in range(NUM_ELEMENTS):
             compound = data[i]
-            self.assertEqual(i, compound.getId())
-            self.assertEqual(i % 8, compound.getValue())
+            self.assertEqual(i, compound.id)
+            self.assertEqual(i % 8, compound.value)
 
     def _createCompoundIndexedOffsetArray(self, createWrongOffsets):
         offsets = []

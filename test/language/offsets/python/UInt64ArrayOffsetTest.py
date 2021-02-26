@@ -18,26 +18,26 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
 
     def testInitializeOffsets(self):
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
-        uint64ArrayOffset.setOffsets(list(range(self.VALUES_SIZE)))
-        uint64ArrayOffset.setArray(list(range(self.ARRAY_SIZE)))
-        uint64ArrayOffset.setValues(list(range(self.VALUES_SIZE)))
+        uint64ArrayOffset.offsets = list(range(self.VALUES_SIZE))
+        uint64ArrayOffset.array = list(range(self.ARRAY_SIZE))
+        uint64ArrayOffset.values = list(range(self.VALUES_SIZE))
         uint64ArrayOffset.initializeOffsets(0)
-        self.assertEqual(self.FIRST_OFFSET, uint64ArrayOffset.getOffsets()[0])
+        self.assertEqual(self.FIRST_OFFSET, uint64ArrayOffset.offsets[0])
 
     def testInitializeOffsetsWithPosition(self):
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
-        uint64ArrayOffset.setOffsets(list(range(self.VALUES_SIZE)))
-        uint64ArrayOffset.setArray(list(range(self.ARRAY_SIZE)))
-        uint64ArrayOffset.setValues(list(range(self.VALUES_SIZE)))
+        uint64ArrayOffset.offsets = list(range(self.VALUES_SIZE))
+        uint64ArrayOffset.array = list(range(self.ARRAY_SIZE))
+        uint64ArrayOffset.values = list(range(self.VALUES_SIZE))
         uint64ArrayOffset.initializeOffsets(3)
         # 3 bits start position + 5 bits alignment -> + 1 byte
-        self.assertEqual(self.FIRST_OFFSET + 1, uint64ArrayOffset.getOffsets()[0])
+        self.assertEqual(self.FIRST_OFFSET + 1, uint64ArrayOffset.offsets[0])
 
     def testRead(self):
         reader = self._createReader(False)
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
         uint64ArrayOffset.read(reader)
-        self.assertEqual(self.FIRST_OFFSET, uint64ArrayOffset.getOffsets()[0])
+        self.assertEqual(self.FIRST_OFFSET, uint64ArrayOffset.offsets[0])
 
     def testReadWrongOffsets(self):
         reader = self._createReader(True)
@@ -47,31 +47,31 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
 
     def testWrite(self):
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
-        uint64ArrayOffset.setOffsets(list(range(self.VALUES_SIZE)))
-        uint64ArrayOffset.setArray(list(range(self.ARRAY_SIZE)))
-        uint64ArrayOffset.setValues(list(range(self.VALUES_SIZE)))
+        uint64ArrayOffset.offsets = list(range(self.VALUES_SIZE))
+        uint64ArrayOffset.array = list(range(self.ARRAY_SIZE))
+        uint64ArrayOffset.values = list(range(self.VALUES_SIZE))
         writer = zserio.BitStreamWriter()
         uint64ArrayOffset.write(writer)
-        self.assertEqual(self.FIRST_OFFSET, uint64ArrayOffset.getOffsets()[0])
+        self.assertEqual(self.FIRST_OFFSET, uint64ArrayOffset.offsets[0])
         self.assertEqual(zserio.bitposition.bitsToBytes(self.BIT_SIZE), len(writer.getByteArray()))
 
     def testWriteWithPosition(self):
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
-        uint64ArrayOffset.setOffsets(list(range(self.VALUES_SIZE)))
-        uint64ArrayOffset.setArray(list(range(self.ARRAY_SIZE)))
-        uint64ArrayOffset.setValues(list(range(self.VALUES_SIZE)))
+        uint64ArrayOffset.offsets = list(range(self.VALUES_SIZE))
+        uint64ArrayOffset.array = list(range(self.ARRAY_SIZE))
+        uint64ArrayOffset.values = list(range(self.VALUES_SIZE))
         writer = zserio.BitStreamWriter()
         writer.writeBits(0, 3)
         uint64ArrayOffset.write(writer)
-        self.assertEqual(self.FIRST_OFFSET + 1, uint64ArrayOffset.getOffsets()[0])
+        self.assertEqual(self.FIRST_OFFSET + 1, uint64ArrayOffset.offsets[0])
         self.assertEqual(zserio.bitposition.bitsToBytes(self.BIT_SIZE) + 1, len(writer.getByteArray()))
 
     def testWriteWrongOffsets(self):
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
-        uint64ArrayOffset.setOffsets([self.FIRST_OFFSET + i * 4 + 1 if (i == self.VALUES_SIZE - 1) else 0
-                                      for i in range(self.VALUES_SIZE)])
-        uint64ArrayOffset.setArray(list(range(self.ARRAY_SIZE)))
-        uint64ArrayOffset.setValues(list(range(self.VALUES_SIZE)))
+        uint64ArrayOffset.offsets = [self.FIRST_OFFSET + i * 4 + 1 if (i == self.VALUES_SIZE - 1) else 0
+                                    for i in range(self.VALUES_SIZE)]
+        uint64ArrayOffset.array = list(range(self.ARRAY_SIZE))
+        uint64ArrayOffset.values = list(range(self.VALUES_SIZE))
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):

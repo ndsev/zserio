@@ -11,7 +11,7 @@ class UnionTemplatedFieldTest(unittest.TestCase):
     def testReadWrite(self):
         uintUnion = self.api.TemplatedUnion_uint16_uint32(field1_=42)
         floatUnion = self.api.TemplatedUnion_float32_float64()
-        floatUnion.setField2(4.2)
+        floatUnion.field2 = 4.2
         compoundUnion = self.api.TemplatedUnion_Compound_uint16_Compound_uint32(
             field3_=self.api.Compound_Compound_uint16(self.api.Compound_uint16(13))
         )

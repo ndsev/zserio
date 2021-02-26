@@ -15,7 +15,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
 
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         arrayLengthofConstraint.read(reader)
-        self.assertEqual(self.CORRECT_LENGTH, len(arrayLengthofConstraint.getArray()))
+        self.assertEqual(self.CORRECT_LENGTH, len(arrayLengthofConstraint.array))
 
     def testReadWrongLengthLess(self):
         writer = zserio.BitStreamWriter()
@@ -37,16 +37,16 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
 
     def testWriteCorrectConstraints(self):
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
-        arrayLengthofConstraint.setArray(list(range(self.CORRECT_LENGTH)))
+        arrayLengthofConstraint.array = list(range(self.CORRECT_LENGTH))
 
         bitBuffer = zserio.serialize(arrayLengthofConstraint)
         readArrayLengthofConstraint = zserio.deserialize(self.api.ArrayLengthofConstraint, bitBuffer)
-        self.assertEqual(self.CORRECT_LENGTH, len(readArrayLengthofConstraint.getArray()))
+        self.assertEqual(self.CORRECT_LENGTH, len(readArrayLengthofConstraint.array))
         self.assertEqual(arrayLengthofConstraint, readArrayLengthofConstraint)
 
     def testWriteWrongLengthLess(self):
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
-        arrayLengthofConstraint.setArray(list(range(self.WRONG_LENGTH_LESS)))
+        arrayLengthofConstraint.array = list(range(self.WRONG_LENGTH_LESS))
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -54,7 +54,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
 
     def testWriteWrongLengthGreater(self):
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
-        arrayLengthofConstraint.setArray(list(range(self.WRONG_LENGTH_GREATER)))
+        arrayLengthofConstraint.array = list(range(self.WRONG_LENGTH_GREATER))
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):

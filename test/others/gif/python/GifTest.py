@@ -14,20 +14,20 @@ class GifTest(unittest.TestCase):
         reader = zserio.BitStreamReader.fromFile(self.ONE_PIX_GIF_FILE_NAME)
         gifFile = self.api.GifFile.fromReader(reader)
 
-        signatureFormat = gifFile.getSignature().getFormat()
+        signatureFormat = gifFile.signature.format
         for i in range(len(self.GIF_FILE_FORMAT)):
             self.assertEqual(self.GIF_FILE_FORMAT[i], chr(signatureFormat[i]))
 
-        signatureVersion = gifFile.getSignature().getVersion()
+        signatureVersion = gifFile.signature.version
         for i in range(len(self.GIF_FILE_VERSION)):
             self.assertEqual(self.GIF_FILE_VERSION[i], chr(signatureVersion[i]))
 
-        screenDescriptor = gifFile.getScreen()
-        self.assertEqual(self.GIF_SCREEN_WIDTH, screenDescriptor.getWidth())
-        self.assertEqual(self.GIF_SCREEN_HEIGHT, screenDescriptor.getHeight())
-        self.assertEqual(self.GIF_SCREEN_BG_COLOR, screenDescriptor.getBgColor())
-        self.assertEqual(self.GIF_SCREEN_BITS_OF_COLOR_RESOLUTION, screenDescriptor.getBitsOfColorResulution())
-        self.assertEqual(self.GIF_SCREEN_BITS_PER_PIXEL, screenDescriptor.getBitsPerPixel())
+        screenDescriptor = gifFile.screen
+        self.assertEqual(self.GIF_SCREEN_WIDTH, screenDescriptor.width)
+        self.assertEqual(self.GIF_SCREEN_HEIGHT, screenDescriptor.height)
+        self.assertEqual(self.GIF_SCREEN_BG_COLOR, screenDescriptor.bg_color)
+        self.assertEqual(self.GIF_SCREEN_BITS_OF_COLOR_RESOLUTION, screenDescriptor.bits_of_color_resolution)
+        self.assertEqual(self.GIF_SCREEN_BITS_PER_PIXEL, screenDescriptor.bits_per_pixel)
 
     ONE_PIX_GIF_FILE_NAME = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data", "1pix.gif")
 

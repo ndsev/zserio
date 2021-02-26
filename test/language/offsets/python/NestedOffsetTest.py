@@ -92,27 +92,27 @@ class NestedOffsetTest(unittest.TestCase):
         writer.writeBits(self.TERMINATOR_VALUE, 7)
 
     def _checkNestedOffset(self, nestedOffset):
-        self.assertEqual(self.TERMINATOR_OFFSET, nestedOffset.getTerminatorOffset())
-        self.assertEqual(self.BOOL_VALUE, nestedOffset.getBoolValue())
+        self.assertEqual(self.TERMINATOR_OFFSET, nestedOffset.terminator_offset)
+        self.assertEqual(self.BOOL_VALUE, nestedOffset.bool_value)
 
-        nestedOffsetChoice = nestedOffset.getNestedOffsetChoice()
-        self.assertEqual(self.BOOL_VALUE, nestedOffsetChoice.getType())
+        nestedOffsetChoice = nestedOffset.nested_offset_choice
+        self.assertEqual(self.BOOL_VALUE, nestedOffsetChoice.type)
 
-        nestedOffsetUnion = nestedOffsetChoice.getNestedOffsetUnion()
+        nestedOffsetUnion = nestedOffsetChoice.nested_offset_union
         self.assertEqual(self.api.NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure,
-                         nestedOffsetUnion.choiceTag())
+                         nestedOffsetUnion.choice_tag)
 
-        nestedOffsetArrayStructure = nestedOffsetUnion.getNestedOffsetArrayStructure()
-        self.assertEqual(self.NUM_ELEMENTS, nestedOffsetArrayStructure.getNumElements())
+        nestedOffsetArrayStructure = nestedOffsetUnion.nested_offset_array_structure
+        self.assertEqual(self.NUM_ELEMENTS, nestedOffsetArrayStructure.num_elements)
 
-        nestedOffsetStructureList = nestedOffsetArrayStructure.getNestedOffsetStructureList()
+        nestedOffsetStructureList = nestedOffsetArrayStructure.nested_offset_structure_list
         self.assertEqual(self.NUM_ELEMENTS, len(nestedOffsetStructureList))
         for i in range(self.NUM_ELEMENTS):
             nestedOffsetStructure = nestedOffsetStructureList[i]
-            self.assertEqual(self.FIRST_DATA_OFFSET + i * 8, nestedOffsetStructure.getDataOffset())
-            self.assertEqual(i, nestedOffsetStructure.getData())
+            self.assertEqual(self.FIRST_DATA_OFFSET + i * 8, nestedOffsetStructure.data_offset)
+            self.assertEqual(i, nestedOffsetStructure.data)
 
-        self.assertEqual(self.TERMINATOR_VALUE, nestedOffset.getTerminator())
+        self.assertEqual(self.TERMINATOR_VALUE, nestedOffset.terminator)
 
     def _createNestedOffset(self, createWrongOffsets):
         nestedOffsetStructureList = []

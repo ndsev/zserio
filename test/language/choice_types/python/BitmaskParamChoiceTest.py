@@ -11,11 +11,11 @@ class BitmaskParamChoiceTest(unittest.TestCase):
     def testConstructor(self):
         selector = self.api.Selector.Values.BLACK
         bitmaskParamChoice = self.api.BitmaskParamChoice(selector)
-        self.assertEqual(selector, bitmaskParamChoice.getSelector())
+        self.assertEqual(selector, bitmaskParamChoice.selector)
 
         bitmaskParamChoice = self.api.BitmaskParamChoice(selector, black_=42)
-        self.assertEqual(selector, bitmaskParamChoice.getSelector())
-        self.assertEqual(42, bitmaskParamChoice.getBlack())
+        self.assertEqual(selector, bitmaskParamChoice.selector)
+        self.assertEqual(42, bitmaskParamChoice.black)
 
     def testFromReader(self):
         selector = self.api.Selector.Values.WHITE
@@ -24,8 +24,8 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         self._writeBitmaskParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         bitmaskParamChoice = self.api.BitmaskParamChoice.fromReader(reader, selector)
-        self.assertEqual(selector, bitmaskParamChoice.getSelector())
-        self.assertEqual(value, bitmaskParamChoice.getWhite())
+        self.assertEqual(selector, bitmaskParamChoice.selector)
+        self.assertEqual(value, bitmaskParamChoice.white)
 
     def testEq(self):
         bitmaskParamChoice1 = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
@@ -33,14 +33,14 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         self.assertTrue(bitmaskParamChoice1 == bitmaskParamChoice2)
 
         value = 99
-        bitmaskParamChoice1.setBlack(value)
+        bitmaskParamChoice1.black = value
         self.assertFalse(bitmaskParamChoice1 == bitmaskParamChoice2)
 
-        bitmaskParamChoice2.setBlack(value)
+        bitmaskParamChoice2.black = value
         self.assertTrue(bitmaskParamChoice1 == bitmaskParamChoice2)
 
         diffValue = value + 1
-        bitmaskParamChoice2.setBlack(diffValue)
+        bitmaskParamChoice2.black = diffValue
         self.assertFalse(bitmaskParamChoice1 == bitmaskParamChoice2)
 
     def testHash(self):
@@ -49,38 +49,38 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         self.assertEqual(hash(bitmaskParamChoice1), hash(bitmaskParamChoice2))
 
         value = 99
-        bitmaskParamChoice1.setBlack(value)
+        bitmaskParamChoice1.black = value
         self.assertTrue(hash(bitmaskParamChoice1) != hash(bitmaskParamChoice2))
 
-        bitmaskParamChoice2.setBlack(value)
+        bitmaskParamChoice2.black = value
         self.assertEqual(hash(bitmaskParamChoice1), hash(bitmaskParamChoice2))
 
         diffValue = value + 1
-        bitmaskParamChoice2.setBlack(diffValue)
+        bitmaskParamChoice2.black = diffValue
         self.assertTrue(hash(bitmaskParamChoice1) != hash(bitmaskParamChoice2))
 
     def testGetSelector(self):
         selector = self.api.Selector.Values.BLACK
         bitmaskParamChoice = self.api.BitmaskParamChoice(selector)
-        self.assertEqual(selector, bitmaskParamChoice.getSelector())
+        self.assertEqual(selector, bitmaskParamChoice.selector)
 
     def testGetSetBlack(self):
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
         value = 99
-        bitmaskParamChoice.setBlack(value)
-        self.assertEqual(value, bitmaskParamChoice.getBlack())
+        bitmaskParamChoice.black = value
+        self.assertEqual(value, bitmaskParamChoice.black)
 
     def testGetSetWhite(self):
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.WHITE)
         value = 234
-        bitmaskParamChoice.setWhite(value)
-        self.assertEqual(value, bitmaskParamChoice.getWhite())
+        bitmaskParamChoice.white = value
+        self.assertEqual(value, bitmaskParamChoice.white)
 
     def testGetSetBlackAndWhite(self):
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK_AND_WHITE)
         value = 65535
-        bitmaskParamChoice.setBlackAndWhite(value)
-        self.assertEqual(value, bitmaskParamChoice.getBlackAndWhite())
+        bitmaskParamChoice.black_and_white = value
+        self.assertEqual(value, bitmaskParamChoice.black_and_white)
 
     def testBitSizeOf(self):
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
@@ -107,13 +107,13 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         selector = self.api.Selector.Values.BLACK
         bitmaskParamChoice = self.api.BitmaskParamChoice(selector)
         byteValue = 99
-        bitmaskParamChoice.setBlack(byteValue)
+        bitmaskParamChoice.black = byteValue
         writer = zserio.BitStreamWriter()
         bitmaskParamChoice.write(writer)
         readBitmaskParamChoice = self.api.BitmaskParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBitmaskParamChoice.read(reader)
-        self.assertEqual(byteValue, readBitmaskParamChoice.getBlack())
+        self.assertEqual(byteValue, readBitmaskParamChoice.black)
         self.assertEqual(bitmaskParamChoice, readBitmaskParamChoice)
 
         selector = self.api.Selector.Values.WHITE
@@ -124,19 +124,19 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         readBitmaskParamChoice = self.api.BitmaskParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBitmaskParamChoice.read(reader)
-        self.assertEqual(shortValue, readBitmaskParamChoice.getWhite())
+        self.assertEqual(shortValue, readBitmaskParamChoice.white)
         self.assertEqual(bitmaskParamChoice, readBitmaskParamChoice)
 
         selector = self.api.Selector.Values.BLACK_AND_WHITE
         bitmaskParamChoice = self.api.BitmaskParamChoice(selector)
         intValue = 65535
-        bitmaskParamChoice.setBlackAndWhite(intValue)
+        bitmaskParamChoice.black_and_white = intValue
         writer = zserio.BitStreamWriter()
         bitmaskParamChoice.write(writer)
         readBitmaskParamChoice = self.api.BitmaskParamChoice(selector)
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         readBitmaskParamChoice.read(reader)
-        self.assertEqual(intValue, readBitmaskParamChoice.getBlackAndWhite())
+        self.assertEqual(intValue, readBitmaskParamChoice.black_and_white)
         self.assertEqual(bitmaskParamChoice, readBitmaskParamChoice)
 
     def _writeBitmaskParamChoiceToStream(self, writer, selector, value):

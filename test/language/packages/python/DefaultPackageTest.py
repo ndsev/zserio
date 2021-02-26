@@ -10,10 +10,10 @@ class DefaultPackageTest(unittest.TestCase):
     def testDefaultPackageStructure(self):
         # just test that DefaultPackageStructure is available in default package
         structure = self.api.DefaultPackageStructure(4)
-        structure.setValue(10)
-        structure.setTopStructure(self.api.default_package_import.top.TopStructure(1, 1234))
-        structure.setChildStructure(self.api.Child(0xdeadbeef))
-        self.assertEqual(10, structure.getValue())
-        self.assertEqual(1, structure.getTopStructure().getType())
-        self.assertEqual(1234, structure.getTopStructure().getData())
-        self.assertEqual(0xdeadbeef, structure.getChildStructure().getValue())
+        structure.value = 10
+        structure.top_structure = self.api.default_package_import.top.TopStructure(1, 1234)
+        structure.child_structure = self.api.Child(0xdeadbeef)
+        self.assertEqual(10, structure.value)
+        self.assertEqual(1, structure.top_structure.type)
+        self.assertEqual(1234, structure.top_structure.data)
+        self.assertEqual(0xdeadbeef, structure.child_structure.value)

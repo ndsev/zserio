@@ -67,13 +67,13 @@ class AutoArrayRecursionTest(unittest.TestCase):
         return self.api.AutoArrayRecursion(0, autoArray)
 
     def _checkAutoArrayRecursion(self, autoArrayRecursion, numElements):
-        self.assertEqual(0, autoArrayRecursion.getId())
-        autoArray = autoArrayRecursion.getAutoArrayRecursion()
+        self.assertEqual(0, autoArrayRecursion.id)
+        autoArray = autoArrayRecursion.auto_array_recursion
         self.assertEqual(numElements, len(autoArray))
         for i in range(1, numElements + 1):
             element = autoArray[i - 1]
-            self.assertEqual(i, element.getId())
-            self.assertEqual(0, len(element.getAutoArrayRecursion()))
+            self.assertEqual(i, element.id)
+            self.assertEqual(0, len(element.auto_array_recursion))
 
     @staticmethod
     def _writeAutoArrayRecursionToStream(writer, numElements):

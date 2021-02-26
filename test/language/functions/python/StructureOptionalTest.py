@@ -25,19 +25,19 @@ class StructureOptionalTest(unittest.TestCase):
 
     def _createValueConsumerCreator(self, defaultValue, externalValue):
         valueCalculator = self.api.ValueCalculator()
-        valueCalculator.setDefaultValue(defaultValue)
+        valueCalculator.default_value = defaultValue
         if defaultValue == self.INVALID_DEFAULT_VALUE:
-            valueCalculator.setExternalValue(externalValue)
+            valueCalculator.external_value = externalValue
 
         valueConsumer = self.api.ValueConsumer(valueCalculator.funcValue())
-        valueConsumer.setIsSmall(self._calculateValue(defaultValue, externalValue) < self.SMALL_VALUE_THRESHOLD)
+        valueConsumer.is_small = self._calculateValue(defaultValue, externalValue) < self.SMALL_VALUE_THRESHOLD
 
         return self.api.ValueConsumerCreator(valueCalculator, valueConsumer)
 
     def _checkValueConsumerCreator(self, defaultValue, externalValue):
         valueConsumerCreator = self._createValueConsumerCreator(defaultValue, externalValue)
         self.assertEqual(self._calculateValue(defaultValue, externalValue),
-                         valueConsumerCreator.getValueCalculator().funcValue())
+                         valueConsumerCreator.value_calculator.funcValue())
 
         writer = zserio.BitStreamWriter()
         valueConsumerCreator.write(writer)

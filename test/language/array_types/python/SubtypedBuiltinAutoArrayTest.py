@@ -52,7 +52,7 @@ class AutoArrayTest(unittest.TestCase):
         reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
         subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray.fromReader(reader)
 
-        array = subtypedBuiltinAutoArray.getArray()
+        array = subtypedBuiltinAutoArray.array
         self.assertEqual(numElements, len(array))
         for i in range(numElements):
             self.assertEqual(i, array[i])
@@ -62,7 +62,7 @@ class AutoArrayTest(unittest.TestCase):
         subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray(array_=array)
         bitBuffer = zserio.serialize(subtypedBuiltinAutoArray)
         readAutoArray = zserio.deserialize(self.api.SubtypedBuiltinAutoArray, bitBuffer)
-        readArray = readAutoArray.getArray()
+        readArray = readAutoArray.array
         self.assertEqual(numElements, len(readArray))
         for i in range(numElements):
             self.assertEqual(i, readArray[i])

@@ -12,7 +12,7 @@ class ChoiceTemplatedEnumSelectorTest(unittest.TestCase):
         selectorFromZero = self.api.EnumFromZero.ONE
         selectorFromOne = self.api.EnumFromOne.THREE
         fromZeroChoice = self.api.TemplatedChoice_EnumFromZero(selectorFromZero)
-        fromZeroChoice.setUint16Field(42)
+        fromZeroChoice.uint16_field = 42
         fromOneChoice = self.api.TemplatedChoice_EnumFromOne(selectorFromOne, stringField_="string")
         choiceTemplatedEnumSelector = self.api.ChoiceTemplatedEnumSelector(
             selectorFromZero, selectorFromOne, fromZeroChoice, fromOneChoice

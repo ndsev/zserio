@@ -14,7 +14,7 @@ class UsedBeforeTypeTest(unittest.TestCase):
 
     def testBitSizeOfWithoutOptional(self):
         usedBeforeTypeExpression = self.api.UsedBeforeTypeExpression()
-        usedBeforeTypeExpression.setColor(self.api.Color.BLUE)
+        usedBeforeTypeExpression.color = self.api.Color.BLUE
         self.assertEqual(self.USED_BEFORE_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
                          usedBeforeTypeExpression.bitSizeOf())
 

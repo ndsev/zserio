@@ -9,12 +9,12 @@ class BitmaskUsedByBitmaskTest(unittest.TestCase):
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "bitmask_types.zs").bitmask_used_by_bitmask
         cls.NONE_VALUE = 0
-        cls.READ_VALUE = cls.api.SimplePermission.Values.READ.getValue()
-        cls.WRITE_VALUE = cls.api.SimplePermission.Values.WRITE.getValue()
+        cls.READ_VALUE = cls.api.SimplePermission.Values.READ.value
+        cls.WRITE_VALUE = cls.api.SimplePermission.Values.WRITE.value
 
     def testEmptyConstructor(self):
         permission = self.api.Permission()
-        self.assertEqual(0, permission.getValue())
+        self.assertEqual(0, permission.value)
 
     def testFromValue(self):
         permission = self.api.Permission.fromValue(self.WRITE_VALUE)
@@ -50,8 +50,8 @@ class BitmaskUsedByBitmaskTest(unittest.TestCase):
         self.assertFalse(write == self.api.Permission.Values.READ)
         self.assertFalse(self.api.Permission.Values.READ == write)
 
-        self.assertTrue(read == self.api.Permission.fromValue(read.getValue())) # copy
-        self.assertTrue(write == self.api.Permission.fromValue(write.getValue())) # copy
+        self.assertTrue(read == self.api.Permission.fromValue(read.value)) # copy
+        self.assertTrue(write == self.api.Permission.fromValue(write.value)) # copy
 
         self.assertFalse(read == write)
 
@@ -83,7 +83,7 @@ class BitmaskUsedByBitmaskTest(unittest.TestCase):
         self.assertEqual(read, read | self.api.Permission.Values.NONE)
         self.assertEqual(write, self.api.Permission.Values.NONE | write)
 
-        self.assertEqual(self.READ_VALUE | self.WRITE_VALUE, (read | write).getValue())
+        self.assertEqual(self.READ_VALUE | self.WRITE_VALUE, (read | write).value)
 
     def testAnd(self):
         read = self.api.Permission.Values.READ
@@ -103,7 +103,7 @@ class BitmaskUsedByBitmaskTest(unittest.TestCase):
         write = self.api.Permission.Values.WRITE
 
         self.assertEqual(read ^ write, self.api.Permission.Values.READ ^ self.api.Permission.Values.WRITE)
-        self.assertEqual(self.READ_VALUE ^ self.WRITE_VALUE, (read ^ write).getValue())
+        self.assertEqual(self.READ_VALUE ^ self.WRITE_VALUE, (read ^ write).value)
         self.assertEqual(read, (read ^ write) & read)
         self.assertEqual(write, (read ^ write) & write)
         self.assertEqual(self.api.Permission.Values.NONE, read ^ read)
@@ -139,8 +139,8 @@ class BitmaskUsedByBitmaskTest(unittest.TestCase):
         self.assertEqual(permission, readPermission)
 
     def testGetValue(self):
-        self.assertEqual(self.NONE_VALUE, self.api.Permission.Values.NONE.getValue())
-        self.assertEqual(self.READ_VALUE, self.api.Permission.Values.READ.getValue())
-        self.assertEqual(self.WRITE_VALUE, self.api.Permission.Values.WRITE.getValue())
+        self.assertEqual(self.NONE_VALUE, self.api.Permission.Values.NONE.value)
+        self.assertEqual(self.READ_VALUE, self.api.Permission.Values.READ.value)
+        self.assertEqual(self.WRITE_VALUE, self.api.Permission.Values.WRITE.value)
 
 PERMISSION_BITSIZEOF = 7

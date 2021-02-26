@@ -29,7 +29,7 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
-        testTable = self._database.getSameAsFieldTable()
+        testTable = self._database.same_as_field_table
         testTable.deleteTable()
         self.assertFalse(self._isTableInDb())
 
@@ -37,7 +37,7 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
-        testTable = self._database.getSameAsFieldTable()
+        testTable = self._database.same_as_field_table
 
         writtenRows = self._createSameAsFieldTableRows()
         testTable.write(writtenRows)
@@ -51,7 +51,7 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
-        testTable = self._database.getSameAsFieldTable()
+        testTable = self._database.same_as_field_table
 
         writtenRows = self._createSameAsFieldTableRows()
         testTable.write(writtenRows)
@@ -64,7 +64,7 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
             self._checkSameAsFieldTableRow(writtenRows[expectedRowNum], readRow)
 
     def testUpdate(self):
-        testTable = self._database.getSameAsFieldTable()
+        testTable = self._database.same_as_field_table
 
         writtenRows = self._createSameAsFieldTableRows()
         testTable.write(writtenRows)
@@ -101,7 +101,7 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
     def _isTableInDb(self):
         # check if database does contain table
         sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME + "'"
-        for row in self._database.connection().cursor().execute(sqlQuery):
+        for row in self._database.connection.cursor().execute(sqlQuery):
             if len(row) == 1 and row[0] == TABLE_NAME:
                 return True
 

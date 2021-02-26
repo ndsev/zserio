@@ -9,14 +9,14 @@ class StructureNameClashingWithJavaTest(unittest.TestCase):
 
     def testEmptyConstructor(self):
         structureNameClashingWithJava = self.api.StructureNameClashingWithJava()
-        self.assertEqual(None, structureNameClashingWithJava.getByteField())
-        self.assertEqual(None, structureNameClashingWithJava.getShortField())
-        self.assertEqual(None, structureNameClashingWithJava.getIntegerField())
-        self.assertEqual(None, structureNameClashingWithJava.getLongField())
-        self.assertEqual(None, structureNameClashingWithJava.getBigIntegerField())
-        self.assertEqual(None, structureNameClashingWithJava.getFloatField())
-        self.assertEqual(None, structureNameClashingWithJava.getDoubleField())
-        self.assertEqual(None, structureNameClashingWithJava.getStringField())
+        self.assertEqual(None, structureNameClashingWithJava.byte_field)
+        self.assertEqual(None, structureNameClashingWithJava.short_field)
+        self.assertEqual(None, structureNameClashingWithJava.integer_field)
+        self.assertEqual(None, structureNameClashingWithJava.long_field)
+        self.assertEqual(None, structureNameClashingWithJava.big_integer_field)
+        self.assertEqual(None, structureNameClashingWithJava.float_field)
+        self.assertEqual(None, structureNameClashingWithJava.double_field)
+        self.assertEqual(None, structureNameClashingWithJava.string_field)
 
 
     def testBitSizeOf(self):

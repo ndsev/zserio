@@ -16,9 +16,9 @@ class StructureConstraintsTest(unittest.TestCase):
 
         structureConstraints = self.api.StructureConstraints()
         structureConstraints.read(reader)
-        self.assertEqual(self.api.BasicColor.BLACK, structureConstraints.getBlackColor())
-        self.assertEqual(self.api.BasicColor.WHITE, structureConstraints.getWhiteColor())
-        self.assertEqual(self.api.ExtendedColor.PURPLE, structureConstraints.getPurpleColor())
+        self.assertEqual(self.api.BasicColor.BLACK, structureConstraints.black_color)
+        self.assertEqual(self.api.BasicColor.WHITE, structureConstraints.white_color)
+        self.assertEqual(self.api.ExtendedColor.PURPLE, structureConstraints.purple_color)
 
     def testReadWrongBlackConstraint(self):
         writer = zserio.BitStreamWriter()
@@ -57,9 +57,9 @@ class StructureConstraintsTest(unittest.TestCase):
                                                              self.api.ExtendedColor.PURPLE)
         bitBuffer = zserio.serialize(structureConstraints)
         readStructureConstraints = zserio.deserialize(self.api.StructureConstraints, bitBuffer)
-        self.assertEqual(self.api.BasicColor.BLACK, readStructureConstraints.getBlackColor())
-        self.assertEqual(self.api.BasicColor.WHITE, readStructureConstraints.getWhiteColor())
-        self.assertEqual(self.api.ExtendedColor.PURPLE, readStructureConstraints.getPurpleColor())
+        self.assertEqual(self.api.BasicColor.BLACK, readStructureConstraints.black_color)
+        self.assertEqual(self.api.BasicColor.WHITE, readStructureConstraints.white_color)
+        self.assertEqual(self.api.ExtendedColor.PURPLE, readStructureConstraints.purple_color)
         self.assertEqual(structureConstraints, readStructureConstraints)
 
     def testWriteWrongBlackConstraint(self):

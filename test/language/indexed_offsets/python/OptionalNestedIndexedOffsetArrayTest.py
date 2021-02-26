@@ -109,8 +109,8 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
         writer.writeBits(FIELD_VALUE, 6)
 
     def _checkOffsets(self, optionalNestedIndexedOffsetArray, offsetShift):
-        length = optionalNestedIndexedOffsetArray.getHeader().getLength()
-        offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets()
+        length = optionalNestedIndexedOffsetArray.header.length
+        offsets = optionalNestedIndexedOffsetArray.header.offsets
         self.assertEqual(length, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for i in range(length):
@@ -118,18 +118,18 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
             expectedOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
 
     def _checkOptionalNestedIndexedOffsetArray(self, optionalNestedIndexedOffsetArray, length):
-        self.assertEqual(length, optionalNestedIndexedOffsetArray.getHeader().getLength())
+        self.assertEqual(length, optionalNestedIndexedOffsetArray.header.length)
 
         offsetShift = 0
         self._checkOffsets(optionalNestedIndexedOffsetArray, offsetShift)
 
         if length > 0:
-            data = optionalNestedIndexedOffsetArray.getData()
+            data = optionalNestedIndexedOffsetArray.data
             self.assertEqual(length, len(data))
             for i in range(length):
                 self.assertTrue(DATA[i] == data[i])
 
-        self.assertEqual(FIELD_VALUE, optionalNestedIndexedOffsetArray.getField())
+        self.assertEqual(FIELD_VALUE, optionalNestedIndexedOffsetArray.field)
 
     def _createOptionalNestedIndexedOffsetArray(self, length, createWrongOffsets):
         optionalNestedIndexedOffsetArray = self.api.OptionalNestedIndexedOffsetArray()
@@ -143,12 +143,12 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
                 offsets.append(currentOffset)
             currentOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
 
-        optionalNestedIndexedOffsetArray.setHeader(self.api.Header(length, offsets))
+        optionalNestedIndexedOffsetArray.header = self.api.Header(length, offsets)
 
         if length > 0:
-            optionalNestedIndexedOffsetArray.setData(DATA)
+            optionalNestedIndexedOffsetArray.data = DATA
 
-        optionalNestedIndexedOffsetArray.setField(FIELD_VALUE)
+        optionalNestedIndexedOffsetArray.field = FIELD_VALUE
 
         return optionalNestedIndexedOffsetArray
 
