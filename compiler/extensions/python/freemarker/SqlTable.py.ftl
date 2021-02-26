@@ -216,15 +216,10 @@ class ${name}:
             ${field.name}_.write(writer)
             rowInList[${field?index}] = writer.getByteArray()
 
-            <#elseif field.enumData??>
+            <#elseif field.enumData?? || field.bitmaskData??>
         ${field.name}_ = rowInList[${field?index}]
         if isinstance(${field.name}_, ${field.pythonTypeName}):
             rowInList[${field?index}] = ${field.name}_.value
-
-            <#elseif field.bitmaskData??>
-        ${field.name}_ = rowInList[${field?index}]
-        if isinstance(${field.name}_, ${field.pythonTypeName}):
-            rowInList[${field?index}] = ${field.name}_.getValue()
 
             </#if>
         </#list>
