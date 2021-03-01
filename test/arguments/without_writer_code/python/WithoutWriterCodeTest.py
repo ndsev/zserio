@@ -12,21 +12,21 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testItemTypeMethods(self):
         userType = self.api.ItemType
 
-        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
 
-        self._assertMethodPresent(userType, "fromReader")
-        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "bitsizeof")
 
     def testVersionAvailabilityMethods(self):
         userType = self.api.VersionAvailability
 
-        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
 
         self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "fromValue")
-        self._assertMethodPresent(userType, "fromReader")
+        self._assertMethodPresent(userType, "from_value")
+        self._assertMethodPresent(userType, "from_reader")
         self._assertMethodPresent(userType, "__eq__")
         self._assertMethodPresent(userType, "__hash__")
         self._assertMethodPresent(userType, "__str__")
@@ -34,20 +34,20 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "__and__")
         self._assertMethodPresent(userType, "__xor__")
         self._assertMethodPresent(userType, "__invert__")
-        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "bitsizeof")
 
         self._assertPropertyPresent(userType, "value", readOnly=True)
 
     def testExtraParamUnionMethods(self):
         userType = self.api.ExtraParamUnion
 
-        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "fromReader")
-        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "bitsizeof")
 
         self._assertPropertyPresent(userType, "choice_tag", readOnly=True)
         self._assertPropertyPresent(userType, "value16", readOnly=True)
@@ -56,14 +56,14 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testItemMethods(self):
         userType = self.api.Item
 
-        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "fromFields")
+        self._assertMethodNotPresent(userType, "from_fields")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "fromReader")
-        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "bitsizeof")
 
         self._assertPropertyPresent(userType, "item_type", readOnly=True)
         self._assertPropertyPresent(userType, "param", readOnly=True)
@@ -72,13 +72,13 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testItemChoiceMethods(self):
         userType = self.api.ItemChoice
 
-        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "fromReader")
-        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "bitsizeof")
 
         self._assertPropertyPresent(userType, "has_item", readOnly=True)
         self._assertPropertyPresent(userType, "item", readOnly=True)
@@ -87,14 +87,14 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testItemChoiceHolderMethods(self):
         userType = self.api.ItemChoiceHolder
 
-        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "fromFields")
+        self._assertMethodNotPresent(userType, "from_fields")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "fromReader")
-        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "bitsizeof")
 
         self._assertPropertyPresent(userType, "has_item", readOnly=True)
         self._assertPropertyPresent(userType, "item_choice", readOnly=True)
@@ -102,14 +102,14 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testTileMethods(self):
         userType = self.api.Tile
 
-        self._assertMethodNotPresent(userType, "initializeOffsets")
+        self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
-        self._assertMethodNotPresent(userType, "fromFields")
+        self._assertMethodNotPresent(userType, "from_fields")
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
-        self._assertMethodPresent(userType, "fromReader")
-        self._assertMethodPresent(userType, "bitSizeOf")
+        self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "bitsizeof")
 
         self._assertPropertyPresent(userType, "version", readOnly=True)
         self._assertPropertyPresent(userType, "num_elements_offset", readOnly=True)
@@ -119,8 +119,8 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testGeoMapTableMethods(self):
         userType = self.api.GeoMapTable
 
-        self._assertMethodNotPresent(userType, "createTable")
-        self._assertMethodNotPresent(userType, "deleteTable")
+        self._assertMethodNotPresent(userType, "create_table")
+        self._assertMethodNotPresent(userType, "delete_table")
         self._assertMethodNotPresent(userType, "write")
         self._assertMethodNotPresent(userType, "update")
 
@@ -130,11 +130,11 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testWorldDbMethods(self):
         userType = self.api.WorldDb
 
-        self._assertMethodNotPresent(userType, "createSchema")
-        self._assertMethodNotPresent(userType, "deleteSchema")
+        self._assertMethodNotPresent(userType, "create_schema")
+        self._assertMethodNotPresent(userType, "delete_schema")
 
         self._assertMethodPresent(userType, "__init__")
-        self._assertMethodPresent(userType, "fromFile")
+        self._assertMethodPresent(userType, "from_file")
         self._assertMethodPresent(userType, "close")
 
         self._assertPropertyPresent(userType, "europe", readOnly=True)
@@ -143,8 +143,8 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         # static constants
         self.assertTrue(hasattr(userType, "DATABASE_NAME"))
-        self.assertTrue(hasattr(userType, "TABLE_NAME_europe"))
-        self.assertTrue(hasattr(userType, "TABLE_NAME_america"))
+        self.assertTrue(hasattr(userType, "TABLE_NAME_EUROPE"))
+        self.assertTrue(hasattr(userType, "TABLE_NAME_AMERICA"))
 
     def testRead(self):
         writer = zserio.BitStreamWriter()
@@ -162,7 +162,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._writeTile(writer)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        tile = self.api.Tile.fromReader(reader)
+        tile = self.api.Tile.from_reader(reader)
 
         self._checkTile(tile)
 

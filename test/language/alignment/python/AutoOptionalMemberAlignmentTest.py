@@ -11,27 +11,27 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
     def testBitSizeOfWithOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(0x4433, 0x1122)
         self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
-                         autoOptionalMemberAlignment.bitSizeOf())
+                         autoOptionalMemberAlignment.bitsizeof())
 
     def testBitSizeOfWithoutOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(None, 0x7624)
         self.assertEqual(self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
-                         autoOptionalMemberAlignment.bitSizeOf())
+                         autoOptionalMemberAlignment.bitsizeof())
 
     def testInitializeOffsetsWithOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(0x1111, 0x3333)
         for bitPosition in range(32):
             self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE,
-                             autoOptionalMemberAlignment.initializeOffsets(bitPosition))
+                             autoOptionalMemberAlignment.initialize_offsets(bitPosition))
         bitPosition = 32
         self.assertEqual(self.WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
-                         autoOptionalMemberAlignment.initializeOffsets(bitPosition))
+                         autoOptionalMemberAlignment.initialize_offsets(bitPosition))
 
     def testInitializeOffsetsWithoutOptional(self):
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment(field_=0x3334)
         bitPosition = 1
         self.assertEqual(self.WITHOUT_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE + bitPosition,
-                         autoOptionalMemberAlignment.initializeOffsets(bitPosition))
+                         autoOptionalMemberAlignment.initialize_offsets(bitPosition))
 
     def testReadWithOptional(self):
         autoOptionalField = 0x1234
@@ -40,7 +40,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(writer, autoOptionalField,
                                                                                   field)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.from_reader(reader)
         self._checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, autoOptionalField, field)
 
     def testReadWithoutOptional(self):
@@ -48,7 +48,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(writer, None, field)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
+        autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.from_reader(reader)
         self._checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, None, field)
 
     def testWriteWithOptional(self):
@@ -80,10 +80,10 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
 
     def _checkAutoOptionalMemberAlignment(self, autoOptionalMemberAlignment, autoOptionalField, field):
         if autoOptionalField is not None:
-            self.assertTrue(autoOptionalMemberAlignment.isAutoOptionalFieldUsed())
+            self.assertTrue(autoOptionalMemberAlignment.is_auto_optional_field_used())
             self.assertEqual(autoOptionalField, autoOptionalMemberAlignment.auto_optional_field)
         else:
-            self.assertFalse(autoOptionalMemberAlignment.isAutoOptionalFieldUsed())
+            self.assertFalse(autoOptionalMemberAlignment.is_auto_optional_field_used())
         self.assertEqual(field, autoOptionalMemberAlignment.field)
 
     WITH_AUTO_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96

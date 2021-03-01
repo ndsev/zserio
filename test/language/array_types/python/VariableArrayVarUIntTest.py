@@ -15,7 +15,7 @@ class VariableArrayVarUIntTest(unittest.TestCase):
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
-        self.assertEqual(expectedBitSize, variableArray.bitSizeOf(bitPosition))
+        self.assertEqual(expectedBitSize, variableArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         numElements = 33
@@ -24,36 +24,36 @@ class VariableArrayVarUIntTest(unittest.TestCase):
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
-        self.assertEqual(expectedEndBitPosition, variableArray.initializeOffsets(bitPosition))
+        self.assertEqual(expectedEndBitPosition, variableArray.initialize_offsets(bitPosition))
 
     def testRead(self):
         numElements = 59
         writer = zserio.BitStreamWriter()
         VariableArrayVarUIntTest._writeVariableArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        variableArray = self.api.VariableArray.fromReader(reader)
+        variableArray = self.api.VariableArray.from_reader(reader)
 
-        self.assertEqual(numElements, variableArray.getNumElements())
-        compoundArray = variableArray.getCompoundArray()
+        self.assertEqual(numElements, variableArray.num_elements)
+        compoundArray = variableArray.compound_array
         self.assertEqual(numElements, len(compoundArray))
         for i in range(numElements):
             testStructure = compoundArray[i]
-            self.assertEqual(i, testStructure.getId())
-            self.assertTrue(testStructure.getName() == "Name" + str(i))
+            self.assertEqual(i, testStructure.id)
+            self.assertTrue(testStructure.name == "Name" + str(i))
 
     def testWrite(self):
         numElements = 33
         compoundArray = [self.api.TestStructure(id_=i, name_="Name" + str(i)) for i in range(numElements)]
-        variableArray = self.api.VariableArray(numElements_=numElements, compoundArray_=compoundArray)
+        variableArray = self.api.VariableArray(num_elements_=numElements, compound_array_=compoundArray)
         bitBuffer = zserio.serialize(variableArray)
         readVariableArray = zserio.deserialize(self.api.VariableArray, bitBuffer)
-        self.assertEqual(numElements, readVariableArray.getNumElements())
-        readCompoundArray = readVariableArray.getCompoundArray()
+        self.assertEqual(numElements, readVariableArray.num_elements)
+        readCompoundArray = readVariableArray.compound_array
         self.assertEqual(numElements, len(readCompoundArray))
         for i in range(numElements):
             readTestStructure = readCompoundArray[i]
-            self.assertEqual(i, readTestStructure.getId())
-            self.assertTrue(readTestStructure.getName() == "Name" + str(i))
+            self.assertEqual(i, readTestStructure.id)
+            self.assertTrue(readTestStructure.name == "Name" + str(i))
 
     def testWriteWrongArray(self):
         numElements = 33

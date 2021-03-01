@@ -13,14 +13,14 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         createWrongOffsets = False
         optionalIndexedOffsetArray = self._createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets)
         self.assertEqual(OptionalIndexedOffsetArrayTest._getOptionalIndexedOffsetArrayBitSize(hasOptional),
-                         optionalIndexedOffsetArray.bitSizeOf())
+                         optionalIndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithoutOptional(self):
         hasOptional = False
         createWrongOffsets = False
         optionalIndexedOffsetArray = self._createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets)
         self.assertEqual(OptionalIndexedOffsetArrayTest._getOptionalIndexedOffsetArrayBitSize(hasOptional),
-                         optionalIndexedOffsetArray.bitSizeOf())
+                         optionalIndexedOffsetArray.bitsizeof())
 
     def testInitializeOffsetsWithOptional(self):
         hasOptional = True
@@ -28,7 +28,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         optionalIndexedOffsetArray = self._createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets)
         bitPosition = 0
         self.assertEqual(OptionalIndexedOffsetArrayTest._getOptionalIndexedOffsetArrayBitSize(hasOptional),
-                         optionalIndexedOffsetArray.initializeOffsets(bitPosition))
+                         optionalIndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
 
     def testInitializeOffsetsWithoutOptional(self):
@@ -37,7 +37,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         optionalIndexedOffsetArray = self._createOptionalIndexedOffsetArray(hasOptional, createWrongOffsets)
         bitPosition = 0
         self.assertEqual(OptionalIndexedOffsetArrayTest._getOptionalIndexedOffsetArrayBitSize(hasOptional),
-                         optionalIndexedOffsetArray.initializeOffsets(bitPosition))
+                         optionalIndexedOffsetArray.initialize_offsets(bitPosition))
 
     def testReadWithOptional(self):
         hasOptional = True
@@ -69,7 +69,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         optionalIndexedOffsetArray.write(writer)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readOptionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray.fromReader(reader)
+        readOptionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray.from_reader(reader)
         self._checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional)
         self.assertTrue(optionalIndexedOffsetArray == readOptionalIndexedOffsetArray)
 

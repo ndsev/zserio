@@ -12,11 +12,11 @@ class ExplicitSimpleParamTest(unittest.TestCase):
         test_api = cls.api.explicit_simple_param
         class SimpleParamTableParameterProvider(test_api.SimpleParamTable.IParameterProvider):
             @staticmethod
-            def getCount1(_row):
+            def count1(_row):
                 return SIMPLE_PARAM_TABLE_COUNT1
 
             @staticmethod
-            def getCount2(_row):
+            def count2(_row):
                 return SIMPLE_PARAM_TABLE_COUNT2
 
         cls.SimpleParamTableParameterProvider = SimpleParamTableParameterProvider
@@ -24,8 +24,8 @@ class ExplicitSimpleParamTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        self._database.create_schema()
 
     def tearDown(self):
         self._database.close()
@@ -34,10 +34,10 @@ class ExplicitSimpleParamTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
         testTable = self._database.simple_param_table
-        testTable.deleteTable()
+        testTable.delete_table()
         self.assertFalse(self._isTableInDb())
 
-        testTable.createTable()
+        testTable.create_table()
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):

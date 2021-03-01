@@ -12,11 +12,11 @@ class ExplicitEnumParamTest(unittest.TestCase):
         test_api = cls.api.explicit_enum_param
         class EnumParamTableParameterProvider(test_api.EnumParamTable.IParameterProvider):
             @staticmethod
-            def getCount1(_row):
+            def count1(_row):
                 return test_api.TestEnum.TEN
 
             @staticmethod
-            def getCount2(_row):
+            def count2(_row):
                 return test_api.TestEnum.ELEVEN
 
         cls.EnumParamTableParameterProvider = EnumParamTableParameterProvider
@@ -24,8 +24,8 @@ class ExplicitEnumParamTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        self._database.create_schema()
 
         self.ENUM_PARAM_TABLE_COUNT1 = self.api.explicit_enum_param.TestEnum.TEN
         self.ENUM_PARAM_TABLE_COUNT2 = self.api.explicit_enum_param.TestEnum.ELEVEN
@@ -37,10 +37,10 @@ class ExplicitEnumParamTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
         testTable = self._database.enum_param_table
-        testTable.deleteTable()
+        testTable.delete_table()
         self.assertFalse(self._isTableInDb())
 
-        testTable.createTable()
+        testTable.create_table()
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):

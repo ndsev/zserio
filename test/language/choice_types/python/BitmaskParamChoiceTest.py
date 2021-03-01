@@ -23,7 +23,7 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeBitmaskParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        bitmaskParamChoice = self.api.BitmaskParamChoice.fromReader(reader, selector)
+        bitmaskParamChoice = self.api.BitmaskParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, bitmaskParamChoice.selector)
         self.assertEqual(value, bitmaskParamChoice.white)
 
@@ -84,24 +84,24 @@ class BitmaskParamChoiceTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
-        self.assertEqual(8, bitmaskParamChoice.bitSizeOf())
+        self.assertEqual(8, bitmaskParamChoice.bitsizeof())
 
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.WHITE)
-        self.assertEqual(8, bitmaskParamChoice.bitSizeOf())
+        self.assertEqual(8, bitmaskParamChoice.bitsizeof())
 
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK_AND_WHITE)
-        self.assertEqual(16, bitmaskParamChoice.bitSizeOf())
+        self.assertEqual(16, bitmaskParamChoice.bitsizeof())
 
     def testInitializeOffsets(self):
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
         bitPosition = 1
-        self.assertEqual(9, bitmaskParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, bitmaskParamChoice.initialize_offsets(bitPosition))
 
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.WHITE)
-        self.assertEqual(9, bitmaskParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, bitmaskParamChoice.initialize_offsets(bitPosition))
 
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK_AND_WHITE)
-        self.assertEqual(17, bitmaskParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(17, bitmaskParamChoice.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         selector = self.api.Selector.Values.BLACK

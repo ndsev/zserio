@@ -33,6 +33,7 @@ public final class CompoundFieldTemplateData
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
 
         name = field.getName();
+        snakeCaseName = AccessorNameFormatter.camelCaseToSnakeCase(name);
 
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
@@ -64,6 +65,11 @@ public final class CompoundFieldTemplateData
     public String getName()
     {
         return name;
+    }
+
+    public String getSnakeCaseName()
+    {
+        return snakeCaseName;
     }
 
     public String getPythonTypeName()
@@ -549,6 +555,7 @@ public final class CompoundFieldTemplateData
     }
 
     private final String name;
+    private final String snakeCaseName;
     private final String pythonTypeName;
     private final String propertyName;
 

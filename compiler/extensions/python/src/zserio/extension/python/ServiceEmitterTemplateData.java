@@ -49,6 +49,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             name = serviceMethod.getName();
+            snakeCaseName = AccessorNameFormatter.camelCaseToSnakeCase(name);
 
             final ZserioType responseType = serviceMethod.getResponseType();
             final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseType);
@@ -66,6 +67,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
+        public String getSnakeCaseName()
+        {
+            return snakeCaseName;
+        }
+
         public String getResponseTypeFullName()
         {
             return responseTypeFullName;
@@ -77,6 +83,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
+        private final String snakeCaseName;
         private final String responseTypeFullName;
         private final String requestTypeFullName;
     }

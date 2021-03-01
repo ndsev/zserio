@@ -21,6 +21,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.common.sql.SqlNativeTypeMapper;
 import zserio.extension.common.sql.types.NativeBlobType;
 import zserio.extension.common.sql.types.SqlNativeType;
+import zserio.extension.python.SqlTableEmitterTemplateData.FieldTemplateData.ParameterTemplateData;
 import zserio.extension.python.types.PythonNativeType;
 import zserio.tools.HashUtil;
 
@@ -54,8 +55,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             {
                 if (parameterTemplateData.getIsExplicit())
                 {
-                    explicitParameters.add(new ExplicitParameterTemplateData(
-                            parameterTemplateData.getExpression(), parameterTemplateData.getPythonTypeName()));
+                    explicitParameters.add(new ExplicitParameterTemplateData(parameterTemplateData));
                 }
             }
         }
@@ -93,10 +93,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
-        public ExplicitParameterTemplateData(String expression, String pythonTypeName)
+        public ExplicitParameterTemplateData(ParameterTemplateData parameterTemplateData)
         {
-            this.expression = expression;
-            this.pythonTypeName = pythonTypeName;
+            expression = parameterTemplateData.getExpression();
+            pythonTypeName = parameterTemplateData.getPythonTypeName();
         }
 
         public String getExpression()
@@ -161,6 +161,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             importCollector.importType(nativeType);
 
             name = field.getName();
+            snakeCaseName = AccessorNameFormatter.camelCaseToSnakeCase(name);
             pythonTypeName = nativeType.getFullName();
 
             isVirtual = field.getIsVirtual();
@@ -181,7 +182,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = (fieldSqlConstraint == null) ? null :
-                pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
+                    pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
             enumData = (fieldBaseType instanceof EnumType) ? new EnumTemplateData(nativeType) : null;
             bitmaskData = (fieldBaseType instanceof BitmaskType) ? new BitmaskTemplateData(nativeType) : null;
@@ -191,6 +192,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public String getSnakeCaseName()
+        {
+            return snakeCaseName;
         }
 
         public String getPythonTypeName()
@@ -323,6 +329,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
+        private final String snakeCaseName;
         private final String pythonTypeName;
 
         private final boolean isVirtual;

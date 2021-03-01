@@ -375,32 +375,32 @@ from timeit import default_timer as timer
 import zserio
 import ${API_MODULE}.api as api
 
-def performanceTest(logPath, blobPath, numIterations):
+def performance_test(log_path, blob_path, num_iterations):
     print("Zserio Python Performance Test")
 
     # prepare byte array
-    readerFromFile = zserio.BitStreamReader.from_file(blobPath)
-    blobFromFile = api.${BLOB_API_PATH}.fromReader(readerFromFile)
-    bufferWriter = zserio.BitStreamWriter()
-    blobFromFile.write(bufferWriter);
-    byteArray = bufferWriter.byte_array
+    reader_from_file = zserio.BitStreamReader.from_file(blob_path)
+    blob_from_file = api.${BLOB_API_PATH}.from_reader(reader_from_file)
+    buffer_writer = zserio.BitStreamWriter()
+    blob_from_file.write(buffer_writer);
+    byte_array = buffer_writer.byte_array
 
     # run the test
     start = timer()
-    for i in range(numIterations):
+    for i in range(num_iterations):
 EOF
 
     case "${TEST_CONFIG}" in
         "READ")
             cat >> "${BUILD_DIR}/src/perftest.py" << EOF
-        reader = zserio.BitStreamReader(byteArray)
-        blob = api.${BLOB_API_PATH}.fromReader(reader)
+        reader = zserio.BitStreamReader(byte_array)
+        blob = api.${BLOB_API_PATH}.from_reader(reader)
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_DIR}/src/perftest.py" << EOF
-        reader = zserio.BitStreamReader(byteArray)
-        blob = api.${BLOB_API_PATH}.fromReader(reader)
+        reader = zserio.BitStreamReader(byte_array)
+        blob = api.${BLOB_API_PATH}.from_reader(reader)
         writer = zserio.BitStreamWriter()
         blob.write(writer)
 EOF
@@ -409,7 +409,7 @@ EOF
         "WRITE")
             cat >> "${BUILD_DIR}/src/perftest.py" << EOF
         writer = zserio.BitStreamWriter()
-        blobFromFile.write(writer)
+        blob_from_file.write(writer)
 EOF
             ;;
     esac
@@ -418,26 +418,26 @@ EOF
     stop = timer()
 
     # process results
-    totalDuration = (stop - start) * 1000
-    stepDuration = totalDuration / numIterations
-    print("Total Duration: %.03fms" % totalDuration)
-    print("Iterations:     %d" % numIterations)
-    print("Step Duration   %.03fms" % stepDuration)
+    total_duration = (stop - start) * 1000
+    step_duration = total_duration / num_iterations
+    print("Total Duration: %.03fms" % total_duration)
+    print("Iterations:     %d" % num_iterations)
+    print("Step Duration   %.03fms" % step_duration)
 
     # write results to file
-    logFile = open(logPath, "w")
-    logFile.write("%.03fms %d %.03fms" % (totalDuration, numIterations, stepDuration))
+    log_file = open(log_path, "w")
+    log_file.write("%.03fms %d %.03fms" % (total_duration, num_iterations, step_duration))
 
 if __name__ == "__main__":
     sys.setrecursionlimit(5000) # empiric constant to prevent failing during testing on recursive blobs
 
-    argParser = argparse.ArgumentParser(description="Zserio Python Performance Test")
-    argParser.add_argument("--log-path", required=True, help="Path to the log file to create")
-    argParser.add_argument('--blob-path', required=True, help="Path to the blob file")
-    argParser.add_argument('--num-iterations', default=${NUM_ITERATIONS}, type=int, help="Number of iterations")
-    args = argParser.parse_args()
+    arg_parser = argparse.ArgumentParser(description="Zserio Python Performance Test")
+    arg_parser.add_argument("--log-path", required=True, help="Path to the log file to create")
+    arg_parser.add_argument('--blob-path', required=True, help="Path to the blob file")
+    arg_parser.add_argument('--num-iterations', default=${NUM_ITERATIONS}, type=int, help="Number of iterations")
+    args = arg_parser.parse_args()
 
-    performanceTest(args.log_path, args.blob_path, args.num_iterations)
+    performance_test(args.log_path, args.blob_path, args.num_iterations)
 EOF
 }
 

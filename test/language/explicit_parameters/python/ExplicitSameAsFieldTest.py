@@ -12,7 +12,7 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
         test_api = cls.api.explicit_same_as_field
         class SameAsFieldTableParameterProvider(test_api.SameAsFieldTable.IParameterProvider):
             @staticmethod
-            def getCount(_row):
+            def count(_row):
                 return SAME_AS_FIELD_TABLE_COUNT_EXPLICIT
 
         cls.SameAsFieldTableParameterProvider = SameAsFieldTableParameterProvider
@@ -20,8 +20,8 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        self._database.create_schema()
 
     def tearDown(self):
         self._database.close()
@@ -30,10 +30,10 @@ class ExplicitSameAsFieldTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
         testTable = self._database.same_as_field_table
-        testTable.deleteTable()
+        testTable.delete_table()
         self.assertFalse(self._isTableInDb())
 
-        testTable.createTable()
+        testTable.create_table()
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):

@@ -11,26 +11,26 @@ class NestedOffsetTest(unittest.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         nestedOffset = self._createNestedOffset(createWrongOffsets)
-        self.assertEqual(self.NEST_OFFSET_BIT_SIZE, nestedOffset.bitSizeOf())
+        self.assertEqual(self.NEST_OFFSET_BIT_SIZE, nestedOffset.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         bitPosition = 2
-        self.assertEqual(self.NEST_OFFSET_BIT_SIZE - bitPosition, nestedOffset.bitSizeOf(bitPosition))
+        self.assertEqual(self.NEST_OFFSET_BIT_SIZE - bitPosition, nestedOffset.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         bitPosition = 0
-        self.assertEqual(self.NEST_OFFSET_BIT_SIZE, nestedOffset.initializeOffsets(bitPosition))
+        self.assertEqual(self.NEST_OFFSET_BIT_SIZE, nestedOffset.initialize_offsets(bitPosition))
         self._checkNestedOffset(nestedOffset)
 
     def testInitializeOffsetsWithPosition(self):
         createWrongOffsets = True
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         bitPosition = 2
-        self.assertEqual(self.NEST_OFFSET_BIT_SIZE, nestedOffset.initializeOffsets(bitPosition))
+        self.assertEqual(self.NEST_OFFSET_BIT_SIZE, nestedOffset.initialize_offsets(bitPosition))
         self._checkNestedOffset(nestedOffset)
 
     def testRead(self):
@@ -38,7 +38,7 @@ class NestedOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeNestedOffsetToStream(writer, writeWrongOffsets)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        nestedOffset = self.api.NestedOffset.fromReader(reader)
+        nestedOffset = self.api.NestedOffset.from_reader(reader)
         self._checkNestedOffset(nestedOffset)
 
     def testReadWrongOffsets(self):
@@ -47,7 +47,7 @@ class NestedOffsetTest(unittest.TestCase):
         self._writeNestedOffsetToStream(writer, writeWrongOffsets)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
-            self.api.NestedOffset.fromReader(reader)
+            self.api.NestedOffset.from_reader(reader)
 
     def testWrite(self):
         createWrongOffsets = True
@@ -56,7 +56,7 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffset.write(writer)
         self._checkNestedOffset(nestedOffset)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readNestedOffset = self.api.NestedOffset.fromReader(reader)
+        readNestedOffset = self.api.NestedOffset.from_reader(reader)
         self._checkNestedOffset(readNestedOffset)
         self.assertTrue(nestedOffset == readNestedOffset)
 
@@ -74,12 +74,12 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            nestedOffset.write(writer, callInitializeOffsets=False)
+            nestedOffset.write(writer, call_initialize_offsets=False)
 
     def _writeNestedOffsetToStream(self, writer, writeWrongOffsets):
         writer.write_bits(self.WRONG_TERMINATOR_OFFSET if writeWrongOffsets else self.TERMINATOR_OFFSET, 32)
         writer.write_bool(self.BOOL_VALUE)
-        writer.write_varsize(self.api.NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure)
+        writer.write_varsize(self.api.NestedOffsetUnion.CHOICE_nested_offset_array_structure)
 
         writer.write_bits(self.NUM_ELEMENTS, 8)
         for i in range(self.NUM_ELEMENTS):
@@ -99,7 +99,7 @@ class NestedOffsetTest(unittest.TestCase):
         self.assertEqual(self.BOOL_VALUE, nestedOffsetChoice.type)
 
         nestedOffsetUnion = nestedOffsetChoice.nested_offset_union
-        self.assertEqual(self.api.NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure,
+        self.assertEqual(self.api.NestedOffsetUnion.CHOICE_nested_offset_array_structure,
                          nestedOffsetUnion.choice_tag)
 
         nestedOffsetArrayStructure = nestedOffsetUnion.nested_offset_array_structure
@@ -123,9 +123,12 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffsetArrayStructure = self.api.NestedOffsetArrayStructure(self.NUM_ELEMENTS,
                                                                          nestedOffsetStructureList)
 
-        nestedOffsetUnion = self.api.NestedOffsetUnion(nestedOffsetArrayStructure_=nestedOffsetArrayStructure)
+        nestedOffsetUnion = self.api.NestedOffsetUnion(
+            nested_offset_array_structure_=nestedOffsetArrayStructure
+        )
 
-        nestedOffsetChoice = self.api.NestedOffsetChoice(self.BOOL_VALUE, nestedOffsetUnion_=nestedOffsetUnion)
+        nestedOffsetChoice = self.api.NestedOffsetChoice(self.BOOL_VALUE,
+                                                         nested_offset_union_=nestedOffsetUnion)
 
         terminatorOffset = self.WRONG_TERMINATOR_OFFSET if createWrongOffsets else self.TERMINATOR_OFFSET
         nestedOffset = self.api.NestedOffset(terminatorOffset, self.BOOL_VALUE, nestedOffsetChoice,

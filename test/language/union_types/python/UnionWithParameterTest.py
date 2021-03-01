@@ -28,7 +28,7 @@ class UnionWithParameterTest(unittest.TestCase):
             testUnion.write(writer) # raises exception
 
     def testFromReader(self):
-        testUnion = self.api.TestUnion(True, case3Field_=-1)
+        testUnion = self.api.TestUnion(True, case3_field_=-1)
         bitBuffer = zserio.serialize(testUnion)
         readTestUnion = zserio.deserialize(self.api.TestUnion, bitBuffer, True)
         self.assertEqual(testUnion.choice_tag, readTestUnion.choice_tag)

@@ -76,7 +76,7 @@ class ChoiceArrayTest(unittest.TestCase):
 
     def _checkChoiceArrayFunction(self, pos):
         inner = self._createInner(pos)
-        readElement = inner.ref.funcGetElement()
+        readElement = inner.ref.func_get_element()
         if pos >= self.NUM_ITEMS:
             self.assertEqual(self.EXPLICIT_ITEM, readElement)
         else:
@@ -90,5 +90,5 @@ class ChoiceArrayTest(unittest.TestCase):
         self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readInner = self.api.Inner.fromReader(reader)
+        readInner = self.api.Inner.from_reader(reader)
         self.assertEqual(inner, readInner)

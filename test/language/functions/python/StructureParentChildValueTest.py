@@ -10,7 +10,7 @@ class StructureParentChildValueTest(unittest.TestCase):
 
     def testParentValue(self):
         parentValue = self._createParentValue()
-        self.assertEqual(self.CHILD_VALUE, parentValue.funcGetValue())
+        self.assertEqual(self.CHILD_VALUE, parentValue.func_get_value())
 
         writer = zserio.BitStreamWriter()
         parentValue.write(writer)
@@ -20,7 +20,7 @@ class StructureParentChildValueTest(unittest.TestCase):
         self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readParentValue = self.api.ParentValue.fromReader(reader)
+        readParentValue = self.api.ParentValue.from_reader(reader)
         self.assertEqual(parentValue, readParentValue)
 
     def _writeParentValueToStream(self, writer):

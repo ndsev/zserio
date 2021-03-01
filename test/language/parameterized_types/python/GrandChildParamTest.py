@@ -16,7 +16,7 @@ class GrandChildParamTest(unittest.TestCase):
         self._checkGrandChildParamInStream(reader, grandChildParam)
 
         reader.bitposition = 0
-        readGrandChildParam = self.api.GrandChildParam.fromReader(reader)
+        readGrandChildParam = self.api.GrandChildParam.from_reader(reader)
         self.assertEqual(grandChildParam, readGrandChildParam)
 
     def _createGrandChildParam(self):

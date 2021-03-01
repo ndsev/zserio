@@ -10,26 +10,26 @@ class EmptyIndexedOffsetArrayTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
-        self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE, emptyIndexedOffsetArray.bitSizeOf())
+        self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE, emptyIndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
         bitPosition = 1
         self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         emptyIndexedOffsetArray.bitSizeOf(bitPosition))
+                         emptyIndexedOffsetArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
         bitPosition = 0
         self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         emptyIndexedOffsetArray.initializeOffsets(bitPosition))
+                         emptyIndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
         emptyIndexedOffsetArray = self._createEmptyIndexedOffsetArray()
         bitPosition = 9
         self.assertEqual(self.EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition,
-                         emptyIndexedOffsetArray.initializeOffsets(bitPosition))
+                         emptyIndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray)
 
     def testRead(self):
@@ -46,7 +46,7 @@ class EmptyIndexedOffsetArrayTest(unittest.TestCase):
         emptyIndexedOffsetArray.write(writer)
         self._checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readEmptyIndexedOffsetArray = self.api.EmptyIndexedOffsetArray.fromReader(reader)
+        readEmptyIndexedOffsetArray = self.api.EmptyIndexedOffsetArray.from_reader(reader)
         self._checkEmptyIndexedOffsetArray(readEmptyIndexedOffsetArray)
         self.assertTrue(emptyIndexedOffsetArray == readEmptyIndexedOffsetArray)
 

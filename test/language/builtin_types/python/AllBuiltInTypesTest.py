@@ -263,7 +263,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.string_type = "TEST"
         allBuiltInTypes.extern_type =  self._getExternalBitBuffer()
         expectedBitSizeOf = 1142
-        self.assertEqual(expectedBitSizeOf, allBuiltInTypes.bitSizeOf())
+        self.assertEqual(expectedBitSizeOf, allBuiltInTypes.bitsizeof())
 
     def testReadWrite(self):
         allBuiltInTypes = self.api.AllBuiltInTypes()

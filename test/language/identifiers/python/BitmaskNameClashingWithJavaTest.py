@@ -13,7 +13,7 @@ class BitmaskNameClashingWithJavaTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava(self.api.String.Values.WRITE)
-        self.assertEqual(self.BIT_SIZE, bitmaskNameClashingWithJava.bitSizeOf())
+        self.assertEqual(self.BIT_SIZE, bitmaskNameClashingWithJava.bitsizeof())
 
     def testStr(self):
         bitmaskNameClashingWithJava = self.api.BitmaskNameClashingWithJava(self.api.String.Values.READ)

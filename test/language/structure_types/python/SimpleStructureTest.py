@@ -22,7 +22,7 @@ class SimpleStructureTest(unittest.TestCase):
         self.assertEqual(numberB, simpleStructure.number_b)
         self.assertEqual(numberC, simpleStructure.number_c)
 
-        simpleStructure = self.api.SimpleStructure(numberB_=numberB, numberA_=numberA, numberC_=numberC)
+        simpleStructure = self.api.SimpleStructure(number_b_=numberB, number_a_=numberA, number_c_=numberC)
         self.assertEqual(numberA, simpleStructure.number_a)
         self.assertEqual(numberB, simpleStructure.number_b)
         self.assertEqual(numberC, simpleStructure.number_c)
@@ -34,7 +34,7 @@ class SimpleStructureTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         SimpleStructureTest._writeSimpleStructureToStream(writer, numberA, numberB, numberC)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        simpleStructure = self.api.SimpleStructure.fromReader(reader)
+        simpleStructure = self.api.SimpleStructure.from_reader(reader)
         self.assertEqual(numberA, simpleStructure.number_a)
         self.assertEqual(numberB, simpleStructure.number_b)
         self.assertEqual(numberC, simpleStructure.number_c)
@@ -100,22 +100,22 @@ class SimpleStructureTest(unittest.TestCase):
         numberB = 0x01
         numberC = 0x02
         simpleStructure = self.api.SimpleStructure(numberA, numberB, numberC)
-        self.assertEqual(self.SIMPLE_STRUCTURE_BIT_SIZE, simpleStructure.bitSizeOf())
+        self.assertEqual(self.SIMPLE_STRUCTURE_BIT_SIZE, simpleStructure.bitsizeof())
 
     def testInitializeOffsets(self):
         numberA = 0x05
         numberB = 0x10
         numberC = 0x44
-        simpleStructure = self.api.SimpleStructure(numberA_=numberA, numberB_=numberB, numberC_=numberC)
+        simpleStructure = self.api.SimpleStructure(number_a_=numberA, number_b_=numberB, number_c_=numberC)
         bitPosition = 1
         self.assertEqual(self.SIMPLE_STRUCTURE_BIT_SIZE + bitPosition,
-                         simpleStructure.initializeOffsets(bitPosition))
+                         simpleStructure.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         numberA = 0x07
         numberB = 0x22
         numberC = 0x33
-        simpleStructure = self.api.SimpleStructure(numberA, numberC_=numberC, numberB_=numberB)
+        simpleStructure = self.api.SimpleStructure(numberA, number_c_=numberC, number_b_=numberB)
         writer = zserio.BitStreamWriter()
         simpleStructure.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)

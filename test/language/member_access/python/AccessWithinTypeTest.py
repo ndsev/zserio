@@ -14,7 +14,7 @@ class AccessWithinTypeTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeMessageToStream(writer, numSentences, wrongArrayLength)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        message = self.api.Message.fromReader(reader)
+        message = self.api.Message.from_reader(reader)
         self._checkMessage(message, numSentences)
 
     def testReadWrongArrayLength(self):
@@ -24,7 +24,7 @@ class AccessWithinTypeTest(unittest.TestCase):
         self._writeMessageToStream(writer, numSentences, wrongArrayLength)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
-            message = self.api.Message.fromReader(reader)
+            message = self.api.Message.from_reader(reader)
             self._checkMessage(message, numSentences)
 
     def testWrite(self):

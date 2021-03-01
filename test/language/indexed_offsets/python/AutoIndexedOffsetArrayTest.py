@@ -11,21 +11,21 @@ class AutoIndexedOffsetArrayTest(unittest.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
-        self.assertEqual(AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE, autoIndexedOffsetArray.bitSizeOf())
+        self.assertEqual(AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE, autoIndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
         self.assertEqual(AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
-                         autoIndexedOffsetArray.bitSizeOf(bitPosition))
+                         autoIndexedOffsetArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
         self.assertEqual(AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         autoIndexedOffsetArray.initializeOffsets(bitPosition))
+                         autoIndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkAutoIndexedOffsetArray(autoIndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
@@ -33,7 +33,7 @@ class AutoIndexedOffsetArrayTest(unittest.TestCase):
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
         self.assertEqual(AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
-                         autoIndexedOffsetArray.initializeOffsets(bitPosition))
+                         autoIndexedOffsetArray.initialize_offsets(bitPosition))
 
         offsetShift = 1
         self._checkOffsets(autoIndexedOffsetArray, offsetShift)
@@ -63,7 +63,7 @@ class AutoIndexedOffsetArrayTest(unittest.TestCase):
         autoIndexedOffsetArray.write(writer)
         self._checkAutoIndexedOffsetArray(autoIndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readAutoIndexedOffsetArray = self.api.AutoIndexedOffsetArray.fromReader(reader)
+        readAutoIndexedOffsetArray = self.api.AutoIndexedOffsetArray.from_reader(reader)
         self._checkAutoIndexedOffsetArray(readAutoIndexedOffsetArray)
         self.assertTrue(autoIndexedOffsetArray == readAutoIndexedOffsetArray)
 
@@ -83,7 +83,7 @@ class AutoIndexedOffsetArrayTest(unittest.TestCase):
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            autoIndexedOffsetArray.write(writer, callInitializeOffsets=False)
+            autoIndexedOffsetArray.write(writer, call_initialize_offsets=False)
 
     @staticmethod
     def _writeAutoIndexedOffsetArrayToStream(writer, writeWrongOffsets):

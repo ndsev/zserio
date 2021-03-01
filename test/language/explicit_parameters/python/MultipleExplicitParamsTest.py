@@ -13,15 +13,15 @@ class MultipleExplicitParamsTest(unittest.TestCase):
         test_api = cls.api.multiple_explicit_params
         class MultipleParamsTableParameterProvider(test_api.MultipleParamsTable.IParameterProvider):
             @staticmethod
-            def getCount(_row):
+            def count(_row):
                 return MULTIPLE_PARAMS_TABLE_COUNT
 
             @staticmethod
-            def getCount1(_row):
+            def count1(_row):
                 return MULTIPLE_PARAMS_TABLE_COUNT1
 
             @staticmethod
-            def getCount2(_row):
+            def count2(_row):
                 return MULTIPLE_PARAMS_TABLE_COUNT2
 
         cls.MultipleParamsTableParameterProvider = MultipleParamsTableParameterProvider
@@ -29,8 +29,8 @@ class MultipleExplicitParamsTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        self._database.create_schema()
 
     def tearDown(self):
         self._database.close()
@@ -39,10 +39,10 @@ class MultipleExplicitParamsTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
         testTable = self._database.multiple_params_table
-        testTable.deleteTable()
+        testTable.delete_table()
         self.assertFalse(self._isTableInDb())
 
-        testTable.createTable()
+        testTable.create_table()
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):

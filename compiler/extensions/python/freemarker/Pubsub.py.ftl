@@ -8,27 +8,27 @@ class ${name}:
 <#list messageList as message>
     <#if message.isPublished>
 
-    def publish${message.name?cap_first}(self, message: ${message.typeFullName}, context: typing.Any = None) -> None:
+    def publish_${message.snakeCaseName}(self, message: ${message.typeFullName}, context: typing.Any = None) -> None:
         self._publish(${message.topicDefinition}, message, context)
     </#if>
     <#if message.isSubscribed>
 
-    def subscribe${message.name?cap_first}(self, callback: typing.Callable[[str, ${message.typeFullName}], None], context: typing.Any = None) -> int:
-        def onRaw(topic: str, data: bytes) -> None:
-            self._onRaw${message.name?cap_first}(callback, topic, data)
-        return self._pubsub.subscribe(${message.topicDefinition}, onRaw, context)
+    def subscribe_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeFullName}], None], context: typing.Any = None) -> int:
+        def on_raw(topic: str, data: bytes) -> None:
+            self._on_raw_${message.snakeCaseName}(callback, topic, data)
+        return self._pubsub.subscribe(${message.topicDefinition}, on_raw, context)
     </#if>
 </#list>
 <#if hasSubscribing>
 
-    def unsubscribe(self, subscriptionId: int) -> None:
-        self._pubsub.unsubscribe(subscriptionId)
+    def unsubscribe(self, subscription_id: int) -> None:
+        self._pubsub.unsubscribe(subscription_id)
     <#list messageList as message>
         <#if message.isSubscribed>
 
-    def _onRaw${message.name?cap_first}(self, callback: typing.Callable[[str, ${message.typeFullName}], None], topic: str, data: bytes) -> None:
+    def _on_raw_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeFullName}], None], topic: str, data: bytes) -> None:
         reader = zserio.BitStreamReader(data)
-        message = ${message.typeFullName}.fromReader(reader)
+        message = ${message.typeFullName}.from_reader(reader)
         callback(topic, message)
         </#if>
     </#list>

@@ -16,7 +16,7 @@ class ArrayElementParamTest(unittest.TestCase):
         self._checkDatabaseInStream(reader, database)
 
         reader.bitposition = 0
-        readDatabase = self.api.Database.fromReader(reader)
+        readDatabase = self.api.Database.from_reader(reader)
         self.assertEqual(database, readDatabase)
 
     def _createDatabase(self):

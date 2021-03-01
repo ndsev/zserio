@@ -10,8 +10,8 @@ class EmptyStructureTest(unittest.TestCase):
 
     def testFromReader(self):
         reader = zserio.BitStreamReader([])
-        emptyStructure = self.api.EmptyStructure.fromReader(reader)
-        self.assertEqual(0, emptyStructure.bitSizeOf())
+        emptyStructure = self.api.EmptyStructure.from_reader(reader)
+        self.assertEqual(0, emptyStructure.bitsizeof())
 
     def testEq(self):
         emptyStructure1 = self.api.EmptyStructure()
@@ -26,18 +26,18 @@ class EmptyStructureTest(unittest.TestCase):
     def testBitSizeOf(self):
         bitPosition = 1
         emptyStructure = self.api.EmptyStructure()
-        self.assertEqual(0, emptyStructure.bitSizeOf(bitPosition))
+        self.assertEqual(0, emptyStructure.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         bitPosition = 1
         emptyStructure = self.api.EmptyStructure()
-        self.assertEqual(bitPosition, emptyStructure.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition, emptyStructure.initialize_offsets(bitPosition))
 
     def testRead(self):
         reader = zserio.BitStreamReader([])
         emptyStructure = self.api.EmptyStructure()
         emptyStructure.read(reader)
-        self.assertEqual(0, emptyStructure.bitSizeOf())
+        self.assertEqual(0, emptyStructure.bitsizeof())
 
     def testWrite(self):
         writer = zserio.BitStreamWriter()
@@ -46,5 +46,5 @@ class EmptyStructureTest(unittest.TestCase):
         byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readEmptyStructure = self.api.EmptyStructure.fromReader(reader)
+        readEmptyStructure = self.api.EmptyStructure.from_reader(reader)
         self.assertEqual(emptyStructure, readEmptyStructure)

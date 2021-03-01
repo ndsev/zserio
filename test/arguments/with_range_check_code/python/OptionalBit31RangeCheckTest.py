@@ -28,7 +28,7 @@ class OptionalBit31RangeCheckTest(unittest.TestCase):
         optionalBit31RangeCheckCompound.value = None
 
     def _checkOptionalBit31Value(self, value):
-        optionalBit31RangeCheckCompound = self.api.OptionalBit31RangeCheckCompound(hasOptional_=True,
+        optionalBit31RangeCheckCompound = self.api.OptionalBit31RangeCheckCompound(has_optional_=True,
                                                                                    value_=value)
         bitBuffer = zserio.serialize(optionalBit31RangeCheckCompound)
         readOptionalBit31RangeCheckCompound = zserio.deserialize(self.api.OptionalBit31RangeCheckCompound,

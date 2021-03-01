@@ -12,8 +12,8 @@ class SqlTypesTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.SqlTypesDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.SqlTypesDb.from_file(self._fileName)
+        self._database.create_schema()
         self._sqlColumnTypes = self._getSqlColumnTypes()
 
     def tearDown(self):

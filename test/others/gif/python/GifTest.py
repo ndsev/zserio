@@ -12,7 +12,7 @@ class GifTest(unittest.TestCase):
 
     def testOnePixGif(self):
         reader = zserio.BitStreamReader.from_file(self.ONE_PIX_GIF_FILE_NAME)
-        gifFile = self.api.GifFile.fromReader(reader)
+        gifFile = self.api.GifFile.from_reader(reader)
 
         signatureFormat = gifFile.signature.format
         for i in range(len(self.GIF_FILE_FORMAT)):

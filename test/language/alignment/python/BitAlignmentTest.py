@@ -10,7 +10,7 @@ class BitAlignmentTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         bitAlignment = self._createBitAlignment()
-        self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE, bitAlignment.bitSizeOf())
+        self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE, bitAlignment.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         bitAlignment = self._createBitAlignment()
@@ -18,29 +18,29 @@ class BitAlignmentTest(unittest.TestCase):
         # starting at bit position 78, also next 64bits are needed
         for startBitPosition in range(78):
             self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE - startBitPosition,
-                             bitAlignment.bitSizeOf(startBitPosition))
+                             bitAlignment.bitsizeof(startBitPosition))
 
         # starting at bit position 78, also next 64bits are needed
         startBitPosition = 78
         self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE - startBitPosition + 64,
-                         bitAlignment.bitSizeOf(startBitPosition))
+                         bitAlignment.bitsizeof(startBitPosition))
 
     def testInitializeOffsets(self):
         bitAlignment = self._createBitAlignment()
 
         # starting up to bit position 77, the structure still fits into original size thanks to alignments
         for bitPosition in range(78):
-            self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE, bitAlignment.initializeOffsets(bitPosition))
+            self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE, bitAlignment.initialize_offsets(bitPosition))
 
         # starting at bit position 78, also next 64bits are needed
         bitPosition = 78
-        self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE + 64, bitAlignment.initializeOffsets(bitPosition))
+        self.assertEqual(self.BIT_ALIGNMENT_BIT_SIZE + 64, bitAlignment.initialize_offsets(bitPosition))
 
     def testRead(self):
         writer = zserio.BitStreamWriter()
         self._writeBitAlignmentToStream(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        bitAlignment = self.api.BitAlignment.fromReader(reader)
+        bitAlignment = self.api.BitAlignment.from_reader(reader)
         self._checkBitAlignment(bitAlignment)
 
     def testWrite(self):

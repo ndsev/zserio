@@ -34,7 +34,7 @@ class ${name}:
 </#if>
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
     @classmethod
-    def fromReader(
+    def from_reader(
             cls: typing.Type['${name}'],
             reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
@@ -109,31 +109,31 @@ ${I}<#rt>
         return ${function.resultExpression}
 </#list>
 
-    def bitSizeOf(self, bitPosition: int = 0) -> int:
+    def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
-        endBitPosition = bitPosition
+        end_bitposition = bitposition
     <#list fieldList as field>
         <@compound_bitsizeof_field field, 2/>
     </#list>
 
-        return endBitPosition - bitPosition
+        return end_bitposition - bitposition
 <#else>
-        del bitPosition
+        del bitposition
 
         return 0
 </#if>
 <#if withWriterCode>
 
-    def initializeOffsets(self, bitPosition: int) -> int:
+    def initialize_offsets(self, bitposition: int) -> int:
     <#if fieldList?has_content>
-        endBitPosition = bitPosition
+        end_bitposition = bitposition
         <#list fieldList as field>
             <@compound_initialize_offsets_field field, 2/>
         </#list>
 
-        return endBitPosition
+        return end_bitposition
     <#else>
-        return bitPosition
+        return bitposition
     </#if>
 </#if>
 
@@ -164,13 +164,13 @@ ${I}<#rt>
             <#break>
         </#if>
     </#list>
-    def write(self, writer: zserio.BitStreamWriter, *, callInitializeOffsets: bool = True) -> None:
+    def write(self, writer: zserio.BitStreamWriter, *, call_initialize_offsets: bool = True) -> None:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        if callInitializeOffsets:
-            self.initializeOffsets(writer.bitposition)
+        if call_initialize_offsets:
+            self.initialize_offsets(writer.bitposition)
         <#else>
-        del callInitializeOffsets
+        del call_initialize_offsets
         </#if>
 
         <#list fieldList as field>
@@ -181,7 +181,7 @@ ${I}<#rt>
         </#list>
     <#else>
         del writer
-        del callInitializeOffsets
+        del call_initialize_offsets
     </#if>
 </#if>
 <#list fieldList as field>

@@ -16,7 +16,7 @@ class SubtypedBitfieldParamTest(unittest.TestCase):
         self._checkSubtypedBitfieldParamHolderInStream(reader, subtypedBitfieldParamHolder)
 
         reader.bitposition = 0
-        readSubtypedBitfieldParamHolder = self.api.SubtypedBitfieldParamHolder.fromReader(reader)
+        readSubtypedBitfieldParamHolder = self.api.SubtypedBitfieldParamHolder.from_reader(reader)
         self.assertEqual(subtypedBitfieldParamHolder, readSubtypedBitfieldParamHolder)
 
     def _createSubtypedBitfieldParamHolder(self):

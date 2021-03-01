@@ -13,7 +13,7 @@ class ChoiceTemplatedFieldTest(unittest.TestCase):
         choice1 = self.api.TemplatedChoice_uint32_uint16(selector)
         choice1.templated_field1 = 42
         choice2 = self.api.TemplatedChoice_Compound_uint32_uint16(
-            selector, templatedField1_=self.api.Compound_uint32(42)
+            selector, templated_field1_=self.api.Compound_uint32(42)
         )
         choiceTemplatedField = self.api.ChoiceTemplatedField(selector, choice1, choice2)
 

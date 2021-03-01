@@ -20,83 +20,83 @@ class SimplePubsubTest(unittest.TestCase):
         def requestCallback(topic, value):
             self.assertEqual("simple_pubsub/request", topic)
             result = self.api.UInt64Value(value.value * value.value)
-            self.simplePubsubProvider.publishPowerOfTwo(result)
+            self.simplePubsubProvider.publish_power_of_two(result)
 
-        self.simplePubsubProvider.subscribeRequest(requestCallback)
+        self.simplePubsubProvider.subscribe_request(requestCallback)
 
         result = {"value": 0}
         def powerOfTwoCallback(topic, value):
             self.assertEqual("simple_pubsub/power_of_two", topic)
             result["value"] = value.value
 
-        self.simplePubsubClient.subscribePowerOfTwo(powerOfTwoCallback)
+        self.simplePubsubClient.subscribe_power_of_two(powerOfTwoCallback)
 
         request = self.api.Int32Value(13)
-        self.simplePubsubClient.publishRequest(request)
+        self.simplePubsubClient.publish_request(request)
         self.assertEqual(169, result["value"])
 
         request.value = -13
-        self.simplePubsubClient.publishRequest(request)
+        self.simplePubsubClient.publish_request(request)
         self.assertEqual(169, result["value"])
 
         request.value = 2
-        self.simplePubsubClient.publishRequest(request)
+        self.simplePubsubClient.publish_request(request)
         self.assertEqual(4, result["value"])
 
         request.value = -2
-        self.simplePubsubClient.publishRequest(request)
+        self.simplePubsubClient.publish_request(request)
         self.assertEqual(4, result["value"])
 
     def testPowerOfTwoSimplePubsub(self):
         def requestCallback(topic, value):
             self.assertEqual("simple_pubsub/request", topic)
             result = self.api.UInt64Value(value.value * value.value)
-            self.simplePubsub.publishPowerOfTwo(result)
+            self.simplePubsub.publish_power_of_two(result)
 
-        self.simplePubsub.subscribeRequest(requestCallback)
+        self.simplePubsub.subscribe_request(requestCallback)
 
         result = {"value": 0}
         def powerOfTwoCallback(topic, value):
             self.assertEqual("simple_pubsub/power_of_two", topic)
             result["value"] = value.value
 
-        self.simplePubsub.subscribePowerOfTwo(powerOfTwoCallback)
+        self.simplePubsub.subscribe_power_of_two(powerOfTwoCallback)
 
         request = self.api.Int32Value(13)
-        self.simplePubsub.publishRequest(request)
+        self.simplePubsub.publish_request(request)
         self.assertEqual(169, result["value"])
 
         request.value = -13
-        self.simplePubsub.publishRequest(request)
+        self.simplePubsub.publish_request(request)
         self.assertEqual(169, result["value"])
 
         request.value = 2
-        self.simplePubsub.publishRequest(request)
+        self.simplePubsub.publish_request(request)
         self.assertEqual(4, result["value"])
 
         request.value = -2
-        self.simplePubsub.publishRequest(request)
+        self.simplePubsub.publish_request(request)
         self.assertEqual(4, result["value"])
 
     def testPublishRequestWithContext(self):
         context = TestPubsubContext()
         self.assertFalse(context.seenByPubsub)
-        self.simplePubsub.publishRequest(self.api.Int32Value(42), context)
+        self.simplePubsub.publish_request(self.api.Int32Value(42), context)
         self.assertTrue(context.seenByPubsub)
 
     def testSubscribeRequestWithContext(self):
         context = TestPubsubContext()
         self.assertFalse(context.seenByPubsub)
-        self.simplePubsub.subscribeRequest(lambda topic, value: None, context)
+        self.simplePubsub.subscribe_request(lambda topic, value: None, context)
         self.assertTrue(context.seenByPubsub)
 
     def testUnsubscribe(self):
         def requestCallback(topic, value):
             self.assertEqual("simple_pubsub/request", topic)
             result = self.api.UInt64Value(value.value * value.value)
-            self.simplePubsub.publishPowerOfTwo(result)
+            self.simplePubsub.publish_power_of_two(result)
 
-        id0 = self.simplePubsub.subscribeRequest(requestCallback)
+        id0 = self.simplePubsub.subscribe_request(requestCallback)
 
         result = {"value1": 0, "value2": 0}
 
@@ -104,28 +104,28 @@ class SimplePubsubTest(unittest.TestCase):
             self.assertEqual("simple_pubsub/power_of_two", topic)
             result["value1"] = value.value
 
-        id1 = self.simplePubsub.subscribePowerOfTwo(powerOfTwoCallback1)
+        id1 = self.simplePubsub.subscribe_power_of_two(powerOfTwoCallback1)
 
         def powerOfTwoCallback2(topic, value):
             self.assertEqual("simple_pubsub/power_of_two", topic)
             result["value2"] = value.value
 
-        id2 = self.simplePubsub.subscribePowerOfTwo(powerOfTwoCallback2)
+        id2 = self.simplePubsub.subscribe_power_of_two(powerOfTwoCallback2)
 
         request = self.api.Int32Value(13)
-        self.simplePubsub.publishRequest(request)
+        self.simplePubsub.publish_request(request)
         self.assertEqual(169, result["value1"])
         self.assertEqual(169, result["value2"])
 
         self.simplePubsub.unsubscribe(id1)
         request.value = 2
-        self.simplePubsub.publishRequest(request)
+        self.simplePubsub.publish_request(request)
         self.assertEqual(169, result["value1"]) # shall not be changed!
         self.assertEqual(4, result["value2"])
 
         self.simplePubsub.unsubscribe(id0) # unsubscribe publisher
         request.value = 3
-        self.simplePubsub.publishRequest(request)
+        self.simplePubsub.publish_request(request)
         self.assertEqual(169, result["value1"]) # shall not be changed!
         self.assertEqual(4, result["value2"]) # shall not be changed!
 

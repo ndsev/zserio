@@ -29,7 +29,7 @@ class StructureOptionalTest(unittest.TestCase):
         if defaultValue == self.INVALID_DEFAULT_VALUE:
             valueCalculator.external_value = externalValue
 
-        valueConsumer = self.api.ValueConsumer(valueCalculator.funcValue())
+        valueConsumer = self.api.ValueConsumer(valueCalculator.func_value())
         valueConsumer.is_small = self._calculateValue(defaultValue, externalValue) < self.SMALL_VALUE_THRESHOLD
 
         return self.api.ValueConsumerCreator(valueCalculator, valueConsumer)
@@ -37,7 +37,7 @@ class StructureOptionalTest(unittest.TestCase):
     def _checkValueConsumerCreator(self, defaultValue, externalValue):
         valueConsumerCreator = self._createValueConsumerCreator(defaultValue, externalValue)
         self.assertEqual(self._calculateValue(defaultValue, externalValue),
-                         valueConsumerCreator.value_calculator.funcValue())
+                         valueConsumerCreator.value_calculator.func_value())
 
         writer = zserio.BitStreamWriter()
         valueConsumerCreator.write(writer)
@@ -47,7 +47,7 @@ class StructureOptionalTest(unittest.TestCase):
         self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readValueConsumerCreator = self.api.ValueConsumerCreator.fromReader(reader)
+        readValueConsumerCreator = self.api.ValueConsumerCreator.from_reader(reader)
         self.assertEqual(valueConsumerCreator, readValueConsumerCreator)
 
     INVALID_DEFAULT_VALUE = 0

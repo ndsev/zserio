@@ -37,7 +37,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "service_types.zs").complex_types_service
 
         class Service(cls.api.ComplexTypesService.Service):
-            def _swapModelsImpl(self, request, _context):
+            def _swap_models_impl(self, request, _context):
                 requestData = request.data
                 data = requestData.data
 
@@ -53,7 +53,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
                 return response
 
             @staticmethod
-            def _getLengthImpl(request, _context):
+            def _get_length_impl(request, _context):
                 requestData = request.data
                 lengthResponse = cls.api.LengthResponse(len(requestData.data))
                 return lengthResponse
@@ -106,9 +106,9 @@ class ComplexTypesServiceTest(unittest.TestCase):
         requestData = self.api.RequestData(self.api.ColorModel.RGB, offsets, data)
         request = self.api.Request(self.api.ColorModel.RGB, requestData)
 
-        self.assertEqual(length, self.client.getLengthMethod(request).length)
+        self.assertEqual(length, self.client.get_length_method(request).length)
 
-        response = self.client.swapModelsMethod(request)
+        response = self.client.swap_models_method(request)
         self.assertEqual(length, response.length)
 
         cmykData = response.data.cmyk_data
@@ -133,9 +133,9 @@ class ComplexTypesServiceTest(unittest.TestCase):
         requestData = self.api.RequestData(self.api.ColorModel.CMYK, offsets, data)
         request = self.api.Request(self.api.ColorModel.CMYK, requestData)
 
-        self.assertEqual(length, self.client.getLengthMethod(request).length)
+        self.assertEqual(length, self.client.get_length_method(request).length)
 
-        response = self.client.swapModelsMethod(request)
+        response = self.client.swap_models_method(request)
         self.assertEqual(length, response.length)
 
         rgbData = response.data.rgb_data

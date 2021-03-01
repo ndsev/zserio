@@ -14,21 +14,21 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
             os.remove(self._fileName)
 
     def testReadWrite(self):
-        sqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.fromFile(self._fileName)
-        sqlTableTemplatedFieldDb.createSchema()
+        sqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self._fileName)
+        sqlTableTemplatedFieldDb.create_schema()
 
         uint32Table = sqlTableTemplatedFieldDb.uint32_table
         uint32TableRows = [(0, self.api.Data_uint32(42))]
         uint32Table.write(uint32TableRows)
 
         unionTable = sqlTableTemplatedFieldDb.union_table
-        union1 = self.api.Union(valueString_="string")
+        union1 = self.api.Union(value_string_="string")
         unionTableRows = [(13, self.api.Data_Union(union1))]
         unionTable.write(unionTableRows)
 
         sqlTableTemplatedFieldDb.close()
 
-        readSqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.fromFile(self._fileName)
+        readSqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self._fileName)
         readUint32TableIterator = readSqlTableTemplatedFieldDb.uint32_table.read()
         readUint32TableRows = []
         for row in readUint32TableIterator:

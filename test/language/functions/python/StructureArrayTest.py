@@ -36,7 +36,7 @@ class StructureArrayTest(unittest.TestCase):
 
     def _checkStructureArray(self, pos):
         structureArray = self._createStructureArray(pos)
-        self.assertEqual(self.ITEMS[pos], structureArray.funcGetElement())
+        self.assertEqual(self.ITEMS[pos], structureArray.func_get_element())
 
         writer = zserio.BitStreamWriter()
         structureArray.write(writer)
@@ -46,5 +46,5 @@ class StructureArrayTest(unittest.TestCase):
         self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readStructureArray = self.api.StructureArray.fromReader(reader)
+        readStructureArray = self.api.StructureArray.from_reader(reader)
         self.assertEqual(structureArray, readStructureArray)

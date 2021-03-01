@@ -20,9 +20,6 @@ class PropertyNamesErrorTest(unittest.TestCase):
                                cls.errors)
         compileErroneousZserio(__file__, "property_names/sql_database_public_method_property_clash_error.zs",
                                cls.errors)
-        compileErroneousZserio(__file__,
-                               "property_names/sql_database_table_name_constant_property_clash_error.zs",
-                               cls.errors)
         compileErroneousZserio(__file__, "property_names/structure_function_property_clash_error.zs",
                                cls.errors)
         compileErroneousZserio(__file__, "property_names/structure_indicator_property_clash_error.zs",
@@ -46,14 +43,14 @@ class PropertyNamesErrorTest(unittest.TestCase):
         compileErroneousZserio(__file__, "property_names/union_public_method_property_clash_error.zs",
                                cls.errors)
 
-    #def testChoiceFunctionPropertyClash(self):
-    #    assertErrorsPresent(self,
-    #        "property_names/choice_function_property_clash_error.zs",
-    #        [
-    #            "3:8: Property name error detected in 'TestChoice'!",
-    #            PropertyNamesErrorTest._getPropertyClashError("funcArray")
-    #        ]
-    #    )
+    def testChoiceFunctionPropertyClash(self):
+        assertErrorsPresent(self,
+            "property_names/choice_function_property_clash_error.zs",
+            [
+                "3:8: Property name error detected in 'TestChoice'!",
+                PropertyNamesErrorTest._getPropertyClashError("func_array")
+            ]
+        )
 
     def testChoiceInvalidPropertyNamePrivate(self):
         assertErrorsPresent(self,
@@ -100,41 +97,32 @@ class PropertyNamesErrorTest(unittest.TestCase):
             ]
         )
 
-    #def testSqlDatabasePublicMethodPropertyClash(self):
-    #    assertErrorsPresent(self,
-    #        "property_names/sql_database_public_method_property_clash_error.zs",
-    #        [
-    #            "9:14: Property name error detected in 'TestDatabase'!",
-    #            PropertyNamesErrorTest._getPropertyClashError("fromFile")
-    #        ]
-    #    )
+    def testSqlDatabasePublicMethodPropertyClash(self):
+        assertErrorsPresent(self,
+            "property_names/sql_database_public_method_property_clash_error.zs",
+            [
+                "9:14: Property name error detected in 'TestDatabase'!",
+                PropertyNamesErrorTest._getPropertyClashError("from_file")
+            ]
+        )
 
-    #def testSqlDatabaseTableNameConstantPropertyClash(self):
-    #    assertErrorsPresent(self,
-    #        "property_names/sql_database_table_name_constant_property_clash_error.zs",
-    #        [
-    #            "9:14: Property name error detected in 'TestDatabase'!",
-    #            PropertyNamesErrorTest._getPropertyClashError("TABLE_NAME_first")
-    #        ]
-    #    )
+    def testStructureFunctionPropertyClash(self):
+        assertErrorsPresent(self,
+            "property_names/structure_function_property_clash_error.zs",
+            [
+                "3:8: Property name error detected in 'TestStructure'!",
+                PropertyNamesErrorTest._getPropertyClashError("func_test")
+            ]
+        )
 
-    #def testStructureFunctionPropertyClash(self):
-    #    assertErrorsPresent(self,
-    #        "property_names/structure_function_property_clash_error.zs",
-    #        [
-    #            "3:8: Property name error detected in 'TestStructure'!",
-    #            PropertyNamesErrorTest._getPropertyClashError("funcTest")
-    #        ]
-    #    )
-
-    #def testStructureIndicatorPropertyClash(self):
-    #    assertErrorsPresent(self,
-    #        "property_names/structure_indicator_property_clash_error.zs",
-    #        [
-    #            "3:8: Property name error detected in 'TestStructure'!",
-    #            PropertyNamesErrorTest._getPropertyClashError("isFieldUsed")
-    #        ]
-    #    )
+    def testStructureIndicatorPropertyClash(self):
+        assertErrorsPresent(self,
+            "property_names/structure_indicator_property_clash_error.zs",
+            [
+                "3:8: Property name error detected in 'TestStructure'!",
+                PropertyNamesErrorTest._getPropertyClashError("is_field_used")
+            ]
+        )
 
     def testStructureInvalidPropertyNamePrivate(self):
         assertErrorsPresent(self,
@@ -190,14 +178,14 @@ class PropertyNamesErrorTest(unittest.TestCase):
             ]
         )
 
-    #def testUnionFunctionPropertyClash(self):
-    #    assertErrorsPresent(self,
-    #        "property_names/union_function_property_clash_error.zs",
-    #        [
-    #            "3:7: Property name error detected in 'TestUnion'!",
-    #            PropertyNamesErrorTest._getPropertyClashError("funcMyFunc")
-    #        ]
-    #    )
+    def testUnionFunctionPropertyClash(self):
+        assertErrorsPresent(self,
+            "property_names/union_function_property_clash_error.zs",
+            [
+                "3:7: Property name error detected in 'TestUnion'!",
+                PropertyNamesErrorTest._getPropertyClashError("func_my_func")
+            ]
+        )
 
     def testUnionInvalidPropertyNamePrivate(self):
         assertErrorsPresent(self,
@@ -217,14 +205,14 @@ class PropertyNamesErrorTest(unittest.TestCase):
             ]
         )
 
-    #def testUnionPublicMethodPropertyClash(self):
-    #    assertErrorsPresent(self,
-    #        "property_names/union_public_method_property_clash_error.zs",
-    #        [
-    #            "3:7: Property name error detected in 'TestUnion'!",
-    #            PropertyNamesErrorTest._getPropertyClashError("bitSizeOf")
-    #        ]
-    #    )
+    def testUnionPublicMethodPropertyClash(self):
+        assertErrorsPresent(self,
+            "property_names/union_public_method_property_clash_error.zs",
+            [
+                "3:7: Property name error detected in 'TestUnion'!",
+                PropertyNamesErrorTest._getPropertyClashError("bitsizeof")
+            ]
+        )
 
     @staticmethod
     def _getPropertyClashError(propertyName):

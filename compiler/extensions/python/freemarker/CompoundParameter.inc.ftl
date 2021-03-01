@@ -42,9 +42,9 @@ ${I}<#rt>
 </#macro>
 
 <#macro parameter_member_name parameter>
-_${parameter.name}_<#rt>
+_${parameter.snakeCaseName}_<#rt>
 </#macro>
 
 <#macro parameter_argument_name parameter>
-${parameter.name}_<#rt>
+${parameter.snakeCaseName}_<#rt>
 </#macro>

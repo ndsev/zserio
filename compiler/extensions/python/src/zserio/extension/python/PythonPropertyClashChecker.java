@@ -89,27 +89,12 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
             checkPropertyName(paramData.getPropertyName(), apiSymbols, compoundType);
     }
 
-    private void checkPropertyNames(UnionType unionType, UnionEmitterTemplateData templateData,
-            String templateSourceName) throws ZserioExtensionException
-    {
-        // we must check properties names to prevent clashing with public symbols in generated API
-        final Set<String> apiSymbols = getTemplateApiMethods(templateSourceName);
-        apiSymbols.addAll(getGeneratedApiSymbols(templateData));
-
-        for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
-            checkPropertyName(fieldData.getPropertyName(), apiSymbols, unionType);
-
-        for (CompoundParameter paramData : templateData.getCompoundParametersData().getList())
-            checkPropertyName(paramData.getPropertyName(), apiSymbols, unionType);
-    }
-
     private void checkPropertyNames(SqlDatabaseType sqlDatabaseType,
             SqlDatabaseEmitterTemplateData templateData,
             String templateSourceName) throws ZserioExtensionException
     {
         // we must check properties names to prevent clashing with public symbols in generated API
         final Set<String> apiSymbols = getTemplateApiMethods(templateSourceName);
-        apiSymbols.addAll(getGeneratedApiSymbols(templateData));
 
         for (SqlDatabaseEmitterTemplateData.DatabaseFieldData fieldData : templateData.getFields())
             checkPropertyName(fieldData.getPropertyName(), apiSymbols, sqlDatabaseType);
@@ -122,10 +107,7 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
             throwPropertyNameError(propertyName, compoundType, "Property names cannot start with '_'!");
 
         if (apiMethods.contains(propertyName))
-        {
-            throwPropertyNameError(propertyName, compoundType,
-                    "Property name clashes with generated API!");
-        }
+            throwPropertyNameError(propertyName, compoundType, "Property name clashes with generated API!");
     }
 
     private void throwPropertyNameError(String propertyName, CompoundType compoundType, String reason)
@@ -170,28 +152,6 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
         {
             generatedSymbols.add(functionData.getName());
         }
-
-        return generatedSymbols;
-    }
-
-    private Set<String> getGeneratedApiSymbols(UnionEmitterTemplateData templateData)
-    {
-        final Set<String> generatedSymbols = getGeneratedApiSymbols((CompoundTypeTemplateData)templateData);
-
-        generatedSymbols.add(templateData.getUndefinedChoiceTagName());
-        for (CompoundFieldTemplateData fieldData : templateData.getFieldList())
-            generatedSymbols.add(templateData.getChoiceTagName(fieldData.getName()));
-
-        return generatedSymbols;
-    }
-
-    private Set<String> getGeneratedApiSymbols(SqlDatabaseEmitterTemplateData templateData)
-    {
-        final Set<String> generatedSymbols = new HashSet<String>();
-
-        generatedSymbols.add(templateData.getDatabaseNameConstant());
-        for (SqlDatabaseEmitterTemplateData.DatabaseFieldData fieldData : templateData.getFields())
-            generatedSymbols.add(fieldData.getTableNameConstant());
 
         return generatedSymbols;
     }

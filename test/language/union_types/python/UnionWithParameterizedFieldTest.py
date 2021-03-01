@@ -16,7 +16,7 @@ class UnionWithParameterizedFieldTest(unittest.TestCase):
         testUnion = self.api.TestUnion(field_=13)
         self.assertEqual(self.api.TestUnion.CHOICE_field, testUnion.choice_tag)
 
-        testUnion = self.api.TestUnion(arrayHolder_=self.api.ArrayHolder(10))
+        testUnion = self.api.TestUnion(array_holder_=self.api.ArrayHolder(10))
         self.assertEqual(10, testUnion.array_holder.size)
 
     def testFromReader(self):

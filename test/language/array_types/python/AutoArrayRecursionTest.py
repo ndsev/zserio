@@ -36,20 +36,20 @@ class AutoArrayRecursionTest(unittest.TestCase):
         autoArrayRecursion = self._createAutoArrayRecursion(numElements)
         bitPosition = 2
         autoArrayRecursionBitSize = 8 + 8 + numElements * (8 + 8)
-        self.assertEqual(autoArrayRecursionBitSize, autoArrayRecursion.bitSizeOf(bitPosition))
+        self.assertEqual(autoArrayRecursionBitSize, autoArrayRecursion.bitsizeof(bitPosition))
 
     def _checkInitializeOffsets(self, numElements):
         autoArrayRecursion = self._createAutoArrayRecursion(numElements)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + 8 + 8 + numElements * (8 + 8)
-        self.assertEqual(expectedEndBitPosition, autoArrayRecursion.initializeOffsets(bitPosition))
+        self.assertEqual(expectedEndBitPosition, autoArrayRecursion.initialize_offsets(bitPosition))
 
     def _checkRead(self, numElements):
         writer = zserio.BitStreamWriter()
         AutoArrayRecursionTest._writeAutoArrayRecursionToStream(writer, numElements)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        autoArrayRecursion = self.api.AutoArrayRecursion.fromReader(reader)
+        autoArrayRecursion = self.api.AutoArrayRecursion.from_reader(reader)
         self._checkAutoArrayRecursion(autoArrayRecursion, numElements)
 
     def _checkWrite(self, numElements):

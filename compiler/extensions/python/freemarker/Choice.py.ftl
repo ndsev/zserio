@@ -61,7 +61,7 @@ class ${name}:
 
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
     @classmethod
-    def fromReader(
+    def from_reader(
             cls: typing.Type['${name}'],
             reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
@@ -116,15 +116,15 @@ class ${name}:
         <#lt>${I}pass
     </#if>
 </#macro>
-    def bitSizeOf(self, bitPosition: int = 0) -> int:
+    def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
-        endBitPosition = bitPosition
+        end_bitposition = bitposition
 
         <@choice_if "choice_bitsizeof_member"/>
 
-        return endBitPosition - bitPosition
+        return end_bitposition - bitposition
 <#else>
-        del bitPosition
+        del bitposition
 
         return 0
 </#if>
@@ -138,15 +138,15 @@ class ${name}:
             <#lt>${I}pass
         </#if>
     </#macro>
-    def initializeOffsets(self, bitPosition: int) -> int:
+    def initialize_offsets(self, bitposition: int) -> int:
     <#if fieldList?has_content>
-        endBitPosition = bitPosition
+        end_bitposition = bitposition
 
         <@choice_if "choice_initialize_offsets_member"/>
 
-        return endBitPosition
+        return end_bitposition
     <#else>
-        return bitPosition
+        return bitposition
     </#if>
 </#if>
 
@@ -174,19 +174,19 @@ class ${name}:
             <#lt>${I}pass
         </#if>
     </#macro>
-    def write(self, writer: zserio.BitStreamWriter, *, callInitializeOffsets: bool = True) -> None:
+    def write(self, writer: zserio.BitStreamWriter, *, call_initialize_offsets: bool = True) -> None:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        if callInitializeOffsets:
-            self.initializeOffsets(writer.bitposition)
+        if call_initialize_offsets:
+            self.initialize_offsets(writer.bitposition)
         <#else>
-        del callInitializeOffsets
+        del call_initialize_offsets
         </#if>
 
         <@choice_if "choice_write_member"/>
     <#else>
         del writer
-        del callInitializeOffsets
+        del call_initialize_offsets
     </#if>
 </#if>
 <#list fieldList as field>

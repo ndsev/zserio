@@ -24,7 +24,7 @@ class EnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeEnumParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        enumParamChoice = self.api.EnumParamChoice.fromReader(reader, selector)
+        enumParamChoice = self.api.EnumParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, enumParamChoice.selector)
         self.assertEqual(value, enumParamChoice.grey)
 
@@ -85,24 +85,24 @@ class EnumParamChoiceTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.BLACK)
-        self.assertEqual(8, enumParamChoice.bitSizeOf())
+        self.assertEqual(8, enumParamChoice.bitsizeof())
 
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.GREY)
-        self.assertEqual(16, enumParamChoice.bitSizeOf())
+        self.assertEqual(16, enumParamChoice.bitsizeof())
 
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.WHITE)
-        self.assertEqual(32, enumParamChoice.bitSizeOf())
+        self.assertEqual(32, enumParamChoice.bitsizeof())
 
     def testInitializeOffsets(self):
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.BLACK)
         bitPosition = 1
-        self.assertEqual(9, enumParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, enumParamChoice.initialize_offsets(bitPosition))
 
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.GREY)
-        self.assertEqual(17, enumParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(17, enumParamChoice.initialize_offsets(bitPosition))
 
         enumParamChoice = self.api.EnumParamChoice(self.api.Selector.WHITE)
-        self.assertEqual(33, enumParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(33, enumParamChoice.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         selector = self.api.Selector.BLACK

@@ -1132,7 +1132,7 @@ class ObjectArrayTraits:
         :returns: Length of given Zserio object type in bits.
         """
 
-        return value.bitSizeOf(bitposition)
+        return value.bitsizeof(bitposition)
 
     @staticmethod
     def initialize_offsets(bitposition: int, value: typing.Any) -> int:
@@ -1144,7 +1144,7 @@ class ObjectArrayTraits:
         :returns: Updated bit stream position which points to the first bit after the Zserio object type.
         """
 
-        return value.initializeOffsets(bitposition)
+        return value.initialize_offsets(bitposition)
 
     def read(self, reader: BitStreamReader, index: int) -> typing.Any:
         """

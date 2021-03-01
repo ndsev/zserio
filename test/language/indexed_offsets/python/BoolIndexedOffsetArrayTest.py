@@ -11,21 +11,21 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
-        self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE, boolIndexedOffsetArray.bitSizeOf())
+        self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE, boolIndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
         self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
-                         boolIndexedOffsetArray.bitSizeOf(bitPosition))
+                         boolIndexedOffsetArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
         self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         boolIndexedOffsetArray.initializeOffsets(bitPosition))
+                         boolIndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkBoolIndexedOffsetArray(boolIndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
@@ -33,7 +33,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
         self.assertEqual(BOOL_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
-                         boolIndexedOffsetArray.initializeOffsets(bitPosition))
+                         boolIndexedOffsetArray.initialize_offsets(bitPosition))
 
         offsetShift = 1
         self._checkOffsets(boolIndexedOffsetArray, offsetShift)
@@ -63,7 +63,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         boolIndexedOffsetArray.write(writer)
         self._checkBoolIndexedOffsetArray(boolIndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readBoolIndexedOffsetArray = self.api.BoolIndexedOffsetArray.fromReader(reader)
+        readBoolIndexedOffsetArray = self.api.BoolIndexedOffsetArray.from_reader(reader)
         self._checkBoolIndexedOffsetArray(readBoolIndexedOffsetArray)
         self.assertTrue(boolIndexedOffsetArray == readBoolIndexedOffsetArray)
 
@@ -83,7 +83,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            boolIndexedOffsetArray.write(writer, callInitializeOffsets=False)
+            boolIndexedOffsetArray.write(writer, call_initialize_offsets=False)
 
     @staticmethod
     def _writeBoolIndexedOffsetArrayToStream(writer, writeWrongOffsets):

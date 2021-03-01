@@ -24,7 +24,7 @@ class FullBitmaskParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeFullBitmaskParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice.fromReader(reader, selector)
+        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, fullBitmaskParamChoice.selector)
         self.assertEqual(value, fullBitmaskParamChoice.white)
 
@@ -85,24 +85,24 @@ class FullBitmaskParamChoiceTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)
-        self.assertEqual(8, fullBitmaskParamChoice.bitSizeOf())
+        self.assertEqual(8, fullBitmaskParamChoice.bitsizeof())
 
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.WHITE)
-        self.assertEqual(8, fullBitmaskParamChoice.bitSizeOf())
+        self.assertEqual(8, fullBitmaskParamChoice.bitsizeof())
 
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK_AND_WHITE)
-        self.assertEqual(16, fullBitmaskParamChoice.bitSizeOf())
+        self.assertEqual(16, fullBitmaskParamChoice.bitsizeof())
 
     def testInitializeOffsets(self):
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)
         bitPosition = 1
-        self.assertEqual(9, fullBitmaskParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, fullBitmaskParamChoice.initialize_offsets(bitPosition))
 
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.WHITE)
-        self.assertEqual(9, fullBitmaskParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, fullBitmaskParamChoice.initialize_offsets(bitPosition))
 
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK_AND_WHITE)
-        self.assertEqual(17, fullBitmaskParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(17, fullBitmaskParamChoice.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         selector = self.api.Selector.Values.BLACK

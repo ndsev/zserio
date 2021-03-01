@@ -12,9 +12,9 @@ struct TestBlob(Header blob) // blob name used to check clashing with an interna
 
 sql_table BlobParamTable
 {
-    uint32                     id          sql "PRIMARY KEY NOT NULL";
-    string                     name;
-    TestBlob(explicit header)  blob1;
-    TestBlob(explicit blob)    blob2;
-    TestBlob(explicit header)  blob3; // header is reused here
+    uint32                          id      sql "PRIMARY KEY NOT NULL";
+    string                          name;
+    TestBlob(explicit headerParam)  blob1; // headerParam name used to check conversion to snake_case in Python
+    TestBlob(explicit blob)         blob2;
+    TestBlob(explicit headerParam)  blob3; // headerParam is reused here
 };

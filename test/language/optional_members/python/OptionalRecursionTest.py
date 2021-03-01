@@ -21,7 +21,7 @@ class OptionalRecursionTest(unittest.TestCase):
         self.assertEqual(0, emptyBlock.block_terminator)
         self.assertEqual(None, emptyBlock.next_data)
 
-        emptyBlock = self.api.Block(byteCount_=0, dataBytes_=[], blockTerminator_=0, nextData_=None)
+        emptyBlock = self.api.Block(byte_count_=0, data_bytes_=[], block_terminator_=0, next_data_=None)
         self.assertEqual(0, emptyBlock.byte_count)
         self.assertEqual(0, len(emptyBlock.data_bytes))
         self.assertEqual(0, emptyBlock.block_terminator)
@@ -57,29 +57,29 @@ class OptionalRecursionTest(unittest.TestCase):
 
     def testHasNextData(self):
         block1 = self._createBlock(self.BLOCK1_DATA)
-        self.assertFalse(block1.isNextDataUsed())
+        self.assertFalse(block1.is_next_data_used())
 
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
-        self.assertTrue(block12.isNextDataUsed())
+        self.assertTrue(block12.is_next_data_used())
 
     def testBitSizeOf(self):
         block1 = self._createBlock(self.BLOCK1_DATA)
-        self.assertEqual(OptionalRecursionTest._getBlockBitSize(self.BLOCK1_DATA), block1.bitSizeOf())
+        self.assertEqual(OptionalRecursionTest._getBlockBitSize(self.BLOCK1_DATA), block1.bitsizeof())
 
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
         self.assertEqual(OptionalRecursionTest._getBlock12BitSize(self.BLOCK1_DATA, self.BLOCK2_DATA),
-                         block12.bitSizeOf())
+                         block12.bitsizeof())
 
     def testInitializeOffsets(self):
         block1 = self._createBlock(self.BLOCK1_DATA)
         bitPosition = 1
         self.assertEqual(bitPosition + OptionalRecursionTest._getBlockBitSize(self.BLOCK1_DATA),
-                         block1.initializeOffsets(bitPosition))
+                         block1.initialize_offsets(bitPosition))
 
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
         self.assertEqual(bitPosition +
                          OptionalRecursionTest._getBlock12BitSize(self.BLOCK1_DATA, self.BLOCK2_DATA),
-                         block12.initializeOffsets(bitPosition))
+                         block12.initialize_offsets(bitPosition))
 
     def testWriteBlock1(self):
         block1 = self._createBlock(self.BLOCK1_DATA)
@@ -89,7 +89,7 @@ class OptionalRecursionTest(unittest.TestCase):
         self._checkBlockInStream(reader, self.BLOCK1_DATA)
 
         reader.bitposition = 0
-        readBlock1 = self.api.Block.fromReader(reader, len(self.BLOCK1_DATA))
+        readBlock1 = self.api.Block.from_reader(reader, len(self.BLOCK1_DATA))
         self.assertEqual(block1, readBlock1)
 
     def testWriteBlock12(self):
@@ -100,7 +100,7 @@ class OptionalRecursionTest(unittest.TestCase):
         self._checkBlock12InStream(reader, self.BLOCK1_DATA, self.BLOCK2_DATA)
 
         reader.bitposition = 0
-        readBlock12 = self.api.Block.fromReader(reader, len(self.BLOCK1_DATA))
+        readBlock12 = self.api.Block.from_reader(reader, len(self.BLOCK1_DATA))
         self.assertEqual(block12, readBlock12)
 
     def _createEmptyBlock(self):

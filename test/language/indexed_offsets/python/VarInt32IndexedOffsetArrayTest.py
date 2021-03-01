@@ -12,21 +12,21 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         createWrongOffsets = False
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize(),
-                         varInt32IndexedOffsetArray.bitSizeOf())
+                         varInt32IndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
         self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize() - bitPosition,
-                         varInt32IndexedOffsetArray.bitSizeOf(bitPosition))
+                         varInt32IndexedOffsetArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
         self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize(),
-                         varInt32IndexedOffsetArray.initializeOffsets(bitPosition))
+                         varInt32IndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkVarInt32IndexedOffsetArray(varInt32IndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
@@ -34,7 +34,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
         self.assertEqual(VarInt32IndexedOffsetArrayTest._getVarInt32IndexedOffsetArrayBitSize() + bitPosition -
-                         1, varInt32IndexedOffsetArray.initializeOffsets(bitPosition))
+                         1, varInt32IndexedOffsetArray.initialize_offsets(bitPosition))
 
         offsetShift = 1
         self._checkOffsets(varInt32IndexedOffsetArray, offsetShift)
@@ -64,7 +64,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         varInt32IndexedOffsetArray.write(writer)
         self._checkVarInt32IndexedOffsetArray(varInt32IndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readVarInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray.fromReader(reader)
+        readVarInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray.from_reader(reader)
         self._checkVarInt32IndexedOffsetArray(readVarInt32IndexedOffsetArray)
         self.assertTrue(varInt32IndexedOffsetArray == readVarInt32IndexedOffsetArray)
 
@@ -84,7 +84,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            varInt32IndexedOffsetArray.write(writer, callInitializeOffsets=False)
+            varInt32IndexedOffsetArray.write(writer, call_initialize_offsets=False)
 
     @staticmethod
     def _writeVarInt32IndexedOffsetArrayToStream(writer, writeWrongOffsets):

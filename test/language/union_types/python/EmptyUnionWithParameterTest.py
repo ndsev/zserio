@@ -14,9 +14,9 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
 
     def testFromReader(self):
         reader = zserio.BitStreamReader([])
-        emptyUnionWithParameter = self.api.EmptyUnionWithParameter.fromReader(reader, self.PARAM_VALUE1)
+        emptyUnionWithParameter = self.api.EmptyUnionWithParameter.from_reader(reader, self.PARAM_VALUE1)
         self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
-        self.assertEqual(0, emptyUnionWithParameter.bitSizeOf())
+        self.assertEqual(0, emptyUnionWithParameter.bitsizeof())
 
     def testEq(self):
         emptyUnionWithParameter1 = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
@@ -39,19 +39,19 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
     def testBitSizeOf(self):
         bitPosition = 1
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
-        self.assertEqual(0, emptyUnionWithParameter.bitSizeOf(bitPosition))
+        self.assertEqual(0, emptyUnionWithParameter.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         bitPosition = 1
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
-        self.assertEqual(bitPosition, emptyUnionWithParameter.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition, emptyUnionWithParameter.initialize_offsets(bitPosition))
 
     def testRead(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
         reader = zserio.BitStreamReader([])
         emptyUnionWithParameter.read(reader)
         self.assertEqual(self.PARAM_VALUE1, emptyUnionWithParameter.param)
-        self.assertEqual(0, emptyUnionWithParameter.bitSizeOf())
+        self.assertEqual(0, emptyUnionWithParameter.bitsizeof())
 
     def testWrite(self):
         writer = zserio.BitStreamWriter()
@@ -60,7 +60,7 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
         byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readEmptyUnionWithParameter = self.api.EmptyUnionWithParameter.fromReader(reader, self.PARAM_VALUE1)
+        readEmptyUnionWithParameter = self.api.EmptyUnionWithParameter.from_reader(reader, self.PARAM_VALUE1)
         self.assertEqual(emptyUnionWithParameter, readEmptyUnionWithParameter)
 
     PARAM_VALUE1 = 1

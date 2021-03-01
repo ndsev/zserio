@@ -14,23 +14,23 @@ class RowIdAndWithoutRowIdTablesTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.RowIdAndWithoutRowIdDb.fromFile(self._fileName)
+        self._database = self.api.RowIdAndWithoutRowIdDb.from_file(self._fileName)
 
     def tearDown(self):
         self._database.close()
 
     def testRowIdColumn(self):
-        self._database.createSchema()
+        self._database.create_schema()
         self.assertFalse(self._isColumnInTable("rowid", self.WITHOUT_ROWID_TABLE_NAME))
         self.assertTrue(self._isColumnInTable("rowid", self.ORDINARY_ROWID_TABLE_NAME))
 
     def testCreateOrdinaryRowIdTable(self):
         testTable = self._database.without_row_id_table
-        testTable.createOrdinaryRowIdTable()
+        testTable.create_ordinary_rowid_table()
         self.assertTrue(self._isColumnInTable("rowid", self.WITHOUT_ROWID_TABLE_NAME))
 
     def testWithoutRowIdTableNamesBlackList(self):
-        self._database.createSchema([self.WITHOUT_ROWID_TABLE_NAME])
+        self._database.create_schema([self.WITHOUT_ROWID_TABLE_NAME])
         self.assertTrue(self._isColumnInTable("rowid", self.WITHOUT_ROWID_TABLE_NAME))
         self.assertTrue(self._isColumnInTable("rowid", self.ORDINARY_ROWID_TABLE_NAME))
 

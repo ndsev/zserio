@@ -11,21 +11,21 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         bit5IndexedOffsetArray = self._createBit5IndexedOffsetArray(createWrongOffsets)
-        self.assertEqual(BIT5_INDEXED_OFFSET_ARRAY_BIT_SIZE, bit5IndexedOffsetArray.bitSizeOf())
+        self.assertEqual(BIT5_INDEXED_OFFSET_ARRAY_BIT_SIZE, bit5IndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         bit5IndexedOffsetArray = self._createBit5IndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
         self.assertEqual(BIT5_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
-                         bit5IndexedOffsetArray.bitSizeOf(bitPosition))
+                         bit5IndexedOffsetArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         bit5IndexedOffsetArray = self._createBit5IndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
         self.assertEqual(BIT5_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         bit5IndexedOffsetArray.initializeOffsets(bitPosition))
+                         bit5IndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkBit5IndexedOffsetArray(bit5IndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
@@ -33,7 +33,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         bit5IndexedOffsetArray = self._createBit5IndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
         self.assertEqual(BIT5_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
-                         bit5IndexedOffsetArray.initializeOffsets(bitPosition))
+                         bit5IndexedOffsetArray.initialize_offsets(bitPosition))
 
         offsetShift = 1
         self._checkOffsets(bit5IndexedOffsetArray, offsetShift)
@@ -63,7 +63,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         bit5IndexedOffsetArray.write(writer)
         self._checkBit5IndexedOffsetArray(bit5IndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readBit5IndexedOffsetArray = self.api.Bit5IndexedOffsetArray.fromReader(reader)
+        readBit5IndexedOffsetArray = self.api.Bit5IndexedOffsetArray.from_reader(reader)
         self._checkBit5IndexedOffsetArray(readBit5IndexedOffsetArray)
         self.assertTrue(bit5IndexedOffsetArray == readBit5IndexedOffsetArray)
 
@@ -83,7 +83,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         bit5IndexedOffsetArray = self._createBit5IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            bit5IndexedOffsetArray.write(writer, callInitializeOffsets=False)
+            bit5IndexedOffsetArray.write(writer, call_initialize_offsets=False)
 
     @staticmethod
     def _writeBit5IndexedOffsetArrayToStream(writer, writeWrongOffsets):

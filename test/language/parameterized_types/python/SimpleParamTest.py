@@ -10,20 +10,20 @@ class SimpleParamTest(unittest.TestCase):
 
     def testParameterConstructor(self):
         item = self.api.Item(self.LOWER_VERSION)
-        self.assertFalse(item.isExtraParamUsed())
+        self.assertFalse(item.is_extra_param_used())
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         self._writeItemToStream(writer, self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        item = self.api.Item.fromReader(reader, self.HIGHER_VERSION)
+        item = self.api.Item.from_reader(reader, self.HIGHER_VERSION)
         self.assertEqual(self.ITEM_PARAM, item.param)
-        self.assertTrue(item.isExtraParamUsed())
+        self.assertTrue(item.is_extra_param_used())
         self.assertEqual(self.ITEM_EXTRA_PARAM, item.extra_param)
 
         item = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         self.assertEqual(self.ITEM_PARAM, item.param)
-        self.assertTrue(item.isExtraParamUsed())
+        self.assertTrue(item.is_extra_param_used())
         self.assertEqual(self.ITEM_EXTRA_PARAM, item.extra_param)
 
     def testEq(self):
@@ -44,19 +44,19 @@ class SimpleParamTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         item1 = self.api.Item(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
-        self.assertEqual(self.ITEM_BIT_SIZE_WITHOUT_OPTIONAL, item1.bitSizeOf())
+        self.assertEqual(self.ITEM_BIT_SIZE_WITHOUT_OPTIONAL, item1.bitsizeof())
 
         item2 = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
-        self.assertEqual(self.ITEM_BIT_SIZE_WITH_OPTIONAL, item2.bitSizeOf())
+        self.assertEqual(self.ITEM_BIT_SIZE_WITH_OPTIONAL, item2.bitsizeof())
 
     def testInitializeOffsets(self):
         item1 = self.api.Item(self.LOWER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
         bitPosition = 1
         self.assertEqual(bitPosition + self.ITEM_BIT_SIZE_WITHOUT_OPTIONAL,
-                         item1.initializeOffsets(bitPosition))
+                         item1.initialize_offsets(bitPosition))
 
         item2 = self.api.Item(self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
-        self.assertEqual(bitPosition + self.ITEM_BIT_SIZE_WITH_OPTIONAL, item2.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition + self.ITEM_BIT_SIZE_WITH_OPTIONAL, item2.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         version = self.HIGHER_VERSION
@@ -69,7 +69,7 @@ class SimpleParamTest(unittest.TestCase):
         self._checkItemInStream(reader, item, version)
         reader.bitposition = 0
 
-        readItem = self.api.Item.fromReader(reader, version)
+        readItem = self.api.Item.from_reader(reader, version)
         self.assertEqual(item, readItem)
 
     def _writeItemToStream(self, writer, version, param, extraParam):

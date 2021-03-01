@@ -15,7 +15,7 @@ class VariableArrayInt8Test(unittest.TestCase):
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
-        self.assertEqual(expectedBitSize, variableArray.bitSizeOf(bitPosition))
+        self.assertEqual(expectedBitSize, variableArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         numElements = 33
@@ -24,14 +24,14 @@ class VariableArrayInt8Test(unittest.TestCase):
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
-        self.assertEqual(expectedEndBitPosition, variableArray.initializeOffsets(bitPosition))
+        self.assertEqual(expectedEndBitPosition, variableArray.initialize_offsets(bitPosition))
 
     def testRead(self):
         numElements = 59
         writer = zserio.BitStreamWriter()
         VariableArrayInt8Test._writeVariableArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        variableArray = self.api.VariableArray.fromReader(reader)
+        variableArray = self.api.VariableArray.from_reader(reader)
 
         self.assertEqual(numElements, variableArray.num_elements)
         compoundArray = variableArray.compound_array

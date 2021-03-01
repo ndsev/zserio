@@ -24,7 +24,7 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeFullEnumParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        fullEnumParamChoice = self.api.FullEnumParamChoice.fromReader(reader, selector)
+        fullEnumParamChoice = self.api.FullEnumParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, fullEnumParamChoice.selector)
         self.assertEqual(value, fullEnumParamChoice.grey)
 
@@ -85,24 +85,24 @@ class FullEnumParamChoiceTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
-        self.assertEqual(8, fullEnumParamChoice.bitSizeOf())
+        self.assertEqual(8, fullEnumParamChoice.bitsizeof())
 
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.GREY)
-        self.assertEqual(16, fullEnumParamChoice.bitSizeOf())
+        self.assertEqual(16, fullEnumParamChoice.bitsizeof())
 
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.WHITE)
-        self.assertEqual(32, fullEnumParamChoice.bitSizeOf())
+        self.assertEqual(32, fullEnumParamChoice.bitsizeof())
 
     def testInitializeOffsets(self):
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
         bitPosition = 1
-        self.assertEqual(9, fullEnumParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, fullEnumParamChoice.initialize_offsets(bitPosition))
 
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.GREY)
-        self.assertEqual(17, fullEnumParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(17, fullEnumParamChoice.initialize_offsets(bitPosition))
 
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.WHITE)
-        self.assertEqual(33, fullEnumParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(33, fullEnumParamChoice.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         selector = self.api.Selector.BLACK

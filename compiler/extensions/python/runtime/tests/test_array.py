@@ -168,17 +168,17 @@ class ArrayTest(unittest.TestCase):
                 return hash(self._value)
 
             @staticmethod
-            def bitSizeOf(_bitposition):
+            def bitsizeof(_bitposition):
                 return 31 # to make an unaligned type
 
-            def initializeOffsets(self, bitposition):
-                return bitposition + self.bitSizeOf(bitposition)
+            def initialize_offsets(self, bitposition):
+                return bitposition + self.bitsizeof(bitposition)
 
             def read(self, reader):
-                self._value = reader.read_bits(self.bitSizeOf(0))
+                self._value = reader.read_bits(self.bitsizeof(0))
 
             def write(self, writer):
-                writer.write_bits(self._value, self.bitSizeOf(0))
+                writer.write_bits(self._value, self.bitsizeof(0))
 
         array_traits = ObjectArrayTraits(DummyObject.create)
         array1_values = [DummyObject(1), DummyObject(2)]

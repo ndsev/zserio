@@ -39,7 +39,7 @@ def deserialize(obj_class: typing.Type[typing.Any], bitbuffer: BitBuffer, *args)
 
     reader = BitStreamReader.from_bitbuffer(bitbuffer)
 
-    return obj_class.fromReader(reader, *args)
+    return obj_class.from_reader(reader, *args)
 
 def serialize_to_bytes(obj: typing.Any) -> bytes:
     """

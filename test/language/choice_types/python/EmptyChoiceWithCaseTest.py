@@ -15,9 +15,9 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
     def testFromReader(self):
         selector = 1
         reader = zserio.BitStreamReader([])
-        emptyChoiceWithCase = self.api.EmptyChoiceWithCase.fromReader(reader, selector)
+        emptyChoiceWithCase = self.api.EmptyChoiceWithCase.from_reader(reader, selector)
         self.assertEqual(selector, emptyChoiceWithCase.selector)
-        self.assertEqual(0, emptyChoiceWithCase.bitSizeOf())
+        self.assertEqual(0, emptyChoiceWithCase.bitsizeof())
 
     def testEq(self):
         emptyChoiceWithCase1 = self.api.EmptyChoiceWithCase(1)
@@ -40,12 +40,12 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(1)
-        self.assertEqual(0, emptyChoiceWithCase.bitSizeOf(1))
+        self.assertEqual(0, emptyChoiceWithCase.bitsizeof(1))
 
     def testInitializeOffsets(self):
         bitPosition = 1
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(1)
-        self.assertEqual(bitPosition, emptyChoiceWithCase.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition, emptyChoiceWithCase.initialize_offsets(bitPosition))
 
     def testRead(self):
         selector = 1
@@ -53,7 +53,7 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
         emptyChoiceWithCase = self.api.EmptyChoiceWithCase(selector)
         emptyChoiceWithCase.read(reader)
         self.assertEqual(selector, emptyChoiceWithCase.selector)
-        self.assertEqual(0, emptyChoiceWithCase.bitSizeOf())
+        self.assertEqual(0, emptyChoiceWithCase.bitsizeof())
 
     def testWrite(self):
         selector = 1
@@ -63,5 +63,5 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
         byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readEmptyChoiceWithCase = self.api.EmptyChoiceWithCase.fromReader(reader, selector)
+        readEmptyChoiceWithCase = self.api.EmptyChoiceWithCase.from_reader(reader, selector)
         self.assertEqual(emptyChoiceWithCase, readEmptyChoiceWithCase)

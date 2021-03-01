@@ -13,8 +13,8 @@ class ComplexTableTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.TestDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.TestDb.from_file(self._fileName)
+        self._database.create_schema()
 
     def tearDown(self):
         self._database.close()
@@ -23,10 +23,10 @@ class ComplexTableTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
         testTable = self._database.complex_table
-        testTable.deleteTable()
+        testTable.delete_table()
         self.assertFalse(self._isTableInDb())
 
-        testTable.createTable()
+        testTable.create_table()
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
@@ -87,7 +87,7 @@ class ComplexTableTest(unittest.TestCase):
             def __init__(self, tableCount):
                 self._tableCount = tableCount
 
-            def getCount(self, _row):
+            def count(self, _row):
                 return self._tableCount
 
         return ComplexTableParameterProvider(self.COMPLEX_TABLE_COUNT)

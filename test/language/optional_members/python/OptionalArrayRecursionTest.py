@@ -56,27 +56,27 @@ class OptionalArrayRecursionTest(unittest.TestCase):
     def testIsTeamMembersUsed(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                         self.api.Title.DEVELOPER)
-        self.assertFalse(employee.isTeamMembersUsed())
+        self.assertFalse(employee.is_team_members_used())
 
         teamLead = self._createTeamLead()
-        self.assertTrue(teamLead.isTeamMembersUsed())
+        self.assertTrue(teamLead.is_team_members_used())
 
     def testBitSizeOf(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                         self.api.Title.DEVELOPER)
-        self.assertEqual(self.DEVELOPER1_BIT_SIZE, employee.bitSizeOf())
+        self.assertEqual(self.DEVELOPER1_BIT_SIZE, employee.bitsizeof())
 
         teamLead = self._createTeamLead()
-        self.assertEqual(self.TEAM_LEAD_BIT_SIZE, teamLead.bitSizeOf())
+        self.assertEqual(self.TEAM_LEAD_BIT_SIZE, teamLead.bitsizeof())
 
     def testInitializeOffsets(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                         self.api.Title.DEVELOPER)
         bitPosition = 1
-        self.assertEqual(bitPosition + self.DEVELOPER1_BIT_SIZE, employee.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition + self.DEVELOPER1_BIT_SIZE, employee.initialize_offsets(bitPosition))
 
         teamLead = self._createTeamLead()
-        self.assertEqual(bitPosition + self.TEAM_LEAD_BIT_SIZE, teamLead.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition + self.TEAM_LEAD_BIT_SIZE, teamLead.initialize_offsets(bitPosition))
 
     def testWriteEmployee(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
@@ -89,7 +89,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
                                     self.api.Title.DEVELOPER)
 
         reader.bitposition = 0
-        readEmployee = self.api.Employee.fromReader(reader)
+        readEmployee = self.api.Employee.from_reader(reader)
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, readEmployee.name)
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, readEmployee.salary)
         self.assertEqual(self.api.Title.DEVELOPER, readEmployee.title)
@@ -102,7 +102,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         self._checkTeamLeadInStream(reader)
 
         reader.bitposition = 0
-        readTeamLead = self.api.Employee.fromReader(reader)
+        readTeamLead = self.api.Employee.from_reader(reader)
         self.assertEqual(self.EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.name)
         self.assertEqual(self.EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.salary)
         self.assertEqual(self.api.Title.TEAM_LEAD, readTeamLead.title)

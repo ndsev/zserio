@@ -10,12 +10,12 @@ class EmptyUnionTest(unittest.TestCase):
 
     def testEmptyConstructor(self):
         emptyUnion = self.api.EmptyUnion()
-        self.assertEqual(0, emptyUnion.bitSizeOf())
+        self.assertEqual(0, emptyUnion.bitsizeof())
 
     def testFromReader(self):
         reader = zserio.BitStreamReader([])
-        emptyUnion = self.api.EmptyUnion.fromReader(reader)
-        self.assertEqual(0, emptyUnion.bitSizeOf())
+        emptyUnion = self.api.EmptyUnion.from_reader(reader)
+        self.assertEqual(0, emptyUnion.bitsizeof())
 
     def testEq(self):
         emptyUnion1 = self.api.EmptyUnion()
@@ -34,18 +34,18 @@ class EmptyUnionTest(unittest.TestCase):
     def testBitSizeOf(self):
         bitPosition = 1
         emptyUnion = self.api.EmptyUnion()
-        self.assertEqual(0, emptyUnion.bitSizeOf(bitPosition))
+        self.assertEqual(0, emptyUnion.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         bitPosition = 1
         emptyUnion = self.api.EmptyUnion()
-        self.assertEqual(bitPosition, emptyUnion.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition, emptyUnion.initialize_offsets(bitPosition))
 
     def testRead(self):
         emptyUnion = self.api.EmptyUnion()
         reader = zserio.BitStreamReader([])
         emptyUnion.read(reader)
-        self.assertEqual(0, emptyUnion.bitSizeOf())
+        self.assertEqual(0, emptyUnion.bitsizeof())
 
     def testWrite(self):
         writer = zserio.BitStreamWriter()
@@ -54,5 +54,5 @@ class EmptyUnionTest(unittest.TestCase):
         byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readEmptyUnion = self.api.EmptyUnion.fromReader(reader)
+        readEmptyUnion = self.api.EmptyUnion.from_reader(reader)
         self.assertEqual(emptyUnion, readEmptyUnion)

@@ -11,21 +11,21 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
-        self.assertEqual(INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE, int14IndexedOffsetArray.bitSizeOf())
+        self.assertEqual(INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE, int14IndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
         self.assertEqual(INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
-                         int14IndexedOffsetArray.bitSizeOf(bitPosition))
+                         int14IndexedOffsetArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
         self.assertEqual(INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         int14IndexedOffsetArray.initializeOffsets(bitPosition))
+                         int14IndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkInt14IndexedOffsetArray(int14IndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
@@ -33,7 +33,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
         self.assertEqual(INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
-                         int14IndexedOffsetArray.initializeOffsets(bitPosition))
+                         int14IndexedOffsetArray.initialize_offsets(bitPosition))
 
         offsetShift = 1
         self._checkOffsets(int14IndexedOffsetArray, offsetShift)
@@ -63,7 +63,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         int14IndexedOffsetArray.write(writer)
         self._checkInt14IndexedOffsetArray(int14IndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readInt14IndexedOffsetArray = self.api.Int14IndexedOffsetArray.fromReader(reader)
+        readInt14IndexedOffsetArray = self.api.Int14IndexedOffsetArray.from_reader(reader)
         self._checkInt14IndexedOffsetArray(readInt14IndexedOffsetArray)
         self.assertTrue(int14IndexedOffsetArray == readInt14IndexedOffsetArray)
 
@@ -83,7 +83,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            int14IndexedOffsetArray.write(writer, callInitializeOffsets=False)
+            int14IndexedOffsetArray.write(writer, call_initialize_offsets=False)
 
     @staticmethod
     def _writeInt14IndexedOffsetArrayToStream(writer, writeWrongOffsets):

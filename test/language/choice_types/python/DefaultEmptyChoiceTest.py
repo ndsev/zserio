@@ -14,7 +14,7 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         DefaultEmptyChoiceTest._writeDefaultEmptyChoiceToStream(writer, tag, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        defaultEmptyChoice = self.api.DefaultEmptyChoice.fromReader(reader, tag)
+        defaultEmptyChoice = self.api.DefaultEmptyChoice.from_reader(reader, tag)
         self.assertEqual(tag, defaultEmptyChoice.tag)
         self.assertEqual(value, defaultEmptyChoice.b)
 

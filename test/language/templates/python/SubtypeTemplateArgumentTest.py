@@ -14,4 +14,4 @@ class SubtypeTemplateArgumentTest(unittest.TestCase):
                                                                    field_uint32, field_compound,
                                                                    field_compound,
                                                                    field_compound)
-        self.assertEqual(192, subtypeTemplateArgument.bitSizeOf())
+        self.assertEqual(192, subtypeTemplateArgument.bitsizeof())

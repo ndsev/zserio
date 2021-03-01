@@ -18,13 +18,13 @@ class DbWithRelocationTest(unittest.TestCase):
         if os.path.exists(self._americaDbFileName):
             os.remove(self._americaDbFileName)
 
-        self._europeDb = self.api.EuropeDb.fromFile(self._europeDbFileName)
-        self._europeDb.createSchema()
+        self._europeDb = self.api.EuropeDb.from_file(self._europeDbFileName)
+        self._europeDb.create_schema()
 
         tableToDbFileNameRelocationMap = {self.RELOCATED_SLOVAKIA_TABLE_NAME : self._europeDbFileName,
                                           self.RELOCATED_CZECHIA_TABLE_NAME : self._europeDbFileName}
-        self._americaDb = self.api.AmericaDb.fromFile(self._americaDbFileName, tableToDbFileNameRelocationMap)
-        self._americaDb.createSchema()
+        self._americaDb = self.api.AmericaDb.from_file(self._americaDbFileName, tableToDbFileNameRelocationMap)
+        self._americaDb.create_schema()
 
     def tearDown(self):
         self._americaDb.close()

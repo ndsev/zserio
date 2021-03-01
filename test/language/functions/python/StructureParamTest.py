@@ -20,7 +20,7 @@ class StructureParamTest(unittest.TestCase):
         self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readMetresConverterCaller = self.api.MetresConverterCaller.fromReader(reader)
+        readMetresConverterCaller = self.api.MetresConverterCaller.from_reader(reader)
         self.assertEqual(metresConverterCaller, readMetresConverterCaller)
 
     @staticmethod

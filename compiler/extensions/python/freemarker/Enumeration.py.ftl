@@ -8,10 +8,10 @@ class ${name}(enum.Enum):
 </#list>
 
     @classmethod
-    def fromReader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
+    def from_reader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
         return cls(reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!}))
 
-    def bitSizeOf(self, _bitPosition: int = 0) -> int:
+    def bitsizeof(self, _bitposition: int = 0) -> int:
 <#if bitSize??>
         return ${bitSize}
 <#else>
@@ -19,8 +19,8 @@ class ${name}(enum.Enum):
 </#if>
 <#if withWriterCode>
 
-    def initializeOffsets(self, bitPosition: int) -> int:
-        return bitPosition + self.bitSizeOf(bitPosition)
+    def initialize_offsets(self, bitposition: int) -> int:
+        return bitposition + self.bitsizeof(bitposition)
 
     def write(self, writer: zserio.BitStreamWriter) -> None:
         writer.write_${runtimeFunction.suffix}(self.value<#rt>

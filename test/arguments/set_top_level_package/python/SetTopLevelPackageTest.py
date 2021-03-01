@@ -12,4 +12,4 @@ class SetTopLevelPackageTest(unittest.TestCase):
     def testEmptyConstructor(self):
         simpleStructure = self.api.appl.SimpleStructure()
         simpleStructure.simple_choice = self.api.appl.SimpleChoice(simpleStructure.e)
-        self.assertEqual(26, simpleStructure.bitSizeOf())
+        self.assertEqual(26, simpleStructure.bitsizeof())

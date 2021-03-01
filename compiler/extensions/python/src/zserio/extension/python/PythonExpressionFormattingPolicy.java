@@ -432,7 +432,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         else
         {
             // this could happen for "explicit identifier" expressions
-            result.append(symbol);
+            result.append(AccessorNameFormatter.camelCaseToSnakeCase(symbol));
         }
     }
 

@@ -15,9 +15,9 @@ class InstantiateTypeAsSqlDatabaseFieldTest(unittest.TestCase):
             os.remove(self._fileName)
 
     def testReadWrite(self):
-        instantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.fromFile(
+        instantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.from_file(
             self._fileName)
-        instantiateTypeAsSqlDatabaseFieldDb.createSchema()
+        instantiateTypeAsSqlDatabaseFieldDb.create_schema()
 
         stringTable = instantiateTypeAsSqlDatabaseFieldDb.string_table
         stringTableRows = [(0, "test")]
@@ -29,7 +29,7 @@ class InstantiateTypeAsSqlDatabaseFieldTest(unittest.TestCase):
 
         instantiateTypeAsSqlDatabaseFieldDb.close()
 
-        readInstantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.fromFile(
+        readInstantiateTypeAsSqlDatabaseFieldDb = self.api.InstantiateTypeAsSqlDatabaseFieldDb.from_file(
             self._fileName)
         readStringTableIterator = readInstantiateTypeAsSqlDatabaseFieldDb.string_table.read()
         readStringTableRows = []

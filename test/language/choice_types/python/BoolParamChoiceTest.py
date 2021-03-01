@@ -24,7 +24,7 @@ class BoolParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         BoolParamChoiceTest._writeBoolParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        boolParamChoice = self.api.BoolParamChoice.fromReader(reader, selector)
+        boolParamChoice = self.api.BoolParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, boolParamChoice.selector)
         self.assertEqual(value, boolParamChoice.grey)
 
@@ -79,18 +79,18 @@ class BoolParamChoiceTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         boolParamChoice = self.api.BoolParamChoice(True)
-        self.assertEqual(8, boolParamChoice.bitSizeOf())
+        self.assertEqual(8, boolParamChoice.bitsizeof())
 
         boolParamChoice = self.api.BoolParamChoice(False)
-        self.assertEqual(16, boolParamChoice.bitSizeOf())
+        self.assertEqual(16, boolParamChoice.bitsizeof())
 
     def testInitializeOffsets(self):
         boolParamChoice = self.api.BoolParamChoice(True)
         bitPosition = 1
-        self.assertEqual(9, boolParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, boolParamChoice.initialize_offsets(bitPosition))
 
         boolParamChoice = self.api.BoolParamChoice(False)
-        self.assertEqual(17, boolParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(17, boolParamChoice.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         selector = True

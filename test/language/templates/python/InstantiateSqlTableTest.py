@@ -15,7 +15,7 @@ class InstantiateSqlTableTest(unittest.TestCase):
         )
 
         u32Table = self.api.U32Table(connection, "u32Table")
-        u32Table.createTable()
+        u32Table.create_table()
 
         rows = [(13, "info")]
         u32Table.write(rows)

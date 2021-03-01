@@ -4,29 +4,29 @@
 
 class Service(zserio.ServiceInterface):
     def __init__(self) -> None:
-        self._methodMap = {
+        self._method_map = {
 <#list methodList as method>
-            "${method.name}": self._${method.name}Method<#if method?has_next>,</#if>
+            "${method.name}": self._${method.snakeCaseName}_method<#if method?has_next>,</#if>
 </#list>
         }
 
     def call_method(self, method_name: str, request_data: bytes, context: typing.Any = None) -> bytes:
-        method = self._methodMap.get(method_name)
+        method = self._method_map.get(method_name)
         if not method:
             raise zserio.ServiceException("${serviceFullName}: Method '%s' does not exist!" % method_name)
         return method(request_data, context)
 <#list methodList as method>
 
-    def _${method.name}Impl(self, request: ${method.requestTypeFullName}, context: typing.Any = None) -> ${method.responseTypeFullName}:
+    def _${method.snakeCaseName}_impl(self, request: ${method.requestTypeFullName}, context: typing.Any = None) -> ${method.responseTypeFullName}:
         raise NotImplementedError()
 </#list>
 <#list methodList as method>
 
-    def _${method.name}Method(self, requestData: bytes, context: typing.Any) -> bytes:
-        reader = zserio.BitStreamReader(requestData)
-        request = ${method.requestTypeFullName}.fromReader(reader)
+    def _${method.snakeCaseName}_method(self, request_data: bytes, context: typing.Any) -> bytes:
+        reader = zserio.BitStreamReader(request_data)
+        request = ${method.requestTypeFullName}.from_reader(reader)
 
-        response = self._${method.name}Impl(request, context)
+        response = self._${method.snakeCaseName}_impl(request, context)
 
         writer = zserio.BitStreamWriter()
         response.write(writer)
@@ -45,14 +45,14 @@ class Client:
         self._service = service
 <#list methodList as method>
 
-    def ${method.name}Method(self, request: ${method.requestTypeFullName}, context: typing.Any = None) -> ${method.responseTypeFullName}:
+    def ${method.snakeCaseName}_method(self, request: ${method.requestTypeFullName}, context: typing.Any = None) -> ${method.responseTypeFullName}:
         writer = zserio.BitStreamWriter()
         request.write(writer)
-        requestData = writer.byte_array
+        request_data = writer.byte_array
 
-        responseData = self._service.call_method("${method.name}", requestData, context)
+        response_data = self._service.call_method("${method.name}", request_data, context)
 
-        reader = zserio.BitStreamReader(responseData)
-        response = ${method.responseTypeFullName}.fromReader(reader)
+        reader = zserio.BitStreamReader(response_data)
+        response = ${method.responseTypeFullName}.from_reader(reader)
         return response
 </#list>

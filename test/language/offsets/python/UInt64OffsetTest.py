@@ -9,23 +9,23 @@ class UInt64OffsetTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "offsets.zs").uint64_offset
 
     def testBitSizeOf(self):
-        uint64Offset = self.api.UInt64Offset.fromReader(self._createReader(False))
-        self.assertEqual(self.BIT_SIZE, uint64Offset.bitSizeOf())
+        uint64Offset = self.api.UInt64Offset.from_reader(self._createReader(False))
+        self.assertEqual(self.BIT_SIZE, uint64Offset.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
-        uint64Offset = self.api.UInt64Offset.fromReader(self._createReader(False))
-        self.assertEqual(self.BIT_SIZE + 5, uint64Offset.bitSizeOf(3))
+        uint64Offset = self.api.UInt64Offset.from_reader(self._createReader(False))
+        self.assertEqual(self.BIT_SIZE + 5, uint64Offset.bitsizeof(3))
 
     def testInitializeOffsets(self):
         uint64Offset = self.api.UInt64Offset()
         uint64Offset.array = list(range(self.ARRAY_SIZE))
-        uint64Offset.initializeOffsets(0)
+        uint64Offset.initialize_offsets(0)
         self.assertEqual(self.OFFSET, uint64Offset.offset)
 
     def testInitializeOffsetsWithPosition(self):
         uint64Offset = self.api.UInt64Offset()
         uint64Offset.array = list(range(self.ARRAY_SIZE))
-        uint64Offset.initializeOffsets(3)
+        uint64Offset.initialize_offsets(3)
         # 3 bits start position + 5 bits alignment -> + 1 byte
         self.assertEqual(self.OFFSET + 1, uint64Offset.offset)
 
@@ -60,7 +60,7 @@ class UInt64OffsetTest(unittest.TestCase):
         uint64Offset = self.api.UInt64Offset(self.WRONG_OFFSET, list(range(self.ARRAY_SIZE)), 0)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            uint64Offset.write(writer, callInitializeOffsets=False)
+            uint64Offset.write(writer, call_initialize_offsets=False)
 
     def _createReader(self, wrongOffset):
         writer = zserio.BitStreamWriter()

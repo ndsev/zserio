@@ -37,20 +37,20 @@ class AutoArrayTest(unittest.TestCase):
         subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray(array)
         bitPosition = 2
         autoArrayBitSize = 8 + numElements * 8
-        self.assertEqual(autoArrayBitSize, subtypedBuiltinAutoArray.bitSizeOf(bitPosition))
+        self.assertEqual(autoArrayBitSize, subtypedBuiltinAutoArray.bitsizeof(bitPosition))
 
     def _checkInitializeOffsets(self, numElements):
         array = list(range(numElements))
         subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray(array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + 8 + numElements * 8
-        self.assertEqual(expectedEndBitPosition, subtypedBuiltinAutoArray.initializeOffsets(bitPosition))
+        self.assertEqual(expectedEndBitPosition, subtypedBuiltinAutoArray.initialize_offsets(bitPosition))
 
     def _checkRead(self, numElements):
         writer = zserio.BitStreamWriter()
         AutoArrayTest._writeAutoArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray.fromReader(reader)
+        subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray.from_reader(reader)
 
         array = subtypedBuiltinAutoArray.array
         self.assertEqual(numElements, len(array))

@@ -7,7 +7,7 @@ class ${name}:
         self._value = 0
 
     @classmethod
-    def fromValue(cls: typing.Type['${name}'], value: int) -> '${name}':
+    def from_value(cls: typing.Type['${name}'], value: int) -> '${name}':
         if value < ${lowerBound} or value > ${upperBound}:
             raise zserio.PythonRuntimeException("Value for bitmask '${name}' out of bounds: %d!" % value)
 
@@ -16,7 +16,7 @@ class ${name}:
         return instance
 
     @classmethod
-    def fromReader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
+    def from_reader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
         instance = cls()
         instance._value = reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!})
         return instance
@@ -53,18 +53,18 @@ class ${name}:
         return str(self._value) + "[" + result + "]"
 
     def __or__(self, other: '${name}') -> '${name}':
-        return ${name}.fromValue(self._value | other._value)
+        return ${name}.from_value(self._value | other._value)
 
     def __and__(self, other: '${name}') -> '${name}':
-        return ${name}.fromValue(self._value & other._value)
+        return ${name}.from_value(self._value & other._value)
 
     def __xor__(self, other: '${name}') -> '${name}':
-        return ${name}.fromValue(self._value ^ other._value)
+        return ${name}.from_value(self._value ^ other._value)
 
     def __invert__(self) -> '${name}':
-        return ${name}.fromValue(~self._value & ${upperBound})
+        return ${name}.from_value(~self._value & ${upperBound})
 
-    def bitSizeOf(self, _bitPosition: int = 0) -> int:
+    def bitsizeof(self, _bit_position: int = 0) -> int:
 <#if bitSize??>
         return ${bitSize}
 <#else>
@@ -72,8 +72,8 @@ class ${name}:
 </#if>
 <#if withWriterCode>
 
-    def initializeOffsets(self, bitPosition: int) -> int:
-        return bitPosition + self.bitSizeOf(bitPosition)
+    def initialize_offsets(self, bit_position: int) -> int:
+        return bit_position + self.bitsizeof(bit_position)
 
     def write(self, writer: zserio.BitStreamWriter) -> None:
         writer.write_${runtimeFunction.suffix}(self._value<#rt>
@@ -90,5 +90,5 @@ class ${name}:
 </#list>
 
 <#list values as value>
-${name}.Values.${value.name} = ${name}.fromValue(${value.value})
+${name}.Values.${value.name} = ${name}.from_value(${value.value})
 </#list>

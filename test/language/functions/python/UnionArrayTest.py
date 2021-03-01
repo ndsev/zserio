@@ -59,9 +59,9 @@ class UnionArrayTest(unittest.TestCase):
         inner = self._createInner(pos)
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
         if isExplicit != 0:
-            self.assertEqual(self.EXPLICIT_ITEM, inner.ref.funcGetItem())
+            self.assertEqual(self.EXPLICIT_ITEM, inner.ref.func_get_item())
         else:
-            self.assertEqual(self.ITEMS[pos], inner.ref.funcGetElement())
+            self.assertEqual(self.ITEMS[pos], inner.ref.func_get_element())
 
         writer = zserio.BitStreamWriter()
         inner.write(writer)
@@ -71,6 +71,6 @@ class UnionArrayTest(unittest.TestCase):
         self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readInner = self.api.Inner.fromReader(reader)
+        readInner = self.api.Inner.from_reader(reader)
 
         self.assertEqual(inner, readInner)

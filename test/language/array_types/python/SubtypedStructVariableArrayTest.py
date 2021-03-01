@@ -15,7 +15,7 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
-        self.assertEqual(expectedBitSize, subtypedStructVariableArray.bitSizeOf(bitPosition))
+        self.assertEqual(expectedBitSize, subtypedStructVariableArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         numElements = 33
@@ -24,14 +24,14 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
         bitPosition = 2
         numOneNumberIndexes = 10
         expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8
-        self.assertEqual(expectedEndBitPosition, subtypedStructVariableArray.initializeOffsets(bitPosition))
+        self.assertEqual(expectedEndBitPosition, subtypedStructVariableArray.initialize_offsets(bitPosition))
 
     def testRead(self):
         numElements = 59
         writer = zserio.BitStreamWriter()
         SubtypedStructVariableArrayTest._writeSubtypedStructVariableArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromReader(reader)
+        subtypedStructVariableArray = self.api.SubtypedStructVariableArray.from_reader(reader)
 
         self.assertEqual(numElements, subtypedStructVariableArray.num_elements)
         compoundArray = subtypedStructVariableArray.compound_array

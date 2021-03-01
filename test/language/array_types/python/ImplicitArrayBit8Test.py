@@ -14,7 +14,7 @@ class ImplicitArrayBit8Test(unittest.TestCase):
         implicitArray = self.api.ImplicitArray(array)
         bitPosition = 2
         implicitArrayBitSize = numElements * 8
-        self.assertEqual(implicitArrayBitSize, implicitArray.bitSizeOf(bitPosition))
+        self.assertEqual(implicitArrayBitSize, implicitArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         numElements = 66
@@ -22,14 +22,14 @@ class ImplicitArrayBit8Test(unittest.TestCase):
         implicitArray = self.api.ImplicitArray(array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + numElements * 8
-        self.assertEqual(expectedEndBitPosition, implicitArray.initializeOffsets(bitPosition))
+        self.assertEqual(expectedEndBitPosition, implicitArray.initialize_offsets(bitPosition))
 
     def testRead(self):
         numElements = 99
         writer = zserio.BitStreamWriter()
         ImplicitArrayBit8Test._writeImplicitArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        implicitArray = self.api.ImplicitArray.fromReader(reader)
+        implicitArray = self.api.ImplicitArray.from_reader(reader)
 
         array = implicitArray.array
         self.assertEqual(numElements, len(array))

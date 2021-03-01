@@ -51,7 +51,7 @@ class StructureValueTest(unittest.TestCase):
 
     def _checkCustomVarInt(self, value):
         customVarInt = self._createCustomVarInt(value)
-        readValue = customVarInt.funcGetValue()
+        readValue = customVarInt.func_get_value()
         self.assertEqual(value, readValue)
 
         writer = zserio.BitStreamWriter()
@@ -62,7 +62,7 @@ class StructureValueTest(unittest.TestCase):
         self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readcustomVarInt = self.api.CustomVarInt.fromReader(reader)
+        readcustomVarInt = self.api.CustomVarInt.from_reader(reader)
         self.assertEqual(customVarInt, readcustomVarInt)
 
     MAX_ONE_BYTE_VALUE = 253

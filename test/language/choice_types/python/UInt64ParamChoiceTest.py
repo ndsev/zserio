@@ -22,7 +22,7 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         UInt64ParamChoiceTest._writeUInt64ParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        uint64ParamChoice = self.api.UInt64ParamChoice.fromReader(reader, selector)
+        uint64ParamChoice = self.api.UInt64ParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, uint64ParamChoice.selector)
         self.assertEqual(value, uint64ParamChoice.b)
 
@@ -82,18 +82,18 @@ class UInt64ParamChoiceTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
-        self.assertEqual(8, uint64ParamChoice.bitSizeOf())
+        self.assertEqual(8, uint64ParamChoice.bitsizeof())
 
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
-        self.assertEqual(16, uint64ParamChoice.bitSizeOf())
+        self.assertEqual(16, uint64ParamChoice.bitsizeof())
 
     def testInitializeOffsets(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         bitPosition = 1
-        self.assertEqual(9, uint64ParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(9, uint64ParamChoice.initialize_offsets(bitPosition))
 
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
-        self.assertEqual(17, uint64ParamChoice.initializeOffsets(bitPosition))
+        self.assertEqual(17, uint64ParamChoice.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)

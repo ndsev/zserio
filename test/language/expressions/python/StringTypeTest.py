@@ -9,8 +9,8 @@ class StringTypeTest(unittest.TestCase):
 
     def testAppend(self):
         stringTypeExpression = self.api.StringTypeExpression(self.VALUE)
-        self.assertEqual(self.VALUE, stringTypeExpression.funcReturnValue())
-        self.assertEqual("appendix", stringTypeExpression.funcAppendix())
-        self.assertEqual(self.api.STRING_CONSTANT + "_appendix", stringTypeExpression.funcAppendToConst())
+        self.assertEqual(self.VALUE, stringTypeExpression.func_return_value())
+        self.assertEqual("appendix", stringTypeExpression.func_appendix())
+        self.assertEqual(self.api.STRING_CONSTANT + "_appendix", stringTypeExpression.func_append_to_const())
 
     VALUE = "value"

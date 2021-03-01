@@ -12,22 +12,22 @@ class ExplicitBlobParamTest(unittest.TestCase):
         test_api = cls.api.explicit_blob_param
         class BlobParamTableParameterProvider(test_api.BlobParamTable.IParameterProvider):
             def __init__(self):
-                self.header = test_api.Header(BLOB_PARAM_TABLE_HEADER_COUNT)
-                self.blob = test_api.Header(BLOB_PARAM_TABLE_BLOB_COUNT)
+                self._headerParam = test_api.Header(BLOB_PARAM_TABLE_HEADER_COUNT)
+                self._blob = test_api.Header(BLOB_PARAM_TABLE_BLOB_COUNT)
 
-            def getHeader(self, _row):
-                return self.header
+            def header_param(self, _row):
+                return self._headerParam
 
-            def getBlob(self, _row):
-                return self.blob
+            def blob(self, _row):
+                return self._blob
 
         cls.BlobParamTableParameterProvider = BlobParamTableParameterProvider
 
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.ExplicitParametersDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
+        self._database.create_schema()
 
     def tearDown(self):
         self._database.close()
@@ -36,10 +36,10 @@ class ExplicitBlobParamTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
         testTable = self._database.blob_param_table
-        testTable.deleteTable()
+        testTable.delete_table()
         self.assertFalse(self._isTableInDb())
 
-        testTable.createTable()
+        testTable.create_table()
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):

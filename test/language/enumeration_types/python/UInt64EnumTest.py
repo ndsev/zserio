@@ -19,20 +19,20 @@ class UInt64EnumTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         writer.write_bits(self.api.DarkColor.DARK_GREEN.value, DARK_COLOR_BITSIZEOF)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        color = self.api.DarkColor.fromReader(reader)
+        color = self.api.DarkColor.from_reader(reader)
         self.assertEqual(DARK_GREEN_VALUE, color.value)
 
     def testBitSizeOf(self):
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.bitSizeOf())
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_RED.bitSizeOf())
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_BLUE.bitSizeOf())
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_GREEN.bitSizeOf())
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.bitsizeof())
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_RED.bitsizeof())
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_BLUE.bitsizeof())
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_GREEN.bitsizeof())
 
     def testInitializeOffsets(self):
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.initializeOffsets(0))
-        self.assertEqual(DARK_COLOR_BITSIZEOF + 1, self.api.DarkColor.DARK_RED.initializeOffsets(1))
-        self.assertEqual(DARK_COLOR_BITSIZEOF + 2, self.api.DarkColor.DARK_BLUE.initializeOffsets(2))
-        self.assertEqual(DARK_COLOR_BITSIZEOF + 3, self.api.DarkColor.DARK_GREEN.initializeOffsets(3))
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.initialize_offsets(0))
+        self.assertEqual(DARK_COLOR_BITSIZEOF + 1, self.api.DarkColor.DARK_RED.initialize_offsets(1))
+        self.assertEqual(DARK_COLOR_BITSIZEOF + 2, self.api.DarkColor.DARK_BLUE.initialize_offsets(2))
+        self.assertEqual(DARK_COLOR_BITSIZEOF + 3, self.api.DarkColor.DARK_GREEN.initialize_offsets(3))
 
     def testWrite(self):
         writer = zserio.BitStreamWriter()

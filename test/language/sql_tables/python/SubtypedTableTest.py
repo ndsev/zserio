@@ -12,8 +12,8 @@ class SubtypedTableTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.TestDb.fromFile(self._fileName)
-        self._database.createSchema()
+        self._database = self.api.TestDb.from_file(self._fileName)
+        self._database.create_schema()
 
     def tearDown(self):
         self._database.close()

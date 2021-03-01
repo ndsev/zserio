@@ -10,7 +10,7 @@ class DummyObject:
         self._value = value
 
     @classmethod
-    def fromReader(cls, reader, parameter):
+    def from_reader(cls, reader, parameter):
         instance = cls(parameter)
         instance.read(reader)
 

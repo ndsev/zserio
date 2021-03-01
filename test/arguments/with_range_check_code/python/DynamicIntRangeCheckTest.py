@@ -31,7 +31,7 @@ class DynamicIntRangeCheckTest(unittest.TestCase):
             self._checkDynamicIntValue(65, zserio.limits.INT64_MAX)
 
     def _checkDynamicIntValue(self, numBits, value):
-        dynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound(numBits_=numBits, value_=value)
+        dynamicIntRangeCheckCompound = self.api.DynamicIntRangeCheckCompound(num_bits_=numBits, value_=value)
         bitBuffer = zserio.serialize(dynamicIntRangeCheckCompound)
         readDynamicIntRangeCheckCompound = zserio.deserialize(self.api.DynamicIntRangeCheckCompound, bitBuffer)
         self.assertEqual(dynamicIntRangeCheckCompound, readDynamicIntRangeCheckCompound)

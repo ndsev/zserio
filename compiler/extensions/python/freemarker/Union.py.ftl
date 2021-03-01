@@ -3,6 +3,9 @@
 <#include "CompoundField.inc.ftl"/>
 <@file_header generatorDescription/>
 <@all_imports packageImports symbolImports typeImports/>
+<#macro choice_tag_name field>
+    CHOICE_${field.snakeCaseName}<#t>
+</#macro>
 
 class ${name}:
 <#assign constructorAnnotatedParamList><@compound_constructor_annotated_parameters compoundParametersData, 3/></#assign>
@@ -21,23 +24,23 @@ class ${name}:
 </#if>
             <#lt>) -> None:
         <@compound_constructor_parameter_assignments compoundParametersData/>
-        self._choiceTag: int = self.UNDEFINED_CHOICE
+        self._choice_tag: int = self.UNDEFINED_CHOICE
         self._choice: typing.Any = None
 <#if fieldList?has_content>
     <#list fieldList as field>
         if <@field_argument_name field/> is not None:
         <#if !field?is_first>
-            if self._choiceTag != self.UNDEFINED_CHOICE:
+            if self._choice_tag != self.UNDEFINED_CHOICE:
                 raise zserio.PythonRuntimeException("Calling constructor of union ${name} is ambiguous!")
         </#if>
-            self._choiceTag = self.${getChoiceTagName(field.name)}
+            self._choice_tag = self.<@choice_tag_name field/>
             <@compound_setter_field field, withWriterCode, 3/>
      </#list>
 </#if>
 
 <#assign constructorParamList><@compound_constructor_parameters compoundParametersData/></#assign>
     @classmethod
-    def fromReader(
+    def from_reader(
             cls: typing.Type['${name}'],
             reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
@@ -53,7 +56,7 @@ class ${name}:
                     <#lt><@compound_compare_parameters compoundParametersData, 5/> and
 </#if>
                     <#if compoundParametersData.list?has_content>                    </#if><#t>
-                    <#lt>self._choiceTag == other._choiceTag and
+                    <#lt>self._choice_tag == other._choice_tag and
                     self._choice == other._choice)
 
         return False
@@ -61,7 +64,7 @@ class ${name}:
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
-        result = zserio.hashcode.calc_hashcode(result, hash(self._choiceTag))
+        result = zserio.hashcode.calc_hashcode(result, hash(self._choice_tag))
         result = zserio.hashcode.calc_hashcode(result, hash(self._choice))
 
         return result
@@ -81,7 +84,7 @@ class ${name}:
     @${field.propertyName}.setter
     def ${field.propertyName}(self, <#rt>
             <#lt><@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
-        self._choiceTag = self.${getChoiceTagName(field.name)}
+        self._choice_tag = self.<@choice_tag_name field/>
         <@compound_setter_field field, withWriterCode, 2/>
     </#if>
 </#list>
@@ -93,43 +96,43 @@ class ${name}:
 
     @property
     def choice_tag(self) -> int:
-        return self._choiceTag
+        return self._choice_tag
 
 <#macro union_if memberActionMacroName>
     <#list fieldList as field>
-        <#if field?is_first>if <#else>elif </#if>self._choiceTag == self.${getChoiceTagName(field.name)}:
+        <#if field?is_first>if <#else>elif </#if>self._choice_tag == self.<@choice_tag_name field/>:
             <@.vars[memberActionMacroName] field, 3/>
     </#list>
         else:
             raise zserio.PythonRuntimeException("No match in union ${name}!")
 </#macro>
-    def bitSizeOf(self, bitPosition: int = 0) -> int:
+    def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
-        endBitPosition = bitPosition
+        end_bitposition = bitposition
 
-        endBitPosition += zserio.bitsizeof.bitsizeof_varsize(self._choiceTag)
+        end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
 
         <@union_if "compound_bitsizeof_field"/>
 
-        return endBitPosition - bitPosition
+        return end_bitposition - bitposition
 <#else>
-        del bitPosition
+        del bitposition
 
         return 0
 </#if>
 <#if withWriterCode>
 
-    def initializeOffsets(self, bitPosition: int) -> int:
+    def initialize_offsets(self, bitposition: int) -> int:
     <#if fieldList?has_content>
-        endBitPosition = bitPosition
+        end_bitposition = bitposition
 
-        endBitPosition += zserio.bitsizeof.bitsizeof_varsize(self._choiceTag)
+        end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
 
         <@union_if "compound_initialize_offsets_field"/>
 
-        return endBitPosition
+        return end_bitposition
     <#else>
-        return bitPosition
+        return bitposition
     </#if>
 </#if>
 
@@ -138,7 +141,7 @@ class ${name}:
 </#macro>
     def read(self, reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-        self._choiceTag = reader.read_varsize()
+        self._choice_tag = reader.read_varsize()
 
         <@union_if "union_read_field"/>
 <#else>
@@ -149,21 +152,21 @@ class ${name}:
     <#macro union_write_field field indent>
         <@compound_write_field field, name, indent/>
     </#macro>
-    def write(self, writer: zserio.BitStreamWriter, *, callInitializeOffsets: bool = True) -> None:
+    def write(self, writer: zserio.BitStreamWriter, *, call_initialize_offsets: bool = True) -> None:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        if callInitializeOffsets:
-            self.initializeOffsets(writer.bitposition)
+        if call_initialize_offsets:
+            self.initialize_offsets(writer.bitposition)
         <#else>
-        del callInitializeOffsets
+        del call_initialize_offsets
         </#if>
 
-        writer.write_varsize(self._choiceTag)
+        writer.write_varsize(self._choice_tag)
 
         <@union_if "union_write_field"/>
     <#else>
         del writer
-        del callInitializeOffsets
+        del call_initialize_offsets
     </#if>
 </#if>
 <#list fieldList as field>
@@ -171,7 +174,7 @@ class ${name}:
 </#list>
 
 <#list fieldList as field>
-    ${getChoiceTagName(field.name)} = ${field?index}
+    <@choice_tag_name field/> = ${field?index}
 </#list>
-    <#-- Don't use CHOICE_UNDEFINED name because of clashing with generated tags from fields. -->
-    ${undefinedChoiceTagName} = -1
+    <#-- don't use CHOICE_undefined to prevent clashing with generated choice tags -->
+    UNDEFINED_CHOICE = -1

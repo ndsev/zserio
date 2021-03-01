@@ -44,50 +44,50 @@ class ${name}:
     class ${rowsClassName}:
         def __init__(self, <#rt>
                 <#lt>rows: typing.Iterator[<#if needsRowConversion>typing.Tuple<#else>'${name}.${rowAnnotationName}'</#if>]<#rt>
-                <#lt><#if needsParameterProvider>, parameterProvider: '${name}.IParameterProvider'</#if>) -> None:
+                <#lt><#if needsParameterProvider>, parameter_provider: '${name}.IParameterProvider'</#if>) -> None:
             self._rows = rows
 <#if needsParameterProvider>
-            self._parameterProvider = parameterProvider
+            self._parameter_provider = parameter_provider
 </#if>
 
         def __iter__(self) -> typing.Iterator['${name}.${rowAnnotationName}']:
             for row in self._rows:
-                yield <#if needsRowConversion>self._readRow(row)<#else>row</#if>
+                yield <#if needsRowConversion>self._read_row(row)<#else>row</#if>
 
 <#if needsRowConversion>
     <#if !needsParameterProvider>
         @staticmethod
     </#if>
-        def _readRow(<#if needsParameterProvider>self, </#if>row: typing.Tuple) -> '${name}.${rowAnnotationName}':
+        def _read_row(<#if needsParameterProvider>self, </#if>row: typing.Tuple) -> '${name}.${rowAnnotationName}':
     <#list fields as field>
-            ${field.name}_ = row[${field?index}]
+            ${field.snakeCaseName}_ = row[${field?index}]
         <#if field.sqlTypeData.isBlob>
-            if ${field.name}_ is not None:
-                reader = zserio.BitStreamReader(${field.name}_)
-                ${field.name}_ = ${field.pythonTypeName}.fromReader(reader<#rt>
+            if ${field.snakeCaseName}_ is not None:
+                reader = zserio.BitStreamReader(${field.snakeCaseName}_)
+                ${field.snakeCaseName}_ = ${field.pythonTypeName}.from_reader(reader<#rt>
             <#list field.parameters as parameter>
                 <#if parameter.isExplicit>
-                    , self._parameterProvider.<@parameter_provider_method_name parameter/>(row)<#t>
+                    , self._parameter_provider.<@parameter_provider_method_name parameter/>(row)<#t>
                 <#else>
                     , ${parameter.expression}<#t>
                 </#if>
             </#list>
                     <#lt>)
         <#elseif field.enumData??>
-            if ${field.name}_ is not None:
-                ${field.name}_ = ${field.enumData.pythonTypeName}(${field.name}_)
+            if ${field.snakeCaseName}_ is not None:
+                ${field.snakeCaseName}_ = ${field.enumData.pythonTypeName}(${field.snakeCaseName}_)
         <#elseif field.bitmaskData??>
-            if ${field.name}_ is not None:
-                ${field.name}_ = ${field.bitmaskData.pythonTypeName}.fromValue(${field.name}_)
+            if ${field.snakeCaseName}_ is not None:
+                ${field.snakeCaseName}_ = ${field.bitmaskData.pythonTypeName}.from_value(${field.snakeCaseName}_)
         </#if>
     </#list>
 
-            return (<#list fields as field>${field.name}_<#if field?index == 0 || field?has_next>, </#if></#list>)
+            return (<#list fields as field>${field.snakeCaseName}_<#if field?index == 0 || field?has_next>, </#if></#list>)
 
 </#if>
 <#if needsParameterProvider>
     <#macro parameter_provider_method_name parameter>
-        get${parameter.expression?cap_first}<#t>
+        ${parameter.expression}<#t>
     </#macro>
     class IParameterProvider:
     <#list explicitParameters as parameter>
@@ -96,96 +96,96 @@ class ${name}:
     </#list>
 
 </#if>
-    def __init__(self, connection: apsw.Connection, tableName: str, attachedDbName: str = None) -> None:
+    def __init__(self, connection: apsw.Connection, table_name: str, attached_db_name: str = None) -> None:
         self._connection: apsw.Connection = connection
-        self._tableName: str = tableName
-        self._attachedDbName: str = attachedDbName
+        self._table_name: str = table_name
+        self._attached_db_name: str = attached_db_name
 <#if withWriterCode>
 
-    def createTable(self) -> None:
-        sqlQuery = self._getCreateTableQuery()
+    def create_table(self) -> None:
+        sql_query = self._get_create_table_query()
     <#if hasNonVirtualField && isWithoutRowId>
-        sqlQuery += " WITHOUT ROWID"
+        sql_query += " WITHOUT ROWID"
     </#if>
         cursor = self._connection.cursor()
-        cursor.execute(sqlQuery)
+        cursor.execute(sql_query)
     <#if hasNonVirtualField && isWithoutRowId>
 
-    def createOrdinaryRowIdTable(self) -> None:
-        sqlQuery = self._getCreateTableQuery()
+    def create_ordinary_rowid_table(self) -> None:
+        sql_query = self._get_create_table_query()
         cursor = self._connection.cursor()
-        cursor.execute(sqlQuery)
+        cursor.execute(sql_query)
     </#if>
 
-    def deleteTable(self) -> None:
-        sqlQuery = "DROP TABLE "
-        sqlQuery += self._getTableNameInQuery()
+    def delete_table(self) -> None:
+        sql_query = "DROP TABLE "
+        sql_query += self._get_table_name_in_query()
         cursor = self._connection.cursor()
-        cursor.execute(sqlQuery)
+        cursor.execute(sql_query)
 </#if>
 
-    def read(self, <#if needsParameterProvider>parameterProvider: '${name}.IParameterProvider', </#if>condition: str = None) -> <#rt>
+    def read(self, <#if needsParameterProvider>parameter_provider: '${name}.IParameterProvider', </#if>condition: str = None) -> <#rt>
             <#lt>'${name}.${rowsClassName}':
-        sqlQuery = ("SELECT "
+        sql_query = ("SELECT "
 <#list fields as field>
                     "${field.name}<#if field?has_next>, </#if>"
 </#list>
                     " FROM ")
-        sqlQuery += self._getTableNameInQuery()
+        sql_query += self._get_table_name_in_query()
         if condition:
-            sqlQuery += " WHERE " + condition
+            sql_query += " WHERE " + condition
 
         cursor = self._connection.cursor()
-        readRows = cursor.execute(sqlQuery)
+        read_rows = cursor.execute(sql_query)
 
-        return ${name}.${rowsClassName}(readRows<#if needsParameterProvider>, parameterProvider</#if>)
+        return ${name}.${rowsClassName}(read_rows<#if needsParameterProvider>, parameter_provider</#if>)
 <#if withWriterCode>
 
     def write(self, rows: typing.Sequence['${name}.${rowAnnotationName}']) -> None:
-        sqlQuery = "INSERT INTO "
-        sqlQuery += self._getTableNameInQuery()
-        sqlQuery += ("("
+        sql_query = "INSERT INTO "
+        sql_query += self._get_table_name_in_query()
+        sql_query += ("("
     <#list fields as field>
                      "${field.name}<#if field?has_next>, </#if>"
     </#list>
                      ") VALUES (<#list fields as field>?<#if field?has_next>, </#if></#list>)")
 
         cursor = self._connection.cursor()
-        hasAutoCommit = self._connection.getautocommit()
-        if hasAutoCommit:
+        has_autocommit = self._connection.getautocommit()
+        if has_autocommit:
             cursor.execute("BEGIN")
 
         for row in rows:
-            cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
+            cursor.execute(sql_query, <#if needsRowConversion>self._write_row(row)<#else>row</#if>)
 
-        if hasAutoCommit:
+        if has_autocommit:
             cursor.execute("COMMIT")
 
     def update(self, row: '${name}.${rowAnnotationName}', whereCondition: str) -> None:
-        sqlQuery = "UPDATE "
-        sqlQuery += self._getTableNameInQuery()
-        sqlQuery += (" SET"
+        sql_query = "UPDATE "
+        sql_query += self._get_table_name_in_query()
+        sql_query += (" SET"
     <#list fields as field>
                      " ${field.name}=?<#if field?has_next>,</#if>"
     </#list>
                      " WHERE ") + whereCondition
 
         cursor = self._connection.cursor()
-        cursor.execute(sqlQuery, <#if needsRowConversion>self._writeRow(row)<#else>row</#if>)
+        cursor.execute(sql_query, <#if needsRowConversion>self._write_row(row)<#else>row</#if>)
 </#if>
 
-    def _getTableNameInQuery(self) -> str:
-        return (self._attachedDbName + "." + self._tableName) if self._attachedDbName else self._tableName
+    def _get_table_name_in_query(self) -> str:
+        return (self._attached_db_name + "." + self._table_name) if self._attached_db_name else self._table_name
 <#if withWriterCode>
 
-    def _getCreateTableQuery(self) -> str:
-        sqlQuery = "CREATE <#if virtualTableUsing??>VIRTUAL </#if>TABLE "
-        sqlQuery += self._getTableNameInQuery()
+    def _get_create_table_query(self) -> str:
+        sql_query = "CREATE <#if virtualTableUsing??>VIRTUAL </#if>TABLE "
+        sql_query += self._get_table_name_in_query()
     <#if virtualTableUsing??>
-        sqlQuery += " USING ${virtualTableUsing}"
+        sql_query += " USING ${virtualTableUsing}"
     </#if>
     <#if hasNonVirtualField || sqlConstraint??>
-        sqlQuery += ("(" +
+        sql_query += ("(" +
         <#list fields as field>
             <#if !field.isVirtual>
                      "${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>"<#rt>
@@ -201,28 +201,28 @@ class ${name}:
                      ")")
     </#if>
 
-        return sqlQuery
+        return sql_query
     <#if needsRowConversion>
 
     @staticmethod
-    def _writeRow(row: '${name}.${rowAnnotationName}') -> typing.List:
-        rowInList = list(row)
+    def _write_row(row: '${name}.${rowAnnotationName}') -> typing.List:
+        row_in_list = list(row)
 
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
-        ${field.name}_ = rowInList[${field?index}]
-        if isinstance(${field.name}_, ${field.pythonTypeName}):
+        ${field.snakeCaseName}_ = row_in_list[${field?index}]
+        if isinstance(${field.snakeCaseName}_, ${field.pythonTypeName}):
             writer = zserio.BitStreamWriter()
-            ${field.name}_.write(writer)
-            rowInList[${field?index}] = writer.byte_array
+            ${field.snakeCaseName}_.write(writer)
+            row_in_list[${field?index}] = writer.byte_array
 
             <#elseif field.enumData?? || field.bitmaskData??>
-        ${field.name}_ = rowInList[${field?index}]
-        if isinstance(${field.name}_, ${field.pythonTypeName}):
-            rowInList[${field?index}] = ${field.name}_.value
+        ${field.snakeCaseName}_ = row_in_list[${field?index}]
+        if isinstance(${field.snakeCaseName}_, ${field.pythonTypeName}):
+            row_in_list[${field?index}] = ${field.snakeCaseName}_.value
 
             </#if>
         </#list>
-        return rowInList
+        return row_in_list
     </#if>
 </#if>

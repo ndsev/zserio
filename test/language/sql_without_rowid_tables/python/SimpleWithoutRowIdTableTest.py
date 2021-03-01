@@ -14,23 +14,23 @@ class SimpleWithoutRowIdTableTest(unittest.TestCase):
     def setUp(self):
         if os.path.exists(self._fileName):
             os.remove(self._fileName)
-        self._database = self.api.SimpleWithoutRowIdDb.fromFile(self._fileName)
+        self._database = self.api.SimpleWithoutRowIdDb.from_file(self._fileName)
 
     def tearDown(self):
         self._database.close()
 
     def testRowIdColumn(self):
-        self._database.createSchema()
+        self._database.create_schema()
         self.assertFalse(self._isColumnInTable("rowid", self.TABLE_NAME))
 
     def testCreateOrdinaryRowIdTable(self):
         testTable = self._database.simple_without_row_id_table
-        testTable.createOrdinaryRowIdTable()
+        testTable.create_ordinary_rowid_table()
         self.assertTrue(self._isColumnInTable("rowid", self.TABLE_NAME))
 
     def testCheckWithoutRowIdTableNamesBlackList(self):
         withoutRowIdTableNamesBlackList = [self.TABLE_NAME]
-        self._database.createSchema(withoutRowIdTableNamesBlackList)
+        self._database.create_schema(withoutRowIdTableNamesBlackList)
         self.assertTrue(self._isColumnInTable("rowid", self.TABLE_NAME))
 
     def _isColumnInTable(self, columnName, tableName):

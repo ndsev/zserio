@@ -15,9 +15,9 @@ class EmptyStructureTest(unittest.TestCase):
     def testFromReader(self):
         param = 1
         reader = zserio.BitStreamReader([])
-        emptyStructureWithParameter = self.api.EmptyStructureWithParameter.fromReader(reader, param)
+        emptyStructureWithParameter = self.api.EmptyStructureWithParameter.from_reader(reader, param)
         self.assertEqual(param, emptyStructureWithParameter.param)
-        self.assertEqual(0, emptyStructureWithParameter.bitSizeOf())
+        self.assertEqual(0, emptyStructureWithParameter.bitsizeof())
 
     def testEq(self):
         emptyStructureWithParameter1 = self.api.EmptyStructureWithParameter(1)
@@ -40,12 +40,12 @@ class EmptyStructureTest(unittest.TestCase):
 
     def testBitSizeOf(self):
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(1)
-        self.assertEqual(0, emptyStructureWithParameter.bitSizeOf(1))
+        self.assertEqual(0, emptyStructureWithParameter.bitsizeof(1))
 
     def testInitializeOffsets(self):
         bitPosition = 1
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(1)
-        self.assertEqual(bitPosition, emptyStructureWithParameter.initializeOffsets(bitPosition))
+        self.assertEqual(bitPosition, emptyStructureWithParameter.initialize_offsets(bitPosition))
 
     def testRead(self):
         param = 1
@@ -53,7 +53,7 @@ class EmptyStructureTest(unittest.TestCase):
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(param)
         emptyStructureWithParameter.read(reader)
         self.assertEqual(param, emptyStructureWithParameter.param)
-        self.assertEqual(0, emptyStructureWithParameter.bitSizeOf())
+        self.assertEqual(0, emptyStructureWithParameter.bitsizeof())
 
     def testWrite(self):
         param = 1
@@ -63,5 +63,5 @@ class EmptyStructureTest(unittest.TestCase):
         byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readEmptyStructureWithParameter = self.api.EmptyStructureWithParameter.fromReader(reader, param)
+        readEmptyStructureWithParameter = self.api.EmptyStructureWithParameter.from_reader(reader, param)
         self.assertEqual(emptyStructureWithParameter, readEmptyStructureWithParameter)

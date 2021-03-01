@@ -19,7 +19,7 @@ class SimpleDbTest(unittest.TestCase):
         connection = apsw.Connection(self._fileName, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE)
 
         database = self.api.WorldDb(connection)
-        database.createSchema()
+        database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
         database.close()
@@ -29,50 +29,50 @@ class SimpleDbTest(unittest.TestCase):
         connection = apsw.Connection(self._fileName, apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE)
 
         database = self.api.WorldDb(connection, [])
-        database.createSchema()
+        database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
         database.close()
         connection.close()
 
     def testFromFile(self):
-        database = self.api.WorldDb.fromFile(self._fileName)
-        database.createSchema()
+        database = self.api.WorldDb.from_file(self._fileName)
+        database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
         database.close()
 
     def testFromFileTableRelocationMap(self):
-        database = self.api.WorldDb.fromFile(self._fileName, [])
-        database.createSchema()
+        database = self.api.WorldDb.from_file(self._fileName, [])
+        database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
         database.close()
 
     def testClose(self):
-        database = self.api.WorldDb.fromFile(self._fileName)
+        database = self.api.WorldDb.from_file(self._fileName)
         database.close()
         self.assertEqual(None, database.connection)
 
     def testTableGetters(self):
-        database = self.api.WorldDb.fromFile(self._fileName)
-        database.createSchema()
+        database = self.api.WorldDb.from_file(self._fileName)
+        database.create_schema()
 
         self.assertTrue(self._isTableInDb(database, self.EUROPE_TABLE_NAME))
         europeTable = database.europe
-        europeTable.deleteTable()
+        europeTable.delete_table()
         self.assertFalse(self._isTableInDb(database, self.EUROPE_TABLE_NAME))
 
         self.assertTrue(self._isTableInDb(database, self.AMERICA_TABLE_NAME))
         americaTable = database.america
-        americaTable.deleteTable()
+        americaTable.delete_table()
         self.assertFalse(self._isTableInDb(database, self.AMERICA_TABLE_NAME))
 
         database.close()
 
     def testConnection(self):
-        database = self.api.WorldDb.fromFile(self._fileName)
-        database.createSchema()
+        database = self.api.WorldDb.from_file(self._fileName)
+        database.create_schema()
 
         connection = database.connection
         cursor = connection.cursor()
@@ -84,8 +84,8 @@ class SimpleDbTest(unittest.TestCase):
         database.close()
 
     def testExecuteQuery(self):
-        database = self.api.WorldDb.fromFile(self._fileName)
-        database.createSchema()
+        database = self.api.WorldDb.from_file(self._fileName)
+        database.create_schema()
 
         for tableName in self._tableNames:
             sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + tableName + "'"
@@ -95,23 +95,23 @@ class SimpleDbTest(unittest.TestCase):
         database.close()
 
     def testCreateSchema(self):
-        database = self.api.WorldDb.fromFile(self._fileName)
+        database = self.api.WorldDb.from_file(self._fileName)
         for tableName in self._tableNames:
             self.assertFalse(self._isTableInDb(database, tableName))
 
-        database.createSchema()
+        database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
 
         database.close()
 
     def testDeleteSchema(self):
-        database = self.api.WorldDb.fromFile(self._fileName)
-        database.createSchema()
+        database = self.api.WorldDb.from_file(self._fileName)
+        database.create_schema()
         for tableName in self._tableNames:
             self.assertTrue(self._isTableInDb(database, tableName))
 
-        database.deleteSchema()
+        database.delete_schema()
         for tableName in self._tableNames:
             self.assertFalse(self._isTableInDb(database, tableName))
 
@@ -121,8 +121,8 @@ class SimpleDbTest(unittest.TestCase):
         self.assertEqual(self.WORLD_DB_NAME, self.api.WorldDb.DATABASE_NAME)
 
     def testGetTableNames(self):
-        self.assertEqual(self.EUROPE_TABLE_NAME, self.api.WorldDb.TABLE_NAME_europe)
-        self.assertEqual(self.AMERICA_TABLE_NAME, self.api.WorldDb.TABLE_NAME_america)
+        self.assertEqual(self.EUROPE_TABLE_NAME, self.api.WorldDb.TABLE_NAME_EUROPE)
+        self.assertEqual(self.AMERICA_TABLE_NAME, self.api.WorldDb.TABLE_NAME_AMERICA)
 
     @staticmethod
     def _isTableInDb(database, tableName):

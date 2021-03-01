@@ -24,7 +24,7 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         UInt16ParamChoiceTest._writeUInt16ParamChoiceToStream(writer, selector, value)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        uint16ParamChoice = self.api.UInt16ParamChoice.fromReader(reader, selector)
+        uint16ParamChoice = self.api.UInt16ParamChoice.from_reader(reader, selector)
         self.assertEqual(selector, uint16ParamChoice.selector)
         self.assertEqual(value, uint16ParamChoice.b)
 
@@ -87,34 +87,34 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         uint16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99
         uint16ParamChoiceA.a = byteValueA
-        self.assertEqual(8, uint16ParamChoiceA.bitSizeOf())
+        self.assertEqual(8, uint16ParamChoiceA.bitsizeof())
 
         uint16ParamChoiceB = self.api.UInt16ParamChoice(self.VARIANT_B_SELECTOR2)
         shortValueB = 234
         uint16ParamChoiceB.b = shortValueB
-        self.assertEqual(16, uint16ParamChoiceB.bitSizeOf())
+        self.assertEqual(16, uint16ParamChoiceB.bitsizeof())
 
         uint16ParamChoiceEmpty = self.api.UInt16ParamChoice(self.EMPTY_SELECTOR1)
-        self.assertEqual(0, uint16ParamChoiceEmpty.bitSizeOf())
+        self.assertEqual(0, uint16ParamChoiceEmpty.bitsizeof())
 
         uint16ParamChoiceC = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
         intValueC = 65535
         uint16ParamChoiceC.c = intValueC
-        self.assertEqual(32, uint16ParamChoiceC.bitSizeOf())
+        self.assertEqual(32, uint16ParamChoiceC.bitsizeof())
 
     def testInitializeOffsets(self):
         bitPosition = 1
         uint16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
-        self.assertEqual(9, uint16ParamChoiceA.initializeOffsets(bitPosition))
+        self.assertEqual(9, uint16ParamChoiceA.initialize_offsets(bitPosition))
 
         uint16ParamChoiceB = self.api.UInt16ParamChoice(self.VARIANT_B_SELECTOR2)
-        self.assertEqual(17, uint16ParamChoiceB.initializeOffsets(bitPosition))
+        self.assertEqual(17, uint16ParamChoiceB.initialize_offsets(bitPosition))
 
         uint16ParamChoiceEmpty = self.api.UInt16ParamChoice(self.EMPTY_SELECTOR1)
-        self.assertEqual(1, uint16ParamChoiceEmpty.initializeOffsets(bitPosition))
+        self.assertEqual(1, uint16ParamChoiceEmpty.initialize_offsets(bitPosition))
 
         uint16ParamChoiceC = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
-        self.assertEqual(33, uint16ParamChoiceC.initializeOffsets(bitPosition))
+        self.assertEqual(33, uint16ParamChoiceC.initialize_offsets(bitPosition))
 
     def testReadWrite(self):
         uint16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)

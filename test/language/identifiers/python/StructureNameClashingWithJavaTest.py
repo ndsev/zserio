@@ -30,6 +30,6 @@ class StructureNameClashingWithJavaTest(unittest.TestCase):
             self.api.Double(0.0),
             self.api.String(""),
         )
-        self.assertEqual(self.BIT_SIZE, structureNameClashingWithJava.bitSizeOf())
+        self.assertEqual(self.BIT_SIZE, structureNameClashingWithJava.bitsizeof())
 
     BIT_SIZE = 8 * 1 + 8 + 16 + 32 + 64 + 64 + 32 + 64 + 8

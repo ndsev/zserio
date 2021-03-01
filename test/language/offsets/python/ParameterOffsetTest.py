@@ -11,26 +11,26 @@ class ParameterOffsetTest(unittest.TestCase):
     def testBitSizeOf(self):
         createWrongOffset = False
         school = self._createSchool(createWrongOffset)
-        self.assertEqual(self.SCHOOL_BIT_SIZE, school.bitSizeOf())
+        self.assertEqual(self.SCHOOL_BIT_SIZE, school.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffset = False
         school = self._createSchool(createWrongOffset)
         bitPosition = 2
-        self.assertEqual(self.SCHOOL_BIT_SIZE + 8 - bitPosition, school.bitSizeOf(bitPosition))
+        self.assertEqual(self.SCHOOL_BIT_SIZE + 8 - bitPosition, school.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffset = True
         school = self._createSchool(createWrongOffset)
         bitPosition = 0
-        self.assertEqual(self.SCHOOL_BIT_SIZE, school.initializeOffsets(bitPosition))
+        self.assertEqual(self.SCHOOL_BIT_SIZE, school.initialize_offsets(bitPosition))
         self._checkSchool(school)
 
     def testInitializeOffsetsWithPosition(self):
         createWrongOffset = True
         school = self._createSchool(createWrongOffset)
         bitPosition = 2
-        self.assertEqual(self.SCHOOL_BIT_SIZE + 8, school.initializeOffsets(bitPosition))
+        self.assertEqual(self.SCHOOL_BIT_SIZE + 8, school.initialize_offsets(bitPosition))
         self._checkSchool(school, bitPosition)
 
     def testRead(self):
@@ -38,7 +38,7 @@ class ParameterOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeSchoolToStream(writer, writeWrongOffset)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        school = self.api.School.fromReader(reader)
+        school = self.api.School.from_reader(reader)
         self._checkSchool(school)
 
     def testReadWrongOffsets(self):
@@ -47,7 +47,7 @@ class ParameterOffsetTest(unittest.TestCase):
         self._writeSchoolToStream(writer, writeWrongOffset)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
-            self.api.School.fromReader(reader)
+            self.api.School.from_reader(reader)
 
     def testWrite(self):
         createWrongOffset = True
@@ -56,7 +56,7 @@ class ParameterOffsetTest(unittest.TestCase):
         school.write(writer)
         self._checkSchool(school)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readSchool = self.api.School.fromReader(reader)
+        readSchool = self.api.School.from_reader(reader)
         self._checkSchool(readSchool)
         self.assertTrue(school == readSchool)
 
@@ -74,7 +74,7 @@ class ParameterOffsetTest(unittest.TestCase):
         school = self._createSchool(createWrongOffset)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            school.write(writer, callInitializeOffsets=False)
+            school.write(writer, call_initialize_offsets=False)
 
     def _writeSchoolToStream(self, writer, writeWrongOffset):
         writer.write_bits(self.SCHOOL_ID, 16)

@@ -11,21 +11,21 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
     def testBitSizeOf(self):
         createWrongOffsets = False
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
-        self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE, compoundIndexedOffsetArray.bitSizeOf())
+        self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE, compoundIndexedOffsetArray.bitsizeof())
 
     def testBitSizeOfWithPosition(self):
         createWrongOffsets = False
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         bitPosition = 1
         self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE - bitPosition,
-                         compoundIndexedOffsetArray.bitSizeOf(bitPosition))
+                         compoundIndexedOffsetArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         createWrongOffsets = True
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         bitPosition = 0
         self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE,
-                         compoundIndexedOffsetArray.initializeOffsets(bitPosition))
+                         compoundIndexedOffsetArray.initialize_offsets(bitPosition))
         self._checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray)
 
     def testInitializeOffsetsWithPosition(self):
@@ -33,7 +33,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         bitPosition = 9
         self.assertEqual(COMPOUND_INDEXED_OFFSET_ARRAY_BIT_SIZE + bitPosition - 1,
-                         compoundIndexedOffsetArray.initializeOffsets(bitPosition))
+                         compoundIndexedOffsetArray.initialize_offsets(bitPosition))
 
         offsetShift = 1
         self._checkOffsets(compoundIndexedOffsetArray, offsetShift)
@@ -63,7 +63,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         compoundIndexedOffsetArray.write(writer)
         self._checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readCompoundIndexedOffsetArray = self.api.CompoundIndexedOffsetArray.fromReader(reader)
+        readCompoundIndexedOffsetArray = self.api.CompoundIndexedOffsetArray.from_reader(reader)
         self._checkCompoundIndexedOffsetArray(readCompoundIndexedOffsetArray)
         self.assertTrue(compoundIndexedOffsetArray == readCompoundIndexedOffsetArray)
 
@@ -83,7 +83,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            compoundIndexedOffsetArray.write(writer, callInitializeOffsets=False)
+            compoundIndexedOffsetArray.write(writer, call_initialize_offsets=False)
 
     @staticmethod
     def _writeCompoundIndexedOffsetArrayToStream(writer, writeWrongOffsets):
