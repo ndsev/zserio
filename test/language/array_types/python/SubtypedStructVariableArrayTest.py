@@ -30,7 +30,7 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
         numElements = 59
         writer = zserio.BitStreamWriter()
         SubtypedStructVariableArrayTest._writeSubtypedStructVariableArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         subtypedStructVariableArray = self.api.SubtypedStructVariableArray.fromReader(reader)
 
         self.assertEqual(numElements, subtypedStructVariableArray.num_elements)
@@ -65,7 +65,7 @@ class SubtypedStructVariableArrayTest(unittest.TestCase):
 
     @staticmethod
     def _writeSubtypedStructVariableArrayToStream(writer, numElements):
-        writer.writeSignedBits(numElements, 8)
+        writer.write_signed_bits(numElements, 8)
         for i in range(numElements):
-            writer.writeBits(i, 32)
-            writer.writeString("Name" + str(i))
+            writer.write_bits(i, 32)
+            writer.write_string("Name" + str(i))

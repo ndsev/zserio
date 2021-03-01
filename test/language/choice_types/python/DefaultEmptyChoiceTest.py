@@ -13,7 +13,7 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         value = 234
         writer = zserio.BitStreamWriter()
         DefaultEmptyChoiceTest._writeDefaultEmptyChoiceToStream(writer, tag, value)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         defaultEmptyChoice = self.api.DefaultEmptyChoice.fromReader(reader, tag)
         self.assertEqual(tag, defaultEmptyChoice.tag)
         self.assertEqual(value, defaultEmptyChoice.b)
@@ -25,7 +25,7 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         defaultEmptyChoiceA.write(writer)
         readDefaultEmptyChoiceA = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readDefaultEmptyChoiceA.read(reader)
         self.assertEqual(byteValueA, readDefaultEmptyChoiceA.a)
         self.assertEqual(defaultEmptyChoiceA, readDefaultEmptyChoiceA)
@@ -35,7 +35,7 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         defaultEmptyChoiceB.write(writer)
         readDefaultEmptyChoiceB = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readDefaultEmptyChoiceB.read(reader)
         self.assertEqual(shortValueB, readDefaultEmptyChoiceB.b)
         self.assertEqual(defaultEmptyChoiceB, readDefaultEmptyChoiceB)
@@ -44,16 +44,16 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         defaultEmptyChoiceDefault.write(writer)
         readDefaultEmptyChoiceDefault = self.api.DefaultEmptyChoice(self.DEFAULT_SELECTOR)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readDefaultEmptyChoiceDefault.read(reader)
         self.assertEqual(defaultEmptyChoiceDefault, readDefaultEmptyChoiceDefault)
 
     @staticmethod
     def _writeDefaultEmptyChoiceToStream(writer, tag, value):
         if tag == 1:
-            writer.writeSignedBits(value, 8)
+            writer.write_signed_bits(value, 8)
         elif tag == 2:
-            writer.writeSignedBits(value, 16)
+            writer.write_signed_bits(value, 16)
         else:
             pass
 

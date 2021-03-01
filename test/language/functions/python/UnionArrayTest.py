@@ -27,19 +27,19 @@ class UnionArrayTest(unittest.TestCase):
         self._checkInner(self.NUM_ITEM_ELEMENTS)
 
     def _writeInnerToStream(self, writer, pos):
-        writer.writeBits(self.NUM_ITEM_ELEMENTS, 16)
+        writer.write_bits(self.NUM_ITEM_ELEMENTS, 16)
 
         for item in self.ITEMS:
-            writer.writeBits(item.a, 8)
-            writer.writeBits(item.b, 8)
+            writer.write_bits(item.a, 8)
+            writer.write_bits(item.b, 8)
 
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
-        writer.writeVarSize(0 if isExplicit != 0 else 1)
+        writer.write_varsize(0 if isExplicit != 0 else 1)
         if isExplicit != 0:
-            writer.writeBits(self.EXPLICIT_ITEM.a, 8)
-            writer.writeBits(self.EXPLICIT_ITEM.b, 8)
+            writer.write_bits(self.EXPLICIT_ITEM.a, 8)
+            writer.write_bits(self.EXPLICIT_ITEM.b, 8)
         else:
-            writer.writeBits(pos, 16)
+            writer.write_bits(pos, 16)
 
     def _createInner(self, pos):
         outerArray = self.api.OuterArray()
@@ -67,10 +67,10 @@ class UnionArrayTest(unittest.TestCase):
         inner.write(writer)
         expectedWriter = zserio.BitStreamWriter()
         self._writeInnerToStream(expectedWriter, pos)
-        self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
-        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
+        self.assertTrue(expectedWriter.byte_array == writer.byte_array)
+        self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readInner = self.api.Inner.fromReader(reader)
 
         self.assertEqual(inner, readInner)

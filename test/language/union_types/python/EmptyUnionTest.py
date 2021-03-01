@@ -51,8 +51,8 @@ class EmptyUnionTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         emptyUnion = self.api.EmptyUnion()
         emptyUnion.write(writer)
-        byteArray = writer.getByteArray()
+        byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEmptyUnion = self.api.EmptyUnion.fromReader(reader)
         self.assertEqual(emptyUnion, readEmptyUnion)

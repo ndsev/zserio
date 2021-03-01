@@ -12,10 +12,10 @@ class ArrayElementParamTest(unittest.TestCase):
         database = self._createDatabase()
         writer = zserio.BitStreamWriter()
         database.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkDatabaseInStream(reader, database)
 
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readDatabase = self.api.Database.fromReader(reader)
         self.assertEqual(database, readDatabase)
 
@@ -36,14 +36,14 @@ class ArrayElementParamTest(unittest.TestCase):
 
     def _checkDatabaseInStream(self, reader, database):
         numBlocks = database.num_blocks
-        self.assertEqual(numBlocks, reader.readBits(16))
+        self.assertEqual(numBlocks, reader.read_bits(16))
 
         headers = database.headers
         expectedOffset = self.FIRST_BYTE_OFFSET
         for i in range(numBlocks):
-            numItems = reader.readBits(16)
+            numItems = reader.read_bits(16)
             self.assertEqual(headers[i].num_items, numItems)
-            self.assertEqual(expectedOffset, reader.readBits(32))
+            self.assertEqual(expectedOffset, reader.read_bits(32))
             expectedOffset += 8 * numItems
 
         blocks = database.blocks
@@ -51,7 +51,7 @@ class ArrayElementParamTest(unittest.TestCase):
             numItems = headers[i].num_items
             items = blocks[i].items
             for j in range(numItems):
-                self.assertEqual(items[j], reader.readSignedBits(64))
+                self.assertEqual(items[j], reader.read_signed_bits(64))
 
     NUM_BLOCKS = 3
     FIRST_BYTE_OFFSET = 2 + NUM_BLOCKS * (2 + 4)

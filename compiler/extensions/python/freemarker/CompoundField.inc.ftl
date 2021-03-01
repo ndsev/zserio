@@ -14,15 +14,15 @@ self.<@field_member_name field/> == other.<@field_member_name field/><#if field.
 
 <#macro compound_hashcode_field_inner field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}result = zserio.hashcode.calcHashCode(result, hash(self.<@field_member_name field/>))
+${I}result = zserio.hashcode.calc_hashcode(result, hash(self.<@field_member_name field/>))
 </#macro>
 
 <#macro compound_getter_field field>
     <#if field.array??>
         <#if field.optional??>
-        return None if self.<@field_member_name field/> is None else self.<@field_member_name field/>.getRawArray()
+        return None if self.<@field_member_name field/> is None else self.<@field_member_name field/>.raw_array
         <#else>
-        return self.<@field_member_name field/>.getRawArray()
+        return self.<@field_member_name field/>.raw_array
         </#if>
     <#else>
         return self.<@field_member_name field/>
@@ -65,7 +65,9 @@ ${I}if self.${field.optional.indicatorName}():
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+${I}endBitPosition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+    <#elseif field.array??><#-- TODO[mikir] should be removed after renaming -->
+${I}endBitPosition += self.<@field_member_name field/>.bitsizeof(endBitPosition)
     <#else>
 ${I}endBitPosition += self.<@field_member_name field/>.bitSizeOf(endBitPosition)
     </#if>
@@ -74,15 +76,15 @@ ${I}endBitPosition += self.<@field_member_name field/>.bitSizeOf(endBitPosition)
 <#macro compound_align_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
-${I}endBitPosition = zserio.bitposition.alignTo(${field.alignmentValue}, endBitPosition)
+${I}endBitPosition = zserio.bitposition.alignto(${field.alignmentValue}, endBitPosition)
     </#if>
     <#if field.offset??>
         <#if field.offset.containsIndex>
             <#-- align to bytes only if the array is non-empty to match read/write behavior -->
 ${I}if self.<@field_member_name field/>:
-${I}    endBitPosition = zserio.bitposition.alignTo(8, endBitPosition)
+${I}    endBitPosition = zserio.bitposition.alignto(8, endBitPosition)
         <#else>
-${I}endBitPosition = zserio.bitposition.alignTo(8, endBitPosition)
+${I}endBitPosition = zserio.bitposition.alignto(8, endBitPosition)
         </#if>
     </#if>
 </#macro>
@@ -106,13 +108,15 @@ ${I}if self.${field.optional.indicatorName}():
     <@compound_align_field field, indent/>
     <#if field.offset?? && !field.offset.containsIndex>
 ${I}# initialize offset
-${I}value = zserio.bitposition.bitsToBytes(endBitPosition)
+${I}value = zserio.bitposition.bits_to_bytes(endBitPosition)
 ${I}${field.offset.setter}
     </#if>
     <#if field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value}
     <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.bitsizeof.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+${I}endBitPosition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+    <#elseif field.array??><#-- TODO[mikir] should be removed after renaming -->
+${I}endBitPosition = self.<@field_member_name field/>.initialize_offsets(endBitPosition)
     <#else>
 ${I}endBitPosition = self.<@field_member_name field/>.initializeOffsets(endBitPosition)
     </#if>
@@ -124,7 +128,7 @@ ${I}endBitPosition = self.<@field_member_name field/>.initializeOffsets(endBitPo
         <#if field.optional.clause??>
 ${I}if self.${field.optional.indicatorName}():
         <#else>
-${I}if reader.readBool():
+${I}if reader.read_bool():
         </#if>
 <@compound_read_field_inner field, compoundName, withWriterCode, indent + 1/>
     <#else>
@@ -135,16 +139,16 @@ ${I}if reader.readBool():
 <#macro compound_read_field_inner field compoundName withWriterCode indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
-${I}reader.alignTo(${field.alignmentValue})
+${I}reader.alignto(${field.alignmentValue})
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
-${I}reader.alignTo(8)
-        <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
+${I}reader.alignto(8)
+        <@compound_check_offset_field field, compoundName, "reader.bitposition", indent/>
     </#if>
     <#if field.array??>
-${I}self.<@field_member_name field/> = zserio.array.Array.fromReader(<@array_field_from_reader_parameters field, withWriterCode/>)
+${I}self.<@field_member_name field/> = zserio.array.Array.from_reader(<@array_field_from_reader_parameters field, withWriterCode/>)
     <#elseif field.runtimeFunction??>
-${I}self.<@field_member_name field/> = reader.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
+${I}self.<@field_member_name field/> = reader.read_${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
     <#else>
         <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
 ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader<#rt>
@@ -165,12 +169,12 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader
 </#macro>
 
 <#macro array_field_keyword_parameters field withWriterCode>
-    <#if field.array.isImplicit>, isImplicit=True<#t>
-    <#elseif !field.array.length??>, isAuto=True<#t>
+    <#if field.array.isImplicit>, is_implicit=True<#t>
+    <#elseif !field.array.length??>, is_auto=True<#t>
     </#if>
     <#if field.offset?? && field.offset.containsIndex>
-        <#if withWriterCode>, setOffsetMethod=self.<@offset_setter_name field/></#if><#t>
-        , checkOffsetMethod=self.<@offset_checker_name field/><#t>
+        <#if withWriterCode>, set_offset_method=self.<@offset_setter_name field/></#if><#t>
+        , check_offset_method=self.<@offset_checker_name field/><#t>
     </#if>
 </#macro>
 
@@ -198,12 +202,12 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.fromReader(reader
     <#if field.optional??>
 ${I}if self.${field.optional.indicatorName}():
         <#if !field.optional.clause??>
-${I}    writer.writeBool(True)
+${I}    writer.write_bool(True)
         </#if>
 <@compound_write_field_inner field, compoundName, indent + 1/>
         <#if !field.optional.clause??>
 ${I}else:
-${I}    writer.writeBool(False)
+${I}    writer.write_bool(False)
         </#if>
     <#else>
 <@compound_write_field_inner field, compoundName, indent/>
@@ -213,17 +217,17 @@ ${I}    writer.writeBool(False)
 <#macro compound_write_field_inner field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
-${I}writer.alignTo(${field.alignmentValue})
+${I}writer.alignto(${field.alignmentValue})
     </#if>
     <#if field.offset?? && !field.offset.containsIndex>
-${I}writer.alignTo(8)
-        <@compound_check_offset_field field, compoundName, "writer.getBitPosition()", indent/>
+${I}writer.alignto(8)
+        <@compound_check_offset_field field, compoundName, "writer.bitposition", indent/>
     </#if>
     <@compound_check_constraint_field field, compoundName, indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     <#if field.runtimeFunction??>
-${I}writer.write${field.runtimeFunction.suffix}(self.<@field_member_name field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
+${I}writer.write_${field.runtimeFunction.suffix}(self.<@field_member_name field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
     <#else>
 ${I}self.<@field_member_name field/>.write(writer<#if field.compound??>, callInitializeOffsets=False</#if>)
     </#if>
@@ -233,9 +237,9 @@ ${I}self.<@field_member_name field/>.write(writer<#if field.compound??>, callIni
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.offset??>
 ${I}# check offset
-${I}if ${bitPositionName} != zserio.bitposition.bytesToBits(${field.offset.getter}):
+${I}if ${bitPositionName} != zserio.bitposition.bytes_to_bits(${field.offset.getter}):
 ${I}    raise zserio.PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                        (${bitPositionName}, zserio.bitposition.bytesToBits(${field.offset.getter})))
+${I}                                        (${bitPositionName}, zserio.bitposition.bytes_to_bits(${field.offset.getter})))
     </#if>
 </#macro>
 
@@ -265,8 +269,8 @@ ${I}                                        (len(self.<@field_member_name field/
 ${I}# check range
         <#if rangeCheck.bitFieldWithExpression??>
 ${I}length = ${rangeCheck.bitFieldWithExpression.lengthExpression}
-${I}lowerBound = zserio.bitfield.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldLowerBound(length)
-${I}upperBound = zserio.bitfield.get<#if rangeCheck.bitFieldWithExpression.isSigned>Signed</#if>BitFieldUpperBound(length)
+${I}lowerBound = zserio.bitfield.<#if rangeCheck.bitFieldWithExpression.isSigned>signed_</#if>bitfield_lowerbound(length)
+${I}upperBound = zserio.bitfield.<#if rangeCheck.bitFieldWithExpression.isSigned>signed_</#if>bitfield_upperbound(length)
         <#else>
 ${I}lowerBound = ${rangeCheck.lowerBound}
 ${I}upperBound = ${rangeCheck.upperBound}
@@ -340,7 +344,7 @@ ${I}                                        (self.<@field_member_name field/>, l
     <#if field.array?? && field.offset?? && field.offset.containsIndex>
 
     def <@offset_setter_name field/>(self, index: int, bitOffset: int) -> None:
-        value = zserio.bitposition.bitsToBytes(bitOffset)
+        value = zserio.bitposition.bits_to_bytes(bitOffset)
         ${field.offset.setter}
     </#if>
 </#macro>
@@ -385,7 +389,7 @@ ${I}                                        (self.<@field_member_name field/>, l
 <#function has_field_any_read_check_code field compoundName indent>
     <#local checkCode>
         <#if field.offset?? && !field.offset.containsIndex>
-            <@compound_check_offset_field field, compoundName, "reader.getBitPosition()", indent/>
+            <@compound_check_offset_field field, compoundName, "reader.bitposition", indent/>
         </#if>
         <@compound_check_constraint_field field, compoundName, indent/>
     </#local>
@@ -399,7 +403,7 @@ ${I}                                        (self.<@field_member_name field/>, l
 <#function has_field_any_write_check_code field compoundName indent>
     <#local checkCode>
         <#if field.offset?? && !field.offset.containsIndex>
-            <@compound_check_offset_field field, compoundName, "writer.getBitPosition()", indent/>
+            <@compound_check_offset_field field, compoundName, "writer.bitposition", indent/>
         </#if>
         <@compound_check_constraint_field field, compoundName, indent/>
         <@compound_check_array_length_field field, compoundName, indent/>

@@ -11,7 +11,7 @@ class GifTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "gif.zs")
 
     def testOnePixGif(self):
-        reader = zserio.BitStreamReader.fromFile(self.ONE_PIX_GIF_FILE_NAME)
+        reader = zserio.BitStreamReader.from_file(self.ONE_PIX_GIF_FILE_NAME)
         gifFile = self.api.GifFile.fromReader(reader)
 
         signatureFormat = gifFile.signature.format

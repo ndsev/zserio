@@ -37,7 +37,7 @@ class ParameterOffsetTest(unittest.TestCase):
         writeWrongOffset = False
         writer = zserio.BitStreamWriter()
         self._writeSchoolToStream(writer, writeWrongOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         school = self.api.School.fromReader(reader)
         self._checkSchool(school)
 
@@ -45,7 +45,7 @@ class ParameterOffsetTest(unittest.TestCase):
         writeWrongOffset = True
         writer = zserio.BitStreamWriter()
         self._writeSchoolToStream(writer, writeWrongOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
             self.api.School.fromReader(reader)
 
@@ -55,7 +55,7 @@ class ParameterOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         school.write(writer)
         self._checkSchool(school)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readSchool = self.api.School.fromReader(reader)
         self._checkSchool(readSchool)
         self.assertTrue(school == readSchool)
@@ -65,7 +65,7 @@ class ParameterOffsetTest(unittest.TestCase):
         school = self._createSchool(createWrongOffset)
         writer = zserio.BitStreamWriter()
         bitPosition = 2
-        writer.writeBits(0, bitPosition)
+        writer.write_bits(0, bitPosition)
         school.write(writer)
         self._checkSchool(school, bitPosition)
 
@@ -77,9 +77,9 @@ class ParameterOffsetTest(unittest.TestCase):
             school.write(writer, callInitializeOffsets=False)
 
     def _writeSchoolToStream(self, writer, writeWrongOffset):
-        writer.writeBits(self.SCHOOL_ID, 16)
-        writer.writeBits(self.WRONG_ROOM_OFFSET if writeWrongOffset else self.ROOM_OFFSET, 32)
-        writer.writeBits(self.ROOM_ID, 16)
+        writer.write_bits(self.SCHOOL_ID, 16)
+        writer.write_bits(self.WRONG_ROOM_OFFSET if writeWrongOffset else self.ROOM_OFFSET, 32)
+        writer.write_bits(self.ROOM_ID, 16)
 
     def _checkSchool(self, school, bitPosition=0):
         self.assertEqual(self.SCHOOL_ID, school.school_id)

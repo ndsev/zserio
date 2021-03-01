@@ -106,9 +106,9 @@ class OptionalExpressionTest(unittest.TestCase):
         container.basic_color = self.api.BasicColor.WHITE
         writer = zserio.BitStreamWriter()
         container.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkContainerInStream(reader, self.api.BasicColor.WHITE, self.NUM_BLACK_TONES)
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.api.BasicColor.WHITE, readContainer.basic_color)
         self.assertFalse(readContainer.isNumBlackTonesUsed())
@@ -120,9 +120,9 @@ class OptionalExpressionTest(unittest.TestCase):
         container.black_color = blackColor
         writer = zserio.BitStreamWriter()
         container.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkContainerInStream(reader, self.api.BasicColor.BLACK, self.NUM_BLACK_TONES)
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.api.BasicColor.BLACK, readContainer.basic_color)
         self.assertEqual(self.NUM_BLACK_TONES, readContainer.num_black_tones)
@@ -134,11 +134,11 @@ class OptionalExpressionTest(unittest.TestCase):
         return self.api.BlackColor(numBlackTones, [i + 1 for i in range(numBlackTones)])
 
     def _checkContainerInStream(self, reader, basicColor, numBlackTones):
-        self.assertEqual(basicColor.value, reader.readBits(8))
+        self.assertEqual(basicColor.value, reader.read_bits(8))
         if basicColor == self.api.BasicColor.BLACK:
-            self.assertEqual(numBlackTones, reader.readBits(8))
+            self.assertEqual(numBlackTones, reader.read_bits(8))
             for i in range(numBlackTones):
-                self.assertEqual(i + 1, reader.readSignedBits(32))
+                self.assertEqual(i + 1, reader.read_signed_bits(32))
 
     NUM_BLACK_TONES = 2
 

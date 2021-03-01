@@ -46,7 +46,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         OptionalIndexedOffsetArrayTest._writeOptionalIndexedOffsetArrayToStream(writer, hasOptional,
                                                                                 writeWrongOffsets)
         optionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray()
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalIndexedOffsetArray.read(reader)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
 
@@ -57,7 +57,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         OptionalIndexedOffsetArrayTest._writeOptionalIndexedOffsetArrayToStream(writer, hasOptional,
                                                                                 writeWrongOffsets)
         optionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray()
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalIndexedOffsetArray.read(reader)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
 
@@ -68,7 +68,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         optionalIndexedOffsetArray.write(writer)
         self._checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readOptionalIndexedOffsetArray = self.api.OptionalIndexedOffsetArray.fromReader(reader)
         self._checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional)
         self.assertTrue(optionalIndexedOffsetArray == readOptionalIndexedOffsetArray)
@@ -87,19 +87,19 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         currentOffset = ELEMENT0_OFFSET
         for i in range(NUM_ELEMENTS):
             if writeWrongOffsets and i == NUM_ELEMENTS - 1:
-                writer.writeBits(WRONG_OFFSET, 32)
+                writer.write_bits(WRONG_OFFSET, 32)
             else:
-                writer.writeBits(currentOffset, 32)
-            currentOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
+                writer.write_bits(currentOffset, 32)
+            currentOffset += zserio.bitsizeof.bitsizeof_string(DATA[i]) // 8
 
-        writer.writeBool(hasOptional)
+        writer.write_bool(hasOptional)
 
         if hasOptional:
-            writer.writeBits(0, 7)
+            writer.write_bits(0, 7)
             for i in range(NUM_ELEMENTS):
-                writer.writeString(DATA[i])
+                writer.write_string(DATA[i])
 
-        writer.writeBits(FIELD_VALUE, 6)
+        writer.write_bits(FIELD_VALUE, 6)
 
     def _checkOffsets(self, optionalIndexedOffsetArray, offsetShift):
         offsets = optionalIndexedOffsetArray.offsets
@@ -107,7 +107,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for i in range(NUM_ELEMENTS):
             self.assertEqual(expectedOffset, offsets[i])
-            expectedOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
+            expectedOffset += zserio.bitsizeof.bitsizeof_string(DATA[i]) // 8
 
     def _checkOptionalIndexedOffsetArray(self, optionalIndexedOffsetArray, hasOptional):
         offsetShift = 0
@@ -133,7 +133,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
                 offsets.append(WRONG_OFFSET)
             else:
                 offsets.append(currentOffset)
-            currentOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
+            currentOffset += zserio.bitsizeof.bitsizeof_string(DATA[i]) // 8
 
         optionalIndexedOffsetArray.offsets = offsets
         optionalIndexedOffsetArray.has_optional = hasOptional
@@ -151,7 +151,7 @@ class OptionalIndexedOffsetArrayTest(unittest.TestCase):
         if hasOptional:
             bitSize += 7
             for i in range(NUM_ELEMENTS):
-                bitSize += zserio.bitsizeof.getBitSizeOfString(DATA[i])
+                bitSize += zserio.bitsizeof.bitsizeof_string(DATA[i])
         bitSize += 6
 
         return bitSize

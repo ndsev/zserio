@@ -37,7 +37,7 @@ class NestedOffsetTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         self._writeNestedOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         nestedOffset = self.api.NestedOffset.fromReader(reader)
         self._checkNestedOffset(nestedOffset)
 
@@ -45,7 +45,7 @@ class NestedOffsetTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         self._writeNestedOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
             self.api.NestedOffset.fromReader(reader)
 
@@ -55,7 +55,7 @@ class NestedOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         nestedOffset.write(writer)
         self._checkNestedOffset(nestedOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readNestedOffset = self.api.NestedOffset.fromReader(reader)
         self._checkNestedOffset(readNestedOffset)
         self.assertTrue(nestedOffset == readNestedOffset)
@@ -65,7 +65,7 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         bitPosition = 2
-        writer.writeBits(0, bitPosition)
+        writer.write_bits(0, bitPosition)
         nestedOffset.write(writer)
         self._checkNestedOffset(nestedOffset)
 
@@ -77,19 +77,19 @@ class NestedOffsetTest(unittest.TestCase):
             nestedOffset.write(writer, callInitializeOffsets=False)
 
     def _writeNestedOffsetToStream(self, writer, writeWrongOffsets):
-        writer.writeBits(self.WRONG_TERMINATOR_OFFSET if writeWrongOffsets else self.TERMINATOR_OFFSET, 32)
-        writer.writeBool(self.BOOL_VALUE)
-        writer.writeVarSize(self.api.NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure)
+        writer.write_bits(self.WRONG_TERMINATOR_OFFSET if writeWrongOffsets else self.TERMINATOR_OFFSET, 32)
+        writer.write_bool(self.BOOL_VALUE)
+        writer.write_varsize(self.api.NestedOffsetUnion.CHOICE_nestedOffsetArrayStructure)
 
-        writer.writeBits(self.NUM_ELEMENTS, 8)
+        writer.write_bits(self.NUM_ELEMENTS, 8)
         for i in range(self.NUM_ELEMENTS):
-            writer.writeBits(self.WRONG_DATA_OFFSET if writeWrongOffsets else self.FIRST_DATA_OFFSET + i * 8,
+            writer.write_bits(self.WRONG_DATA_OFFSET if writeWrongOffsets else self.FIRST_DATA_OFFSET + i * 8,
                              32)
-            writer.writeBits(0, 7 if (i == 0) else 1)
-            writer.writeBits(i, 31)
+            writer.write_bits(0, 7 if (i == 0) else 1)
+            writer.write_bits(i, 31)
 
-        writer.alignTo(8)
-        writer.writeBits(self.TERMINATOR_VALUE, 7)
+        writer.alignto(8)
+        writer.write_bits(self.TERMINATOR_VALUE, 7)
 
     def _checkNestedOffset(self, nestedOffset):
         self.assertEqual(self.TERMINATOR_OFFSET, nestedOffset.terminator_offset)

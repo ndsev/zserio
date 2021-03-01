@@ -39,7 +39,7 @@ class BitAlignmentTest(unittest.TestCase):
     def testRead(self):
         writer = zserio.BitStreamWriter()
         self._writeBitAlignmentToStream(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         bitAlignment = self.api.BitAlignment.fromReader(reader)
         self._checkBitAlignment(bitAlignment)
 
@@ -51,38 +51,38 @@ class BitAlignmentTest(unittest.TestCase):
         self.assertTrue(bitAlignment == readBitAlignment)
 
     def _writeBitAlignmentToStream(self, writer):
-        writer.writeBits(self.ALIGNED1_FIELD_VALUE, 1)
+        writer.write_bits(self.ALIGNED1_FIELD_VALUE, 1)
 
-        writer.writeBits(0, 1)
-        writer.writeBits(self.ALIGNED2_FIELD_VALUE, 2)
+        writer.write_bits(0, 1)
+        writer.write_bits(self.ALIGNED2_FIELD_VALUE, 2)
 
-        writer.writeBits(0, 2)
-        writer.writeBits(self.ALIGNED3_FIELD_VALUE, 3)
+        writer.write_bits(0, 2)
+        writer.write_bits(self.ALIGNED3_FIELD_VALUE, 3)
 
-        writer.writeBits(0, 3)
-        writer.writeBits(self.ALIGNED4_FIELD_VALUE, 4)
+        writer.write_bits(0, 3)
+        writer.write_bits(self.ALIGNED4_FIELD_VALUE, 4)
 
-        writer.writeBits(0, 4)
-        writer.writeBits(self.ALIGNED5_FIELD_VALUE, 5)
+        writer.write_bits(0, 4)
+        writer.write_bits(self.ALIGNED5_FIELD_VALUE, 5)
 
-        writer.writeBits(0, 5)
-        writer.writeBits(self.ALIGNED6_FIELD_VALUE, 6)
+        writer.write_bits(0, 5)
+        writer.write_bits(self.ALIGNED6_FIELD_VALUE, 6)
 
-        writer.writeBits(0, 6)
-        writer.writeBits(self.ALIGNED7_FIELD_VALUE, 7)
+        writer.write_bits(0, 6)
+        writer.write_bits(self.ALIGNED7_FIELD_VALUE, 7)
 
-        writer.writeBits(0, 7)
-        writer.writeBits(self.ALIGNED8_FIELD_VALUE, 8)
+        writer.write_bits(0, 7)
+        writer.write_bits(self.ALIGNED8_FIELD_VALUE, 8)
 
-        writer.writeBits(0, 1 + 15)
-        writer.writeBits(self.ALIGNED16_FIELD_VALUE, 16)
+        writer.write_bits(0, 1 + 15)
+        writer.write_bits(self.ALIGNED16_FIELD_VALUE, 16)
 
-        writer.writeBits(0, 1 + 31)
-        writer.writeBits(self.ALIGNED32_FIELD_VALUE, 32)
+        writer.write_bits(0, 1 + 31)
+        writer.write_bits(self.ALIGNED32_FIELD_VALUE, 32)
 
-        writer.writeBits(0, 33)
-        writer.writeBits(0, 63)
-        writer.writeBits(self.ALIGNED64_FIELD_VALUE, 64)
+        writer.write_bits(0, 33)
+        writer.write_bits(0, 63)
+        writer.write_bits(self.ALIGNED64_FIELD_VALUE, 64)
 
     def _checkBitAlignment(self, bitAlignment):
         self.assertEqual(self.ALIGNED1_FIELD_VALUE, bitAlignment.aligned1_field)

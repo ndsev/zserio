@@ -15,7 +15,7 @@ class StructFullAndShortTemplateArgumentTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structFullNameTemplateArgument.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructFullNameTemplateArgument = self.api.StructFullNameTemplateArgument()
         readStructFullNameTemplateArgument.read(reader)
         self.assertEqual(structFullNameTemplateArgument, readStructFullNameTemplateArgument)
@@ -27,7 +27,7 @@ class StructFullAndShortTemplateArgumentTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structShortNameTemplateArgument.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructShortNameTemplateArgument = self.api.templated_struct.StructShortNameTemplateArgument()
         readStructShortNameTemplateArgument.read(reader)
         self.assertEqual(structShortNameTemplateArgument, readStructShortNameTemplateArgument)

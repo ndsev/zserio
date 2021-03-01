@@ -28,7 +28,7 @@ class ImplicitArrayBit8Test(unittest.TestCase):
         numElements = 99
         writer = zserio.BitStreamWriter()
         ImplicitArrayBit8Test._writeImplicitArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         implicitArray = self.api.ImplicitArray.fromReader(reader)
 
         array = implicitArray.array
@@ -50,4 +50,4 @@ class ImplicitArrayBit8Test(unittest.TestCase):
     @staticmethod
     def _writeImplicitArrayToStream(writer, numElements):
         for i in range(numElements):
-            writer.writeBits(i, 8)
+            writer.write_bits(i, 8)

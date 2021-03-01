@@ -11,7 +11,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
     def testReadCorrectLength(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.CORRECT_LENGTH)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         arrayLengthofConstraint.read(reader)
@@ -20,7 +20,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
     def testReadWrongLengthLess(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.WRONG_LENGTH_LESS)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -29,7 +29,7 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
     def testReadWrongLengthGreater(self):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.WRONG_LENGTH_GREATER)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         arrayLengthofConstraint = self.api.ArrayLengthofConstraint()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -62,9 +62,9 @@ class ArrayLengthofConstraintTest(unittest.TestCase):
 
     @staticmethod
     def _write(writer, length):
-        writer.writeBits(length, 8) # all lengths in this test fits in a single byte
+        writer.write_bits(length, 8) # all lengths in this test fits in a single byte
         for i in range(length):
-            writer.writeBits(i, 32)
+            writer.write_bits(i, 32)
 
     CORRECT_LENGTH = 6
     WRONG_LENGTH_LESS = 3

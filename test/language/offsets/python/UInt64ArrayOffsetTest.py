@@ -53,7 +53,7 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         uint64ArrayOffset.write(writer)
         self.assertEqual(self.FIRST_OFFSET, uint64ArrayOffset.offsets[0])
-        self.assertEqual(zserio.bitposition.bitsToBytes(self.BIT_SIZE), len(writer.getByteArray()))
+        self.assertEqual(zserio.bitposition.bits_to_bytes(self.BIT_SIZE), len(writer.byte_array))
 
     def testWriteWithPosition(self):
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
@@ -61,10 +61,10 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
         uint64ArrayOffset.array = list(range(self.ARRAY_SIZE))
         uint64ArrayOffset.values = list(range(self.VALUES_SIZE))
         writer = zserio.BitStreamWriter()
-        writer.writeBits(0, 3)
+        writer.write_bits(0, 3)
         uint64ArrayOffset.write(writer)
         self.assertEqual(self.FIRST_OFFSET + 1, uint64ArrayOffset.offsets[0])
-        self.assertEqual(zserio.bitposition.bitsToBytes(self.BIT_SIZE) + 1, len(writer.getByteArray()))
+        self.assertEqual(zserio.bitposition.bits_to_bytes(self.BIT_SIZE) + 1, len(writer.byte_array))
 
     def testWriteWrongOffsets(self):
         uint64ArrayOffset = self.api.UInt64ArrayOffset()
@@ -81,22 +81,22 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
 
         # offset
-        writer.writeVarSize(self.VALUES_SIZE)
+        writer.write_varsize(self.VALUES_SIZE)
         for i in range(self.VALUES_SIZE):
             offset = self.FIRST_OFFSET + i * 4 + (wrongOffset and 1 if (i == self.VALUES_SIZE - 1) else 0)
-            writer.writeBits(offset, 64)
+            writer.write_bits(offset, 64)
 
         # array
-        writer.writeVarSize(self.ARRAY_SIZE)
+        writer.write_varsize(self.ARRAY_SIZE)
         for i in range(self.ARRAY_SIZE):
-            writer.writeSignedBits(0, 8)
+            writer.write_signed_bits(0, 8)
 
         # values
-        writer.writeVarSize(self.VALUES_SIZE)
+        writer.write_varsize(self.VALUES_SIZE)
         for i in range(self.VALUES_SIZE):
-            writer.writeSignedBits(0, 32)
+            writer.write_signed_bits(0, 32)
 
-        return zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        return zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
     ARRAY_SIZE = 13
     VALUES_SIZE = 42

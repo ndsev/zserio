@@ -23,7 +23,7 @@ class EnumParamChoiceTest(unittest.TestCase):
         value = 234
         writer = zserio.BitStreamWriter()
         self._writeEnumParamChoiceToStream(writer, selector, value)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         enumParamChoice = self.api.EnumParamChoice.fromReader(reader, selector)
         self.assertEqual(selector, enumParamChoice.selector)
         self.assertEqual(value, enumParamChoice.grey)
@@ -112,7 +112,7 @@ class EnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         enumParamChoice.write(writer)
         readEnumParamChoice = self.api.EnumParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEnumParamChoice.read(reader)
         self.assertEqual(byteValue, readEnumParamChoice.black)
         self.assertEqual(enumParamChoice, readEnumParamChoice)
@@ -123,7 +123,7 @@ class EnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         enumParamChoice.write(writer)
         readEnumParamChoice = self.api.EnumParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEnumParamChoice.read(reader)
         self.assertEqual(shortValue, readEnumParamChoice.grey)
         self.assertEqual(enumParamChoice, readEnumParamChoice)
@@ -135,17 +135,17 @@ class EnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         enumParamChoice.write(writer)
         readEnumParamChoice = self.api.EnumParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEnumParamChoice.read(reader)
         self.assertEqual(intValue, readEnumParamChoice.white)
         self.assertEqual(enumParamChoice, readEnumParamChoice)
 
     def _writeEnumParamChoiceToStream(self, writer, selector, value):
         if selector == self.api.Selector.BLACK:
-            writer.writeSignedBits(value, 8)
+            writer.write_signed_bits(value, 8)
         elif selector == self.api.Selector.GREY:
-            writer.writeSignedBits(value, 16)
+            writer.write_signed_bits(value, 16)
         elif selector == self.api.Selector.WHITE:
-            writer.writeSignedBits(value, 32)
+            writer.write_signed_bits(value, 32)
         else:
             self.fail("Invalid selector: %d" % selector)

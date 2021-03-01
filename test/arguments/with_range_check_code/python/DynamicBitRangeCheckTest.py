@@ -37,5 +37,5 @@ class DynamicBitRangeCheckTest(unittest.TestCase):
         self.assertEqual(dynamicBitRangeCheckCompound, readDynamicBitRangeCheckCompound)
 
 NUM_BITS = 10
-DYNAMIC_BIT_LOWER_BOUND = zserio.bitfield.getBitFieldLowerBound(NUM_BITS)
-DYNAMIC_BIT_UPPER_BOUND = zserio.bitfield.getBitFieldUpperBound(NUM_BITS)
+DYNAMIC_BIT_LOWER_BOUND = zserio.bitfield.bitfield_lowerbound(NUM_BITS)
+DYNAMIC_BIT_UPPER_BOUND = zserio.bitfield.bitfield_upperbound(NUM_BITS)

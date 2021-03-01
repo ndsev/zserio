@@ -44,7 +44,7 @@ final class PythonRuntimeFunctionDataCreator
 
     private static String getSuffixForIntegralType(boolean signed)
     {
-        return signed ? "SignedBits" : "Bits";
+        return signed ? "signed_bits" : "bits";
     }
 
     private static class Visitor extends ZserioAstDefaultVisitor
@@ -57,19 +57,19 @@ final class PythonRuntimeFunctionDataCreator
         @Override
         public void visitBooleanType(BooleanType type)
         {
-            templateData = new RuntimeFunctionTemplateData("Bool");
+            templateData = new RuntimeFunctionTemplateData("bool");
         }
 
         @Override
         public void visitFloatType(FloatType type)
         {
-            templateData = new RuntimeFunctionTemplateData("Float" + type.getBitSize());
+            templateData = new RuntimeFunctionTemplateData("float" + type.getBitSize());
         }
 
         @Override
         public void visitExternType(ExternType type)
         {
-            templateData = new RuntimeFunctionTemplateData("BitBuffer");
+            templateData = new RuntimeFunctionTemplateData("bitbuffer");
         }
 
         @Override
@@ -87,7 +87,7 @@ final class PythonRuntimeFunctionDataCreator
         @Override
         public void visitStringType(StringType type)
         {
-            templateData = new RuntimeFunctionTemplateData("String");
+            templateData = new RuntimeFunctionTemplateData("string");
         }
 
         @Override
@@ -95,17 +95,17 @@ final class PythonRuntimeFunctionDataCreator
         {
             final StringBuilder suffix = new StringBuilder();
             final int maxBitSize = type.getMaxBitSize();
-            suffix.append("Var");
+            suffix.append("var");
             if (maxBitSize == 40) // VarSize
             {
-                suffix.append("Size");
+                suffix.append("size");
             }
             else
             {
                 if (!type.isSigned())
-                    suffix.append("U");
-                suffix.append("Int");
-                if (maxBitSize != 72) // Var(U)Int takes up to 9 bytes
+                    suffix.append("u");
+                suffix.append("int");
+                if (maxBitSize != 72) // var(u)int takes up to 9 bytes
                     suffix.append(maxBitSize);
             }
 

@@ -57,9 +57,9 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
         emptyUnionWithParameter.write(writer)
-        byteArray = writer.getByteArray()
+        byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEmptyUnionWithParameter = self.api.EmptyUnionWithParameter.fromReader(reader, self.PARAM_VALUE1)
         self.assertEqual(emptyUnionWithParameter, readEmptyUnionWithParameter)
 

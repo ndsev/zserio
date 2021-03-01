@@ -12,7 +12,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
                               self.api.ExtendedColor.PURPLE)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureConstraints = self.api.StructureConstraints()
         structureConstraints.read(reader)
@@ -24,7 +24,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.RED, self.api.BasicColor.WHITE,
                               self.api.ExtendedColor.PURPLE)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureConstraints = self.api.StructureConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -34,7 +34,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.RED,
                               self.api.ExtendedColor.PURPLE)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureConstraints = self.api.StructureConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -44,7 +44,7 @@ class StructureConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self.__class__._write(writer, self.api.BasicColor.BLACK, self.api.BasicColor.WHITE,
                               self.api.ExtendedColor.LIME)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureConstraints = self.api.StructureConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -91,8 +91,8 @@ class StructureConstraintsTest(unittest.TestCase):
 
     @staticmethod
     def _write(writer, blackColor, whiteColor, purpleColor):
-        writer.writeBits(blackColor.value, 8)
-        writer.writeBool(True)
-        writer.writeBits(whiteColor.value, 8)
-        writer.writeBool(True)
-        writer.writeBits(purpleColor.value, 16)
+        writer.write_bits(blackColor.value, 8)
+        writer.write_bool(True)
+        writer.write_bits(whiteColor.value, 8)
+        writer.write_bool(True)
+        writer.write_bits(purpleColor.value, 16)

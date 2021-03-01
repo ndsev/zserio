@@ -16,7 +16,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
             self.api.Availability.Values.COORD_Z
         )
         self.__class__._write(writer, availability, 1, 1, 1)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
         structureBitmaskConstraints.read(reader)
@@ -28,7 +28,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         availability = self.api.Availability.Values.COORD_X | self.api.Availability.Values.COORD_Y
         self.__class__._write(writer, availability, 1, 1, 1)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -38,7 +38,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         availability = self.api.Availability.Values.COORD_X | self.api.Availability.Values.COORD_Z
         self.__class__._write(writer, availability, 1, 1, 1)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -48,7 +48,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         availability = self.api.Availability.Values.COORD_Y | self.api.Availability.Values.COORD_Z
         self.__class__._write(writer, availability, 1, 1, 1)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         structureBitmaskConstraints = self.api.StructureBitmaskConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -91,7 +91,7 @@ class StructureBitmaskConstraintsTest(unittest.TestCase):
 
     @staticmethod
     def _write(writer, mask, x, y, z):
-        writer.writeBits(mask.value, 3)
-        writer.writeBits(x, 8)
-        writer.writeBits(y, 8)
-        writer.writeBits(z, 8)
+        writer.write_bits(mask.value, 3)
+        writer.write_bits(x, 8)
+        writer.write_bits(y, 8)
+        writer.write_bits(z, 8)

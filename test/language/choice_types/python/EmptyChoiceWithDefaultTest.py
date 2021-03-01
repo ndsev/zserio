@@ -60,8 +60,8 @@ class EmptyChoiceWithDefaultTest(unittest.TestCase):
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(selector)
         writer = zserio.BitStreamWriter()
         emptyChoiceWithDefault.write(writer)
-        byteArray = writer.getByteArray()
+        byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEmptyChoiceWithDefault = self.api.EmptyChoiceWithDefault.fromReader(reader, selector)
         self.assertEqual(emptyChoiceWithDefault, readEmptyChoiceWithDefault)

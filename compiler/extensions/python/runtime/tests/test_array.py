@@ -7,149 +7,149 @@ from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           StringArrayTraits, BoolArrayTraits, BitBufferArrayTraits, ObjectArrayTraits)
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
-from zserio.bitsizeof import getBitSizeOfVarUInt64
+from zserio.bitsizeof import bitsizeof_varuint64
 from zserio.bitwriter import BitStreamWriter
 from zserio import PythonRuntimeException
 
 class ArrayTest(unittest.TestCase):
 
-    def testBitFieldArray(self):
-        arrayTraits = BitFieldArrayTraits(5)
-        array1Values = [1, 2]
-        array1BitSizeOf = 2 * 5
-        array1AlignedBitSizeOf = 5 + 3 + 5
-        array2Values = [3, 4]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_bitfield_array(self):
+        array_traits = BitFieldArrayTraits(5)
+        array1_values = [1, 2]
+        array1_bitsizeof = 2 * 5
+        array1_aligned_bitsizeof = 5 + 3 + 5
+        array2_values = [3, 4]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testSignedBitFieldArray(self):
-        arrayTraits = SignedBitFieldArrayTraits(5)
-        array1Values = [-1, 1]
-        array1BitSizeOf = 2 * 5
-        array1AlignedBitSizeOf = 5 + 3 + 5
-        array2Values = [-2, 2]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_signed_bitfield_array(self):
+        array_traits = SignedBitFieldArrayTraits(5)
+        array1_values = [-1, 1]
+        array1_bitsizeof = 2 * 5
+        array1_aligned_bitsizeof = 5 + 3 + 5
+        array2_values = [-2, 2]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarUInt16Array(self):
-        arrayTraits = VarUInt16ArrayTraits()
-        array1Values = [1, 1024]
-        array1BitSizeOf = 8 + 16
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varuint16_array(self):
+        array_traits = VarUInt16ArrayTraits()
+        array1_values = [1, 1024]
+        array1_bitsizeof = 8 + 16
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [1, 8192]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarUInt32Array(self):
-        arrayTraits = VarUInt32ArrayTraits()
-        array1Values = [1, 16384]
-        array1BitSizeOf = 8 + 24
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [1, 32768]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varuint32_array(self):
+        array_traits = VarUInt32ArrayTraits()
+        array1_values = [1, 16384]
+        array1_bitsizeof = 8 + 24
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [1, 32768]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarUInt64Array(self):
-        arrayTraits = VarUInt64ArrayTraits()
-        array1Values = [1, 16384]
-        array1BitSizeOf = 8 + 24
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [1, 65536]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varuint64_array(self):
+        array_traits = VarUInt64ArrayTraits()
+        array1_values = [1, 16384]
+        array1_bitsizeof = 8 + 24
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [1, 65536]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarUIntArray(self):
-        arrayTraits = VarUIntArrayTraits()
-        array1Values = [1, 1024]
-        array1BitSizeOf = 8 + 16
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varuint_array(self):
+        array_traits = VarUIntArrayTraits()
+        array1_values = [1, 1024]
+        array1_bitsizeof = 8 + 16
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [1, 8192]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarSizeArray(self):
-        arrayTraits = VarSizeArrayTraits()
-        array1Values = [1, 16384]
-        array1BitSizeOf = 8 + 24
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [1, 32768]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varsize_array(self):
+        array_traits = VarSizeArrayTraits()
+        array1_values = [1, 16384]
+        array1_bitsizeof = 8 + 24
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [1, 32768]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarInt16Array(self):
-        arrayTraits = VarInt16ArrayTraits()
-        array1Values = [-1, 1024]
-        array1BitSizeOf = 8 + 16
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [-1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varint16_array(self):
+        array_traits = VarInt16ArrayTraits()
+        array1_values = [-1, 1024]
+        array1_bitsizeof = 8 + 16
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [-1, 8192]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarInt32Array(self):
-        arrayTraits = VarInt32ArrayTraits()
-        array1Values = [-1, 16384]
-        array1BitSizeOf = 8 + 24
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [-1, 32768]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varint32_array(self):
+        array_traits = VarInt32ArrayTraits()
+        array1_values = [-1, 16384]
+        array1_bitsizeof = 8 + 24
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [-1, 32768]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarInt64Array(self):
-        arrayTraits = VarInt64ArrayTraits()
-        array1Values = [-1, 16384]
-        array1BitSizeOf = 8 + 24
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [-1, 65536]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varint64_array(self):
+        array_traits = VarInt64ArrayTraits()
+        array1_values = [-1, 16384]
+        array1_bitsizeof = 8 + 24
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [-1, 65536]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testVarIntArray(self):
-        arrayTraits = VarIntArrayTraits()
-        array1Values = [-1, 1024]
-        array1BitSizeOf = 8 + 16
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [-1, 8192]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_varint_array(self):
+        array_traits = VarIntArrayTraits()
+        array1_values = [-1, 1024]
+        array1_bitsizeof = 8 + 16
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [-1, 8192]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testFloat16Array(self):
-        arrayTraits = Float16ArrayTraits()
-        array1Values = [-1.0, 1.0]
-        array1BitSizeOf = 2 * 16
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [-3.5, 3.5]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_float16_array(self):
+        array_traits = Float16ArrayTraits()
+        array1_values = [-1.0, 1.0]
+        array1_bitsizeof = 2 * 16
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [-3.5, 3.5]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testFloat32Array(self):
-        arrayTraits = Float32ArrayTraits()
-        array1Values = [-1.0, 1.0]
-        array1BitSizeOf = 2 * 32
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [-3.5, 3.5]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_float32_array(self):
+        array_traits = Float32ArrayTraits()
+        array1_values = [-1.0, 1.0]
+        array1_bitsizeof = 2 * 32
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [-3.5, 3.5]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testFloat64Array(self):
-        arrayTraits = Float64ArrayTraits()
-        array1Values = [-1.0, 1.0]
-        array1BitSizeOf = 2 * 64
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = [-3.5, 3.5]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_float64_array(self):
+        array_traits = Float64ArrayTraits()
+        array1_values = [-1.0, 1.0]
+        array1_bitsizeof = 2 * 64
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = [-3.5, 3.5]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testStringArray(self):
-        arrayTraits = StringArrayTraits()
-        array1Values = ["Text1", "Text2"]
-        array1BitSizeOf = 2 * (1 + len("TextN")) * 8
-        array1AlignedBitSizeOf = array1BitSizeOf
-        array2Values = ["Text3", "Text4"]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_string_array(self):
+        array_traits = StringArrayTraits()
+        array1_values = ["Text1", "Text2"]
+        array1_bitsizeof = 2 * (1 + len("TextN")) * 8
+        array1_aligned_bitsizeof = array1_bitsizeof
+        array2_values = ["Text3", "Text4"]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testBoolArray(self):
-        arrayTraits = BoolArrayTraits()
-        array1Values = [True, False]
-        array1BitSizeOf = 2 * 1
-        array1AlignedBitSizeOf = 1 + 7 + 1
-        array2Values = [True, True]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_bool_array(self):
+        array_traits = BoolArrayTraits()
+        array1_values = [True, False]
+        array1_bitsizeof = 2 * 1
+        array1_aligned_bitsizeof = 1 + 7 + 1
+        array2_values = [True, True]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testBitBufferArray(self):
-        arrayTraits = BitBufferArrayTraits()
-        array1Values = [BitBuffer(bytes([0xAB, 0x07]), 11), BitBuffer(bytes([0xAB, 0xCD, 0x7F]), 23)]
-        array1BitSizeOf = 8 + 11 + 8 + 23
-        array1AlignedBitSizeOf = 8 + 11 + 5 + 8 + 23
-        array2Values = [BitBuffer(bytes([0xBA, 0x07]), 11), BitBuffer(bytes([0xBA, 0xDC, 0x7F]), 23)]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+    def test_bitbuffer_array(self):
+        array_traits = BitBufferArrayTraits()
+        array1_values = [BitBuffer(bytes([0xAB, 0x07]), 11), BitBuffer(bytes([0xAB, 0xCD, 0x7F]), 23)]
+        array1_bitsizeof = 8 + 11 + 8 + 23
+        array1_aligned_bitsizeof = 8 + 11 + 5 + 8 + 23
+        array2_values = [BitBuffer(bytes([0xBA, 0x07]), 11), BitBuffer(bytes([0xBA, 0xDC, 0x7F]), 23)]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def testObjectArray(self):
+    def test_object_array(self):
         class DummyObject:
             def __init__(self, value):
                 self._value = value
@@ -168,174 +168,175 @@ class ArrayTest(unittest.TestCase):
                 return hash(self._value)
 
             @staticmethod
-            def bitSizeOf(_bitPosition):
+            def bitSizeOf(_bitposition):
                 return 31 # to make an unaligned type
 
-            def initializeOffsets(self, bitPosition):
-                return bitPosition + self.bitSizeOf(bitPosition)
+            def initializeOffsets(self, bitposition):
+                return bitposition + self.bitSizeOf(bitposition)
 
             def read(self, reader):
-                self._value = reader.readBits(self.bitSizeOf(0))
+                self._value = reader.read_bits(self.bitSizeOf(0))
 
             def write(self, writer):
-                writer.writeBits(self._value, self.bitSizeOf(0))
+                writer.write_bits(self._value, self.bitSizeOf(0))
 
-        arrayTraits = ObjectArrayTraits(DummyObject.create)
-        array1Values = [DummyObject(1), DummyObject(2)]
-        array1BitSizeOf = 2 * 31
-        array1AlignedBitSizeOf = 31 + 1 + 31
-        array2Values = [DummyObject(3), DummyObject(4)]
-        self._testArray(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values)
+        array_traits = ObjectArrayTraits(DummyObject.create)
+        array1_values = [DummyObject(1), DummyObject(2)]
+        array1_bitsizeof = 2 * 31
+        array1_aligned_bitsizeof = 31 + 1 + 31
+        array2_values = [DummyObject(3), DummyObject(4)]
+        self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
-    def _testArray(self, arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf, array2Values):
-        self._testFromReader(arrayTraits, array1Values)
-        self._testEq(arrayTraits, array1Values, array2Values)
-        self._testHashCode(arrayTraits, array1Values, array2Values)
-        self._testLen(arrayTraits, array1Values)
-        self._testGetItem(arrayTraits, array1Values)
-        self._testSetItem(arrayTraits, array1Values)
-        self._testGetRawArray(arrayTraits, array1Values, array2Values)
-        self._testBitSizeOf(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
-        self._testInitializeOffsets(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
-        self._testRead(arrayTraits, array1Values)
-        self._testWrite(arrayTraits, array1Values, array1BitSizeOf, array1AlignedBitSizeOf)
+    def _test_array(self, array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof,
+                    array2_values):
+        self._test_from_reader(array_traits, array1_values)
+        self._test_eq(array_traits, array1_values, array2_values)
+        self._test_hashcode(array_traits, array1_values, array2_values)
+        self._test_len(array_traits, array1_values)
+        self._test_get_item(array_traits, array1_values)
+        self._test_set_item(array_traits, array1_values)
+        self._test_raw_array(array_traits, array1_values, array2_values)
+        self._test_bitsizeof(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof)
+        self._test_initialize_offsets(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof)
+        self._test_read(array_traits, array1_values)
+        self._test_write(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof)
 
-    def _testFromReader(self, arrayTraits, arrayValues):
-        array = Array(arrayTraits, arrayValues)
+    def _test_from_reader(self, array_traits, array_values):
+        array = Array(array_traits, array_values)
         writer = BitStreamWriter()
         array.write(writer)
-        reader = BitStreamReader(writer.getByteArray())
-        readArray = Array.fromReader(arrayTraits, reader, len(arrayValues))
-        self.assertEqual(array, readArray)
+        reader = BitStreamReader(writer.byte_array)
+        read_array = Array.from_reader(array_traits, reader, len(array_values))
+        self.assertEqual(array, read_array)
 
-    def _testEq(self, arrayTraits, array1Values, array2Values):
-        array1 = Array(arrayTraits, array1Values)
-        array2 = Array(arrayTraits, array2Values)
-        array3 = Array(arrayTraits, array1Values)
+    def _test_eq(self, array_traits, array1_values, array2_values):
+        array1 = Array(array_traits, array1_values)
+        array2 = Array(array_traits, array2_values)
+        array3 = Array(array_traits, array1_values)
         self.assertNotEqual(array1, None)
         self.assertNotEqual(array1, array2)
         self.assertEqual(array1, array3)
 
-    def _testHashCode(self, arrayTraits, array1Values, array2Values):
-        array1 = Array(arrayTraits, array1Values)
-        array2 = Array(arrayTraits, array2Values)
-        array3 = Array(arrayTraits, array1Values)
+    def _test_hashcode(self, array_traits, array1_values, array2_values):
+        array1 = Array(array_traits, array1_values)
+        array2 = Array(array_traits, array2_values)
+        array3 = Array(array_traits, array1_values)
         self.assertNotEqual(hash(array1), hash(array2))
         self.assertEqual(hash(array1), hash(array3))
 
-    def _testLen(self, arrayTraits, arrayValues):
-        array = Array(arrayTraits, arrayValues)
-        rawArray = array.getRawArray()
-        self.assertEqual(len(rawArray), len(array))
+    def _test_len(self, array_traits, array_values):
+        array = Array(array_traits, array_values)
+        raw_array = array.raw_array
+        self.assertEqual(len(raw_array), len(array))
 
-    def _testGetItem(self, arrayTraits, arrayValues):
-        array = Array(arrayTraits, arrayValues)
-        rawArray = array.getRawArray()
-        for value, rawValue in zip(array, rawArray):
-            self.assertEqual(value, rawValue)
+    def _test_get_item(self, array_traits, array_values):
+        array = Array(array_traits, array_values)
+        raw_array = array.raw_array
+        for value, raw_value in zip(array, raw_array):
+            self.assertEqual(value, raw_value)
 
-    def _testSetItem(self, arrayTraits, arrayValues):
-        array = Array(arrayTraits, arrayValues)
-        rawArray = array.getRawArray()
+    def _test_set_item(self, array_traits, array_values):
+        array = Array(array_traits, array_values)
+        raw_array = array.raw_array
         self.assertTrue(len(array) > 1)
-        firstValue = array[0]
-        secondValue = array[1]
-        array[0] = secondValue
-        self.assertEqual(array[0], rawArray[0])
-        rawArray[0] = firstValue # return the original value for other tests
-        self.assertEqual(array[0], rawArray[0])
+        first_value = array[0]
+        second_value = array[1]
+        array[0] = second_value
+        self.assertEqual(array[0], raw_array[0])
+        raw_array[0] = first_value # return the original value for other tests
+        self.assertEqual(array[0], raw_array[0])
 
-    def _testGetRawArray(self, arrayTraits, array1Values, array2Values):
-        array1 = Array(arrayTraits, array1Values)
-        array2 = Array(arrayTraits, array2Values)
-        array3 = Array(arrayTraits, array1Values)
-        self.assertNotEqual(array1.getRawArray(), array2.getRawArray())
-        self.assertEqual(array1.getRawArray(), array3.getRawArray())
+    def _test_raw_array(self, array_traits, array1_values, array2_values):
+        array1 = Array(array_traits, array1_values)
+        array2 = Array(array_traits, array2_values)
+        array3 = Array(array_traits, array1_values)
+        self.assertNotEqual(array1.raw_array, array2.raw_array)
+        self.assertEqual(array1.raw_array, array3.raw_array)
 
-    def _testBitSizeOf(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        array = Array(arrayTraits, arrayValues)
-        self.assertEqual(expectedBitSize, array.bitSizeOf(0))
-        self.assertEqual(expectedBitSize, array.bitSizeOf(7))
+    def _test_bitsizeof(self, array_traits, array_values, expected_bitsize, expected_aligned_bitsize):
+        array = Array(array_traits, array_values)
+        self.assertEqual(expected_bitsize, array.bitsizeof(0))
+        self.assertEqual(expected_bitsize, array.bitsizeof(7))
 
-        autoArray = Array(arrayTraits, arrayValues, isAuto=True)
-        self.assertEqual(getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize, autoArray.bitSizeOf(0))
-        self.assertEqual(getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize, autoArray.bitSizeOf(7))
+        auto_array = Array(array_traits, array_values, is_auto=True)
+        self.assertEqual(bitsizeof_varuint64(len(array_values)) + expected_bitsize, auto_array.bitsizeof(0))
+        self.assertEqual(bitsizeof_varuint64(len(array_values)) + expected_bitsize, auto_array.bitsizeof(7))
 
-        alignedArray = Array(arrayTraits, arrayValues, setOffsetMethod=not None)
-        self.assertEqual(expectedAlignedBitSize, alignedArray.bitSizeOf(0))
+        aligned_array = Array(array_traits, array_values, set_offset_method=not None)
+        self.assertEqual(expected_aligned_bitsize, aligned_array.bitsizeof(0))
 
-    def _testInitializeOffsets(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _setOffsetMethod(_index, _bitOffset):
+    def _test_initialize_offsets(self, array_traits, array_values, expected_bitsize, expected_aligned_bitsize):
+        def _set_offset_method(_index, _bitoffset):
             pass
 
-        array = Array(arrayTraits, arrayValues)
-        self.assertEqual(0 + expectedBitSize, array.initializeOffsets(0))
-        self.assertEqual(7 + expectedBitSize, array.initializeOffsets(7))
+        array = Array(array_traits, array_values)
+        self.assertEqual(0 + expected_bitsize, array.initialize_offsets(0))
+        self.assertEqual(7 + expected_bitsize, array.initialize_offsets(7))
 
-        autoArray = Array(arrayTraits, arrayValues, isAuto=True)
-        self.assertEqual(0 + getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize,
-                         autoArray.initializeOffsets(0))
-        self.assertEqual(7 + getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize,
-                         autoArray.initializeOffsets(7))
+        auto_array = Array(array_traits, array_values, is_auto=True)
+        self.assertEqual(0 + bitsizeof_varuint64(len(array_values)) + expected_bitsize,
+                         auto_array.initialize_offsets(0))
+        self.assertEqual(7 + bitsizeof_varuint64(len(array_values)) + expected_bitsize,
+                         auto_array.initialize_offsets(7))
 
-        alignedArray = Array(arrayTraits, arrayValues, setOffsetMethod=_setOffsetMethod)
-        self.assertEqual(0 + expectedAlignedBitSize, alignedArray.initializeOffsets(0))
+        aligned_array = Array(array_traits, array_values, set_offset_method=_set_offset_method)
+        self.assertEqual(0 + expected_aligned_bitsize, aligned_array.initialize_offsets(0))
 
-    def _testRead(self, arrayTraits, arrayValues):
-        def _checkOffsetMethod(_index, _bitOffset):
+    def _test_read(self, array_traits, array_values):
+        def _check_offset_method(_index, _bitoffset):
             pass
 
-        array = Array(arrayTraits, arrayValues)
+        array = Array(array_traits, array_values)
         writer = BitStreamWriter()
         array.write(writer)
-        reader = BitStreamReader(writer.getByteArray())
-        readArray = Array(arrayTraits)
-        readArray.read(reader, len(array.getRawArray()))
-        self.assertEqual(array, readArray)
+        reader = BitStreamReader(writer.byte_array)
+        read_array = Array(array_traits)
+        read_array.read(reader, len(array.raw_array))
+        self.assertEqual(array, read_array)
 
-        autoArray = Array(arrayTraits, arrayValues, isAuto=True)
+        auto_array = Array(array_traits, array_values, is_auto=True)
         writer = BitStreamWriter()
-        autoArray.write(writer)
-        reader = BitStreamReader(writer.getByteArray())
-        readAutoArray = Array(arrayTraits, isAuto=True)
-        readAutoArray.read(reader, len(autoArray.getRawArray()))
-        self.assertEqual(autoArray, readAutoArray)
+        auto_array.write(writer)
+        reader = BitStreamReader(writer.byte_array)
+        read_auto_array = Array(array_traits, is_auto=True)
+        read_auto_array.read(reader, len(auto_array.raw_array))
+        self.assertEqual(auto_array, read_auto_array)
 
-        alignedArray = Array(arrayTraits, arrayValues, checkOffsetMethod=_checkOffsetMethod)
+        aligned_array = Array(array_traits, array_values, check_offset_method=_check_offset_method)
         writer = BitStreamWriter()
-        alignedArray.write(writer)
-        reader = BitStreamReader(writer.getByteArray())
-        readAlignedArray = Array(arrayTraits, checkOffsetMethod=_checkOffsetMethod)
-        readAlignedArray.read(reader, len(alignedArray.getRawArray()))
-        self.assertEqual(alignedArray, readAlignedArray)
+        aligned_array.write(writer)
+        reader = BitStreamReader(writer.byte_array)
+        read_aligned_array = Array(array_traits, check_offset_method=_check_offset_method)
+        read_aligned_array.read(reader, len(aligned_array.raw_array))
+        self.assertEqual(aligned_array, read_aligned_array)
 
-        if arrayTraits.HAS_BITSIZEOF_CONSTANT and arrayTraits.bitSizeOf() % 8 == 0:
-            implicitArray = Array(arrayTraits, arrayValues, isImplicit=True)
+        if array_traits.HAS_BITSIZEOF_CONSTANT and array_traits.bitsizeof() % 8 == 0:
+            implicit_array = Array(array_traits, array_values, is_implicit=True)
             writer = BitStreamWriter()
-            implicitArray.write(writer)
-            reader = BitStreamReader(writer.getByteArray())
-            readImplicitArray = Array(arrayTraits, isImplicit=True)
-            readImplicitArray.read(reader)
-            self.assertEqual(implicitArray, readImplicitArray)
-        elif not arrayTraits.HAS_BITSIZEOF_CONSTANT:
+            implicit_array.write(writer)
+            reader = BitStreamReader(writer.byte_array)
+            read_implicit_array = Array(array_traits, is_implicit=True)
+            read_implicit_array.read(reader)
+            self.assertEqual(implicit_array, read_implicit_array)
+        elif not array_traits.HAS_BITSIZEOF_CONSTANT:
             with self.assertRaises(PythonRuntimeException):
-                Array(arrayTraits, isImplicit=True).read(reader)
+                Array(array_traits, is_implicit=True).read(reader)
 
-    def _testWrite(self, arrayTraits, arrayValues, expectedBitSize, expectedAlignedBitSize):
-        def _checkOffsetMethod(_index, _bitOffset):
+    def _test_write(self, array_traits, array_values, expected_bitsize, expected_aligned_bitsize):
+        def _check_offset_method(_index, _bitoffset):
             pass
 
-        array = Array(arrayTraits, arrayValues)
+        array = Array(array_traits, array_values)
         writer = BitStreamWriter()
         array.write(writer)
-        self.assertEqual(expectedBitSize, writer.getBitPosition())
+        self.assertEqual(expected_bitsize, writer.bitposition)
 
-        autoArray = Array(arrayTraits, arrayValues, isAuto=True)
+        auto_array = Array(array_traits, array_values, is_auto=True)
         writer = BitStreamWriter()
-        autoArray.write(writer)
-        self.assertEqual(getBitSizeOfVarUInt64(len(arrayValues)) + expectedBitSize, writer.getBitPosition())
+        auto_array.write(writer)
+        self.assertEqual(bitsizeof_varuint64(len(array_values)) + expected_bitsize, writer.bitposition)
 
-        alignedArray = Array(arrayTraits, arrayValues, checkOffsetMethod=_checkOffsetMethod)
+        aligned_array = Array(array_traits, array_values, check_offset_method=_check_offset_method)
         writer = BitStreamWriter()
-        alignedArray.write(writer)
-        self.assertEqual(expectedAlignedBitSize, writer.getBitPosition())
+        aligned_array.write(writer)
+        self.assertEqual(expected_aligned_bitsize, writer.bitposition)

@@ -15,7 +15,7 @@ class SubtypeTemplateWithBuiltinTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         subtypeTemplateWithBuiltin.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readSubtypeTemplateWithBuiltin = self.api.SubtypeTemplateWithBuiltin()
         readSubtypeTemplateWithBuiltin.read(reader)
         self.assertEqual(subtypeTemplateWithBuiltin, readSubtypeTemplateWithBuiltin)

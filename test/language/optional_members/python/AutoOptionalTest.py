@@ -79,9 +79,9 @@ class AutoOptionalTest(unittest.TestCase):
         container.non_optional_int = self.NON_OPTIONAL_INT_VALUE
         writer = zserio.BitStreamWriter()
         container.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkContainerInStream(reader, self.NON_OPTIONAL_INT_VALUE, None)
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readNonOptionalContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.NON_OPTIONAL_INT_VALUE, readNonOptionalContainer.non_optional_int)
         self.assertFalse(readNonOptionalContainer.isAutoOptionalIntUsed())
@@ -89,9 +89,9 @@ class AutoOptionalTest(unittest.TestCase):
         container.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
         writer = zserio.BitStreamWriter()
         container.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkContainerInStream(reader, self.NON_OPTIONAL_INT_VALUE, self.AUTO_OPTIONAL_INT_VALUE)
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readAutoOptionalContainer = self.api.Container.fromReader(reader)
         self.assertEqual(self.NON_OPTIONAL_INT_VALUE, readAutoOptionalContainer.non_optional_int)
         self.assertTrue(readAutoOptionalContainer.isAutoOptionalIntUsed())
@@ -99,12 +99,12 @@ class AutoOptionalTest(unittest.TestCase):
 
     def _checkContainerInStream(self, reader, nonOptionalIntValue, autoOptionalIntValue):
         if autoOptionalIntValue is None:
-            self.assertEqual(nonOptionalIntValue, reader.readSignedBits(32))
-            self.assertEqual(False, reader.readBool())
+            self.assertEqual(nonOptionalIntValue, reader.read_signed_bits(32))
+            self.assertEqual(False, reader.read_bool())
         else:
-            self.assertEqual(nonOptionalIntValue, reader.readSignedBits(32))
-            self.assertEqual(True, reader.readBool())
-            self.assertEqual(autoOptionalIntValue, reader.readSignedBits(32))
+            self.assertEqual(nonOptionalIntValue, reader.read_signed_bits(32))
+            self.assertEqual(True, reader.read_bool())
+            self.assertEqual(autoOptionalIntValue, reader.read_signed_bits(32))
 
     NON_OPTIONAL_INT_VALUE = -0x1EADDEAD
     AUTO_OPTIONAL_INT_VALUE = -0x1EEFBEEF

@@ -13,7 +13,7 @@ class InstantiateTypeAsStructFieldTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateTypeAsStructField.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readInstantiateTypeAsStructField = self.api.InstantiateTypeAsStructField()
         readInstantiateTypeAsStructField.read(reader)
         self.assertEqual(instantiateTypeAsStructField, readInstantiateTypeAsStructField)

@@ -29,24 +29,24 @@ class ChoiceArrayTest(unittest.TestCase):
         self._checkChoiceArrayFunction(self.NUM_ITEMS)
 
     def _writeOuterArrayToStream(self, writer, pos):
-        writer.writeBits(self.NUM_ITEMS, 16)
+        writer.write_bits(self.NUM_ITEMS, 16)
 
         for item in self.ITEMS:
-            writer.writeBits(item.a, 8)
-            writer.writeBits(item.b, 8)
+            writer.write_bits(item.a, 8)
+            writer.write_bits(item.b, 8)
 
         isExplicit = 1 if pos >= self.NUM_ITEMS else 0
-        writer.writeBits(isExplicit, 8)
+        writer.write_bits(isExplicit, 8)
         if isExplicit != 0:
-            writer.writeBits(self.EXPLICIT_ITEM.a, 8)
-            writer.writeBits(self.EXPLICIT_ITEM.b, 8)
+            writer.write_bits(self.EXPLICIT_ITEM.a, 8)
+            writer.write_bits(self.EXPLICIT_ITEM.b, 8)
             elementA = self.EXPLICIT_ITEM.a
         else:
-            writer.writeBits(pos, 16)
+            writer.write_bits(pos, 16)
             elementA = self.ITEMS[pos].a
 
         if elementA == self.ELEMENT_A_FOR_EXTRA_VALUE:
-            writer.writeSignedBits(self.EXTRA_VALUE, 32)
+            writer.write_signed_bits(self.EXTRA_VALUE, 32)
 
     def _createInner(self, pos):
         outerArray = self.api.OuterArray()
@@ -86,9 +86,9 @@ class ChoiceArrayTest(unittest.TestCase):
         inner.write(writer)
         expectedWriter = zserio.BitStreamWriter()
         self._writeOuterArrayToStream(expectedWriter, pos)
-        self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
-        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
+        self.assertTrue(expectedWriter.byte_array == writer.byte_array)
+        self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readInner = self.api.Inner.fromReader(reader)
         self.assertEqual(inner, readInner)

@@ -47,7 +47,7 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(writer, hasOptional,
                                                                     self.OPTIONAL_FIELD_OFFSET, optionalField,
                                                                     field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalMemberOffset = self.api.OptionalMemberOffset.fromReader(reader)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
                                         optionalField, field)
@@ -59,7 +59,7 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         OptionalMemberOffsetTest._writeOptionalMemberOffsetToStream(writer, hasOptional, optionalFieldOffset,
                                                                     None, field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalMemberOffset = self.api.OptionalMemberOffset.fromReader(reader)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, optionalFieldOffset, None, field)
 
@@ -74,7 +74,7 @@ class OptionalMemberOffsetTest(unittest.TestCase):
         optionalMemberOffset.write(writer)
         self._checkOptionalMemberOffset(optionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
                                         optionalField, field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readOptionalMemberOffset = self.api.OptionalMemberOffset.fromReader(reader)
         self._checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, self.OPTIONAL_FIELD_OFFSET,
                                         optionalField, field)
@@ -92,12 +92,12 @@ class OptionalMemberOffsetTest(unittest.TestCase):
 
     @staticmethod
     def _writeOptionalMemberOffsetToStream(writer, hasOptional, optionalFieldOffset, optionalField, field):
-        writer.writeBool(hasOptional)
-        writer.writeBits(optionalFieldOffset, 32)
+        writer.write_bool(hasOptional)
+        writer.write_bits(optionalFieldOffset, 32)
         if hasOptional:
-            writer.writeBits(0, 7)
-            writer.writeSignedBits(optionalField, 32)
-        writer.writeSignedBits(field, 32)
+            writer.write_bits(0, 7)
+            writer.write_signed_bits(optionalField, 32)
+        writer.write_signed_bits(field, 32)
 
     def _checkOptionalMemberOffset(self, optionalMemberOffset, hasOptional, optionalFieldOffset, optionalField,
                                    field):

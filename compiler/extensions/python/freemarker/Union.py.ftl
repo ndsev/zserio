@@ -61,8 +61,8 @@ class ${name}:
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
-        result = zserio.hashcode.calcHashCode(result, hash(self._choiceTag))
-        result = zserio.hashcode.calcHashCode(result, hash(self._choice))
+        result = zserio.hashcode.calc_hashcode(result, hash(self._choiceTag))
+        result = zserio.hashcode.calc_hashcode(result, hash(self._choice))
 
         return result
 <#list compoundParametersData.list as parameter>
@@ -107,7 +107,7 @@ class ${name}:
 <#if fieldList?has_content>
         endBitPosition = bitPosition
 
-        endBitPosition += zserio.bitsizeof.getBitSizeOfVarSize(self._choiceTag)
+        endBitPosition += zserio.bitsizeof.bitsizeof_varsize(self._choiceTag)
 
         <@union_if "compound_bitsizeof_field"/>
 
@@ -123,7 +123,7 @@ class ${name}:
     <#if fieldList?has_content>
         endBitPosition = bitPosition
 
-        endBitPosition += zserio.bitsizeof.getBitSizeOfVarSize(self._choiceTag)
+        endBitPosition += zserio.bitsizeof.bitsizeof_varsize(self._choiceTag)
 
         <@union_if "compound_initialize_offsets_field"/>
 
@@ -138,7 +138,7 @@ class ${name}:
 </#macro>
     def read(self, reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-        self._choiceTag = reader.readVarSize()
+        self._choiceTag = reader.read_varsize()
 
         <@union_if "union_read_field"/>
 <#else>
@@ -153,12 +153,12 @@ class ${name}:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
-            self.initializeOffsets(writer.getBitPosition())
+            self.initializeOffsets(writer.bitposition)
         <#else>
         del callInitializeOffsets
         </#if>
 
-        writer.writeVarSize(self._choiceTag)
+        writer.write_varsize(self._choiceTag)
 
         <@union_if "union_write_field"/>
     <#else>

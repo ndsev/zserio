@@ -8,7 +8,7 @@ from zserio.bitbuffer import BitBuffer
 from zserio.exception import PythonRuntimeException
 from zserio.limits import INT64_MIN
 
-def getBitSizeOfVarInt16(value: int) -> int:
+def bitsizeof_varint16(value: int) -> int:
     """
     Gets bit size of variable 16-bit signed integer value.
 
@@ -17,9 +17,9 @@ def getBitSizeOfVarInt16(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varint16 type.
     """
 
-    return _getBitSizeOfVarIntImpl(abs(value), VARINT16_MAX_VALUES, "varint16")
+    return _bitsizeof_varnum(abs(value), VARINT16_MAX_VALUES, "varint16")
 
-def getBitSizeOfVarInt32(value: int) -> int:
+def bitsizeof_varint32(value: int) -> int:
     """
     Gets bit size of variable 32-bit signed integer value.
 
@@ -28,9 +28,9 @@ def getBitSizeOfVarInt32(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varint32 type.
     """
 
-    return _getBitSizeOfVarIntImpl(abs(value), VARINT32_MAX_VALUES, "varint32")
+    return _bitsizeof_varnum(abs(value), VARINT32_MAX_VALUES, "varint32")
 
-def getBitSizeOfVarInt64(value: int) -> int:
+def bitsizeof_varint64(value: int) -> int:
     """
     Gets bit size of variable 64-bit signed integer value.
 
@@ -39,9 +39,9 @@ def getBitSizeOfVarInt64(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varint64 type.
     """
 
-    return _getBitSizeOfVarIntImpl(abs(value), VARINT64_MAX_VALUES, "varint64")
+    return _bitsizeof_varnum(abs(value), VARINT64_MAX_VALUES, "varint64")
 
-def getBitSizeOfVarInt(value: int) -> int:
+def bitsizeof_varint(value: int) -> int:
     """
     Gets bit size of variable signed integer value (up to 9 bytes).
 
@@ -52,9 +52,9 @@ def getBitSizeOfVarInt(value: int) -> int:
 
     if value == INT64_MIN:
         return 8 # INT64_MIN is stored as -0
-    return _getBitSizeOfVarIntImpl(abs(value), VARINT_MAX_VALUES, "varint")
+    return _bitsizeof_varnum(abs(value), VARINT_MAX_VALUES, "varint")
 
-def getBitSizeOfVarUInt16(value: int) -> int:
+def bitsizeof_varuint16(value: int) -> int:
     """
     Gets bit size of variable 16-bit unsigned integer value.
 
@@ -63,9 +63,9 @@ def getBitSizeOfVarUInt16(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varuint16 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT16_MAX_VALUES, "varuint16")
+    return _bitsizeof_varnum(value, VARUINT16_MAX_VALUES, "varuint16")
 
-def getBitSizeOfVarUInt32(value: int) -> int:
+def bitsizeof_varuint32(value: int) -> int:
     """
     Gets bit size of variable 32-bit unsigned integer value.
 
@@ -74,9 +74,9 @@ def getBitSizeOfVarUInt32(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varuint32 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT32_MAX_VALUES, "varuint32")
+    return _bitsizeof_varnum(value, VARUINT32_MAX_VALUES, "varuint32")
 
-def getBitSizeOfVarUInt64(value: int) -> int:
+def bitsizeof_varuint64(value: int) -> int:
     """
     Gets bit size of variable 64-bit unsigned integer value.
 
@@ -85,9 +85,9 @@ def getBitSizeOfVarUInt64(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varuint64 type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT64_MAX_VALUES, "varuint64")
+    return _bitsizeof_varnum(value, VARUINT64_MAX_VALUES, "varuint64")
 
-def getBitSizeOfVarUInt(value: int) -> int:
+def bitsizeof_varuint(value: int) -> int:
     """
     Gets bit size of variable unsigned integer value (up to 9 bytes).
 
@@ -96,9 +96,9 @@ def getBitSizeOfVarUInt(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varuint type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARUINT_MAX_VALUES, "varuint")
+    return _bitsizeof_varnum(value, VARUINT_MAX_VALUES, "varuint")
 
-def getBitSizeOfVarSize(value: int) -> int:
+def bitsizeof_varsize(value: int) -> int:
     """
     Gets bit size of variable size integer value.
 
@@ -107,9 +107,9 @@ def getBitSizeOfVarSize(value: int) -> int:
     :raises PythonRuntimeException: Throws if given value is out of range for varsize type.
     """
 
-    return _getBitSizeOfVarIntImpl(value, VARSIZE_MAX_VALUES, "varsize")
+    return _bitsizeof_varnum(value, VARSIZE_MAX_VALUES, "varsize")
 
-def getBitSizeOfString(string: str) -> int:
+def bitsizeof_string(string: str) -> int:
     """
     Gets bit size of string.
 
@@ -117,30 +117,30 @@ def getBitSizeOfString(string: str) -> int:
     :raises PythonRuntimeException: Throws if given string is too long.
     """
 
-    stringBytes = string.encode("utf-8")
-    return getBitSizeOfVarSize(len(stringBytes)) + len(stringBytes) * 8
+    string_bytes = string.encode("utf-8")
+    return bitsizeof_varsize(len(string_bytes)) + len(string_bytes) * 8
 
-def getBitSizeOfBitBuffer(bitBuffer: BitBuffer) -> int:
+def bitsizeof_bitbuffer(bitbuffer: BitBuffer) -> int:
     """
     Gets the bit size of bit buffer which is stored in bit stream.
 
-    :param bitBuffer: Bit buffer for calculation.
+    :param bitbuffer: Bit buffer for calculation.
     :returns: Length of bit buffer in bits.
     :raises PythonRuntimeException: Throws if given bit buffer is too long.
     """
-    bitBufferSize = bitBuffer.getBitSize()
+    bitbuffer_size = bitbuffer.bitsize
 
     # bit buffer consists of varsize for bit size followed by the bits
-    return getBitSizeOfVarSize(bitBufferSize) + bitBufferSize
+    return bitsizeof_varsize(bitbuffer_size) + bitbuffer_size
 
-def _getBitSizeOfVarIntImpl(value: int, maxValues: typing.Sequence[int], varIntName: str) -> int:
+def _bitsizeof_varnum(value: int, max_values: typing.Sequence[int], varint_name: str) -> int:
     if value >= 0:
-        absValue = abs(value)
-        for i, maxValue in enumerate(maxValues):
-            if absValue <= maxValue:
+        abs_value = abs(value)
+        for i, max_value in enumerate(max_values):
+            if abs_value <= max_value:
                 return (i + 1) * 8
 
-    raise PythonRuntimeException("bitsizeof: Value '%d' is out of range for %s!" % (value, varIntName))
+    raise PythonRuntimeException("bitsizeof: Value '%d' is out of range for %s!" % (value, varint_name))
 
 VARINT16_MAX_VALUES = [
     (1 << (6)) - 1,

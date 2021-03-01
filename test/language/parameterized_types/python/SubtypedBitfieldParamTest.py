@@ -12,10 +12,10 @@ class SubtypedBitfieldParamTest(unittest.TestCase):
         subtypedBitfieldParamHolder = self._createSubtypedBitfieldParamHolder()
         writer = zserio.BitStreamWriter()
         subtypedBitfieldParamHolder.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkSubtypedBitfieldParamHolderInStream(reader, subtypedBitfieldParamHolder)
 
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readSubtypedBitfieldParamHolder = self.api.SubtypedBitfieldParamHolder.fromReader(reader)
         self.assertEqual(subtypedBitfieldParamHolder, readSubtypedBitfieldParamHolder)
 
@@ -29,8 +29,8 @@ class SubtypedBitfieldParamTest(unittest.TestCase):
     def _checkSubtypedBitfieldParamHolderInStream(self, stream, subtypedBitfieldParamHolder):
         subtypedBitfieldParam = subtypedBitfieldParamHolder.subtyped_bitfield_param
         self.assertEqual(subtypedBitfieldParam.param, self.SUBTYPED_BITFIELD_PARAM)
-        self.assertEqual(subtypedBitfieldParam.value, stream.readBits(16))
-        self.assertEqual(subtypedBitfieldParam.extra_value, stream.readBits(32))
+        self.assertEqual(subtypedBitfieldParam.value, stream.read_bits(16))
+        self.assertEqual(subtypedBitfieldParam.extra_value, stream.read_bits(32))
 
     SUBTYPED_BITFIELD_PARAM = 11
     SUBTYPED_BITFIELD_PARAM_VALUE = 0x0BED

@@ -46,15 +46,15 @@ class UInt64OffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         uint64Offset.write(writer)
         self.assertEqual(self.OFFSET, uint64Offset.offset)
-        self.assertEqual(self.BIT_SIZE / 8, len(writer.getByteArray()))
+        self.assertEqual(self.BIT_SIZE / 8, len(writer.byte_array))
 
     def testWriteWithPosition(self):
         uint64Offset = self.api.UInt64Offset(0, list(range(self.ARRAY_SIZE)), 0)
         writer = zserio.BitStreamWriter()
-        writer.writeBits(0, 3)
+        writer.write_bits(0, 3)
         uint64Offset.write(writer)
         self.assertEqual(self.OFFSET + 1, uint64Offset.offset)
-        self.assertEqual(self.BIT_SIZE / 8 + 1, len(writer.getByteArray()))
+        self.assertEqual(self.BIT_SIZE / 8 + 1, len(writer.byte_array))
 
     def testWriteWrongOffsets(self):
         uint64Offset = self.api.UInt64Offset(self.WRONG_OFFSET, list(range(self.ARRAY_SIZE)), 0)
@@ -66,13 +66,13 @@ class UInt64OffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
 
         # offset
-        writer.writeBits(self.WRONG_OFFSET if wrongOffset else self.OFFSET, 64)
-        writer.writeVarSize(self.ARRAY_SIZE)
+        writer.write_bits(self.WRONG_OFFSET if wrongOffset else self.OFFSET, 64)
+        writer.write_varsize(self.ARRAY_SIZE)
         for i in range(self.ARRAY_SIZE):
-            writer.writeSignedBits(i, 8)
-        writer.writeSignedBits(0, 32)
+            writer.write_signed_bits(i, 8)
+        writer.write_signed_bits(0, 32)
 
-        return zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        return zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
     ARRAY_SIZE = 13
     OFFSET = 8 + 1 + 13

@@ -49,7 +49,7 @@ class AutoArrayTest(unittest.TestCase):
     def _checkRead(self, numElements):
         writer = zserio.BitStreamWriter()
         AutoArrayTest._writeAutoArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoArray = self.api.AutoArray.fromReader(reader)
 
         uint8Array = autoArray.uint8_array
@@ -69,9 +69,9 @@ class AutoArrayTest(unittest.TestCase):
 
     @staticmethod
     def _writeAutoArrayToStream(writer, numElements):
-        writer.writeVarSize(numElements)
+        writer.write_varsize(numElements)
         for i in range(numElements):
-            writer.writeBits(i, 8)
+            writer.write_bits(i, 8)
 
     AUTO_ARRAY_LENGTH1 = 5
     AUTO_ARRAY_LENGTH2 = 10

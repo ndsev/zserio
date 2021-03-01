@@ -39,7 +39,7 @@ class BitOffsetTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         self._writeBitOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         bitOffset = self.api.BitOffset.fromReader(reader)
         self._checkBitOffset(bitOffset)
 
@@ -47,7 +47,7 @@ class BitOffsetTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         self._writeBitOffsetToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
             bitOffset = self.api.BitOffset.fromReader(reader)
             self._checkBitOffset(bitOffset)
@@ -58,7 +58,7 @@ class BitOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitOffset.write(writer)
         self._checkBitOffset(bitOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readBitOffset = self.api.BitOffset.fromReader(reader)
         self._checkBitOffset(readBitOffset)
         self.assertTrue(bitOffset == readBitOffset)
@@ -68,7 +68,7 @@ class BitOffsetTest(unittest.TestCase):
         bitOffset = self._createBitOffset(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         bitPosition = 2
-        writer.writeBits(0, bitPosition)
+        writer.write_bits(0, bitPosition)
         bitOffset.write(writer)
 
         offsetShift = 1
@@ -83,46 +83,46 @@ class BitOffsetTest(unittest.TestCase):
 
     def _writeBitOffsetToStream(self, writer, writeWrongOffsets):
         if writeWrongOffsets:
-            writer.writeBits(self.WRONG_FIELD1_OFFSET, 8)
-            writer.writeBits(self.WRONG_FIELD2_OFFSET, 16)
-            writer.writeBits(self.WRONG_FIELD3_OFFSET, 32)
-            writer.writeBits(self.WRONG_FIELD4_OFFSET, 8)
-            writer.writeBits(self.WRONG_FIELD5_OFFSET, 15)
-            writer.writeBits(self.WRONG_FIELD6_OFFSET, 18)
-            writer.writeBits(self.WRONG_FIELD7_OFFSET, 23)
-            writer.writeBits(self.WRONG_FIELD8_OFFSET, 8)
+            writer.write_bits(self.WRONG_FIELD1_OFFSET, 8)
+            writer.write_bits(self.WRONG_FIELD2_OFFSET, 16)
+            writer.write_bits(self.WRONG_FIELD3_OFFSET, 32)
+            writer.write_bits(self.WRONG_FIELD4_OFFSET, 8)
+            writer.write_bits(self.WRONG_FIELD5_OFFSET, 15)
+            writer.write_bits(self.WRONG_FIELD6_OFFSET, 18)
+            writer.write_bits(self.WRONG_FIELD7_OFFSET, 23)
+            writer.write_bits(self.WRONG_FIELD8_OFFSET, 8)
         else:
-            writer.writeBits(self.FIELD1_OFFSET, 8)
-            writer.writeBits(self.FIELD2_OFFSET, 16)
-            writer.writeBits(self.FIELD3_OFFSET, 32)
-            writer.writeBits(self.FIELD4_OFFSET, 8)
-            writer.writeBits(self.FIELD5_OFFSET, 15)
-            writer.writeBits(self.FIELD6_OFFSET, 18)
-            writer.writeBits(self.FIELD7_OFFSET, 23)
-            writer.writeBits(self.FIELD8_OFFSET, 8)
+            writer.write_bits(self.FIELD1_OFFSET, 8)
+            writer.write_bits(self.FIELD2_OFFSET, 16)
+            writer.write_bits(self.FIELD3_OFFSET, 32)
+            writer.write_bits(self.FIELD4_OFFSET, 8)
+            writer.write_bits(self.FIELD5_OFFSET, 15)
+            writer.write_bits(self.FIELD6_OFFSET, 18)
+            writer.write_bits(self.FIELD7_OFFSET, 23)
+            writer.write_bits(self.FIELD8_OFFSET, 8)
 
-        writer.writeBits(self.FIELD1_VALUE, 1)
+        writer.write_bits(self.FIELD1_VALUE, 1)
 
-        writer.writeBits(0, 7)
-        writer.writeBits(self.FIELD2_VALUE, 2)
+        writer.write_bits(0, 7)
+        writer.write_bits(self.FIELD2_VALUE, 2)
 
-        writer.writeBits(0, 6)
-        writer.writeBits(self.FIELD3_VALUE, 3)
+        writer.write_bits(0, 6)
+        writer.write_bits(self.FIELD3_VALUE, 3)
 
-        writer.writeBits(0, 5)
-        writer.writeBits(self.FIELD4_VALUE, 4)
+        writer.write_bits(0, 5)
+        writer.write_bits(self.FIELD4_VALUE, 4)
 
-        writer.writeBits(0, 4)
-        writer.writeBits(self.FIELD5_VALUE, 5)
+        writer.write_bits(0, 4)
+        writer.write_bits(self.FIELD5_VALUE, 5)
 
-        writer.writeBits(0, 3)
-        writer.writeBits(self.FIELD6_VALUE, 6)
+        writer.write_bits(0, 3)
+        writer.write_bits(self.FIELD6_VALUE, 6)
 
-        writer.writeBits(0, 2)
-        writer.writeBits(self.FIELD7_VALUE, 7)
+        writer.write_bits(0, 2)
+        writer.write_bits(self.FIELD7_VALUE, 7)
 
-        writer.writeBits(0, 1)
-        writer.writeBits(self.FIELD8_VALUE, 8)
+        writer.write_bits(0, 1)
+        writer.write_bits(self.FIELD8_VALUE, 8)
 
     def _checkOffsets(self, bitOffset, offsetShift):
         self.assertEqual(self.FIELD1_OFFSET + offsetShift, bitOffset.field1_offset)

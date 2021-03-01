@@ -25,8 +25,8 @@ class VarUIntBitmaskTest(unittest.TestCase):
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
-        writer.writeBits(WRITE_VALUE, zserio.bitsizeof.getBitSizeOfVarUInt(WRITE_VALUE))
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        writer.write_bits(WRITE_VALUE, zserio.bitsizeof.bitsizeof_varuint(WRITE_VALUE))
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         permission = self.api.Permission.fromReader(reader)
         self.assertEqual(self.api.Permission.Values.WRITE, permission)
 
@@ -119,14 +119,14 @@ class VarUIntBitmaskTest(unittest.TestCase):
         self.assertEqual(read | write, ~none & (read | write))
 
     def testBitSizeOf(self):
-        self.assertEqual(zserio.bitsizeof.getBitSizeOfVarUInt(NONE_VALUE),
+        self.assertEqual(zserio.bitsizeof.bitsizeof_varuint(NONE_VALUE),
                          self.api.Permission.Values.NONE.bitSizeOf())
-        self.assertEqual(zserio.bitsizeof.getBitSizeOfVarUInt(NONE_VALUE),
+        self.assertEqual(zserio.bitsizeof.bitsizeof_varuint(NONE_VALUE),
                          self.api.Permission.Values.NONE.bitSizeOf(1))
 
     def testInitializeOffsets(self):
         bitPosition = 1
-        self.assertEqual(bitPosition + zserio.bitsizeof.getBitSizeOfVarUInt(READ_VALUE),
+        self.assertEqual(bitPosition + zserio.bitsizeof.bitsizeof_varuint(READ_VALUE),
                          self.api.Permission.Values.READ.initializeOffsets(bitPosition))
 
     def testWrite(self):
@@ -134,7 +134,7 @@ class VarUIntBitmaskTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         permission.write(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readPermission = self.api.Permission.fromReader(reader)
         self.assertEqual(permission, readPermission)
 

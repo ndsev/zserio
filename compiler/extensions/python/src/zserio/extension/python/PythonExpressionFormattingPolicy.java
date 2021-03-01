@@ -181,7 +181,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
         importCollector.importPackage("zserio");
-        return new UnaryExpressionFormatting("zserio.builtin.getNumBits(", ")");
+        return new UnaryExpressionFormatting("zserio.builtin.numbits(", ")");
     }
 
     // binary expressions formatting

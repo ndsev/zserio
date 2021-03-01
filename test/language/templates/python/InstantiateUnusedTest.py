@@ -14,7 +14,7 @@ class InstantiateUnusedTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         u32.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readU32 = self.api.U32()
         readU32.read(reader)
         self.assertEqual(u32, readU32)

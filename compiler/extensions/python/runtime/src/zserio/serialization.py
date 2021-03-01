@@ -24,24 +24,24 @@ def serialize(obj: typing.Any) -> BitBuffer:
     writer = BitStreamWriter()
     obj.write(writer)
 
-    return BitBuffer(writer.getByteArray(), writer.getBitPosition())
+    return BitBuffer(writer.byte_array, writer.bitposition)
 
-def deserialize(objClass: typing.Type[typing.Any], bitBuffer: BitBuffer, *args) -> typing.Any:
+def deserialize(obj_class: typing.Type[typing.Any], bitbuffer: BitBuffer, *args) -> typing.Any:
     """
     Deserializes bit buffer to the generated object.
 
-    :param objClass: Class instance of the generated object to deserialize.
-    :param bitBuffer: Bit buffer which represents generated object in binary format.
-    :param args: Additional arguments needed for objClass.fromReader method.
+    :param obj_class: Class instance of the generated object to deserialize.
+    :param bitbuffer: Bit buffer which represents generated object in binary format.
+    :param args: Additional arguments needed for obj_class.from_reader method.
     :returns: Generated object created from given bit buffer.
     :raises PythonRuntimeException: Throws in case of any error during deserialization.
     """
 
-    reader = BitStreamReader.fromBitBuffer(bitBuffer)
+    reader = BitStreamReader.from_bitbuffer(bitbuffer)
 
-    return objClass.fromReader(reader, *args)
+    return obj_class.fromReader(reader, *args)
 
-def serializeToBytes(obj: typing.Any) -> bytes:
+def serialize_to_bytes(obj: typing.Any) -> bytes:
     """
     Serializes generated object to the byte buffer.
 
@@ -56,11 +56,11 @@ def serializeToBytes(obj: typing.Any) -> bytes:
     :raises PythonRuntimeException: Throws in case of any error during serialization.
     """
 
-    bitBuffer = serialize(obj)
+    bitbuffer = serialize(obj)
 
-    return bitBuffer.getBuffer()
+    return bitbuffer.buffer
 
-def deserializeBytes(objClass: typing.Type[typing.Any], buffer: bytes, *args) -> typing.Any:
+def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) -> typing.Any:
     """
     Deserializes byte buffer to the generated object.
 
@@ -68,13 +68,13 @@ def deserializeBytes(objClass: typing.Type[typing.Any], buffer: bytes, *args) ->
     serialization (because there is no way how to specify exact number of bits). Thus, it could allow reading
     behind stream (possibly in case of damaged data).
 
-    :param objClass: Class instance of the generated object to deserialize.
+    :param obj_class: Class instance of the generated object to deserialize.
     :param buffer: Byte buffer which represents generated object in binary format.
-    :param args: Additional arguments needed for objClass.fromReader method.
+    :param args: Additional arguments needed for obj_class.from_reader method.
     :returns: Generated object created from given byte buffer.
     :raises PythonRuntimeException: Throws in case of any error during deserialization.
     """
 
-    bitBuffer = BitBuffer(buffer)
+    bitbuffer = BitBuffer(buffer)
 
-    return deserialize(objClass, bitBuffer, *args)
+    return deserialize(obj_class, bitbuffer, *args)

@@ -49,7 +49,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         OptionalNestedIndexedOffsetArrayTest._writeOptionalNestedIndexedOffsetArrayToStream(writer, length,
                                                                                             writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalNestedIndexedOffsetArray = self.api.OptionalNestedIndexedOffsetArray()
         optionalNestedIndexedOffsetArray.read(reader)
         self._checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length)
@@ -60,7 +60,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         OptionalNestedIndexedOffsetArrayTest._writeOptionalNestedIndexedOffsetArrayToStream(writer, length,
                                                                                             writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalNestedIndexedOffsetArray = self.api.OptionalNestedIndexedOffsetArray()
         optionalNestedIndexedOffsetArray.read(reader)
         self._checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length)
@@ -73,7 +73,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         optionalNestedIndexedOffsetArray.write(writer)
         self._checkOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readOptionalNestedIndexedOffsetArray = self.api.OptionalNestedIndexedOffsetArray.fromReader(reader)
         self._checkOptionalNestedIndexedOffsetArray(readOptionalNestedIndexedOffsetArray, length)
         self.assertTrue(optionalNestedIndexedOffsetArray == readOptionalNestedIndexedOffsetArray)
@@ -91,22 +91,22 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
 
     @staticmethod
     def _writeOptionalNestedIndexedOffsetArrayToStream(writer, length, writeWrongOffsets):
-        writer.writeSignedBits(length, 16)
+        writer.write_signed_bits(length, 16)
 
         if length > 0:
             currentOffset = ELEMENT0_OFFSET
             for i in range(length):
                 if writeWrongOffsets and i == length - 1:
-                    writer.writeBits(WRONG_OFFSET, 32)
+                    writer.write_bits(WRONG_OFFSET, 32)
                 else:
-                    writer.writeBits(currentOffset, 32)
-                currentOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
+                    writer.write_bits(currentOffset, 32)
+                currentOffset += zserio.bitsizeof.bitsizeof_string(DATA[i]) // 8
 
             # already aligned
             for i in range(length):
-                writer.writeString(DATA[i])
+                writer.write_string(DATA[i])
 
-        writer.writeBits(FIELD_VALUE, 6)
+        writer.write_bits(FIELD_VALUE, 6)
 
     def _checkOffsets(self, optionalNestedIndexedOffsetArray, offsetShift):
         length = optionalNestedIndexedOffsetArray.header.length
@@ -115,7 +115,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for i in range(length):
             self.assertEqual(expectedOffset, offsets[i])
-            expectedOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
+            expectedOffset += zserio.bitsizeof.bitsizeof_string(DATA[i]) // 8
 
     def _checkOptionalNestedIndexedOffsetArray(self, optionalNestedIndexedOffsetArray, length):
         self.assertEqual(length, optionalNestedIndexedOffsetArray.header.length)
@@ -141,7 +141,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
                 offsets.append(WRONG_OFFSET)
             else:
                 offsets.append(currentOffset)
-            currentOffset += zserio.bitsizeof.getBitSizeOfString(DATA[i]) // 8
+            currentOffset += zserio.bitsizeof.bitsizeof_string(DATA[i]) // 8
 
         optionalNestedIndexedOffsetArray.header = self.api.Header(length, offsets)
 
@@ -158,7 +158,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
         if length > 0:
             # already aligned
             for i in range(length):
-                bitSize += zserio.bitsizeof.getBitSizeOfString(DATA[i])
+                bitSize += zserio.bitsizeof.bitsizeof_string(DATA[i])
         bitSize += 6
 
         return bitSize

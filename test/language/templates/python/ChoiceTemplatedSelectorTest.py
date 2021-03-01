@@ -20,7 +20,7 @@ class ChoiceTemplatedSelectorTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         choiceTemplatedSelector.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readChoiceTemplatedSelector = self.api.ChoiceTemplatedSelector()
         readChoiceTemplatedSelector.read(reader)
         self.assertEqual(choiceTemplatedSelector, readChoiceTemplatedSelector)

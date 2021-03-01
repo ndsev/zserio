@@ -10,11 +10,11 @@ class Service(zserio.ServiceInterface):
 </#list>
         }
 
-    def callMethod(self, methodName: str, requestData: bytes, context: typing.Any = None) -> bytes:
-        method = self._methodMap.get(methodName)
+    def call_method(self, method_name: str, request_data: bytes, context: typing.Any = None) -> bytes:
+        method = self._methodMap.get(method_name)
         if not method:
-            raise zserio.ServiceException("${serviceFullName}: Method '%s' does not exist!" % methodName)
-        return method(requestData, context)
+            raise zserio.ServiceException("${serviceFullName}: Method '%s' does not exist!" % method_name)
+        return method(request_data, context)
 <#list methodList as method>
 
     def _${method.name}Impl(self, request: ${method.requestTypeFullName}, context: typing.Any = None) -> ${method.responseTypeFullName}:
@@ -30,7 +30,7 @@ class Service(zserio.ServiceInterface):
 
         writer = zserio.BitStreamWriter()
         response.write(writer)
-        return writer.getByteArray()
+        return writer.byte_array
 </#list>
 
     SERVICE_FULL_NAME = "${serviceFullName}"
@@ -48,9 +48,9 @@ class Client:
     def ${method.name}Method(self, request: ${method.requestTypeFullName}, context: typing.Any = None) -> ${method.responseTypeFullName}:
         writer = zserio.BitStreamWriter()
         request.write(writer)
-        requestData = writer.getByteArray()
+        requestData = writer.byte_array
 
-        responseData = self._service.callMethod("${method.name}", requestData, context)
+        responseData = self._service.call_method("${method.name}", requestData, context)
 
         reader = zserio.BitStreamReader(responseData)
         response = ${method.responseTypeFullName}.fromReader(reader)

@@ -9,13 +9,13 @@ class ${name}(enum.Enum):
 
     @classmethod
     def fromReader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
-        return cls(reader.read${runtimeFunction.suffix}(${runtimeFunction.arg!}))
+        return cls(reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!}))
 
     def bitSizeOf(self, _bitPosition: int = 0) -> int:
 <#if bitSize??>
         return ${bitSize}
 <#else>
-        return zserio.bitsizeof.getBitSizeOf${runtimeFunction.suffix}(self.value)
+        return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self.value)
 </#if>
 <#if withWriterCode>
 
@@ -23,6 +23,6 @@ class ${name}(enum.Enum):
         return bitPosition + self.bitSizeOf(bitPosition)
 
     def write(self, writer: zserio.BitStreamWriter) -> None:
-        writer.write${runtimeFunction.suffix}(self.value<#rt>
-                                              <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
+        writer.write_${runtimeFunction.suffix}(self.value<#rt>
+                                               <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 </#if>

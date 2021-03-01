@@ -17,8 +17,8 @@ class BitfieldEnumTest(unittest.TestCase):
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
-        writer.writeBits(self.api.Color.GREEN.value, COLOR_BITSIZEOF)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        writer.write_bits(self.api.Color.GREEN.value, COLOR_BITSIZEOF)
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         color = self.api.Color.fromReader(reader)
         self.assertEqual(GREEN_VALUE, color.value)
 
@@ -37,8 +37,8 @@ class BitfieldEnumTest(unittest.TestCase):
     def testWrite(self):
         writer = zserio.BitStreamWriter()
         self.api.Color.RED.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
-        self.assertEqual(RED_VALUE, reader.readBits(COLOR_BITSIZEOF))
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
+        self.assertEqual(RED_VALUE, reader.read_bits(COLOR_BITSIZEOF))
 
 COLOR_BITSIZEOF = 5
 

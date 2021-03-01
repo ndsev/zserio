@@ -85,10 +85,10 @@ class OptionalRecursionTest(unittest.TestCase):
         block1 = self._createBlock(self.BLOCK1_DATA)
         writer = zserio.BitStreamWriter()
         block1.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkBlockInStream(reader, self.BLOCK1_DATA)
 
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readBlock1 = self.api.Block.fromReader(reader, len(self.BLOCK1_DATA))
         self.assertEqual(block1, readBlock1)
 
@@ -96,10 +96,10 @@ class OptionalRecursionTest(unittest.TestCase):
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
         writer = zserio.BitStreamWriter()
         block12.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkBlock12InStream(reader, self.BLOCK1_DATA, self.BLOCK2_DATA)
 
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readBlock12 = self.api.Block.fromReader(reader, len(self.BLOCK1_DATA))
         self.assertEqual(block12, readBlock12)
 
@@ -125,13 +125,13 @@ class OptionalRecursionTest(unittest.TestCase):
 
     def _checkBlockInStream(self, reader, blockData):
         for element in blockData:
-            self.assertEqual(element, reader.readBits(8))
-        self.assertEqual(0, reader.readBits(8))
+            self.assertEqual(element, reader.read_bits(8))
+        self.assertEqual(0, reader.read_bits(8))
 
     def _checkBlock12InStream(self, reader, block1Data, block2Data):
         for element in block1Data:
-            self.assertEqual(element, reader.readBits(8))
-        self.assertEqual(len(block2Data), reader.readBits(8))
+            self.assertEqual(element, reader.read_bits(8))
+        self.assertEqual(len(block2Data), reader.read_bits(8))
 
         self._checkBlockInStream(reader, block2Data)
 

@@ -308,7 +308,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         allBuiltInTypes.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readAllBuiltInTypes = self.api.AllBuiltInTypes()
         readAllBuiltInTypes.read(reader)
         self.assertEqual(allBuiltInTypes, readAllBuiltInTypes)
@@ -318,4 +318,4 @@ class AllBuiltInTypesTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         externalStructure.write(writer)
 
-        return zserio.BitBuffer(writer.getByteArray(), writer.getBitPosition())
+        return zserio.BitBuffer(writer.byte_array, writer.bitposition)

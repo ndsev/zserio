@@ -21,7 +21,7 @@ class OneStringStructureTest(unittest.TestCase):
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         OneStringStructureTest._writeOneStringStructureToStream(writer, self.ONE_STRING)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         oneStringStructure = self.api.OneStringStructure.fromReader(reader)
         self.assertEqual(self.ONE_STRING, oneStringStructure.one_string)
 
@@ -66,7 +66,7 @@ class OneStringStructureTest(unittest.TestCase):
         oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
         writer = zserio.BitStreamWriter()
         oneStringStructure.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readOneStringStructure = self.api.OneStringStructure()
         readOneStringStructure.read(reader)
         self.assertEqual(self.ONE_STRING, readOneStringStructure.one_string)
@@ -74,7 +74,7 @@ class OneStringStructureTest(unittest.TestCase):
 
     @staticmethod
     def _writeOneStringStructureToStream(writer, oneString):
-        writer.writeString(oneString)
+        writer.write_string(oneString)
 
     ONE_STRING = "This is a string!"
     ONE_STRING_STRUCTURE_BIT_SIZE = (1 + len(ONE_STRING)) * 8

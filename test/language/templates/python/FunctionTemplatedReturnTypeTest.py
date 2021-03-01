@@ -19,7 +19,7 @@ class FunctionTemplatedReturnTypeTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         functionTemplatedReturnType.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readFunctionTemplatedReturnType = self.api.FunctionTemplatedReturnType()
         readFunctionTemplatedReturnType.read(reader)
 

@@ -23,7 +23,7 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         value = 234
         writer = zserio.BitStreamWriter()
         UInt16ParamChoiceTest._writeUInt16ParamChoiceToStream(writer, selector, value)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         uint16ParamChoice = self.api.UInt16ParamChoice.fromReader(reader, selector)
         self.assertEqual(selector, uint16ParamChoice.selector)
         self.assertEqual(value, uint16ParamChoice.b)
@@ -123,7 +123,7 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         uint16ParamChoiceA.write(writer)
         readUInt16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt16ParamChoiceA.read(reader)
         self.assertEqual(byteValueA, readUInt16ParamChoiceA.a)
         self.assertEqual(uint16ParamChoiceA, readUInt16ParamChoiceA)
@@ -133,7 +133,7 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         uint16ParamChoiceB.write(writer)
         readUInt16ParamChoiceB = self.api.UInt16ParamChoice(self.VARIANT_B_SELECTOR1)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt16ParamChoiceB.read(reader)
         self.assertEqual(shortValueB, readUInt16ParamChoiceB.b)
         self.assertEqual(uint16ParamChoiceB, readUInt16ParamChoiceB)
@@ -144,7 +144,7 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         uint16ParamChoiceC.write(writer)
         readUInt16ParamChoiceC = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt16ParamChoiceC.read(reader)
         self.assertEqual(intValueC, readUInt16ParamChoiceC.c)
         self.assertEqual(uint16ParamChoiceC, readUInt16ParamChoiceC)
@@ -152,13 +152,13 @@ class UInt16ParamChoiceTest(unittest.TestCase):
     @staticmethod
     def _writeUInt16ParamChoiceToStream(writer, selector, value):
         if selector == 1:
-            writer.writeSignedBits(value, 8)
+            writer.write_signed_bits(value, 8)
         elif selector in (2, 3, 4):
-            writer.writeSignedBits(value, 16)
+            writer.write_signed_bits(value, 16)
         elif selector in (5, 6):
             pass
         else:
-            writer.writeSignedBits(value, 32)
+            writer.write_signed_bits(value, 32)
 
     VARIANT_A_SELECTOR = 1
     VARIANT_B_SELECTOR1 = 2

@@ -42,7 +42,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         Int14IndexedOffsetArrayTest._writeInt14IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         int14IndexedOffsetArray = self.api.Int14IndexedOffsetArray()
         int14IndexedOffsetArray.read(reader)
         self._checkInt14IndexedOffsetArray(int14IndexedOffsetArray)
@@ -51,7 +51,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         Int14IndexedOffsetArrayTest._writeInt14IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         int14IndexedOffsetArray = self.api.Int14IndexedOffsetArray()
         with self.assertRaises(zserio.PythonRuntimeException):
             int14IndexedOffsetArray.read(reader)
@@ -62,7 +62,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         int14IndexedOffsetArray.write(writer)
         self._checkInt14IndexedOffsetArray(int14IndexedOffsetArray)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readInt14IndexedOffsetArray = self.api.Int14IndexedOffsetArray.fromReader(reader)
         self._checkInt14IndexedOffsetArray(readInt14IndexedOffsetArray)
         self.assertTrue(int14IndexedOffsetArray == readInt14IndexedOffsetArray)
@@ -72,7 +72,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         bitPosition = 8
-        writer.writeBits(0, bitPosition)
+        writer.write_bits(0, bitPosition)
         int14IndexedOffsetArray.write(writer)
 
         offsetShift = 1
@@ -90,18 +90,18 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         currentOffset = ELEMENT0_OFFSET
         for i in range(NUM_ELEMENTS):
             if writeWrongOffsets and i == NUM_ELEMENTS - 1:
-                writer.writeBits(WRONG_OFFSET, 32)
+                writer.write_bits(WRONG_OFFSET, 32)
             else:
-                writer.writeBits(currentOffset, 32)
+                writer.write_bits(currentOffset, 32)
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE
 
-        writer.writeBits(SPACER_VALUE, 1)
+        writer.write_bits(SPACER_VALUE, 1)
 
-        writer.writeBits(0, 7)
+        writer.write_bits(0, 7)
         for i in range(NUM_ELEMENTS):
-            writer.writeBits(i, ELEMENT_SIZE)
+            writer.write_bits(i, ELEMENT_SIZE)
             if i != NUM_ELEMENTS - 1:
-                writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE)
+                writer.write_bits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE)
 
     def _checkOffsets(self, int14IndexedOffsetArray, offsetShift):
         offsets = int14IndexedOffsetArray.offsets

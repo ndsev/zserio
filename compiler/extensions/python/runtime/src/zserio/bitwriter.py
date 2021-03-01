@@ -3,13 +3,13 @@ The module implements abstraction for writing data to the bit stream.
 """
 
 from zserio.bitbuffer import BitBuffer
-from zserio.bitsizeof import (getBitSizeOfVarInt16, getBitSizeOfVarInt32,
-                              getBitSizeOfVarInt64, getBitSizeOfVarInt,
-                              getBitSizeOfVarUInt16, getBitSizeOfVarUInt32,
-                              getBitSizeOfVarUInt64, getBitSizeOfVarUInt,
-                              getBitSizeOfVarSize)
+from zserio.bitsizeof import (bitsizeof_varint16, bitsizeof_varint32,
+                              bitsizeof_varint64, bitsizeof_varint,
+                              bitsizeof_varuint16, bitsizeof_varuint32,
+                              bitsizeof_varuint64, bitsizeof_varuint,
+                              bitsizeof_varsize)
 from zserio.exception import PythonRuntimeException
-from zserio.float import convertFloatToUInt16, convertFloatToUInt32, convertFloatToUInt64
+from zserio.float import float_to_uint16, float_to_uint32, float_to_uint64
 from zserio.limits import INT64_MIN
 
 class BitStreamWriter:
@@ -22,51 +22,51 @@ class BitStreamWriter:
         Constructor.
         """
 
-        self._byteArray: bytearray = bytearray()
-        self._bitPosition: int = 0
+        self._byte_array: bytearray = bytearray()
+        self._bitposition: int = 0
 
-    def writeBits(self, value: int, numBits: int) -> None:
+    def write_bits(self, value: int, numbits: int) -> None:
         """
         Writes the given value with the given number of bits to the underlying storage.
 
         :param value: Value to write.
-        :param numBits: Number of bits to write.
+        :param numbits: Number of bits to write.
         :raises PythonRuntimeException: If the value is out of the range or if the number of bits is invalid.
         """
 
-        if numBits <= 0:
-            raise PythonRuntimeException("BitStreamWriter: numBits '%d' is less than 1!" % numBits)
+        if numbits <= 0:
+            raise PythonRuntimeException("BitStreamWriter: numbits '%d' is less than 1!" % numbits)
 
-        minValue = 0
-        maxValue = (1 << numBits) - 1
-        if value < minValue or value > maxValue:
+        min_value = 0
+        max_value = (1 << numbits) - 1
+        if value < min_value or value > max_value:
             raise PythonRuntimeException("BitStreamWriter: Value '%d' is out of the range <%d,%d>!" %
-                                         (value, minValue, maxValue))
+                                         (value, min_value, max_value))
 
-        self._writeBitsImpl(value, numBits, signed=False)
+        self._write_bits(value, numbits, signed=False)
 
-    def writeSignedBits(self, value: int, numBits: int) -> None:
+    def write_signed_bits(self, value: int, numbits: int) -> None:
         """
         Writes the given signed value with the given number of bits to the underlying storage.
         Provided for convenience.
 
         :param value: Signed value to write.
-        :param numBits: Number of bits to write.
+        :param numbits: Number of bits to write.
         :raises PythonRuntimeException: If the value is out of the range or if the number of bits is invalid.
         """
 
-        if numBits <= 0:
-            raise PythonRuntimeException("BitStreamWriter: numBits '%d' is less than 1!" % numBits)
+        if numbits <= 0:
+            raise PythonRuntimeException("BitStreamWriter: numbits '%d' is less than 1!" % numbits)
 
-        minValue = -(1 << (numBits - 1))
-        maxValue = (1 << (numBits - 1)) - 1
-        if value < minValue or value > maxValue:
+        min_value = -(1 << (numbits - 1))
+        max_value = (1 << (numbits - 1)) - 1
+        if value < min_value or value > max_value:
             raise PythonRuntimeException("BitStreamWriter: Value '%d' is out of the range <%d,%d>!" %
-                                         (value, minValue, maxValue))
+                                         (value, min_value, max_value))
 
-        self._writeBitsImpl(value, numBits, signed=True)
+        self._write_bits(value, numbits, signed=True)
 
-    def writeVarInt16(self, value: int) -> None:
+    def write_varint16(self, value: int) -> None:
         """
         Writes a variable 16-bit signed integer value to the underlying storage.
 
@@ -74,9 +74,9 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 2, getBitSizeOfVarInt16(value) // 8, isSigned=True)
+        self._write_varnum(value, 2, bitsizeof_varint16(value) // 8, is_signed=True)
 
-    def writeVarInt32(self, value: int) -> None:
+    def write_varint32(self, value: int) -> None:
         """
         Writes a variable 32-bit signed integer value to the underlying storage.
 
@@ -84,9 +84,9 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 4, getBitSizeOfVarInt32(value) // 8, isSigned=True)
+        self._write_varnum(value, 4, bitsizeof_varint32(value) // 8, is_signed=True)
 
-    def writeVarInt64(self, value: int) -> None:
+    def write_varint64(self, value: int) -> None:
         """
         Writes a variable 16-bit signed integer value to the underlying storage.
 
@@ -94,9 +94,9 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 8, getBitSizeOfVarInt64(value) // 8, isSigned=True)
+        self._write_varnum(value, 8, bitsizeof_varint64(value) // 8, is_signed=True)
 
-    def writeVarInt(self, value: int) -> None:
+    def write_varint(self, value: int) -> None:
         """
         Writes a variable signed integer value (up to 9 bytes) to the underlying storage.
 
@@ -105,11 +105,11 @@ class BitStreamWriter:
         """
 
         if value == INT64_MIN:
-            self.writeBits(0x80, 8) # INT64_MIN is stored as -0
+            self.write_bits(0x80, 8) # INT64_MIN is stored as -0
         else:
-            self._writeVarNum(value, 9, getBitSizeOfVarInt(value) // 8, isSigned=True)
+            self._write_varnum(value, 9, bitsizeof_varint(value) // 8, is_signed=True)
 
-    def writeVarUInt16(self, value: int) -> None:
+    def write_varuint16(self, value: int) -> None:
         """
         Writes a variable 16-bit unsigned integer value to the underlying storage.
 
@@ -117,9 +117,9 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 2, getBitSizeOfVarUInt16(value) // 8, isSigned=False)
+        self._write_varnum(value, 2, bitsizeof_varuint16(value) // 8, is_signed=False)
 
-    def writeVarUInt32(self, value: int) -> None:
+    def write_varuint32(self, value: int) -> None:
         """
         Writes a variable 32-bit unsigned integer value to the underlying storage.
 
@@ -127,9 +127,9 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 4, getBitSizeOfVarUInt32(value) // 8, isSigned=False)
+        self._write_varnum(value, 4, bitsizeof_varuint32(value) // 8, is_signed=False)
 
-    def writeVarUInt64(self, value: int) -> None:
+    def write_varuint64(self, value: int) -> None:
         """
         Writes a variable 16-bit unsigned integer value to the underlying storage.
 
@@ -137,9 +137,9 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 8, getBitSizeOfVarUInt64(value) // 8, isSigned=False)
+        self._write_varnum(value, 8, bitsizeof_varuint64(value) // 8, is_signed=False)
 
-    def writeVarUInt(self, value: int) -> None:
+    def write_varuint(self, value: int) -> None:
         """
         Writes a variable unsigned integer value (up to 9 bytes) to the underlying storage.
 
@@ -147,9 +147,9 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 9, getBitSizeOfVarUInt(value) // 8, isSigned=False)
+        self._write_varnum(value, 9, bitsizeof_varuint(value) // 8, is_signed=False)
 
-    def writeVarSize(self, value: int) -> None:
+    def write_varsize(self, value: int) -> None:
         """
         Writes a variable size integer value to the underlying storage.
 
@@ -157,36 +157,36 @@ class BitStreamWriter:
         :raises PythonRuntimeException: If the value is out of the range.
         """
 
-        self._writeVarNum(value, 5, getBitSizeOfVarSize(value) // 8, isSigned=False)
+        self._write_varnum(value, 5, bitsizeof_varsize(value) // 8, is_signed=False)
 
-    def writeFloat16(self, value: float) -> None:
+    def write_float16(self, value: float) -> None:
         """
         Writes a 16-bit float value to the underlying storage according to IEEE 754 binary16.
 
         :param value: Float value to write.
         """
 
-        self.writeBits(convertFloatToUInt16(value), 16)
+        self.write_bits(float_to_uint16(value), 16)
 
-    def writeFloat32(self, value: float) -> None:
+    def write_float32(self, value: float) -> None:
         """
         Writes a 32-bit float value to the underlying storage according to IEEE 754 binary32.
 
         :param value: Float value to write.
         """
 
-        self.writeBits(convertFloatToUInt32(value), 32)
+        self.write_bits(float_to_uint32(value), 32)
 
-    def writeFloat64(self, value: float) -> None:
+    def write_float64(self, value: float) -> None:
         """
         Writes a 64-bit float value to the underlying storage according to IEEE 754 binary64.
 
         :param value: Float value to write.
         """
 
-        self.writeBits(convertFloatToUInt64(value), 64)
+        self.write_bits(float_to_uint64(value), 64)
 
-    def writeString(self, string: str) -> None:
+    def write_string(self, string: str) -> None:
         """
         Writes the given string to the underlying storage in UTF-8 encoding. Length of the string is written
         as varuint64 at the beginning.
@@ -194,57 +194,58 @@ class BitStreamWriter:
         :param string: String to write.
         """
 
-        stringBytes = string.encode("utf-8")
-        self.writeVarSize(len(stringBytes))
-        for stringByte in stringBytes:
-            self.writeBits(stringByte, 8)
+        string_bytes = string.encode("utf-8")
+        self.write_varsize(len(string_bytes))
+        for string_byte in string_bytes:
+            self.write_bits(string_byte, 8)
 
-    def writeBool(self, value: bool) -> None:
+    def write_bool(self, value: bool) -> None:
         """
         Writes bool in a single bit.
 
         :param value: Bool value to write.
         """
 
-        self.writeBits(1 if value else 0, 1)
+        self.write_bits(1 if value else 0, 1)
 
-    def writeBitBuffer(self, bitBuffer: BitBuffer) -> None:
+    def write_bitbuffer(self, bitbuffer: BitBuffer) -> None:
         """
         Writes a bit buffer to the underlying storage. Length of the bit buffer is written as varuint64
         at the beginning.
 
-        :param bitBuffer: Bit buffer to write.
+        :param bitbuffer: Bit buffer to write.
         """
 
-        bitSize = bitBuffer.getBitSize()
-        self.writeVarSize(bitSize)
+        bitsize = bitbuffer.bitsize
+        self.write_varsize(bitsize)
 
-        writeBuffer = bitBuffer.getBuffer()
-        numBytesToWrite = bitSize // 8
-        numRestBits = bitSize - numBytesToWrite * 8
-        beginBitPosition = self._bitPosition
-        if (beginBitPosition & 0x07) != 0:
+        write_buffer = bitbuffer.buffer
+        num_bytes_to_write = bitsize // 8
+        num_rest_bits = bitsize - num_bytes_to_write * 8
+        begin_bitposition = self._bitposition
+        if (begin_bitposition & 0x07) != 0:
             # we are not aligned to byte
-            for i in range(numBytesToWrite):
-                self.writeBits(writeBuffer[i], 8)
+            for i in range(num_bytes_to_write):
+                self.write_bits(write_buffer[i], 8)
         else:
             # we are aligned to byte
-            self._byteArray += writeBuffer[0:numBytesToWrite]
-            self._bitPosition += numBytesToWrite * 8
+            self._byte_array += write_buffer[0:num_bytes_to_write]
+            self._bitposition += num_bytes_to_write * 8
 
-        if numRestBits > 0:
-            self.writeBits(writeBuffer[numBytesToWrite] >> (8 - numRestBits), numRestBits)
+        if num_rest_bits > 0:
+            self.write_bits(write_buffer[num_bytes_to_write] >> (8 - num_rest_bits), num_rest_bits)
 
-    def getByteArray(self) -> bytes:
+    @property
+    def byte_array(self) -> bytes:
         """
         Gets internal bytearray.
 
         :returns: Underlying bytearray object.
         """
 
-        return self._byteArray
+        return self._byte_array
 
-    def toFile(self, filename: str) -> None:
+    def to_file(self, filename: str) -> None:
         """
         Writes underlying bytearray to binary file.
 
@@ -252,69 +253,70 @@ class BitStreamWriter:
         """
 
         with open(filename, "wb") as file:
-            file.write(self._byteArray)
+            file.write(self._byte_array)
 
-    def getBitPosition(self) -> int:
+    @property
+    def bitposition(self) -> int:
         """
         Gets current bit position.
 
         :returns: Current bit position.
         """
 
-        return self._bitPosition
+        return self._bitposition
 
-    def alignTo(self, alignment: int) -> None:
+    def alignto(self, alignment: int) -> None:
         """
         Aligns the bit position according to the aligning value.
 
         :param alignment: An aligning value to use.
         """
 
-        offset = self._bitPosition % alignment
+        offset = self._bitposition % alignment
         if offset != 0:
-            self.writeBits(0, alignment - offset)
+            self.write_bits(0, alignment - offset)
 
-    def _writeBitsImpl(self, value: int, numBits: int, *, signed: bool) -> None:
-        bufferLastByteBits = self._bitPosition % 8
-        bufferFreeBits = (8 - bufferLastByteBits) if bufferLastByteBits != 0 else 0
-        valueFirstByteBits = numBits % 8 or 8
-        if valueFirstByteBits <= bufferFreeBits:
-            leftShift = bufferFreeBits - valueFirstByteBits
+    def _write_bits(self, value: int, numbits: int, *, signed: bool) -> None:
+        buffer_last_byte_bits = self._bitposition % 8
+        buffer_free_bits = (8 - buffer_last_byte_bits) if buffer_last_byte_bits != 0 else 0
+        value_first_byte_bits = numbits % 8 or 8
+        if value_first_byte_bits <= buffer_free_bits:
+            left_shift = buffer_free_bits - value_first_byte_bits
         else:
-            leftShift = bufferFreeBits + 8 - valueFirstByteBits
-        value <<= leftShift
-        numBytes = (numBits + leftShift + 7) // 8
-        valueBytes = value.to_bytes(numBytes, byteorder='big', signed=signed)
-        if bufferFreeBits == 0:
-            self._byteArray.extend(valueBytes)
+            left_shift = buffer_free_bits + 8 - value_first_byte_bits
+        value <<= left_shift
+        num_bytes = (numbits + left_shift + 7) // 8
+        value_bytes = value.to_bytes(num_bytes, byteorder='big', signed=signed)
+        if buffer_free_bits == 0:
+            self._byte_array.extend(value_bytes)
         else:
-            valueFirstByte = valueBytes[0] & ((1 << bufferFreeBits) - 1)
-            self._byteArray[-1] |= valueFirstByte
-            self._byteArray.extend(valueBytes[1:])
+            value_first_byte = value_bytes[0] & ((1 << buffer_free_bits) - 1)
+            self._byte_array[-1] |= value_first_byte
+            self._byte_array.extend(value_bytes[1:])
 
-        self._bitPosition += numBits
+        self._bitposition += numbits
 
-    def _writeVarNum(self, value: int, maxVarBytes: int, numVarBytes: int, *, isSigned: bool) -> None:
-        absValue = abs(value)
-        hasMaxByteRange = (numVarBytes == maxVarBytes)
-        for i in range(numVarBytes):
+    def _write_varnum(self, value: int, max_var_bytes: int, num_var_bytes: int, *, is_signed: bool) -> None:
+        abs_value = abs(value)
+        has_max_byte_range = (num_var_bytes == max_var_bytes)
+        for i in range(num_var_bytes):
             byte = 0x00
-            numBits = 8
-            hasNextByte = (i < numVarBytes - 1)
-            hasSignBit = (isSigned and i == 0)
-            if hasSignBit:
+            numbits = 8
+            has_next_byte = (i < num_var_bytes - 1)
+            has_sign_bit = (is_signed and i == 0)
+            if has_sign_bit:
                 if value < 0:
                     byte |= 0x80
-                numBits -= 1
-            if hasNextByte:
-                numBits -= 1
-                byte |= (1 << numBits) # use bit 6 if signed bit is present, use bit 7 otherwise
+                numbits -= 1
+            if has_next_byte:
+                numbits -= 1
+                byte |= (1 << numbits) # use bit 6 if signed bit is present, use bit 7 otherwise
             else: # this is the last byte
-                if not hasMaxByteRange: # next byte indicator is not used in last byte in case of max byte range
-                    numBits -= 1
+                if not has_max_byte_range: # next byte flag isn't used in last byte in case of max byte range
+                    numbits -= 1
 
-            shiftBits = (numVarBytes - (i + 1)) * 7 + (1 if hasMaxByteRange and hasNextByte else 0)
-            byte |= (absValue >> shiftBits) & VAR_NUM_BIT_MASKS[numBits - 1]
-            self.writeBits(byte, 8)
+            shift_bits = (num_var_bytes - (i + 1)) * 7 + (1 if has_max_byte_range and has_next_byte else 0)
+            byte |= (abs_value >> shift_bits) & VAR_NUM_BIT_MASKS[numbits - 1]
+            self.write_bits(byte, 8)
 
 VAR_NUM_BIT_MASKS = [0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff]

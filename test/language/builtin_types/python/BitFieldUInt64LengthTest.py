@@ -28,7 +28,7 @@ class BitFieldUInt64LengthTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         container.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readContainer = self.api.Container()
         readContainer.read(reader)
         self.assertEqual(container, readContainer)

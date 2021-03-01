@@ -18,7 +18,7 @@ class StructLongTemplateArgumentTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structLongTemplateArgument.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructLongTemplateArgument = self.api.StructLongTemplateArgument()
         readStructLongTemplateArgument.read(reader)
         self.assertEqual(structLongTemplateArgument, readStructLongTemplateArgument)

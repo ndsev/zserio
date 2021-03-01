@@ -12,10 +12,10 @@ class GrandChildParamTest(unittest.TestCase):
         grandChildParam = self._createGrandChildParam()
         writer = zserio.BitStreamWriter()
         grandChildParam.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkGrandChildParamInStream(reader, grandChildParam)
 
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readGrandChildParam = self.api.GrandChildParam.fromReader(reader)
         self.assertEqual(grandChildParam, readGrandChildParam)
 
@@ -30,11 +30,11 @@ class GrandChildParamTest(unittest.TestCase):
 
     def _checkGrandChildParamInStream(self, stream, grandChildParam):
         itemChoiceHolder = grandChildParam.item_choice_holder
-        self.assertEqual(itemChoiceHolder.has_item, stream.readBool())
+        self.assertEqual(itemChoiceHolder.has_item, stream.read_bool())
 
         item = itemChoiceHolder.item_choice.item
-        self.assertEqual(item.param, stream.readBits(16))
-        self.assertEqual(item.extra_param, stream.readBits(32))
+        self.assertEqual(item.param, stream.read_bits(16))
+        self.assertEqual(item.extra_param, stream.read_bits(32))
 
     ITEM_CHOICE_HOLDER_HAS_ITEM = True
     ITEM_PARAM = 0xAABB

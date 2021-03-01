@@ -32,25 +32,25 @@ class SimpleUnionTest(unittest.TestCase):
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case1Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
         self.assertEqual(self.CASE1_FIELD, simpleUnion.case1_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case2Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
         self.assertEqual(self.CASE2_FIELD, simpleUnion.case2_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case3Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
         self.assertEqual(self.CASE3_FIELD, simpleUnion.case3_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case4Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion.fromReader(reader)
         self.assertEqual(self.CASE4_FIELD, simpleUnion.case4_field)
 
@@ -160,28 +160,28 @@ class SimpleUnionTest(unittest.TestCase):
     def testRead(self):
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case1Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
         self.assertEqual(self.CASE1_FIELD, simpleUnion.case1_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case2Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
         self.assertEqual(self.CASE2_FIELD, simpleUnion.case2_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case3Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
         self.assertEqual(self.CASE3_FIELD, simpleUnion.case3_field)
 
         writer = zserio.BitStreamWriter()
         self._writeSimpleUnionToStream(writer, self.api.SimpleUnion.CHOICE_case4Field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleUnion = self.api.SimpleUnion()
         simpleUnion.read(reader)
         self.assertEqual(self.CASE4_FIELD, simpleUnion.case4_field)
@@ -211,15 +211,15 @@ class SimpleUnionTest(unittest.TestCase):
         self.assertTrue(simpleUnion == readSimpleUnion)
 
     def _writeSimpleUnionToStream(self, writer, choiceTag):
-        writer.writeVarSize(choiceTag)
+        writer.write_varsize(choiceTag)
         if choiceTag == self.api.SimpleUnion.CHOICE_case1Field:
-            writer.writeSignedBits(self.CASE1_FIELD, 8)
+            writer.write_signed_bits(self.CASE1_FIELD, 8)
         elif choiceTag == self.api.SimpleUnion.CHOICE_case2Field:
-            writer.writeBits(self.CASE2_FIELD, 16)
+            writer.write_bits(self.CASE2_FIELD, 16)
         elif choiceTag == self.api.SimpleUnion.CHOICE_case3Field:
-            writer.writeString(self.CASE3_FIELD)
+            writer.write_string(self.CASE3_FIELD)
         elif choiceTag == self.api.SimpleUnion.CHOICE_case4Field:
-            writer.writeSignedBits(self.CASE4_FIELD, 8)
+            writer.write_signed_bits(self.CASE4_FIELD, 8)
         else:
             raise zserio.PythonRuntimeException("_writeSimpleUnionToStream - unknown choiceTag %d!" % choiceTag)
 
@@ -230,5 +230,5 @@ class SimpleUnionTest(unittest.TestCase):
 
     UNION_CASE1_BIT_SIZE = 8 + 8
     UNION_CASE2_BIT_SIZE = 8 + 16
-    UNION_CASE3_BIT_SIZE = 8 + zserio.bitsizeof.getBitSizeOfString(CASE3_FIELD)
+    UNION_CASE3_BIT_SIZE = 8 + zserio.bitsizeof.bitsizeof_string(CASE3_FIELD)
     UNION_CASE4_BIT_SIZE = 8 + 8

@@ -15,7 +15,7 @@ class InstantiateTypeAsTemplateArgumentTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateTypeAsTemplateArgument.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readInstantiateTypeAsTemplateArgument = self.api.InstantiateTypeAsTemplateArgument()
         readInstantiateTypeAsTemplateArgument.read(reader)
         self.assertEqual(instantiateTypeAsTemplateArgument, readInstantiateTypeAsTemplateArgument)

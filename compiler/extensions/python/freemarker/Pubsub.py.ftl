@@ -38,5 +38,5 @@ class ${name}:
     def _publish(self, topic: str, message: typing.Any, context: typing.Any) -> None:
         writer = zserio.BitStreamWriter()
         message.write(writer)
-        self._pubsub.publish(topic, writer.getByteArray(), context)
+        self._pubsub.publish(topic, writer.byte_array, context)
 </#if>

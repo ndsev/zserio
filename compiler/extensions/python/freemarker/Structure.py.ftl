@@ -168,7 +168,7 @@ ${I}<#rt>
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
-            self.initializeOffsets(writer.getBitPosition())
+            self.initializeOffsets(writer.bitposition)
         <#else>
         del callInitializeOffsets
         </#if>

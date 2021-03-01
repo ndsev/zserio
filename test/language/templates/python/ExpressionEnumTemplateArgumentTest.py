@@ -15,7 +15,7 @@ class ExpressionEnumTemplateArgumentTest(unittest.TestCase):
         enumTemplateArgumentHolder = self.api.EnumTemplateArgumentHolder(enumTemplateArgument_Color)
         writer = zserio.BitStreamWriter()
         enumTemplateArgumentHolder.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEnumTemplateArgumentHolder = self.api.EnumTemplateArgumentHolder()
         readEnumTemplateArgumentHolder.read(reader)
         self.assertEqual(enumTemplateArgumentHolder, readEnumTemplateArgumentHolder)

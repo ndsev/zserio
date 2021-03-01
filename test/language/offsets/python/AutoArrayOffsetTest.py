@@ -37,7 +37,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         writeWrongOffset = False
         writer = zserio.BitStreamWriter()
         self._writeAutoArrayHolderToStream(writer, writeWrongOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoArrayHolder = self.api.AutoArrayHolder.fromReader(reader)
         self._checkAutoArrayHolder(autoArrayHolder)
 
@@ -45,7 +45,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         writeWrongOffset = True
         writer = zserio.BitStreamWriter()
         self._writeAutoArrayHolderToStream(writer, writeWrongOffset)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
             autoArrayHolder = self.api.AutoArrayHolder.fromReader(reader)
             self._checkAutoArrayHolder(autoArrayHolder)
@@ -56,7 +56,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         autoArrayHolder.write(writer)
         self._checkAutoArrayHolder(autoArrayHolder)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readAutoArrayHolder = self.api.AutoArrayHolder.fromReader(reader)
         self._checkAutoArrayHolder(readAutoArrayHolder)
         self.assertTrue(autoArrayHolder == readAutoArrayHolder)
@@ -66,7 +66,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         autoArrayHolder = self._createAutoArrayHolder(createWrongOffset)
         writer = zserio.BitStreamWriter()
         bitPosition = 2
-        writer.writeBits(0, bitPosition)
+        writer.write_bits(0, bitPosition)
         autoArrayHolder.write(writer)
         self._checkAutoArrayHolder(autoArrayHolder, bitPosition)
 
@@ -78,11 +78,11 @@ class AutoArrayOffsetTest(unittest.TestCase):
             autoArrayHolder.write(writer, callInitializeOffsets=False)
 
     def _writeAutoArrayHolderToStream(self, writer, writeWrongOffset):
-        writer.writeBits(self.WRONG_AUTO_ARRAY_OFFSET if writeWrongOffset else self.AUTO_ARRAY_OFFSET, 32)
-        writer.writeBits(self.FORCED_ALIGNMENT_VALUE, 8)
-        writer.writeVarSize(self.AUTO_ARRAY_LENGTH)
+        writer.write_bits(self.WRONG_AUTO_ARRAY_OFFSET if writeWrongOffset else self.AUTO_ARRAY_OFFSET, 32)
+        writer.write_bits(self.FORCED_ALIGNMENT_VALUE, 8)
+        writer.write_varsize(self.AUTO_ARRAY_LENGTH)
         for i in range(self.AUTO_ARRAY_LENGTH):
-            writer.writeBits(i, 7)
+            writer.write_bits(i, 7)
 
     def _checkAutoArrayHolder(self, autoArrayHolder, bitPosition=0):
         expectedAutoArrayOffset = (self.AUTO_ARRAY_OFFSET if (bitPosition == 0) else

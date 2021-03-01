@@ -13,7 +13,7 @@ class InstantiateOnlyNestedTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateOnlyNested.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readInstantiateOnlyNested = self.api.InstantiateOnlyNested()
         readInstantiateOnlyNested.read(reader)
         self.assertEqual(instantiateOnlyNested, readInstantiateOnlyNested)

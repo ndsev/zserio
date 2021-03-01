@@ -22,7 +22,7 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         value = 234
         writer = zserio.BitStreamWriter()
         self._writeBitmaskParamChoiceToStream(writer, selector, value)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         bitmaskParamChoice = self.api.BitmaskParamChoice.fromReader(reader, selector)
         self.assertEqual(selector, bitmaskParamChoice.selector)
         self.assertEqual(value, bitmaskParamChoice.white)
@@ -111,7 +111,7 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitmaskParamChoice.write(writer)
         readBitmaskParamChoice = self.api.BitmaskParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readBitmaskParamChoice.read(reader)
         self.assertEqual(byteValue, readBitmaskParamChoice.black)
         self.assertEqual(bitmaskParamChoice, readBitmaskParamChoice)
@@ -122,7 +122,7 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitmaskParamChoice.write(writer)
         readBitmaskParamChoice = self.api.BitmaskParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readBitmaskParamChoice.read(reader)
         self.assertEqual(shortValue, readBitmaskParamChoice.white)
         self.assertEqual(bitmaskParamChoice, readBitmaskParamChoice)
@@ -134,17 +134,17 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         bitmaskParamChoice.write(writer)
         readBitmaskParamChoice = self.api.BitmaskParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readBitmaskParamChoice.read(reader)
         self.assertEqual(intValue, readBitmaskParamChoice.black_and_white)
         self.assertEqual(bitmaskParamChoice, readBitmaskParamChoice)
 
     def _writeBitmaskParamChoiceToStream(self, writer, selector, value):
         if selector == self.api.Selector.Values.BLACK:
-            writer.writeBits(value, 8)
+            writer.write_bits(value, 8)
         elif selector == self.api.Selector.Values.WHITE:
-            writer.writeBits(value, 8)
+            writer.write_bits(value, 8)
         elif selector == self.api.Selector.Values.BLACK_AND_WHITE:
-            writer.writeBits(value, 16)
+            writer.write_bits(value, 16)
         else:
             self.fail("Invalid selector: %d" % selector)

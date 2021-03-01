@@ -39,7 +39,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(writer, autoOptionalField,
                                                                                   field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
         self._checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, autoOptionalField, field)
 
@@ -47,7 +47,7 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
         field = 0x2222
         writer = zserio.BitStreamWriter()
         AutoOptionalMemberAlignmentTest._writeAutoOptionalMemberAlignmentToStream(writer, None, field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoOptionalMemberAlignment = self.api.AutoOptionalMemberAlignment.fromReader(reader)
         self._checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, None, field)
 
@@ -71,12 +71,12 @@ class AutoOptionalMemberAlignmentTest(unittest.TestCase):
     @staticmethod
     def _writeAutoOptionalMemberAlignmentToStream(writer, autoOptionalField, field):
         if autoOptionalField is not None:
-            writer.writeBool(True)
-            writer.writeBits(0, 31)
-            writer.writeSignedBits(autoOptionalField, 32)
+            writer.write_bool(True)
+            writer.write_bits(0, 31)
+            writer.write_signed_bits(autoOptionalField, 32)
         else:
-            writer.writeBool(False)
-        writer.writeSignedBits(field, 32)
+            writer.write_bool(False)
+        writer.write_signed_bits(field, 32)
 
     def _checkAutoOptionalMemberAlignment(self, autoOptionalMemberAlignment, autoOptionalField, field):
         if autoOptionalField is not None:

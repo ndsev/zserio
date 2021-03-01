@@ -80,7 +80,7 @@ class ${name}:
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
-        result = zserio.hashcode.calcHashCode(result, hash(self._choice))
+        result = zserio.hashcode.calc_hashcode(result, hash(self._choice))
 
         return result
 <#list compoundParametersData.list as parameter>
@@ -178,7 +178,7 @@ class ${name}:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
         if callInitializeOffsets:
-            self.initializeOffsets(writer.getBitPosition())
+            self.initializeOffsets(writer.bitposition)
         <#else>
         del callInitializeOffsets
         </#if>

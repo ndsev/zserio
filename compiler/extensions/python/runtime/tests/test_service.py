@@ -3,7 +3,7 @@ import unittest
 from zserio import ServiceInterface
 
 class ServiceTest(unittest.TestCase):
-    def testCallMethod(self):
-        serviceInterface = ServiceInterface()
+    def test_call_method(self):
+        service_interface = ServiceInterface()
         with self.assertRaises(NotImplementedError):
-            serviceInterface.callMethod("method", bytes(), None)
+            service_interface.call_method("method", bytes(), None)

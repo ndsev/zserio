@@ -30,7 +30,7 @@ class VariableArrayInt8Test(unittest.TestCase):
         numElements = 59
         writer = zserio.BitStreamWriter()
         VariableArrayInt8Test._writeVariableArrayToStream(writer, numElements)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         variableArray = self.api.VariableArray.fromReader(reader)
 
         self.assertEqual(numElements, variableArray.num_elements)
@@ -65,7 +65,7 @@ class VariableArrayInt8Test(unittest.TestCase):
 
     @staticmethod
     def _writeVariableArrayToStream(writer, numElements):
-        writer.writeBits(numElements, 8)
+        writer.write_bits(numElements, 8)
         for i in range(numElements):
-            writer.writeBits(i, 32)
-            writer.writeString("Name" + str(i))
+            writer.write_bits(i, 32)
+            writer.write_string("Name" + str(i))

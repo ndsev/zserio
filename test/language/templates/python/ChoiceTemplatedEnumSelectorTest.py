@@ -20,7 +20,7 @@ class ChoiceTemplatedEnumSelectorTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         choiceTemplatedEnumSelector.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readChoiceTemplatedEnumSelector = self.api.ChoiceTemplatedEnumSelector()
         readChoiceTemplatedEnumSelector.read(reader)
         self.assertEqual(choiceTemplatedEnumSelector, readChoiceTemplatedEnumSelector)

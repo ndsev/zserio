@@ -1,20 +1,20 @@
 import unittest
 
-from zserio.hashcode import calcHashCode, HASH_SEED
+from zserio.hashcode import calc_hashcode, HASH_SEED
 
 class HashCodeTest(unittest.TestCase):
 
-    def testCalcHashCode(self):
+    def test_calc_hashcode(self):
         array1 = [1, 2, 3, 4]
         array2 = [1, 2, 3, 3]
         array3 = [1, 2, 3, 4]
-        self.assertNotEqual(self._hashCode(array1), self._hashCode(array2))
-        self.assertEqual(self._hashCode(array1), self._hashCode(array3))
+        self.assertNotEqual(self._hashcode(array1), self._hashcode(array2))
+        self.assertEqual(self._hashcode(array1), self._hashcode(array3))
 
     @staticmethod
-    def _hashCode(array):
-        hashCode = HASH_SEED
+    def _hashcode(array):
+        hashcode = HASH_SEED
         for element in array:
-            hashCode = calcHashCode(hashCode, hash(element))
+            hashcode = calc_hashcode(hashcode, hash(element))
 
-        return hashCode
+        return hashcode

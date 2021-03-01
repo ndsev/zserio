@@ -23,7 +23,7 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         value = 234
         writer = zserio.BitStreamWriter()
         self._writeFullEnumParamChoiceToStream(writer, selector, value)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         fullEnumParamChoice = self.api.FullEnumParamChoice.fromReader(reader, selector)
         self.assertEqual(selector, fullEnumParamChoice.selector)
         self.assertEqual(value, fullEnumParamChoice.grey)
@@ -112,7 +112,7 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         fullEnumParamChoice.write(writer)
         readFullEnumParamChoice = self.api.FullEnumParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readFullEnumParamChoice.read(reader)
         self.assertEqual(byteValue, readFullEnumParamChoice.black)
         self.assertEqual(fullEnumParamChoice, readFullEnumParamChoice)
@@ -123,7 +123,7 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         fullEnumParamChoice.write(writer)
         readFullEnumParamChoice = self.api.FullEnumParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readFullEnumParamChoice.read(reader)
         self.assertEqual(shortValue, readFullEnumParamChoice.grey)
         self.assertEqual(fullEnumParamChoice, readFullEnumParamChoice)
@@ -135,17 +135,17 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         fullEnumParamChoice.write(writer)
         readFullEnumParamChoice = self.api.FullEnumParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readFullEnumParamChoice.read(reader)
         self.assertEqual(intValue, readFullEnumParamChoice.white)
         self.assertEqual(fullEnumParamChoice, readFullEnumParamChoice)
 
     def _writeFullEnumParamChoiceToStream(self, writer, selector, value):
         if selector == self.api.Selector.BLACK:
-            writer.writeSignedBits(value, 8)
+            writer.write_signed_bits(value, 8)
         elif selector == self.api.Selector.GREY:
-            writer.writeSignedBits(value, 16)
+            writer.write_signed_bits(value, 16)
         elif selector == self.api.Selector.WHITE:
-            writer.writeSignedBits(value, 32)
+            writer.write_signed_bits(value, 32)
         else:
             self.fail("Invalid selector: %d" % selector)

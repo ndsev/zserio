@@ -21,7 +21,7 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         value = 234
         writer = zserio.BitStreamWriter()
         UInt64ParamChoiceTest._writeUInt64ParamChoiceToStream(writer, selector, value)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         uint64ParamChoice = self.api.UInt64ParamChoice.fromReader(reader, selector)
         self.assertEqual(selector, uint64ParamChoice.selector)
         self.assertEqual(value, uint64ParamChoice.b)
@@ -102,7 +102,7 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         uint64ParamChoice.write(writer)
         readUInt64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt64ParamChoice.read(reader)
         self.assertEqual(byteValue, readUInt64ParamChoice.a)
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
@@ -112,7 +112,7 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         uint64ParamChoice.write(writer)
         readUInt64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUInt64ParamChoice.read(reader)
         self.assertEqual(shortValue, readUInt64ParamChoice.b)
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
@@ -120,13 +120,13 @@ class UInt64ParamChoiceTest(unittest.TestCase):
     @staticmethod
     def _writeUInt64ParamChoiceToStream(writer, selector, value):
         if selector == 1:
-            writer.writeSignedBits(value, 8)
+            writer.write_signed_bits(value, 8)
         elif selector in (2, 3, 4):
-            writer.writeSignedBits(value, 16)
+            writer.write_signed_bits(value, 16)
         elif selector in (5, 6):
             pass
         else:
-            writer.writeSignedBits(value, 32)
+            writer.write_signed_bits(value, 32)
 
     VARIANT_A_SELECTOR = 1
     VARIANT_B_SELECTOR = 2

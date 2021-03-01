@@ -28,13 +28,13 @@ class StructureValueTest(unittest.TestCase):
 
     def _writeCustomVarIntToStream(self, writer, value):
         if value <= self.MAX_ONE_BYTE_VALUE:
-            writer.writeBits(value, 8)
+            writer.write_bits(value, 8)
         elif value <= 0xFFFF:
-            writer.writeBits(self.TWO_BYTES_INDICATOR, 8)
-            writer.writeBits(value, 16)
+            writer.write_bits(self.TWO_BYTES_INDICATOR, 8)
+            writer.write_bits(value, 16)
         else:
-            writer.writeBits(self.FOUR_BYTES_INDICATOR, 8)
-            writer.writeBits(value, 32)
+            writer.write_bits(self.FOUR_BYTES_INDICATOR, 8)
+            writer.write_bits(value, 32)
 
     def _createCustomVarInt(self, value):
         customVarInt = self.api.CustomVarInt()
@@ -58,10 +58,10 @@ class StructureValueTest(unittest.TestCase):
         customVarInt.write(writer)
         expectedWriter = zserio.BitStreamWriter()
         self._writeCustomVarIntToStream(expectedWriter, value)
-        self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
-        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
+        self.assertTrue(expectedWriter.byte_array == writer.byte_array)
+        self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readcustomVarInt = self.api.CustomVarInt.fromReader(reader)
         self.assertEqual(customVarInt, readcustomVarInt)
 

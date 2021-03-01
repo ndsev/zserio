@@ -39,7 +39,7 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         OptionalMemberAlignmentTest._writeOptionalMemberAlignmentToStream(writer, hasOptional, optionalField,
                                                                           field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalMemberAlignment = self.api.OptionalMemberAlignment.fromReader(reader)
         self._checkOptionalMemberAlignment(optionalMemberAlignment, hasOptional, optionalField, field)
 
@@ -48,7 +48,7 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
         field = 0x2222
         writer = zserio.BitStreamWriter()
         OptionalMemberAlignmentTest._writeOptionalMemberAlignmentToStream(writer, hasOptional, None, field)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         optionalMemberAlignment = self.api.OptionalMemberAlignment.fromReader(reader)
         self._checkOptionalMemberAlignment(optionalMemberAlignment, hasOptional, None, field)
 
@@ -73,11 +73,11 @@ class OptionalMemberAlignmentTest(unittest.TestCase):
 
     @staticmethod
     def _writeOptionalMemberAlignmentToStream(writer, hasOptional, optionalField, field):
-        writer.writeBool(hasOptional)
+        writer.write_bool(hasOptional)
         if hasOptional:
-            writer.writeBits(0, 31)
-            writer.writeBits(optionalField, 32)
-        writer.writeBits(field, 32)
+            writer.write_bits(0, 31)
+            writer.write_bits(optionalField, 32)
+        writer.write_bits(field, 32)
 
     def _checkOptionalMemberAlignment(self, optionalMemberAlignment, hasOptional, optionalField, field):
         self.assertEqual(hasOptional, optionalMemberAlignment.has_optional)

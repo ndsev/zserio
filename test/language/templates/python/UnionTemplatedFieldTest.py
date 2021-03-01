@@ -19,7 +19,7 @@ class UnionTemplatedFieldTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         unionTemplatedField.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readUnionTemplatedField = self.api.UnionTemplatedField()
         readUnionTemplatedField.read(reader)
         self.assertEqual(unionTemplatedField, readUnionTemplatedField)

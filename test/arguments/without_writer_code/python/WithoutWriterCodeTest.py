@@ -150,7 +150,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         self._writeTile(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         tile = self.api.Tile()
         tile.read(reader)
 
@@ -161,7 +161,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         self._writeTile(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         tile = self.api.Tile.fromReader(reader)
 
         self._checkTile(tile)
@@ -198,7 +198,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         self._writeTile(writer)
-        blob = writer.getByteArray()
+        blob = writer.byte_array
 
         cursor.execute("INSERT INTO europe VALUES(?, ?)", (TILE_ID_EUROPE, blob))
         cursor.execute("INSERT INTO america VALUES(?, ?)", (TILE_ID_AMERICA, blob))
@@ -207,17 +207,17 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
     def _writeTile(self, writer):
         # Tile
-        writer.writeBits(VERSION_AVAILABILITY, 3)
-        writer.writeBits(VERSION, 8)
-        writer.writeBits(6, 32) # numElementsOffset
-        writer.alignTo(8)
-        writer.writeBits(NUM_ELEMENTS, 32)
+        writer.write_bits(VERSION_AVAILABILITY, 3)
+        writer.write_bits(VERSION, 8)
+        writer.write_bits(6, 32) # numElementsOffset
+        writer.alignto(8)
+        writer.write_bits(NUM_ELEMENTS, 32)
 
         # offsets
         # offset of the first element
-        offset = zserio.bitposition.bitsToBytes(writer.getBitPosition()) + 4 * NUM_ELEMENTS
+        offset = zserio.bitposition.bits_to_bytes(writer.bitposition) + 4 * NUM_ELEMENTS
         for i in range(NUM_ELEMENTS):
-            writer.writeBits(offset, 32)
+            writer.write_bits(offset, 32)
             hasItem = i % 2 == 0 # hasItem == True for even elements
             if hasItem:
                 offset += 8
@@ -225,18 +225,18 @@ class WithoutWriterCodeTest(unittest.TestCase):
                 offset += 3
 
         for i in range(NUM_ELEMENTS):
-            writer.alignTo(8) # aligned because of indexed offsets
+            writer.alignto(8) # aligned because of indexed offsets
             # ItemChoiceHolder
             hasItem = i % 2 == 0 # hasItem == True for even elements
-            writer.writeBool(hasItem)
+            writer.write_bool(hasItem)
             if hasItem:
                 # Item
-                writer.writeBits(PARAMS[i], 16)
+                writer.write_bits(PARAMS[i], 16)
                 # ExtraParamUnion - choiceTag CHOICE_value32
-                writer.writeVarSize(self.api.ExtraParamUnion.CHOICE_value32)
-                writer.writeBits(EXTRA_PARAM, 32)
+                writer.write_varsize(self.api.ExtraParamUnion.CHOICE_value32)
+                writer.write_bits(EXTRA_PARAM, 32)
             else:
-                writer.writeBits(PARAMS[i], 16)
+                writer.write_bits(PARAMS[i], 16)
 
     def _checkTile(self, tile):
         self.assertEqual(VERSION, tile.version)

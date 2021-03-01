@@ -18,7 +18,7 @@ class ${name}:
     @classmethod
     def fromReader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
         instance = cls()
-        instance._value = reader.read${runtimeFunction.suffix}(${runtimeFunction.arg!})
+        instance._value = reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!})
         return instance
 
     def __eq__(self, other: object) -> bool:
@@ -30,7 +30,7 @@ class ${name}:
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
 
-        result = zserio.hashcode.calcHashCode(result, hash(self._value))
+        result = zserio.hashcode.calc_hashcode(result, hash(self._value))
 
         return result
 
@@ -68,7 +68,7 @@ class ${name}:
 <#if bitSize??>
         return ${bitSize}
 <#else>
-        return zserio.bitsizeof.getBitSizeOf${runtimeFunction.suffix}(self._value)
+        return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self._value)
 </#if>
 <#if withWriterCode>
 
@@ -76,8 +76,8 @@ class ${name}:
         return bitPosition + self.bitSizeOf(bitPosition)
 
     def write(self, writer: zserio.BitStreamWriter) -> None:
-        writer.write${runtimeFunction.suffix}(self._value<#rt>
-                                              <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
+        writer.write_${runtimeFunction.suffix}(self._value<#rt>
+                                               <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 </#if>
 
     @property

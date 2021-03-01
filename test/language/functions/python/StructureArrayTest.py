@@ -23,13 +23,13 @@ class StructureArrayTest(unittest.TestCase):
         self._checkStructureArray(2)
 
     def _writeStructureArrayToStream(self, writer, pos):
-        writer.writeBits(self.NUM_ITEMS, 16)
+        writer.write_bits(self.NUM_ITEMS, 16)
 
         for item in self.ITEMS:
-            writer.writeBits(item.a, 8)
-            writer.writeBits(item.b, 8)
+            writer.write_bits(item.a, 8)
+            writer.write_bits(item.b, 8)
 
-        writer.writeBits(pos, 16)
+        writer.write_bits(pos, 16)
 
     def _createStructureArray(self, pos):
         return self.api.StructureArray(self.NUM_ITEMS, self.ITEMS, pos)
@@ -42,9 +42,9 @@ class StructureArrayTest(unittest.TestCase):
         structureArray.write(writer)
         expectedWriter = zserio.BitStreamWriter()
         self._writeStructureArrayToStream(expectedWriter, pos)
-        self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
-        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
+        self.assertTrue(expectedWriter.byte_array == writer.byte_array)
+        self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructureArray = self.api.StructureArray.fromReader(reader)
         self.assertEqual(structureArray, readStructureArray)

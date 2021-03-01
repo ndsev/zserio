@@ -18,10 +18,10 @@ class StructureOptionalTest(unittest.TestCase):
         return defaultValue if defaultValue != self.INVALID_DEFAULT_VALUE else externalValue
 
     def _writeValueConsumerCreatorToStream(self, writer, defaultValue, externalValue):
-        writer.writeBits(defaultValue, 4)
+        writer.write_bits(defaultValue, 4)
         if defaultValue == self.INVALID_DEFAULT_VALUE:
-            writer.writeBits(externalValue, 4)
-        writer.writeBool(self._calculateValue(defaultValue, externalValue) < self.SMALL_VALUE_THRESHOLD)
+            writer.write_bits(externalValue, 4)
+        writer.write_bool(self._calculateValue(defaultValue, externalValue) < self.SMALL_VALUE_THRESHOLD)
 
     def _createValueConsumerCreator(self, defaultValue, externalValue):
         valueCalculator = self.api.ValueCalculator()
@@ -43,10 +43,10 @@ class StructureOptionalTest(unittest.TestCase):
         valueConsumerCreator.write(writer)
         expectedWriter = zserio.BitStreamWriter()
         self._writeValueConsumerCreatorToStream(expectedWriter, defaultValue, externalValue)
-        self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
-        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
+        self.assertTrue(expectedWriter.byte_array == writer.byte_array)
+        self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readValueConsumerCreator = self.api.ValueConsumerCreator.fromReader(reader)
         self.assertEqual(valueConsumerCreator, readValueConsumerCreator)
 

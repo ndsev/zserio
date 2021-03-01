@@ -23,7 +23,7 @@ class BoolParamChoiceTest(unittest.TestCase):
         value = 234
         writer = zserio.BitStreamWriter()
         BoolParamChoiceTest._writeBoolParamChoiceToStream(writer, selector, value)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         boolParamChoice = self.api.BoolParamChoice.fromReader(reader, selector)
         self.assertEqual(selector, boolParamChoice.selector)
         self.assertEqual(value, boolParamChoice.grey)
@@ -100,7 +100,7 @@ class BoolParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         boolParamChoice.write(writer)
         readBoolParamChoice = self.api.BoolParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readBoolParamChoice.read(reader)
         self.assertEqual(byteValue, readBoolParamChoice.black)
         self.assertEqual(boolParamChoice, readBoolParamChoice)
@@ -111,7 +111,7 @@ class BoolParamChoiceTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         boolParamChoice.write(writer)
         readBoolParamChoice = self.api.BoolParamChoice(selector)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readBoolParamChoice.read(reader)
         self.assertEqual(shortValue, readBoolParamChoice.grey)
         self.assertEqual(boolParamChoice, readBoolParamChoice)
@@ -119,6 +119,6 @@ class BoolParamChoiceTest(unittest.TestCase):
     @staticmethod
     def _writeBoolParamChoiceToStream(writer, selector, value):
         if selector:
-            writer.writeSignedBits(value, 8)
+            writer.write_signed_bits(value, 8)
         else:
-            writer.writeSignedBits(value, 16)
+            writer.write_signed_bits(value, 16)

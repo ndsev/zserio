@@ -84,11 +84,11 @@ class OptionalArrayRecursionTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         employee.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                     self.api.Title.DEVELOPER)
 
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readEmployee = self.api.Employee.fromReader(reader)
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_NAME, readEmployee.name)
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, readEmployee.salary)
@@ -98,10 +98,10 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         teamLead = self._createTeamLead()
         writer = zserio.BitStreamWriter()
         teamLead.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkTeamLeadInStream(reader)
 
-        reader.setBitPosition(0)
+        reader.bitposition = 0
         readTeamLead = self.api.Employee.fromReader(reader)
         self.assertEqual(self.EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.name)
         self.assertEqual(self.EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.salary)
@@ -129,14 +129,14 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         return teamLead
 
     def _checkEmployeeInStream(self, reader, name, salary, title):
-        self.assertEqual(name, reader.readString())
-        self.assertEqual(salary, reader.readBits(16))
-        self.assertEqual(title.value, reader.readBits(8))
+        self.assertEqual(name, reader.read_string())
+        self.assertEqual(salary, reader.read_bits(16))
+        self.assertEqual(title.value, reader.read_bits(8))
 
     def _checkTeamLeadInStream(self, reader):
         self._checkEmployeeInStream(reader, self.EMPLOYEE_TEAM_LEAD_NAME, self.EMPLOYEE_TEAM_LEAD_SALARY,
                                     self.api.Title.TEAM_LEAD)
-        self.assertEqual(self.NUM_DEVELOPERS, reader.readVarUInt64())
+        self.assertEqual(self.NUM_DEVELOPERS, reader.read_varuint64())
         self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                     self.api.Title.DEVELOPER)
         self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY,

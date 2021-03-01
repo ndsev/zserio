@@ -11,12 +11,12 @@ class ServiceInterface:
     Generic interface for all Zserio services.
     """
 
-    def callMethod(self, methodName: str, requestData: bytes, context: typing.Any = None) -> bytes:
+    def call_method(self, method_name: str, request_data: bytes, context: typing.Any = None) -> bytes:
         """
         Calls method with the given name synchronously.
 
-        :param methodName: Name of the service method to call.
-        :param requestData: Request data to be passed to the method.
+        :param method_name: Name of the service method to call.
+        :param request_data: Request data to be passed to the method.
         :param context: Context specific for particular service.
         :returns: Response data.
         :raises ServiceException: If the call fails.

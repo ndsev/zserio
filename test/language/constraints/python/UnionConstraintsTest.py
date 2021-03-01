@@ -12,7 +12,7 @@ class UnionConstraintsTest(unittest.TestCase):
         value8 = self.VALUE8_CORRECT_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self._writeValue8(writer, value8)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         unionConstraints = self.api.UnionConstraints()
         unionConstraints.read(reader)
@@ -23,7 +23,7 @@ class UnionConstraintsTest(unittest.TestCase):
         value8 = self.VALUE8_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self._writeValue8(writer, value8)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         unionConstraints = self.api.UnionConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -33,7 +33,7 @@ class UnionConstraintsTest(unittest.TestCase):
         value16 = self.VALUE16_WRONG_CONSTRAINT
         writer = zserio.BitStreamWriter()
         self._writeValue16(writer, value16)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
 
         unionConstraints = self.api.UnionConstraints()
         with self.assertRaises(zserio.PythonRuntimeException):
@@ -69,12 +69,12 @@ class UnionConstraintsTest(unittest.TestCase):
             unionConstraints.write(writer)
 
     def _writeValue8(self, writer, value8):
-        writer.writeVarSize(self.api.UnionConstraints.CHOICE_value8)
-        writer.writeBits(value8, 8)
+        writer.write_varsize(self.api.UnionConstraints.CHOICE_value8)
+        writer.write_bits(value8, 8)
 
     def _writeValue16(self, writer, value16):
-        writer.writeVarSize(self.api.UnionConstraints.CHOICE_value16)
-        writer.writeBits(value16, 8)
+        writer.write_varsize(self.api.UnionConstraints.CHOICE_value16)
+        writer.write_bits(value16, 8)
 
     VALUE8_CORRECT_CONSTRAINT = 1
     VALUE8_WRONG_CONSTRAINT = 0

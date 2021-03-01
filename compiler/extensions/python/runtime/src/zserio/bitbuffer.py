@@ -6,7 +6,7 @@ import typing
 
 from zserio.exception import PythonRuntimeException
 from zserio.hashcode import HASH_SEED
-from zserio.hashcode import calcHashCode
+from zserio.hashcode import calc_hashcode
 
 class BitBuffer:
     """
@@ -16,54 +16,55 @@ class BitBuffer:
     of the last byte are used. In this case, only most significant bits of the corresponded size are used.
     """
 
-    def __init__(self, buffer: bytes, bitSize: typing.Optional[int] = None) -> None:
+    def __init__(self, buffer: bytes, bitsize: typing.Optional[int] = None) -> None:
         """
         Constructs bit buffer from bytes buffer and bit size.
 
         :param buffer: Bytes-like buffer to construct from.
-        :param bitSize: Number of bits stored in buffer to use.
-        :raises PythonRuntimeException: If bitSize is out of range.
+        :param bitsize: Number of bits stored in buffer to use.
+        :raises PythonRuntimeException: If bitsize is out of range.
         """
 
-        if bitSize is None:
-            bitSize = len(buffer) * 8
-        elif len(buffer) * 8 < bitSize:
+        if bitsize is None:
+            bitsize = len(buffer) * 8
+        elif len(buffer) * 8 < bitsize:
             raise PythonRuntimeException("BitBuffer: Bit size %d out of range for given buffer byte "
-                                         "size %d!" % (bitSize, len(buffer)))
+                                         "size %d!" % (bitsize, len(buffer)))
         self._buffer: bytes = buffer
-        self._bitSize: int = bitSize
+        self._bitsize: int = bitsize
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, BitBuffer):
             return False
 
-        if self._bitSize != other._bitSize:
+        if self._bitsize != other._bitsize:
             return False
 
-        byteSize = self.getByteSize()
-        if byteSize > 0:
-            if byteSize > 1:
-                if self._buffer[0:byteSize - 1] != other._buffer[0:byteSize - 1]:
+        bytesize = self.bytesize()
+        if bytesize > 0:
+            if bytesize > 1:
+                if self._buffer[0:bytesize - 1] != other._buffer[0:bytesize - 1]:
                     return False
 
-            if self._getMaskedLastByte() != other._getMaskedLastByte():
+            if self._masked_last_byte() != other._masked_last_byte():
                 return False
 
         return True
 
     def __hash__(self) -> int:
         result = HASH_SEED
-        byteSize = self.getByteSize()
-        if byteSize > 0:
-            if byteSize > 1:
-                for element in self._buffer[0:byteSize - 1]:
-                    result = calcHashCode(result, hash(element))
+        bytesize = self.bytesize()
+        if bytesize > 0:
+            if bytesize > 1:
+                for element in self._buffer[0:bytesize - 1]:
+                    result = calc_hashcode(result, hash(element))
 
-            result = calcHashCode(result, hash(self._getMaskedLastByte()))
+            result = calc_hashcode(result, hash(self._masked_last_byte()))
 
         return result
 
-    def getBuffer(self) -> bytes:
+    @property
+    def buffer(self) -> bytes:
         """
         Gets the underlying byte buffer.
 
@@ -73,25 +74,26 @@ class BitBuffer:
         """
         return self._buffer
 
-    def getBitSize(self) -> int:
+    @property
+    def bitsize(self) -> int:
         """
         Gets the number of bits stored in the bit buffer.
 
         :returns: Size of the bit buffer in bits.
         """
-        return self._bitSize
+        return self._bitsize
 
-    def getByteSize(self) -> int:
+    def bytesize(self) -> int:
         """
         Gets the number of bytes stored in the bit buffer.
 
         :returns: Size of the bit buffer in bytes.
         """
-        return (self._bitSize + 7) // 8
+        return (self._bitsize + 7) // 8
 
-    def _getMaskedLastByte(self) -> int:
-        roundedByteSize = self._bitSize // 8
-        lastByteBits = self._bitSize - 8 * roundedByteSize
+    def _masked_last_byte(self) -> int:
+        rounded_bytesize = self._bitsize // 8
+        last_byte_bits = self._bitsize - 8 * rounded_bytesize
 
-        return (self._buffer[roundedByteSize - 1] if lastByteBits == 0 else
-                self._buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)))
+        return (self._buffer[rounded_bytesize - 1] if last_byte_bits == 0 else
+                self._buffer[rounded_bytesize] & (0xFF << (8 - last_byte_bits)))

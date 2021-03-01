@@ -16,7 +16,7 @@ class SubtypeTemplateWithCompoundTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         subtypeTemplateWithCompound.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readSubtypeTemplateWithCompound = self.api.SubtypeTemplateWithCompound()
         readSubtypeTemplateWithCompound.read(reader)
         self.assertEqual(subtypeTemplateWithCompound, readSubtypeTemplateWithCompound)

@@ -146,4 +146,4 @@ class ComplexTypesServiceTest(unittest.TestCase):
 
     def testInvalidServiceMethod(self):
         with self.assertRaises(zserio.ServiceException):
-            self.service.callMethod("nonexistentMethod", bytes())
+            self.service.call_method("nonexistentMethod", bytes())

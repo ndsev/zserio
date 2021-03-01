@@ -15,7 +15,7 @@ class SimpleParamTest(unittest.TestCase):
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
         self._writeItemToStream(writer, self.HIGHER_VERSION, self.ITEM_PARAM, self.ITEM_EXTRA_PARAM)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         item = self.api.Item.fromReader(reader, self.HIGHER_VERSION)
         self.assertEqual(self.ITEM_PARAM, item.param)
         self.assertTrue(item.isExtraParamUsed())
@@ -65,22 +65,22 @@ class SimpleParamTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         item.write(writer)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self._checkItemInStream(reader, item, version)
-        reader.setBitPosition(0)
+        reader.bitposition = 0
 
         readItem = self.api.Item.fromReader(reader, version)
         self.assertEqual(item, readItem)
 
     def _writeItemToStream(self, writer, version, param, extraParam):
-        writer.writeBits(param, 16)
+        writer.write_bits(param, 16)
         if version >= self.HIGHER_VERSION:
-            writer.writeBits(extraParam, 32)
+            writer.write_bits(extraParam, 32)
 
     def _checkItemInStream(self, reader, item, version):
-        self.assertEqual(item.param, reader.readBits(16))
+        self.assertEqual(item.param, reader.read_bits(16))
         if version >= self.HIGHER_VERSION:
-            self.assertEqual(item.extra_param, reader.readBits(32))
+            self.assertEqual(item.extra_param, reader.read_bits(32))
 
     LOWER_VERSION = 9
     HIGHER_VERSION = 10

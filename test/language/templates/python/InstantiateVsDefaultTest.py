@@ -14,7 +14,7 @@ class InstantiateVsDefaultTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         instantiateVsDefault.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readInstantiateVsDefault = self.api.InstantiateVsDefault()
         readInstantiateVsDefault.read(reader)
         self.assertEqual(instantiateVsDefault, readInstantiateVsDefault)

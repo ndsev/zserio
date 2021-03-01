@@ -22,11 +22,11 @@ class TestPubsub(zserio.PubsubInterface):
         self._subscriptions[subscriptionId] = {"topic": topic, "callback": callback}
         return subscriptionId
 
-    def unsubscribe(self, subscriptionId):
-        if not subscriptionId in self._subscriptions:
-            raise zserio.PubsubException("TestPubsub: Invalid subscription ID '%d'!" % subscriptionId)
+    def unsubscribe(self, subscription_id):
+        if not subscription_id in self._subscriptions:
+            raise zserio.PubsubException("TestPubsub: Invalid subscription ID '%d'!" % subscription_id)
 
-        self._subscriptions.pop(subscriptionId)
+        self._subscriptions.pop(subscription_id)
 
 class TestPubsubContext:
     def __init__(self):

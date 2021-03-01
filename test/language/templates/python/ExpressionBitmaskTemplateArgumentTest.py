@@ -17,7 +17,7 @@ class ExpressionBitmaskTemplateArgumentTest(unittest.TestCase):
         )
         writer = zserio.BitStreamWriter()
         bitmaskTemplateArgumentHolder.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readBitmaskTemplateArgumentHolder = self.api.BitmaskTemplateArgumentHolder()
         readBitmaskTemplateArgumentHolder.read(reader)
         self.assertEqual(bitmaskTemplateArgumentHolder, readBitmaskTemplateArgumentHolder)

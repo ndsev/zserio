@@ -7,48 +7,49 @@ from zserio.bitwriter import BitStreamWriter
 
 class BitStreamTest(unittest.TestCase):
 
-    def testBits(self):
-        for numBits in range(1, 65):
-            maxValue = (1 << numBits) - 1
+    def test_bits(self):
+        for numbits in range(1, 65):
+            max_value = (1 << numbits) - 1
             values = [
-                maxValue,
-                maxValue >> 1,
-                maxValue >> 2,
+                max_value,
+                max_value >> 1,
+                max_value >> 2,
                 1,
                 0,
                 1,
-                maxValue >> 2,
-                maxValue >> 1,
-                maxValue
+                max_value >> 2,
+                max_value >> 1,
+                max_value
             ]
-            self._testBitsImpl(BitStreamWriter.writeBits, BitStreamReader.readBits, values, numBits)
+            self._test_bits_impl(BitStreamWriter.write_bits, BitStreamReader.read_bits, values, numbits)
 
-    def testSignedBits(self):
-        for numBits in range(1, 65):
-            minValue = -1 << (numBits - 1)
-            maxValue = (1 << (numBits - 1)) - 1
+    def test_signed_bits(self):
+        for numbits in range(1, 65):
+            min_value = -1 << (numbits - 1)
+            max_value = (1 << (numbits - 1)) - 1
             values = [
-                minValue,
-                maxValue,
-                minValue >> 1,
-                maxValue >> 1,
-                minValue >> 2,
-                maxValue >> 2,
+                min_value,
+                max_value,
+                min_value >> 1,
+                max_value >> 1,
+                min_value >> 2,
+                max_value >> 2,
                 - 1,
-                (1 if numBits != 1 else -1),
+                (1 if numbits != 1 else -1),
                 0,
-                (1 if numBits != 1 else -1),
+                (1 if numbits != 1 else -1),
                 - 1,
-                maxValue >> 2,
-                minValue >> 2,
-                maxValue >> 1,
-                minValue >> 1,
-                maxValue,
-                minValue
+                max_value >> 2,
+                min_value >> 2,
+                max_value >> 1,
+                min_value >> 1,
+                max_value,
+                min_value
             ]
-            self._testBitsImpl(BitStreamWriter.writeSignedBits, BitStreamReader.readSignedBits, values, numBits)
+            self._test_bits_impl(BitStreamWriter.write_signed_bits, BitStreamReader.read_signed_bits, values,
+                                 numbits)
 
-    def testVarInt16(self):
+    def test_varint16(self):
         values = [
             # 1 byte
             0,
@@ -63,9 +64,9 @@ class BitStreamTest(unittest.TestCase):
             + ((1 << (6 + 8)) - 1),
         ]
 
-        self._testImpl(BitStreamWriter.writeVarInt16, BitStreamReader.readVarInt16, values, 15)
+        self._test_impl(BitStreamWriter.write_varint16, BitStreamReader.read_varint16, values, 15)
 
-    def testVarInt32(self):
+    def test_varint32(self):
         values = [
             # 1 byte
             0,
@@ -90,9 +91,9 @@ class BitStreamTest(unittest.TestCase):
             + ((1 << (6 + 7 + 7 + 8)) - 1)
         ]
 
-        self._testImpl(BitStreamWriter.writeVarInt32, BitStreamReader.readVarInt32, values, 31)
+        self._test_impl(BitStreamWriter.write_varint32, BitStreamReader.read_varint32, values, 31)
 
-    def testVarInt64(self):
+    def test_varint64(self):
         values = [
             # 1 byte
             0,
@@ -137,9 +138,9 @@ class BitStreamTest(unittest.TestCase):
             + ((1 << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
         ]
 
-        self._testImpl(BitStreamWriter.writeVarInt64, BitStreamReader.readVarInt64, values, 63)
+        self._test_impl(BitStreamWriter.write_varint64, BitStreamReader.read_varint64, values, 63)
 
-    def testVarInt(self):
+    def test_varint(self):
         values = [
             # 1 byte
             0,
@@ -191,9 +192,9 @@ class BitStreamTest(unittest.TestCase):
             INT64_MIN # special case, stored as -0
         ]
 
-        self._testImpl(BitStreamWriter.writeVarInt, BitStreamReader.readVarInt, values, 71)
+        self._test_impl(BitStreamWriter.write_varint, BitStreamReader.read_varint, values, 71)
 
-    def testVarUInt16(self):
+    def test_varuint16(self):
         values = [
             # 1 byte
             0,
@@ -204,9 +205,9 @@ class BitStreamTest(unittest.TestCase):
             ((1 << (7 + 8)) - 1),
         ]
 
-        self._testImpl(BitStreamWriter.writeVarUInt16, BitStreamReader.readVarUInt16, values, 15)
+        self._test_impl(BitStreamWriter.write_varuint16, BitStreamReader.read_varuint16, values, 15)
 
-    def testVarUInt32(self):
+    def test_varuint32(self):
         values = [
             # 1 byte
             ((0)),
@@ -223,9 +224,9 @@ class BitStreamTest(unittest.TestCase):
             ((1 << (7 + 7 + 7 + 8)) - 1)
         ]
 
-        self._testImpl(BitStreamWriter.writeVarUInt32, BitStreamReader.readVarUInt32, values, 31)
+        self._test_impl(BitStreamWriter.write_varuint32, BitStreamReader.read_varuint32, values, 31)
 
-    def testVarUInt64(self):
+    def test_varuint64(self):
         values = [
             # 1 byte
             ((0)),
@@ -254,9 +255,9 @@ class BitStreamTest(unittest.TestCase):
             ((1 << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
         ]
 
-        self._testImpl(BitStreamWriter.writeVarUInt64, BitStreamReader.readVarUInt64, values, 63)
+        self._test_impl(BitStreamWriter.write_varuint64, BitStreamReader.read_varuint64, values, 63)
 
-    def testVarUInt(self):
+    def test_varuint(self):
         values = [
             # 1 byte
             ((0)),
@@ -288,9 +289,9 @@ class BitStreamTest(unittest.TestCase):
             ((1 << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)) - 1),
         ]
 
-        self._testImpl(BitStreamWriter.writeVarUInt, BitStreamReader.readVarUInt, values, 71)
+        self._test_impl(BitStreamWriter.write_varuint, BitStreamReader.read_varuint, values, 71)
 
-    def testVarSize(self):
+    def test_varsize(self):
         values = [
             # 1 byte
             ((0)),
@@ -310,9 +311,9 @@ class BitStreamTest(unittest.TestCase):
             ((1 << (2 + 7 + 7 + 7 + 8)) - 1)
         ]
 
-        self._testImpl(BitStreamWriter.writeVarSize, BitStreamReader.readVarSize, values, 39)
+        self._test_impl(BitStreamWriter.write_varsize, BitStreamReader.read_varsize, values, 39)
 
-    def testFloat16(self):
+    def test_float16(self):
         values = [
             - 42.5,
             - 2.0,
@@ -324,9 +325,9 @@ class BitStreamTest(unittest.TestCase):
             42.5
         ]
 
-        self._testImpl(BitStreamWriter.writeFloat16, BitStreamReader.readFloat16, values, 15)
+        self._test_impl(BitStreamWriter.write_float16, BitStreamReader.read_float16, values, 15)
 
-    def testFloat32(self):
+    def test_float32(self):
         values = [
             - 42.5,
             - 2.0,
@@ -338,9 +339,9 @@ class BitStreamTest(unittest.TestCase):
             42.5
         ]
 
-        self._testImpl(BitStreamWriter.writeFloat32, BitStreamReader.readFloat32, values, 31)
+        self._test_impl(BitStreamWriter.write_float32, BitStreamReader.read_float32, values, 31)
 
-    def testFloat64(self):
+    def test_float64(self):
         values = [
             - 42.5,
             - 2.0,
@@ -352,18 +353,18 @@ class BitStreamTest(unittest.TestCase):
             42.5
         ]
 
-        self._testImpl(BitStreamWriter.writeFloat64, BitStreamReader.readFloat64, values, 63)
+        self._test_impl(BitStreamWriter.write_float64, BitStreamReader.read_float64, values, 63)
 
-    def testString(self):
+    def test_string(self):
         values = [
             "Hello World",
             "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2\0nonWrittenPart",
             b"Price: \xE2\x82\xAC 3 what's this? -> \xC2\xA2".decode("utf-8")
         ]
 
-        self._testImpl(BitStreamWriter.writeString, BitStreamReader.readString, values, 7)
+        self._test_impl(BitStreamWriter.write_string, BitStreamReader.read_string, values, 7)
 
-    def testBool(self):
+    def test_bool(self):
         values = [
             False,
             True,
@@ -380,108 +381,108 @@ class BitStreamTest(unittest.TestCase):
             False
         ]
 
-        self._testImpl(BitStreamWriter.writeBool, BitStreamReader.readBool, values, 1)
+        self._test_impl(BitStreamWriter.write_bool, BitStreamReader.read_bool, values, 1)
 
-    def testBitBuffer(self):
+    def test_bitbuffer(self):
         values = [
             BitBuffer(bytes([0xAB, 0x07]), 11),
             BitBuffer(bytes([0xAB, 0xCD, 0x7F]), 23)
         ]
 
-        self._testImpl(BitStreamWriter.writeBitBuffer, BitStreamReader.readBitBuffer, values, 7)
+        self._test_impl(BitStreamWriter.write_bitbuffer, BitStreamReader.read_bitbuffer, values, 7)
 
-    def testBitPosition(self):
+    def test_bitposition(self):
         writer = BitStreamWriter()
-        writer.writeBits(0xaaaa, 16)
-        self.assertEqual(16, writer.getBitPosition())
-        writer.writeBits(0xff, 8)
-        self.assertEqual(24, writer.getBitPosition())
+        writer.write_bits(0xaaaa, 16)
+        self.assertEqual(16, writer.bitposition)
+        writer.write_bits(0xff, 8)
+        self.assertEqual(24, writer.bitposition)
 
-        reader = BitStreamReader(buffer=writer.getByteArray())
-        self.assertEqual(0xaaaa, reader.readBits(16))
-        self.assertEqual(16, reader.getBitPosition())
-        reader.setBitPosition(8)
-        self.assertEqual(8, reader.getBitPosition())
-        self.assertEqual(0xaaff, reader.readBits(16))
-        reader.setBitPosition(13)
-        self.assertEqual(13, reader.getBitPosition())
-        self.assertEqual(0x02, reader.readBits(3))
-        self.assertEqual(16, reader.getBitPosition())
-        self.assertEqual(0xff, reader.readBits(8))
-        self.assertEqual(24, reader.getBitPosition())
-        reader.setBitPosition(0)
-        self.assertEqual(0, reader.getBitPosition())
-        self.assertEqual(0xaaaaff, reader.readBits(24))
+        reader = BitStreamReader(buffer=writer.byte_array)
+        self.assertEqual(0xaaaa, reader.read_bits(16))
+        self.assertEqual(16, reader.bitposition)
+        reader.bitposition = 8
+        self.assertEqual(8, reader.bitposition)
+        self.assertEqual(0xaaff, reader.read_bits(16))
+        reader.bitposition = 13
+        self.assertEqual(13, reader.bitposition)
+        self.assertEqual(0x02, reader.read_bits(3))
+        self.assertEqual(16, reader.bitposition)
+        self.assertEqual(0xff, reader.read_bits(8))
+        self.assertEqual(24, reader.bitposition)
+        reader.bitposition = 0
+        self.assertEqual(0, reader.bitposition)
+        self.assertEqual(0xaaaaff, reader.read_bits(24))
 
-    def testAlignTo(self):
+    def test_alignto(self):
         writer = BitStreamWriter()
-        writer.writeBits(5, 3)
-        writer.alignTo(8)
-        self.assertEqual(8, writer.getBitPosition())
-        writer.writeBits(0, 1)
-        writer.alignTo(16)
-        self.assertEqual(16, writer.getBitPosition())
-        writer.writeBits(0xaa, 9)
-        writer.alignTo(32)
-        self.assertEqual(32, writer.getBitPosition())
-        writer.writeBits(0xaca, 13)
-        writer.alignTo(64)
-        self.assertEqual(64, writer.getBitPosition())
-        writer.writeBits(0xcafe, 16)
+        writer.write_bits(5, 3)
+        writer.alignto(8)
+        self.assertEqual(8, writer.bitposition)
+        writer.write_bits(0, 1)
+        writer.alignto(16)
+        self.assertEqual(16, writer.bitposition)
+        writer.write_bits(0xaa, 9)
+        writer.alignto(32)
+        self.assertEqual(32, writer.bitposition)
+        writer.write_bits(0xaca, 13)
+        writer.alignto(64)
+        self.assertEqual(64, writer.bitposition)
+        writer.write_bits(0xcafe, 16)
 
-        reader = BitStreamReader(buffer=writer.getByteArray())
-        self.assertEqual(5, reader.readBits(3))
-        reader.alignTo(8)
-        self.assertEqual(8, reader.getBitPosition())
-        self.assertEqual(0, reader.readBits(1))
-        reader.alignTo(16)
-        self.assertEqual(16, reader.getBitPosition())
-        self.assertEqual(0xaa, reader.readBits(9))
-        reader.alignTo(32)
-        self.assertEqual(32, reader.getBitPosition())
-        self.assertEqual(0xaca, reader.readBits(13))
-        reader.alignTo(64)
-        self.assertEqual(64, reader.getBitPosition())
-        self.assertEqual(0xcafe, reader.readBits(16))
+        reader = BitStreamReader(buffer=writer.byte_array)
+        self.assertEqual(5, reader.read_bits(3))
+        reader.alignto(8)
+        self.assertEqual(8, reader.bitposition)
+        self.assertEqual(0, reader.read_bits(1))
+        reader.alignto(16)
+        self.assertEqual(16, reader.bitposition)
+        self.assertEqual(0xaa, reader.read_bits(9))
+        reader.alignto(32)
+        self.assertEqual(32, reader.bitposition)
+        self.assertEqual(0xaca, reader.read_bits(13))
+        reader.alignto(64)
+        self.assertEqual(64, reader.bitposition)
+        self.assertEqual(0xcafe, reader.read_bits(16))
 
-    def testFile(self):
-        testFilename = "BitStreamTest.bin"
+    def test_file(self):
+        test_filename = "BitStreamTest.bin"
         writer = BitStreamWriter()
-        writer.writeBits(13, 7)
-        writer.writeString(testFilename)
-        writer.writeVarInt(-123456)
-        writer.toFile(testFilename)
+        writer.write_bits(13, 7)
+        writer.write_string(test_filename)
+        writer.write_varint(-123456)
+        writer.to_file(test_filename)
 
-        reader = BitStreamReader.fromFile(testFilename)
-        self.assertEqual(13, reader.readBits(7))
-        self.assertEqual(testFilename, reader.readString())
-        self.assertEqual(-123456, reader.readVarInt())
+        reader = BitStreamReader.from_file(test_filename)
+        self.assertEqual(13, reader.read_bits(7))
+        self.assertEqual(test_filename, reader.read_string())
+        self.assertEqual(-123456, reader.read_varint())
 
-    def _testBitsImpl(self, writeMethod, readMethod, values, numBits):
-        for bitPos in range(numBits):
+    def _test_bits_impl(self, write_method, read_method, values, numbits):
+        for bit_pos in range(numbits):
             writer = BitStreamWriter()
-            if bitPos > 0:
-                writer.writeBits(0, bitPos)
+            if bit_pos > 0:
+                writer.write_bits(0, bit_pos)
             for value in values:
-                writeMethod(writer, value, numBits)
+                write_method(writer, value, numbits)
 
-            reader = BitStreamReader(buffer=writer.getByteArray())
-            if bitPos > 0:
-                reader.readBits(bitPos)
+            reader = BitStreamReader(buffer=writer.byte_array)
+            if bit_pos > 0:
+                reader.read_bits(bit_pos)
             for value in values:
-                self.assertEqual(value, readMethod(reader, numBits),
-                                 "[numBits=%d, bitPos=%d]" % (numBits, bitPos))
+                self.assertEqual(value, read_method(reader, numbits),
+                                 "[numbits=%d, bit_pos=%d]" % (numbits, bit_pos))
 
-    def _testImpl(self, writeMethod, readMethod, values, maxStartBitPos):
-        for bitPos in range(maxStartBitPos):
+    def _test_impl(self, write_method, read_method, values, max_start_bit_pos):
+        for bit_pos in range(max_start_bit_pos):
             writer = BitStreamWriter()
-            if bitPos > 0:
-                writer.writeBits(0, bitPos)
+            if bit_pos > 0:
+                writer.write_bits(0, bit_pos)
             for value in values:
-                writeMethod(writer, value)
+                write_method(writer, value)
 
-            reader = BitStreamReader(buffer=writer.getByteArray())
-            if bitPos > 0:
-                reader.readBits(bitPos)
+            reader = BitStreamReader(buffer=writer.byte_array)
+            if bit_pos > 0:
+                reader.read_bits(bit_pos)
             for value in values:
-                self.assertEqual(value, readMethod(reader), "[bitPos=%d]" % bitPos)
+                self.assertEqual(value, read_method(reader), "[bit_pos=%d]" % bit_pos)

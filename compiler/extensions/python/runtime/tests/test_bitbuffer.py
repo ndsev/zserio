@@ -5,86 +5,86 @@ from zserio.exception import PythonRuntimeException
 
 class BitStreamReaderTest(unittest.TestCase):
 
-    def testBufferConstructor(self):
-        byteSize = 2
-        bitBuffer = BitBuffer(bytes([1, 2]))
-        self.assertEqual(8 * byteSize, bitBuffer.getBitSize())
+    def test_buffer_constructor(self):
+        bytesize = 2
+        bitbuffer = BitBuffer(bytes([1, 2]))
+        self.assertEqual(8 * bytesize, bitbuffer.bitsize)
 
-        emptyBitSize = 0
-        emptyBitBuffer = BitBuffer(bytes([]))
-        self.assertEqual(emptyBitSize, emptyBitBuffer.getBitSize())
+        empty_bitsize = 0
+        empty_bitbuffer = BitBuffer(bytes([]))
+        self.assertEqual(empty_bitsize, empty_bitbuffer.bitsize)
 
-    def testBufferBitSizeConstructor(self):
-        bitSize = 11
-        bitBuffer = BitBuffer(bytes([0x01, 0xE0]), bitSize)
-        self.assertEqual(bitSize, bitBuffer.getBitSize())
+    def test_buffer_bitsize_constructor(self):
+        bitsize = 11
+        bitbuffer = BitBuffer(bytes([0x01, 0xE0]), bitsize)
+        self.assertEqual(bitsize, bitbuffer.bitsize)
 
-        emptyBitSize = 0
-        emptyBitBuffer = BitBuffer(bytes([]), emptyBitSize)
-        self.assertEqual(emptyBitSize, emptyBitBuffer.getBitSize())
+        empty_bitsize = 0
+        empty_bitbuffer = BitBuffer(bytes([]), empty_bitsize)
+        self.assertEqual(empty_bitsize, empty_bitbuffer.bitsize)
 
-        outOfRangeBitSize = 9
+        out_of_range_bitsize = 9
         with self.assertRaises(PythonRuntimeException):
-            BitBuffer([1], outOfRangeBitSize) # throws!
+            BitBuffer([1], out_of_range_bitsize) # throws!
 
-    def testEq(self):
-        bitSize = 11
-        bitBuffer1 = BitBuffer(bytes([0xAB, 0xE0]), bitSize)
-        bitBuffer2 = BitBuffer(bytes([0xAB, 0xF0]), bitSize)
-        self.assertEqual(bitBuffer1, bitBuffer2)
+    def test_eq(self):
+        bitsize = 11
+        bitbuffer1 = BitBuffer(bytes([0xAB, 0xE0]), bitsize)
+        bitbuffer2 = BitBuffer(bytes([0xAB, 0xF0]), bitsize)
+        self.assertEqual(bitbuffer1, bitbuffer2)
 
-        bitBuffer3 = BitBuffer(bytes([0xAB, 0xFF]), bitSize)
-        self.assertEqual(bitBuffer1, bitBuffer3)
+        bitbuffer3 = BitBuffer(bytes([0xAB, 0xFF]), bitsize)
+        self.assertEqual(bitbuffer1, bitbuffer3)
 
-        bitBuffer4 = BitBuffer(bytes([0xAB, 0xC0]), bitSize)
-        self.assertNotEqual(bitBuffer1, bitBuffer4)
+        bitbuffer4 = BitBuffer(bytes([0xAB, 0xC0]), bitsize)
+        self.assertNotEqual(bitbuffer1, bitbuffer4)
 
-        bitBuffer5 = BitBuffer(bytes([0xBA, 0xE0]), bitSize)
-        self.assertNotEqual(bitBuffer1, bitBuffer5)
+        bitbuffer5 = BitBuffer(bytes([0xBA, 0xE0]), bitsize)
+        self.assertNotEqual(bitbuffer1, bitbuffer5)
 
-        bitBuffer6 = BitBuffer(bytes([0xAB]))
-        self.assertNotEqual(bitBuffer1, bitBuffer6)
+        bitbuffer6 = BitBuffer(bytes([0xAB]))
+        self.assertNotEqual(bitbuffer1, bitbuffer6)
 
-        bitBuffer7 = BitBuffer(bytes())
-        self.assertNotEqual(bitBuffer1, bitBuffer7)
+        bitbuffer7 = BitBuffer(bytes())
+        self.assertNotEqual(bitbuffer1, bitbuffer7)
 
-        self.assertNotEqual(bitBuffer1, 1)
+        self.assertNotEqual(bitbuffer1, 1)
 
-    def testHashCode(self):
-        bitSize = 11
-        bitBuffer1 = BitBuffer(bytes([0xAB, 0xE0]), bitSize)
-        bitBuffer2 = BitBuffer(bytes([0xAB, 0xF0]), bitSize)
-        self.assertEqual(hash(bitBuffer1), hash(bitBuffer2))
+    def test_hashcode(self):
+        bitsize = 11
+        bitbuffer1 = BitBuffer(bytes([0xAB, 0xE0]), bitsize)
+        bitbuffer2 = BitBuffer(bytes([0xAB, 0xF0]), bitsize)
+        self.assertEqual(hash(bitbuffer1), hash(bitbuffer2))
 
-        bitBuffer3 = BitBuffer(bytes([0xAB, 0xFF]), bitSize)
-        self.assertEqual(hash(bitBuffer1), hash(bitBuffer3))
+        bitbuffer3 = BitBuffer(bytes([0xAB, 0xFF]), bitsize)
+        self.assertEqual(hash(bitbuffer1), hash(bitbuffer3))
 
-        bitBuffer4 = BitBuffer(bytes([0xAB, 0xC0]), bitSize)
-        self.assertNotEqual(hash(bitBuffer1), hash(bitBuffer4))
+        bitbuffer4 = BitBuffer(bytes([0xAB, 0xC0]), bitsize)
+        self.assertNotEqual(hash(bitbuffer1), hash(bitbuffer4))
 
-        bitBuffer5 = BitBuffer(bytes([0xBA, 0xE0]), bitSize)
-        self.assertNotEqual(hash(bitBuffer1), hash(bitBuffer5))
+        bitbuffer5 = BitBuffer(bytes([0xBA, 0xE0]), bitsize)
+        self.assertNotEqual(hash(bitbuffer1), hash(bitbuffer5))
 
-        bitBuffer6 = BitBuffer(bytes([0xAB]))
-        self.assertNotEqual(hash(bitBuffer1), hash(bitBuffer6))
+        bitbuffer6 = BitBuffer(bytes([0xAB]))
+        self.assertNotEqual(hash(bitbuffer1), hash(bitbuffer6))
 
-        bitBuffer7 = BitBuffer(bytes())
-        self.assertNotEqual(hash(bitBuffer1), hash(bitBuffer7))
+        bitbuffer7 = BitBuffer(bytes())
+        self.assertNotEqual(hash(bitbuffer1), hash(bitbuffer7))
 
-    def testGetBuffer(self):
-        bitSize = 11
+    def test_buffer(self):
+        bitsize = 11
         buffer = bytes([0xAB, 0xE0])
-        bitBuffer = BitBuffer(buffer, bitSize)
-        self.assertEqual(buffer, bitBuffer.getBuffer())
+        bitbuffer = BitBuffer(buffer, bitsize)
+        self.assertEqual(buffer, bitbuffer.buffer)
 
-    def testGetBitSize(self):
-        bitSize = 11
-        bitBuffer = BitBuffer(bytes([0xAB, 0xE0]), bitSize)
-        self.assertEqual(bitSize, bitBuffer.getBitSize())
+    def test_bitsize(self):
+        bitsize = 11
+        bitbuffer = BitBuffer(bytes([0xAB, 0xE0]), bitsize)
+        self.assertEqual(bitsize, bitbuffer.bitsize)
 
-    def testGetByteSize(self):
-        bitSize = 11
+    def test_bytesize(self):
+        bitsize = 11
         buffer = bytes([0xAB, 0xE0])
-        byteSize = len(buffer)
-        bitBuffer = BitBuffer(buffer, bitSize)
-        self.assertEqual(byteSize, bitBuffer.getByteSize())
+        bytesize = len(buffer)
+        bitbuffer = BitBuffer(buffer, bitsize)
+        self.assertEqual(bytesize, bitbuffer.bytesize())

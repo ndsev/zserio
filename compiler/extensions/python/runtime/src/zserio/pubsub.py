@@ -35,7 +35,7 @@ class PubsubInterface:
         """
         raise NotImplementedError()
 
-    def unsubscribe(self, subscriptionId: int) -> None:
+    def unsubscribe(self, subscription_id: int) -> None:
         """
         Unsubscribes the subscription with the given ID.
 

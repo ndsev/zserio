@@ -1,6 +1,6 @@
 import unittest
 
-from zserio.serialization import serialize, deserialize, serializeToBytes, deserializeBytes
+from zserio.serialization import serialize, deserialize, serialize_to_bytes, deserialize_bytes
 from zserio.bitbuffer import BitBuffer
 from zserio.exception import PythonRuntimeException
 
@@ -16,46 +16,46 @@ class DummyObject:
 
         return instance
 
-    def getValue(self):
+    def get_value(self):
         return self._value
 
     @staticmethod
-    def bitSizeOf(_bitPosition = 0):
+    def bitsizeof(_bitposition = 0):
         return 31 # to make an unaligned type
 
     def read(self, reader):
-        self._value = reader.readBits(self.bitSizeOf(0))
+        self._value = reader.read_bits(self.bitsizeof(0))
 
     def write(self, writer):
-        writer.writeBits(self._value, self.bitSizeOf(0))
+        writer.write_bits(self._value, self.bitsizeof(0))
 
 class SerializationTest(unittest.TestCase):
 
-    def testSerialize(self):
-        dummyObject = DummyObject(0xAB, 0xDEAD)
-        bitBuffer = serialize(dummyObject)
-        expectedBitSize = 31
-        self.assertEqual(expectedBitSize, bitBuffer.getBitSize())
-        self.assertEqual((expectedBitSize + 7) // 8, bitBuffer.getByteSize())
-        self.assertEqual(b'\x00\x01\xBD\x5A', bitBuffer.getBuffer())
+    def test_serialize(self):
+        dummy_object = DummyObject(0xAB, 0xDEAD)
+        bitbuffer = serialize(dummy_object)
+        expected_bitsize = 31
+        self.assertEqual(expected_bitsize, bitbuffer.bitsize)
+        self.assertEqual((expected_bitsize + 7) // 8, bitbuffer.bytesize())
+        self.assertEqual(b'\x00\x01\xBD\x5A', bitbuffer.buffer)
 
-    def testDeserialize(self):
-        bitBuffer = BitBuffer(b'\x00\x01\xBD\x5A', 31)
-        dummyObject = deserialize(DummyObject, bitBuffer, 0xAB)
-        self.assertEqual(0xDEAD, dummyObject.getValue())
+    def test_deserialize(self):
+        bitbuffer = BitBuffer(b'\x00\x01\xBD\x5A', 31)
+        dummy_object = deserialize(DummyObject, bitbuffer, 0xAB)
+        self.assertEqual(0xDEAD, dummy_object.get_value())
 
-        wrongBitBuffer = BitBuffer(b'\x00\x01\xBD\x5A', 30)
+        wrong_bitbuffer = BitBuffer(b'\x00\x01\xBD\x5A', 30)
         with self.assertRaises(PythonRuntimeException):
-            deserialize(DummyObject, wrongBitBuffer, 0xAB) # reading behind the stream!
+            deserialize(DummyObject, wrong_bitbuffer, 0xAB) # reading behind the stream!
 
-    def testSerializeToBytes(self):
-        dummyObject = DummyObject(0xAB, 0xDEAD)
-        buffer = serializeToBytes(dummyObject)
-        expectedBitSize = 31
-        self.assertEqual((expectedBitSize + 7) // 8, len(buffer))
+    def test_serialize_to_bytes(self):
+        dummy_object = DummyObject(0xAB, 0xDEAD)
+        buffer = serialize_to_bytes(dummy_object)
+        expected_bitsize = 31
+        self.assertEqual((expected_bitsize + 7) // 8, len(buffer))
         self.assertEqual(b'\x00\x01\xBD\x5A', buffer)
 
-    def testDeserializeBytes(self):
+    def test_deserialize_bytes(self):
         buffer = b'\x00\x01\xBD\x5A'
-        dummyObject = deserializeBytes(DummyObject, buffer, 0xAB)
-        self.assertEqual(0xDEAD, dummyObject.getValue())
+        dummy_object = deserialize_bytes(DummyObject, buffer, 0xAB)
+        self.assertEqual(0xDEAD, dummy_object.get_value())

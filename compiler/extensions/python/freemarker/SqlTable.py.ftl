@@ -214,7 +214,7 @@ class ${name}:
         if isinstance(${field.name}_, ${field.pythonTypeName}):
             writer = zserio.BitStreamWriter()
             ${field.name}_.write(writer)
-            rowInList[${field?index}] = writer.getByteArray()
+            rowInList[${field?index}] = writer.byte_array
 
             <#elseif field.enumData?? || field.bitmaskData??>
         ${field.name}_ = rowInList[${field?index}]

@@ -23,7 +23,7 @@ class StructLongTemplateArgumentClashTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structLongTemplateArgumentClash.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructLongTemplateArgumentClash = self.api.StructLongTemplateArgumentClash()
         readStructLongTemplateArgumentClash.read(reader)
         self.assertEqual(structLongTemplateArgumentClash, readStructLongTemplateArgumentClash)

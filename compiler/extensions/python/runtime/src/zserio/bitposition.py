@@ -4,40 +4,40 @@ The module provides help methods for bit position calculation.
 
 from zserio.exception import PythonRuntimeException
 
-def alignTo(alignmentValue: int, bitPosition: int) -> int:
+def alignto(alignment_value: int, bitposition: int) -> int:
     """
     Aligns the bit size to the given alignment value.
 
-    :param alignmentValue: Value to align.
-    :param bitPosition: Current bit position where to apply alignment.
+    :param alignment_value: Value to align.
+    :param bitposition: Current bit position where to apply alignment.
     :returns: Aligned bit position.
     """
 
-    if bitPosition <= 0 or alignmentValue == 0:
-        return bitPosition
+    if bitposition <= 0 or alignment_value == 0:
+        return bitposition
 
-    return (((bitPosition - 1) // alignmentValue) + 1) * alignmentValue
+    return (((bitposition - 1) // alignment_value) + 1) * alignment_value
 
-def bitsToBytes(numBits: int) -> int:
+def bits_to_bytes(numbits: int) -> int:
     """
     Converts number of bits to bytes.
 
-    :param numBits: The number of bits to convert.
+    :param numbits: The number of bits to convert.
     :returns: Number of bytes
     :raises PythonRuntimeException: If number of bits to convert is not divisible by 8.
     """
 
-    if numBits % 8 != 0:
-        raise PythonRuntimeException("bitPosition: %d is not a multiple of 8!" % numBits)
+    if numbits % 8 != 0:
+        raise PythonRuntimeException("bitposition: %d is not a multiple of 8!" % numbits)
 
-    return numBits // 8
+    return numbits // 8
 
-def bytesToBits(numBytes: int) -> int:
+def bytes_to_bits(num_bytes: int) -> int:
     """
     Converts number of bytes to bits.
 
-    :param numBytes: The n number of bytes to convert.
+    :param num_bytes: The n number of bytes to convert.
     :returns: Number of bits.
     """
 
-    return numBytes * 8
+    return num_bytes * 8

@@ -37,5 +37,5 @@ class DynamicIntRangeCheckTest(unittest.TestCase):
         self.assertEqual(dynamicIntRangeCheckCompound, readDynamicIntRangeCheckCompound)
 
 NUM_BITS = 10
-DYNAMIC_INT_LOWER_BOUND = zserio.bitfield.getSignedBitFieldLowerBound(NUM_BITS)
-DYNAMIC_INT_UPPER_BOUND = zserio.bitfield.getSignedBitFieldUpperBound(NUM_BITS)
+DYNAMIC_INT_LOWER_BOUND = zserio.bitfield.signed_bitfield_lowerbound(NUM_BITS)
+DYNAMIC_INT_UPPER_BOUND = zserio.bitfield.signed_bitfield_upperbound(NUM_BITS)

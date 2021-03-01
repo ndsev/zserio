@@ -17,7 +17,7 @@ class StructTemplatedFieldTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structTemplatedField.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructTemplatedField = self.api.StructTemplatedField()
         readStructTemplatedField.read(reader)
         self.assertEqual(structTemplatedField, readStructTemplatedField)

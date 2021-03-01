@@ -17,7 +17,7 @@ class StructTemplatedTypeArgumentTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         structTemplatedTypeArgument.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readStructTemplatedTypeArgument = self.api.StructTemplatedTypeArgument()
         readStructTemplatedTypeArgument.read(reader)
         self.assertEqual(structTemplatedTypeArgument, readStructTemplatedTypeArgument)

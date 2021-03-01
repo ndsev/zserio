@@ -43,7 +43,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = False
         writer = zserio.BitStreamWriter()
         VarInt32IndexedOffsetArrayTest._writeVarInt32IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         varInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray()
         varInt32IndexedOffsetArray.read(reader)
         self._checkVarInt32IndexedOffsetArray(varInt32IndexedOffsetArray)
@@ -52,7 +52,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         writeWrongOffsets = True
         writer = zserio.BitStreamWriter()
         VarInt32IndexedOffsetArrayTest._writeVarInt32IndexedOffsetArrayToStream(writer, writeWrongOffsets)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         varInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray()
         with self.assertRaises(zserio.PythonRuntimeException):
             varInt32IndexedOffsetArray.read(reader)
@@ -63,7 +63,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         writer = zserio.BitStreamWriter()
         varInt32IndexedOffsetArray.write(writer)
         self._checkVarInt32IndexedOffsetArray(varInt32IndexedOffsetArray)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readVarInt32IndexedOffsetArray = self.api.VarInt32IndexedOffsetArray.fromReader(reader)
         self._checkVarInt32IndexedOffsetArray(readVarInt32IndexedOffsetArray)
         self.assertTrue(varInt32IndexedOffsetArray == readVarInt32IndexedOffsetArray)
@@ -73,7 +73,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         bitPosition = 8
-        writer.writeBits(0, bitPosition)
+        writer.write_bits(0, bitPosition)
         varInt32IndexedOffsetArray.write(writer)
 
         offsetShift = 1
@@ -91,16 +91,16 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         currentOffset = ELEMENT0_OFFSET
         for i in range(NUM_ELEMENTS):
             if writeWrongOffsets and i == NUM_ELEMENTS - 1:
-                writer.writeBits(WRONG_OFFSET, 32)
+                writer.write_bits(WRONG_OFFSET, 32)
             else:
-                writer.writeBits(currentOffset, 32)
-            currentOffset += zserio.bitsizeof.getBitSizeOfVarInt32(i) // 8
+                writer.write_bits(currentOffset, 32)
+            currentOffset += zserio.bitsizeof.bitsizeof_varint32(i) // 8
 
-        writer.writeBits(SPACER_VALUE, 1)
+        writer.write_bits(SPACER_VALUE, 1)
 
-        writer.writeBits(0, 7)
+        writer.write_bits(0, 7)
         for i in range(NUM_ELEMENTS):
-            writer.writeVarInt32(i)
+            writer.write_varint32(i)
 
     def _checkOffsets(self, varInt32IndexedOffsetArray, offsetShift):
         offsets = varInt32IndexedOffsetArray.offsets
@@ -108,7 +108,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         expectedOffset = ELEMENT0_OFFSET + offsetShift
         for i in range(NUM_ELEMENTS):
             self.assertEqual(expectedOffset, offsets[i])
-            expectedOffset += zserio.bitsizeof.getBitSizeOfVarInt32(i) // 8
+            expectedOffset += zserio.bitsizeof.bitsizeof_varint32(i) // 8
 
     def _checkVarInt32IndexedOffsetArray(self, varInt32IndexedOffsetArray):
         offsetShift = 0
@@ -129,7 +129,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
                 offsets.append(WRONG_OFFSET)
             else:
                 offsets.append(currentOffset)
-            currentOffset += zserio.bitsizeof.getBitSizeOfVarInt32(i) // 8
+            currentOffset += zserio.bitsizeof.bitsizeof_varint32(i) // 8
 
         data = []
         for i in range(NUM_ELEMENTS):
@@ -141,7 +141,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
     def _getVarInt32IndexedOffsetArrayBitSize():
         bitSize = ELEMENT0_OFFSET * 8
         for i in range(NUM_ELEMENTS):
-            bitSize += zserio.bitsizeof.getBitSizeOfVarInt32(i)
+            bitSize += zserio.bitsizeof.bitsizeof_varint32(i)
 
         return bitSize
 

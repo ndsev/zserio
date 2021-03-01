@@ -21,18 +21,18 @@ class StructureArrayParamTest(unittest.TestCase):
         parentStructure.write(writer)
         expectedWriter = zserio.BitStreamWriter()
         self._writeParentStructureToStream(expectedWriter)
-        self.assertTrue(expectedWriter.getByteArray() == writer.getByteArray())
-        self.assertTrue(expectedWriter.getBitPosition() == writer.getBitPosition())
+        self.assertTrue(expectedWriter.byte_array == writer.byte_array)
+        self.assertTrue(expectedWriter.bitposition == writer.bitposition)
 
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readParentStructure = self.api.ParentStructure.fromReader(reader)
         self.assertEqual(parentStructure, readParentStructure)
 
     def _writeParentStructureToStream(self, writer):
-        writer.writeBits(self.NUM_CHILDREN, 8)
+        writer.write_bits(self.NUM_CHILDREN, 8)
 
         for childStructure in self.CHILDREN:
-            writer.writeBits(childStructure.value, childStructure.bit_size)
+            writer.write_bits(childStructure.value, childStructure.bit_size)
 
     def _createParentStructure(self):
         return self.api.ParentStructure(self.NUM_CHILDREN, self.CHILDREN)

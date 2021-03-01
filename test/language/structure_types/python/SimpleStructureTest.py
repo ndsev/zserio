@@ -33,7 +33,7 @@ class SimpleStructureTest(unittest.TestCase):
         numberC = 0x7F
         writer = zserio.BitStreamWriter()
         SimpleStructureTest._writeSimpleStructureToStream(writer, numberA, numberB, numberC)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         simpleStructure = self.api.SimpleStructure.fromReader(reader)
         self.assertEqual(numberA, simpleStructure.number_a)
         self.assertEqual(numberB, simpleStructure.number_b)
@@ -118,7 +118,7 @@ class SimpleStructureTest(unittest.TestCase):
         simpleStructure = self.api.SimpleStructure(numberA, numberC_=numberC, numberB_=numberB)
         writer = zserio.BitStreamWriter()
         simpleStructure.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readSimpleStructure = self.api.SimpleStructure()
         readSimpleStructure.read(reader)
         self.assertEqual(numberA, readSimpleStructure.number_a)
@@ -128,8 +128,8 @@ class SimpleStructureTest(unittest.TestCase):
 
     @staticmethod
     def _writeSimpleStructureToStream(writer, numberA, numberB, numberC):
-        writer.writeBits(numberA, 3)
-        writer.writeBits(numberB, 8)
-        writer.writeBits(numberC, 7)
+        writer.write_bits(numberA, 3)
+        writer.write_bits(numberB, 8)
+        writer.write_bits(numberC, 7)
 
     SIMPLE_STRUCTURE_BIT_SIZE = 18

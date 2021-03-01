@@ -19,7 +19,7 @@ class ChoiceTemplatedFieldTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         choiceTemplatedField.write(writer)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readChoiceTemplatedField = self.api.ChoiceTemplatedField()
         readChoiceTemplatedField.read(reader)
         self.assertEqual(choiceTemplatedField, readChoiceTemplatedField)

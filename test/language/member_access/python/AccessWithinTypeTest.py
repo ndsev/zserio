@@ -13,7 +13,7 @@ class AccessWithinTypeTest(unittest.TestCase):
         wrongArrayLength = False
         writer = zserio.BitStreamWriter()
         self._writeMessageToStream(writer, numSentences, wrongArrayLength)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         message = self.api.Message.fromReader(reader)
         self._checkMessage(message, numSentences)
 
@@ -22,7 +22,7 @@ class AccessWithinTypeTest(unittest.TestCase):
         wrongArrayLength = True
         writer = zserio.BitStreamWriter()
         self._writeMessageToStream(writer, numSentences, wrongArrayLength)
-        reader = zserio.BitStreamReader(writer.getByteArray(), writer.getBitPosition())
+        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         with self.assertRaises(zserio.PythonRuntimeException):
             message = self.api.Message.fromReader(reader)
             self._checkMessage(message, numSentences)
@@ -45,11 +45,11 @@ class AccessWithinTypeTest(unittest.TestCase):
             message.write(writer)
 
     def _writeMessageToStream(self, writer, numSentences, wrongArrayLength):
-        writer.writeBits(self.VERSION_VALUE, 16)
-        writer.writeBits(numSentences, 16)
+        writer.write_bits(self.VERSION_VALUE, 16)
+        writer.write_bits(numSentences, 16)
         numStrings = numSentences - 1 if wrongArrayLength else numSentences
         for i in range(numStrings):
-            writer.writeString(self.SENTENCE_PREFIX + str(i))
+            writer.write_string(self.SENTENCE_PREFIX + str(i))
 
     def _checkMessage(self, message, numSentences):
         self.assertEqual(self.VERSION_VALUE, message.header.version)
