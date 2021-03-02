@@ -7,6 +7,7 @@ import typing
 from zserio.exception import PythonRuntimeException
 from zserio.hashcode import HASH_SEED
 from zserio.hashcode import calc_hashcode
+from zserio.bitposition import bitsize_to_bytesize
 
 class BitBuffer:
     """
@@ -40,7 +41,7 @@ class BitBuffer:
         if self._bitsize != other._bitsize:
             return False
 
-        bytesize = self.bytesize()
+        bytesize = bitsize_to_bytesize(self._bitsize)
         if bytesize > 0:
             if bytesize > 1:
                 if self._buffer[0:bytesize - 1] != other._buffer[0:bytesize - 1]:
@@ -53,7 +54,7 @@ class BitBuffer:
 
     def __hash__(self) -> int:
         result = HASH_SEED
-        bytesize = self.bytesize()
+        bytesize = bitsize_to_bytesize(self._bitsize)
         if bytesize > 0:
             if bytesize > 1:
                 for element in self._buffer[0:bytesize - 1]:
@@ -82,14 +83,6 @@ class BitBuffer:
         :returns: Size of the bit buffer in bits.
         """
         return self._bitsize
-
-    def bytesize(self) -> int:
-        """
-        Gets the number of bytes stored in the bit buffer.
-
-        :returns: Size of the bit buffer in bytes.
-        """
-        return (self._bitsize + 7) // 8
 
     def _masked_last_byte(self) -> int:
         rounded_bytesize = self._bitsize // 8

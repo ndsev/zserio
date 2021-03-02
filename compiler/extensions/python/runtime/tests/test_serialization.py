@@ -36,7 +36,6 @@ class SerializationTest(unittest.TestCase):
         bitbuffer = serialize(dummy_object)
         expected_bitsize = 31
         self.assertEqual(expected_bitsize, bitbuffer.bitsize)
-        self.assertEqual((expected_bitsize + 7) // 8, bitbuffer.bytesize())
         self.assertEqual(b'\x00\x01\xBD\x5A', bitbuffer.buffer)
 
     def test_deserialize(self):

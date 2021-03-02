@@ -41,3 +41,13 @@ def bytes_to_bits(num_bytes: int) -> int:
     """
 
     return num_bytes * 8
+
+def bitsize_to_bytesize(bitsize: int) -> int:
+    """
+    Converts number of bits to number of bytes.
+
+    :param bitsize: Size in bits to convert.
+    :returns: Size in bytes.
+    """
+
+    return (bitsize + 7) // 8

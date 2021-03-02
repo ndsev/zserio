@@ -1,6 +1,7 @@
 import unittest
 
-from zserio.bitposition import (alignto, bits_to_bytes, bytes_to_bits, PythonRuntimeException)
+from zserio.bitposition import (alignto, bits_to_bytes, bytes_to_bits, bitsize_to_bytesize,
+                                PythonRuntimeException)
 
 class BitPositionTest(unittest.TestCase):
 
@@ -28,3 +29,12 @@ class BitPositionTest(unittest.TestCase):
         self.assertEqual(0, bytes_to_bits(0))
         self.assertEqual(8, bytes_to_bits(1))
         self.assertEqual(16, bytes_to_bits(2))
+
+    def test_bitsize_to_bytesize(self):
+        self.assertEqual(0, bitsize_to_bytesize(0))
+        self.assertEqual(1, bitsize_to_bytesize(4))
+        self.assertEqual(1, bitsize_to_bytesize(8))
+        self.assertEqual(2, bitsize_to_bytesize(9))
+        self.assertEqual(2, bitsize_to_bytesize(16))
+        self.assertEqual(3, bitsize_to_bytesize(17))
+        self.assertEqual(3, bitsize_to_bytesize(24))

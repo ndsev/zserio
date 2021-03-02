@@ -81,10 +81,3 @@ class BitStreamReaderTest(unittest.TestCase):
         bitsize = 11
         bitbuffer = BitBuffer(bytes([0xAB, 0xE0]), bitsize)
         self.assertEqual(bitsize, bitbuffer.bitsize)
-
-    def test_bytesize(self):
-        bitsize = 11
-        buffer = bytes([0xAB, 0xE0])
-        bytesize = len(buffer)
-        bitbuffer = BitBuffer(buffer, bitsize)
-        self.assertEqual(bytesize, bitbuffer.bytesize())
