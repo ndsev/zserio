@@ -379,11 +379,11 @@ def performanceTest(logPath, blobPath, numIterations):
     print("Zserio Python Performance Test")
 
     # prepare byte array
-    readerFromFile = zserio.BitStreamReader.fromFile(blobPath)
+    readerFromFile = zserio.BitStreamReader.from_file(blobPath)
     blobFromFile = api.${BLOB_API_PATH}.fromReader(readerFromFile)
     bufferWriter = zserio.BitStreamWriter()
     blobFromFile.write(bufferWriter);
-    byteArray = bufferWriter.getByteArray()
+    byteArray = bufferWriter.byte_array
 
     # run the test
     start = timer()
