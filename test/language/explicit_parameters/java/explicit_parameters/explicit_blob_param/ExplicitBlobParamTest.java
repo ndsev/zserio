@@ -107,9 +107,9 @@ public class ExplicitBlobParamTest
     private static class BlobParamTableParameterProvider implements BlobParamTable.ParameterProvider
     {
         @Override
-        public Header getHeader(ResultSet resultSet)
+        public Header getHeaderParam(ResultSet resultSet)
         {
-            return header;
+            return headerParam;
         }
 
         @Override
@@ -118,7 +118,7 @@ public class ExplicitBlobParamTest
             return blob;
         }
 
-        Header header = new Header(BLOB_PARAM_TABLE_HEADER_COUNT);
+        Header headerParam = new Header(BLOB_PARAM_TABLE_HEADER_COUNT);
         Header blob = new Header(BLOB_PARAM_TABLE_BLOB_COUNT);
     }
 

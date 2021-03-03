@@ -35,13 +35,13 @@ protected:
     public:
         BlobParamTableParameterProvider()
         {
-            m_header.setCount(BLOB_PARAM_TABLE_HEADER_COUNT);
+            m_headerParam.setCount(BLOB_PARAM_TABLE_HEADER_COUNT);
             m_blob.setCount(BLOB_PARAM_TABLE_BLOB_COUNT);
         }
 
-        virtual Header& getHeader(BlobParamTable::Row&)
+        virtual Header& getHeaderParam(BlobParamTable::Row&)
         {
-            return m_header;
+            return m_headerParam;
         }
 
         virtual Header& getBlob(BlobParamTable::Row&)
@@ -50,7 +50,7 @@ protected:
         }
 
     private:
-        Header m_header;
+        Header m_headerParam;
         Header m_blob;
     };
 
