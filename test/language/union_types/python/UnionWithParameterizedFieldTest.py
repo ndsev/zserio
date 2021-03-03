@@ -14,7 +14,7 @@ class UnionWithParameterizedFieldTest(unittest.TestCase):
         self.assertEqual(10, testUnion.array_holder.size)
 
         testUnion = self.api.TestUnion(field_=13)
-        self.assertEqual(self.api.TestUnion.CHOICE_field, testUnion.choice_tag)
+        self.assertEqual(self.api.TestUnion.CHOICE_FIELD, testUnion.choice_tag)
 
         testUnion = self.api.TestUnion(array_holder_=self.api.ArrayHolder(10))
         self.assertEqual(10, testUnion.array_holder.size)

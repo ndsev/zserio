@@ -232,8 +232,8 @@ class WithoutWriterCodeTest(unittest.TestCase):
             if hasItem:
                 # Item
                 writer.write_bits(PARAMS[i], 16)
-                # ExtraParamUnion - choiceTag CHOICE_value32
-                writer.write_varsize(self.api.ExtraParamUnion.CHOICE_value32)
+                # ExtraParamUnion - choiceTag CHOICE_VALUE32
+                writer.write_varsize(self.api.ExtraParamUnion.CHOICE_VALUE32)
                 writer.write_bits(EXTRA_PARAM, 32)
             else:
                 writer.write_bits(PARAMS[i], 16)
@@ -252,7 +252,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         item0 = itemChoice0.item
         self.assertEqual(PARAMS[0], item0.param)
         self.assertEqual(self.api.ItemType.WITH_EXTRA_PARAM, item0.item_type)
-        self.assertEqual(self.api.ExtraParamUnion.CHOICE_value32, item0.extra_param.choice_tag)
+        self.assertEqual(self.api.ExtraParamUnion.CHOICE_VALUE32, item0.extra_param.choice_tag)
         self.assertEqual(EXTRA_PARAM, item0.extra_param.value32)
 
         # element 1

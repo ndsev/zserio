@@ -16,7 +16,7 @@ class UnionConstraintsTest(unittest.TestCase):
 
         unionConstraints = self.api.UnionConstraints()
         unionConstraints.read(reader)
-        self.assertEqual(self.api.UnionConstraints.CHOICE_value8, unionConstraints.choice_tag)
+        self.assertEqual(self.api.UnionConstraints.CHOICE_VALUE8, unionConstraints.choice_tag)
         self.assertEqual(value8, unionConstraints.value8)
 
     def testReadWrongValue8Constraint(self):
@@ -46,7 +46,7 @@ class UnionConstraintsTest(unittest.TestCase):
 
         bitBuffer = zserio.serialize(unionConstraints)
         readUnionConstraints = zserio.deserialize(self.api.UnionConstraints, bitBuffer)
-        self.assertEqual(self.api.UnionConstraints.CHOICE_value16, readUnionConstraints.choice_tag)
+        self.assertEqual(self.api.UnionConstraints.CHOICE_VALUE16, readUnionConstraints.choice_tag)
         self.assertEqual(value16, readUnionConstraints.value16)
         self.assertEqual(unionConstraints, readUnionConstraints)
 
@@ -69,11 +69,11 @@ class UnionConstraintsTest(unittest.TestCase):
             unionConstraints.write(writer)
 
     def _writeValue8(self, writer, value8):
-        writer.write_varsize(self.api.UnionConstraints.CHOICE_value8)
+        writer.write_varsize(self.api.UnionConstraints.CHOICE_VALUE8)
         writer.write_bits(value8, 8)
 
     def _writeValue16(self, writer, value16):
-        writer.write_varsize(self.api.UnionConstraints.CHOICE_value16)
+        writer.write_varsize(self.api.UnionConstraints.CHOICE_VALUE16)
         writer.write_bits(value16, 8)
 
     VALUE8_CORRECT_CONSTRAINT = 1
