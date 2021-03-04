@@ -29,7 +29,8 @@ public class ExplicitParametersErrorTest
     public void differentCompoundType()
     {
         final String error = "different_compound_type_error.zs:28:15: " +
-                "Type of explicit parameter 'header' resolved to 'different_compound_type_error.OtherHeader' " +
+                "Type of explicit parameter 'headerParam' resolved to " +
+                "'different_compound_type_error.OtherHeader' " +
                 "but first used as 'different_compound_type_error.Header' at 26:10!";
         assertTrue(zserioErrors.isPresent(error));
     }

@@ -24,6 +24,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_enum_param/TestEnum.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_enum_param/TestEnum.h
 
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.h
+
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTable.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/SimpleParamTable.h
     ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_simple_param/TestBlob.cpp
@@ -34,10 +39,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.cpp
     ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_explicit_params/TestBlob.h
 
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/SameAsFieldTable.h
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.cpp
-    ${ZSERIO_GEN_DIR}/explicit_parameters/explicit_same_as_field/TestBlob.h
+
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_with_same_name/MultipleWithSameNameTable.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_with_same_name/Parameterized1.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_with_same_name/Parameterized1.h
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_with_same_name/Parameterized2.cpp
+    ${ZSERIO_GEN_DIR}/explicit_parameters/multiple_with_same_name/Parameterized2.h
 )
 
 zserio_add_library(TARGET explicit_parameters_zs
@@ -59,6 +67,7 @@ add_test_sources(
     cpp/ExplicitSameAsFieldTest.cpp
     cpp/ExplicitSimpleParamTest.cpp
     cpp/MultipleExplicitParamsTest.cpp
+    cpp/MultipleWithSameNameTest.cpp
 )
 
 add_test_dependencies(explicit_parameters_zs)

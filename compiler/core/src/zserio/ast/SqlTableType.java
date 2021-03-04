@@ -182,7 +182,8 @@ public class SqlTableType extends CompoundType
                 if (argumentExpression.isExplicitVariable())
                 {
                     final Parameter param = instantiatedParam.getParameter();
-                    final String paramName = param.getName();
+                    // expression contains the actual parameter name (i.e. argument name)
+                    final String paramName = argumentExpression.getText();
                     final ZserioType baseType = param.getTypeReference().getBaseTypeReference().getType();
                     final String typeName = ZserioTypeUtil.getFullName(baseType);
 

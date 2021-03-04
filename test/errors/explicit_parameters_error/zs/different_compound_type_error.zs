@@ -15,17 +15,17 @@ struct Blob(Header header)
     uint32 array[header.count];
 };
 
-struct OtherBlob(OtherHeader header)
+struct OtherBlob(OtherHeader otherHeader)
 {
-    uint32 array[header.count];
+    uint32 array[otherHeader.count];
 };
 
 sql_table Table
 {
-    uint32                     id sql "PRIMARY KEY NOT NULL";
-    Blob(explicit header)      blob1;
-    Blob(explicit header)      blob2;
-    OtherBlob(explicit header) otherBlob;
+    uint32                          id sql "PRIMARY KEY NOT NULL";
+    Blob(explicit headerParam)      blob1;
+    Blob(explicit headerParam)      blob2;
+    OtherBlob(explicit headerParam) otherBlob;
 };
 
 sql_database Database

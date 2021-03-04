@@ -58,7 +58,8 @@ public class MultipleExplicitParamsTest
         fillMultipleParamsTableRows(writtenRows);
         multipleParamsTable.write(writtenRows);
 
-        final MultipleParamsTableParameterProvider parameterProvider = new MultipleParamsTableParameterProvider();
+        final MultipleParamsTableParameterProvider parameterProvider =
+                new MultipleParamsTableParameterProvider();
         final List<MultipleParamsTableRow> readRows = multipleParamsTable.read(parameterProvider);
         checkMultipleParamsTableRows(writtenRows, readRows);
     }
@@ -72,7 +73,8 @@ public class MultipleExplicitParamsTest
         fillMultipleParamsTableRows(writtenRows);
         multipleParamsTable.write(writtenRows);
 
-        final MultipleParamsTableParameterProvider parameterProvider = new MultipleParamsTableParameterProvider();
+        final MultipleParamsTableParameterProvider parameterProvider =
+                new MultipleParamsTableParameterProvider();
         final String condition = "name='Name1'";
         final List<MultipleParamsTableRow> readRows = multipleParamsTable.read(parameterProvider, condition);
         assertEquals(1, readRows.size());
@@ -96,8 +98,10 @@ public class MultipleExplicitParamsTest
         final String updateCondition = "id=" + updateRowId;
         multipleParamsTable.update(updateRow, updateCondition);
 
-        final MultipleParamsTableParameterProvider parameterProvider = new MultipleParamsTableParameterProvider();
-        final List<MultipleParamsTableRow> readRows = multipleParamsTable.read(parameterProvider, updateCondition);
+        final MultipleParamsTableParameterProvider parameterProvider =
+                new MultipleParamsTableParameterProvider();
+        final List<MultipleParamsTableRow> readRows =
+                multipleParamsTable.read(parameterProvider, updateCondition);
         assertEquals(1, readRows.size());
 
         final MultipleParamsTableRow readRow = readRows.get(0);
@@ -178,7 +182,8 @@ public class MultipleExplicitParamsTest
         return row;
     }
 
-    private static void checkMultipleParamsTableRows(List<MultipleParamsTableRow> rows1, List<MultipleParamsTableRow> rows2)
+    private static void checkMultipleParamsTableRows(List<MultipleParamsTableRow> rows1,
+            List<MultipleParamsTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)

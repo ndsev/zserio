@@ -155,7 +155,8 @@ public class ExplicitSimpleParamTest
         return row;
     }
 
-    private static void checkSimpleParamTableRows(List<SimpleParamTableRow> rows1, List<SimpleParamTableRow> rows2)
+    private static void checkSimpleParamTableRows(List<SimpleParamTableRow> rows1,
+            List<SimpleParamTableRow> rows2)
     {
         assertEquals(rows1.size(), rows2.size());
         for (int i = 0; i < rows1.size(); ++i)

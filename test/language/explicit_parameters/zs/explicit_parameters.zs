@@ -6,13 +6,15 @@ import explicit_parameters.explicit_enum_param.*;
 import explicit_parameters.explicit_same_as_field.*;
 import explicit_parameters.explicit_simple_param.*;
 import explicit_parameters.multiple_explicit_params.*;
+import explicit_parameters.multiple_with_same_name.*;
 
 sql_database ExplicitParametersDb
 {
-    BitmaskParamTable   bitmaskParamTable;
-    BlobParamTable      blobParamTable;
-    EnumParamTable      enumParamTable;
-    SameAsFieldTable    sameAsFieldTable;
-    SimpleParamTable    simpleParamTable;
-    MultipleParamsTable multipleParamsTable;
+    BitmaskParamTable           bitmaskParamTable;
+    BlobParamTable              blobParamTable;
+    EnumParamTable              enumParamTable;
+    SameAsFieldTable            sameAsFieldTable;
+    SimpleParamTable            simpleParamTable;
+    MultipleParamsTable         multipleParamsTable;
+    MultipleWithSameNameTable   multipleWithSameNameTable;
 };
