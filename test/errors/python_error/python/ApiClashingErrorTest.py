@@ -23,7 +23,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/bitmask_with_api_clash_error.zs",
             [
-                "3:15: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":3:15: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -33,7 +33,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/choice_with_api_clash_error.zs",
             [
-                "3:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":3:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -43,7 +43,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/const_with_api_clash_error.zs",
             [
-                "3:14: Cannot generate python source 'API.py' for symbol 'API', " +
+                ":3:14: Cannot generate python source 'API.py' for symbol 'API', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -53,7 +53,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/enumeration_with_api_clash_error.zs",
             [
-                "3:12: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":3:12: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -63,7 +63,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/instantiate_type_with_api_clash_error.zs",
             [
-                "8:33: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":8:33: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -73,7 +73,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/pubsub_with_api_clash_error.zs",
             [
-                "15:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":15:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -83,7 +83,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/service_with_api_clash_error.zs",
             [
-                "13:9: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":13:9: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -93,7 +93,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/sql_database_with_api_clash_error.zs",
             [
-                "9:14: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":9:14: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -103,7 +103,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/sql_table_with_api_clash_error.zs",
             [
-                "3:11: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":3:11: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -113,7 +113,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/structure_with_api_clash_error.zs",
             [
-                "3:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":3:8: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -123,7 +123,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/subtype_with_api_clash_error.zs",
             [
-                "3:17: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":3:17: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]
@@ -133,7 +133,7 @@ class ApiClashingErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "api_clashing/union_with_api_clash_error.zs",
             [
-                "3:7: Cannot generate python source 'Api.py' for symbol 'Api', " +
+                ":3:7: Cannot generate python source 'Api.py' for symbol 'Api', " +
                 "since it would clash with auto-generated 'api.py'! Please choose different name.",
                 "Python Generator: Clash in generated code detected!"
             ]

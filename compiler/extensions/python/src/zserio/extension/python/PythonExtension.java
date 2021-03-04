@@ -73,6 +73,9 @@ public class PythonExtension implements Extension
     private void check(Root rootNode, PythonExtensionParameters pythonParameters)
             throws ZserioExtensionException
     {
+        final PythonScopeSymbolClashChecker pythonIdentifierClashChecker = new PythonScopeSymbolClashChecker();
+        rootNode.walk(pythonIdentifierClashChecker);
+
         final PythonApiClashChecker pythonApiClashChecker = new PythonApiClashChecker();
         rootNode.walk(pythonApiClashChecker);
 

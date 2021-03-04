@@ -47,7 +47,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_function_property_clash_error.zs",
             [
-                "3:8: Property name error detected in 'TestChoice'!",
+                ":3:8: Property name error detected in 'TestChoice'!",
                 PropertyNamesErrorTest._getPropertyClashError("func_array")
             ]
         )
@@ -56,7 +56,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_invalid_property_name_private_error.zs",
             [
-                "3:8: Property name error detected in 'TestChoice'!",
+                ":3:8: Property name error detected in 'TestChoice'!",
                 PropertyNamesErrorTest._getPropertyRuleError("_choice")
             ]
         )
@@ -65,7 +65,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_invalid_property_name_reserved_error.zs",
             [
-                "3:8: Property name error detected in 'TestChoice'!",
+                ":3:8: Property name error detected in 'TestChoice'!",
                 PropertyNamesErrorTest._getPropertyRuleError("__str__")
             ]
         )
@@ -74,7 +74,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_public_method_property_clash_error.zs",
             [
-                "3:8: Property name error detected in 'TestChoice'!",
+                ":3:8: Property name error detected in 'TestChoice'!",
                 PropertyNamesErrorTest._getPropertyClashError("write")
             ]
         )
@@ -83,7 +83,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/sql_database_connection_property_clash_error.zs",
             [
-                "9:14: Property name error detected in 'TestDatabase'!",
+                ":9:14: Property name error detected in 'TestDatabase'!",
                 PropertyNamesErrorTest._getPropertyClashError("connection")
             ]
         )
@@ -92,7 +92,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/sql_database_invalid_property_name_reserved_error.zs",
             [
-                "9:14: Property name error detected in 'TestDatabase'!",
+                ":9:14: Property name error detected in 'TestDatabase'!",
                 PropertyNamesErrorTest._getPropertyRuleError("__init__")
             ]
         )
@@ -101,7 +101,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/sql_database_public_method_property_clash_error.zs",
             [
-                "9:14: Property name error detected in 'TestDatabase'!",
+                ":9:14: Property name error detected in 'TestDatabase'!",
                 PropertyNamesErrorTest._getPropertyClashError("from_file")
             ]
         )
@@ -110,7 +110,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_function_property_clash_error.zs",
             [
-                "3:8: Property name error detected in 'TestStructure'!",
+                ":3:8: Property name error detected in 'TestStructure'!",
                 PropertyNamesErrorTest._getPropertyClashError("func_test")
             ]
         )
@@ -119,7 +119,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_indicator_property_clash_error.zs",
             [
-                "3:8: Property name error detected in 'TestStructure'!",
+                ":3:8: Property name error detected in 'TestStructure'!",
                 PropertyNamesErrorTest._getPropertyClashError("is_field_used")
             ]
         )
@@ -128,7 +128,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_invalid_property_name_private_error.zs",
             [
-                "3:8: Property name error detected in 'TestStructure'!",
+                ":3:8: Property name error detected in 'TestStructure'!",
                 PropertyNamesErrorTest._getPropertyRuleError("_field")
             ]
         )
@@ -137,7 +137,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_invalid_property_name_reserved_error.zs",
             [
-                "3:8: Property name error detected in 'TestStructure'!",
+                ":3:8: Property name error detected in 'TestStructure'!",
                 PropertyNamesErrorTest._getPropertyRuleError("__eq__")
             ]
         )
@@ -146,7 +146,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_public_method_property_clash_error.zs",
             [
-                "3:8: Property name error detected in 'TestStructure'!",
+                ":3:8: Property name error detected in 'TestStructure'!",
                 PropertyNamesErrorTest._getPropertyClashError("read")
             ]
         )
@@ -155,7 +155,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/template_invalid_property_name_private_error.zs",
             [
-                "3:8: Property name error detected in 'StringStruct'!",
+                ":3:8: Property name error detected in 'StringStruct'!",
                 PropertyNamesErrorTest._getPropertyRuleError("_field")
             ]
         )
@@ -164,7 +164,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/template_public_method_property_clash_error.zs",
             [
-                "3:8: Property name error detected in 'TemplatedChoice_string'!",
+                ":3:8: Property name error detected in 'TemplatedChoice_string'!",
                 PropertyNamesErrorTest._getPropertyClashError("write")
             ]
         )
@@ -173,7 +173,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_choice_tag_property_clash_error.zs",
             [
-                "3:7: Property name error detected in 'TestUnion'!",
+                ":3:7: Property name error detected in 'TestUnion'!",
                 PropertyNamesErrorTest._getPropertyClashError("choice_tag")
             ]
         )
@@ -182,7 +182,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_function_property_clash_error.zs",
             [
-                "3:7: Property name error detected in 'TestUnion'!",
+                ":3:7: Property name error detected in 'TestUnion'!",
                 PropertyNamesErrorTest._getPropertyClashError("func_my_func")
             ]
         )
@@ -191,7 +191,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_invalid_property_name_private_error.zs",
             [
-                "3:7: Property name error detected in 'TestUnion'!",
+                ":3:7: Property name error detected in 'TestUnion'!",
                 PropertyNamesErrorTest._getPropertyRuleError("_choice")
             ]
         )
@@ -200,7 +200,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_invalid_property_name_reserved_error.zs",
             [
-                "3:7: Property name error detected in 'TestUnion'!",
+                ":3:7: Property name error detected in 'TestUnion'!",
                 PropertyNamesErrorTest._getPropertyRuleError("__hash__")
             ]
         )
@@ -209,7 +209,7 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_public_method_property_clash_error.zs",
             [
-                "3:7: Property name error detected in 'TestUnion'!",
+                ":3:7: Property name error detected in 'TestUnion'!",
                 PropertyNamesErrorTest._getPropertyClashError("bitsizeof")
             ]
         )
