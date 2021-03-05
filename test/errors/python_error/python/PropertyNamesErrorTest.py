@@ -47,8 +47,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_function_property_clash_error.zs",
             [
-                ":3:8: Property name error detected in 'TestChoice'!",
-                PropertyNamesErrorTest._getPropertyClashError("func_array")
+                ":10:16: Property name 'func_array' generated for symbol 'funcArray' " +
+                "clashes with generated method for function 'array' defined at 12:19!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -56,8 +57,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_invalid_property_name_private_error.zs",
             [
-                ":3:8: Property name error detected in 'TestChoice'!",
-                PropertyNamesErrorTest._getPropertyRuleError("_choice")
+                ":6:16: Invalid property name '_choice' generated for symbol '_choice'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -65,8 +67,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_invalid_property_name_reserved_error.zs",
             [
-                ":3:8: Property name error detected in 'TestChoice'!",
-                PropertyNamesErrorTest._getPropertyRuleError("__str__")
+                ":6:16: Invalid property name '__str__' generated for symbol '__str__'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -74,8 +77,8 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/choice_public_method_property_clash_error.zs",
             [
-                ":3:8: Property name error detected in 'TestChoice'!",
-                PropertyNamesErrorTest._getPropertyClashError("write")
+                ":6:14: Property name 'write' generated for symbol 'write' clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -83,8 +86,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/sql_database_connection_property_clash_error.zs",
             [
-                ":9:14: Property name error detected in 'TestDatabase'!",
-                PropertyNamesErrorTest._getPropertyClashError("connection")
+                ":11:15: Property name 'connection' generated for symbol 'connection' " +
+                "clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -92,8 +96,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/sql_database_invalid_property_name_reserved_error.zs",
             [
-                ":9:14: Property name error detected in 'TestDatabase'!",
-                PropertyNamesErrorTest._getPropertyRuleError("__init__")
+                ":11:15: Invalid property name '__init__' generated for symbol '__init__'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -101,8 +106,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/sql_database_public_method_property_clash_error.zs",
             [
-                ":9:14: Property name error detected in 'TestDatabase'!",
-                PropertyNamesErrorTest._getPropertyClashError("from_file")
+                ":11:15: Property name 'from_file' generated for symbol 'fromFile' " +
+                "clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -110,8 +116,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_function_property_clash_error.zs",
             [
-                ":3:8: Property name error detected in 'TestStructure'!",
-                PropertyNamesErrorTest._getPropertyClashError("func_test")
+                ":5:12: Property name 'func_test' generated for symbol 'funcTest' " +
+                "clashes with generated method for function 'test' defined at 7:19!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -119,8 +126,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_indicator_property_clash_error.zs",
             [
-                ":3:8: Property name error detected in 'TestStructure'!",
-                PropertyNamesErrorTest._getPropertyClashError("is_field_used")
+                ":6:12: Property name 'is_field_used' generated for symbol 'isFieldUsed' " +
+                "clashes with generated indicator for optional field 'field' defined at 5:21!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -128,8 +136,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_invalid_property_name_private_error.zs",
             [
-                ":3:8: Property name error detected in 'TestStructure'!",
-                PropertyNamesErrorTest._getPropertyRuleError("_field")
+                ":6:12: Invalid property name '_field' generated for symbol '_field'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -137,8 +146,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_invalid_property_name_reserved_error.zs",
             [
-                ":3:8: Property name error detected in 'TestStructure'!",
-                PropertyNamesErrorTest._getPropertyRuleError("__eq__")
+                ":5:12: Invalid property name '__eq__' generated for symbol '__eq__'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -146,8 +156,8 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/structure_public_method_property_clash_error.zs",
             [
-                ":3:8: Property name error detected in 'TestStructure'!",
-                PropertyNamesErrorTest._getPropertyClashError("read")
+                ":5:12: Property name 'read' generated for symbol 'read' clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -155,8 +165,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/template_invalid_property_name_private_error.zs",
             [
-                ":3:8: Property name error detected in 'StringStruct'!",
-                PropertyNamesErrorTest._getPropertyRuleError("_field")
+                ":5:7: Invalid property name '_field' generated for symbol '_field'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -164,8 +175,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/template_public_method_property_clash_error.zs",
             [
-                ":3:8: Property name error detected in 'TemplatedChoice_string'!",
-                PropertyNamesErrorTest._getPropertyClashError("write")
+                ":3:33: Property name 'write' generated for symbol 'write' " +
+                "clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -173,8 +185,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_choice_tag_property_clash_error.zs",
             [
-                ":3:7: Property name error detected in 'TestUnion'!",
-                PropertyNamesErrorTest._getPropertyClashError("choice_tag")
+                ":6:12: Property name 'choice_tag' generated for symbol 'choiceTag' " +
+                "clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -182,8 +195,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_function_property_clash_error.zs",
             [
-                ":3:7: Property name error detected in 'TestUnion'!",
-                PropertyNamesErrorTest._getPropertyClashError("func_my_func")
+                ":5:12: Property name 'func_my_func' generated for symbol 'funcMyFunc' " +
+                "clashes with generated method for function 'myFunc' defined at 7:21!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
 
@@ -191,8 +205,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_invalid_property_name_private_error.zs",
             [
-                ":3:7: Property name error detected in 'TestUnion'!",
-                PropertyNamesErrorTest._getPropertyRuleError("_choice")
+                ":5:12: Invalid property name '_choice' generated for symbol '_choice'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -200,8 +215,9 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_invalid_property_name_reserved_error.zs",
             [
-                ":3:7: Property name error detected in 'TestUnion'!",
-                PropertyNamesErrorTest._getPropertyRuleError("__hash__")
+                ":6:12: Invalid property name '__hash__' generated for symbol '__hash__'. " +
+                "Property names cannot start with '_'!",
+                "[ERROR] Python Generator: Property name error detected!"
             ]
         )
 
@@ -209,17 +225,8 @@ class PropertyNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "property_names/union_public_method_property_clash_error.zs",
             [
-                ":3:7: Property name error detected in 'TestUnion'!",
-                PropertyNamesErrorTest._getPropertyClashError("bitsizeof")
+                ":6:12: Property name 'bitsizeof' generated for symbol 'bitsizeof' " +
+                "clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
             ]
         )
-
-    @staticmethod
-    def _getPropertyClashError(propertyName):
-        return ("[ERROR] Python Generator: Invalid property name '" + propertyName + "'! " +
-                "Property name clashes with generated API!")
-
-    @staticmethod
-    def _getPropertyRuleError(propertyName):
-        return ("[ERROR] Python Generator: Invalid property name '" + propertyName + "'! " +
-                "Property names cannot start with '_'!")
