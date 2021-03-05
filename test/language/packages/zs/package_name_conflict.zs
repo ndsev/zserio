@@ -7,12 +7,12 @@ struct Blob
     uint32 value;
 };
 
-struct PackageNameConflict
+struct PackageNameConflictLocal
 {
     Blob blob;
 };
 
-struct PackageNameConflictInner
+struct PackageNameConflictImported
 {
     package_name_conflict.package_name_conflict.Blob blob;
 };

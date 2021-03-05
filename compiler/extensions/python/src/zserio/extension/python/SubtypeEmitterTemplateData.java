@@ -16,7 +16,7 @@ public class SubtypeEmitterTemplateData extends PythonTemplateData
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeTargetType =
                 pythonNativeMapper.getPythonType(subtype.getTypeReference());
-        importUsedType(nativeTargetType);
+        importType(nativeTargetType);
         targetTypeName = nativeTargetType.getFullName();
     }
 

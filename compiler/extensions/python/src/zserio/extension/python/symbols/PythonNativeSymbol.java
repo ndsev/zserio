@@ -4,7 +4,7 @@ import zserio.ast.PackageName;
 import zserio.extension.python.PythonFullNameFormatter;
 
 /**
- * C++ native symbol - e.g. constant.
+ * Python native symbol - e.g. constant.
  */
 public class PythonNativeSymbol
 {

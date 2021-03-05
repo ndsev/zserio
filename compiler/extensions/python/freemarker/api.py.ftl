@@ -3,18 +3,12 @@
 <#if subpackages?has_content>
 
     <#list subpackages as subpackage>
-import <#if packagePath?has_content>${packagePath}.</#if>${subpackage}.api as ${subpackage}
-    </#list>
-</#if>
-<#if modules?has_content>
-
-    <#list modules as module>
-import <#if packagePath?has_content>${packagePath}.</#if>${module} as ${module}
+import ${subpackage.modulePath}.api as ${subpackage.symbol}
     </#list>
 </#if>
 <#if packageSymbols?has_content>
 
     <#list packageSymbols as packageSymbol>
-from <#if packagePath?has_content>${packagePath}.</#if>${packageSymbol} import ${packageSymbol}
+from ${packageSymbol.modulePath} import ${packageSymbol.symbol}
     </#list>
 </#if>

@@ -33,7 +33,7 @@ public final class CompoundFieldTemplateData
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
 
         name = field.getName();
-        snakeCaseName = AccessorNameFormatter.camelCaseToSnakeCase(name);
+        snakeCaseName = PythonSymbolConverter.camelCaseToSnakeCase(name);
 
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);

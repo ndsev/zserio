@@ -52,14 +52,14 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/Letters.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_enum_template_argument_conflict/Letters.h
 
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/color/Color.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/color/Color.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/import_color/Color.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/import_color/Color.h
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/Color.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/Color.h
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_7C6F461F.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_7C6F461F.h
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_6066EE71.cpp
-    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_6066EE71.h
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_F30EBCB3.cpp
+    ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgument_Color_F30EBCB3.h
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.h
 
@@ -223,16 +223,16 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/StructFullNameTemplateArgument.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_full_and_short_template_argument/StructFullNameTemplateArgument.h
 
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/storage/Storage.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/storage/Storage.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/import_storage/Storage.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/import_storage/Storage.h
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/Storage.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/Storage.h
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/StructFullNameTemplateArgument.h
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_08C0ED6D.cpp
-    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_08C0ED6D.h
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_A3A4B101.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_A3A4B101.h
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_C76E422F.cpp
+    ${ZSERIO_GEN_DIR}/templates/struct_full_name_template_argument/TemplatedStruct_Storage_C76E422F.h
 
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.cpp
     ${ZSERIO_GEN_DIR}/templates/struct_long_template_argument/StructLongTemplateArgument.h

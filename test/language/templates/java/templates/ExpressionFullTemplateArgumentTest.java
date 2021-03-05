@@ -16,7 +16,7 @@ import zserio.runtime.io.FileBitStreamWriter;
 
 import templates.expression_full_template_argument.FullTemplateArgumentHolder;
 import templates.expression_full_template_argument.FullTemplateArgument_Color_7C6F461F;
-import templates.expression_full_template_argument.FullTemplateArgument_Color_6066EE71;
+import templates.expression_full_template_argument.FullTemplateArgument_Color_F30EBCB3;
 
 public class ExpressionFullTemplateArgumentTest
 {
@@ -27,8 +27,8 @@ public class ExpressionFullTemplateArgumentTest
                 new FullTemplateArgument_Color_7C6F461F(false, 10);
         assertTrue(colorInternal.isExpressionFieldUsed());
 
-        final FullTemplateArgument_Color_6066EE71 colorExternal =
-                new FullTemplateArgument_Color_6066EE71(false, 10);
+        final FullTemplateArgument_Color_F30EBCB3 colorExternal =
+                new FullTemplateArgument_Color_F30EBCB3(false, 10);
         assertFalse(colorExternal.isExpressionFieldUsed());
 
         final FullTemplateArgumentHolder fullTemplateArgumentHolder =

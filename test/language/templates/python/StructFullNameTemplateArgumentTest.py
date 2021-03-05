@@ -10,7 +10,7 @@ class StructFullNameTemplateArgumentTest(unittest.TestCase):
 
     def testReadWrite(self):
         structFullNameTemplateArgument = self.api.StructFullNameTemplateArgument(
-            self.api.TemplatedStruct_Storage_08C0ED6D(self.api.storage.Storage(42)),
+            self.api.TemplatedStruct_Storage_C76E422F(self.api.import_storage.Storage(42)),
             self.api.TemplatedStruct_Storage_A3A4B101(self.api.Storage("string"))
         )
 

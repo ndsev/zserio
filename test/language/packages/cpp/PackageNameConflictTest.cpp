@@ -1,46 +1,47 @@
 #include "gtest/gtest.h"
 
-#include "package_name_conflict/PackageNameConflict.h"
-#include "package_name_conflict/PackageNameConflictInner.h"
+#include "package_name_conflict/PackageNameConflictLocal.h"
+#include "package_name_conflict/PackageNameConflictImported.h"
 
 namespace package_name_conflict
 {
 
-TEST(PackageNameConflictTest, packageNameConflict)
+TEST(PackageNameConflictTest, packageNameConflictLocal)
 {
-    // just test that PackageNameConflict includes correct Blob
-    PackageNameConflict packageNameConflict{Blob{13}};
+    // just test that PackageNameConflictLocal includes correct Blob
+    PackageNameConflictLocal packageNameConflictLocal{Blob{13}};
 
     zserio::BitStreamWriter writer;
-    packageNameConflict.write(writer);
+    packageNameConflictLocal.write(writer);
 
     size_t bufferSize = 0;
     const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
     zserio::BitStreamReader reader(buffer, bufferSize);
-    PackageNameConflict readPackageNameConflict(reader);
+    PackageNameConflictLocal readPackageNameConflictLocal(reader);
 
-    ASSERT_EQ(13, packageNameConflict.getBlob().getValue());
-    ASSERT_EQ(packageNameConflict.getBlob().getValue(), readPackageNameConflict.getBlob().getValue());
+    ASSERT_EQ(13, packageNameConflictLocal.getBlob().getValue());
+    ASSERT_EQ(packageNameConflictLocal.getBlob().getValue(), readPackageNameConflictLocal.getBlob().getValue());
 }
 
-TEST(PackageNameConflictTest, packageNameConflictInner)
+TEST(PackageNameConflictTest, packageNameConflictImported)
 {
-    // just test that PackageNameConflictInner includes correct Blob
-    PackageNameConflictInner packageNameConflictInner{
+    // just test that PackageNameConflictImported includes correct Blob
+    PackageNameConflictImported packageNameConflictImported{
             ::package_name_conflict::package_name_conflict::Blob{"test"}};
 
     zserio::BitStreamWriter writer;
-    packageNameConflictInner.write(writer);
+    packageNameConflictImported.write(writer);
 
     size_t bufferSize = 0;
     const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
     zserio::BitStreamReader reader(buffer, bufferSize);
-    PackageNameConflictInner readPackageNameConflictInner(reader);
+    PackageNameConflictImported readPackageNameConflictImported(reader);
 
-    ASSERT_EQ("test", packageNameConflictInner.getBlob().getValue());
-    ASSERT_EQ(packageNameConflictInner.getBlob().getValue(), readPackageNameConflictInner.getBlob().getValue());
+    ASSERT_EQ("test", packageNameConflictImported.getBlob().getValue());
+    ASSERT_EQ(packageNameConflictImported.getBlob().getValue(),
+            readPackageNameConflictImported.getBlob().getValue());
 }
 
 } // namespace package_name_conflict

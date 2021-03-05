@@ -8,44 +8,29 @@ import zserio.tools.StringJoinUtil;
  */
 final public class PythonFullNameFormatter
 {
-    /**
-     * Constructs full Python name from the given package name.
-     *
-     * @param packageName Package name.
-     *
-     * @return Full package name.
-     */
     public static String getFullName(PackageName packageName)
     {
         return packageName.toString(PYTHON_PACKAGE_SEPARATOR);
     }
 
-    /**
-     * Constructs full Python name from package name and type or symbol name.
-     *
-     * @param packageName Package name.
-     * @param name        Type or symbol name.
-     *
-     * @return Full name.
-     */
-    public static String getFullName(PackageName packageName, String name)
+    public static String getFullName(PackageName packageName, String packageSymbolName)
     {
-        return getFullName(packageName, name, name);
+        final String moduleName = PythonSymbolConverter.packageSymbolToModuleName(packageSymbolName);
+
+        return getFullName(packageName, moduleName, packageSymbolName);
     }
 
-    /**
-     * Constructs full Python name from package name, module name and type or symbol name.
-     *
-     * @param packageName Package name.
-     * @param moduleName  Module name.
-     * @param name        Type or symbol name.
-     *
-     * @return Full name of a member function or a static member variable.
-     */
     public static String getFullName(PackageName packageName, String moduleName, String name)
     {
         return StringJoinUtil.joinStrings(getFullName(packageName), moduleName, name,
                 PYTHON_PACKAGE_SEPARATOR);
+    }
+
+    public static String getFullModuleImportName(PackageName packageName, String symbolName)
+    {
+        final String moduleName = PythonSymbolConverter.packageSymbolToModuleName(symbolName);
+
+        return StringJoinUtil.joinStrings(getFullName(packageName), moduleName, PYTHON_PACKAGE_SEPARATOR);
     }
 
     private static final String PYTHON_PACKAGE_SEPARATOR = ".";

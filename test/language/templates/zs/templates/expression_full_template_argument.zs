@@ -1,6 +1,6 @@
 package templates.expression_full_template_argument;
 
-import templates.expression_full_template_argument.color.*;
+import templates.expression_full_template_argument.import_color.*;
 
 enum uint8 Color
 {
@@ -17,5 +17,5 @@ struct FullTemplateArgument<E>
 struct FullTemplateArgumentHolder
 {
     FullTemplateArgument<Color> templateArgumentInternal;
-    FullTemplateArgument<templates.expression_full_template_argument.color.Color> templateArgumentExternal;
+    FullTemplateArgument<templates.expression_full_template_argument.import_color.Color> templateArgumentExternal;
 };

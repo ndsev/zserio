@@ -11,7 +11,7 @@ TEST(StructFullNameTemplateArgumentTest, readWrite)
 {
     StructFullNameTemplateArgument structFullNameTemplateArgument;
     structFullNameTemplateArgument.setStructExternal(
-            TemplatedStruct_Storage_08C0ED6D{storage::Storage{42}});
+            TemplatedStruct_Storage_C76E422F{import_storage::Storage{42}});
     structFullNameTemplateArgument.setStructInternal(
             TemplatedStruct_Storage_A3A4B101{Storage{std::string{"string"}}});
 

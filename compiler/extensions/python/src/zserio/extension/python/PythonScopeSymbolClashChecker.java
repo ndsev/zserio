@@ -118,7 +118,7 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
                         if (explicitParameters.add(explicitParamName)) // first time seeing this parameter
                         {
                             final String prevExplicitParamName = snakeCaseExplicitParamMap.put(
-                                    AccessorNameFormatter.camelCaseToSnakeCase(explicitParamName),
+                                    PythonSymbolConverter.camelCaseToSnakeCase(explicitParamName),
                                     explicitParamName);
                             if (prevExplicitParamName != null)
                             {
@@ -139,7 +139,7 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
             throws ZserioExtensionException
     {
         final String symbolName = symbol.getName();
-        final String snakeCaseSymbolName = AccessorNameFormatter.camelCaseToSnakeCase(symbolName);
+        final String snakeCaseSymbolName = PythonSymbolConverter.camelCaseToSnakeCase(symbolName);
         final String prevSymbolName = symbolMap.put(snakeCaseSymbolName, symbol.getName());
         if (prevSymbolName != null)
         {

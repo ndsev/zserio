@@ -8,5 +8,4 @@ public interface ImportCollector
     void importPackage(String packageName);
     void importSymbol(PythonNativeSymbol nativeSymbol);
     void importType(PythonNativeType nativeType);
-    void importUsedType(PythonNativeType nativeType);
 }

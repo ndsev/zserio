@@ -69,10 +69,10 @@ set(ZSERIO_GENERATED_SOURCES_DEFAULT_PACKAGE
 )
 
 set(ZSERIO_GENERATED_SOURCES_PACKAGE_NAME_CONFLICT
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflict.cpp
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflict.h
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictInner.cpp
-    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictInner.h
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictLocal.cpp
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictLocal.h
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictImported.cpp
+    ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/PackageNameConflictImported.h
     ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/Blob.cpp
     ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/Blob.h
     ${ZSERIO_GEN_DIR_PACKAGE_NAME_CONFLICT}/package_name_conflict/package_name_conflict/Blob.cpp

@@ -57,10 +57,11 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         processSourceTemplate(templateName, templateData, zserioType.getPackage(), zserioType.getName());
     }
 
-    protected void processSourceTemplate(String templateName, Object templateData,
-            Package zserioPackage, String outFileName) throws ZserioExtensionException
+    protected void processSourceTemplate(String templateName, Object templateData, Package zserioPackage,
+            String name) throws ZserioExtensionException
     {
-        processTemplate(templateName, templateData, zserioPackage.getPackageName(), outFileName);
+        final String moduleName = PythonSymbolConverter.packageSymbolToModuleName(name);
+        processTemplate(templateName, templateData, zserioPackage.getPackageName(), moduleName);
     }
 
     protected void processTemplate(String templateName, Object templateData, PackageName packageName,

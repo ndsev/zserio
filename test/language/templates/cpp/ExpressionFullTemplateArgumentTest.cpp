@@ -11,7 +11,7 @@ TEST(ExpressionFullTemplateArgumentTest, readWrite)
 {
     const FullTemplateArgument_Color_7C6F461F colorInternal(false, 10);
     ASSERT_TRUE(colorInternal.isExpressionFieldUsed());
-    const FullTemplateArgument_Color_6066EE71 colorExternal(false, 10);
+    const FullTemplateArgument_Color_F30EBCB3 colorExternal(false, 10);
     ASSERT_FALSE(colorExternal.isExpressionFieldUsed());
 
     FullTemplateArgumentHolder fullTemplateArgumentHolder(colorInternal, colorExternal);

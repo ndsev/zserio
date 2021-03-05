@@ -17,7 +17,7 @@ import zserio.runtime.io.FileBitStreamWriter;
 import templates.struct_full_name_template_argument.StructFullNameTemplateArgument;
 import templates.struct_full_name_template_argument.Storage;
 import templates.struct_full_name_template_argument.TemplatedStruct_Storage_A3A4B101;
-import templates.struct_full_name_template_argument.TemplatedStruct_Storage_08C0ED6D;
+import templates.struct_full_name_template_argument.TemplatedStruct_Storage_C76E422F;
 
 public class StructFullNameTemplateArgumentTest
 {
@@ -26,8 +26,8 @@ public class StructFullNameTemplateArgumentTest
     {
         final StructFullNameTemplateArgument structFullNameTemplateArgument =
                 new StructFullNameTemplateArgument();
-        structFullNameTemplateArgument.setStructExternal(new TemplatedStruct_Storage_08C0ED6D(
-                new templates.struct_full_name_template_argument.storage.Storage((long)42)));
+        structFullNameTemplateArgument.setStructExternal(new TemplatedStruct_Storage_C76E422F(
+                new templates.struct_full_name_template_argument.import_storage.Storage((long)42)));
         structFullNameTemplateArgument.setStructInternal(new TemplatedStruct_Storage_A3A4B101(
                 new Storage("string")));
 

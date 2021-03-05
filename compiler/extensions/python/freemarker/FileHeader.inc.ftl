@@ -10,13 +10,13 @@ import ${packageImport}
 
 <#macro type_imports typeImports>
     <#list typeImports as typeImport>
-import <#if typeImport.packagePath?has_content>${typeImport.packagePath}.</#if>${typeImport.moduleName}
+import ${typeImport}
     </#list>
 </#macro>
 
 <#macro symbol_imports symbolImports>
     <#list symbolImports as symbolImport>
-import <#if symbolImport.packagePath?has_content>${symbolImport.packagePath}.</#if>${symbolImport.moduleName}
+import ${symbolImport}
     </#list>
 </#macro>
 

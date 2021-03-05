@@ -1,5 +1,6 @@
 package zserio.extension.python;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 import zserio.ast.BitmaskType;
@@ -17,7 +18,6 @@ import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
-import zserio.ast.ZserioType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
@@ -31,10 +31,11 @@ public class ApiEmitter extends PythonDefaultEmitter
     @Override
     public void endRoot(Root root) throws ZserioExtensionException
     {
-        for (ApiEmitterTemplateData packageTemplateData : packageMapping.values())
+        for (Map.Entry<PackageName, ApiEmitterTemplateData> packageMappingEntry : packageMapping.entrySet())
         {
-            final PackageName packageName = packageTemplateData.getPackageName();
-            processTemplate(API_TEMPLATE, packageTemplateData, packageName, API_FILENAME_ROOT);
+            final PackageName packageName = packageMappingEntry.getKey();
+            final ApiEmitterTemplateData templateData = packageMappingEntry.getValue();
+            processTemplate(API_TEMPLATE, templateData, packageName, API_FILENAME_ROOT);
         }
     }
 
@@ -110,7 +111,7 @@ public class ApiEmitter extends PythonDefaultEmitter
     public void beginService(ServiceType serviceType) throws ZserioExtensionException
     {
         if (getWithServiceCode())
-            addModuleMapping(serviceType);
+            addPackageSymbolMapping(serviceType);
     }
 
     @Override
@@ -124,6 +125,7 @@ public class ApiEmitter extends PythonDefaultEmitter
     {
         if (!packageMapping.isEmpty())
             throw new ZserioExtensionException("ApiEmitter: Empty package shall be first!");
+
         packageMapping.put(PackageName.EMPTY,
                 new ApiEmitterTemplateData(getTemplateDataContext(), PackageName.EMPTY));
     }
@@ -149,15 +151,6 @@ public class ApiEmitter extends PythonDefaultEmitter
         }
     }
 
-    private void addModuleMapping(ZserioType zserioType) throws ZserioExtensionException
-    {
-        final PackageName packageName = zserioType.getPackage().getPackageName();
-        final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
-        if (packageTemplateData == null)
-            throw new ZserioExtensionException("ApiEmitter: Package not yet mapped!");
-        packageTemplateData.addModule(zserioType);
-    }
-
     private void addPackageSymbolMapping(PackageSymbol packageSymbol) throws ZserioExtensionException
     {
         final String symbolName = packageSymbol.getName();
@@ -165,6 +158,7 @@ public class ApiEmitter extends PythonDefaultEmitter
         final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
         if (packageTemplateData == null)
             throw new ZserioExtensionException("ApiEmitter: Package not yet mapped!");
+
         packageTemplateData.addPackageSymbol(symbolName);
     }
 

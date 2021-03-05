@@ -10,36 +10,38 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
 public class PackageNameConflictTest
 {
     @Test
-    public void packageNameConflict() throws Exception
+    public void packageNameConflictLocal() throws Exception
     {
-        // just test that PackageNameConflict uses correct Blob
-        PackageNameConflict packageNameConflict = new PackageNameConflict(new Blob(13));
+        // just test that PackageNameConflictLocal uses correct Blob
+        final PackageNameConflictLocal packageNameConflictLocal = new PackageNameConflictLocal(new Blob(13));
 
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        packageNameConflict.write(writer);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        packageNameConflictLocal.write(writer);
 
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
-        PackageNameConflict readPackageNameConflict = new PackageNameConflict(reader);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final PackageNameConflictLocal readPackageNameConflictLocal = new PackageNameConflictLocal(reader);
 
-        assertEquals(13, packageNameConflict.getBlob().getValue());
-        assertEquals(packageNameConflict.getBlob().getValue(), readPackageNameConflict.getBlob().getValue());
+        assertEquals(13, packageNameConflictLocal.getBlob().getValue());
+        assertEquals(packageNameConflictLocal.getBlob().getValue(),
+                readPackageNameConflictLocal.getBlob().getValue());
     }
 
     @Test
-    public void packageNameConflictInner() throws Exception
+    public void packageNameConflictImported() throws Exception
     {
-        // just test that PackageNameConflictInner uses correct Blob
-        PackageNameConflictInner packageNameConflictInner = new PackageNameConflictInner(
+        // just test that PackageNameConflictImported uses correct Blob
+        final PackageNameConflictImported packageNameConflictImported = new PackageNameConflictImported(
                 new package_name_conflict.package_name_conflict.Blob("test"));
 
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        packageNameConflictInner.write(writer);
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        packageNameConflictImported.write(writer);
 
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
-        PackageNameConflictInner readPackageNameConflictInner = new PackageNameConflictInner(reader);
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final PackageNameConflictImported readPackageNameConflictImported =
+                new PackageNameConflictImported(reader);
 
-        assertEquals("test", packageNameConflictInner.getBlob().getValue());
-        assertEquals(packageNameConflictInner.getBlob().getValue(),
-                readPackageNameConflictInner.getBlob().getValue());
+        assertEquals("test", packageNameConflictImported.getBlob().getValue());
+        assertEquals(packageNameConflictImported.getBlob().getValue(),
+                readPackageNameConflictImported.getBlob().getValue());
     }
 };
