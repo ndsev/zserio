@@ -42,7 +42,6 @@ java -jar zserio.jar
     [-withValidationCode|-withoutValidationCode]
     [-withWriterCode|-withoutWriterCode]
     [-withUnusedWarnings|-withoutUnusedWarnings]
-    [-withPythonProperties|-withoutPythonProperties]
     [-xml <output directory>]
     <input file>
 ```
@@ -160,14 +159,6 @@ writing data to the bit stream or to the SQLite database. By default is enabled.
 **`-withUnusedWarnings|-withoutUnusedWarnings`**
 
 Enables/disables warnings for unused types. By default is disabled.
-
-**`-withPythonProperties|-withoutPythonProperties`**
-
-Enables/disables generation of Python properties. By default is disabled and zserio generates setters and
-getters for fields and parameters accessors and for other gettable attributes. When enabled, all attributes
-which may be considered as properties are generated as Python properties. Note that with this option enabled,
-it may cause an error during Zserio compilation when some field or parameter has inconvenient name which clashes
-with generated API. In that case either change the problematic name or disable this option.
 
 **`-xml`**
 
