@@ -521,7 +521,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     @Override
     public Field visitSqlDatabaseFieldDefinition(ZserioParser.SqlDatabaseFieldDefinitionContext ctx)
     {
-        final AstLocation location = new AstLocation(ctx.getStart());
+        final AstLocation location = new AstLocation(ctx.id().getStart());
         final TypeInstantiation fieldTypeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
         final String name = ctx.id().getText();
 

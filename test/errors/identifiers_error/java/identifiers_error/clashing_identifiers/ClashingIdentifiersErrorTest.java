@@ -103,8 +103,8 @@ public class ClashingIdentifiersErrorTest
     {
         final String errors[] =
         {
-            "clashing_sql_database_table_names_error.zs:10:5:     Conflicting symbol defined here.",
-            "clashing_sql_database_table_names_error.zs:11:5: " +
+            "clashing_sql_database_table_names_error.zs:10:11:     Conflicting symbol defined here.",
+            "clashing_sql_database_table_names_error.zs:11:11: " +
                     "Symbol 'tBl_x' is not unique (case insensitive) within the SQL type!"
         };
         assertTrue(zserioErrors.isPresent(errors));

@@ -35,14 +35,14 @@ public class SqlDatabasesErrorTest
     @Test
     public void structureField()
     {
-        final String error = "structure_field_error.zs:19:5: Field 'testStructure' is not a sql table!";
+        final String error = "structure_field_error.zs:19:22: Field 'testStructure' is not a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
     @Test
     public void subtypedStructureField()
     {
-        final String error = "subtyped_structure_field_error.zs:15:5: " +
+        final String error = "subtyped_structure_field_error.zs:15:23: " +
                 "Field 'subtypedTestStructure' is not a sql table!";
         assertTrue(zserioErrors.isPresent(error));
     }

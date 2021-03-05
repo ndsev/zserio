@@ -62,7 +62,7 @@ class ScopeSymbolsErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "scope_symbols/sql_database_table_names_clash_error.zs",
             [
-                ":12:5: Symbol name 'test_table' clashes with 'testTable' " +
+                ":12:15: Symbol name 'test_table' clashes with 'testTable' " +
                 "since both are generated equally in Python code!",
                 "[ERROR] Python Generator: Symbol name clash detected!"
             ]
