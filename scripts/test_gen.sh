@@ -211,7 +211,7 @@ test_gen()
         rm "${TEST_OUT_DIR}/cpp/gen/gif/gif_data/GifData.cpp"
     fi
     if [[ "${PYTHON_GENERATOR}" != "" ]] ; then
-        rm "${TEST_OUT_DIR}/python/gen/gif/gif_data/GifData.py"
+        rm "${TEST_OUT_DIR}/python/gen/gif/gif_data/gif_data.py"
     fi
     if [[ "${XML_GENERATOR}" != "" ]] ; then
         rm "${TEST_OUT_DIR}/xml/abstract_syntax_tree.xml"
