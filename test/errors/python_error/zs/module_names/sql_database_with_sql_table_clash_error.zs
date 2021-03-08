@@ -1,4 +1,4 @@
-package package_symbols.sql_database_with_sql_table_clash_error;
+package module_names.sql_database_with_sql_table_clash_error;
 
 sql_table Some_Good_Name
 {

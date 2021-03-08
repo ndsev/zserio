@@ -1,4 +1,4 @@
-package package_symbols.choice_with_union_clash_error;
+package module_names.choice_with_union_clash_error;
 
 choice SomeName(bool selector) on selector
 {

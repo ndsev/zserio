@@ -1,4 +1,4 @@
-package package_symbols.instantiation_with_structure_clash_error;
+package module_names.instantiation_with_structure_clash_error;
 
 struct SomeName
 {

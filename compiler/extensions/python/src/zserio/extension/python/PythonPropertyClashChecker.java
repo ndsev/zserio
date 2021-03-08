@@ -30,7 +30,8 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
     @Override
     public boolean traverseTemplateInstantiations()
     {
-        return true;
+        // names of properties are already given in templates
+        return false;
     }
 
     @Override

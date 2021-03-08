@@ -1,4 +1,4 @@
-package package_symbols.const_with_structure_clash_error;
+package module_names.const_with_structure_clash_error;
 
 const uint32 SOME_NAME = 13;
 

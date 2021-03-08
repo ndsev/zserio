@@ -1,5 +1,6 @@
 package zserio.extension.python;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +17,9 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
+import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
+import zserio.ast.ZserioTemplatableType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ZserioToolPrinter;
@@ -25,11 +28,12 @@ import zserio.tools.ZserioToolPrinter;
  * Checks that Python modules generated for each package symbol do not clash on the file system.
  * Note that module names are created from package symbol names by converting to snake case to conform PEP-8.
  */
-class PythonPackageSymbolClashChecker extends DefaultTreeWalker
+class PythonModuleClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()
     {
+        // we need to check package symbol names of template instantiations
         return true;
     }
 
@@ -109,8 +113,8 @@ class PythonPackageSymbolClashChecker extends DefaultTreeWalker
     public void beginInstantiateType(InstantiateType instantiateType) throws ZserioExtensionException
     {
         // We don't need to check instantiate types since we will check the concrete instantiations
-        // (which have the same symbol name) thanks to the traverseTemplateInstantiations set to true.
-        // Moreover we would get false positives because of adding the same symbol twice.
+        // (which have the same package symbol name) thanks to the traverseTemplateInstantiations set to true.
+        // Moreover we would get false positives here because of adding the same symbol twice.
     }
 
     private void addSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
@@ -119,12 +123,34 @@ class PythonPackageSymbolClashChecker extends DefaultTreeWalker
         final PackageSymbol clashingPackageSymbol = packageSymbolMap.put(moduleName, packageSymbol);
         if (clashingPackageSymbol != null)
         {
+            printErrorContext(packageSymbol);
+
             ZserioToolPrinter.printError(packageSymbol.getLocation(),
                     "Module '" + moduleName + "' generated for package symbol '" + packageSymbol.getName() +
                     "' clashes with module generated for package symbol '" + clashingPackageSymbol.getName() +
                     "' defined at " + clashingPackageSymbol.getLocation().getLine() + ":" +
                     clashingPackageSymbol.getLocation().getColumn() + "!");
             throw new ZserioExtensionException("Module name clashing detected!");
+        }
+    }
+
+    private static void printErrorContext(PackageSymbol packageSymbol)
+    {
+        if (packageSymbol instanceof ZserioTemplatableType)
+        {
+            final ZserioTemplatableType templatable = (ZserioTemplatableType)packageSymbol;
+            if (templatable.getTemplate() != null)
+            {
+                final ArrayDeque<TypeReference> reversedStack = new ArrayDeque<TypeReference>();
+                for (TypeReference instantiationReference : templatable.getInstantiationReferenceStack())
+                    reversedStack.push(instantiationReference);
+                for (TypeReference instantiationReference : reversedStack)
+                {
+                    ZserioToolPrinter.printError(instantiationReference.getLocation(),
+                            "In instantiation of '" + instantiationReference.getReferencedTypeName() +
+                            "' required from here");
+                }
+            }
         }
     }
 

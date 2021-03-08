@@ -29,7 +29,7 @@ class PythonApiClashChecker extends DefaultTreeWalker
     public boolean traverseTemplateInstantiations()
     {
         // we don't need to check instantiations since they can clash only if 'instantiate' keyword is used
-        // and we check such definitions here in beginInstantiateType
+        // and we check such clashes in beginInstantiateType
         return false;
     }
 

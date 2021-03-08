@@ -1,4 +1,4 @@
-package package_symbols.structure_with_service_clash_error;
+package module_names.structure_with_service_clash_error;
 
 struct SomeName
 {

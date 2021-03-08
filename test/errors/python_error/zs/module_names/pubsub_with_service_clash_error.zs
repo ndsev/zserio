@@ -1,4 +1,4 @@
-package package_symbols.pubsub_with_service_clash_error;
+package module_names.pubsub_with_service_clash_error;
 
 struct Request
 {

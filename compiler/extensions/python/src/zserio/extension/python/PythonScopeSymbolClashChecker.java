@@ -33,7 +33,8 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     @Override
     public boolean traverseTemplateInstantiations()
     {
-        return true;
+        // scope symbol names are already known in templates
+        return false;
     }
 
     @Override
@@ -135,8 +136,7 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
         }
     }
 
-    private void addSymbol(Map<String, String> symbolMap, ScopeSymbol symbol)
-            throws ZserioExtensionException
+    private void addSymbol(Map<String, String> symbolMap, ScopeSymbol symbol) throws ZserioExtensionException
     {
         final String symbolName = symbol.getName();
         final String snakeCaseSymbolName = PythonSymbolConverter.camelCaseToSnakeCase(symbolName);
