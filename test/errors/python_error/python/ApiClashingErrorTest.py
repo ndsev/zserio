@@ -6,6 +6,7 @@ class ApiClashingErrorTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.errors = {}
+        compileErroneousZserio(__file__, "api_clashing/api_package_with_api_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "api_clashing/bitmask_with_api_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "api_clashing/choice_with_api_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "api_clashing/const_with_api_clash_error.zs", cls.errors)
@@ -18,6 +19,17 @@ class ApiClashingErrorTest(unittest.TestCase):
         compileErroneousZserio(__file__, "api_clashing/structure_with_api_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "api_clashing/subtype_with_api_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "api_clashing/union_with_api_clash_error.zs", cls.errors)
+
+    def testApiPackageWithApiClash(self):
+        assertErrorsPresent(self,
+            "api_clashing/api_package_with_api_clash_error.zs",
+            [
+                ":1:9: Cannot generate python package 'api' for package " +
+                "'api_clashing.api_package_with_api_clash_error.api.some_package', " +
+                "since it would clash with auto-generated 'api.py'! Please choose different package name.",
+                "[ERROR] Python Generator: Clash in generated code detected!"
+            ]
+        )
 
     def testBitmaskWithApiClash(self):
         assertErrorsPresent(self,

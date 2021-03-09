@@ -1,5 +1,6 @@
 package zserio.extension.python;
 
+import java.util.List;
 import java.util.Locale;
 
 import zserio.ast.BitmaskType;
@@ -7,6 +8,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.InstantiateType;
+import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
@@ -31,6 +33,33 @@ class PythonApiClashChecker extends DefaultTreeWalker
         // we don't need to check instantiations since they can clash only if 'instantiate' keyword is used
         // and we check such clashes in beginInstantiateType
         return false;
+    }
+
+    @Override
+    public void beginPackage(Package pkg) throws ZserioExtensionException
+    {
+        if (pkg.getPackageName().isEmpty())
+        {
+            // default package is present, we need to check also top level package id
+            checkTopLevelPackageId = true;
+        }
+        else
+        {
+            final int startIdx = checkTopLevelPackageId ? 0 : 1;
+            final List<String> idList = pkg.getPackageName().getIdList();
+            for (int i = startIdx; i < idList.size(); ++i)
+            {
+                final String id = idList.get(i);
+                if (id.equals(ApiEmitter.API_FILENAME_ROOT))
+                {
+                    ZserioToolPrinter.printError(pkg.getLocation(),
+                            "Cannot generate python package '" + id +  "' for package '" +
+                            pkg.getPackageName() + "', since it would clash with auto-generated '" +
+                            apiOutputFileNameLowerCase + "'! Please choose different package name.");
+                    throw new ZserioExtensionException("Clash in generated code detected!");
+                }
+            }
+        }
     }
 
     @Override
@@ -127,4 +156,5 @@ class PythonApiClashChecker extends DefaultTreeWalker
 
     private static String apiOutputFileNameLowerCase =
             PythonDefaultEmitter.getOutputFileName(ApiEmitter.API_FILENAME_ROOT).toLowerCase(Locale.ENGLISH);
+    private boolean checkTopLevelPackageId = false;
 }
