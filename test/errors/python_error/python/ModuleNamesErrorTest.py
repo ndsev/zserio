@@ -7,6 +7,7 @@ class ModuleNamesErrorTest(unittest.TestCase):
     def setUpClass(cls):
         cls.errors = {}
 
+        compileErroneousZserio(__file__, "module_names/bitmask_with_enum_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "module_names/choice_with_union_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "module_names/const_with_structure_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "module_names/instantiate_type_with_structure_clash_error.zs",
@@ -17,7 +18,17 @@ class ModuleNamesErrorTest(unittest.TestCase):
         compileErroneousZserio(__file__, "module_names/sql_database_with_sql_table_clash_error.zs",
                                cls.errors)
         compileErroneousZserio(__file__, "module_names/structure_with_service_clash_error.zs", cls.errors)
-        compileErroneousZserio(__file__, "module_names/structure_with_structure_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "module_names/structure_with_subtype_clash_error.zs", cls.errors)
+
+    def testBitmaskWithEnumClashError(self):
+        assertErrorsPresent(self,
+            "module_names/bitmask_with_enum_clash_error.zs",
+            [
+                ":9:12: Module 'color_info' generated for package symbol 'Color_Info' " +
+                "clashes with module generated for package symbol 'ColorInfo' defined at 3:15!",
+                "[ERROR] Python Generator: Module name clashing detected!"
+            ]
+        )
 
     def testChoiceWithUnionClashError(self):
         assertErrorsPresent(self,
@@ -43,7 +54,7 @@ class ModuleNamesErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "module_names/instantiate_type_with_structure_clash_error.zs",
             [
-                ":13:13: In instantiation of 'Some' required from here",
+                ":13:13: In instantiation of 'Other' required from here",
                 ":8:8: Module 'some_name' generated for package symbol 'SomeName' " +
                 "clashes with module generated for package symbol 'Some_Name' defined at 3:8!",
                 "[ERROR] Python Generator: Module name clashing detected!"
@@ -91,11 +102,11 @@ class ModuleNamesErrorTest(unittest.TestCase):
             ]
         )
 
-    def testStructureWithStructureClashError(self):
+    def testStructureWithSubtypeClashError(self):
         assertErrorsPresent(self,
-            "module_names/structure_with_structure_clash_error.zs",
+            "module_names/structure_with_subtype_clash_error.zs",
             [
-                ":8:8: Module 'some_good_name' generated for package symbol 'SomeGoodName' " +
+                ":8:24: Module 'some_good_name' generated for package symbol 'SomeGoodName' " +
                 "clashes with module generated for package symbol 'SOME_GOOD_NAME' defined at 3:8!",
                 "[ERROR] Python Generator: Module name clashing detected!"
             ]

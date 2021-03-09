@@ -75,6 +75,10 @@ public class PythonExtension implements Extension
         final PythonModuleClashChecker moduleClashChecker = new PythonModuleClashChecker();
         rootNode.walk(moduleClashChecker);
 
+        final PythonPackageWithModuleClashChecker packageWithModuleClashChecker =
+                new PythonPackageWithModuleClashChecker();
+        rootNode.walk(packageWithModuleClashChecker);
+
         final PythonScopeSymbolClashChecker scopeSymbolClashChecker = new PythonScopeSymbolClashChecker();
         rootNode.walk(scopeSymbolClashChecker);
 

@@ -5,9 +5,9 @@ struct Some_Name
     uint32 field;
 };
 
-struct Some<T>
+struct Other<T>
 {
     T field;
 };
 
-instantiate Some<string> SomeName;
+instantiate Other<string> SomeName;

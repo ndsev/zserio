@@ -33,7 +33,7 @@ class PythonModuleClashChecker extends DefaultTreeWalker
     @Override
     public boolean traverseTemplateInstantiations()
     {
-        // we need to check package symbol names of template instantiations
+        // we need to check module names of template instantiations
         return true;
     }
 
@@ -112,9 +112,8 @@ class PythonModuleClashChecker extends DefaultTreeWalker
     @Override
     public void beginInstantiateType(InstantiateType instantiateType) throws ZserioExtensionException
     {
-        // We don't need to check instantiate types since we will check the concrete instantiations
-        // (which have the same package symbol name) thanks to the traverseTemplateInstantiations set to true.
-        // Moreover we would get false positives here because of adding the same symbol twice.
+        // instantiate type doesn't have it's own emitter since the instantiations are generated
+        // by appropriate emitters for concrete templatable types, so we do not need to check it here
     }
 
     private void addSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
