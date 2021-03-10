@@ -33,7 +33,7 @@ public final class CompoundParameterTemplateData
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             name = parameter.getName();
-            snakeCaseName = PythonSymbolConverter.camelCaseToSnakeCase(name);
+            snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(
                     parameter.getTypeReference());
             importCollector.importType(nativeType);

@@ -5,16 +5,47 @@ import java.util.regex.Pattern;
 
 public class PythonSymbolConverter
 {
-    public static String packageSymbolToModuleName(String packageSymbolName)
+    public static String symbolToModule(String pythonSymbolName)
     {
-        return camelCaseToSnakeCase(packageSymbolName);
+        return toLowerSnakeCase(pythonSymbolName);
     }
 
-    public static String camelCaseToSnakeCase(String camelCase)
+    public static String enumItemToSymbol(String enumItemName)
     {
-        return CAMEL_CASE_PATTERN.matcher(camelCase)
+        return toUpperSnakeCase(enumItemName);
+    }
+
+    public static String bitmaskValueToSymbol(String bitmaskValueName)
+    {
+        return toUpperSnakeCase(bitmaskValueName);
+    }
+
+    public static String constantToSymbol(String constantName)
+    {
+        return toUpperSnakeCase(constantName);
+    }
+
+    public static String toLowerSnakeCase(String symbolName)
+    {
+        // check if everything is already in lower case to avoid unnecessary conversion
+        if (symbolName.equals(symbolName.toLowerCase(Locale.ENGLISH)))
+            return symbolName;
+
+        return CAMEL_CASE_PATTERN.matcher(symbolName)
                 .replaceAll(REPLACEMENT_WITH_UNDERSCORE)
                 .toLowerCase(Locale.ENGLISH);
+    }
+
+    private static String toUpperSnakeCase(String symbolName)
+    {
+        // check if everything is already in upper case to avoid unnecessary conversion
+        // (and not to introduce extra underscores after numbers)
+        if (symbolName.equals(symbolName.toUpperCase(Locale.ENGLISH)))
+            return symbolName;
+
+        return CAMEL_CASE_PATTERN.matcher(symbolName)
+                .replaceAll(REPLACEMENT_WITH_UNDERSCORE)
+                .toUpperCase(Locale.ENGLISH);
     }
 
     private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([a-z0-9])([A-Z])");

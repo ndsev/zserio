@@ -54,7 +54,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         public EnumItemData(EnumItem enumItem) throws ZserioExtensionException
         {
-            name = enumItem.getName();
+            name = PythonSymbolConverter.enumItemToSymbol(enumItem.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(enumItem.getValue());
         }
 

@@ -91,7 +91,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     {
         public BitmaskValueData(BitmaskValue bitmaskValue) throws ZserioExtensionException
         {
-            name = bitmaskValue.getName();
+            name = PythonSymbolConverter.bitmaskValueToSymbol(bitmaskValue.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
         }

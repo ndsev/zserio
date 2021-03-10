@@ -26,6 +26,7 @@
 #include "constants/READ_PERMISSION.h"
 #include "constants/READ_PERMISSION_VALUE.h"
 #include "constants/STRING_CONSTANT.h"
+#include "constants/StringPascalCaseConstant.h"
 #include "constants/SUBTYPE_BLUE_COLOR_CONSTANT.h"
 #include "constants/SUBTYPE_INT25_CONSTANT.h"
 #include "constants/SUBTYPE_READ_PERMISSION.h"
@@ -315,6 +316,11 @@ TEST(ConstantsTest, hexEscStringConstant)
 TEST(ConstantsTest, octalEscStringConstant)
 {
     ASSERT_EQ("Test string with octal escape \031", OCTAL_ESC_STRING_CONSTANT);
+}
+
+TEST(ConstantsTest, stringPascalCaseConstant)
+{
+    ASSERT_EQ("Different naming convention", StringPascalCaseConstant);
 }
 
 TEST(ConstantsTest, constantDefinedByConstant)

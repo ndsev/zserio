@@ -4,6 +4,6 @@ const int32 WHITE_COLOR = 1;
 
 enum int32 Colors
 {
-    White = WHITE_COLOR,
-    Black
+    WHITE = WHITE_COLOR,
+    BLACK
 };

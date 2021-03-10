@@ -7,10 +7,16 @@ class ScopeSymbolsErrorTest(unittest.TestCase):
     def setUpClass(cls):
         cls.errors = {}
 
+        compileErroneousZserio(__file__, "scope_symbols/bitmask_value_camel_case_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/bitmask_value_pascal_case_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/bitmask_value_snake_case_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/choice_field_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/choice_parameter_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/choice_parameter_with_function_clash_error.zs",
                                cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/enum_item_camel_case_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/enum_item_pascal_case_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/enum_item_snake_case_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/pubsub_message_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/service_method_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/sql_database_table_names_clash_error.zs", cls.errors)
@@ -21,6 +27,36 @@ class ScopeSymbolsErrorTest(unittest.TestCase):
         compileErroneousZserio(__file__, "scope_symbols/structure_function_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/union_field_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/union_field_with_function_clash_error.zs", cls.errors)
+
+    def testBitmaskValueCamelCaseClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/bitmask_value_camel_case_clash_error.zs",
+            [
+                ":9:5: Symbol name 'createPermission' clashes with 'CREATE_PERMISSION' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
+    def testBitmaskValuePascalCaseClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/bitmask_value_pascal_case_clash_error.zs",
+            [
+                ":9:5: Symbol name 'CreatePermission' clashes with 'CREATE_PERMISSION' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
+    def testBitmaskValueSnakeCaseClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/bitmask_value_snake_case_clash_error.zs",
+            [
+                ":9:5: Symbol name 'create_permission' clashes with 'CREATE_PERMISSION' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
 
     def testChoiceFieldNamesClash(self):
         assertErrorsPresent(self,
@@ -47,6 +83,36 @@ class ScopeSymbolsErrorTest(unittest.TestCase):
             "scope_symbols/choice_parameter_names_clash_error.zs",
             [
                 ":3:42: Symbol name 'some_param' clashes with 'someParam' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
+    def testEnumItemCamelCaseClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/enum_item_camel_case_clash_error.zs",
+            [
+                ":9:5: Symbol name 'darkGreen' clashes with 'DARK_GREEN' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
+    def testEnumItemPascalCaseClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/enum_item_pascal_case_clash_error.zs",
+            [
+                ":9:5: Symbol name 'DarkGreen' clashes with 'DARK_GREEN' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
+    def testEnumItemSnakeCaseClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/enum_item_snake_case_clash_error.zs",
+            [
+                ":9:5: Symbol name 'dark_green' clashes with 'DARK_GREEN' " +
                 "since both are generated equally in Python code!",
                 "[ERROR] Python Generator: Symbol name clash detected!"
             ]

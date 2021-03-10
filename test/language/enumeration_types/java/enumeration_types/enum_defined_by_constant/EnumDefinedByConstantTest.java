@@ -10,7 +10,7 @@ public class EnumDefinedByConstantTest
     public void colors()
     {
         assertEquals(1, WHITE_COLOR.WHITE_COLOR);
-        assertEquals(WHITE_COLOR.WHITE_COLOR, Colors.White.getValue());
-        assertEquals(Colors.White.getValue() + 1, Colors.Black.getValue());
+        assertEquals(WHITE_COLOR.WHITE_COLOR, Colors.WHITE.getValue());
+        assertEquals(Colors.WHITE.getValue() + 1, Colors.BLACK.getValue());
     }
 }

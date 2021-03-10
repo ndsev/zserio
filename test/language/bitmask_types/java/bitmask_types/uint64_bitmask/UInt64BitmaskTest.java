@@ -23,8 +23,9 @@ public class UInt64BitmaskTest
     @Test
     public void valueConstructor()
     {
-        final Permission permission = new Permission(WRITE_VALUE);
-        assertTrue(permission.and(Permission.Values.WRITE).equals(Permission.Values.WRITE));
+        final Permission permission = new Permission(WRITE_PERMISSION_VALUE);
+        assertTrue(permission.and(Permission.Values.write_permission).equals(
+                Permission.Values.write_permission));
     }
 
     @Test(expected=IllegalArgumentException.class)
@@ -43,44 +44,45 @@ public class UInt64BitmaskTest
     public void readConstructor() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeBigInteger(Permission.Values.WRITE.getValue(), PERMISSION_BITSIZEOF);
+        writer.writeBigInteger(Permission.Values.write_permission.getValue(), PERMISSION_BITSIZEOF);
         final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
         final Permission readPermission = new Permission(reader);
-        assertEquals(Permission.Values.WRITE, readPermission);
+        assertEquals(Permission.Values.write_permission, readPermission);
     }
 
     @Test
     public void bitSizeOf()
     {
-        assertEquals(PERMISSION_BITSIZEOF, Permission.Values.NONE.bitSizeOf());
-        assertEquals(PERMISSION_BITSIZEOF, Permission.Values.NONE.bitSizeOf(1));
+        assertEquals(PERMISSION_BITSIZEOF, Permission.Values.nonePermission.bitSizeOf());
+        assertEquals(PERMISSION_BITSIZEOF, Permission.Values.nonePermission.bitSizeOf(1));
     }
 
     @Test
     public void initializeOffsets()
     {
         final int bitPosition = 1;
-        assertEquals(bitPosition + PERMISSION_BITSIZEOF, Permission.Values.READ.initializeOffsets(bitPosition));
+        assertEquals(bitPosition + PERMISSION_BITSIZEOF,
+                Permission.Values.READ_PERMISSION.initializeOffsets(bitPosition));
     }
 
     @Test
     public void equals()
     {
-        assertTrue(Permission.Values.NONE.equals(Permission.Values.NONE));
-        assertTrue(Permission.Values.READ.equals(Permission.Values.READ));
-        assertTrue(Permission.Values.WRITE.equals(Permission.Values.WRITE));
+        assertTrue(Permission.Values.nonePermission.equals(Permission.Values.nonePermission));
+        assertTrue(Permission.Values.READ_PERMISSION.equals(Permission.Values.READ_PERMISSION));
+        assertTrue(Permission.Values.write_permission.equals(Permission.Values.write_permission));
 
-        final Permission read = Permission.Values.READ;
-        assertTrue(read.equals(Permission.Values.READ));
-        assertTrue(Permission.Values.READ.equals(read));
-        assertFalse(read.equals(Permission.Values.WRITE));
-        assertFalse(Permission.Values.WRITE.equals(read));
+        final Permission read = Permission.Values.READ_PERMISSION;
+        assertTrue(read.equals(Permission.Values.READ_PERMISSION));
+        assertTrue(Permission.Values.READ_PERMISSION.equals(read));
+        assertFalse(read.equals(Permission.Values.write_permission));
+        assertFalse(Permission.Values.write_permission.equals(read));
 
-        final Permission write = new Permission(WRITE_VALUE);
-        assertTrue(write.equals(Permission.Values.WRITE));
-        assertTrue(Permission.Values.WRITE.equals(write));
-        assertFalse(write.equals(Permission.Values.READ));
-        assertFalse(Permission.Values.READ.equals(write));
+        final Permission write = new Permission(WRITE_PERMISSION_VALUE);
+        assertTrue(write.equals(Permission.Values.write_permission));
+        assertTrue(Permission.Values.write_permission.equals(write));
+        assertFalse(write.equals(Permission.Values.READ_PERMISSION));
+        assertFalse(Permission.Values.READ_PERMISSION.equals(write));
 
         assertTrue(read.equals(read));
         assertTrue(write.equals(write));
@@ -90,31 +92,33 @@ public class UInt64BitmaskTest
     @Test
     public void hashCodeMethod()
     {
-        final Permission read = Permission.Values.READ;
-        final Permission write = Permission.Values.WRITE;
-        assertEquals(read.hashCode(), Permission.Values.READ.hashCode());
-        assertEquals(read.hashCode(), new Permission(READ_VALUE).hashCode());
-        assertEquals(write.hashCode(), Permission.Values.WRITE.hashCode());
-        assertEquals(write.hashCode(), new Permission(WRITE_VALUE).hashCode());
+        final Permission read = Permission.Values.READ_PERMISSION;
+        final Permission write = Permission.Values.write_permission;
+        assertEquals(read.hashCode(), Permission.Values.READ_PERMISSION.hashCode());
+        assertEquals(read.hashCode(), new Permission(READ_PERMISSION_VALUE).hashCode());
+        assertEquals(write.hashCode(), Permission.Values.write_permission.hashCode());
+        assertEquals(write.hashCode(), new Permission(WRITE_PERMISSION_VALUE).hashCode());
         assertFalse(read.hashCode() == write.hashCode());
-        assertFalse(read.hashCode() == Permission.Values.NONE.hashCode());
+        assertFalse(read.hashCode() == Permission.Values.nonePermission.hashCode());
     }
 
     @Test
     public void toStringMethod()
     {
-        assertEquals("0[NONE]", Permission.Values.NONE.toString());
-        assertEquals("2[READ]", Permission.Values.READ.toString());
-        assertEquals("4[WRITE]", Permission.Values.WRITE.toString());
-        assertEquals("6[READ | WRITE]", Permission.Values.READ.or(Permission.Values.WRITE).toString());
-        assertEquals("7[READ | WRITE]", new Permission(BigInteger.valueOf(7)).toString());
-        assertEquals("255[READ | WRITE | CREATE]", new Permission(BigInteger.valueOf(255)).toString());
+        assertEquals("0[nonePermission]", Permission.Values.nonePermission.toString());
+        assertEquals("2[READ_PERMISSION]", Permission.Values.READ_PERMISSION.toString());
+        assertEquals("4[write_permission]", Permission.Values.write_permission.toString());
+        assertEquals("6[READ_PERMISSION | write_permission]",
+                Permission.Values.READ_PERMISSION.or(Permission.Values.write_permission).toString());
+        assertEquals("7[READ_PERMISSION | write_permission]", new Permission(BigInteger.valueOf(7)).toString());
+        assertEquals("255[READ_PERMISSION | write_permission | CreatePermission]",
+                new Permission(BigInteger.valueOf(255)).toString());
     }
 
     @Test
     public void write() throws IOException
     {
-        final Permission permission = Permission.Values.READ;
+        final Permission permission = Permission.Values.READ_PERMISSION;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         permission.write(writer);
 
@@ -126,59 +130,60 @@ public class UInt64BitmaskTest
     @Test
     public void getValue()
     {
-        assertEquals(NONE_VALUE, Permission.Values.NONE.getValue());
-        assertEquals(READ_VALUE, Permission.Values.READ.getValue());
-        assertEquals(WRITE_VALUE, Permission.Values.WRITE.getValue());
+        assertEquals(NONE_PERMISSION_VALUE, Permission.Values.nonePermission.getValue());
+        assertEquals(READ_PERMISSION_VALUE, Permission.Values.READ_PERMISSION.getValue());
+        assertEquals(WRITE_PERMISSION_VALUE, Permission.Values.write_permission.getValue());
     }
 
     @Test
     public void or()
     {
-        final Permission read = Permission.Values.READ;
-        final Permission write = Permission.Values.WRITE;
+        final Permission read = Permission.Values.READ_PERMISSION;
+        final Permission write = Permission.Values.write_permission;
 
-        assertEquals(read.or(write), Permission.Values.READ.or(Permission.Values.WRITE));
-        assertEquals(read, read.or(Permission.Values.NONE));
-        assertEquals(write, Permission.Values.NONE.or(write));
-        assertEquals(READ_VALUE.or(WRITE_VALUE), read.or(write).getValue());
+        assertEquals(read.or(write), Permission.Values.READ_PERMISSION.or(Permission.Values.write_permission));
+        assertEquals(read, read.or(Permission.Values.nonePermission));
+        assertEquals(write, Permission.Values.nonePermission.or(write));
+        assertEquals(READ_PERMISSION_VALUE.or(WRITE_PERMISSION_VALUE), read.or(write).getValue());
     }
 
     @Test
     public void and()
     {
-        final Permission read = Permission.Values.READ;
-        final Permission write = Permission.Values.WRITE;
-        final Permission readwrite = Permission.Values.READ.or(Permission.Values.WRITE);
+        final Permission read = Permission.Values.READ_PERMISSION;
+        final Permission write = Permission.Values.write_permission;
+        final Permission readwrite = Permission.Values.READ_PERMISSION.or(Permission.Values.write_permission);
 
         assertEquals(read, readwrite.and(read));
         assertEquals(write, readwrite.and(write));
-        assertEquals(Permission.Values.NONE, readwrite.and(Permission.Values.NONE));
-        assertEquals(Permission.Values.NONE, read.and(Permission.Values.NONE));
-        assertEquals(Permission.Values.NONE, write.and(Permission.Values.NONE));
-        assertEquals(Permission.Values.NONE, read.and(write));
+        assertEquals(Permission.Values.nonePermission, readwrite.and(Permission.Values.nonePermission));
+        assertEquals(Permission.Values.nonePermission, read.and(Permission.Values.nonePermission));
+        assertEquals(Permission.Values.nonePermission, write.and(Permission.Values.nonePermission));
+        assertEquals(Permission.Values.nonePermission, read.and(write));
         assertEquals(read, read.and(read).and(read).and(read));
     }
 
     @Test
     public void xor()
     {
-        final Permission read = Permission.Values.READ;
-        final Permission write = Permission.Values.WRITE;
+        final Permission read = Permission.Values.READ_PERMISSION;
+        final Permission write = Permission.Values.write_permission;
 
-        assertEquals(read.xor(write), Permission.Values.READ.xor(Permission.Values.WRITE));
-        assertEquals(READ_VALUE.xor(WRITE_VALUE), read.xor(write).getValue());
+        assertEquals(read.xor(write),
+                Permission.Values.READ_PERMISSION.xor(Permission.Values.write_permission));
+        assertEquals(READ_PERMISSION_VALUE.xor(WRITE_PERMISSION_VALUE), read.xor(write).getValue());
         assertEquals(read, (read.xor(write)).and(read));
         assertEquals(write, (read.xor(write)).and(write));
-        assertEquals(Permission.Values.NONE, read.xor(read));
-        assertEquals(Permission.Values.NONE, write.xor(write));
+        assertEquals(Permission.Values.nonePermission, read.xor(read));
+        assertEquals(Permission.Values.nonePermission, write.xor(write));
     }
 
     @Test
     public void not()
     {
-        final Permission none = Permission.Values.NONE;
-        final Permission read = Permission.Values.READ;
-        final Permission write = Permission.Values.WRITE;
+        final Permission none = Permission.Values.nonePermission;
+        final Permission read = Permission.Values.READ_PERMISSION;
+        final Permission write = Permission.Values.write_permission;
 
         assertEquals(write, read.not().and(write));
         assertEquals(none, read.not().and(read));
@@ -189,7 +194,7 @@ public class UInt64BitmaskTest
 
     private static int PERMISSION_BITSIZEOF = 64;
 
-    private static BigInteger NONE_VALUE = BigInteger.ZERO;
-    private static BigInteger READ_VALUE = BigInteger.valueOf(2);
-    private static BigInteger WRITE_VALUE = BigInteger.valueOf(4);
+    private static BigInteger NONE_PERMISSION_VALUE = BigInteger.ZERO;
+    private static BigInteger READ_PERMISSION_VALUE = BigInteger.valueOf(2);
+    private static BigInteger WRITE_PERMISSION_VALUE = BigInteger.valueOf(4);
 }

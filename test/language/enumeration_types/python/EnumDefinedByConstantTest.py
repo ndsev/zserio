@@ -9,5 +9,5 @@ class EnumDefinedByConstantTest(unittest.TestCase):
 
     def testLightColor(self):
         self.assertEqual(1, self.api.WHITE_COLOR)
-        self.assertEqual(1, self.api.Colors.White.value)
-        self.assertEqual(self.api.Colors.White.value + 1, self.api.Colors.Black.value)
+        self.assertEqual(1, self.api.Colors.WHITE.value)
+        self.assertEqual(self.api.Colors.WHITE.value + 1, self.api.Colors.BLACK.value)

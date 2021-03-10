@@ -361,7 +361,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
             result.append(nativeEnumType.getFullName());
             result.append(".");
         }
-        result.append(enumItem.getName());
+        result.append(PythonSymbolConverter.enumItemToSymbol(enumItem.getName()));
     }
 
     private void formatBitmaskValue(StringBuilder result, boolean isMostLeftId, BitmaskValue bitmaskValue,
@@ -378,7 +378,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
             result.append(".");
         }
         result.append("Values.");
-        result.append(bitmaskValue.getName());
+        result.append(PythonSymbolConverter.bitmaskValueToSymbol(bitmaskValue.getName()));
     }
 
     private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
@@ -432,7 +432,7 @@ public class PythonExpressionFormattingPolicy implements ExpressionFormattingPol
         else
         {
             // this could happen for "explicit identifier" expressions
-            result.append(PythonSymbolConverter.camelCaseToSnakeCase(symbol));
+            result.append(PythonSymbolConverter.toLowerSnakeCase(symbol));
         }
     }
 

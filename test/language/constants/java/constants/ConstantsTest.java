@@ -309,6 +309,12 @@ public class ConstantsTest
     }
 
     @Test
+    public void stringPascalCaseConstant()
+    {
+        assertEquals("Different naming convention", StringPascalCaseConstant.StringPascalCaseConstant);
+    }
+
+    @Test
     public void constantDefinedByConstant()
     {
         assertEquals(UINT32_FULL_MASK.UINT32_FULL_MASK, UINT32_MAX_CONSTANT.UINT32_MAX_CONSTANT);

@@ -15,7 +15,7 @@ public class ConstEmitter extends PythonDefaultEmitter
     public void beginConst(Constant constant) throws ZserioExtensionException
     {
         final Object templateData = new ConstEmitterTemplateData(getTemplateDataContext(), constant);
-        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, constant.getPackage(), constant.getName());
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, constant);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "Constant.py.ftl";

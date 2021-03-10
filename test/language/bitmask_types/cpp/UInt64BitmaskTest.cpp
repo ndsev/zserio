@@ -18,16 +18,16 @@ class Uint64BitmaskTest : public ::testing::Test
 protected:
     static const size_t PERMISSION_BITSIZEOF;
 
-    static const Permission::underlying_type NONE_VALUE;
-    static const Permission::underlying_type READ_VALUE;
-    static const Permission::underlying_type WRITE_VALUE;
+    static const Permission::underlying_type NONE_PERMISSION_VALUE;
+    static const Permission::underlying_type READ_PERMISSION_VALUE;
+    static const Permission::underlying_type WRITE_PERMISSION_VALUE;
 };
 
 const size_t Uint64BitmaskTest::PERMISSION_BITSIZEOF = 64;
 
-const Permission::underlying_type Uint64BitmaskTest::NONE_VALUE = 0;
-const Permission::underlying_type Uint64BitmaskTest::READ_VALUE = 2;
-const Permission::underlying_type Uint64BitmaskTest::WRITE_VALUE = 4;
+const Permission::underlying_type Uint64BitmaskTest::NONE_PERMISSION_VALUE = 0;
+const Permission::underlying_type Uint64BitmaskTest::READ_PERMISSION_VALUE = 2;
+const Permission::underlying_type Uint64BitmaskTest::WRITE_PERMISSION_VALUE = 4;
 
 TEST_F(Uint64BitmaskTest, emptyConstructor)
 {
@@ -37,147 +37,149 @@ TEST_F(Uint64BitmaskTest, emptyConstructor)
 
 TEST_F(Uint64BitmaskTest, valuesConstroctor)
 {
-    const Permission permission(Permission::Values::WRITE);
-    ASSERT_EQ(WRITE_VALUE, permission.getValue());
+    const Permission permission(Permission::Values::write_permission);
+    ASSERT_EQ(WRITE_PERMISSION_VALUE, permission.getValue());
 }
 
 TEST_F(Uint64BitmaskTest, underlyingTypeConstructor)
 {
-    const Permission permission(READ_VALUE);
-    ASSERT_TRUE((permission & Permission::Values::READ) == Permission::Values::READ);
+    const Permission permission(READ_PERMISSION_VALUE);
+    ASSERT_TRUE((permission & Permission::Values::READ_PERMISSION) ==
+            Permission::Values::READ_PERMISSION);
 }
 
 TEST_F(Uint64BitmaskTest, readConstructor)
 {
     zserio::BitStreamWriter writer;
-    writer.writeBits64(static_cast<uint64_t>(Permission::Values::WRITE), PERMISSION_BITSIZEOF);
+    writer.writeBits64(static_cast<uint64_t>(Permission::Values::write_permission), PERMISSION_BITSIZEOF);
     size_t writerBufferByteSize;
     const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
 
     Permission permission(reader);
-    ASSERT_EQ(WRITE_VALUE, permission.getValue());
+    ASSERT_EQ(WRITE_PERMISSION_VALUE, permission.getValue());
 }
 
 TEST_F(Uint64BitmaskTest, copyConstructor)
 {
-    const Permission permission(READ_VALUE);
+    const Permission permission(READ_PERMISSION_VALUE);
     const Permission copy(permission);
-    ASSERT_EQ(READ_VALUE, copy.getValue());
+    ASSERT_EQ(READ_PERMISSION_VALUE, copy.getValue());
 }
 
 TEST_F(Uint64BitmaskTest, assignmentOperator)
 {
-    const Permission permission(READ_VALUE);
+    const Permission permission(READ_PERMISSION_VALUE);
     Permission copy;
     copy = permission;
-    ASSERT_EQ(READ_VALUE, copy.getValue());
+    ASSERT_EQ(READ_PERMISSION_VALUE, copy.getValue());
 }
 
 TEST_F(Uint64BitmaskTest, moveConstructor)
 {
-    Permission permission(READ_VALUE);
+    Permission permission(READ_PERMISSION_VALUE);
     const Permission moved(std::move(permission));
-    ASSERT_EQ(READ_VALUE, moved.getValue());
+    ASSERT_EQ(READ_PERMISSION_VALUE, moved.getValue());
 }
 
 TEST_F(Uint64BitmaskTest, moveAssignmentOperator)
 {
-    Permission permission(READ_VALUE);
+    Permission permission(READ_PERMISSION_VALUE);
     Permission moved;
     moved = std::move(permission);
-    ASSERT_EQ(READ_VALUE, moved.getValue());
+    ASSERT_EQ(READ_PERMISSION_VALUE, moved.getValue());
 }
 
 TEST_F(Uint64BitmaskTest, underlyingTypeCast)
 {
-    const Permission permission(WRITE_VALUE);
-    ASSERT_EQ(WRITE_VALUE, static_cast<Permission::underlying_type>(permission));
+    const Permission permission(WRITE_PERMISSION_VALUE);
+    ASSERT_EQ(WRITE_PERMISSION_VALUE, static_cast<Permission::underlying_type>(permission));
 }
 
 TEST_F(Uint64BitmaskTest, getValue)
 {
-    ASSERT_EQ(NONE_VALUE, Permission(Permission::Values::NONE).getValue());
-    ASSERT_EQ(READ_VALUE, Permission(Permission::Values::READ).getValue());
-    ASSERT_EQ(WRITE_VALUE, Permission(Permission::Values::WRITE).getValue());
+    ASSERT_EQ(NONE_PERMISSION_VALUE, Permission(Permission::Values::nonePermission).getValue());
+    ASSERT_EQ(READ_PERMISSION_VALUE, Permission(Permission::Values::READ_PERMISSION).getValue());
+    ASSERT_EQ(WRITE_PERMISSION_VALUE, Permission(Permission::Values::write_permission).getValue());
 }
 
 TEST_F(Uint64BitmaskTest, bitSizeOf)
 {
-    ASSERT_EQ(PERMISSION_BITSIZEOF, Permission(Permission::Values::NONE).bitSizeOf());
+    ASSERT_EQ(PERMISSION_BITSIZEOF, Permission(Permission::Values::nonePermission).bitSizeOf());
 }
 
 TEST_F(Uint64BitmaskTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
-    Permission permission(Permission::Values::NONE);
+    Permission permission(Permission::Values::nonePermission);
     ASSERT_EQ(bitPosition + PERMISSION_BITSIZEOF, permission.initializeOffsets(bitPosition));
 }
 
 TEST_F(Uint64BitmaskTest, hashCode)
 {
-    const Permission readPermission(Permission::Values::READ);
-    const Permission writePermission(Permission::Values::WRITE);
+    const Permission readPermission(Permission::Values::READ_PERMISSION);
+    const Permission writePermission(Permission::Values::write_permission);
     const Permission copyRead(readPermission);
     ASSERT_EQ(readPermission.hashCode(), copyRead.hashCode());
     ASSERT_NE(readPermission.hashCode(), writePermission.hashCode());
-    ASSERT_NE(readPermission.hashCode(), Permission(Permission::Values::NONE).hashCode());
-    ASSERT_NE(writePermission.hashCode(), Permission(Permission::Values::NONE).hashCode());
+    ASSERT_NE(readPermission.hashCode(), Permission(Permission::Values::nonePermission).hashCode());
+    ASSERT_NE(writePermission.hashCode(), Permission(Permission::Values::nonePermission).hashCode());
 }
 
 TEST_F(Uint64BitmaskTest, read)
 {
     zserio::BitStreamWriter writer;
-    writer.writeBits64(static_cast<uint64_t>(Permission::Values::READ), PERMISSION_BITSIZEOF);
+    writer.writeBits64(static_cast<uint64_t>(Permission::Values::READ_PERMISSION), PERMISSION_BITSIZEOF);
     size_t writerBufferByteSize;
     const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
 
     Permission permission;
     permission.read(reader);
-    ASSERT_EQ(READ_VALUE, permission.getValue());
+    ASSERT_EQ(READ_PERMISSION_VALUE, permission.getValue());
 }
 
 TEST_F(Uint64BitmaskTest, write)
 {
-    const Permission permission(Permission::Values::READ);
+    const Permission permission(Permission::Values::READ_PERMISSION);
     zserio::BitStreamWriter writer;
     permission.write(writer);
 
     size_t writerBufferByteSize;
     const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
     zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
-    ASSERT_EQ(READ_VALUE, reader.readBits64(PERMISSION_BITSIZEOF));
+    ASSERT_EQ(READ_PERMISSION_VALUE, reader.readBits64(PERMISSION_BITSIZEOF));
 }
 
 TEST_F(Uint64BitmaskTest, toString)
 {
-    ASSERT_EQ(std::string("0[NONE]"), Permission(Permission::Values::NONE).toString());
-    ASSERT_EQ(std::string("2[READ]"), Permission(Permission::Values::READ).toString());
-    ASSERT_EQ(std::string("4[WRITE]"), Permission(Permission::Values::WRITE).toString());
-    ASSERT_EQ(std::string("6[READ | WRITE]"),
-            (Permission::Values::READ | Permission::Values::WRITE).toString());
-    ASSERT_EQ(std::string("7[READ | WRITE]"), Permission(7).toString());
-    ASSERT_EQ(std::string("255[READ | WRITE | CREATE]"), Permission(255).toString());
+    ASSERT_EQ(std::string("0[nonePermission]"), Permission(Permission::Values::nonePermission).toString());
+    ASSERT_EQ(std::string("2[READ_PERMISSION]"), Permission(Permission::Values::READ_PERMISSION).toString());
+    ASSERT_EQ(std::string("4[write_permission]"), Permission(Permission::Values::write_permission).toString());
+    ASSERT_EQ(std::string("6[READ_PERMISSION | write_permission]"),
+            (Permission::Values::READ_PERMISSION | Permission::Values::write_permission).toString());
+    ASSERT_EQ(std::string("7[READ_PERMISSION | write_permission]"), Permission(7).toString());
+    ASSERT_EQ(std::string("255[READ_PERMISSION | write_permission | CreatePermission]"),
+            Permission(255).toString());
 }
 
 TEST_F(Uint64BitmaskTest, operatorEquality)
 {
-    ASSERT_TRUE(Permission::Values::READ == Permission::Values::READ);
-    ASSERT_FALSE(Permission::Values::READ == Permission::Values::WRITE);
-    ASSERT_TRUE(Permission::Values::WRITE == Permission::Values::WRITE);
+    ASSERT_TRUE(Permission::Values::READ_PERMISSION == Permission::Values::READ_PERMISSION);
+    ASSERT_FALSE(Permission::Values::READ_PERMISSION == Permission::Values::write_permission);
+    ASSERT_TRUE(Permission::Values::write_permission == Permission::Values::write_permission);
 
-    const Permission read(Permission::Values::READ);
-    ASSERT_TRUE(read == Permission::Values::READ);
-    ASSERT_TRUE(Permission::Values::READ == read);
-    ASSERT_FALSE(read == Permission::Values::WRITE);
-    ASSERT_FALSE(Permission::Values::WRITE == read);
+    const Permission read(Permission::Values::READ_PERMISSION);
+    ASSERT_TRUE(read == Permission::Values::READ_PERMISSION);
+    ASSERT_TRUE(Permission::Values::READ_PERMISSION == read);
+    ASSERT_FALSE(read == Permission::Values::write_permission);
+    ASSERT_FALSE(Permission::Values::write_permission == read);
 
-    const Permission write(Permission::Values::WRITE);
-    ASSERT_TRUE(write == Permission::Values::WRITE);
-    ASSERT_TRUE(Permission::Values::WRITE == write);
-    ASSERT_FALSE(write == Permission::Values::READ);
-    ASSERT_FALSE(Permission::Values::READ == write);
+    const Permission write(Permission::Values::write_permission);
+    ASSERT_TRUE(write == Permission::Values::write_permission);
+    ASSERT_TRUE(Permission::Values::write_permission == write);
+    ASSERT_FALSE(write == Permission::Values::READ_PERMISSION);
+    ASSERT_FALSE(Permission::Values::READ_PERMISSION == write);
 
     ASSERT_TRUE(read == read);
     ASSERT_TRUE(read == Permission(read)); // copy
@@ -189,21 +191,21 @@ TEST_F(Uint64BitmaskTest, operatorEquality)
 
 TEST_F(Uint64BitmaskTest, operatorNonequality)
 {
-    ASSERT_FALSE(Permission::Values::READ != Permission::Values::READ);
-    ASSERT_TRUE(Permission::Values::READ != Permission::Values::WRITE);
-    ASSERT_FALSE(Permission::Values::WRITE != Permission::Values::WRITE);
+    ASSERT_FALSE(Permission::Values::READ_PERMISSION != Permission::Values::READ_PERMISSION);
+    ASSERT_TRUE(Permission::Values::READ_PERMISSION != Permission::Values::write_permission);
+    ASSERT_FALSE(Permission::Values::write_permission != Permission::Values::write_permission);
 
-    const Permission read(Permission::Values::READ);
-    ASSERT_FALSE(read != Permission::Values::READ);
-    ASSERT_FALSE(Permission::Values::READ != read);
-    ASSERT_TRUE(read != Permission::Values::WRITE);
-    ASSERT_TRUE(Permission::Values::WRITE != read);
+    const Permission read(Permission::Values::READ_PERMISSION);
+    ASSERT_FALSE(read != Permission::Values::READ_PERMISSION);
+    ASSERT_FALSE(Permission::Values::READ_PERMISSION != read);
+    ASSERT_TRUE(read != Permission::Values::write_permission);
+    ASSERT_TRUE(Permission::Values::write_permission != read);
 
-    const Permission write(Permission::Values::WRITE);
-    ASSERT_FALSE(write != Permission::Values::WRITE);
-    ASSERT_FALSE(Permission::Values::WRITE != write);
-    ASSERT_TRUE(write != Permission::Values::READ);
-    ASSERT_TRUE(Permission::Values::READ != write);
+    const Permission write(Permission::Values::write_permission);
+    ASSERT_FALSE(write != Permission::Values::write_permission);
+    ASSERT_FALSE(Permission::Values::write_permission != write);
+    ASSERT_TRUE(write != Permission::Values::READ_PERMISSION);
+    ASSERT_TRUE(Permission::Values::READ_PERMISSION != write);
 
     ASSERT_FALSE(read != read);
     ASSERT_FALSE(read != Permission(read)); // copy
@@ -215,109 +217,112 @@ TEST_F(Uint64BitmaskTest, operatorNonequality)
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseOr)
 {
-    const Permission read(Permission::Values::READ);
-    const Permission write(Permission::Values::WRITE);
+    const Permission read(Permission::Values::READ_PERMISSION);
+    const Permission write(Permission::Values::write_permission);
 
-    ASSERT_EQ(read | write, Permission::Values::READ | Permission::Values::WRITE);
-    ASSERT_EQ(read | Permission::Values::WRITE, Permission::Values::READ | write);
-    ASSERT_EQ(read, read | Permission::Values::NONE);
-    ASSERT_EQ(write, Permission::Values::NONE | write);
+    ASSERT_EQ(read | write, Permission::Values::READ_PERMISSION | Permission::Values::write_permission);
+    ASSERT_EQ(read | Permission::Values::write_permission, Permission::Values::READ_PERMISSION | write);
+    ASSERT_EQ(read, read | Permission::Values::nonePermission);
+    ASSERT_EQ(write, Permission::Values::nonePermission | write);
 
-    ASSERT_EQ(READ_VALUE | WRITE_VALUE, (read | write).getValue());
+    ASSERT_EQ(READ_PERMISSION_VALUE | WRITE_PERMISSION_VALUE, (read | write).getValue());
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseAnd)
 {
-    const Permission read(Permission::Values::READ);
-    const Permission write(Permission::Values::WRITE);
-    const Permission readwrite(Permission::Values::READ | Permission::Values::WRITE);
+    const Permission read(Permission::Values::READ_PERMISSION);
+    const Permission write(Permission::Values::write_permission);
+    const Permission readwrite(Permission::Values::READ_PERMISSION | Permission::Values::write_permission);
 
-    ASSERT_EQ(Permission::Values::READ, readwrite & read);
-    ASSERT_EQ(Permission::Values::WRITE, readwrite & write);
-    ASSERT_EQ(read, readwrite & Permission::Values::READ);
-    ASSERT_EQ(read, Permission::Values::READ & readwrite);
-    ASSERT_EQ(write, Permission::Values::WRITE & readwrite);
-    ASSERT_EQ(readwrite & Permission::Values::NONE, Permission::Values::NONE);
+    ASSERT_EQ(Permission::Values::READ_PERMISSION, readwrite & read);
+    ASSERT_EQ(Permission::Values::write_permission, readwrite & write);
+    ASSERT_EQ(read, readwrite & Permission::Values::READ_PERMISSION);
+    ASSERT_EQ(read, Permission::Values::READ_PERMISSION & readwrite);
+    ASSERT_EQ(write, Permission::Values::write_permission & readwrite);
+    ASSERT_EQ(readwrite & Permission::Values::nonePermission, Permission::Values::nonePermission);
 
     ASSERT_EQ(read, read & read & read & read);
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseXor)
 {
-    const Permission read(Permission::Values::READ);
-    const Permission write(Permission::Values::WRITE);
+    const Permission read(Permission::Values::READ_PERMISSION);
+    const Permission write(Permission::Values::write_permission);
 
-    ASSERT_EQ(read ^ write, Permission::Values::READ ^ Permission::Values::WRITE);
-    ASSERT_EQ(Permission::Values::READ ^ write, read ^ Permission::Values::WRITE);
-    ASSERT_EQ((read ^ write).getValue(), READ_VALUE ^ WRITE_VALUE);
+    ASSERT_EQ(read ^ write, Permission::Values::READ_PERMISSION ^ Permission::Values::write_permission);
+    ASSERT_EQ(Permission::Values::READ_PERMISSION ^ write, read ^ Permission::Values::write_permission);
+    ASSERT_EQ((read ^ write).getValue(), READ_PERMISSION_VALUE ^ WRITE_PERMISSION_VALUE);
     ASSERT_EQ(read, (read ^ write) & read);
     ASSERT_EQ(write, (read ^ write) & write);
-    ASSERT_EQ(Permission::Values::NONE, read ^ read);
-    ASSERT_EQ(Permission::Values::NONE, read ^ Permission::Values::READ);
+    ASSERT_EQ(Permission::Values::nonePermission, read ^ read);
+    ASSERT_EQ(Permission::Values::nonePermission, read ^ Permission::Values::READ_PERMISSION);
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseNot)
 {
-    const Permission read(Permission::Values::READ);
+    const Permission read(Permission::Values::READ_PERMISSION);
 
-    ASSERT_EQ(Permission::Values::WRITE, ~read & Permission::Values::WRITE);
-    ASSERT_EQ(Permission::Values::NONE, ~read & Permission::Values::READ);
-    ASSERT_EQ(Permission::Values::WRITE, ~Permission::Values::NONE & Permission::Values::WRITE);
-    ASSERT_EQ(Permission::Values::READ, ~Permission::Values::NONE & Permission::Values::READ);
-    ASSERT_EQ(Permission::Values::READ | Permission::Values::WRITE,
-            ~Permission::Values::NONE & (Permission::Values::READ | Permission::Values::WRITE));
+    ASSERT_EQ(Permission::Values::write_permission, ~read & Permission::Values::write_permission);
+    ASSERT_EQ(Permission::Values::nonePermission, ~read & Permission::Values::READ_PERMISSION);
+    ASSERT_EQ(Permission::Values::write_permission,
+            ~Permission::Values::nonePermission & Permission::Values::write_permission);
+    ASSERT_EQ(Permission::Values::READ_PERMISSION,
+            ~Permission::Values::nonePermission & Permission::Values::READ_PERMISSION);
+    ASSERT_EQ(Permission::Values::READ_PERMISSION | Permission::Values::write_permission,
+            ~Permission::Values::nonePermission & (Permission::Values::READ_PERMISSION |
+                    Permission::Values::write_permission));
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseOrAssignment)
 {
     Permission permission;
-    permission |= Permission::Values::READ;
-    ASSERT_EQ(Permission::Values::READ, permission);
+    permission |= Permission::Values::READ_PERMISSION;
+    ASSERT_EQ(Permission::Values::READ_PERMISSION, permission);
 
-    permission |= Permission::Values::NONE;
-    ASSERT_EQ(Permission::Values::READ, permission);
+    permission |= Permission::Values::nonePermission;
+    ASSERT_EQ(Permission::Values::READ_PERMISSION, permission);
 
-    const Permission write(Permission::Values::WRITE);
+    const Permission write(Permission::Values::write_permission);
     permission |= write;
-    ASSERT_EQ(Permission::Values::READ | Permission::Values::WRITE, permission);
+    ASSERT_EQ(Permission::Values::READ_PERMISSION | Permission::Values::write_permission, permission);
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseAndAssignment)
 {
-    Permission permission(Permission::Values::READ | Permission::Values::WRITE);
-    permission &= Permission::Values::READ;
-    ASSERT_EQ(Permission::Values::READ, permission);
+    Permission permission(Permission::Values::READ_PERMISSION | Permission::Values::write_permission);
+    permission &= Permission::Values::READ_PERMISSION;
+    ASSERT_EQ(Permission::Values::READ_PERMISSION, permission);
 
-    permission |= Permission::Values::WRITE;
-    permission &= Permission::Values::WRITE;
-    ASSERT_EQ(Permission::Values::WRITE, permission);
+    permission |= Permission::Values::write_permission;
+    permission &= Permission::Values::write_permission;
+    ASSERT_EQ(Permission::Values::write_permission, permission);
 
-    const Permission write(Permission::Values::WRITE);
-    permission |= Permission::Values::READ;
+    const Permission write(Permission::Values::write_permission);
+    permission |= Permission::Values::READ_PERMISSION;
     permission &= write;
-    ASSERT_EQ(Permission::Values::WRITE, permission);
+    ASSERT_EQ(Permission::Values::write_permission, permission);
 
-    permission &= Permission::Values::NONE;
-    ASSERT_EQ(Permission::Values::NONE, permission);
+    permission &= Permission::Values::nonePermission;
+    ASSERT_EQ(Permission::Values::nonePermission, permission);
 }
 
 TEST_F(Uint64BitmaskTest, operatorBitwiseXorAssignment)
 {
     Permission permission;
-    permission ^= Permission::Values::READ;
-    ASSERT_EQ(Permission::Values::READ, permission);
+    permission ^= Permission::Values::READ_PERMISSION;
+    ASSERT_EQ(Permission::Values::READ_PERMISSION, permission);
 
-    permission ^= Permission::Values::NONE;
-    ASSERT_EQ(Permission::Values::READ, permission);
+    permission ^= Permission::Values::nonePermission;
+    ASSERT_EQ(Permission::Values::READ_PERMISSION, permission);
 
-    permission ^= Permission::Values::WRITE;
-    ASSERT_EQ(Permission::Values::READ | Permission::Values::WRITE, permission);
+    permission ^= Permission::Values::write_permission;
+    ASSERT_EQ(Permission::Values::READ_PERMISSION | Permission::Values::write_permission, permission);
 
-    permission ^= Permission::Values::WRITE;
-    ASSERT_EQ(Permission::Values::READ, permission);
+    permission ^= Permission::Values::write_permission;
+    ASSERT_EQ(Permission::Values::READ_PERMISSION, permission);
 
-    permission ^= Permission::Values::READ;
-    ASSERT_EQ(Permission::Values::NONE, permission);
+    permission ^= Permission::Values::READ_PERMISSION;
+    ASSERT_EQ(Permission::Values::nonePermission, permission);
 }
 
 } // namespace uint64_bitmask

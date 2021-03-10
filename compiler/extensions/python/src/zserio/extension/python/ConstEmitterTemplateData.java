@@ -3,6 +3,7 @@ package zserio.extension.python;
 import zserio.ast.Constant;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 
 public class ConstEmitterTemplateData extends PythonTemplateData
 {
@@ -11,7 +12,8 @@ public class ConstEmitterTemplateData extends PythonTemplateData
     {
         super(context);
 
-        name = constant.getName();
+        final PythonNativeSymbol nativeSymbol = context.getPythonNativeMapper().getPythonSymbol(constant);
+        name = nativeSymbol.getName();
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         value = pythonExpressionFormatter.formatGetter(constant.getValueExpression());

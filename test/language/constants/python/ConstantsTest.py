@@ -155,6 +155,9 @@ class BitfieldEnumTest(unittest.TestCase):
     def testOctalEscStringConstant(self):
         self.assertEqual("Test string with octal escape \031", self.api.OCTAL_ESC_STRING_CONSTANT)
 
+    def testStringPascalCaseConstant(self):
+        self.assertEqual("Different naming convention", self.api.STRING_PASCAL_CASE_CONSTANT)
+
     def testConstantDefinedByConstant(self):
         self.assertEqual(self.api.UINT32_FULL_MASK, self.api.UINT32_MAX_CONSTANT)
 

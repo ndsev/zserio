@@ -2,8 +2,9 @@ package bitmask_types.uint64_bitmask;
 
 bitmask uint64 Permission
 {
-    NONE   = 0000b,
-    READ   = 0010b,
-    WRITE  = 0100b,
-    CREATE = 1000b
+    // different naming styles are intended to check extensions which rename symbols (Python)
+    nonePermission   = 0000b,
+    READ_PERMISSION  = 0010b,
+    write_permission = 0100b,
+    CreatePermission = 1000b
 };

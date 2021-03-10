@@ -43,7 +43,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             importCollector.importType(nativeType);
 
             name = field.getName();
-            snakeCaseName = PythonSymbolConverter.camelCaseToSnakeCase(name);
+            snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             pythonTypeName = nativeType.getFullName();
             propertyName = AccessorNameFormatter.getPropertyName(field);
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?

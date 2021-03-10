@@ -2,6 +2,7 @@ package zserio.extension.python.symbols;
 
 import zserio.ast.PackageName;
 import zserio.extension.python.PythonFullNameFormatter;
+import zserio.extension.python.PythonSymbolConverter;
 
 /**
  * Python native symbol - e.g. constant.
@@ -17,7 +18,7 @@ public class PythonNativeSymbol
     public PythonNativeSymbol(PackageName packageName, String name)
     {
         this.packageName = packageName;
-        this.name = name;
+        this.name = PythonSymbolConverter.constantToSymbol(name);
     };
 
     /**

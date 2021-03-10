@@ -118,7 +118,11 @@ class PythonModuleClashChecker extends DefaultTreeWalker
 
     private void addSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
     {
-        final String moduleName = PythonSymbolConverter.packageSymbolToModuleName(packageSymbol.getName());
+        // TODO[mikir] Redesign it to use native mapper!
+        final String pythonSymbolName = (packageSymbol instanceof Constant) ?
+                PythonSymbolConverter.constantToSymbol(packageSymbol.getName()) :
+                    packageSymbol.getName();
+        final String moduleName = PythonSymbolConverter.symbolToModule(pythonSymbolName);
         final PackageSymbol clashingPackageSymbol = packageSymbolMap.put(moduleName, packageSymbol);
         if (clashingPackageSymbol != null)
         {

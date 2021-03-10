@@ -10,7 +10,7 @@ class UInt64EnumTest(unittest.TestCase):
         cls.api = getZserioApi(__file__, "enumeration_types.zs").uint64_enum
 
     def testValues(self):
-        self.assertEqual(NONE_VALUE, self.api.DarkColor.NONE.value)
+        self.assertEqual(NONE_COLOR_VALUE, self.api.DarkColor.NONE_COLOR.value)
         self.assertEqual(DARK_RED_VALUE, self.api.DarkColor.DARK_RED.value)
         self.assertEqual(DARK_BLUE_VALUE, self.api.DarkColor.DARK_BLUE.value)
         self.assertEqual(DARK_GREEN_VALUE, self.api.DarkColor.DARK_GREEN.value)
@@ -23,13 +23,13 @@ class UInt64EnumTest(unittest.TestCase):
         self.assertEqual(DARK_GREEN_VALUE, color.value)
 
     def testBitSizeOf(self):
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.bitsizeof())
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE_COLOR.bitsizeof())
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_RED.bitsizeof())
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_BLUE.bitsizeof())
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_GREEN.bitsizeof())
 
     def testInitializeOffsets(self):
-        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.initialize_offsets(0))
+        self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE_COLOR.initialize_offsets(0))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 1, self.api.DarkColor.DARK_RED.initialize_offsets(1))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 2, self.api.DarkColor.DARK_BLUE.initialize_offsets(2))
         self.assertEqual(DARK_COLOR_BITSIZEOF + 3, self.api.DarkColor.DARK_GREEN.initialize_offsets(3))
@@ -42,7 +42,7 @@ class UInt64EnumTest(unittest.TestCase):
 
 DARK_COLOR_BITSIZEOF = 64
 
-NONE_VALUE = 0
+NONE_COLOR_VALUE = 0
 DARK_RED_VALUE = 1
 DARK_BLUE_VALUE = 2
 DARK_GREEN_VALUE = 7

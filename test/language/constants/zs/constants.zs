@@ -66,6 +66,7 @@ const string        STRING_CONSTANT = "Test \"Quated\" String";
 const string        UNICODE_ESC_STRING_CONSTANT = "Test string with unicode escape \u0019";
 const string        HEX_ESC_STRING_CONSTANT = "Test string with hexadecimal escape \x19";
 const string        OCTAL_ESC_STRING_CONSTANT = "Test string with octal escape \031";
+const string        StringPascalCaseConstant = "Different naming convention";
 
 // constant defined by another constant
 const uint32        UINT32_FULL_MASK = UINT32_MAX_CONSTANT;

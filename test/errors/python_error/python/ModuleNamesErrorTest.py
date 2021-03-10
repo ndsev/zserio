@@ -9,6 +9,7 @@ class ModuleNamesErrorTest(unittest.TestCase):
 
         compileErroneousZserio(__file__, "module_names/bitmask_with_enum_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "module_names/choice_with_union_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "module_names/const_with_const_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "module_names/const_with_structure_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "module_names/instantiate_type_with_structure_clash_error.zs",
                                cls.errors)
@@ -36,6 +37,16 @@ class ModuleNamesErrorTest(unittest.TestCase):
             [
                 ":11:7: Module 'some_name' generated for package symbol 'Some_Name' " +
                 "clashes with module generated for package symbol 'SomeName' defined at 3:8!",
+                "[ERROR] Python Generator: Module name clashing detected!"
+            ]
+        )
+
+    def testConstWithConstClashError(self):
+        assertErrorsPresent(self,
+            "module_names/const_with_const_clash_error.zs",
+            [
+                ":4:14: Module 'some_name' generated for package symbol 'SomeName' " +
+                "clashes with module generated for package symbol 'SOME_NAME' defined at 3:14!",
                 "[ERROR] Python Generator: Module name clashing detected!"
             ]
         )

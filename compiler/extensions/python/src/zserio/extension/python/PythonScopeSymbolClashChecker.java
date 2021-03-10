@@ -5,8 +5,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import zserio.ast.AstLocation;
+import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.ParameterizedTypeInstantiation;
@@ -56,6 +59,22 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     }
 
     @Override
+    public void beginEnumeration(EnumType enumType) throws ZserioExtensionException
+    {
+        final Map<String, String> symbolMap = new HashMap<String, String>();
+        for (ScopeSymbol symbol : enumType.getItems())
+            addSymbol(symbolMap, symbol, PythonSymbolConverter.enumItemToSymbol(symbol.getName()));
+    }
+
+    @Override
+    public void beginBitmask(BitmaskType bitmaskType) throws ZserioExtensionException
+    {
+        final Map<String, String> symbolMap = new HashMap<String, String>();
+        for (ScopeSymbol symbol : bitmaskType.getValues())
+            addSymbol(symbolMap, symbol, PythonSymbolConverter.bitmaskValueToSymbol(symbol.getName()));
+    }
+
+    @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
     {
         checkCompoundType(sqlTableType);
@@ -73,32 +92,29 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     public void beginService(ServiceType serviceType) throws ZserioExtensionException
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
-
         for (ScopeSymbol symbol : serviceType.getMethodList())
-            addSymbol(symbolMap, symbol);
+            addSymbol(symbolMap, symbol, symbol.getName());
     }
 
     @Override
     public void beginPubsub(PubsubType pubsubType) throws ZserioExtensionException
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
-
         for (ScopeSymbol symbol : pubsubType.getMessageList())
-            addSymbol(symbolMap, symbol);
+            addSymbol(symbolMap, symbol, symbol.getName());
     }
 
     private void checkCompoundType(CompoundType compoundType) throws ZserioExtensionException
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
-
         for (ScopeSymbol symbol : compoundType.getTypeParameters())
-            addSymbol(symbolMap, symbol);
+            addSymbol(symbolMap, symbol, symbol.getName());
 
         for (ScopeSymbol symbol : compoundType.getFields())
-            addSymbol(symbolMap, symbol);
+            addSymbol(symbolMap, symbol, symbol.getName());
 
         for (ScopeSymbol symbol : compoundType.getFunctions())
-            addSymbol(symbolMap, symbol);
+            addSymbol(symbolMap, symbol, symbol.getName());
     }
 
     private void checkExplicitParameters(SqlTableType sqlTableType) throws ZserioExtensionException
@@ -122,7 +138,7 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
                         if (explicitParameters.add(explicitParamName)) // first time seeing this parameter
                         {
                             final String prevExplicitParamName = snakeCaseExplicitParamMap.put(
-                                    PythonSymbolConverter.camelCaseToSnakeCase(explicitParamName),
+                                    PythonSymbolConverter.toLowerSnakeCase(explicitParamName),
                                     explicitParamName);
                             if (prevExplicitParamName != null)
                             {
@@ -139,15 +155,16 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
         }
     }
 
-    private void addSymbol(Map<String, String> symbolMap, ScopeSymbol symbol) throws ZserioExtensionException
+    private void addSymbol(Map<String, String> symbolMap, ScopeSymbol symbol, String pythonSymbolName)
+            throws ZserioExtensionException
     {
-        final String symbolName = symbol.getName();
-        final String snakeCaseSymbolName = PythonSymbolConverter.camelCaseToSnakeCase(symbolName);
+        // TODO[mikir] Redesign it to use native mapper!
+        final String snakeCaseSymbolName = PythonSymbolConverter.toLowerSnakeCase(pythonSymbolName);
         final String prevSymbolName = symbolMap.put(snakeCaseSymbolName, symbol.getName());
         if (prevSymbolName != null)
         {
             ZserioToolPrinter.printError(symbol.getLocation(),
-                    "Symbol name '" + symbolName + "' clashes with '" + prevSymbolName +
+                    "Symbol name '" + symbol.getName() + "' clashes with '" + prevSymbolName +
                     "' since both are generated equally in Python code!");
             throw new ZserioExtensionException("Symbol name clash detected!");
         }

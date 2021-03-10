@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import zserio.ast.Package;
+import zserio.ast.Constant;
 import zserio.ast.PackageName;
 import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
@@ -54,14 +54,17 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
     protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioExtensionException
     {
-        processSourceTemplate(templateName, templateData, zserioType.getPackage(), zserioType.getName());
+        final String moduleName = PythonSymbolConverter.symbolToModule(zserioType.getName());
+        processTemplate(templateName, templateData, zserioType.getPackage().getPackageName(), moduleName);
     }
 
-    protected void processSourceTemplate(String templateName, Object templateData, Package zserioPackage,
-            String name) throws ZserioExtensionException
+    protected void processSourceTemplate(String templateName, Object templateData, Constant constant)
+            throws ZserioExtensionException
     {
-        final String moduleName = PythonSymbolConverter.packageSymbolToModuleName(name);
-        processTemplate(templateName, templateData, zserioPackage.getPackageName(), moduleName);
+        // TODO[mikir] Redesign it to use native mapper!
+        final String pythonConstantName = PythonSymbolConverter.constantToSymbol(constant.getName());
+        final String moduleName = PythonSymbolConverter.symbolToModule(pythonConstantName);
+        processTemplate(templateName, templateData, constant.getPackage().getPackageName(), moduleName);
     }
 
     protected void processTemplate(String templateName, Object templateData, PackageName packageName,

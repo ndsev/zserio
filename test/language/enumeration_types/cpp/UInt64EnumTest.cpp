@@ -16,7 +16,7 @@ class UInt64EnumTest : public ::testing::Test
 protected:
     static const size_t DARK_COLOR_BITSIZEOF;
 
-    static const uint64_t NONE_VALUE;
+    static const uint64_t NONE_COLOR_VALUE;
     static const uint64_t DARK_RED_VALUE;
     static const uint64_t DARK_BLUE_VALUE;
     static const uint64_t DARK_GREEN_VALUE;
@@ -24,36 +24,36 @@ protected:
 
 const size_t UInt64EnumTest::DARK_COLOR_BITSIZEOF = 64;
 
-const uint64_t UInt64EnumTest::NONE_VALUE = 0;
+const uint64_t UInt64EnumTest::NONE_COLOR_VALUE = 0;
 const uint64_t UInt64EnumTest::DARK_RED_VALUE = 1;
 const uint64_t UInt64EnumTest::DARK_BLUE_VALUE = 2;
 const uint64_t UInt64EnumTest::DARK_GREEN_VALUE = 7;
 
 TEST_F(UInt64EnumTest, EnumTraits)
 {
-    ASSERT_EQ(std::string("NONE"), zserio::EnumTraits<DarkColor>::names[0]);
-    ASSERT_EQ(std::string("DARK_GREEN"), zserio::EnumTraits<DarkColor>::names[3]);
+    ASSERT_EQ(std::string("noneColor"), zserio::EnumTraits<DarkColor>::names[0]);
+    ASSERT_EQ(std::string("DarkGreen"), zserio::EnumTraits<DarkColor>::names[3]);
     ASSERT_EQ(4, zserio::EnumTraits<DarkColor>::names.size());
 
     ASSERT_EQ(DarkColor::DARK_RED, zserio::EnumTraits<DarkColor>::values[1]);
-    ASSERT_EQ(DarkColor::DARK_BLUE, zserio::EnumTraits<DarkColor>::values[2]);
+    ASSERT_EQ(DarkColor::dark_blue, zserio::EnumTraits<DarkColor>::values[2]);
     ASSERT_EQ(4, zserio::EnumTraits<DarkColor>::values.size());
 }
 
 TEST_F(UInt64EnumTest, enumToOrdinal)
 {
-    ASSERT_EQ(0, zserio::enumToOrdinal(DarkColor::NONE));
+    ASSERT_EQ(0, zserio::enumToOrdinal(DarkColor::noneColor));
     ASSERT_EQ(1, zserio::enumToOrdinal(DarkColor::DARK_RED));
-    ASSERT_EQ(2, zserio::enumToOrdinal(DarkColor::DARK_BLUE));
-    ASSERT_EQ(3, zserio::enumToOrdinal(DarkColor::DARK_GREEN));
+    ASSERT_EQ(2, zserio::enumToOrdinal(DarkColor::dark_blue));
+    ASSERT_EQ(3, zserio::enumToOrdinal(DarkColor::DarkGreen));
 }
 
 TEST_F(UInt64EnumTest, valueToEnum)
 {
-    ASSERT_EQ(DarkColor::NONE, zserio::valueToEnum<DarkColor>(NONE_VALUE));
+    ASSERT_EQ(DarkColor::noneColor, zserio::valueToEnum<DarkColor>(NONE_COLOR_VALUE));
     ASSERT_EQ(DarkColor::DARK_RED, zserio::valueToEnum<DarkColor>(DARK_RED_VALUE));
-    ASSERT_EQ(DarkColor::DARK_BLUE, zserio::valueToEnum<DarkColor>(DARK_BLUE_VALUE));
-    ASSERT_EQ(DarkColor::DARK_GREEN, zserio::valueToEnum<DarkColor>(DARK_GREEN_VALUE));
+    ASSERT_EQ(DarkColor::dark_blue, zserio::valueToEnum<DarkColor>(DARK_BLUE_VALUE));
+    ASSERT_EQ(DarkColor::DarkGreen, zserio::valueToEnum<DarkColor>(DARK_GREEN_VALUE));
 }
 
 TEST_F(UInt64EnumTest, valueToEnumFailure)
@@ -63,13 +63,14 @@ TEST_F(UInt64EnumTest, valueToEnumFailure)
 
 TEST_F(UInt64EnumTest, bitSizeOf)
 {
-    ASSERT_TRUE(zserio::bitSizeOf(DarkColor::NONE) == DARK_COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::bitSizeOf(DarkColor::noneColor) == DARK_COLOR_BITSIZEOF);
 }
 
 TEST_F(UInt64EnumTest, initializeOffsets)
 {
     const size_t bitPosition = 1;
-    ASSERT_TRUE(zserio::initializeOffsets(bitPosition, DarkColor::NONE) == bitPosition + DARK_COLOR_BITSIZEOF);
+    ASSERT_TRUE(zserio::initializeOffsets(bitPosition, DarkColor::noneColor) ==
+            bitPosition + DARK_COLOR_BITSIZEOF);
 }
 
 TEST_F(UInt64EnumTest, read)
@@ -86,7 +87,7 @@ TEST_F(UInt64EnumTest, read)
 
 TEST_F(UInt64EnumTest, write)
 {
-    const DarkColor darkColor(DarkColor::DARK_BLUE);
+    const DarkColor darkColor(DarkColor::dark_blue);
     zserio::BitStreamWriter writer;
     zserio::write(writer, darkColor);
 

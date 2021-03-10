@@ -161,7 +161,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             importCollector.importType(nativeType);
 
             name = field.getName();
-            snakeCaseName = PythonSymbolConverter.camelCaseToSnakeCase(name);
+            snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             pythonTypeName = nativeType.getFullName();
 
             isVirtual = field.getIsVirtual();

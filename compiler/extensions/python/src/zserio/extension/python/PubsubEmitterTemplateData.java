@@ -59,7 +59,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             name = message.getName();
-            snakeCaseName = PythonSymbolConverter.camelCaseToSnakeCase(name);
+            snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             final PythonNativeType pythonType = pythonNativeMapper.getPythonType(message.getType());
             importCollector.importType(pythonType);
