@@ -15,7 +15,7 @@ class StructureArrayParamTest(unittest.TestCase):
 
     def testParentStructure(self):
         parentStructure = self._createParentStructure()
-        self.assertEqual(self.CHILD_BIT_SIZE, parentStructure.func_get_child_bit_size())
+        self.assertEqual(self.CHILD_BIT_SIZE, parentStructure.get_child_bit_size())
 
         writer = zserio.BitStreamWriter()
         parentStructure.write(writer)

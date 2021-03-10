@@ -51,7 +51,7 @@ class StructureValueTest(unittest.TestCase):
 
     def _checkCustomVarInt(self, value):
         customVarInt = self._createCustomVarInt(value)
-        readValue = customVarInt.func_get_value()
+        readValue = customVarInt.get_value()
         self.assertEqual(value, readValue)
 
         writer = zserio.BitStreamWriter()

@@ -36,7 +36,7 @@ class StructureArrayTest(unittest.TestCase):
 
     def _checkStructureArray(self, pos):
         structureArray = self._createStructureArray(pos)
-        self.assertEqual(self.ITEMS[pos], structureArray.func_get_element())
+        self.assertEqual(self.ITEMS[pos], structureArray.get_element())
 
         writer = zserio.BitStreamWriter()
         structureArray.write(writer)

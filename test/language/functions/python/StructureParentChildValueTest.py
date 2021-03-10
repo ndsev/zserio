@@ -10,7 +10,7 @@ class StructureParentChildValueTest(unittest.TestCase):
 
     def testParentValue(self):
         parentValue = self._createParentValue()
-        self.assertEqual(self.CHILD_VALUE, parentValue.func_get_value())
+        self.assertEqual(self.CHILD_VALUE, parentValue.get_value())
 
         writer = zserio.BitStreamWriter()
         parentValue.write(writer)

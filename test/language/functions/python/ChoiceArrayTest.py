@@ -76,7 +76,7 @@ class ChoiceArrayTest(unittest.TestCase):
 
     def _checkChoiceArrayFunction(self, pos):
         inner = self._createInner(pos)
-        readElement = inner.ref.func_get_element()
+        readElement = inner.ref.get_element()
         if pos >= self.NUM_ITEMS:
             self.assertEqual(self.EXPLICIT_ITEM, readElement)
         else:

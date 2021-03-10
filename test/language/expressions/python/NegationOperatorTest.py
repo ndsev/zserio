@@ -9,7 +9,7 @@ class NegationOperatorTest(unittest.TestCase):
 
     def testNegatedValue(self):
         negationOperatorExpression = self.api.NegationOperatorExpression(True)
-        self.assertEqual(False, negationOperatorExpression.func_negated_value())
+        self.assertEqual(False, negationOperatorExpression.negated_value())
 
         negationOperatorExpression.value = False
-        self.assertEqual(True, negationOperatorExpression.func_negated_value())
+        self.assertEqual(True, negationOperatorExpression.negated_value())

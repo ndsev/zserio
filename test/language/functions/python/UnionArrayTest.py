@@ -59,9 +59,9 @@ class UnionArrayTest(unittest.TestCase):
         inner = self._createInner(pos)
         isExplicit = 1 if pos >= self.NUM_ITEM_ELEMENTS else 0
         if isExplicit != 0:
-            self.assertEqual(self.EXPLICIT_ITEM, inner.ref.func_get_item())
+            self.assertEqual(self.EXPLICIT_ITEM, inner.ref.get_item())
         else:
-            self.assertEqual(self.ITEMS[pos], inner.ref.func_get_element())
+            self.assertEqual(self.ITEMS[pos], inner.ref.get_element())
 
         writer = zserio.BitStreamWriter()
         inner.write(writer)
