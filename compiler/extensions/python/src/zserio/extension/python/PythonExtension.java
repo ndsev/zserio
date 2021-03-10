@@ -82,8 +82,9 @@ public class PythonExtension implements Extension
         final PythonScopeSymbolClashChecker scopeSymbolClashChecker = new PythonScopeSymbolClashChecker();
         rootNode.walk(scopeSymbolClashChecker);
 
-        final PythonPropertyClashChecker propertyClashChecker = new PythonPropertyClashChecker();
-        rootNode.walk(propertyClashChecker);
+        final PythonGeneratedSymbolsClashChecker generatedSymbolsClashChecker =
+                new PythonGeneratedSymbolsClashChecker();
+        rootNode.walk(generatedSymbolsClashChecker);
 
         final PythonApiClashChecker apiClashChecker = new PythonApiClashChecker();
         rootNode.walk(apiClashChecker);

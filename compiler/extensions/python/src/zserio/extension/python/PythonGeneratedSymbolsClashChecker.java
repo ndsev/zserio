@@ -3,6 +3,7 @@ package zserio.extension.python;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -25,7 +26,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * Checks that Python code generator will not produce any clashes with generated properties.
  */
-class PythonPropertyClashChecker extends DefaultTreeWalker
+class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()
@@ -67,32 +68,34 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
     private void checkCompoundType(CompoundType compoundType,
             String templateSourceName) throws ZserioExtensionException
     {
-        final PropertyNameChecker propertyNameChecker =
-                new PropertyNameChecker(compoundType, templateSourceName);
+        final SymbolNameChecker symbolNameChecker =
+                new SymbolNameChecker(compoundType, templateSourceName);
 
         for (Field field : compoundType.getFields())
         {
             final String propertyName = AccessorNameFormatter.getPropertyName(field);
-            propertyNameChecker.check(field, propertyName);
+            symbolNameChecker.checkProperty(field, propertyName);
         }
 
         for (Parameter parameter : compoundType.getTypeParameters())
         {
             final String propertyName = AccessorNameFormatter.getPropertyName(parameter);
-            propertyNameChecker.check(parameter, propertyName);
+            symbolNameChecker.checkProperty(parameter, propertyName);
+        }
+
+        for (Function function : compoundType.getFunctions())
+        {
+            final String functionName = AccessorNameFormatter.getFunctionName(function);
+            symbolNameChecker.checkFunction(function, functionName);
         }
     }
 
-    private static class PropertyNameChecker
+    private static class SymbolNameChecker
     {
-        public PropertyNameChecker(CompoundType compoundType, String templateSourceName)
+        public SymbolNameChecker(CompoundType compoundType, String templateSourceName)
                 throws ZserioExtensionException
         {
             apiMethods = getTemplateApiMethods(templateSourceName);
-
-            // get function names
-            for (Function function : compoundType.getFunctions())
-                functionNames.put(AccessorNameFormatter.getFunctionName(function), function);
 
             // get indicator names
             for (Field field : compoundType.getFields())
@@ -102,46 +105,46 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
             }
         }
 
-        public void check(ScopeSymbol scopeSymbol, String propertyName) throws ZserioExtensionException
+        public void checkProperty(ScopeSymbol scopeSymbol, String propertyName) throws ZserioExtensionException
         {
-            if (propertyName.startsWith("_"))
+            check(scopeSymbol, propertyName, "Property");
+        }
+
+        public void checkFunction(Function function, String functionName) throws ZserioExtensionException
+        {
+            check(function, functionName, "Function");
+        }
+
+        private void check(ScopeSymbol scopeSymbol, String generatedName, String symbolDescription)
+                throws ZserioExtensionException
+        {
+            if (generatedName.startsWith("_"))
             {
                 ZserioToolPrinter.printError(scopeSymbol.getLocation(),
-                        "Invalid property name '" + propertyName + "' generated for symbol '" +
-                        scopeSymbol.getName() + "'. Property names cannot start with '_'!");
-                throw new ZserioExtensionException("Property name error detected!");
+                        "Invalid " + symbolDescription.toLowerCase(Locale.ENGLISH) + " name '" + generatedName +
+                        "' generated for symbol '" + scopeSymbol.getName() + "'. " +
+                        symbolDescription + " names cannot start with '_'!");
+                throw new ZserioExtensionException(symbolDescription + " name error detected!");
             }
 
-            if (apiMethods.contains(propertyName))
+            if (apiMethods.contains(generatedName))
             {
                 ZserioToolPrinter.printError(scopeSymbol.getLocation(),
-                        "Property name '" + propertyName + "' generated for symbol '" + scopeSymbol.getName() +
-                        "' clashes with generated API method!");
-                throw new ZserioExtensionException("Property name clash detected!");
+                        symbolDescription + " name '" + generatedName + "' generated for symbol '" +
+                        scopeSymbol.getName() + "' clashes with generated API method!");
+                throw new ZserioExtensionException(symbolDescription + " name clash detected!");
             }
 
-            final Function clashingFunction = functionNames.get(propertyName);
-            if (clashingFunction != null)
-            {
-                ZserioToolPrinter.printError(scopeSymbol.getLocation(),
-                        "Property name '" + propertyName + "' generated for symbol '" + scopeSymbol.getName() +
-                        "' clashes with generated method for function '" +
-                        clashingFunction.getName() + "' defined at " +
-                        clashingFunction.getLocation().getLine() + ":" +
-                        clashingFunction.getLocation().getColumn() + "!");
-                throw new ZserioExtensionException("Property name clash detected!");
-            }
-
-            final Field clashingField = indicatorNames.get(propertyName);
+            final Field clashingField = indicatorNames.get(generatedName);
             if (clashingField != null)
             {
                 ZserioToolPrinter.printError(scopeSymbol.getLocation(),
-                        "Property name '" + propertyName + "' generated for symbol '" + scopeSymbol.getName() +
-                        "' clashes with generated indicator for optional field '" +
+                        symbolDescription + " name '" + generatedName + "' generated for symbol '" +
+                        scopeSymbol.getName() + "' clashes with generated indicator for optional field '" +
                         clashingField.getName() + "' defined at " +
                         clashingField.getLocation().getLine() + ":" +
                         clashingField.getLocation().getColumn() + "!");
-                throw new ZserioExtensionException("Property name clash detected!");
+                throw new ZserioExtensionException(symbolDescription + " name clash detected!");
             }
         }
 
@@ -162,7 +165,6 @@ class PythonPropertyClashChecker extends DefaultTreeWalker
         }
 
         private final Set<String> apiMethods;
-        private final Map<String, Function> functionNames = new HashMap<String, Function>();
         private final Map<String, Field> indicatorNames = new HashMap<String, Field>();
     }
 }

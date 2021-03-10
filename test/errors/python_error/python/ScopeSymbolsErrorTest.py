@@ -9,6 +9,8 @@ class ScopeSymbolsErrorTest(unittest.TestCase):
 
         compileErroneousZserio(__file__, "scope_symbols/choice_field_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/choice_parameter_names_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/choice_parameter_with_function_clash_error.zs",
+                               cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/pubsub_message_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/service_method_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/sql_database_table_names_clash_error.zs", cls.errors)
@@ -16,13 +18,25 @@ class ScopeSymbolsErrorTest(unittest.TestCase):
         compileErroneousZserio(__file__, "scope_symbols/structure_field_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/structure_field_with_parameter_clash_error.zs",
                                cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/structure_function_names_clash_error.zs", cls.errors)
         compileErroneousZserio(__file__, "scope_symbols/union_field_names_clash_error.zs", cls.errors)
+        compileErroneousZserio(__file__, "scope_symbols/union_field_with_function_clash_error.zs", cls.errors)
 
     def testChoiceFieldNamesClash(self):
         assertErrorsPresent(self,
             "scope_symbols/choice_field_names_clash_error.zs",
             [
                 ":8:17: Symbol name 'some_field' clashes with 'someField' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
+    def testChoiceParameterWithFunctionClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/choice_parameter_with_function_clash_error.zs",
+            [
+                ":12:19: Symbol name 'func_array' clashes with 'funcArray' " +
                 "since both are generated equally in Python code!",
                 "[ERROR] Python Generator: Symbol name clash detected!"
             ]
@@ -98,11 +112,31 @@ class ScopeSymbolsErrorTest(unittest.TestCase):
             ]
         )
 
+    def testStructureFunctionNamesNamesClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/structure_function_names_clash_error.zs",
+            [
+                ":10:19: Symbol name 'someName' clashes with 'some_name' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
     def testUnionFieldNamesClash(self):
         assertErrorsPresent(self,
             "scope_symbols/union_field_names_clash_error.zs",
             [
                 ":6:13: Symbol name 'someField' clashes with 'some_field' " +
+                "since both are generated equally in Python code!",
+                "[ERROR] Python Generator: Symbol name clash detected!"
+            ]
+        )
+
+    def testUnionFieldWithFunctionClash(self):
+        assertErrorsPresent(self,
+            "scope_symbols/union_field_with_function_clash_error.zs",
+            [
+                ":7:21: Symbol name 'someField' clashes with 'some_field' " +
                 "since both are generated equally in Python code!",
                 "[ERROR] Python Generator: Symbol name clash detected!"
             ]

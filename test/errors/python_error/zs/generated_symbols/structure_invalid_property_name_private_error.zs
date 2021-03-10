@@ -1,4 +1,4 @@
-package property_names.structure_invalid_property_name_private_error;
+package generated_symbols.structure_invalid_property_name_private_error;
 
 struct TestStructure
 {

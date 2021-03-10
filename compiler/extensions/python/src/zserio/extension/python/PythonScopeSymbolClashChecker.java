@@ -96,6 +96,9 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
 
         for (ScopeSymbol symbol : compoundType.getFields())
             addSymbol(symbolMap, symbol);
+
+        for (ScopeSymbol symbol : compoundType.getFunctions())
+            addSymbol(symbolMap, symbol);
     }
 
     private void checkExplicitParameters(SqlTableType sqlTableType) throws ZserioExtensionException

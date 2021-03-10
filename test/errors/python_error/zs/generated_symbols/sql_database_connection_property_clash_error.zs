@@ -1,4 +1,4 @@
-package property_names.sql_database_connection_property_clash_error;
+package generated_symbols.sql_database_connection_property_clash_error;
 
 sql_table TestTable
 {

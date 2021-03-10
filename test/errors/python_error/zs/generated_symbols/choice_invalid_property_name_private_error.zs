@@ -1,4 +1,4 @@
-package property_names.choice_invalid_property_name_private_error;
+package generated_symbols.choice_invalid_property_name_private_error;
 
 choice TestChoice(uint32 param) on param
 {

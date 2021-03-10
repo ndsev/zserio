@@ -1,4 +1,4 @@
-package property_names.union_public_method_property_clash_error;
+package generated_symbols.union_public_method_property_clash_error;
 
 union TestUnion
 {

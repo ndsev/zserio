@@ -1,4 +1,4 @@
-package property_names.template_invalid_property_name_private_error;
+package generated_symbols.template_invalid_property_name_private_error;
 
 struct TemplatedStruct<T>
 {

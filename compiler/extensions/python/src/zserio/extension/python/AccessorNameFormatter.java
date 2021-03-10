@@ -14,7 +14,7 @@ public class AccessorNameFormatter
 
     public static String getFunctionName(Function function)
     {
-        return FUNCTION_NAME_PREFIX + PythonSymbolConverter.camelCaseToSnakeCase(function.getName());
+        return PythonSymbolConverter.camelCaseToSnakeCase(function.getName());
     }
 
     public static String getSqlColumnName(Field field)
@@ -34,5 +34,4 @@ public class AccessorNameFormatter
 
     private static final String INDICATOR_NAME_PREFIX = "is_";
     private static final String INDICATOR_NAME_SUFFIX = "_used";
-    private static final String FUNCTION_NAME_PREFIX = "func_";
 }
