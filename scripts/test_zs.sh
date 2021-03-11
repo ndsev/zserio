@@ -227,7 +227,7 @@ target_link_libraries(\${PROJECT_NAME} ZserioCppRuntime)${SQLITE_USE}
 # add cppcheck custom command
 include(cppcheck_utils)
 cppcheck_add_custom_command(TARGET \${PROJECT_NAME} SOURCE_DIR \${CMAKE_CURRENT_SOURCE_DIR}/gen
-    OPTIONS --suppress=variableScope
+    OPTIONS --suppress=variableScope --suppress=constParameter
 )
 
 add_test(compile_generated_cpp \${CMAKE_COMMAND} -E echo "Generated sources were successfully compiled!")
