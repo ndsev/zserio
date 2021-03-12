@@ -35,7 +35,7 @@ jobs:
     - name: Workaround for 'Unable to connect to ppa.launchpad.net' failure during installation
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
     - name: Install dependencies
-      run: sudo apt-get install cmake doxygen graphviz g++-multilib
+      run: sudo apt-get install cmake doxygen graphviz
     - name: Install specific version of C++ static code analysis tool (cppcheck)
       run: |
         wget https://github.com/danmar/cppcheck/archive/1.90.tar.gz -P "${GITHUB_WORKSPACE}" -O cppcheck-1.90.tar.gz
@@ -54,14 +54,14 @@ jobs:
         wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip -P "${GITHUB_WORKSPACE}"
         unzip "${GITHUB_WORKSPACE}"/spotbugs-3.1.12.zip
     - name: Build Zserio
-      run: scripts/build.sh all-linux64 cpp_rt-linux32
+      run: scripts/build.sh all-linux64
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test.sh all-linux64 cpp-linux32
+          scripts/test.sh all-linux64
     - name: Run Zserio integration tests for repeated generation
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test_gen.sh all-linux64 cpp-linux32
+          scripts/test_gen.sh all-linux64
