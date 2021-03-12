@@ -2,6 +2,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl"/>
 <@file_header generatorDescription/>
+<@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
 <#macro choice_tag_name field>
     CHOICE_${field.snakeCaseName?upper_case}<#t>

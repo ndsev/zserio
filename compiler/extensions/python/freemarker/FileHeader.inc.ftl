@@ -2,6 +2,12 @@
 ${generatorDescription}
 </#macro>
 
+<#-- we need to use future annotations to prevent clashes between typing and top level package name -->
+<#macro future_annotations>
+
+from __future__ import annotations
+</#macro>
+
 <#macro package_imports packageImports>
     <#list packageImports as packageImport>
 import ${packageImport}

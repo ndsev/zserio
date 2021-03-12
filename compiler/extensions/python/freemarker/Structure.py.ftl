@@ -2,6 +2,7 @@
 <#include "CompoundField.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl"/>
 <@file_header generatorDescription/>
+<@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
 
 class ${name}:

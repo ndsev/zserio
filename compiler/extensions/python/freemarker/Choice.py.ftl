@@ -2,6 +2,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl"/>
 <@file_header generatorDescription/>
+<@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
