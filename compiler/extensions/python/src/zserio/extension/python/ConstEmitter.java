@@ -4,7 +4,7 @@ import zserio.ast.Constant;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class ConstEmitter extends PythonDefaultEmitter
+class ConstEmitter extends PythonDefaultEmitter
 {
     public ConstEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

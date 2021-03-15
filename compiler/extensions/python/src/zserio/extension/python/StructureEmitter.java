@@ -4,7 +4,7 @@ import zserio.ast.StructureType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class StructureEmitter extends PythonDefaultEmitter
+class StructureEmitter extends PythonDefaultEmitter
 {
     public StructureEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

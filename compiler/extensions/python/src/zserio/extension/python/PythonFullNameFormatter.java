@@ -6,7 +6,7 @@ import zserio.tools.StringJoinUtil;
 /**
  * The class handles the Python full name construction.
  */
-final public class PythonFullNameFormatter
+public class PythonFullNameFormatter
 {
     public static String getFullName(PackageName packageName)
     {

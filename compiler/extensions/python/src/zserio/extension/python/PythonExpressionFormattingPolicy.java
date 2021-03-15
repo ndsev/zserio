@@ -16,7 +16,7 @@ import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.PythonNativeType;
 import zserio.extension.common.ExpressionFormattingPolicy;
 
-public class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
+class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
     public PythonExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector)
     {

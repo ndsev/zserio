@@ -21,7 +21,7 @@ import zserio.ast.UnionType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class ApiEmitter extends PythonDefaultEmitter
+class ApiEmitter extends PythonDefaultEmitter
 {
     public ApiEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

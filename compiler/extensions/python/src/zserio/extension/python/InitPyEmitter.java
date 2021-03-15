@@ -9,7 +9,7 @@ import zserio.ast.PackageName;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
-public class InitPyEmitter extends PythonDefaultEmitter
+class InitPyEmitter extends PythonDefaultEmitter
 {
     public InitPyEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
     {

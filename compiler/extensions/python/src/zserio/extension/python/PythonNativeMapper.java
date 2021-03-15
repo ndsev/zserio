@@ -38,7 +38,7 @@ import zserio.extension.python.types.NativeSubtype;
 import zserio.extension.python.types.NativeUserType;
 import zserio.extension.python.types.PythonNativeType;
 
-public class PythonNativeMapper
+class PythonNativeMapper
 {
     /**
      * Returns a Python symbol that can hold an instance of Zserio symbol.

@@ -3,7 +3,7 @@ package zserio.extension.python;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.PythonNativeType;
 
-public interface ImportCollector
+interface ImportCollector
 {
     void importPackage(String packageName);
     void importSymbol(PythonNativeSymbol nativeSymbol);

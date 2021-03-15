@@ -4,7 +4,7 @@ import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Parameter;
 
-public class AccessorNameFormatter
+class AccessorNameFormatter
 {
     public static String getIndicatorName(Field field)
     {
