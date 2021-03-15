@@ -35,8 +35,18 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
     <property name="zserio_python.classes_dir" value="${zserio_python.build_dir}/classes"/>
     <property name="zserio_python.spotbugs.out_dir" value="${zserio_python.build_dir}/spotbugs"/>
 
+    <property name="zserio_python.test.src_dir" location="${zserio_python.base_dir}/test"/>
+    <property name="zserio_python.test.build_dir" value="${zserio_python.build_dir}/test"/>
+    <property name="zserio_python.test.classes_dir" value="${zserio_python.test.build_dir}/classes"/>
+    <property name="zserio_python.test.spotbugs.out_dir" value="${zserio_python.test.build_dir}/spotbugs"/>
+    <property name="zserio_python.test.results_dir" value="${zserio_python.test.build_dir}/results"/>
+
     <property name="zserio_python.jar_dir" value="${zserio_python.build_dir}/jar"/>
     <property name="zserio_python.jar_file" value="${zserio_python.jar_dir}/zserio_python.jar"/>
+
+    <property name="3rdparty.root_dir" value="${zserio_python.zserio_root}/3rdparty"/>
+    <property name="3rdparty.jar_dir" value="${3rdparty.root_dir}/java"/>
+    <property name="3rdparty.junit.jar_file" value="${3rdparty.jar_dir}/junit-4.10.jar"/>
 
     <!-- Zserio Python extension version. -->
     <loadfile
@@ -120,6 +130,66 @@ spotbugs.home_dir             - Location of the spotbugs tool. If not set, spotb
         <fail message="SpotBugs found some issues!" if="zserio_python.is_failed"/>
     </target>
 
-    <target name="test" depends="spotbugs">
+    <target name="test.clean">
+        <delete dir="${zserio_python.test.build_dir}"/>
+    </target>
+
+    <target name="test.compile" depends="jar">
+        <mkdir dir="${zserio_python.test.classes_dir}"/>
+        <depend srcDir="${zserio_python.test.src_dir}" destDir="${zserio_python.test.classes_dir}"
+            cache="${zserio_python.test.build_dir}/depend-cache"/>
+        <javac srcdir="${zserio_python.test.src_dir}" destdir="${zserio_python.test.classes_dir}" debug="on"
+            encoding="utf8" includeAntRuntime="false">
+            <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Werror"/>
+            <classpath>
+                <pathelement path="${3rdparty.junit.jar_file}"/>
+                <pathelement path="${zserio_python.jar_file}"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="test.spotbugs" depends="spotbugs, test.compile" if="spotbugs.home_dir">
+        <mkdir dir="${zserio_python.test.spotbugs.out_dir}"/>
+        <taskdef classpath="${spotbugs.home_dir}/lib/spotbugs-ant.jar"
+            resource="edu/umd/cs/findbugs/anttask/tasks.properties"/>
+        <spotbugs home="${spotbugs.home_dir}"
+            output="html"
+            outputFile="${zserio_python.test.spotbugs.out_dir}/spotbugs.html"
+            reportLevel="low"
+            errorProperty="zserio_python.spotbugs.is_failed"
+            warningsProperty="zserio_python.spotbugs.is_failed">
+            <sourcePath>
+                <dirset dir="${zserio_python.test.src_dir}"/>
+            </sourcePath>
+            <fileset dir="${zserio_python.test.classes_dir}"/>
+            <class location="${zserio_python.jar_file}"/>
+            <auxClasspath>
+                <path refid="zserio_python.classpath_zserio_core"/>
+                <fileset file="${3rdparty.junit.jar_file}"/>
+            </auxClasspath>
+        </spotbugs>
+        <fail message="SpotBugs found some issues!" if="zserio_python.spotbugs.is_failed"/>
+    </target>
+
+    <target name="test.run" depends="test.spotbugs">
+        <mkdir dir="${zserio_python.test.results_dir}"/>
+        <junit printsummary="no" fork="yes" dir="${zserio_python.test.classes_dir}" haltonfailure="yes">
+            <classpath>
+                <pathelement path="${3rdparty.junit.jar_file}"/>
+                <pathelement path="${zserio_python.jar_file}"/>
+                <pathelement path="${zserio_python.test.classes_dir}"/>
+            </classpath>
+            <batchtest todir="${zserio_python.test.results_dir}">
+                <fileset dir="${zserio_python.test.src_dir}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+                <formatter type="plain" usefile="false"/>
+                <formatter type="xml"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="test" depends="test.run">
     </target>
 </project>

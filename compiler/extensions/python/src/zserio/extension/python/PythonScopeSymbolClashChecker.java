@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import zserio.ast.AstLocation;
 import zserio.ast.BitmaskType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
