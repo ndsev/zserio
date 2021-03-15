@@ -3,7 +3,7 @@ package zserio.extension.python;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ExpressionFormattingPolicy;
 
-final class TemplateDataContext
+class TemplateDataContext
 {
     public TemplateDataContext(PythonExtensionParameters pythonParameters)
     {

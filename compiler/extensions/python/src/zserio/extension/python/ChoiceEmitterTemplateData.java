@@ -32,15 +32,8 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         }
 
         final ChoiceDefault choiceDefault = choiceType.getChoiceDefault();
-        if (choiceDefault != null)
-        {
-            defaultMember = new DefaultMember(context, choiceType, choiceDefault, pythonExpressionFormatter,
-                    this);
-        }
-        else
-        {
-            defaultMember = null;
-        }
+        defaultMember = (choiceDefault == null) ? null:
+                new DefaultMember(context, choiceType, choiceDefault, this);
 
         isDefaultUnreachable = choiceType.isChoiceDefaultUnreachable();
     }
@@ -78,8 +71,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
             final Field fieldType = choiceCase.getField();
             compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(context, choiceType,
-                            fieldType, expressionFormatter, importCollector) : null;
+                    new CompoundFieldTemplateData(context, choiceType, fieldType, importCollector) : null;
         }
 
         public Iterable<String> getExpressionList()
@@ -99,13 +91,11 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public static class DefaultMember
     {
         public DefaultMember(TemplateDataContext context, ChoiceType choiceType, ChoiceDefault choiceDefault,
-                ExpressionFormatter expressionFormatter, ImportCollector importCollector)
-                        throws ZserioExtensionException
+                ImportCollector importCollector) throws ZserioExtensionException
         {
             final Field fieldType = choiceDefault.getField();
             compoundField = (fieldType != null) ?
-                    new CompoundFieldTemplateData(context, choiceType,
-                            fieldType, expressionFormatter, importCollector) : null;
+                    new CompoundFieldTemplateData(context, choiceType, fieldType, importCollector) : null;
         }
 
         public CompoundFieldTemplateData getCompoundField()

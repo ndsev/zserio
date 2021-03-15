@@ -5,7 +5,6 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.Field;
-import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
 public class CompoundTypeTemplateData extends UserTypeTemplateData
@@ -19,10 +18,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         importPackage("zserio");
 
         withRangeCheckCode = context.getWithRangeCheckCode();
-        final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         compoundParametersData = new CompoundParameterTemplateData(context, compoundType, this);
-        compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType,
-                pythonExpressionFormatter, this);
+        compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType, this);
 
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
 
@@ -30,8 +27,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
         {
-            fieldList.add(new CompoundFieldTemplateData(
-                    context, compoundType, fieldType, pythonExpressionFormatter, this));
+            fieldList.add(new CompoundFieldTemplateData(context, compoundType, fieldType, this));
         }
     }
 

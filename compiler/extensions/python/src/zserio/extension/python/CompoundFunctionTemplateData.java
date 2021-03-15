@@ -13,15 +13,13 @@ import zserio.extension.python.types.PythonNativeType;
 public final class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(TemplateDataContext context, CompoundType compoundType,
-            ExpressionFormatter pythonExpressionFormatter, ImportCollector importCollector)
-                    throws ZserioExtensionException
+            ImportCollector importCollector) throws ZserioExtensionException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<Function> functionList = compoundType.getFunctions();
         for (Function function : functionList)
         {
-            compoundFunctionList.add(new CompoundFunction(context, function,
-                    pythonExpressionFormatter, importCollector));
+            compoundFunctionList.add(new CompoundFunction(context, function, importCollector));
         }
     }
 
@@ -32,9 +30,8 @@ public final class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(TemplateDataContext context, Function function,
-                ExpressionFormatter pythonExpressionFormatter, ImportCollector importCollector)
-                        throws ZserioExtensionException
+        public CompoundFunction(TemplateDataContext context, Function function, ImportCollector importCollector)
+                throws ZserioExtensionException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
             final PythonNativeType nativeType =
@@ -43,6 +40,8 @@ public final class CompoundFunctionTemplateData
 
             name = AccessorNameFormatter.getFunctionName(function);
             returnPythonTypeName = nativeType.getFullName();
+            final ExpressionFormatter pythonExpressionFormatter =
+                    context.getPythonExpressionFormatter(importCollector);
             resultExpression = pythonExpressionFormatter.formatGetter(function.getResultExpression());
         }
 

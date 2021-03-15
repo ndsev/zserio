@@ -25,8 +25,7 @@ import zserio.extension.python.types.PythonNativeType;
 
 public final class CompoundFieldTemplateData
 {
-    public CompoundFieldTemplateData(TemplateDataContext context,
-            CompoundType parentType, Field field, ExpressionFormatter pythonExpressionFormatter,
+    public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType, Field field,
             ImportCollector importCollector) throws ZserioExtensionException
     {
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
@@ -42,6 +41,8 @@ public final class CompoundFieldTemplateData
 
         propertyName = AccessorNameFormatter.getPropertyName(field);
 
+        final ExpressionFormatter pythonExpressionFormatter =
+                context.getPythonExpressionFormatter(importCollector);
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
         final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
         optional = createOptional(field, fieldBaseType, parentType, pythonExpressionFormatter);

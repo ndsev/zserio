@@ -14,7 +14,7 @@ import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
-final class PythonRuntimeFunctionDataCreator
+class PythonRuntimeFunctionDataCreator
 {
     public static RuntimeFunctionTemplateData createData(TypeInstantiation typeInstantiation,
             ExpressionFormatter pythonExpressionFormatter) throws ZserioExtensionException
