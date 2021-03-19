@@ -83,7 +83,7 @@ class Bit5IndexedOffsetArrayTest(unittest.TestCase):
         bit5IndexedOffsetArray = self._createBit5IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            bit5IndexedOffsetArray.write(writer, call_initialize_offsets=False)
+            bit5IndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
 
     @staticmethod
     def _writeBit5IndexedOffsetArrayToStream(writer, writeWrongOffsets):

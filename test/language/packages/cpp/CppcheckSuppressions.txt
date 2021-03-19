@@ -8,3 +8,7 @@ uninitMemberVar:*/gen_packages/single_import_conflict/imported/SimpleParamStruct
 uninitMemberVar:*/gen_packages/single_import_conflict/imported/SimpleParamStructure.h
 uninitMemberVar:*/gen_packages/single_import_precedence/top/Parameterized.cpp
 uninitMemberVar:*/gen_packages/single_import_precedence/top/Parameterized.h
+uninitMemberVar:*/gen_reader/reader/ParameterizedElement.cpp
+uninitMemberVar:*/gen_reader/reader/ParameterizedElement.h
+uninitMemberVar:*/gen_index/index_workaround/index/ParameterizedElement.cpp
+uninitMemberVar:*/gen_index/index_workaround/index/ParameterizedElement.h

@@ -83,7 +83,7 @@ class BoolIndexedOffsetArrayTest(unittest.TestCase):
         boolIndexedOffsetArray = self._createBoolIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            boolIndexedOffsetArray.write(writer, call_initialize_offsets=False)
+            boolIndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
 
     @staticmethod
     def _writeBoolIndexedOffsetArrayToStream(writer, writeWrongOffsets):

@@ -79,7 +79,7 @@ class BitOffsetTest(unittest.TestCase):
         bitOffset = self._createBitOffset(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            bitOffset.write(writer, call_initialize_offsets=False)
+            bitOffset.write(writer, zserio_call_initialize_offsets=False)
 
     def _writeBitOffsetToStream(self, writer, writeWrongOffsets):
         if writeWrongOffsets:

@@ -140,34 +140,35 @@ class ${name}:
 <#macro union_read_field field indent>
     <@compound_read_field field, name, withWriterCode, indent/>
 </#macro>
-    def read(self, reader: zserio.BitStreamReader) -> None:
+    def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-        self._choice_tag = reader.read_varsize()
+        self._choice_tag = zserio_reader.read_varsize()
 
         <@union_if "union_read_field"/>
 <#else>
-        del reader
+        del zserio_reader
 </#if>
 <#if withWriterCode>
 
     <#macro union_write_field field indent>
         <@compound_write_field field, name, indent/>
     </#macro>
-    def write(self, writer: zserio.BitStreamWriter, *, call_initialize_offsets: bool = True) -> None:
+    def write(self, zserio_writer: zserio.BitStreamWriter, *,
+              zserio_call_initialize_offsets: bool = True) -> None:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        if call_initialize_offsets:
-            self.initialize_offsets(writer.bitposition)
+        if zserio_call_initialize_offsets:
+            self.initialize_offsets(zserio_writer.bitposition)
         <#else>
-        del call_initialize_offsets
+        del zserio_call_initialize_offsets
         </#if>
 
-        writer.write_varsize(self._choice_tag)
+        zserio_writer.write_varsize(self._choice_tag)
 
         <@union_if "union_write_field"/>
     <#else>
-        del writer
-        del call_initialize_offsets
+        del zserio_writer
+        del zserio_call_initialize_offsets
     </#if>
 </#if>
 <#list fieldList as field>

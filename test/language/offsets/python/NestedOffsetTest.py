@@ -74,7 +74,7 @@ class NestedOffsetTest(unittest.TestCase):
         nestedOffset = self._createNestedOffset(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            nestedOffset.write(writer, call_initialize_offsets=False)
+            nestedOffset.write(writer, zserio_call_initialize_offsets=False)
 
     def _writeNestedOffsetToStream(self, writer, writeWrongOffsets):
         writer.write_bits(self.WRONG_TERMINATOR_OFFSET if writeWrongOffsets else self.TERMINATOR_OFFSET, 32)

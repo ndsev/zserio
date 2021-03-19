@@ -84,7 +84,7 @@ class VarInt32IndexedOffsetArrayTest(unittest.TestCase):
         varInt32IndexedOffsetArray = self._createVarInt32IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            varInt32IndexedOffsetArray.write(writer, call_initialize_offsets=False)
+            varInt32IndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
 
     @staticmethod
     def _writeVarInt32IndexedOffsetArrayToStream(writer, writeWrongOffsets):

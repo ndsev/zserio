@@ -85,7 +85,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     @Override
     public String getIndex(Expression expr)
     {
-        return "index";
+        return "zserio_index";
     }
 
     @Override

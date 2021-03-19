@@ -83,7 +83,7 @@ class Int14IndexedOffsetArrayTest(unittest.TestCase):
         int14IndexedOffsetArray = self._createInt14IndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            int14IndexedOffsetArray.write(writer, call_initialize_offsets=False)
+            int14IndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
 
     @staticmethod
     def _writeInt14IndexedOffsetArrayToStream(writer, writeWrongOffsets):

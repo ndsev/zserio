@@ -159,11 +159,11 @@ class ${name}:
         <#lt>${I}pass
     </#if>
 </#macro>
-    def read(self, reader: zserio.BitStreamReader) -> None:
+    def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
         <@choice_if "choice_read_member"/>
 <#else>
-        del reader
+        del zserio_reader
 </#if>
 <#if withWriterCode>
 
@@ -175,19 +175,20 @@ class ${name}:
             <#lt>${I}pass
         </#if>
     </#macro>
-    def write(self, writer: zserio.BitStreamWriter, *, call_initialize_offsets: bool = True) -> None:
+    def write(self, zserio_writer: zserio.BitStreamWriter, *,
+              zserio_call_initialize_offsets: bool = True) -> None:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        if call_initialize_offsets:
-            self.initialize_offsets(writer.bitposition)
+        if zserio_call_initialize_offsets:
+            self.initialize_offsets(zserio_writer.bitposition)
         <#else>
-        del call_initialize_offsets
+        del zserio_call_initialize_offsets
         </#if>
 
         <@choice_if "choice_write_member"/>
     <#else>
-        del writer
-        del call_initialize_offsets
+        del zserio_writer
+        del zserio_call_initialize_offsets
     </#if>
 </#if>
 <#list fieldList as field>

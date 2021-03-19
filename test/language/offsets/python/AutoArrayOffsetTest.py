@@ -75,7 +75,7 @@ class AutoArrayOffsetTest(unittest.TestCase):
         autoArrayHolder = self._createAutoArrayHolder(createWrongOffset)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            autoArrayHolder.write(writer, call_initialize_offsets=False)
+            autoArrayHolder.write(writer, zserio_call_initialize_offsets=False)
 
     def _writeAutoArrayHolderToStream(self, writer, writeWrongOffset):
         writer.write_bits(self.WRONG_AUTO_ARRAY_OFFSET if writeWrongOffset else self.AUTO_ARRAY_OFFSET, 32)

@@ -83,7 +83,7 @@ class CompoundIndexedOffsetArrayTest(unittest.TestCase):
         compoundIndexedOffsetArray = self._createCompoundIndexedOffsetArray(createWrongOffsets)
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            compoundIndexedOffsetArray.write(writer, call_initialize_offsets=False)
+            compoundIndexedOffsetArray.write(writer, zserio_call_initialize_offsets=False)
 
     @staticmethod
     def _writeCompoundIndexedOffsetArrayToStream(writer, writeWrongOffsets):

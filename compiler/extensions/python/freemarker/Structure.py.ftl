@@ -37,10 +37,10 @@ class ${name}:
     @classmethod
     def from_reader(
             cls: typing.Type['${name}'],
-            reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
+            zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
         instance = cls(${constructorParamList})
-        instance.read(reader)
+        instance.read(zserio_reader)
 
         return instance
 
@@ -145,7 +145,7 @@ ${I}<#rt>
         <#break>
     </#if>
 </#list>
-    def read(self, reader: zserio.BitStreamReader) -> None:
+    def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
     <#list fieldList as field>
         <@compound_read_field field, name, withWriterCode, 2/>
@@ -154,7 +154,7 @@ ${I}<#rt>
         </#if>
     </#list>
 <#else>
-        del reader
+        del zserio_reader
 </#if>
 <#if withWriterCode>
 
@@ -165,13 +165,14 @@ ${I}<#rt>
             <#break>
         </#if>
     </#list>
-    def write(self, writer: zserio.BitStreamWriter, *, call_initialize_offsets: bool = True) -> None:
+    def write(self, zserio_writer: zserio.BitStreamWriter, *,
+              zserio_call_initialize_offsets: bool = True) -> None:
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
-        if call_initialize_offsets:
-            self.initialize_offsets(writer.bitposition)
+        if zserio_call_initialize_offsets:
+            self.initialize_offsets(zserio_writer.bitposition)
         <#else>
-        del call_initialize_offsets
+        del zserio_call_initialize_offsets
         </#if>
 
         <#list fieldList as field>
@@ -181,8 +182,8 @@ ${I}<#rt>
             </#if>
         </#list>
     <#else>
-        del writer
-        del call_initialize_offsets
+        del zserio_writer
+        del zserio_call_initialize_offsets
     </#if>
 </#if>
 <#list fieldList as field>

@@ -75,7 +75,7 @@ class UIn64ArrayOffsetTest(unittest.TestCase):
 
         writer = zserio.BitStreamWriter()
         with self.assertRaises(zserio.PythonRuntimeException):
-            uint64ArrayOffset.write(writer, call_initialize_offsets=False)
+            uint64ArrayOffset.write(writer, zserio_call_initialize_offsets=False)
 
     def _createReader(self, wrongOffset):
         writer = zserio.BitStreamWriter()
