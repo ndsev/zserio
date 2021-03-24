@@ -282,6 +282,34 @@ public class CommandLineArgumentsTest
     }
 
     @Test
+    public void withCrossExtensionCheck() throws ParseException
+    {
+        final String[] args = { "-withCrossExtensionCheck" };
+        assertTrue(parse(args).getWithCrossExtensionCheck());
+    }
+
+    @Test
+    public void withoutCrossExtensionCheck() throws ParseException
+    {
+        final String[] args = { "-withoutCrossExtensionCheck" };
+        assertFalse(parse(args).getWithCrossExtensionCheck());
+    }
+
+    @Test
+    public void withCrossExtensionCheckDefault() throws ParseException
+    {
+        final String[] args = {};
+        assertTrue(parse(args).getWithCrossExtensionCheck());
+    }
+
+    @Test(expected=ParseException.class)
+    public void crossExtensionCheck() throws ParseException
+    {
+        final String[] args = { "-withCrossExtensionCheck", "-withoutCrossExtensionCheck" };
+        parse(args);
+    }
+
+    @Test
     public void setTopLevelPackage() throws ParseException
     {
         final String[] args = { "-setTopLevelPackage", "top.main" };
@@ -299,17 +327,24 @@ public class CommandLineArgumentsTest
     }
 
     @Test(expected=ParseException.class)
-    public void setTopLevelPackageReservedId() throws ParseException
-    {
-        final String[] args = { "-setTopLevelPackage", "top.static" };
-        parse(args);
-    }
-
-    @Test(expected=ParseException.class)
     public void setTopLevelPackageZserioId() throws ParseException
     {
         final String[] args = { "-setTopLevelPackage", "top.zserio" };
         parse(args);
+    }
+
+    @Test
+    public void ignoreTimestampDefault() throws ParseException
+    {
+        final String[] args = { };
+        assertFalse(parse(args).getIgnoreTimestamps());
+    }
+
+    @Test
+    public void ignoreTimestamps() throws ParseException
+    {
+        final String[] args = { "-ignoreTimestamps" };
+        assertTrue(parse(args).getIgnoreTimestamps());
     }
 
     private static CommandLineArguments parse(String[] args) throws ParseException

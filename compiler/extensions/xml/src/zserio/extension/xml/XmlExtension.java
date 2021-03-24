@@ -42,6 +42,10 @@ public class XmlExtension implements Extension
     }
 
     @Override
+    public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
+    {}
+
+    @Override
     public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);

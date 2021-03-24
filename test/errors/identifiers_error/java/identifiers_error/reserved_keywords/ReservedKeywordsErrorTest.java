@@ -21,7 +21,7 @@ public class ReservedKeywordsErrorTest
     public void javaKeywordFieldName()
     {
         final String error = "java_keyword_field_name_error.zs:6:13: " +
-                "'abstract' is a reserved keyword and may not be used in identifiers!";
+                "Field 'abstract' clashes with a Java keyword and may not be used as an identifier!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -29,7 +29,15 @@ public class ReservedKeywordsErrorTest
     public void cppKeywordFieldName()
     {
         final String error = "cpp_keyword_field_name_error.zs:6:13: " +
-                "'auto' is a reserved keyword and may not be used in identifiers!";
+                "Field 'auto' clashes with a C++ keyword and may not be used as an identifier!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void cppKeywordFunctionName()
+    {
+        final String error = "cpp_keyword_function_name_error.zs:6:19: " +
+                "Function 'auto' clashes with a C++ keyword and may not be used as an identifier!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -37,7 +45,7 @@ public class ReservedKeywordsErrorTest
     public void cppKeywordStructName()
     {
         final String error = "cpp_keyword_struct_name_error.zs:3:8: " +
-                "'auto' is a reserved keyword and may not be used in identifiers!";
+                "Symbols defined in a package must start with an upper case letter!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -45,7 +53,15 @@ public class ReservedKeywordsErrorTest
     public void pythonKeywordFieldName()
     {
         final String error = "python_keyword_field_name_error.zs:6:13: " +
-                "'def' is a reserved keyword and may not be used in identifiers!";
+                "Field 'def' clashes with a Python keyword and may not be used as an identifier!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void pythonKeywordParameterName()
+    {
+        final String error = "python_keyword_parameter_name_error.zs:3:20: " +
+                "Parameter 'def' clashes with a Python keyword and may not be used as an identifier!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

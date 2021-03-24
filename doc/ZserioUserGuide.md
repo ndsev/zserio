@@ -26,6 +26,7 @@ java -jar zserio.jar
     [-cpp <output directory>]
     [-doc <output directory>]
     [-h,--help]
+    [-ignoreTimestamps]
     [-java <output directory>]
     [-python <output directory>]
     [-setDotExecutable <dotExec>]
@@ -33,15 +34,16 @@ java -jar zserio.jar
     [-setTopLevelPackage <package>]
     [-src <source directory>]
     [-v,--version]
+    [-withCrossExtensionCheck|-withoutCrossExtensionCheck]
     [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withPubsubCode|-withoutPubsubCode]
     [-withServiceCode|-withoutServiceCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
     [-withSvgDiagrams|-withoutSvgDiagrams]
+    [-withUnusedWarnings|-withoutUnusedWarnings]
     [-withValidationCode|-withoutValidationCode]
     [-withWriterCode|-withoutWriterCode]
-    [-withUnusedWarnings|-withoutUnusedWarnings]
     [-xml <output directory>]
     <input file>
 ```
@@ -63,6 +65,10 @@ Zserio will generate HTML documentation into a given output directory.
 **`-h, --help`**
 
 Shows all supported command line options with their description.
+
+**`-ignoreTimestamps`**
+
+Switches Zserio to ignore timestamps and thus forces it to always regenerate output.
 
 **`-java`**
 
@@ -110,6 +116,11 @@ directories as in the Java `CLASSPATH` is not supported.
 
 Shows the version of the Zserio tool.
 
+**`-withCrossExtensionCheck|-withoutCrossExtensionCheck`**
+
+Enabled/disables cross extension check, which causes that the checking phase is executed for all available
+extensions. By default is enabled to simplify to write portable schemas.
+
 **`-withRangeCheckCode|-withoutRangeCheckCode`**
 
 Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
@@ -145,6 +156,10 @@ available on system path or must be defined by `-setDotExecutable` option. By de
 executable is a part of the Graphviz package which can be downloaded from
 [Graphviz Web Page](http://www.graphviz.org/download).
 
+**`-withUnusedWarnings|-withoutUnusedWarnings`**
+
+Enables/disables warnings for unused types. By default is disabled.
+
 **`-withValidationCode|-withoutValidationCode`**
 
 Enables/disables generation of the API extension, which is used for SQLite database validation. Currently,
@@ -155,10 +170,6 @@ enabled only when writer code is enabled (see `-withWriterCode` option).
 
 Enables/disables generation of the C++ and Java API writing interface extension. This extension allows
 writing data to the bit stream or to the SQLite database. By default is enabled.
-
-**`-withUnusedWarnings|-withoutUnusedWarnings`**
-
-Enables/disables warnings for unused types. By default is disabled.
 
 **`-xml`**
 

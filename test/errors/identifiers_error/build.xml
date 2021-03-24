@@ -91,11 +91,15 @@
 
         <testGen testName="identifiers_error" zsFile="reserved_keywords/cpp_keyword_field_name_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/cpp_keyword_function_name_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="reserved_keywords/cpp_keyword_struct_name_error.zs"
             ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="reserved_keywords/java_keyword_field_name_error.zs"
             ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="reserved_keywords/python_keyword_field_name_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="identifiers_error" zsFile="reserved_keywords/python_keyword_parameter_name_error.zs"
             ignoreErrors="true"/>
         <testGen testName="identifiers_error" zsFile="reserved_keywords/zserio_keyword_field_name_error.zs"
             ignoreErrors="true"/>

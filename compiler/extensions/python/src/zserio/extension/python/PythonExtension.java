@@ -7,6 +7,7 @@ import org.apache.commons.cli.Options;
 
 import zserio.ast.Root;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
@@ -41,12 +42,39 @@ public class PythonExtension implements Extension
     }
 
     @Override
+    public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
+    {
+        final ReservedKeywordsClashChecker pythonKeywordsClashChecker =
+                new ReservedKeywordsClashChecker("Python", PYTHON_KEYWORDS);
+        rootNode.walk(pythonKeywordsClashChecker);
+
+        final PythonTopLevelPacakgeClashChecker topLevelPackageClashChecker =
+                new PythonTopLevelPacakgeClashChecker();
+        rootNode.walk(topLevelPackageClashChecker);
+
+        final PythonModuleClashChecker moduleClashChecker = new PythonModuleClashChecker();
+        rootNode.walk(moduleClashChecker);
+
+        final PythonPackageWithModuleClashChecker packageWithModuleClashChecker =
+                new PythonPackageWithModuleClashChecker();
+        rootNode.walk(packageWithModuleClashChecker);
+
+        final PythonScopeSymbolClashChecker scopeSymbolClashChecker = new PythonScopeSymbolClashChecker();
+        rootNode.walk(scopeSymbolClashChecker);
+
+        final PythonGeneratedSymbolsClashChecker generatedSymbolsClashChecker =
+                new PythonGeneratedSymbolsClashChecker();
+        rootNode.walk(generatedSymbolsClashChecker);
+
+        final PythonApiClashChecker apiClashChecker = new PythonApiClashChecker();
+        rootNode.walk(apiClashChecker);
+    }
+
+    @Override
     public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);
         final PythonExtensionParameters pythonParameters = new PythonExtensionParameters(parameters);
-
-        check(rootNode);
 
         final List<PythonDefaultEmitter> emitters = new ArrayList<PythonDefaultEmitter>();
         emitters.add(new ConstEmitter(outputFileManager, pythonParameters));
@@ -70,27 +98,14 @@ public class PythonExtension implements Extension
         outputFileManager.printReport();
     }
 
-    private void check(Root rootNode) throws ZserioExtensionException
+    // List of Python keywords, got from Python 3.9 keyword module:
+    // >>> import keyword
+    // >>> keyword.kwlist
+    private static final String[] PYTHON_KEYWORDS = new String[]
     {
-        final PythonTopLevelPacakgeClashChecker topLevelPackageClashChecker =
-                new PythonTopLevelPacakgeClashChecker();
-        rootNode.walk(topLevelPackageClashChecker);
-
-        final PythonModuleClashChecker moduleClashChecker = new PythonModuleClashChecker();
-        rootNode.walk(moduleClashChecker);
-
-        final PythonPackageWithModuleClashChecker packageWithModuleClashChecker =
-                new PythonPackageWithModuleClashChecker();
-        rootNode.walk(packageWithModuleClashChecker);
-
-        final PythonScopeSymbolClashChecker scopeSymbolClashChecker = new PythonScopeSymbolClashChecker();
-        rootNode.walk(scopeSymbolClashChecker);
-
-        final PythonGeneratedSymbolsClashChecker generatedSymbolsClashChecker =
-                new PythonGeneratedSymbolsClashChecker();
-        rootNode.walk(generatedSymbolsClashChecker);
-
-        final PythonApiClashChecker apiClashChecker = new PythonApiClashChecker();
-        rootNode.walk(apiClashChecker);
-    }
+        "False", "None", "True", "__peg_parser__", "and", "as", "assert", "async", "await", "break", "class",
+        "continue", "def", "del", "elif", "else", "except", "finally", "for", "from", "global", "if", "import",
+        "in", "is", "lambda", "nonlocal", "not", "or", "pass", "raise", "return", "try", "while", "with",
+        "yield"
+    };
 }

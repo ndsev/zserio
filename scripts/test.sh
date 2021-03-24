@@ -170,6 +170,7 @@ test_xml()
                     local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/xml_options.txt"
                     local SWITCH_WERROR=1
                     local SWITCH_XMLLINT=1
+                    local ZSERIO_ARGS=("-xml" "${TEST_XML_OUT_ZS_DIR}")
                     if [[ -f "${OPTIONS_FILE}" ]] ; then
                         local OPTION_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
                         if [ -n "${OPTION_WERROR}" ] ; then
@@ -179,8 +180,11 @@ test_xml()
                         if [ -n "${OPTION_XMLLINT}" ] ; then
                             SWITCH_XMLLINT=${OPTION_XMLLINT}
                         fi
+                        local OPTION_ZSERIO_ARGS=`grep 'ZSERIO_ARGS' "${OPTIONS_FILE}" | cut -d= -f 2`
+                        if [ -n "${OPTION_ZSERIO_ARGS}" ] ; then
+                            ZSERIO_ARGS+=(${OPTION_ZSERIO_ARGS})
+                        fi
                     fi
-                    local ZSERIO_ARGS=("-xml" "${TEST_XML_OUT_ZS_DIR}")
                     run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_XML_OUT_ZS_DIR}" "${TEST_ZS_DIR}" \
                         "${MAIN_ZS_FILE_NAME}" ${SWITCH_WERROR} ZSERIO_ARGS[@]
                     if [ $? -ne 0 ] ; then
@@ -237,14 +241,19 @@ test_doc()
                 if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
                     local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/doc_options.txt"
                     local SWITCH_WERROR=1
+                    local ZSERIO_ARGS=("-doc" "${TEST_DOC_OUT_ZS_DIR}"
+                                       "-withSvgDiagrams"
+                                       "-setDotExecutable" "${DOT}")
                     if [[ -f "${OPTIONS_FILE}" ]] ; then
                         local OPTION_WERROR=`grep 'WERROR' "${OPTIONS_FILE}" | cut -d= -f 2`
                         if [ -n "${OPTION_WERROR}" ] ; then
                             SWITCH_WERROR=${OPTION_WERROR}
                         fi
+                        local OPTION_ZSERIO_ARGS=`grep 'ZSERIO_ARGS' "${OPTIONS_FILE}" | cut -d= -f 2`
+                        if [ -n "${OPTION_ZSERIO_ARGS}" ] ; then
+                            ZSERIO_ARGS+=(${OPTION_ZSERIO_ARGS})
+                        fi
                     fi
-                    local ZSERIO_ARGS=("-doc" "${TEST_DOC_OUT_ZS_DIR}" "-withSvgDiagrams" "-setDotExecutable" \
-                        "${DOT}")
                     run_zserio_tool "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_DOC_OUT_ZS_DIR}" "${TEST_ZS_DIR}" \
                         "${MAIN_ZS_FILE_NAME}" ${SWITCH_WERROR} ZSERIO_ARGS[@]
                     if [ $? -ne 0 ] ; then

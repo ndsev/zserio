@@ -1,0 +1,42 @@
+<project name="without_cross_extension_check" basedir="." default="run">
+    <testProperties testPath="arguments/without_cross_extension_check"
+        testName="without_cross_extension_check"/>
+
+    <target name="prepare">
+        <testPrepare testName="without_cross_extension_check"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="without_cross_extension_check"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="without_cross_extension_check.zs.gen_is_uptodate">
+        <testGenClean testName="without_cross_extension_check"/>
+        <testGen testName="without_cross_extension_check" zsFile="invalid_in_cpp.zs">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+        <testGen testName="without_cross_extension_check" zsFile="invalid_in_python.zs">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="without_cross_extension_check"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="without_cross_extension_check"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="without_cross_extension_check"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="without_cross_extension_check"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="without_cross_extension_check"/>
+    </target>
+</project>

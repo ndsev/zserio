@@ -24,6 +24,7 @@ class ExtensionManager
     public ExtensionManager(CommandLineArguments commandLineArguments)
     {
         extensions = new ArrayList<Extension>();
+        this.commandLineArguments = commandLineArguments;
         ServiceLoader<Extension> loader = ServiceLoader.load(Extension.class, getClass().getClassLoader());
         Iterator<Extension> it = loader.iterator();
         while (it.hasNext())
@@ -80,30 +81,63 @@ class ExtensionManager
         }
         else
         {
+            if (commandLineArguments.getWithCrossExtensionCheck())
+            {
+                ZserioToolPrinter.printMessage("Running cross extension check");
+                for (Extension extension : extensions)
+                    check(rootNode, extension, parameters);
+            }
+
             for (Extension extension : extensions)
             {
                 if (extension.isEnabled(parameters))
                 {
-                    try
-                    {
-                        ZserioToolPrinter.printMessage("Calling " + extension.getName() + " extension");
-                        extension.process(rootNode, parameters);
-                    }
-                    catch (ZserioExtensionException exception)
-                    {
-                        throw new ZserioExtensionException(extension.getName() + ": " + exception.getMessage());
-                    }
-                    catch (Throwable exception)
-                    {
-                        throw new ZserioExtensionException(extension.getName() + ": " +
-                                getThrowableExceptionMessage(exception));
-                    }
+                    if (!commandLineArguments.getWithCrossExtensionCheck())
+                        check(rootNode, extension, parameters);
+                    process(rootNode, extension, parameters);
                 }
                 else
                 {
                     ZserioToolPrinter.printMessage("Extension " + extension.getName() + " is disabled");
                 }
             }
+        }
+    }
+
+    private static void check(Root rootNode, Extension extension, ExtensionParameters parameters)
+            throws ZserioExtensionException
+    {
+        try
+        {
+            extension.check(rootNode, parameters);
+        }
+        catch (ZserioExtensionException exception)
+        {
+            throw new ZserioExtensionException(extension.getName() + ": " + exception.getMessage());
+        }
+        catch (Throwable exception)
+        {
+            throw new ZserioExtensionException(extension.getName() + ": " +
+                    getThrowableExceptionMessage(exception));
+        }
+    }
+
+    private static void process(Root rootNode, Extension extension, ExtensionParameters parameters)
+            throws ZserioExtensionException
+    {
+        try
+        {
+            ZserioToolPrinter.printMessage("Calling " + extension.getName() + " extension");
+            extension.process(rootNode, parameters);
+        }
+        catch (ZserioExtensionException exception)
+        {
+            throw new ZserioExtensionException(extension.getName() + ": " + exception.getMessage());
+        }
+        catch (Throwable exception)
+        {
+            throw new ZserioExtensionException(extension.getName() + ": " +
+                    getThrowableExceptionMessage(exception));
         }
     }
 
@@ -127,4 +161,5 @@ class ExtensionManager
     }
 
     private final List<Extension> extensions;
+    private final CommandLineArguments commandLineArguments;
 }

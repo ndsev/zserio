@@ -177,6 +177,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether to run check on all available extensions to ensure that the schema will be portable.
+     *
+     * @return True if command line arguments enable cross extension check.
+     */
+    public boolean getWithCrossExtensionCheck()
+    {
+        return withCrossExtensionCheckOption;
+    }
+
+    /**
      * Gets the top level package name identifier list.
      *
      * @returns List of top level package name identifier or empty list if not specified.
@@ -318,6 +328,14 @@ class CommandLineArguments
         unusedWarningsGroup.setRequired(false);
         options.addOptionGroup(unusedWarningsGroup);
 
+        final OptionGroup crossExtensionCheckGroup = new OptionGroup();
+        option = new Option(OptionNameWithCrossExtensionCheck, false, "enable cross extension check (default)");
+        crossExtensionCheckGroup.addOption(option);
+        option = new Option(OptionNameWithoutCrossExtensionCheck, false, "disable cross extension check");
+        crossExtensionCheckGroup.addOption(option);
+        crossExtensionCheckGroup.setRequired(false);
+        options.addOptionGroup(crossExtensionCheckGroup);
+
         option = new Option(OptionNameSetTopLevelPackage, true,
                 "force top level package prefix to all zserio packages");
         option.setArgName("packageName");
@@ -334,9 +352,6 @@ class CommandLineArguments
         srcPathName = getOptionValue(OptionNameSource);
         helpOption = hasOption(OptionNameHelpShort);
         versionOption = hasOption(OptionNameVersionShort);
-        final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
-        topLevelPackageNameIds = (topLevelPackageName == null) ? new ArrayList<String>() :
-            java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withPubsubCodeOption = !hasOption(OptionNameWithoutPubsubCode);
         withServiceCodeOption = !hasOption(OptionNameWithoutServiceCode);
@@ -345,6 +360,10 @@ class CommandLineArguments
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
         withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
+        withCrossExtensionCheckOption = !hasOption(OptionNameWithoutCrossExtensionCheck);
+        final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
+        topLevelPackageNameIds = (topLevelPackageName == null) ? new ArrayList<String>() :
+            java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
         ignoreTimestampsOption = hasOption(OptionNameIngoreTimestamps);
 
         validateOptions();
@@ -441,7 +460,6 @@ class CommandLineArguments
     private static final String OptionNameHelpShort = "h";
     private static final String OptionNameSource = "src";
     private static final String OptionNameVersionShort = "v";
-    private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
     private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
     private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
     private static final String OptionNameWithPubsubCode = "withPubsubCode";
@@ -458,6 +476,9 @@ class CommandLineArguments
     private static final String OptionNameWithoutWriterCode = "withoutWriterCode";
     private static final String OptionNameWithUnusedWarnings = "withUnusedWarnings";
     private static final String OptionNameWithoutUnusedWarnings = "withoutUnusedWarnings";
+    private static final String OptionNameWithCrossExtensionCheck = "withCrossExtensionCheck";
+    private static final String OptionNameWithoutCrossExtensionCheck = "withoutCrossExtensionCheck";
+    private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
     private static final String OptionNameIngoreTimestamps = "ignoreTimestamps";
 
     private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
@@ -468,7 +489,6 @@ class CommandLineArguments
     private String  inputFileName;
     private boolean helpOption;
     private String  srcPathName;
-    private List<String> topLevelPackageNameIds;
     private boolean versionOption;
     private boolean withRangeCheckCodeOption;
     private boolean withPubsubCodeOption;
@@ -478,5 +498,7 @@ class CommandLineArguments
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
     private boolean withUnusedWarningsOption;
+    private boolean withCrossExtensionCheckOption;
+    private List<String> topLevelPackageNameIds;
     private boolean ignoreTimestampsOption;
 }

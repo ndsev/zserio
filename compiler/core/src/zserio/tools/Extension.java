@@ -43,7 +43,22 @@ public interface Extension
     public boolean isEnabled(ExtensionParameters parameters);
 
     /**
-     * Calls the extension to process the root node.
+     * Calls the extension to check Zserio tree.
+     *
+     * Extension does its basic checks on Zserio AST. Extensions which generate code should verify that
+     * it will be possible to generate the given schema correctly (e.g. checks reserved keywords, etc.).
+     *
+     * The caller (i.e. Zserio core) is responsible for calling the check() phase before process().
+     *
+     * @param rootNode   The root node of Zserio tree to check.
+     * @param parameters The parameters to pass to extension.
+     */
+    public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException;
+
+    /**
+     * Calls the extension to process Zserio tree.
+     *
+     * The caller (i.e. Zserio core) is responsible for calling the check() phase before process().
      *
      * @param rootNode   The root node of Zserio tree to process.
      * @param parameters The parameters to pass to extension.

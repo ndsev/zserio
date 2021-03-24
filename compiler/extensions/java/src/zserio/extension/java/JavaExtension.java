@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.Root;
 import zserio.extension.common.OutputFileManager;
+import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
@@ -39,6 +40,14 @@ public class JavaExtension implements Extension
     }
 
     @Override
+    public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
+    {
+        final ReservedKeywordsClashChecker javaKeywordsClashChecker =
+                new ReservedKeywordsClashChecker("Java", JAVA_KEYWORDS);
+        rootNode.walk(javaKeywordsClashChecker);
+    }
+
+    @Override
     public void process(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
         final OutputFileManager outputFileManager = new OutputFileManager(parameters);
@@ -62,4 +71,16 @@ public class JavaExtension implements Extension
 
         outputFileManager.printReport();
     }
+
+    private static final String[] JAVA_KEYWORDS =
+    {
+        "abstract",   "assert",       "boolean",    "break",    "byte",      "case",
+        "catch",      "char",         "class",      "const",    "continue",  "default",
+        "double",     "do",           "else",       "enum",     "extends",   "false",
+        "final",      "finally",      "float",      "for",      "goto",      "if",
+        "implements", "import",       "instanceof", "int",      "interface", "long",
+        "native",     "new",          "null",       "package",  "private",   "protected",
+        "public",     "return",       "short",      "static",   "strictfp",  "super",
+        "switch",     "synchronized", "this",       "throw",    "throws",    "transient",
+    };
 }
