@@ -51,23 +51,30 @@ function(gtest_add_tests executable extra_args)
         file(READ "${source}" contents)
         string(REGEX MATCHALL "${gtest_test_type_regex} *\\(([A-Za-z_0-9 ,]+)\\)" found_tests ${contents})
         foreach (hit ${found_tests})
-          string(REGEX MATCH "${gtest_test_type_regex}" test_type ${hit})
+            string(REGEX MATCH "${gtest_test_type_regex}" test_type ${hit})
 
-          # Parameterized tests have a different signature for the filter
-          if ("x${test_type}" STREQUAL "xTEST_P")
-            string(REGEX REPLACE ${gtest_case_name_regex}  "*/\\1.\\2/*" test_name ${hit})
-          elseif ("x${test_type}" STREQUAL "xTEST_F" OR "x${test_type}" STREQUAL "xTEST")
-            string(REGEX REPLACE ${gtest_case_name_regex} "\\1.\\2" test_name ${hit})
-          elseif ("x${test_type}" STREQUAL "xTYPED_TEST")
-            string(REGEX REPLACE ${gtest_case_name_regex} "\\1/*.\\2" test_name ${hit})
-          else ()
-            message(WARNING "Could not parse GTest ${hit} for adding to CTest.")
-            continue()
-          endif ()
-          add_test(NAME ${test_name} COMMAND ${executable} --gtest_filter=${test_name} ${extra_args})
-          # Add labels automatically - relative path from current source dir to the source file
-          string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" label "${source}")
-          set_tests_properties(${test_name} PROPERTIES LABELS "${label}")
+            # Parameterized tests have a different signature for the filter
+            if ("x${test_type}" STREQUAL "xTEST_P")
+                string(REGEX REPLACE ${gtest_case_name_regex}  "*/\\1.\\2/*" test_name ${hit})
+            elseif ("x${test_type}" STREQUAL "xTEST_F" OR "x${test_type}" STREQUAL "xTEST")
+                string(REGEX REPLACE ${gtest_case_name_regex} "\\1.\\2" test_name ${hit})
+            elseif ("x${test_type}" STREQUAL "xTYPED_TEST")
+                string(REGEX REPLACE ${gtest_case_name_regex} "\\1/*.\\2" test_name ${hit})
+            else ()
+                message(WARNING "Could not parse GTest ${hit} for adding to CTest.")
+                continue()
+            endif ()
+
+            add_test(NAME ${test_name} COMMAND ${executable} --gtest_filter=${test_name} ${extra_args})
+
+            # Add labels automatically - relative path from current source dir to the source file
+            string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" "" label "${source}")
+            set_tests_properties(${test_name} PROPERTIES LABELS "${label}")
+
+            if ("x${test_type}" STREQUAL "xTEST_F")
+                # add resource lock for test cases within a single test source file when the test uses a fixture
+                set_tests_properties(${test_name} PROPERTIES RESOURCE_LOCK ${label})
+            endif ()
         endforeach ()
     endforeach ()
 endfunction()
