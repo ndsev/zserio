@@ -335,6 +335,44 @@ test_gen()
         return 1
     fi
 
+    echo
+    echo "Repeated generation, add switch -ignoreTimestamps"
+    echo
+
+    CLEAN=0
+    ZSERIO_EXTRA_ARGS="-withoutSourcesAmalgamation -withRangeCheckCode -ignoreTimestamps" \
+    test_zs "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${TEST_OUT_DIR}" \
+            PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} ${PARAM_DOC} \
+            "${TEST_ZS_DIR}" "${TEST_ZS_MAIN}" "${TEST_NAME}" ${SWITCH_WERROR} ${CLEAN}
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    check "${TEST_OUT_DIR}" "${JAVA_GENERATOR}" "Generated 23 files"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    check "${TEST_OUT_DIR}" "${CPP_GENERATOR}" "Generated 46 files"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    check "${TEST_OUT_DIR}" "${PYTHON_GENERATOR}" "Generated 35 files"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    check "${TEST_OUT_DIR}" "${XML_GENERATOR}" "Generated 1 file"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
     return 0
 }
 
