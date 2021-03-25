@@ -4,7 +4,7 @@ import zserio.ast.PackageName;
 import zserio.extension.java.JavaFullNameFormatter;
 
 /**
- * C++ native symbol - e.g. constant.
+ * Java native symbol - e.g. constant.
  */
 public class JavaNativeSymbol
 {

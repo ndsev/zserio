@@ -5,7 +5,7 @@ import zserio.extension.python.PythonFullNameFormatter;
 import zserio.extension.python.PythonSymbolConverter;
 
 /**
- * Python native symbol - e.g. constant.
+ * Python native symbol - e.g. constant, compound type, subtype, etc.
  */
 public class PythonNativeSymbol
 {

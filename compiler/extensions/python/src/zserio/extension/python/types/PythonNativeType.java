@@ -1,30 +1,30 @@
 package zserio.extension.python.types;
 
 import zserio.ast.PackageName;
-import zserio.extension.common.NativeType;
 import zserio.extension.python.PythonFullNameFormatter;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 
-public class PythonNativeType implements NativeType
+/**
+ * Python native symbol - e.g. compound type, subtype, etc.
+ */
+public class PythonNativeType extends PythonNativeSymbol
 {
     protected PythonNativeType(String name)
     {
+        super(PackageName.EMPTY, name);
         fullName = name;
-        packageName = PackageName.EMPTY;
-        this.name = name;
     }
 
     protected PythonNativeType(PackageName packageName, String name)
     {
+        super(packageName, name);
         fullName = PythonFullNameFormatter.getFullName(packageName, name);
-        this.name = name;
-        this.packageName = packageName;
     }
 
     protected PythonNativeType(PackageName packageName, String moduleName, String name)
     {
+        super(packageName, name);
         fullName = PythonFullNameFormatter.getFullName(packageName, moduleName, name);
-        this.name = name;
-        this.packageName = packageName;
     }
 
     @Override
@@ -33,18 +33,5 @@ public class PythonNativeType implements NativeType
         return fullName;
     }
 
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    public PackageName getPackageName()
-    {
-        return packageName;
-    }
-
     private final String fullName;
-    private final String name;
-    private final PackageName packageName;
 }

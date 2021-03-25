@@ -1,15 +1,17 @@
 package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
-import zserio.extension.common.NativeType;
 import zserio.extension.java.JavaFullNameFormatter;
+import zserio.extension.java.symbols.JavaNativeSymbol;
 
-public abstract class JavaNativeType implements NativeType
+/**
+ * Java native type - e.g. compound type, subtype, etc.
+ */
+public abstract class JavaNativeType extends JavaNativeSymbol
 {
     public JavaNativeType(PackageName packageName, String name)
     {
-        this.packageName = packageName;
-        this.name = name;
+        super(packageName, name);
     }
 
     @Override
@@ -18,25 +20,8 @@ public abstract class JavaNativeType implements NativeType
         return JavaFullNameFormatter.getFullName(getPackageName(), getName());
     }
 
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    /**
-     * Return the name of the package that contains this type.
-     */
-    public PackageName getPackageName()
-    {
-        return packageName;
-    }
-
     public abstract boolean isSimple();
 
     protected static final PackageName JAVA_LANG_PACKAGE =
             new PackageName.Builder().addId("java").addId("lang").get();
-
-    private final PackageName packageName;
-    private final String name;
 }

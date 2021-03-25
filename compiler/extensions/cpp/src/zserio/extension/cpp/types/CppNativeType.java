@@ -5,10 +5,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import zserio.ast.PackageName;
-import zserio.extension.common.NativeType;
 import zserio.extension.cpp.CppFullNameFormatter;
 
-public abstract class CppNativeType implements NativeType
+/**
+ * C++ native type - e.g. compound type, subtype, etc.
+ */
+public abstract class CppNativeType
 {
     public CppNativeType(PackageName packageName, String name)
     {
@@ -24,13 +26,11 @@ public abstract class CppNativeType implements NativeType
         this.simpleType = simpleType;
     }
 
-    @Override
     public String getFullName()
     {
         return CppFullNameFormatter.getFullName(packageName, name);
     }
 
-    @Override
     public String getName()
     {
         return name;

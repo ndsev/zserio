@@ -27,7 +27,6 @@ import zserio.ast.StringType;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
-import zserio.extension.common.NativeType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.symbols.JavaNativeSymbol;
 import zserio.extension.java.types.JavaNativeType;
@@ -190,7 +189,7 @@ final class JavaNativeMapper
     public NativeIntegralType getJavaIntegralType(TypeInstantiation typeInstantiation)
             throws ZserioExtensionException
     {
-        final NativeType javaType = getJavaType(typeInstantiation);
+        final JavaNativeType javaType = getJavaType(typeInstantiation);
 
         if (!(javaType instanceof NativeIntegralType))
         {
