@@ -27,8 +27,8 @@ class ExplicitEnumParamTest(unittest.TestCase):
         self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
         self._database.create_schema()
 
-        self.ENUM_PARAM_TABLE_COUNT1 = self.api.explicit_enum_param.TestEnum.TEN
-        self.ENUM_PARAM_TABLE_COUNT2 = self.api.explicit_enum_param.TestEnum.ELEVEN
+        self._enumParamTableCount1 = self.api.explicit_enum_param.TestEnum.TEN
+        self._enumParamTableCount2 = self.api.explicit_enum_param.TestEnum.ELEVEN
 
     def tearDown(self):
         self._database.close()
@@ -94,14 +94,14 @@ class ExplicitEnumParamTest(unittest.TestCase):
         return rows
 
     def _createEnumParamTableRow(self, rowId, name):
-        values1 = [rowId for i in range(self.ENUM_PARAM_TABLE_COUNT1.value)]
-        testBlob1 = self.api.explicit_enum_param.TestBlob(self.ENUM_PARAM_TABLE_COUNT1, values1)
+        values1 = [rowId for i in range(self._enumParamTableCount1.value)]
+        testBlob1 = self.api.explicit_enum_param.TestBlob(self._enumParamTableCount1, values1)
 
-        values2 = [rowId + 1 for i in range(self.ENUM_PARAM_TABLE_COUNT2.value)]
-        testBlob2 = self.api.explicit_enum_param.TestBlob(self.ENUM_PARAM_TABLE_COUNT2, values2)
+        values2 = [rowId + 1 for i in range(self._enumParamTableCount2.value)]
+        testBlob2 = self.api.explicit_enum_param.TestBlob(self._enumParamTableCount2, values2)
 
-        values3 = [rowId + 2 for i in range(self.ENUM_PARAM_TABLE_COUNT1.value)]
-        testBlob3 = self.api.explicit_enum_param.TestBlob(self.ENUM_PARAM_TABLE_COUNT1, values3)
+        values3 = [rowId + 2 for i in range(self._enumParamTableCount1.value)]
+        testBlob3 = self.api.explicit_enum_param.TestBlob(self._enumParamTableCount1, values3)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
 

@@ -27,8 +27,8 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
         self._database = self.api.ExplicitParametersDb.from_file(self._fileName)
         self._database.create_schema()
 
-        self.BITMASK_PARAM_TABLE_COUNT1 = self.api.explicit_bitmask_param.TestBitmask.Values.TEN
-        self.BITMASK_PARAM_TABLE_COUNT2 = self.api.explicit_bitmask_param.TestBitmask.Values.ELEVEN
+        self._bitmaskParamTableCount1 = self.api.explicit_bitmask_param.TestBitmask.Values.TEN
+        self._bitmaskParamTableCount2 = self.api.explicit_bitmask_param.TestBitmask.Values.ELEVEN
 
     def tearDown(self):
         self._database.close()
@@ -94,14 +94,14 @@ class ExplicitBitmaskParamTest(unittest.TestCase):
         return rows
 
     def _createBitmaskParamTableRow(self, rowId, name):
-        values1 = [rowId for i in range(self.BITMASK_PARAM_TABLE_COUNT1.value)]
-        testBlob1 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT1, values1)
+        values1 = [rowId for i in range(self._bitmaskParamTableCount1.value)]
+        testBlob1 = self.api.explicit_bitmask_param.TestBlob(self._bitmaskParamTableCount1, values1)
 
-        values2 = [rowId + 1 for i in range(self.BITMASK_PARAM_TABLE_COUNT2.value)]
-        testBlob2 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT2, values2)
+        values2 = [rowId + 1 for i in range(self._bitmaskParamTableCount2.value)]
+        testBlob2 = self.api.explicit_bitmask_param.TestBlob(self._bitmaskParamTableCount2, values2)
 
-        values3 = [rowId + 2 for i in range(self.BITMASK_PARAM_TABLE_COUNT1.value)]
-        testBlob3 = self.api.explicit_bitmask_param.TestBlob(self.BITMASK_PARAM_TABLE_COUNT1, values3)
+        values3 = [rowId + 2 for i in range(self._bitmaskParamTableCount1.value)]
+        testBlob3 = self.api.explicit_bitmask_param.TestBlob(self._bitmaskParamTableCount1, values3)
 
         return (rowId, name, testBlob1, testBlob2, testBlob3)
 
