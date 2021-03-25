@@ -35,7 +35,7 @@
 </#if>
 
 class ${name}:
-<#assign rowAnnotationName = "RowAnnotation"/>
+<#assign rowAnnotationName = "ROW_ANNOTATION"/>
     ${rowAnnotationName} = typing.Tuple[
     <#list fields as field>
         ${field.pythonTypeName}<#if field?has_next>,<#else>]</#if>
@@ -162,14 +162,14 @@ class ${name}:
         if has_autocommit:
             cursor.execute("COMMIT")
 
-    def update(self, row: '${name}.${rowAnnotationName}', whereCondition: str) -> None:
+    def update(self, row: '${name}.${rowAnnotationName}', where_condition: str) -> None:
         sql_query = "UPDATE "
         sql_query += self._get_table_name_in_query()
         sql_query += (" SET"
     <#list fields as field>
                      " ${field.name}=?<#if field?has_next>,</#if>"
     </#list>
-                     " WHERE ") + whereCondition
+                     " WHERE ") + where_condition
 
         cursor = self._connection.cursor()
         cursor.execute(sql_query, <#if needsRowConversion>self._write_row(row)<#else>row</#if>)
