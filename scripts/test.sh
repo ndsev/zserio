@@ -109,17 +109,17 @@ test_python()
         if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
             TEST_ARGS+=("--filter=${SWITCH_TEST_NAME}")
         fi
-        local PYTHON_RUNTIME_ROOT="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime"
         local TEST_FILE="${TEST_SRC_DIR}/tests.py"
-        local PYLINT_RCFILE="${PYTHON_RUNTIME_ROOT}/pylintrc.txt"
-        local MYPY_CONFIG_FILE="${PYTHON_RUNTIME_ROOT}/mypy.ini"
+        local PYLINT_RCFILE="${TEST_SRC_DIR}/pylintrc.txt"
+        local PYLINT_RCFILE_FOR_TESTS="${TEST_SRC_DIR}/pylintrc_test.txt"
+        local MYPY_CONFIG_FILE="${TEST_SRC_DIR}/mypy.ini"
 
         echo
         echo "Running python tests."
         echo
 
         python "${TEST_FILE}" "${TEST_ARGS[@]}" --pylint_rcfile="${PYLINT_RCFILE}" \
-                --mypy_config_file="${MYPY_CONFIG_FILE}"
+                --pylint_rcfile_test="${PYLINT_RCFILE_FOR_TESTS}" --mypy_config_file="${MYPY_CONFIG_FILE}"
         local PYTHON_RESULT=$?
         if [ ${PYTHON_RESULT} -ne 0 ] ; then
             stderr_echo "Running python failed with return code ${PYTHON_RESULT}!"
@@ -129,7 +129,7 @@ test_python()
         echo "Running pylint on python test utilities."
 
         local PYLINT_ARGS=("--disable=missing-docstring,import-outside-toplevel,c-extension-no-member")
-        run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TEST_FILE}" "${TEST_SRC_DIR}/utils/python"/*
+        run_pylint "${PYLINT_RCFILE_FOR_TESTS}" PYLINT_ARGS[@] "${TEST_FILE}" "${TEST_SRC_DIR}/utils/python"/*
         if [ $? -ne 0 ] ; then
             return 1
         fi

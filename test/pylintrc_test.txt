@@ -23,10 +23,10 @@ max-module-lines=1500
 [BASIC]
 
 # Naming style matching correct argument names.
-argument-naming-style=snake_case
+argument-naming-style=any
 
 # Naming style matching correct attribute names.
-attr-naming-style=snake_case
+attr-naming-style=any
 
 # Naming style matching correct class attribute names.
 class-attribute-naming-style=UPPER_CASE
@@ -38,19 +38,19 @@ class-naming-style=PascalCase
 const-naming-style=UPPER_CASE
 
 # Naming style matching correct function names.
-function-naming-style=snake_case
+function-naming-style=any
 
 # Naming style matching correct inline iteration names.
 inlinevar-naming-style=snake_case
 
 # Naming style matching correct method names.
-method-naming-style=snake_case
+method-naming-style=any
 
 # Naming style matching correct module names.
-module-naming-style=snake_case
+module-naming-style=any
 
 # Naming style matching correct variable names.
-variable-naming-style=snake_case
+variable-naming-style=any
 
 [DESIGN]
 

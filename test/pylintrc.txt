@@ -23,16 +23,16 @@ max-module-lines=1500
 [BASIC]
 
 # Naming style matching correct argument names.
-argument-naming-style=snake_case
+argument-rgx=^[a-z_0-9]+$ # 't1', 'p' or 'p_' do not conform to snake_case
 
 # Naming style matching correct attribute names.
-attr-naming-style=snake_case
+attr-rgx=^[a-z_0-9]+$ # 't1', 'p' or 'p_' do not conform to snake_case
 
 # Naming style matching correct class attribute names.
-class-attribute-naming-style=UPPER_CASE
+class-attribute-rgx=^[A-Z_][A-Z_0-9]*$ # 'A' does not conform to UPPER_CASE
 
 # Naming style matching correct class names.
-class-naming-style=PascalCase
+class-rgx=^[A-Z][A-Za-z0-9_]*$ # templates with '_' does not conform to PascalCase
 
 # Naming style matching correct constant names.
 const-naming-style=UPPER_CASE
@@ -50,7 +50,7 @@ method-naming-style=snake_case
 module-naming-style=snake_case
 
 # Naming style matching correct variable names.
-variable-naming-style=snake_case
+variable-rgx=^[a-z_0-9]+$ # 't1', 'p' or 'p_' do not conform to snake_case
 
 [DESIGN]
 

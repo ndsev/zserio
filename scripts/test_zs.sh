@@ -330,8 +330,8 @@ test_zs()
             return 1
         fi
 
-        local PYLINT_RCFILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/pylintrc.txt"
-        local MYPY_CONFIG_FILE="${ZSERIO_PROJECT_ROOT}/compiler/extensions/python/runtime/mypy.ini"
+        local PYLINT_RCFILE="${ZSERIO_PROJECT_ROOT}/test/pylintrc.txt"
+        local MYPY_CONFIG_FILE="${ZSERIO_PROJECT_ROOT}/test/mypy.ini"
         local GEN_PYTHON_DIR="${TEST_OUT_DIR}/python/gen"
         local PYTHON_RUNTIME_ROOT="${UNPACKED_ZSERIO_RELEASE_DIR}/runtime_libs/python"
 
@@ -339,16 +339,16 @@ test_zs()
         echo "Running pylint on Python generated files."
 
         local GEN_DISABLE_OPTION=""
-        GEN_DISABLE_OPTION+="missing-docstring,invalid-name,no-self-use,duplicate-code,line-too-long,"
-        GEN_DISABLE_OPTION+="singleton-comparison,too-many-instance-attributes,too-many-arguments,"
-        GEN_DISABLE_OPTION+="too-many-public-methods,too-many-locals,too-many-branches,too-many-statements,"
-        GEN_DISABLE_OPTION+="too-many-lines,unneeded-not,superfluous-parens,len-as-condition,"
-        GEN_DISABLE_OPTION+="import-self,too-few-public-methods,too-many-function-args,c-extension-no-member,"
-        GEN_DISABLE_OPTION+="simplifiable-if-expression,unused-import"
+        GEN_DISABLE_OPTION+="missing-docstring, no-self-use,duplicate-code, line-too-long, "
+        GEN_DISABLE_OPTION+="singleton-comparison, too-many-instance-attributes, too-many-arguments, "
+        GEN_DISABLE_OPTION+="too-many-public-methods, too-few-public-methods, too-many-locals, "
+        GEN_DISABLE_OPTION+="too-many-branches, too-many-statements, unneeded-not, superfluous-parens, "
+        GEN_DISABLE_OPTION+="import-self, invalid-unary-operand-type, c-extension-no-member, "
+        GEN_DISABLE_OPTION+="too-many-lines, simplifiable-if-expression"
         local PYLINT_ARGS=("--disable=${GEN_DISABLE_OPTION}" "--ignore=api.py")
         PYTHONPATH="${GEN_PYTHON_DIR}:${PYTHON_RUNTIME_ROOT}" \
         run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${GEN_PYTHON_DIR}"/*
-        if [ $? -ne 0 ]; then
+        if [ $? -ne 0 ] ; then
             return 1
         fi
 
