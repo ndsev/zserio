@@ -125,14 +125,14 @@ class BitOffsetTest(unittest.TestCase):
         writer.write_bits(self.FIELD8_VALUE, 8)
 
     def _checkOffsets(self, bitOffset, offsetShift):
-        self.assertEqual(self.FIELD1_OFFSET + offsetShift, bitOffset.field1_offset)
-        self.assertEqual(self.FIELD2_OFFSET + offsetShift, bitOffset.field2_offset)
-        self.assertEqual(self.FIELD3_OFFSET + offsetShift, bitOffset.field3_offset)
-        self.assertEqual(self.FIELD4_OFFSET + offsetShift, bitOffset.field4_offset)
-        self.assertEqual(self.FIELD5_OFFSET + offsetShift, bitOffset.field5_offset)
-        self.assertEqual(self.FIELD6_OFFSET + offsetShift, bitOffset.field6_offset)
-        self.assertEqual(self.FIELD7_OFFSET + offsetShift, bitOffset.field7_offset)
-        self.assertEqual(self.FIELD8_OFFSET + offsetShift, bitOffset.field8_offset)
+        self.assertEqual(self.FIELD1_OFFSET + offsetShift, bitOffset.field1offset)
+        self.assertEqual(self.FIELD2_OFFSET + offsetShift, bitOffset.field2offset)
+        self.assertEqual(self.FIELD3_OFFSET + offsetShift, bitOffset.field3offset)
+        self.assertEqual(self.FIELD4_OFFSET + offsetShift, bitOffset.field4offset)
+        self.assertEqual(self.FIELD5_OFFSET + offsetShift, bitOffset.field5offset)
+        self.assertEqual(self.FIELD6_OFFSET + offsetShift, bitOffset.field6offset)
+        self.assertEqual(self.FIELD7_OFFSET + offsetShift, bitOffset.field7offset)
+        self.assertEqual(self.FIELD8_OFFSET + offsetShift, bitOffset.field8offset)
 
     def _checkBitOffset(self, bitOffset):
         offsetShift = 0

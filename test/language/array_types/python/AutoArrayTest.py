@@ -41,7 +41,7 @@ class AutoArrayTest(unittest.TestCase):
 
     def _checkInitializeOffsets(self, numElements):
         uint8Array = list(range(numElements))
-        autoArray = self.api.AutoArray(uint8_array_=uint8Array)
+        autoArray = self.api.AutoArray(uint8array_=uint8Array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + 8 + numElements * 8
         self.assertEqual(expectedEndBitPosition, autoArray.initialize_offsets(bitPosition))
@@ -52,7 +52,7 @@ class AutoArrayTest(unittest.TestCase):
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoArray = self.api.AutoArray.from_reader(reader)
 
-        uint8Array = autoArray.uint8_array
+        uint8Array = autoArray.uint8array
         self.assertEqual(numElements, len(uint8Array))
         for i in range(numElements):
             self.assertEqual(i, uint8Array[i])
@@ -62,7 +62,7 @@ class AutoArrayTest(unittest.TestCase):
         autoArray = self.api.AutoArray(uint8Array)
         bitBuffer = zserio.serialize(autoArray)
         readAutoArray = zserio.deserialize(self.api.AutoArray, bitBuffer)
-        readUint8Array = readAutoArray.uint8_array
+        readUint8Array = readAutoArray.uint8array
         self.assertEqual(numElements, len(readUint8Array))
         for i in range(numElements):
             self.assertEqual(i, readUint8Array[i])

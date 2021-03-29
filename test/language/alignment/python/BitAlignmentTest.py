@@ -85,17 +85,17 @@ class BitAlignmentTest(unittest.TestCase):
         writer.write_bits(self.ALIGNED64_FIELD_VALUE, 64)
 
     def _checkBitAlignment(self, bitAlignment):
-        self.assertEqual(self.ALIGNED1_FIELD_VALUE, bitAlignment.aligned1_field)
-        self.assertEqual(self.ALIGNED2_FIELD_VALUE, bitAlignment.aligned2_field)
-        self.assertEqual(self.ALIGNED3_FIELD_VALUE, bitAlignment.aligned3_field)
-        self.assertEqual(self.ALIGNED4_FIELD_VALUE, bitAlignment.aligned4_field)
-        self.assertEqual(self.ALIGNED5_FIELD_VALUE, bitAlignment.aligned5_field)
-        self.assertEqual(self.ALIGNED6_FIELD_VALUE, bitAlignment.aligned6_field)
-        self.assertEqual(self.ALIGNED7_FIELD_VALUE, bitAlignment.aligned7_field)
-        self.assertEqual(self.ALIGNED8_FIELD_VALUE, bitAlignment.aligned8_field)
-        self.assertEqual(self.ALIGNED16_FIELD_VALUE, bitAlignment.aligned16_field)
-        self.assertEqual(self.ALIGNED32_FIELD_VALUE, bitAlignment.aligned32_field)
-        self.assertEqual(self.ALIGNED64_FIELD_VALUE, bitAlignment.aligned64_field)
+        self.assertEqual(self.ALIGNED1_FIELD_VALUE, bitAlignment.aligned1field)
+        self.assertEqual(self.ALIGNED2_FIELD_VALUE, bitAlignment.aligned2field)
+        self.assertEqual(self.ALIGNED3_FIELD_VALUE, bitAlignment.aligned3field)
+        self.assertEqual(self.ALIGNED4_FIELD_VALUE, bitAlignment.aligned4field)
+        self.assertEqual(self.ALIGNED5_FIELD_VALUE, bitAlignment.aligned5field)
+        self.assertEqual(self.ALIGNED6_FIELD_VALUE, bitAlignment.aligned6field)
+        self.assertEqual(self.ALIGNED7_FIELD_VALUE, bitAlignment.aligned7field)
+        self.assertEqual(self.ALIGNED8_FIELD_VALUE, bitAlignment.aligned8field)
+        self.assertEqual(self.ALIGNED16_FIELD_VALUE, bitAlignment.aligned16field)
+        self.assertEqual(self.ALIGNED32_FIELD_VALUE, bitAlignment.aligned32field)
+        self.assertEqual(self.ALIGNED64_FIELD_VALUE, bitAlignment.aligned64field)
 
     def _createBitAlignment(self):
         return self.api.BitAlignment(self.ALIGNED1_FIELD_VALUE, self.ALIGNED2_FIELD_VALUE,

@@ -46,31 +46,9 @@ public class PythonSymbolConverter
 
     private static String insertUnderscoresToCamelCase(String symbolName)
     {
-        final StringBuilder result = new StringBuilder();
-        final String[] symbolNameParts = symbolName.split("_", -1); // -1 means include trailing empty strings
-        int count = 0;
-        for (String symbolNamePart : symbolNameParts)
-        {
-            // don't change hex numbers delimited by underscores
-            if (HEXADECIMAL_PATTERN.matcher(symbolNamePart).matches())
-            {
-                result.append(symbolNamePart);
-            }
-            else
-            {
-                result.append(CAMEL_CASE_PATTERN.matcher(symbolNamePart).replaceAll(
-                        REPLACEMENT_WITH_UNDERSCORE));
-            }
-
-            count++;
-            if (count < symbolNameParts.length)
-                result.append("_");
-        }
-
-        return result.toString();
+        return CAMEL_CASE_PATTERN.matcher(symbolName).replaceAll(REPLACEMENT_WITH_UNDERSCORE);
     }
 
-    private static final Pattern HEXADECIMAL_PATTERN = Pattern.compile("^[0-9a-fA-F]+$");
-    private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([a-z0-9])([A-Z])");
+    private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([a-z])([A-Z])");
     private static final String REPLACEMENT_WITH_UNDERSCORE = "$1_$2";
 }

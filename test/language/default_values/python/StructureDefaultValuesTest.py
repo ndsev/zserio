@@ -13,23 +13,23 @@ class StructureDefaultValuesTest(unittest.TestCase):
 
     def testDefaultBit4Value(self):
         structureDefaultValues = self.api.StructureDefaultValues()
-        self.assertEqual(0x0F, structureDefaultValues.bit4_value)
+        self.assertEqual(0x0F, structureDefaultValues.bit4value)
 
     def testDefaultInt16Value(self):
         structureDefaultValues = self.api.StructureDefaultValues()
-        self.assertEqual(0x0BEE, structureDefaultValues.int16_value)
+        self.assertEqual(0x0BEE, structureDefaultValues.int16value)
 
     def testDefaultFloat16Value(self):
         structureDefaultValues = self.api.StructureDefaultValues()
-        self.assertEqual(1.23, structureDefaultValues.float16_value)
+        self.assertEqual(1.23, structureDefaultValues.float16value)
 
     def testDefaultFloat32Value(self):
         structureDefaultValues = self.api.StructureDefaultValues()
-        self.assertEqual(1.234, structureDefaultValues.float32_value)
+        self.assertEqual(1.234, structureDefaultValues.float32value)
 
     def testDefaultFloat64Value(self):
         structureDefaultValues = self.api.StructureDefaultValues()
-        self.assertEqual(1.2345, structureDefaultValues.float64_value)
+        self.assertEqual(1.2345, structureDefaultValues.float64value)
 
     def testDefaultStringValue(self):
         structureDefaultValues = self.api.StructureDefaultValues()

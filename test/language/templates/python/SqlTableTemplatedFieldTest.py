@@ -17,7 +17,7 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
         sqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self._fileName)
         sqlTableTemplatedFieldDb.create_schema()
 
-        uint32Table = sqlTableTemplatedFieldDb.uint32_table
+        uint32Table = sqlTableTemplatedFieldDb.uint32table
         uint32TableRows = [(0, self.api.Data_uint32(42))]
         uint32Table.write(uint32TableRows)
 
@@ -29,7 +29,7 @@ class SqlTableTemplatedFieldTest(unittest.TestCase):
         sqlTableTemplatedFieldDb.close()
 
         readSqlTableTemplatedFieldDb = self.api.SqlTableTemplatedFieldDb.from_file(self._fileName)
-        readUint32TableIterator = readSqlTableTemplatedFieldDb.uint32_table.read()
+        readUint32TableIterator = readSqlTableTemplatedFieldDb.uint32table.read()
         readUint32TableRows = []
         for row in readUint32TableIterator:
             readUint32TableRows.append(row)

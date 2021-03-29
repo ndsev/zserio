@@ -13,8 +13,8 @@ public class PythonSymbolConverterTest
         assertEquals("my_long_structure", PythonSymbolConverter.symbolToModule("my_long_structure"));
         assertEquals("my_long_structure", PythonSymbolConverter.symbolToModule("My_long_structure"));
         assertEquals("my_long_structure", PythonSymbolConverter.symbolToModule("My_Long_Structure"));
-        assertEquals("my_long6_structure", PythonSymbolConverter.symbolToModule("MyLong6Structure"));
-        assertEquals("my_long6_acdstructure", PythonSymbolConverter.symbolToModule("MyLong6ACDStructure"));
+        assertEquals("my_long6structure", PythonSymbolConverter.symbolToModule("MyLong6Structure"));
+        assertEquals("my_long6acdstructure", PythonSymbolConverter.symbolToModule("MyLong6ACDStructure"));
         assertEquals("my_long_6acd_structure", PythonSymbolConverter.symbolToModule("MyLong_6ACD_Structure"));
     }
 
@@ -24,7 +24,7 @@ public class PythonSymbolConverterTest
         assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MY_LONG_ENUM_ITEM"));
         assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLongEnumItem"));
         assertEquals("MY_LONG_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("my_long_enum_item"));
-        assertEquals("MY_LONG6_ACDENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6ACDEnumItem"));
+        assertEquals("MY_LONG6ACDENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong6ACDEnumItem"));
         assertEquals("MY_LONG_6ACD_ENUM_ITEM", PythonSymbolConverter.enumItemToSymbol("MyLong_6ACD_EnumItem"));
     }
 
@@ -37,7 +37,7 @@ public class PythonSymbolConverterTest
                 PythonSymbolConverter.bitmaskValueToSymbol("MyLongBitmaskValue"));
         assertEquals("MY_LONG_BITMASK_VALUE",
                 PythonSymbolConverter.bitmaskValueToSymbol("my_long_bitmask_value"));
-        assertEquals("MY_LONG6_ACDBITMASK_VALUE",
+        assertEquals("MY_LONG6ACDBITMASK_VALUE",
                 PythonSymbolConverter.bitmaskValueToSymbol("MyLong6ACDBitmaskValue"));
         assertEquals("MY_LONG_6ACD_BITMASK_VALUE",
                 PythonSymbolConverter.bitmaskValueToSymbol("MyLong_6ACD_BitmaskValue"));
@@ -49,7 +49,7 @@ public class PythonSymbolConverterTest
         assertEquals("MY_LONG_CONSTANT", PythonSymbolConverter.constantToSymbol("MY_LONG_CONSTANT"));
         assertEquals("MY_LONG_CONSTANT", PythonSymbolConverter.constantToSymbol("MyLongConstant"));
         assertEquals("MY_LONG_CONSTANT", PythonSymbolConverter.constantToSymbol("my_long_constant"));
-        assertEquals("MY_LONG6_ACDCONSTANT", PythonSymbolConverter.constantToSymbol("MyLong6ACDConstant"));
+        assertEquals("MY_LONG6ACDCONSTANT", PythonSymbolConverter.constantToSymbol("MyLong6ACDConstant"));
         assertEquals("MY_LONG_6ACD_CONSTANT", PythonSymbolConverter.constantToSymbol("MyLong_6ACD_Constant"));
     }
 }
