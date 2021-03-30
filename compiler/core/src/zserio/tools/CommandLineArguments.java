@@ -23,10 +23,14 @@ import org.apache.commons.cli.DefaultParser;
 class CommandLineArguments
 {
     /**
-     * Empty constructor.
+     * Constructor.
+     *
+     * @param executor Specifies in which way the Zserio tool has been executed.
      */
-    public CommandLineArguments()
+    public CommandLineArguments(ZserioTool.Executor executor)
     {
+        this.executor = executor;
+
         options = new Options();
         addOptions();
     }
@@ -233,12 +237,14 @@ class CommandLineArguments
      */
     public void printHelp()
     {
-        final HelpFormatter hf = new HelpFormatter();
+        final String command = (executor == ZserioTool.Executor.PYTHON_MAIN) ? "zserio" :
+            "java -jar zserio.jar";
 
+        final HelpFormatter hf = new HelpFormatter();
         hf.setSyntaxPrefix("Usage: ");
         hf.setLeftPadding(2);
         hf.setOptionComparator(null);
-        hf.printHelp("java -jar zserio.jar <options> zserioInputFile\n", "Options:", options, null, false);
+        hf.printHelp(command + " <options> zserioInputFile\n", "Options:", options, null, false);
         ZserioToolPrinter.printMessage("");
     }
 
@@ -342,8 +348,8 @@ class CommandLineArguments
         option.setRequired(false);
         options.addOption(option);
 
-        option = new Option(OptionNameIngoreTimestamps, false,
-                "ingore timestamps and always regenerate output");
+        option = new Option(OptionNameIgnoreTimestamps, false,
+                "ignore timestamps and always regenerate output");
         options.addOption(option);
     }
 
@@ -364,7 +370,7 @@ class CommandLineArguments
         final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
         topLevelPackageNameIds = (topLevelPackageName == null) ? new ArrayList<String>() :
             java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
-        ignoreTimestampsOption = hasOption(OptionNameIngoreTimestamps);
+        ignoreTimestampsOption = hasOption(OptionNameIgnoreTimestamps);
 
         validateOptions();
 
@@ -479,11 +485,13 @@ class CommandLineArguments
     private static final String OptionNameWithCrossExtensionCheck = "withCrossExtensionCheck";
     private static final String OptionNameWithoutCrossExtensionCheck = "withoutCrossExtensionCheck";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
-    private static final String OptionNameIngoreTimestamps = "ignoreTimestamps";
+    private static final String OptionNameIgnoreTimestamps = "ignoreTimestamps";
 
     private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
 
+    private final ZserioTool.Executor executor;
     private final Options options;
+
     private CommandLine parsedCommandLine;
 
     private String  inputFileName;

@@ -349,7 +349,7 @@ public class CommandLineArgumentsTest
 
     private static CommandLineArguments parse(String[] args) throws ParseException
     {
-        final CommandLineArguments commandLineArgs = new CommandLineArguments();
+        final CommandLineArguments commandLineArgs = new CommandLineArguments(ZserioTool.Executor.JAVA_MAIN);
         commandLineArgs.parse(args);
         return commandLineArgs;
     }

@@ -99,7 +99,7 @@ public class ZserioTask extends Task
     {
         validate();
 
-        ToolWrapper tool = new ToolWrapper("zserio.tools.ZserioTool", classpath, ignoreError);
+        ToolWrapper tool = new ToolWrapper("zserio.tools.ZserioToolAntTask", classpath, ignoreError);
         tool.callMain(buildArgs());
     }
 

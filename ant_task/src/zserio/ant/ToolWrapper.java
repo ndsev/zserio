@@ -90,7 +90,7 @@ public class ToolWrapper
             // and now this is java magic
             Class<?> [] pTypes = new Class<?>[1];
             pTypes[0] = String[].class;
-            final Method main = clazz.getDeclaredMethod("runTool", pTypes);
+            final Method main = clazz.getDeclaredMethod("main", pTypes);
 
             final Object [] allArgs = new Object[1];
             allArgs[0] = args;

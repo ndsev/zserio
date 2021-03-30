@@ -36,31 +36,50 @@ import zserio.extension.common.ZserioExtensionException;
 public class ZserioTool
 {
     /**
-     * The entry point for this command line application.
+     * Zserio tool executor.
+     */
+    public enum Executor
+    {
+        /**
+         * Zserio tool has been executed from Java.
+         */
+        JAVA_MAIN,
+
+        /**
+         * Zserio tool has been executed from Ant task.
+         */
+        ANT_TASK_MAIN,
+
+        /**
+         * Zserio tool has been executed from Python command line.
+         */
+        PYTHON_MAIN
+    }
+
+    /**
+     * The entry point of Zserio tool for Java.
      *
      * @param args Command line arguments.
      */
     public static void main(String[] args)
     {
-        if (!runTool(args))
+        if (!runTool(args, Executor.JAVA_MAIN))
             System.exit(1);
     }
 
     /**
-     * The entry point for Ant task.
-     *
-     * Calling System.exit() method throws if it is called from Ant task. Therefore this special entry point
-     * has been introduced.
+     * The entry point of Zserio tool common for all executors.
      *
      * @param args Command line arguments.
+     * @param executor Specifies in which way the Zserio tool has been executed.
      *
      * @return Returns true in case of success, otherwise returns false.
      */
-    public static boolean runTool(String[] args)
+    public static boolean runTool(String[] args, Executor executor)
     {
         try
         {
-            final ZserioTool zserioTool = new ZserioTool();
+            final ZserioTool zserioTool = new ZserioTool(executor);
             zserioTool.execute(args);
         }
         catch (org.apache.commons.cli.ParseException exception)
@@ -105,9 +124,9 @@ public class ZserioTool
         return true;
     }
 
-    private ZserioTool()
+    private ZserioTool(Executor executor)
     {
-        commandLineArguments = new CommandLineArguments();
+        commandLineArguments = new CommandLineArguments(executor);
         resourceManager = new ResourceManager();
         inputFileManager = new InputFileManager(commandLineArguments);
         extensionManager = new ExtensionManager(commandLineArguments);
