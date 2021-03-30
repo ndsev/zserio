@@ -13,7 +13,9 @@ import zserio.tools.Extension;
 import zserio.tools.ExtensionParameters;
 
 /**
- * The extension which generates Python API sources.
+ * The Python extension.
+ *
+ * Generates Python API sources.
  */
 public class PythonExtension implements Extension
 {

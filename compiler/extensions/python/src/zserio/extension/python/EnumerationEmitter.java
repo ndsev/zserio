@@ -4,6 +4,9 @@ import zserio.ast.EnumType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Enumeration emitter.
+ */
 class EnumerationEmitter extends PythonDefaultEmitter
 {
     public EnumerationEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
@@ -14,7 +17,8 @@ class EnumerationEmitter extends PythonDefaultEmitter
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioExtensionException
     {
-        final Object templateData = new EnumerationEmitterTemplateData(getTemplateDataContext(), enumType);
+        final EnumerationEmitterTemplateData templateData =
+                new EnumerationEmitterTemplateData(getTemplateDataContext(), enumType);
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, enumType);
     }
 

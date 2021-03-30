@@ -2,6 +2,9 @@ package zserio.extension.python.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Python array type mapping.
+ */
 public class NativeArrayType extends PythonNativeType
 {
     public NativeArrayType(String traitsName)

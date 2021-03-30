@@ -4,6 +4,9 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * Base class for all user type template data for FreeMarker..
+ */
 public class UserTypeTemplateData extends PythonTemplateData
 {
     public UserTypeTemplateData(TemplateDataContext context, ZserioType type) throws ZserioExtensionException

@@ -8,6 +8,9 @@ import zserio.ast.Parameter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * FreeMarker template data for compound parameters, used from various template data.
+ */
 public final class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(TemplateDataContext context, CompoundType compoundType,
@@ -37,7 +40,7 @@ public final class CompoundParameterTemplateData
             final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(
                     parameter.getTypeReference());
             importCollector.importType(nativeType);
-            pythonTypeName = nativeType.getFullName();
+            pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
             propertyName = AccessorNameFormatter.getPropertyName(parameter);
         }
 

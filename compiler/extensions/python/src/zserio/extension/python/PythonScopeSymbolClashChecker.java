@@ -26,6 +26,8 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ZserioToolPrinter;
 
 /**
+ * Scope symbol clash checker.
+ *
  * Checks that Python code generator will not produce any clashes caused by renaming of
  * scope symbols to snake case. Scope symbol clashing is resolved in core, but since we rename the symbols
  * to snake case, we have to verify that it doesn't cause any new clashes.
@@ -92,7 +94,7 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
         for (ScopeSymbol symbol : serviceType.getMethodList())
-            addSymbol(symbolMap, symbol, symbol.getName());
+            addSymbol(symbolMap, symbol, PythonSymbolConverter.toLowerSnakeCase(symbol.getName()));
     }
 
     @Override
@@ -100,20 +102,20 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
         for (ScopeSymbol symbol : pubsubType.getMessageList())
-            addSymbol(symbolMap, symbol, symbol.getName());
+            addSymbol(symbolMap, symbol, PythonSymbolConverter.toLowerSnakeCase(symbol.getName()));
     }
 
     private void checkCompoundType(CompoundType compoundType) throws ZserioExtensionException
     {
         final Map<String, String> symbolMap = new HashMap<String, String>();
         for (ScopeSymbol symbol : compoundType.getTypeParameters())
-            addSymbol(symbolMap, symbol, symbol.getName());
+            addSymbol(symbolMap, symbol, PythonSymbolConverter.toLowerSnakeCase(symbol.getName()));
 
         for (ScopeSymbol symbol : compoundType.getFields())
-            addSymbol(symbolMap, symbol, symbol.getName());
+            addSymbol(symbolMap, symbol, PythonSymbolConverter.toLowerSnakeCase(symbol.getName()));
 
         for (ScopeSymbol symbol : compoundType.getFunctions())
-            addSymbol(symbolMap, symbol, symbol.getName());
+            addSymbol(symbolMap, symbol, PythonSymbolConverter.toLowerSnakeCase(symbol.getName()));
     }
 
     private void checkExplicitParameters(SqlTableType sqlTableType) throws ZserioExtensionException
@@ -157,9 +159,7 @@ class PythonScopeSymbolClashChecker extends DefaultTreeWalker
     private void addSymbol(Map<String, String> symbolMap, ScopeSymbol symbol, String pythonSymbolName)
             throws ZserioExtensionException
     {
-        // TODO[mikir] Redesign it to use native mapper!
-        final String snakeCaseSymbolName = PythonSymbolConverter.toLowerSnakeCase(pythonSymbolName);
-        final String prevSymbolName = symbolMap.put(snakeCaseSymbolName, symbol.getName());
+        final String prevSymbolName = symbolMap.put(pythonSymbolName, symbol.getName());
         if (prevSymbolName != null)
         {
             ZserioToolPrinter.printError(symbol.getLocation(),

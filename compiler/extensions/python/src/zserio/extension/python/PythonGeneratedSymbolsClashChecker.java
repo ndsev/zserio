@@ -24,6 +24,8 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ZserioToolPrinter;
 
 /**
+ * Generated symbols clash checker.
+ *
  * Checks that Python code generator will not produce any clashes with generated properties.
  */
 class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker

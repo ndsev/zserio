@@ -1,7 +1,6 @@
 package zserio.extension.python;
 
 import zserio.ast.ArrayInstantiation;
-import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.ChoiceType;
@@ -13,6 +12,7 @@ import zserio.ast.FixedBitFieldType;
 import zserio.ast.FloatType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
+import zserio.ast.PackageSymbol;
 import zserio.ast.PubsubType;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -38,42 +38,38 @@ import zserio.extension.python.types.NativeSubtype;
 import zserio.extension.python.types.NativeUserType;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * Python native mapper.
+ *
+ * Provides mapping of types and symbols from Zserio package symbols to Python native types and symbols.
+ */
 class PythonNativeMapper
 {
-    /**
-     * Returns a Python symbol that can hold an instance of Zserio symbol.
-     *
-     * @param symbol Zserio symbol.
-     *
-     * @return Python symbol.
-     *
-     * @throws ZserioExtensionException If the Zserio symbol cannot be mapped to any Python symbol.
-     */
-    public PythonNativeSymbol getPythonSymbol(AstNode symbol) throws ZserioExtensionException
+    public PythonNativeSymbol getPythonSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
     {
-        if (symbol instanceof Constant)
+        if (packageSymbol instanceof Constant)
         {
-            final Constant constant = (Constant)symbol;
-            final PackageName packageName = constant.getPackage().getPackageName();
-            final String name = constant.getName();
-            return new PythonNativeSymbol(packageName, name);
+            return getPythonSymbol((Constant)packageSymbol);
+        }
+        else if (packageSymbol instanceof ZserioType)
+        {
+            return getPythonType((ZserioType)packageSymbol);
         }
         else
         {
-            throw new ZserioExtensionException("Unhandled symbol '" + symbol.getClass().getName() +
-                    "' in PythonNativeMapper!");
+            throw new ZserioExtensionException("Unhandled package symbol '" +
+                    packageSymbol.getClass().getName() + "' in PythonNativeMapper!");
         }
     }
 
-    /**
-     * Returns a Python type that can hold an instance of the Zserio type.
-     *
-     * @param typeInstantiation Instantiation of the Zserio type.
-     *
-     * @return  Python type which can hold the Zserio type.
-     *
-     * @throws ZserioExtensionException If the Zserio type cannot be mapped to any Python type.
-     */
+    public PythonNativeSymbol getPythonSymbol(Constant constant) throws ZserioExtensionException
+    {
+        final PackageName packageName = constant.getPackage().getPackageName();
+        final String name = PythonSymbolConverter.constantToSymbol(constant.getName());
+        final String moduleName = PythonSymbolConverter.symbolToModule(name);
+        return new PythonNativeSymbol(packageName, moduleName, name);
+    }
+
     public PythonNativeType getPythonType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
         if (typeInstantiation instanceof ArrayInstantiation)
@@ -83,30 +79,12 @@ class PythonNativeMapper
         return getPythonType(typeInstantiation.getType());
     }
 
-    /**
-     * Returns a Python type that can hold an instance of referenced Zserio type.
-     *
-     * @param typeReference Reference to the Zserio type.
-     *
-     * @return  Python type which can hold referenced Zserio type.
-     *
-     * @throws ZserioExtensionException If the referenced Zserio type cannot be mapped to any Python type.
-     */
     public PythonNativeType getPythonType(TypeReference typeReference) throws ZserioExtensionException
     {
         // don't resolve subtypes so that the subtype name (Python imports) will be used
         return getPythonType(typeReference.getType());
     }
 
-    /**
-     * Returns a Python type that can hold an instance of given Zserio type.
-     *
-     * @param type Zserio type for mapping to Python type.
-     *
-     * @return Python type which can hold a Zserio type.
-     *
-     * @throws ZserioExtensionException If the Zserio type cannot be mapped to any Python type.
-     */
     public PythonNativeType getPythonType(ZserioType type) throws ZserioExtensionException
     {
         final TypeMapperVisitor visitor = new TypeMapperVisitor();

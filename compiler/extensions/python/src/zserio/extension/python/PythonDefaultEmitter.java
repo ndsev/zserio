@@ -7,14 +7,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import zserio.ast.Constant;
 import zserio.ast.PackageName;
-import zserio.ast.ZserioType;
+import zserio.ast.PackageSymbol;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 
+/**
+ * Base class for all Python emitters.
+ */
 abstract class PythonDefaultEmitter extends DefaultTreeWalker
 {
     public PythonDefaultEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
@@ -51,20 +54,12 @@ abstract class PythonDefaultEmitter extends DefaultTreeWalker
         return context;
     }
 
-    protected void processSourceTemplate(String templateName, Object templateData, ZserioType zserioType)
+    protected void processSourceTemplate(String templateName, Object templateData, PackageSymbol packageSymbol)
             throws ZserioExtensionException
     {
-        final String moduleName = PythonSymbolConverter.symbolToModule(zserioType.getName());
-        processTemplate(templateName, templateData, zserioType.getPackage().getPackageName(), moduleName);
-    }
-
-    protected void processSourceTemplate(String templateName, Object templateData, Constant constant)
-            throws ZserioExtensionException
-    {
-        // TODO[mikir] Redesign it to use native mapper!
-        final String pythonConstantName = PythonSymbolConverter.constantToSymbol(constant.getName());
-        final String moduleName = PythonSymbolConverter.symbolToModule(pythonConstantName);
-        processTemplate(templateName, templateData, constant.getPackage().getPackageName(), moduleName);
+        final PythonNativeSymbol nativeSymbol = context.getPythonNativeMapper().getPythonSymbol(packageSymbol);
+        processTemplate(templateName, templateData,
+                nativeSymbol.getPackageName(), nativeSymbol.getModuleName());
     }
 
     protected void processTemplate(String templateName, Object templateData, PackageName packageName,

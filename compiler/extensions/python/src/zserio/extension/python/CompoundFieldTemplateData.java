@@ -23,6 +23,9 @@ import zserio.extension.python.types.NativeArrayType;
 import zserio.extension.python.types.NativeBuiltinType;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * FreeMarker template data for compound fields, used from various template data.
+ */
 public final class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType, Field field,
@@ -37,7 +40,7 @@ public final class CompoundFieldTemplateData
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
         importCollector.importType(nativeType);
-        pythonTypeName = nativeType.getFullName();
+        pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
 
         propertyName = AccessorNameFormatter.getPropertyName(field);
 
@@ -321,7 +324,7 @@ public final class CompoundFieldTemplateData
             final PythonNativeType elementNativeType =
                     pythonNativeMapper.getPythonType(elementTypeInstantiation);
             importCollector.importType(elementNativeType);
-            elementPythonTypeName = elementNativeType.getFullName();
+            elementPythonTypeName = PythonFullNameFormatter.getFullName(elementNativeType);
             elementIsRecursive = (elementTypeInstantiation.getBaseType() == parentType);
             elementBitSize = new BitSize(elementTypeInstantiation, pythonExpressionFormatter);
             elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);

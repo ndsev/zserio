@@ -20,11 +20,15 @@ import zserio.ast.Subtype;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioTemplatableType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.tools.ZserioToolPrinter;
 
 /**
+ * Modules clash checker.
+ *
  * Checks that Python modules generated for each package symbol do not clash on the file system.
  * Note that module names are created from package symbol names by converting to snake case to conform PEP-8.
  */
@@ -44,69 +48,69 @@ class PythonModuleClashChecker extends DefaultTreeWalker
     }
 
     @Override
-    public void beginConst(Constant constType) throws ZserioExtensionException
+    public void beginConst(Constant constant) throws ZserioExtensionException
     {
-        addSymbol(constType);
+        addSymbol(constant, pythonNativeMapper.getPythonSymbol(constant));
     }
 
     @Override
     public void beginSubtype(Subtype subtype) throws ZserioExtensionException
     {
-        addSymbol(subtype);
+        addZserioType(subtype);
     }
 
     @Override
     public void beginStructure(StructureType structureType) throws ZserioExtensionException
     {
-        addSymbol(structureType);
+        addZserioType(structureType);
     }
 
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException
     {
-        addSymbol(choiceType);
+        addZserioType(choiceType);
     }
 
     @Override
     public void beginUnion(UnionType unionType) throws ZserioExtensionException
     {
-        addSymbol(unionType);
+        addZserioType(unionType);
     }
 
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioExtensionException
     {
-        addSymbol(enumType);
+        addZserioType(enumType);
     }
 
     @Override
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioExtensionException
     {
-        addSymbol(bitmaskType);
+        addZserioType(bitmaskType);
     }
 
     @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
     {
-        addSymbol(sqlTableType);
+        addZserioType(sqlTableType);
     }
 
     @Override
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioExtensionException
     {
-        addSymbol(sqlDatabaseType);
+        addZserioType(sqlDatabaseType);
     }
 
     @Override
     public void beginService(ServiceType service) throws ZserioExtensionException
     {
-        addSymbol(service);
+        addZserioType(service);
     }
 
     @Override
     public void beginPubsub(PubsubType pubsub) throws ZserioExtensionException
     {
-        addSymbol(pubsub);
+        addZserioType(pubsub);
     }
 
     @Override
@@ -116,13 +120,15 @@ class PythonModuleClashChecker extends DefaultTreeWalker
         // by appropriate emitters for concrete templatable types, so we do not need to check it here
     }
 
-    private void addSymbol(PackageSymbol packageSymbol) throws ZserioExtensionException
+    private void addZserioType(ZserioType zserioType) throws ZserioExtensionException
     {
-        // TODO[mikir] Redesign it to use native mapper!
-        final String pythonSymbolName = (packageSymbol instanceof Constant) ?
-                PythonSymbolConverter.constantToSymbol(packageSymbol.getName()) :
-                    packageSymbol.getName();
-        final String moduleName = PythonSymbolConverter.symbolToModule(pythonSymbolName);
+        addSymbol(zserioType, pythonNativeMapper.getPythonType(zserioType));
+    }
+
+    private void addSymbol(PackageSymbol packageSymbol, PythonNativeSymbol pythonNativeSymbol)
+            throws ZserioExtensionException
+    {
+        final String moduleName = pythonNativeSymbol.getModuleName();
         final PackageSymbol clashingPackageSymbol = packageSymbolMap.put(moduleName, packageSymbol);
         if (clashingPackageSymbol != null)
         {
@@ -157,5 +163,6 @@ class PythonModuleClashChecker extends DefaultTreeWalker
         }
     }
 
+    private final PythonNativeMapper pythonNativeMapper = new PythonNativeMapper();
     private final Map<String, PackageSymbol> packageSymbolMap = new HashMap<String, PackageSymbol>();
 }

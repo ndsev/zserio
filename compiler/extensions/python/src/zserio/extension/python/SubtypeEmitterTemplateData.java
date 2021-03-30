@@ -4,6 +4,9 @@ import zserio.ast.Subtype;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * FreeMarker template data for SubtypeEmitter.
+ */
 public class SubtypeEmitterTemplateData extends PythonTemplateData
 {
     public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype)
@@ -17,7 +20,7 @@ public class SubtypeEmitterTemplateData extends PythonTemplateData
         final PythonNativeType nativeTargetType =
                 pythonNativeMapper.getPythonType(subtype.getTypeReference());
         importType(nativeTargetType);
-        targetTypeName = nativeTargetType.getFullName();
+        targetTypeName = PythonFullNameFormatter.getFullName(nativeTargetType);
     }
 
     public String getName()

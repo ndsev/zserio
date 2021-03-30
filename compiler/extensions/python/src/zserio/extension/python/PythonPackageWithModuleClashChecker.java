@@ -26,11 +26,13 @@ import zserio.ast.UnionType;
 import zserio.ast.ZserioTemplatableType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.tools.ZserioToolPrinter;
 
 /**
- * Checks that Python modules generated for each package symbol do not clash with generated packages.
+ * Package with module clash checker.
  *
+ * Checks that Python modules generated for each package symbol do not clash with generated packages.
  * Note that module names are created from package symbol names by converting to snake case to conform PEP-8.
  *
  * Note that this clashing doesn't cause problems on the file system, but it makes it almost impossible
@@ -57,19 +59,15 @@ class PythonPackageWithModuleClashChecker extends DefaultTreeWalker
             {
                 for (PackageSymbol packageSymbol : packageSymbols)
                 {
-                    // TODO[mikir] Redesign it to use native mapper!
-                    final String pythonSymbolName = (packageSymbol instanceof Constant) ?
-                            PythonSymbolConverter.constantToSymbol(packageSymbol.getName()) :
-                                packageSymbol.getName();
-                    final String moduleName = PythonSymbolConverter.symbolToModule(pythonSymbolName);
+                    final PythonNativeSymbol nativeSymbol = pythonNativeMapper.getPythonSymbol(packageSymbol);
+                    final String moduleName = nativeSymbol.getModuleName();
                     if (childPackageIds.contains(moduleName))
                     {
                         printErrorContext(packageSymbol);
                         ZserioToolPrinter.printError(packageSymbol.getLocation(),
-                                "Module '" +
-                                PythonFullNameFormatter.getFullModuleImportName(packageName, moduleName) +
-                                "' generated for package symbol '" +
-                                packageSymbol.getName() + "' clashes with equally named generated package!");
+                                "Module '" + PythonFullNameFormatter.getModuleFullName(nativeSymbol) +
+                                "' generated for package symbol '" + packageSymbol.getName() +
+                                "' clashes with equally named generated package!");
 
                         throw new ZserioExtensionException("Package with module name clashing detected!");
                     }
@@ -204,7 +202,9 @@ class PythonPackageWithModuleClashChecker extends DefaultTreeWalker
         }
     }
 
-    final Map<PackageName, Set<String>> packageToChildPackageIdMap = new HashMap<PackageName, Set<String>>();
-    final Map<PackageName, Set<PackageSymbol>> packageToPackageSymbolMap =
+    private final PythonNativeMapper pythonNativeMapper = new PythonNativeMapper();
+    private final Map<PackageName, Set<String>> packageToChildPackageIdMap =
+            new HashMap<PackageName, Set<String>>();
+    private final Map<PackageName, Set<PackageSymbol>> packageToPackageSymbolMap =
             new HashMap<PackageName, Set<PackageSymbol>>();
 };

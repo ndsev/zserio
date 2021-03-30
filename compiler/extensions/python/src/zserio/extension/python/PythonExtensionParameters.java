@@ -9,10 +9,10 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ExtensionParameters;
 
 /**
- * Command line parameters for python extension.
+ * Command line parameters for Python extension.
  *
- * The class holds all command line parameters passed by core to the python extension, which are really
- * used by python emitters.
+ * The class holds all command line parameters passed by core to the Python extension, which are really
+ * used by Python emitters.
  */
 class PythonExtensionParameters
 {

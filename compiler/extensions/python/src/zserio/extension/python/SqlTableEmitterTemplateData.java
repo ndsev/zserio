@@ -25,6 +25,9 @@ import zserio.extension.python.SqlTableEmitterTemplateData.FieldTemplateData.Par
 import zserio.extension.python.types.PythonNativeType;
 import zserio.tools.HashUtil;
 
+/**
+ * FreeMarker template data for SqlTableEmitter.
+ */
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType sqlTableType)
@@ -162,7 +165,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             name = field.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
-            pythonTypeName = nativeType.getFullName();
+            pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
 
             isVirtual = field.getIsVirtual();
             parameters = new ArrayList<ParameterTemplateData>();
@@ -238,7 +241,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             public EnumTemplateData(PythonNativeType enumNativeType)
             {
-                pythonTypeName = enumNativeType.getFullName();
+                pythonTypeName = PythonFullNameFormatter.getFullName(enumNativeType);
             }
 
             public String getPythonTypeName()
@@ -253,7 +256,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             public BitmaskTemplateData(PythonNativeType bitmaskNativeType)
             {
-                pythonTypeName = bitmaskNativeType.getFullName();
+                pythonTypeName = PythonFullNameFormatter.getFullName(bitmaskNativeType);
             }
 
             public String getPythonTypeName()
@@ -301,7 +304,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                         pythonNativeMapper.getPythonType(parameter.getTypeReference());
                 importCollector.importType(parameterNativeType);
 
-                pythonTypeName = parameterNativeType.getFullName();
+                pythonTypeName = PythonFullNameFormatter.getFullName(parameterNativeType);
 
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();

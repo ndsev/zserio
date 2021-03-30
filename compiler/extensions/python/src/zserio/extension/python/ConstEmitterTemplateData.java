@@ -5,6 +5,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 
+/**
+ * FreeMarker template data for ConstEmitter.
+ */
 public class ConstEmitterTemplateData extends PythonTemplateData
 {
     public ConstEmitterTemplateData(TemplateDataContext context, Constant constant)

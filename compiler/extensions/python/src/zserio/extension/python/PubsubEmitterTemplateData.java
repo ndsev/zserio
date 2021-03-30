@@ -9,6 +9,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * FreeMarker template data for PubsubEmitter.
+ */
 public class PubsubEmitterTemplateData extends UserTypeTemplateData
 {
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
@@ -63,7 +66,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             final PythonNativeType pythonType = pythonNativeMapper.getPythonType(message.getType());
             importCollector.importType(pythonType);
-            typeFullName = pythonType.getFullName();
+            typeFullName = PythonFullNameFormatter.getFullName(pythonType);
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }

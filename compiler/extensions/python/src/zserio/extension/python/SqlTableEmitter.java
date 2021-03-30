@@ -4,6 +4,9 @@ import zserio.ast.SqlTableType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * SQL table emitter.
+ */
 class SqlTableEmitter extends PythonDefaultEmitter
 {
     public SqlTableEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
@@ -14,11 +17,12 @@ class SqlTableEmitter extends PythonDefaultEmitter
     @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
     {
-        if (getWithSqlCode())
-        {
-            final Object templateData = new SqlTableEmitterTemplateData(getTemplateDataContext(), sqlTableType);
-            processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlTableType);
-        }
+        if (!getWithSqlCode())
+            return;
+
+        final SqlTableEmitterTemplateData templateData =
+                new SqlTableEmitterTemplateData(getTemplateDataContext(), sqlTableType);
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, sqlTableType);
     }
 
     private static final String TEMPLATE_SOURCE_NAME = "SqlTable.py.ftl";

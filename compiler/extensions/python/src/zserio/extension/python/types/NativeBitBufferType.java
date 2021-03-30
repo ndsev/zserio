@@ -2,6 +2,9 @@ package zserio.extension.python.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Python BitBuffer mapping.
+ */
 public class NativeBitBufferType extends PythonNativeType
 {
     public NativeBitBufferType()

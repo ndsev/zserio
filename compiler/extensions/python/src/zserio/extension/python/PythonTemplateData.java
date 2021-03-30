@@ -7,6 +7,9 @@ import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.NativeUserType;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * Base class for all Python template data for FreeMarker.
+ */
 public class PythonTemplateData implements ImportCollector
 {
     public PythonTemplateData(TemplateDataContext context)
@@ -49,8 +52,7 @@ public class PythonTemplateData implements ImportCollector
     @Override
     public void importSymbol(PythonNativeSymbol nativeSymbol)
     {
-        final String symbolImport = PythonFullNameFormatter.getFullModuleImportName(
-                nativeSymbol.getPackageName(), nativeSymbol.getName());
+        final String symbolImport = PythonFullNameFormatter.getModuleFullName(nativeSymbol);
         symbolImports.add(symbolImport);
     }
 
@@ -59,8 +61,7 @@ public class PythonTemplateData implements ImportCollector
     {
         if (nativeType instanceof NativeUserType)
         {
-            final String typeImport = PythonFullNameFormatter.getFullModuleImportName(
-                    nativeType.getPackageName(), nativeType.getName());
+            final String typeImport = PythonFullNameFormatter.getModuleFullName(nativeType);
             typeImports.add(typeImport);
         }
     }

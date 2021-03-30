@@ -11,6 +11,9 @@ import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for EnumerationEmitter.
+ */
 public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 {
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)

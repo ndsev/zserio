@@ -3,7 +3,7 @@
 <#if subpackages?has_content>
 
     <#list subpackages as subpackage>
-import ${subpackage.modulePath}.api as ${subpackage.symbol}
+import ${subpackage.modulePath} as ${subpackage.symbol}
     </#list>
 </#if>
 <#if packageSymbols?has_content>

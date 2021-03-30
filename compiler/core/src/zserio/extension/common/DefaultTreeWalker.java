@@ -44,7 +44,7 @@ public abstract class DefaultTreeWalker implements TreeWalker
     {}
 
     @Override
-    public void beginConst(Constant constType) throws ZserioExtensionException
+    public void beginConst(Constant constant) throws ZserioExtensionException
     {}
 
     @Override

@@ -18,11 +18,15 @@ import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioTemplatableType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.tools.ZserioToolPrinter;
 
 /**
+ * API clash checker.
+ *
  * Checks that Python code generator will not produce any clashes with auto-generated API helpers.
  */
 class PythonApiClashChecker extends DefaultTreeWalker
@@ -55,7 +59,7 @@ class PythonApiClashChecker extends DefaultTreeWalker
                     ZserioToolPrinter.printError(pkg.getLocation(),
                             "Cannot generate python package '" + id +  "' for package '" +
                             pkg.getPackageName() + "', since it would clash with auto-generated '" +
-                            apiOutputFileNameLowerCase + "'! Please choose different package name.");
+                            API_OUTPUT_FILE_NAME_LOWER_CASE + "'! Please choose different package name.");
                     throw new ZserioExtensionException("Clash in generated code detected!");
                 }
             }
@@ -65,76 +69,82 @@ class PythonApiClashChecker extends DefaultTreeWalker
     @Override
     public void beginConst(Constant constant) throws ZserioExtensionException
     {
-        checkPackageSymbolName(constant);
+        checkPythonSymbolName(constant, pythonNativeMapper.getPythonSymbol(constant));
     }
 
     @Override
     public void beginSubtype(Subtype subtype) throws ZserioExtensionException
     {
-        checkPackageSymbolName(subtype);
+        checkZserioType(subtype);
     }
 
     @Override
     public void beginStructure(StructureType structureType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(structureType);
+        checkZserioType(structureType);
     }
 
     @Override
     public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(choiceType);
+        checkZserioType(choiceType);
     }
 
     @Override
     public void beginUnion(UnionType unionType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(unionType);
+        checkZserioType(unionType);
     }
 
     @Override
     public void beginEnumeration(EnumType enumType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(enumType);
+        checkZserioType(enumType);
     }
 
     @Override
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(bitmaskType);
+        checkZserioType(bitmaskType);
     }
 
     @Override
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(sqlTableType);
+        checkZserioType(sqlTableType);
     }
 
     @Override
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(sqlDatabaseType);
+        checkZserioType(sqlDatabaseType);
     }
 
     @Override
     public void beginService(ServiceType service) throws ZserioExtensionException
     {
-        checkPackageSymbolName(service);
+        checkZserioType(service);
     }
 
     @Override
     public void beginPubsub(PubsubType pubsub) throws ZserioExtensionException
     {
-        checkPackageSymbolName(pubsub);
+        checkZserioType(pubsub);
     }
 
     @Override
     public void beginInstantiateType(InstantiateType instantiateType) throws ZserioExtensionException
     {
-        checkPackageSymbolName(instantiateType);
+        checkZserioType(instantiateType);
     }
 
-    private void checkPackageSymbolName(PackageSymbol packageSymbol) throws ZserioExtensionException
+    private void checkZserioType(ZserioType zserioType) throws ZserioExtensionException
+    {
+        checkPythonSymbolName(zserioType, pythonNativeMapper.getPythonType(zserioType));
+    }
+
+    private void checkPythonSymbolName(PackageSymbol packageSymbol, PythonNativeSymbol nativeSymbol)
+            throws ZserioExtensionException
     {
         if (packageSymbol instanceof ZserioTemplatableType)
         {
@@ -143,18 +153,20 @@ class PythonApiClashChecker extends DefaultTreeWalker
                 return; // do not check templates
         }
 
-        final String outputFileName = PythonDefaultEmitter.getOutputFileName(packageSymbol.getName());
-        if (outputFileName.toLowerCase(Locale.ENGLISH).equals(apiOutputFileNameLowerCase))
+        final String outputFileName = PythonDefaultEmitter.getOutputFileName(nativeSymbol.getName());
+        if (outputFileName.toLowerCase(Locale.ENGLISH).equals(API_OUTPUT_FILE_NAME_LOWER_CASE))
         {
             ZserioToolPrinter.printError(packageSymbol.getLocation(),
                     "Cannot generate python source '" + outputFileName +  "' for symbol '" +
                     packageSymbol.getName() + "', since it would clash with auto-generated '" +
-                    apiOutputFileNameLowerCase + "'! Please choose different name.");
+                    API_OUTPUT_FILE_NAME_LOWER_CASE + "'! Please choose different name.");
             throw new ZserioExtensionException("Clash in generated code detected!");
         }
     }
 
-    private static String apiOutputFileNameLowerCase =
+    private static final String API_OUTPUT_FILE_NAME_LOWER_CASE =
             PythonDefaultEmitter.getOutputFileName(ApiEmitter.API_FILENAME_ROOT).toLowerCase(Locale.ENGLISH);
+
+    private final PythonNativeMapper pythonNativeMapper = new PythonNativeMapper();
     private boolean checkTopLevelPackageId = false;
 }

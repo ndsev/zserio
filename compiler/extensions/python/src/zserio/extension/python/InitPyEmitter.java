@@ -9,6 +9,11 @@ import zserio.ast.PackageName;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Emitter for init.py.
+ *
+ * Emits empty __init__ files for all generated packages.
+ */
 class InitPyEmitter extends PythonDefaultEmitter
 {
     public InitPyEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)

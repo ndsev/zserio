@@ -4,6 +4,9 @@ import zserio.ast.ServiceType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Service emitter.
+ */
 class ServiceEmitter extends PythonDefaultEmitter
 {
     public ServiceEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
@@ -17,8 +20,8 @@ class ServiceEmitter extends PythonDefaultEmitter
         if (!getWithServiceCode())
             return;
 
-        final ServiceEmitterTemplateData templateData = new ServiceEmitterTemplateData(
-                getTemplateDataContext(), serviceType);
+        final ServiceEmitterTemplateData templateData =
+                new ServiceEmitterTemplateData(getTemplateDataContext(), serviceType);
         processSourceTemplate(TEMPLATE_NAME, templateData, serviceType);
     }
 

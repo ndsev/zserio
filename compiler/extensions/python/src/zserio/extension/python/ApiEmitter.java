@@ -9,7 +9,6 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Package;
 import zserio.ast.PackageName;
-import zserio.ast.PackageSymbol;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
 import zserio.ast.ServiceType;
@@ -18,9 +17,18 @@ import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
 import zserio.ast.UnionType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
+import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * Api emitter.
+ *
+ * Emits api.py files which provide easy access to whole generated code, via including just a single top level
+ * api.py.
+ */
 class ApiEmitter extends PythonDefaultEmitter
 {
     public ApiEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
@@ -126,8 +134,7 @@ class ApiEmitter extends PythonDefaultEmitter
         if (!packageMapping.isEmpty())
             throw new ZserioExtensionException("ApiEmitter: Empty package shall be first!");
 
-        packageMapping.put(PackageName.EMPTY,
-                new ApiEmitterTemplateData(getTemplateDataContext(), PackageName.EMPTY));
+        packageMapping.put(PackageName.EMPTY, new ApiEmitterTemplateData(getTemplateDataContext()));
     }
 
     private void addPackageMapping(PackageName mappedPackageName)
@@ -141,38 +148,37 @@ class ApiEmitter extends PythonDefaultEmitter
             ApiEmitterTemplateData apiEmitterTemplateData = packageMapping.get(currentPackageNameBuilder.get());
             if (apiEmitterTemplateData == null)
             {
-                apiEmitterTemplateData = new ApiEmitterTemplateData(context, currentPackageNameBuilder.get());
+                apiEmitterTemplateData = new ApiEmitterTemplateData(context);
                 packageMapping.put(currentPackageNameBuilder.get(), apiEmitterTemplateData);
             }
 
             if (prevPackageTemplateData != null)
-                prevPackageTemplateData.addSubpackage(id);
+                prevPackageTemplateData.addSubpackage(currentPackageNameBuilder.get());
             prevPackageTemplateData = apiEmitterTemplateData;
         }
     }
 
-    private void addTypeMapping(PackageSymbol packageSymbol) throws ZserioExtensionException
+    private void addTypeMapping(ZserioType zserioType) throws ZserioExtensionException
     {
-        // TODO[mikir] Redesign it to use native mapper!
-        final String symbolName = packageSymbol.getName();
-        addPackageSymbolMapping(symbolName, packageSymbol.getPackage().getPackageName());
+        final PythonNativeType nativeType =
+                getTemplateDataContext().getPythonNativeMapper().getPythonType(zserioType);
+        addPythonSymbolMapping(nativeType);
     }
 
-    private void addConstantMapping(PackageSymbol packageSymbol) throws ZserioExtensionException
+    private void addConstantMapping(Constant constant) throws ZserioExtensionException
     {
-        // TODO[mikir] Redesign it to use native mapper!
-        final String symbolName = PythonSymbolConverter.constantToSymbol(packageSymbol.getName());
-        addPackageSymbolMapping(symbolName, packageSymbol.getPackage().getPackageName());
+        final PythonNativeSymbol nativeSymbol =
+                getTemplateDataContext().getPythonNativeMapper().getPythonSymbol(constant);
+        addPythonSymbolMapping(nativeSymbol);
     }
 
-    private void addPackageSymbolMapping(String symbolName, PackageName packageName)
-            throws ZserioExtensionException
+    private void addPythonSymbolMapping(PythonNativeSymbol nativeSymbol) throws ZserioExtensionException
     {
-        final ApiEmitterTemplateData packageTemplateData = packageMapping.get(packageName);
+        final ApiEmitterTemplateData packageTemplateData = packageMapping.get(nativeSymbol.getPackageName());
         if (packageTemplateData == null)
             throw new ZserioExtensionException("ApiEmitter: Package not yet mapped!");
 
-        packageTemplateData.addPackageSymbol(symbolName);
+        packageTemplateData.addPythonSymbol(nativeSymbol);
     }
 
     private static final String API_TEMPLATE = "api.py.ftl";

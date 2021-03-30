@@ -4,6 +4,9 @@ import zserio.ast.Constant;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Emitter for constants.
+ */
 class ConstEmitter extends PythonDefaultEmitter
 {
     public ConstEmitter(OutputFileManager outputFileManager, PythonExtensionParameters pythonParameters)
@@ -14,7 +17,8 @@ class ConstEmitter extends PythonDefaultEmitter
     @Override
     public void beginConst(Constant constant) throws ZserioExtensionException
     {
-        final Object templateData = new ConstEmitterTemplateData(getTemplateDataContext(), constant);
+        final ConstEmitterTemplateData templateData =
+                new ConstEmitterTemplateData(getTemplateDataContext(), constant);
         processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, constant);
     }
 

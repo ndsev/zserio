@@ -16,6 +16,11 @@ import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.PythonNativeType;
 import zserio.extension.common.ExpressionFormattingPolicy;
 
+/**
+ * Expression formatting policy for Python generator.
+ *
+ * The class formats expressions for Python generator.
+ */
 class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
     public PythonExpressionFormattingPolicy(TemplateDataContext context, ImportCollector importCollector)
@@ -358,7 +363,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
             final EnumType enumType = (EnumType)exprType;
             final PythonNativeType nativeEnumType = context.getPythonNativeMapper().getPythonType(enumType);
             importCollector.importType(nativeEnumType);
-            result.append(nativeEnumType.getFullName());
+            result.append(PythonFullNameFormatter.getFullName(nativeEnumType));
             result.append(".");
         }
         result.append(PythonSymbolConverter.enumItemToSymbol(enumItem.getName()));
@@ -374,7 +379,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
             final PythonNativeType nativeBitmaskType =
                     context.getPythonNativeMapper().getPythonType(bitmaskType);
             importCollector.importType(nativeBitmaskType);
-            result.append(nativeBitmaskType.getFullName());
+            result.append(PythonFullNameFormatter.getFullName(nativeBitmaskType));
             result.append(".");
         }
         result.append("Values.");
@@ -386,7 +391,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     {
         final PythonNativeType resolvedNativeType = context.getPythonNativeMapper().getPythonType(resolvedType);
         importCollector.importType(resolvedNativeType);
-        result.append(resolvedNativeType.getFullName());
+        result.append(PythonFullNameFormatter.getFullName(resolvedNativeType));
     }
 
     private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
@@ -439,7 +444,7 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     private void formatConstant(StringBuilder result, Constant constant) throws ZserioExtensionException
     {
         final PythonNativeSymbol nativeSymbol = context.getPythonNativeMapper().getPythonSymbol(constant);
-        result.append(nativeSymbol.getFullName());
+        result.append(PythonFullNameFormatter.getFullName(nativeSymbol));
         importCollector.importSymbol(nativeSymbol);
     }
 

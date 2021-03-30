@@ -11,6 +11,9 @@ import zserio.ast.SqlTableType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * FreeMarker template data for SqlDatabaseEmitter.
+ */
 public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
@@ -44,7 +47,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
             name = field.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
-            pythonTypeName = nativeType.getFullName();
+            pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
             propertyName = AccessorNameFormatter.getPropertyName(field);
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;

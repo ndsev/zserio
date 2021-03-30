@@ -24,7 +24,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         final Expression expression = choiceType.getSelectorExpression();
         selectorExpression = cppExpressionFormatter.formatGetter(expression);
-        // TODO[Mi-L@]: Consider using switch on bitmask also (using valueof).
+        // TODO[Mi-L@]: Consider using switch also on bitmask (using valueof).
         canUseNativeSwitch = expression.getExprType() != Expression.ExpressionType.BOOLEAN &&
                 expression.getExprType() != Expression.ExpressionType.BITMASK;
 

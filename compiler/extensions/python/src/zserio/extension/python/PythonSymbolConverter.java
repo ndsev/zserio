@@ -3,6 +3,11 @@ package zserio.extension.python;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+/**
+ * Python symbol converter.
+ *
+ * Provides conversion of Zserio symbol names to names used in Python generated API.
+ */
 public class PythonSymbolConverter
 {
     public static String symbolToModule(String pythonSymbolName)

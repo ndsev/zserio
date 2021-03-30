@@ -3,6 +3,11 @@ package zserio.extension.python;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ExpressionFormattingPolicy;
 
+/**
+ * FreeMarker template data context for all emitters.
+ *
+ * Holds all parameters used by FreeMarker template data.
+ */
 class TemplateDataContext
 {
     public TemplateDataContext(PythonExtensionParameters pythonParameters)

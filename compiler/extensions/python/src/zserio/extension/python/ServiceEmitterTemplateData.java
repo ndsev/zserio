@@ -9,6 +9,9 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * FreeMarker template data for ServiceEmitter.
+ */
 public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
@@ -54,12 +57,12 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             final ZserioType responseType = serviceMethod.getResponseType();
             final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseType);
             importCollector.importType(pythonResponseType);
-            responseTypeFullName = pythonResponseType.getFullName();
+            responseTypeFullName = PythonFullNameFormatter.getFullName(pythonResponseType);
 
             final ZserioType requestType = serviceMethod.getRequestType();
             final PythonNativeType pythonRequestType = typeMapper.getPythonType(requestType);
             importCollector.importType(pythonRequestType);
-            requestTypeFullName = pythonRequestType.getFullName();
+            requestTypeFullName = PythonFullNameFormatter.getFullName(pythonRequestType);
         }
 
         public String getName()

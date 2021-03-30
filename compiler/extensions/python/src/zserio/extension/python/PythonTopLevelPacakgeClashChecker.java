@@ -6,6 +6,11 @@ import zserio.extension.common.DefaultTreeWalker;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ZserioToolPrinter;
 
+/**
+ * Top level package name clash checker.
+ *
+ * Checks that top level packages don't clash with used Python modules or packages - e.g. 'typing'.
+ */
 class PythonTopLevelPacakgeClashChecker extends DefaultTreeWalker
 {
     @Override

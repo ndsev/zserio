@@ -7,6 +7,9 @@ import zserio.ast.CompoundType;
 import zserio.ast.Field;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Base class for compound types template data for FreeMarker.
+ */
 public class CompoundTypeTemplateData extends UserTypeTemplateData
 {
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)

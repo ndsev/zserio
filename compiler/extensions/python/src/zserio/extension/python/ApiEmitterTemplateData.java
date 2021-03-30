@@ -6,14 +6,17 @@ import java.util.List;
 import java.util.ArrayList;
 
 import zserio.ast.PackageName;
+import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.tools.HashUtil;
 
+/**
+ * FreeMarker template data for ApiEmitter.
+ */
 public class ApiEmitterTemplateData extends PythonTemplateData
 {
-    public ApiEmitterTemplateData(TemplateDataContext context, PackageName packageName)
+    public ApiEmitterTemplateData(TemplateDataContext context)
     {
         super(context);
-        this.packageName = packageName;
     }
 
     public Iterable<ApiImport> getSubpackages()
@@ -78,21 +81,22 @@ public class ApiEmitterTemplateData extends PythonTemplateData
         private final String symbol;
     }
 
-    void addSubpackage(String subpackage)
+    void addSubpackage(PackageName subpackageName)
     {
         // please note that adding of the same subpackage can be called several times
-        final String modulePath = PythonFullNameFormatter.getFullModuleImportName(packageName, subpackage);
-        subpackages.add(new ApiImport(modulePath, subpackage));
+        final String modulePath = PythonFullNameFormatter.getModuleFullName(subpackageName, API_MODULE_NAME);
+        final String symbolName = subpackageName.getIdList().get(subpackageName.getIdList().size() - 1);
+        subpackages.add(new ApiImport(modulePath, symbolName));
     }
 
-    void addPackageSymbol(String symbolName)
+    void addPythonSymbol(PythonNativeSymbol nativeSymbol)
     {
-        final String modulePath = PythonFullNameFormatter.getFullModuleImportName(packageName, symbolName);
-        packageSymbols.add(new ApiImport(modulePath, symbolName));
+        final String modulePath = PythonFullNameFormatter.getModuleFullName(nativeSymbol);
+        packageSymbols.add(new ApiImport(modulePath, nativeSymbol.getName()));
     }
-
-    private final PackageName packageName;
 
     private final Set<ApiImport> subpackages = new TreeSet<ApiImport>();
     private final List<ApiImport> packageSymbols = new ArrayList<ApiImport>();
+
+    private final static String API_MODULE_NAME = "api";
 }

@@ -10,6 +10,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
+/**
+ * FreeMarker template data for compound functions, used from various template data.
+ */
 public final class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(TemplateDataContext context, CompoundType compoundType,
@@ -39,7 +42,7 @@ public final class CompoundFunctionTemplateData
             importCollector.importType(nativeType);
 
             name = AccessorNameFormatter.getFunctionName(function);
-            returnPythonTypeName = nativeType.getFullName();
+            returnPythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
             final ExpressionFormatter pythonExpressionFormatter =
                     context.getPythonExpressionFormatter(importCollector);
             resultExpression = pythonExpressionFormatter.formatGetter(function.getResultExpression());
