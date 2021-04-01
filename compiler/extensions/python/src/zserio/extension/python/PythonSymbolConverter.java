@@ -51,9 +51,16 @@ public class PythonSymbolConverter
 
     private static String insertUnderscoresToCamelCase(String symbolName)
     {
-        return CAMEL_CASE_PATTERN.matcher(symbolName).replaceAll(REPLACEMENT_WITH_UNDERSCORE);
+        String underscoredSymbolName =
+                CAMEL_CASE_PATTERN_1.matcher(symbolName).replaceAll(REPLACEMENT_WITH_UNDERSCORE);
+        underscoredSymbolName =
+                CAMEL_CASE_PATTERN_2.matcher(underscoredSymbolName).replaceAll(REPLACEMENT_WITH_UNDERSCORE);
+
+        return underscoredSymbolName;
     }
 
-    private static final Pattern CAMEL_CASE_PATTERN = Pattern.compile("([a-z])([A-Z])");
+    private static final Pattern CAMEL_CASE_PATTERN_1 = Pattern.compile("([a-z])([A-Z])");
+    private static final Pattern CAMEL_CASE_PATTERN_2 = Pattern.compile("([0-9A-Z])([A-Z][a-z])");
+
     private static final String REPLACEMENT_WITH_UNDERSCORE = "$1_$2";
 }

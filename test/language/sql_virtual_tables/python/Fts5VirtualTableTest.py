@@ -21,7 +21,7 @@ class Fts5VirtualTableTest(unittest.TestCase):
     def testDeleteTable(self):
         self.assertTrue(self._isTableInDb())
 
-        testTable = self._database.fts5virtual_table
+        testTable = self._database.fts5_virtual_table
         testTable.delete_table()
         self.assertFalse(self._isTableInDb())
 
@@ -29,7 +29,7 @@ class Fts5VirtualTableTest(unittest.TestCase):
         self.assertTrue(self._isTableInDb())
 
     def testReadWithoutCondition(self):
-        testTable = self._database.fts5virtual_table
+        testTable = self._database.fts5_virtual_table
 
         writtenRows = self._createFts5VirtualTableRows()
         testTable.write(writtenRows)
@@ -42,7 +42,7 @@ class Fts5VirtualTableTest(unittest.TestCase):
         self.assertTrue(len(writtenRows), numReadRows)
 
     def testReadWithCondition(self):
-        testTable = self._database.fts5virtual_table
+        testTable = self._database.fts5_virtual_table
 
         writtenRows = self._createFts5VirtualTableRows()
         testTable.write(writtenRows)
@@ -55,7 +55,7 @@ class Fts5VirtualTableTest(unittest.TestCase):
             self.assertEqual(writtenRows[expectedRowNum], readRow)
 
     def testUpdate(self):
-        testTable = self._database.fts5virtual_table
+        testTable = self._database.fts5_virtual_table
 
         writtenRows = self._createFts5VirtualTableRows()
         testTable.write(writtenRows)
