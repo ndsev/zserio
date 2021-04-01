@@ -115,9 +115,9 @@ class ComplexTypesServiceTest(unittest.TestCase):
         requestData = self.api.RequestData(self.api.ColorModel.RGB, offsets, data)
         request = self.api.Request(self.api.ColorModel.RGB, requestData)
 
-        self.assertEqual(length, self.client.get_length_method(request).length)
+        self.assertEqual(length, self.client.get_length(request).length)
 
-        response = self.client.swap_models_method(request)
+        response = self.client.swap_models(request)
         self.assertEqual(length, response.length)
 
         cmykData = response.data.cmyk_data
@@ -142,9 +142,9 @@ class ComplexTypesServiceTest(unittest.TestCase):
         requestData = self.api.RequestData(self.api.ColorModel.CMYK, offsets, data)
         request = self.api.Request(self.api.ColorModel.CMYK, requestData)
 
-        self.assertEqual(length, self.client.get_length_method(request).length)
+        self.assertEqual(length, self.client.get_length(request).length)
 
-        response = self.client.swap_models_method(request)
+        response = self.client.swap_models(request)
         self.assertEqual(length, response.length)
 
         rgbData = response.data.rgb_data

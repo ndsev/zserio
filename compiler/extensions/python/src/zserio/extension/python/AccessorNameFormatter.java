@@ -3,6 +3,7 @@ package zserio.extension.python;
 import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Parameter;
+import zserio.ast.ServiceMethod;
 
 /**
  * Accessor name formatter.
@@ -35,6 +36,11 @@ class AccessorNameFormatter
     public static String getPropertyName(Parameter param)
     {
         return PythonSymbolConverter.toLowerSnakeCase(param.getName());
+    }
+
+    public static String getServiceClientMethodName(ServiceMethod method)
+    {
+        return PythonSymbolConverter.toLowerSnakeCase(method.getName());
     }
 
     private static final String INDICATOR_NAME_PREFIX = "is_";

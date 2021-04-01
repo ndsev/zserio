@@ -45,7 +45,7 @@ class ${name}:
             self._service_client = service_client
 <#list methodList as method>
 
-        def ${method.snakeCaseName}_method(self, request: ${method.requestTypeFullName}, <#rt>
+        def ${method.clientMethodName}(self, request: ${method.requestTypeFullName}, <#rt>
                 <#lt>context: typing.Any = None) -> ${method.responseTypeFullName}:
             response_data = self._service_client.call_method("${method.name}", zserio.ServiceData(request), context)
             reader = zserio.BitStreamReader(response_data)

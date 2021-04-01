@@ -15,6 +15,8 @@ import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Parameter;
 import zserio.ast.ScopeSymbol;
+import zserio.ast.ServiceMethod;
+import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
@@ -67,11 +69,23 @@ class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
         checkCompoundType(sqlDatabaseType, SqlDatabaseEmitter.TEMPLATE_SOURCE_NAME);
     }
 
+    @Override
+    public void beginService(ServiceType serviceType) throws ZserioExtensionException
+    {
+        final SymbolNameChecker symbolNameChecker = new SymbolNameChecker();
+
+        for (ServiceMethod method : serviceType.getMethodList())
+        {
+            final String methodName = AccessorNameFormatter.getServiceClientMethodName(method);
+            symbolNameChecker.check(method, methodName, "Method");
+        }
+    }
+
     private void checkCompoundType(CompoundType compoundType,
             String templateSourceName) throws ZserioExtensionException
     {
-        final SymbolNameChecker symbolNameChecker =
-                new SymbolNameChecker(compoundType, templateSourceName);
+        final CompoundSymbolNameChecker symbolNameChecker =
+                new CompoundSymbolNameChecker(compoundType, templateSourceName);
 
         for (Field field : compoundType.getFields())
         {
@@ -94,7 +108,23 @@ class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
 
     private static class SymbolNameChecker
     {
-        public SymbolNameChecker(CompoundType compoundType, String templateSourceName)
+        private void check(ScopeSymbol scopeSymbol, String generatedName, String symbolDescription)
+                throws ZserioExtensionException
+        {
+            if (generatedName.startsWith("_"))
+            {
+                ZserioToolPrinter.printError(scopeSymbol.getLocation(),
+                        "Invalid " + symbolDescription.toLowerCase(Locale.ENGLISH) + " name '" + generatedName +
+                        "' generated for symbol '" + scopeSymbol.getName() + "'. " +
+                        symbolDescription + " names cannot start with '_'!");
+                throw new ZserioExtensionException(symbolDescription + " name error detected!");
+            }
+        }
+    }
+
+    private static class CompoundSymbolNameChecker extends SymbolNameChecker
+    {
+        public CompoundSymbolNameChecker(CompoundType compoundType, String templateSourceName)
                 throws ZserioExtensionException
         {
             apiMethods = getTemplateApiMethods(templateSourceName);
@@ -120,14 +150,7 @@ class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
         private void check(ScopeSymbol scopeSymbol, String generatedName, String symbolDescription)
                 throws ZserioExtensionException
         {
-            if (generatedName.startsWith("_"))
-            {
-                ZserioToolPrinter.printError(scopeSymbol.getLocation(),
-                        "Invalid " + symbolDescription.toLowerCase(Locale.ENGLISH) + " name '" + generatedName +
-                        "' generated for symbol '" + scopeSymbol.getName() + "'. " +
-                        symbolDescription + " names cannot start with '_'!");
-                throw new ZserioExtensionException(symbolDescription + " name error detected!");
-            }
+            super.check(scopeSymbol, generatedName, symbolDescription);
 
             if (apiMethods.contains(generatedName))
             {

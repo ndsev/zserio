@@ -15,6 +15,10 @@ class GeneratedSymbolsErrorTest(unittest.TestCase):
                                cls.errors)
         compileErroneousZserio(__file__, "generated_symbols/choice_public_method_property_clash_error.zs",
                                cls.errors)
+        compileErroneousZserio(__file__, "generated_symbols/service_invalid_method_name_private_error.zs",
+                               cls.errors)
+        compileErroneousZserio(__file__, "generated_symbols/service_invalid_method_name_reserved_error.zs",
+                               cls.errors)
         compileErroneousZserio(__file__, "generated_symbols/sql_database_connection_property_clash_error.zs",
                                cls.errors)
         compileErroneousZserio(__file__,
@@ -85,6 +89,26 @@ class GeneratedSymbolsErrorTest(unittest.TestCase):
             [
                 ":6:14: Property name 'write' generated for symbol 'write' clashes with generated API method!",
                 "[ERROR] Python Generator: Property name clash detected!"
+            ]
+        )
+
+    def testServiceInvalidMethodNamePrivate(self):
+        assertErrorsPresent(self,
+            "generated_symbols/service_invalid_method_name_private_error.zs",
+            [
+                ":11:14: Invalid method name '_service' generated for symbol '_service'. " +
+                "Method names cannot start with '_'!",
+                "[ERROR] Python Generator: Method name error detected!"
+            ]
+        )
+
+    def testServiceInvalidMethodNameReserved(self):
+        assertErrorsPresent(self,
+            "generated_symbols/service_invalid_method_name_reserved_error.zs",
+            [
+                ":11:14: Invalid method name '__eq__' generated for symbol '__eq__'. " +
+                "Method names cannot start with '_'!",
+                "[ERROR] Python Generator: Method name error detected!"
             ]
         )
 

@@ -53,6 +53,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         {
             name = serviceMethod.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
+            clientMethodName = AccessorNameFormatter.getServiceClientMethodName(serviceMethod);
 
             final ZserioType responseType = serviceMethod.getResponseType();
             final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseType);
@@ -75,6 +76,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return snakeCaseName;
         }
 
+        public String getClientMethodName()
+        {
+            return clientMethodName;
+        }
+
         public String getResponseTypeFullName()
         {
             return responseTypeFullName;
@@ -87,6 +93,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String snakeCaseName;
+        private final String clientMethodName;
         private final String responseTypeFullName;
         private final String requestTypeFullName;
     }

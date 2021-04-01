@@ -22,8 +22,8 @@ class ServiceEmitter extends PythonDefaultEmitter
 
         final ServiceEmitterTemplateData templateData =
                 new ServiceEmitterTemplateData(getTemplateDataContext(), serviceType);
-        processSourceTemplate(TEMPLATE_NAME, templateData, serviceType);
+        processSourceTemplate(TEMPLATE_SOURCE_NAME, templateData, serviceType);
     }
 
-    private static final String TEMPLATE_NAME = "Service.py.ftl";
+    static final String TEMPLATE_SOURCE_NAME = "Service.py.ftl";
 }
