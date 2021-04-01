@@ -31,6 +31,15 @@ CMYK_VALUES = [
     _convertRgbToCmyk(RGB_VALUES[2])
 ]
 
+class LocalServiceClient(zserio.ServiceClientInterface):
+    def __init__(self, service):
+        self._service = service
+
+    def call_method(self, method_name, request, context = None):
+        response = self._service.call_method(method_name, request.byte_array, context)
+
+        return response.byte_array
+
 class ComplexTypesServiceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -84,7 +93,7 @@ class ComplexTypesServiceTest(unittest.TestCase):
 
     def setUp(self):
         self.service = self.Service()
-        self.client = self.api.ComplexTypesService.Client(self.service)
+        self.client = self.api.ComplexTypesService.Client(LocalServiceClient(self.service))
 
     def testServiceFullName(self):
         self.assertEqual("service_types.complex_types_service.ComplexTypesService",

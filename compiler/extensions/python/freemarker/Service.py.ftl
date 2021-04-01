@@ -12,10 +12,11 @@ class ${name}:
 </#list>
             }
 
-        def call_method(self, method_name: str, request_data: bytes, context: typing.Any = None) -> bytes:
+        def call_method(self, method_name: str, request_data: bytes, context: typing.Any = None) -> zserio.ServiceData:
             method = self._method_map.get(method_name)
             if not method:
                 raise zserio.ServiceException("${serviceFullName}: Method '%s' does not exist!" % method_name)
+
             return method(request_data, context)
 <#list methodList as method>
 
@@ -25,15 +26,11 @@ class ${name}:
 </#list>
 <#list methodList as method>
 
-        def _${method.snakeCaseName}_method(self, request_data: bytes, context: typing.Any) -> bytes:
+        def _${method.snakeCaseName}_method(self, request_data: bytes, context: typing.Any) -> zserio.ServiceData:
             reader = zserio.BitStreamReader(request_data)
             request = ${method.requestTypeFullName}.from_reader(reader)
 
-            response = self._${method.snakeCaseName}_impl(request, context)
-
-            writer = zserio.BitStreamWriter()
-            response.write(writer)
-            return writer.byte_array
+            return zserio.ServiceData(self._${method.snakeCaseName}_impl(request, context))
 </#list>
 
         SERVICE_FULL_NAME = "${serviceFullName}"
@@ -44,19 +41,15 @@ class ${name}:
         ]
 
     class Client:
-        def __init__(self, service: zserio.ServiceInterface) -> None:
-            self._service = service
+        def __init__(self, service_client: zserio.ServiceClientInterface) -> None:
+            self._service_client = service_client
 <#list methodList as method>
 
         def ${method.snakeCaseName}_method(self, request: ${method.requestTypeFullName}, <#rt>
                 <#lt>context: typing.Any = None) -> ${method.responseTypeFullName}:
-            writer = zserio.BitStreamWriter()
-            request.write(writer)
-            request_data = writer.byte_array
-
-            response_data = self._service.call_method("${method.name}", request_data, context)
-
+            response_data = self._service_client.call_method("${method.name}", zserio.ServiceData(request), context)
             reader = zserio.BitStreamReader(response_data)
             response = ${method.responseTypeFullName}.from_reader(reader)
+
             return response
 </#list>

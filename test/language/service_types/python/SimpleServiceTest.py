@@ -7,6 +7,15 @@ class FakeContext:
     def __init__(self):
         self.seenByService = False
 
+class LocalServiceClient(zserio.ServiceClientInterface):
+    def __init__(self, service):
+        self._service = service
+
+    def call_method(self, method_name, request, context = None):
+        response = self._service.call_method(method_name, request.byte_array, context)
+
+        return response.byte_array
+
 class SimpleServiceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -26,7 +35,7 @@ class SimpleServiceTest(unittest.TestCase):
 
     def setUp(self):
         self.service = self.Service()
-        self.client = self.api.SimpleService.Client(self.service)
+        self.client = self.api.SimpleService.Client(LocalServiceClient(self.service))
 
     def testServiceFullName(self):
         self.assertEqual("service_types.simple_service.SimpleService",
