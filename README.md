@@ -40,10 +40,12 @@ what writers will be able to fill in.
 Although it does not have a wire format, we have added some convenience keywords lately that encapsulate some
 functionality. You can find more information on [Zserio Invisibles](doc/ZserioInvisibles.md).
 
-At the moment the following languages are supported
-- C++
-- Java
-- Python
+At the moment the following extensions are available
+- [C++ Generator](compiler/extensions/cpp/README.md)
+- [Java Generator](compiler/extensions/java/README.md)
+- [Python Generator](compiler/extensions/python/README.md)
+- [Doc Generator](compiler/extensions/doc/README.md)
+- [XML Generator](compiler/extensions/xml/README.md)
 
 ## Quick introduction
 
