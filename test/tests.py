@@ -147,7 +147,7 @@ def _runPylint(sources, options, disableOption=None):
         pylintOptions.append("--disable=%s" % disableOption)
 
     if "PYLINT_EXTRA_ARGS" in os.environ:
-        pylintOptions.append(os.environ["PYLINT_EXTRA_ARGS"])
+        pylintOptions += os.environ["PYLINT_EXTRA_ARGS"].split()
 
     pylintRunner = pylint.lint.Run(pylintOptions, do_exit=False)
     if pylintRunner.linter.msg_status:
