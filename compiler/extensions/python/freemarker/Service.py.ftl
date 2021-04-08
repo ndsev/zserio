@@ -8,7 +8,7 @@ class ${name}:
         def __init__(self) -> None:
             self._method_map = {
 <#list methodList as method>
-                "${method.name}": self._${method.snakeCaseName}_method<#if method?has_next>,</#if>
+                self._METHOD_NAMES[${method?index}]: self._${method.snakeCaseName}_method<#if method?has_next>,</#if>
 </#list>
             }
 
@@ -18,6 +18,14 @@ class ${name}:
                 raise zserio.ServiceException("${serviceFullName}: Method '%s' does not exist!" % method_name)
 
             return method(request_data, context)
+
+        @property
+        def service_full_name(self) -> str:
+            return self._SERVICE_FULL_NAME
+
+        @property
+        def method_names(self) -> typing.List:
+            return self._METHOD_NAMES
 <#list methodList as method>
 
         def _${method.snakeCaseName}_impl(self, request: ${method.requestTypeFullName}, <#rt>
@@ -33,8 +41,8 @@ class ${name}:
             return zserio.ServiceData(self._${method.snakeCaseName}_impl(request, context))
 </#list>
 
-        SERVICE_FULL_NAME = "${serviceFullName}"
-        METHOD_NAMES = [
+        _SERVICE_FULL_NAME = "${serviceFullName}"
+        _METHOD_NAMES = [
 <#list methodList as method>
             "${method.name}"<#if method?has_next>,</#if>
 </#list>

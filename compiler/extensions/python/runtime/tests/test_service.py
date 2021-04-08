@@ -27,6 +27,10 @@ class ServiceTest(unittest.TestCase):
         service_interface = ServiceInterface()
         with self.assertRaises(NotImplementedError):
             service_interface.call_method("method", bytes(), None)
+        with self.assertRaises(NotImplementedError):
+            service_interface.service_full_name()
+        with self.assertRaises(NotImplementedError):
+            service_interface.method_names()
 
     def test_service_client_interface(self):
         service_client_interface = ServiceClientInterface()

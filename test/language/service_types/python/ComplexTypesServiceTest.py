@@ -97,11 +97,11 @@ class ComplexTypesServiceTest(unittest.TestCase):
 
     def testServiceFullName(self):
         self.assertEqual("service_types.complex_types_service.ComplexTypesService",
-                         self.api.ComplexTypesService.Service.SERVICE_FULL_NAME)
+                         self.service.service_full_name)
 
     def testMethodNames(self):
-        self.assertEqual("swapModels", self.api.ComplexTypesService.Service.METHOD_NAMES[0])
-        self.assertEqual("getLength", self.api.ComplexTypesService.Service.METHOD_NAMES[1])
+        self.assertEqual("swapModels", self.service.method_names[0])
+        self.assertEqual("getLength", self.service.method_names[1])
 
     def testRgbToCmyk(self):
         length = 10000

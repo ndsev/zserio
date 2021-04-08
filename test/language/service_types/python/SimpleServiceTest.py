@@ -38,11 +38,10 @@ class SimpleServiceTest(unittest.TestCase):
         self.client = self.api.SimpleService.Client(LocalServiceClient(self.service))
 
     def testServiceFullName(self):
-        self.assertEqual("service_types.simple_service.SimpleService",
-                         self.api.SimpleService.Service.SERVICE_FULL_NAME)
+        self.assertEqual("service_types.simple_service.SimpleService", self.service.service_full_name)
 
     def testMethodNames(self):
-        self.assertEqual("powerOfTwo", self.api.SimpleService.Service.METHOD_NAMES[0])
+        self.assertEqual("powerOfTwo", self.service.method_names[0])
 
     def testPowerOfTwo(self):
         request = self.api.Request(13)

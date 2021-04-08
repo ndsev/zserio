@@ -66,6 +66,24 @@ class ServiceInterface:
         """
         raise NotImplementedError()
 
+    @property
+    def service_full_name(self) -> str:
+        """
+        Gets service full name.
+
+        :returns: Service full name.
+        """
+        raise NotImplementedError()
+
+    @property
+    def method_names(self) -> typing.List:
+        """
+        Gets list of service method names.
+
+        :returns: List of service method names.
+        """
+        raise NotImplementedError()
+
 class ServiceClientInterface:
     """
     Generic interface for all Zserio services on client side.
