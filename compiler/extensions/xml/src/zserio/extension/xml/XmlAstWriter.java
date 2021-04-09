@@ -48,6 +48,8 @@ import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
+import zserio.ast.Rule;
+import zserio.ast.RuleGroup;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
@@ -233,6 +235,14 @@ public class XmlAstWriter implements ZserioAstVisitor
     }
 
     @Override
+    public void visitRuleGroup(RuleGroup ruleGroup)
+    {
+        final Element xmlElement = xmlDoc.createElement("RULE_GROUP");
+        xmlElement.setAttribute("name", ruleGroup.getName());
+        visitAstNode(ruleGroup, xmlElement);
+    }
+
+    @Override
     public void visitField(Field field)
     {
         final Element fieldXmlElement = xmlDoc.createElement("FIELD");
@@ -353,6 +363,14 @@ public class XmlAstWriter implements ZserioAstVisitor
         if (pubsubMessage.isSubscribed())
             xmlElement.setAttribute("subscribe", "true");
         visitAstNode(pubsubMessage, xmlElement);
+    }
+
+    @Override
+    public void visitRule(Rule rule)
+    {
+        final Element xmlElement = xmlDoc.createElement("RULE");
+        xmlElement.setAttribute("ruleId", rule.getRuleId());
+        visitAstNode(rule, xmlElement);
     }
 
     @Override
