@@ -69,6 +69,8 @@ PACKAGE             : 'package' ;
 PUBSUB              : 'pubsub' ;
 PUBLISH             : 'publish' ;
 RETURN              : 'return' ;
+RULE                : 'rule' ;
+RULE_GROUP          : 'rule_group' ;
 SERVICE             : 'service' ;
 SQL                 : 'sql' ;
 SQL_DATABASE        : 'sql_database' ;

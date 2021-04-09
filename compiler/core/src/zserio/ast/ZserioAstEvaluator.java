@@ -120,6 +120,13 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
+    public void visitRule(Rule rule)
+    {
+        rule.visitChildren(this);
+        rule.evaluate();
+    }
+
+    @Override
     public void visitExpression(Expression expression)
     {
         expression.visitChildren(this);

@@ -34,6 +34,13 @@ public interface ZserioAstVisitor
     public void visitConstant(Constant constant);
 
     /**
+     * Visits rule group definition.
+     *
+     * @param ruleGroup Rule group AST node.
+     */
+    public void visitRuleGroup(RuleGroup ruleGroup);
+
+    /**
      * Visits subtype declaration.
      *
      * @param subtype Subtype AST node.
@@ -165,6 +172,13 @@ public interface ZserioAstVisitor
      * @param pubsubMessage Pub/Sub message AST node.
      */
     public void visitPubsubMessage(PubsubMessage pubsubMessage);
+
+    /**
+     * Visits a single rule.
+     *
+     * @param rule Rule AST node.
+     */
+    public void visitRule(Rule rule);
 
     /**
      * Visits function definition.

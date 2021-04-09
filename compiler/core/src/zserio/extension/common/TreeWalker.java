@@ -9,6 +9,7 @@ import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -85,6 +86,15 @@ public interface TreeWalker
      * @throws In case of any internal error of the extension.
      */
     public void beginConst(Constant constant) throws ZserioExtensionException;
+
+    /**
+     * Called when RuleGroup AST node begins.
+     *
+     * @param ruleGroup Current RuleGroup AST node.
+     *
+     * @throws In case of any internal error of the extension.
+     */
+    public void beginRuleGroup(RuleGroup ruleGroup) throws ZserioExtensionException;
 
     /**
      * Called when Subtype AST node begins.

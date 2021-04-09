@@ -12,12 +12,15 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
 import zserio.ast.Function;
+import zserio.ast.Import;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
 import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.ast.Root;
+import zserio.ast.RuleGroup;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
@@ -31,7 +34,7 @@ import zserio.tools.ZserioToolPrinter;
 /**
  * Clash checker which checks clashing of identifiers with the given list of reserved keywords.
  */
-public class ReservedKeywordsClashChecker extends DefaultTreeWalker
+public class ReservedKeywordsClashChecker implements TreeWalker
 {
     /**
      * Constructor.
@@ -52,6 +55,14 @@ public class ReservedKeywordsClashChecker extends DefaultTreeWalker
     }
 
     @Override
+    public void beginRoot(Root root) throws ZserioExtensionException
+    {}
+
+    @Override
+    public void endRoot(Root root) throws ZserioExtensionException
+    {}
+
+    @Override
     public void beginPackage(Package pkg) throws ZserioExtensionException
     {
         for (String id : pkg.getPackageName().getIdList())
@@ -59,9 +70,23 @@ public class ReservedKeywordsClashChecker extends DefaultTreeWalker
     }
 
     @Override
+    public void endPackage(Package pkg) throws ZserioExtensionException
+    {}
+
+    @Override
+    public void beginImport(Import importNode) throws ZserioExtensionException
+    {}
+
+    @Override
     public void beginConst(Constant constant) throws ZserioExtensionException
     {
         checkId(constant, "Constant");
+    }
+
+    @Override
+    public void beginRuleGroup(RuleGroup ruleGroup) throws ZserioExtensionException
+    {
+        // rule group is only other form of documentation
     }
 
     @Override

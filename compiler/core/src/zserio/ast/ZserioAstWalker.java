@@ -33,6 +33,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitRuleGroup(RuleGroup ruleGroup)
+    {
+        ruleGroup.visitChildren(this);
+    }
+
+    @Override
     public void visitSubtype(Subtype subtype)
     {
         subtype.visitChildren(this);
@@ -144,6 +150,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     public void visitPubsubMessage(PubsubMessage pubsubMessage)
     {
         pubsubMessage.visitChildren(this);
+    }
+
+    @Override
+    public void visitRule(Rule rule)
+    {
+        rule.visitChildren(this);
     }
 
     @Override

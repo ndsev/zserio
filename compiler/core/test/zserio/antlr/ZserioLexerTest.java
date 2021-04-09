@@ -121,6 +121,8 @@ public class ZserioLexerTest
                 "publish " +
                 "pubsub " +
                 "return " +
+                "rule" +
+                "rule_group" +
                 "service " +
                 "sql " +
                 "sql_database " +
@@ -185,6 +187,8 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.PUBLISH);
         checkToken(lexer, ZserioLexer.PUBSUB);
         checkToken(lexer, ZserioLexer.RETURN);
+        checkToken(lexer, ZserioLexer.RULE);
+        checkToken(lexer, ZserioLexer.RULE_GROUP);
         checkToken(lexer, ZserioLexer.SERVICE);
         checkToken(lexer, ZserioLexer.SQL);
         checkToken(lexer, ZserioLexer.SQL_DATABASE);

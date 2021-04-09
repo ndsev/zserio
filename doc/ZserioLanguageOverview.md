@@ -44,6 +44,8 @@ described in zserio, giving the developer overall control of the data schema use
 
 [Comments](#comments)
 
+[Rules](#rules)
+
 [Packages and Imports](#packages-and-imports)
 
 [Templates](#templates)
@@ -225,6 +227,8 @@ varsize      | `[byte 1]: 1 bit has next byte, 7 bits value`
  <sup></sup> | `[byte 4]: 1 bit has next byte, 7 bits value`
  <sup></sup> | `[byte 5]: 8 bits value`
 
+> Note that `varsize` is available since `2.0.0`.
+
 ### Boolean Type
 
 In zserio, booleans are denoted by `bool`. A boolean is stored in a single bit. Both `true` and `false` are
@@ -268,6 +272,7 @@ struct StructureWithExternalField
     bit:7   numberC;
 };
 ```
+> Since `1.4.0`
 
 [top](#language-guide)
 
@@ -381,6 +386,8 @@ bitmask (e.g. `NONE = 0`). Such `NONE` mask can be useful in expressions.
 
 The bitmask value represented by integer type can be referenced as `valueof(Permission.EXECUTABLE)`,
 see [valueof Operator](#valueof-operator).
+
+> Since `2.0.0`
 
 [top](#language-guide)
 
@@ -1309,6 +1316,36 @@ line, it is rendered without indentation.
 
 [top](#language-guide)
 
+## Rules
+
+Zserio also provides a way how to organize semantic restrictions for the schema which cannot be easily defined
+using constraints. Rules are defined within rule groups and are described using
+[documentation comments](#comments). Each rule have it's own identifier which is standard Zserio identifier
+extended by `-` character. The rule ID must be unique (using case insensitive comparison) within a single Zserio
+package.
+
+**Example**
+```
+rule_group SchemaRules
+{
+    /*!
+    Description of the semantic rule.
+
+    ![Rule 01](../assets/rule-01-picture.png)
+    !*/
+    rule "rule-01";
+
+    /*!
+    Another rule.
+    !*/
+    rule "rule-02";
+};
+```
+
+> Since `2.4.0`
+
+[top](#language-guide)
+
 ## Packages and Imports
 
 Complex zserio specifications should be split into multiple packages stored in separate source files. Every
@@ -1546,6 +1583,8 @@ However, it's allowed to do so in the different packages (which are not imported
 template will be instantiated as different type in the other package. Because of that, the `instantiate`
 command should be considered very carefully and used only if it's really necessary.
 
+> Since `1.4.0`
+
 [top](#language-guide)
 
 ## Service Types
@@ -1585,7 +1624,9 @@ The types must be non-parameterized compound types. Parameterized types are not 
 are not stored in the bit stream. However parameterized types can be still used in the response or request
 types' subtree.
 
-[[top]](#language-guide)
+> Since `2.0.0`
+
+[top](#language-guide)
 
 ## Pubsub Types
 
@@ -1635,6 +1676,10 @@ as an example of a concrete Pub/Sub pattern specification.
 
 Message type must be a non-parameterized compound type. Parameterized types are not allowed since the parameters
 are not stored in the bit stream. However parameterized types can be still used in the type's subtree.
+
+> Since `2.0.0`
+
+[top](#language-guide)
 
 ## SQLite Extension
 

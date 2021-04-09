@@ -153,7 +153,15 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
-    public Constant visitConstDeclaration(ZserioParser.ConstDeclarationContext ctx)
+    public PackageSymbol visitSymbolDefinition(ZserioParser.SymbolDefinitionContext ctx)
+    {
+        final PackageSymbol symbol = (PackageSymbol)super.visitSymbolDefinition(ctx);
+        currentPackage.addSymbol(symbol);
+        return symbol;
+    }
+
+    @Override
+    public Constant visitConstDefinition(ZserioParser.ConstDefinitionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final TypeInstantiation typeInstantiation = visitTypeInstantiation(ctx.typeInstantiation());
@@ -165,9 +173,33 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final Constant constant = new Constant(location, currentPackage, typeInstantiation, name,
                 valueExpression, docComments);
 
-        currentPackage.addSymbol(constant);
-
         return constant;
+    }
+
+    @Override
+    public RuleGroup visitRuleGroupDefinition(ZserioParser.RuleGroupDefinitionContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.id().getStart());
+
+        final String name = ctx.id().getText();
+
+        final List<Rule> rules = new ArrayList<Rule>();
+        for (ZserioParser.RuleDefinitionContext ruleDefinitionCtx : ctx.ruleDefinition())
+            rules.add(visitRuleDefinition(ruleDefinitionCtx));
+
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
+
+        return new RuleGroup(location, currentPackage, name, rules, docComments);
+    }
+
+    @Override
+    public Rule visitRuleDefinition(ZserioParser.RuleDefinitionContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.expression().getStart());
+        final Expression ruleIdExpression = (Expression)visit(ctx.expression());
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
+
+        return new Rule(location, ruleIdExpression, docComments);
     }
 
     @Override
@@ -536,7 +568,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation location = new AstLocation(ctx.id().getStart());
         final String name = ctx.id().getText();
 
-        List<ServiceMethod> methods = new ArrayList<ServiceMethod>();
+        final List<ServiceMethod> methods = new ArrayList<ServiceMethod>();
         for (ZserioParser.ServiceMethodDefinitionContext methodDefinitionCtx : ctx.serviceMethodDefinition())
             methods.add(visitServiceMethodDefinition(methodDefinitionCtx));
 
@@ -570,7 +602,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
 
         final String name = ctx.id().getText();
 
-        List<PubsubMessage> messages = new ArrayList<PubsubMessage>();
+        final List<PubsubMessage> messages = new ArrayList<PubsubMessage>();
         for (ZserioParser.PubsubMessageDefinitionContext messageDefinitionCtx : ctx.pubsubMessageDefinition())
             messages.add(visitPubsubMessageDefinition(messageDefinitionCtx));
 

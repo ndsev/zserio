@@ -24,6 +24,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitRuleGroup(RuleGroup ruleGroup)
+    {}
+
+    @Override
     public void visitSubtype(Subtype subtype)
     {}
 
@@ -97,6 +101,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
 
     @Override
     public void visitPubsubMessage(PubsubMessage pubsubMessage)
+    {}
+
+    @Override
+    public void visitRule(Rule rule)
     {}
 
     @Override

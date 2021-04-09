@@ -9,6 +9,7 @@ import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -45,6 +46,10 @@ public abstract class DefaultTreeWalker implements TreeWalker
 
     @Override
     public void beginConst(Constant constant) throws ZserioExtensionException
+    {}
+
+    @Override
+    public void beginRuleGroup(RuleGroup ruleGroup) throws ZserioExtensionException
     {}
 
     @Override

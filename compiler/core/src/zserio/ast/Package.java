@@ -224,9 +224,12 @@ public class Package extends DocumentableAstNode
         if (!packageName.toString().equals(packageName.toString().toLowerCase(Locale.ENGLISH)))
             throw new ParserException(this, "Package name cannot contain upper case letters!");
 
-        final PackageSymbolValidator validator = new PackageSymbolValidator();
+        final PackageSymbolValidator packageSymbolValidator = new PackageSymbolValidator();
         for (PackageSymbol localSymbol : localSymbols.values())
-            validator.validate(localSymbol.getName(), localSymbol);
+            packageSymbolValidator.validate(localSymbol.getName(), localSymbol);
+
+        final PackageRuleValidator ruleValidator = new PackageRuleValidator();
+        accept(ruleValidator);
     }
 
     /**

@@ -46,11 +46,18 @@ public class ZserioParserTest
     }
 
     @Test
-    public void constDeclaration()
+    public void constDefinition()
     {
-        checkParseTree("constDeclaration", "const uint32 C = 10;",
-                "(constDeclaration const (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
+        checkParseTree("constDefinition", "const uint32 C = 10;",
+                "(constDefinition const (typeInstantiation (typeReference (builtinType (intType uint32)))) " +
                         "(id C) = (expression (literal 10)) ;)");
+    }
+
+    @Test
+    public void ruleDefinition()
+    {
+        checkParseTree("ruleDefinition", "rule \"rule-id-1\";",
+                "(ruleDefinition rule (expression (literal \"rule-id-1\")) ;)");
     }
 
     @Test

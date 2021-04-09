@@ -7,6 +7,7 @@ options
 
 tokens { RSHIFT }
 
+
 // PACKAGE (main rule)
 
 packageDeclaration
@@ -25,7 +26,7 @@ importDeclaration
     ;
 
 languageDirective
-    :   constDeclaration
+    :   symbolDefinition
     |   typeDeclaration
     ;
 
@@ -43,11 +44,31 @@ typeDeclaration
     |   instantiateDeclaration
     ;
 
+symbolDefinition
+    :   constDefinition
+    |   ruleGroupDefinition
+    ;
+
 
 // CONST
 
-constDeclaration
+constDefinition
     :   CONST typeInstantiation id ASSIGN expression SEMICOLON
+    ;
+
+
+// RULES
+
+ruleGroupDefinition
+    :   RULE_GROUP id
+        LBRACE
+        ruleDefinition*
+        RBRACE
+        SEMICOLON
+    ;
+
+ruleDefinition
+    :   RULE expression SEMICOLON // string expression
     ;
 
 

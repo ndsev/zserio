@@ -75,6 +75,19 @@ public class ZserioAstTreeWalker extends ZserioAstWalker
     }
 
     @Override
+    public void visitRuleGroup(RuleGroup ruleGroup)
+    {
+        try
+        {
+            walker.beginRuleGroup(ruleGroup);
+        }
+        catch (ZserioExtensionException e)
+        {
+            throw new UncheckedZserioExtensionException(e);
+        }
+    }
+
+    @Override
     public void visitSubtype(Subtype subtype)
     {
         try
