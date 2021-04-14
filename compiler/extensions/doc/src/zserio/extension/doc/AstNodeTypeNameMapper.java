@@ -24,6 +24,8 @@ import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.ast.Rule;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlConstraint;
@@ -87,6 +89,12 @@ class AstNodeTypeNameMapper
         public void visitConstant(Constant constant)
         {
             typeName = "Constant";
+        }
+
+        @Override
+        public void visitRuleGroup(RuleGroup ruleGroup)
+        {
+            typeName = "RuleGroup";
         }
 
         @Override
@@ -201,6 +209,12 @@ class AstNodeTypeNameMapper
         public void visitPubsubMessage(PubsubMessage pubsubMessage)
         {
             typeName = "PubsubMessage";
+        }
+
+        @Override
+        public void visitRule(Rule rule)
+        {
+            typeName = "Rule";
         }
 
         @Override

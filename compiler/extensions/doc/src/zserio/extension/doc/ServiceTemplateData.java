@@ -16,14 +16,8 @@ public class ServiceTemplateData extends PackageTemplateDataBase
     {
         super(context, serviceType);
 
-        packageName = AstNodeNameMapper.getName(serviceType.getPackage());
         for (ServiceMethod method : serviceType.getMethodList())
             methodList.add(new MethodTemplateData(context, serviceType, method));
-    }
-
-    public String getPackageName()
-    {
-        return packageName;
     }
 
     public Iterable<MethodTemplateData> getMethodList()
@@ -68,6 +62,5 @@ public class ServiceTemplateData extends PackageTemplateDataBase
         private final DocCommentsTemplateData docComments;
     }
 
-    private final String packageName;
     private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
 }

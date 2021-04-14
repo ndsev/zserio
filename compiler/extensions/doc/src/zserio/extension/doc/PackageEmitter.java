@@ -13,6 +13,7 @@ import zserio.ast.EnumType;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -36,8 +37,6 @@ class PackageEmitter extends DefaultTreeWalker
             SymbolCollector symbolCollector, PackageCollector packageCollector, UsedByCollector usedByCollector,
             UsedByChoiceCollector usedByChoiceCollector)
     {
-        super();
-
         this.outputFileManager = outputFileManager;
 
         final String outputDir = docParameters.getOutputDir();
@@ -88,6 +87,13 @@ class PackageEmitter extends DefaultTreeWalker
     {
         final ConstantTemplateData templateData = new ConstantTemplateData(context, constant);
         DocFreeMarkerUtil.processTemplate("constant.html.ftl", templateData, writer);
+    }
+
+    @Override
+    public void beginRuleGroup(RuleGroup ruleGroup) throws ZserioExtensionException
+    {
+        final RulesTemplateData templateData = new RulesTemplateData(context, ruleGroup);
+        DocFreeMarkerUtil.processTemplate("rules.html.ftl",  templateData, writer);
     }
 
     @Override

@@ -330,6 +330,17 @@ a:hover {
   color: ${tokenHoverGreenColor};
 }
 
+.rules .anchor,
+.rules .anchor-md {
+  border-top: none;
+  padding-top: revert;
+  scroll-margin-top: ${headerHeight}rem;
+}
+
+.rules p:last-child {
+  margin-bottom: 0;
+}
+
 #main dd {
   padding-left: 1em;
 }

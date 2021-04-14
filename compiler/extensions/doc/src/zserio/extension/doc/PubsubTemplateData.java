@@ -17,14 +17,8 @@ public class PubsubTemplateData extends PackageTemplateDataBase
     {
         super(context, pubsubType);
 
-        packageName = AstNodeNameMapper.getName(pubsubType.getPackage());
         for (PubsubMessage message : pubsubType.getMessageList())
             messageList.add(new MessageTemplateData(context, pubsubType, message));
-    }
-
-    public String getPackageName()
-    {
-        return packageName;
     }
 
     public Iterable<MessageTemplateData> getMessageList()
@@ -78,6 +72,5 @@ public class PubsubTemplateData extends PackageTemplateDataBase
         private final DocCommentsTemplateData docComments;
     }
 
-    private final String packageName;
     private final List<MessageTemplateData> messageList = new ArrayList<MessageTemplateData>();
 }

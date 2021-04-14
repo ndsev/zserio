@@ -10,6 +10,8 @@ import zserio.ast.DocTagSee;
 import zserio.ast.Expression;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
+import zserio.ast.Rule;
+import zserio.ast.RuleGroup;
 import zserio.ast.ScopeSymbol;
 import zserio.ast.SymbolReference;
 import zserio.ast.TemplateArgument;
@@ -111,6 +113,19 @@ class SymbolTemplateDataCreator
         final String htmlTitle = typeName + " " + name;
         final String htmlLinkPage = createHtmlLinkPage(context, pkg);
         final String htmlLinkAnchor = typeName;
+
+        return new SymbolTemplateData(name, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
+    }
+
+    public static SymbolTemplateData createData(TemplateDataContext context, RuleGroup ruleGroup, Rule rule)
+    {
+        final String name = AstNodeNameMapper.getName(rule);
+        final String typeName = AstNodeTypeNameMapper.getTypeName(rule);
+
+        final Package zserioPackage = AstNodePackageMapper.getPackage(ruleGroup);
+        final String htmlTitle = createHtmlTitle(typeName, zserioPackage);
+        final String htmlLinkPage = createHtmlLinkPage(context, zserioPackage);
+        final String htmlLinkAnchor = name;
 
         return new SymbolTemplateData(name, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
     }

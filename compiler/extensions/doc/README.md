@@ -3,7 +3,8 @@
 Zserio extension which generates HTML documentation from the Zserio schema.
 
 The documentation contains all entities defined in the schema together with well formatted comments,
-provides easy navigation via cross references and implements a simple quick search.
+provides easy navigation via cross references and implements a simple quick search. Single HTML page per each
+package is generated.
 
 It can also generate collaboration diagrams as SVG images.
 
@@ -26,6 +27,14 @@ as self-standing sections wherever in the document, even at the beginning and at
 
 Documentation Generator also distinguish one-liner comments, which are rendered as one-liners also in the
 resulting HTML documentation.
+
+## Rules
+
+Rules are rendered as tables within the package HTML, placed according the definition of an appropriate
+`rule_group`. The particular rules can be currently referenced only from
+[markdown comments](../../../doc/ZserioLanguageOverview.md#markdown-documentation-comments) using an anchor
+which is exactly the *rule id*.
+
 
 ## Resources in Markdown Comments
 

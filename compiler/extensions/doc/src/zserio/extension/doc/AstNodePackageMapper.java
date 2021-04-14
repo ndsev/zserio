@@ -9,6 +9,7 @@ import zserio.ast.EnumType;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -57,6 +58,12 @@ class AstNodePackageMapper
         public void visitConstant(Constant constant)
         {
             pkg = constant.getPackage();
+        }
+
+        @Override
+        public void visitRuleGroup(RuleGroup ruleGroup)
+        {
+            pkg = ruleGroup.getPackage();
         }
 
         @Override

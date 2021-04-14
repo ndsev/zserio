@@ -21,6 +21,8 @@ import zserio.ast.PackageName;
 import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.ast.Rule;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -83,6 +85,12 @@ class AstNodeNameMapper
         public void visitConstant(Constant constant)
         {
             name = constant.getName();
+        }
+
+        @Override
+        public void visitRuleGroup(RuleGroup ruleGroup)
+        {
+            name = ruleGroup.getName();
         }
 
         @Override
@@ -173,6 +181,12 @@ class AstNodeNameMapper
         public void visitPubsubMessage(PubsubMessage pubsubMessage)
         {
             name = pubsubMessage.getName();
+        }
+
+        @Override
+        public void visitRule(Rule rule)
+        {
+            name = rule.getRuleId();
         }
 
         @Override
