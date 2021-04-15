@@ -121,8 +121,8 @@ public class ZserioLexerTest
                 "publish " +
                 "pubsub " +
                 "return " +
-                "rule" +
-                "rule_group" +
+                "rule " +
+                "rule_group " +
                 "service " +
                 "sql " +
                 "sql_database " +
