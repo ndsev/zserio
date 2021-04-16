@@ -23,7 +23,7 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class DocCommentsTemplateData
 {
-    public DocCommentsTemplateData(PackageTemplateDataContext context, List<DocComment> docComments)
+    public DocCommentsTemplateData(ContentTemplateDataContext context, List<DocComment> docComments)
     {
         boolean isDeprecated = false;
 
@@ -65,7 +65,7 @@ public class DocCommentsTemplateData
 
     public static class DocCommentTemplateData
     {
-        public DocCommentTemplateData(PackageTemplateDataContext context, DocCommentClassic docCommentClassic)
+        public DocCommentTemplateData(ContentTemplateDataContext context, DocCommentClassic docCommentClassic)
         {
             boolean isDeprecated = false;
             for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
@@ -90,7 +90,7 @@ public class DocCommentsTemplateData
             this.isOneLiner = docCommentClassic.isOneLiner();
         }
 
-        public DocCommentTemplateData(PackageTemplateDataContext context, DocCommentMarkdown docCommentMarkdown)
+        public DocCommentTemplateData(ContentTemplateDataContext context, DocCommentMarkdown docCommentMarkdown)
         {
             isDeprecated = false;
 
@@ -123,7 +123,7 @@ public class DocCommentsTemplateData
 
         public static class DocParagraphData
         {
-            public DocParagraphData(PackageTemplateDataContext context, DocParagraph docParagraph)
+            public DocParagraphData(ContentTemplateDataContext context, DocParagraph docParagraph)
             {
                 for (DocElement docElement : docParagraph.getDocElements())
                     docElements.add(new DocElementData(context, docElement));
@@ -136,7 +136,7 @@ public class DocCommentsTemplateData
 
             public static class DocElementData
             {
-                public DocElementData(PackageTemplateDataContext context, DocElement docElement)
+                public DocElementData(ContentTemplateDataContext context, DocElement docElement)
                 {
                     final DocMultiline multiline = docElement.getDocMultiline();
                     this.multiline = multiline != null ? new DocMultilineData(context, multiline) : null;
@@ -184,7 +184,7 @@ public class DocCommentsTemplateData
 
         public static class DocMultilineData
         {
-            public DocMultilineData(PackageTemplateDataContext context, DocMultiline docMultiline)
+            public DocMultilineData(ContentTemplateDataContext context, DocMultiline docMultiline)
             {
                 for (DocLine docLine : docMultiline.getLines())
                 {
@@ -202,7 +202,7 @@ public class DocCommentsTemplateData
 
             public static class DocLineElementData
             {
-                DocLineElementData(PackageTemplateDataContext context, DocLineElement docLineElement)
+                DocLineElementData(ContentTemplateDataContext context, DocLineElement docLineElement)
                 {
                     final DocText docText = docLineElement.getDocText();
                     docString = docText != null ?
@@ -231,7 +231,7 @@ public class DocCommentsTemplateData
 
         public static class DocTagSeeData
         {
-            public DocTagSeeData(PackageTemplateDataContext context, DocTagSee docTagSee)
+            public DocTagSeeData(ContentTemplateDataContext context, DocTagSee docTagSee)
             {
                 seeSymbol = SymbolTemplateDataCreator.createData(context,  docTagSee);
             }
@@ -246,7 +246,7 @@ public class DocCommentsTemplateData
 
         public static class DocTagParamData
         {
-            public DocTagParamData(PackageTemplateDataContext context, DocTagParam docTagParam)
+            public DocTagParamData(ContentTemplateDataContext context, DocTagParam docTagParam)
             {
                 name = docTagParam.getParamName();
 
@@ -273,7 +273,7 @@ public class DocCommentsTemplateData
         private final boolean isOneLiner;
     }
 
-    private DocCommentTemplateData createDocCommentTemplateData(PackageTemplateDataContext context,
+    private DocCommentTemplateData createDocCommentTemplateData(ContentTemplateDataContext context,
             DocComment docComment)
     {
         if (docComment instanceof DocCommentMarkdown)

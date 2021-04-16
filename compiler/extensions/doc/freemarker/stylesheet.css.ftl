@@ -37,8 +37,8 @@
 <#assign tokenGreenColor="rgb(0,128,0,0.65)"/>
 <#assign tokenHoverGreenColor="rgb(0,128,0,0.85)"/>
 <#assign deprecatedColor="gray"/>
-<#assign headerNavColor="white"/>
-<#assign headerNavHoverColor="rgb(255,255,255,0.65)"/>
+<#assign headerNavColor="rgb(255,255,255,0.65)"/>
+<#assign headerNavHoverColor="white"/>
 <#assign codeDocColor="gray"/>
 <#-- stylesheet -->
 .anchor:not(h1):not(h2), /* anchors for zserio fields, functions, etc. */
@@ -88,6 +88,23 @@ h2 { /* symbols in package or doc headings */
 
 #header .navbar-nav {
   color: ${headerNavColor};
+  margin-top: 0.25rem;
+  font-size: 1rem;
+}
+
+#header .nav-link {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  color: ${headerNavColor};
+}
+
+#header .nav-link:hover {
+  color: ${headerNavHoverColor};
+}
+
+#header .nav-link.active {
+  color: ${headerNavHoverColor};
+  font-weight: bold;
 }
 
 #header #zserio-logo {
@@ -99,11 +116,15 @@ h2 { /* symbols in package or doc headings */
   fill: ${headerNavHoverColor};
 }
 
-#header #zserio-logo:hover #zserio-logo-z {
+#header #zserio-logo #zserio-logo-z {
   fill: rgba(255, 0, 0, 0.85);
 }
 
-.navbar-nav.navbar-center { /* custom bootstrap extension */
+#header #zserio-logo:hover #zserio-logo-z {
+  fill: rgba(255, 0, 0, 1);
+}
+
+.navbar-center { /* custom bootstrap extension */
   position: absolute;
   left: 50%;
   transform: translatex(-50%);
@@ -153,7 +174,8 @@ h2 { /* symbols in package or doc headings */
   box-shadow: 0 0 0 3px ${borderColorLight};
 }
 
-#symbol_overview {
+#symbol_overview,
+#rules_overview {
   padding-top: ${symbolOverviewPaddingTop}rem;
   overflow-y: auto;
   height: calc(100% - ${searchFormPaddingTop + searchHeight + searchFormPaddingBottom}rem);
@@ -193,6 +215,10 @@ h2 { /* symbols in package or doc headings */
 
 .nav-symbols.active.collapsed {
   display: none;
+}
+
+.nav-rule-groups {
+  margin-left: 1rem;
 }
 
 .nav-link-package.active {
@@ -330,14 +356,14 @@ a:hover {
   color: ${tokenHoverGreenColor};
 }
 
-.rules .anchor,
-.rules .anchor-md {
+.rule_group .anchor,
+.rule_group .anchor-md {
   border-top: none;
   padding-top: revert;
   scroll-margin-top: ${headerHeight}rem;
 }
 
-.rules p:last-child {
+.rule_group p:last-child {
   margin-bottom: 0;
 }
 

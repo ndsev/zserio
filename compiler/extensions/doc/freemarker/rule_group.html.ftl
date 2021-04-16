@@ -9,14 +9,14 @@
 
 </#if>
 ${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
-${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>Rules ${symbol.name}</span>
+${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>RuleGroup ${symbol.name}</span>
 ${I}</h2>
 
 <#if hasStickyDocComments(docComments)>
     <@doc_comments_sticky docComments, indent, false/>
 </#if>
 
-${I}<div class="rules table table-responsive"><table><tbody>
+${I}<div class="rule_group table table-responsive"><table><tbody>
 <#list rules as rule>
 ${I}  <tr>
 ${I}    <th scope="row">

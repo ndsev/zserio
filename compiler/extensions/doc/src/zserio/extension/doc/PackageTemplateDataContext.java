@@ -6,17 +6,16 @@ package zserio.extension.doc;
  * Freemarker template data context holds all parameters used by Freemarker template data. This specialization
  * is designed for all Freemarker template data used by Package emitter.
  */
-class PackageTemplateDataContext extends TemplateDataContext
+class PackageTemplateDataContext extends ContentTemplateDataContext
 {
     public PackageTemplateDataContext(DocExtensionParameters docParameters, String htmlRootDirectory,
             UsedByCollector usedByCollector, UsedByChoiceCollector usedByChoiceCollector,
             DocResourceManager docResourceManager)
     {
-        super(docParameters.getWithSvgDiagrams(), htmlRootDirectory);
+        super(docParameters, htmlRootDirectory, docResourceManager);
 
         this.usedByCollector = usedByCollector;
         this.usedByChoiceCollector = usedByChoiceCollector;
-        this.docResourceManager = docResourceManager;
     }
 
     public UsedByCollector getUsedByCollector()
@@ -29,12 +28,6 @@ class PackageTemplateDataContext extends TemplateDataContext
         return usedByChoiceCollector;
     }
 
-    public DocResourceManager getDocResourceManager()
-    {
-        return docResourceManager;
-    }
-
     private final UsedByCollector usedByCollector;
     private final UsedByChoiceCollector usedByChoiceCollector;
-    private final DocResourceManager docResourceManager;
 }

@@ -8,11 +8,11 @@ import zserio.ast.RuleGroup;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
- * FreeMarker template data for rules in the package used by Package emitter.
+ * FreeMarker template data for rule groups in the package used by Package emitter.
  */
-public class RulesTemplateData extends PackageTemplateDataBase
+public class RuleGroupTemplateData extends ContentTemplateDataBase
 {
-    public RulesTemplateData(PackageTemplateDataContext context, RuleGroup ruleGroup)
+    public RuleGroupTemplateData(ContentTemplateDataContext context, RuleGroup ruleGroup)
             throws ZserioExtensionException
     {
         super(context, ruleGroup);
@@ -28,7 +28,7 @@ public class RulesTemplateData extends PackageTemplateDataBase
 
     public static class RuleTemplateData
     {
-        RuleTemplateData(PackageTemplateDataContext context, RuleGroup ruleGroup, Rule rule)
+        RuleTemplateData(ContentTemplateDataContext context, RuleGroup ruleGroup, Rule rule)
         {
             symbol = SymbolTemplateDataCreator.createData(context, ruleGroup, rule);
             docComments = new DocCommentsTemplateData(context, rule.getDocComments());

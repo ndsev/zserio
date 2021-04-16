@@ -1,5 +1,6 @@
 package zserio.extension.doc;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,6 +17,7 @@ import zserio.ast.Package;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.HashUtil;
+import zserio.tools.StringJoinUtil;
 
 /**
  * Documentation resource manager.
@@ -33,16 +35,27 @@ import zserio.tools.HashUtil;
  */
 class DocResourceManager
 {
-    public DocResourceManager(OutputFileManager outputFileManager, PackageCollector packageCollector,
-            String htmlContentDirectory, String docResourceDirectory)
+    public DocResourceManager(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
+            PackageCollector packageCollector)
     {
         this.packageCollector = packageCollector;
 
         this.outputFileManager = outputFileManager;
-        contentDir = Paths.get(htmlContentDirectory).toAbsolutePath();
+
+        final String outputDir = docParameters.getOutputDir();
+        final String htmlPackagesDirectory = StringJoinUtil.joinStrings(
+                outputDir, DocDirectories.PACKAGES_DIRECTORY, File.separator);
+        final String docResourceDirectory = StringJoinUtil.joinStrings(
+                outputDir, DocDirectories.DOC_RESOURCES_DIRECTORY, File.separator);
+        packagesDir = Paths.get(htmlPackagesDirectory).toAbsolutePath();
         resourcesDir = Paths.get(docResourceDirectory).toAbsolutePath();
 
-        currentOutputDir = contentDir;
+        currentOutputDir = Paths.get(outputDir).toAbsolutePath();
+    }
+
+    public void setCurrentOutputDir(String currentOutputDir)
+    {
+        this.currentOutputDir = Paths.get(currentOutputDir).toAbsolutePath();
     }
 
     public String addResource(AstLocation location, String resourceLink) throws ZserioExtensionException
@@ -68,7 +81,7 @@ class DocResourceManager
         if (zserioPackage != null)
         {
             final String packageHtmlLink = PackageEmitter.getPackageHtmlLink(zserioPackage, ".");
-            return new LocalResource(contentDir, packageHtmlLink);
+            return new LocalResource(packagesDir, packageHtmlLink);
         }
 
         if (!resource.getFullPath().toFile().exists())
@@ -284,7 +297,7 @@ class DocResourceManager
 
     private final OutputFileManager outputFileManager;
     private final PackageCollector packageCollector;
-    private final Path contentDir;
+    private final Path packagesDir;
     private final Path resourcesDir;
 
     private Path currentOutputDir;

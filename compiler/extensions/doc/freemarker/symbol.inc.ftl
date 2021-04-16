@@ -1,5 +1,5 @@
 <#ftl output_format="HTML">
-<#include "html_path.inc.ftl">
+<#include "html_common.inc.ftl">
 <#macro symbol_reference symbol>
     <#if symbol.htmlLink??>
         <a <@symbol_reference_class symbol/> <@symbol_reference_href_title symbol/>><#t>

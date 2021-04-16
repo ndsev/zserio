@@ -13,6 +13,7 @@ import zserio.ast.EnumType;
 import zserio.ast.InstantiateType;
 import zserio.ast.Package;
 import zserio.ast.PubsubType;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -61,6 +62,12 @@ class SymbolCollector extends DefaultTreeWalker
     public void beginConst(Constant constant) throws ZserioExtensionException
     {
         currentNodes.add(constant);
+    }
+
+    @Override
+    public void beginRuleGroup(RuleGroup ruleGroup) throws ZserioExtensionException
+    {
+        currentNodes.add(ruleGroup);
     }
 
     @Override

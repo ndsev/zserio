@@ -10,13 +10,12 @@ import zserio.extension.common.ZserioExtensionException;
 /**
  * Base FreeMarker template data for all symbols in the package used by Package emitter.
  */
-public class PackageTemplateDataBase
+public class PackageTemplateDataBase extends ContentTemplateDataBase
 {
     public PackageTemplateDataBase(PackageTemplateDataContext context, DocumentableAstNode astNode)
             throws ZserioExtensionException
     {
-        this.docComments = new DocCommentsTemplateData(context, astNode.getDocComments());
-        symbol = SymbolTemplateDataCreator.createData(context, astNode);
+        super(context, astNode);
 
         final UsedByCollector usedByCollector = context.getUsedByCollector();
         final boolean svgCollaborationExists =
@@ -34,16 +33,6 @@ public class PackageTemplateDataBase
         }
     }
 
-    public DocCommentsTemplateData getDocComments()
-    {
-        return docComments;
-    }
-
-    public SymbolTemplateData getSymbol()
-    {
-        return symbol;
-    }
-
     public String getCollaborationDiagramSvg()
     {
         return collaborationDiagramSvg;
@@ -54,8 +43,6 @@ public class PackageTemplateDataBase
         return usedBySymbols;
     }
 
-    private final DocCommentsTemplateData docComments;
-    private final SymbolTemplateData symbol;
     private final String collaborationDiagramSvg;
     private final SortedSet<SymbolTemplateData> usedBySymbols;
 }

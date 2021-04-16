@@ -18,6 +18,7 @@ class TemplateDataContext
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
 
         contentDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.CONTENT_DIRECTORY);
+        packagesDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.PACKAGES_DIRECTORY);
         cssDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.CSS_DIRECTORY);
         jsDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.JS_DIRECTORY);
         resourcesDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.RESOURCES_DIRECTORY);
@@ -38,6 +39,11 @@ class TemplateDataContext
     public String getContentDirectory()
     {
         return contentDirectory;
+    }
+
+    public String getPackagesDirectory()
+    {
+        return packagesDirectory;
     }
 
     public String getCssDirectory()
@@ -69,6 +75,7 @@ class TemplateDataContext
     private final ExpressionFormatter docExpressionFormatter;
 
     private final String contentDirectory;
+    private final String packagesDirectory;
     private final String cssDirectory;
     private final String jsDirectory;
     private final String resourcesDirectory;

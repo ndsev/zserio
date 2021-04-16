@@ -1,5 +1,5 @@
 <#ftl output_format="HTML">
-<#include "html_path.inc.ftl">
+<#include "html_common.inc.ftl">
 <!doctype html>
 <html lang="en">
   <head>

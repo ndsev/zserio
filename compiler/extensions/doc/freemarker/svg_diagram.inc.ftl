@@ -1,5 +1,5 @@
 <#ftl output_format="HTML">
-<#include "html_path.inc.ftl">
+<#include "html_common.inc.ftl">
 <#macro collaboration_diagram symbol svgFileName indent>
     <#local I>${""?left_pad(indent * 2)}</#local>
 ${I}<h3 class="anchor" id="${symbol.htmlLink.htmlAnchor}_collaboration">Collaboration Diagram</h3>

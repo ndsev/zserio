@@ -18,13 +18,15 @@ import zserio.extension.common.ZserioExtensionException;
 public class BeginPackageTemplateData
 {
     public BeginPackageTemplateData(PackageTemplateDataContext context, Package pkg,
-            Map<Package, List<AstNode>> nodesMap) throws ZserioExtensionException
+            Map<Package, List<AstNode>> nodesMap, HeaderNavigationTemplateData headerNavigation)
+                    throws ZserioExtensionException
     {
         cssDirectory = context.getCssDirectory();
-        resourcesDirectory = context.getResourcesDirectory();
         isDefaultPackage = pkg.getPackageName().isEmpty();
         symbol = SymbolTemplateDataCreator.createData(context, pkg);
         docComments = new DocCommentsTemplateData(context, pkg.getDocComments());
+
+        this.headerNavigation = headerNavigation;
 
         for (Import importNode : pkg.getImports())
             importNodes.add(new ImportTemplateData(context, importNode));
@@ -39,11 +41,6 @@ public class BeginPackageTemplateData
     public String getCssDirectory()
     {
         return cssDirectory;
-    }
-
-    public String getResourcesDirectory()
-    {
-        return resourcesDirectory;
     }
 
     public String getStylesheetName()
@@ -64,6 +61,11 @@ public class BeginPackageTemplateData
     public DocCommentsTemplateData getDocComments()
     {
         return docComments;
+    }
+
+    public HeaderNavigationTemplateData getHeaderNavigation()
+    {
+        return headerNavigation;
     }
 
     public Iterable<ImportTemplateData> getImportNodes()
@@ -162,10 +164,10 @@ public class BeginPackageTemplateData
     };
 
     private final String cssDirectory;
-    private final String resourcesDirectory;
     private final boolean isDefaultPackage;
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;
+    private final HeaderNavigationTemplateData headerNavigation;
     private final List<ImportTemplateData> importNodes = new ArrayList<ImportTemplateData>();
     // we want to have sorted packages in symbol overview
     private final Set<PackageSymbolOverviewTemplateData> packages =

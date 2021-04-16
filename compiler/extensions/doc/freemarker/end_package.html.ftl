@@ -1,4 +1,5 @@
 <#ftl output_format="HTML">
+<#include "html_common.inc.ftl">
 <#include "doc_comment.inc.ftl">
 <#if hasDocComments(docComments)>
 
@@ -24,70 +25,7 @@
       anchors.add(".anchor");
       anchors.add(".anchor-md");
 
-      // search logic
-      function escapeRegex(string) {
-        return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
-      }
-
-      function buildRegEx(terms) {
-        try {
-          return new RegExp(terms.join(".*"), "i");
-        } catch (e) {
-          return null;
-        }
-      }
-
-      function buildSearchPattern(value) {
-        let terms = value.split(/\s/);
-        let pattern = buildRegEx(terms);
-        if (!pattern) {
-          let escapedTerms = terms.map(function(term) {
-            return escapeRegex(term);
-          });
-          pattern = buildRegEx(escapedTerms);
-        }
-        return pattern;
-      }
-
-      function searchFilter(value) {
-        let symbolOverview = $("#symbol_overview");
-
-        if (value == "") {
-          // restore to default state
-          symbolOverview.find(".nav-symbols").css("display", "");
-          symbolOverview.find(".nav-link").css("display", "");
-        } else {
-          // show also symbols nav-s which are not in the active package
-          symbolOverview.find(".nav-symbols").show();
-          symbolOverview.find(".nav-link").hide(); // hide all links
-
-          let searchPattern = buildSearchPattern(value);
-          if (!searchPattern) {
-            console.warn("Couldn't build a search pattern!")
-            return;
-          }
-
-          symbolOverview.find(".nav-package").each(function(index, element) {
-            let navPackage = $(element);
-            let navLinkPackage = navPackage.find(".nav-link-package");
-            let packageName = navLinkPackage.text();
-            let showPackage = packageName.match(searchPattern);
-            navPackage.find(".nav-link-symbol").each(function(index, element) {
-              let navLinkSymbol = $(element);
-              let symbolName = navLinkSymbol.text();
-              let fullSymbolName = packageName + "." + symbolName;
-
-              if (fullSymbolName.match(searchPattern)) {
-                navLinkSymbol.show();
-                showPackage = true;
-              }
-            });
-            if (showPackage) {
-              navLinkPackage.show();
-            }
-          });
-        }
-      }
+      <@html_js_search_functions "symbol_overview", "package", "symbol"/>
 
       function scrollParentToChild(parent, child) {
         let parentRect = parent.getBoundingClientRect();
@@ -127,18 +65,22 @@
 
       // custom hooks
       $(document).ready(function() {
-        // re-apply current search value
-        let searchValue = getItemFromStorage(sessionStorage, "searchValue");
-        if (searchValue) {
-          $("#search").val(searchValue);
-          searchFilter(searchValue);
-        }
+        <@html_js_search_setup "symbolOverviewSearchValue"/>
 
         // re-apply current left panel scroll
         let symbolOverviewScrollTop = getItemFromStorage(sessionStorage, "symbolOverviewScrollTop");
         if (symbolOverviewScrollTop) {
           $('#symbol_overview').scrollTop(symbolOverviewScrollTop);
         }
+
+        // remember current symbol overview scroll position
+        $("#symbol_overview .nav-link").on("click", function() {
+          setItemToStorage(sessionStorage, "symbolOverviewScrollTop", $('#symbol_overview').scrollTop());
+        });
+
+        $("#header .nav-link").on("click", function() {
+          setItemToStorage(sessionStorage, "symbolOverviewScrollTop", 0);
+        });
 
         // toc toggleable by the button
         $("#toc_button").click(toggleToc);
@@ -148,20 +90,6 @@
         $('body').scrollspy({
           target: '#toc',
           offset: scrollMarginTop
-        });
-
-        $("#search").on("keyup", function(e) {
-          if (e.key == "Escape")
-            $(this).val("");
-
-          let value = $(this).val();
-          setItemToStorage(sessionStorage, "searchValue", value);
-          searchFilter(value);
-        });
-
-        // remember current symbol overview scroll position
-        $(".nav-link").on("click", function() {
-          setItemToStorage(sessionStorage, "symbolOverviewScrollTop", $('#symbol_overview').scrollTop());
         });
 
         // allow to collapse active package in the overview

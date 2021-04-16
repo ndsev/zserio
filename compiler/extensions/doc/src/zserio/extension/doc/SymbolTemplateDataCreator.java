@@ -69,7 +69,7 @@ class SymbolTemplateDataCreator
     }
 
     public static SymbolTemplateData createData(TemplateDataContext context, ZserioType zserioType,
-            AstNode member, String memberName, String allias)
+            AstNode member, String memberName, String alias)
     {
         final String memberTypeName = AstNodeTypeNameMapper.getTypeName(member);
 
@@ -80,10 +80,10 @@ class SymbolTemplateDataCreator
 
         final String zserioTypeName = AstNodeTypeNameMapper.getTypeName(zserioType);
         final String zserioName = zserioType.getName();
-        final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + "_" +
+        final String htmlLinkAnchor = createHtmlAnchor(zserioTypeName, zserioName) + ANCHOR_SEPARATOR +
                 createHtmlAnchor(memberTypeName, memberName);
 
-        return new SymbolTemplateData(allias, memberTypeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
+        return new SymbolTemplateData(alias, memberTypeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
     }
 
     // in case of a template instantiation, use instantiation reference instead
@@ -112,7 +112,7 @@ class SymbolTemplateDataCreator
         final String typeName = AstNodeTypeNameMapper.getTypeName(pkg);
         final String htmlTitle = typeName + " " + name;
         final String htmlLinkPage = createHtmlLinkPage(context, pkg);
-        final String htmlLinkAnchor = typeName;
+        final String htmlLinkAnchor = createHtmlAnchor(typeName, name);
 
         return new SymbolTemplateData(name, typeName, htmlTitle, htmlLinkPage, htmlLinkAnchor);
     }
@@ -180,14 +180,14 @@ class SymbolTemplateDataCreator
 
     private static String createHtmlLinkPage(TemplateDataContext context, Package pkg)
     {
-        final String contentDirectory = context.getContentDirectory();
-
-        return PackageEmitter.getPackageHtmlLink(pkg, contentDirectory);
+        return PackageEmitter.getPackageHtmlLink(pkg, context.getPackagesDirectory());
     }
 
     private static String createHtmlAnchor(String typeName, String name)
     {
-        return typeName + "_" + name.replaceAll("\\s", "_");
+        // space can be in name due to case expressions, dot can be in a package name
+        return typeName + ANCHOR_SEPARATOR +
+                name.replaceAll("\\s", ANCHOR_SEPARATOR).replaceAll("\\.", ANCHOR_SEPARATOR);
     }
 
     private static List<SymbolTemplateData> createTemplateArguments(TemplateDataContext context, AstNode node)
@@ -212,4 +212,6 @@ class SymbolTemplateDataCreator
 
         return templateArguments;
     }
+
+    private static final String ANCHOR_SEPARATOR = "-";
 }
