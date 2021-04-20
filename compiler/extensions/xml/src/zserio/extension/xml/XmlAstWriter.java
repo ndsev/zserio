@@ -493,7 +493,12 @@ public class XmlAstWriter implements ZserioAstVisitor
     @Override
     public void visitDocCommentClassic(DocCommentClassic docComment)
     {
-        visitAstNode(docComment, "DOC_COMMENT_CLASSIC");
+        final Element xmlElement = xmlDoc.createElement("DOC_COMMENT_CLASSIC");
+        if (docComment.isOneLiner())
+            xmlElement.setAttribute("isOneLiner", "true");
+        if (docComment.isSticky())
+            xmlElement.setAttribute("isSticky", "true");
+        visitAstNode(docComment, xmlElement);
     }
 
     @Override
@@ -501,6 +506,10 @@ public class XmlAstWriter implements ZserioAstVisitor
     {
         final Element xmlElement = xmlDoc.createElement("DOC_COMMENT_MARKDOWN");
         xmlElement.setAttribute("markdown", docComment.getMarkdown());
+        if (docComment.isOneLiner())
+            xmlElement.setAttribute("isOneLiner", "true");
+        if (docComment.isSticky())
+            xmlElement.setAttribute("isSticky", "true");
         visitAstNode(docComment, xmlElement);
     }
 
