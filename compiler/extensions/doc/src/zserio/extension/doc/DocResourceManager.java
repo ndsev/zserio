@@ -36,11 +36,10 @@ import zserio.tools.StringJoinUtil;
 class DocResourceManager
 {
     public DocResourceManager(OutputFileManager outputFileManager, DocExtensionParameters docParameters,
-            PackageCollector packageCollector)
+            PackageCollector packageCollector, Package rootPackage, boolean hasSchemaRules)
     {
-        this.packageCollector = packageCollector;
-
         this.outputFileManager = outputFileManager;
+        this.packageCollector = packageCollector;
 
         final String outputDir = docParameters.getOutputDir();
         final String htmlPackagesDirectory = StringJoinUtil.joinStrings(
@@ -51,6 +50,9 @@ class DocResourceManager
         resourcesDir = Paths.get(docResourceDirectory).toAbsolutePath();
 
         currentOutputDir = Paths.get(outputDir).toAbsolutePath();
+
+        htmlResourceEmitter =
+                new HtmlResourceEmitter(outputFileManager, docParameters, rootPackage, hasSchemaRules);
     }
 
     public void setCurrentOutputDir(String currentOutputDir)
@@ -128,7 +130,7 @@ class DocResourceManager
                             StandardCharsets.UTF_8);
                     final String bodyContent = DocMarkdownToHtmlConverter.convert(this,
                             new AstLocation(srcResource.getFullPath().toString(), 0, 0), markdown);
-                    HtmlResourceEmitter.emit(outputFileManager, dstResource.getPath().toString(),
+                    htmlResourceEmitter.emit(dstResource.getPath(),
                             dstResource.getFileName(), srcResource.getFileName(), bodyContent);
                 }
                 catch (ZserioExtensionException e)
@@ -299,6 +301,7 @@ class DocResourceManager
     private final PackageCollector packageCollector;
     private final Path packagesDir;
     private final Path resourcesDir;
+    private final HtmlResourceEmitter htmlResourceEmitter;
 
     private Path currentOutputDir;
 }

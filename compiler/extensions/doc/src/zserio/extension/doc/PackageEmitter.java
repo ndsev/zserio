@@ -52,7 +52,7 @@ class PackageEmitter extends DefaultTreeWalker
                 usedByChoiceCollector, docResourceManager);
 
         headerNavigation = new HeaderNavigationTemplateData(context, rootPackage, hasSchemaRules,
-                HeaderNavigationTemplateData.PACKAGES_ITEM);
+                HeaderNavigationTemplateData.ActiveItem.PACKAGES_ITEM);
     }
 
     @Override

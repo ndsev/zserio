@@ -10,14 +10,17 @@ import zserio.ast.Package;
  */
 public class HeaderNavigationTemplateData
 {
-    public HeaderNavigationTemplateData(ContentTemplateDataContext context, Package rootPackage,
-            boolean hasSchemaRules, int activeItem)
+    public HeaderNavigationTemplateData(TemplateDataContext context, Package rootPackage,
+            boolean hasSchemaRules, ActiveItem activeItem)
     {
         final SymbolTemplateData rootPackageSymbol = SymbolTemplateDataCreator.createData(context, rootPackage);
         navigationItems.add(new NavigationItem(
                 "Packages", rootPackageSymbol.getHtmlLink().getHtmlPage()));
-        navigationItems.add(new NavigationItem(
-                "Rules", RulesOverviewEmitter.getRulesOverviewHtmlLink(context.getContentDirectory())));
+        if (hasSchemaRules)
+        {
+            navigationItems.add(new NavigationItem(
+                    "Rules", RulesOverviewEmitter.getRulesOverviewHtmlLink(context.getContentDirectory())));
+        }
 
         this.activeItem = activeItem;
     }
@@ -27,9 +30,9 @@ public class HeaderNavigationTemplateData
         return navigationItems;
     }
 
-    public int getActiveItem()
+    public int getActiveItemIndex()
     {
-        return activeItem;
+        return activeItem.getValue();
     }
 
     public static class NavigationItem
@@ -54,10 +57,25 @@ public class HeaderNavigationTemplateData
         private final String htmlLink;
     }
 
-    private final List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
-    private final int activeItem;
+    enum ActiveItem
+    {
+        NO_ITEM(-1),
+        PACKAGES_ITEM(0),
+        RULES_ITEM(1);
 
-    static final int NO_ITEM = -1;
-    static final int PACKAGES_ITEM = 0;
-    static final int RULES_ITEM = 1;
+        public int getValue()
+        {
+            return index;
+        }
+
+        private ActiveItem(int index)
+        {
+            this.index = index;
+        }
+
+        private final int index;
+    };
+
+    private final List<NavigationItem> navigationItems = new ArrayList<NavigationItem>();
+    private final ActiveItem activeItem;
 };

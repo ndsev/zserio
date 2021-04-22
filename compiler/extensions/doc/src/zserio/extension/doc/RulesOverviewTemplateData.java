@@ -20,8 +20,9 @@ public class RulesOverviewTemplateData
         cssDirectory = context.getCssDirectory();
         jsDirectory = context.getJsDirectory();
         stylesheetName = StylesheetEmitter.STYLESHEET_FILE_NAME;
-        headerNavigation = new HeaderNavigationTemplateData(context, rootPackage, true,
-                HeaderNavigationTemplateData.RULES_ITEM);
+        final boolean hasSchemaRules = true; // this is the rules view!
+        headerNavigation = new HeaderNavigationTemplateData(context, rootPackage, hasSchemaRules,
+                HeaderNavigationTemplateData.ActiveItem.RULES_ITEM);
 
         this.packagesRuleGroups = packagesRuleGroups;
     }

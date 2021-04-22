@@ -37,11 +37,6 @@ class RulesOverviewEmitter extends DefaultTreeWalker
                 docParameters, htmlRootDirectory, docResourceManager);
     }
 
-    public boolean hasSchemaRules()
-    {
-        return !packagesRuleGroups.isEmpty();
-    }
-
     @Override
     public boolean traverseTemplateInstantiations()
     {
@@ -51,14 +46,11 @@ class RulesOverviewEmitter extends DefaultTreeWalker
     @Override
     public void endRoot(Root root) throws ZserioExtensionException
     {
-        if (hasSchemaRules())
-        {
-            final File outputFile = new File(getRulesOverviewHtmlLink(htmlContentDirectory));
-            final RulesOverviewTemplateData templateData = new RulesOverviewTemplateData(
-                    context, root.getRootPackage(), packagesRuleGroups);
-            DocFreeMarkerUtil.processTemplate(RULES_OVERVIEW_TEMPLATE_SOURCE_NAME, templateData, outputFile);
-            outputFileManager.registerOutputFile(outputFile);
-        }
+        final File outputFile = new File(getRulesOverviewHtmlLink(htmlContentDirectory));
+        final RulesOverviewTemplateData templateData = new RulesOverviewTemplateData(
+                context, root.getRootPackage(), packagesRuleGroups);
+        DocFreeMarkerUtil.processTemplate(RULES_OVERVIEW_TEMPLATE_SOURCE_NAME, templateData, outputFile);
+        outputFileManager.registerOutputFile(outputFile);
     }
 
     @Override

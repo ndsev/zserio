@@ -22,7 +22,7 @@
       <div class="navbar-nav">
         <ul class="navbar-nav flex-row">
 <#list headerNavigation.navigationItems as item>
-          <li class="nav-item"><a class="nav-link<#if item?index == headerNavigation.activeItem> active</#if>"<#rt>
+          <li class="nav-item"><a class="nav-link<#if item?index == headerNavigation.activeItemIndex> active</#if>"<#rt>
             <#lt> href="<@html_path item.htmlLink/>">${item.name}</a></li>
 </#list>
         </ul>

@@ -12,9 +12,9 @@ import zserio.tools.StringJoinUtil;
  */
 class TemplateDataContext
 {
-    public TemplateDataContext(boolean withSvgDiagrams, String htmlRootDirectory)
+    public TemplateDataContext(DocExtensionParameters docParameters, String htmlRootDirectory)
     {
-        this.withSvgDiagrams = withSvgDiagrams;
+        this.withSvgDiagrams = docParameters.getWithSvgDiagrams();
         this.docExpressionFormatter = new ExpressionFormatter(new DocExpressionFormattingPolicy());
 
         contentDirectory = getHtmlDirectory(htmlRootDirectory, DocDirectories.CONTENT_DIRECTORY);

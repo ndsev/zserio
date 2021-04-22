@@ -17,8 +17,7 @@ class IndexEmitter
             Package rootPackage) throws ZserioExtensionException
     {
         final String htmlRootDirectory = ".";
-        final TemplateDataContext context = new TemplateDataContext(docParameters.getWithSvgDiagrams(),
-                htmlRootDirectory);
+        final TemplateDataContext context = new TemplateDataContext(docParameters, htmlRootDirectory);
         final SymbolTemplateData templateData = SymbolTemplateDataCreator.createData(context, rootPackage);
         final File outputFile = new File(docParameters.getOutputDir(), INDEX_FILE_NAME);
         DocFreeMarkerUtil.processTemplate(INDEX_TEMPLATE_SOURCE_NAME, templateData, outputFile);

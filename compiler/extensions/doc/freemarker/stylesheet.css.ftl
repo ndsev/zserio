@@ -48,6 +48,7 @@
 }
 
 main > h1:first-child, /* package heading */
+main > h2:first-child, /* possible 2nd-level heading in renderd markdown resource
 main > .doc:first-child > h1:first-child, /* floating comment before the package declaration  */
 main > .doc:first-child > h2:first-child {
   border-top: none;
@@ -365,10 +366,6 @@ a:hover {
 
 .rule_group p:last-child {
   margin-bottom: 0;
-}
-
-#main dd {
-  padding-left: 1em;
 }
 
 #main code {

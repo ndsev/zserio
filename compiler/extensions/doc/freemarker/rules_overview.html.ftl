@@ -46,7 +46,7 @@
           </nav>
         </div>
 
-        <main class="col-10 pl-3 order-2">
+        <main id="main" class="col-10 pl-3 order-2">
 <#list packagesRuleGroups as packageRuleGroups>
           <h1 class="anchor" id="${packageRuleGroups.packageSymbol.htmlLink.htmlAnchor}">${packageRuleGroups.packageSymbol.name}</h1>
     <#list packageRuleGroups.ruleGroups as ruleGroup>

@@ -11,7 +11,7 @@ class ContentTemplateDataContext extends TemplateDataContext
     public ContentTemplateDataContext(DocExtensionParameters docParameters, String htmlRootDirectory,
             DocResourceManager docResourceManager)
     {
-        super(docParameters.getWithSvgDiagrams(), htmlRootDirectory);
+        super(docParameters, htmlRootDirectory);
 
         this.docResourceManager = docResourceManager;
     }

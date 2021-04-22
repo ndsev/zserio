@@ -75,19 +75,25 @@ public class DocExtension implements Extension
         final UsedByChoiceCollector usedByChoiceCollector = new UsedByChoiceCollector();
         rootNode.walk(usedByChoiceCollector);
 
+        // check if there are any schema rules
+        final RuleGroupVisitor ruleGroupVisitor = new RuleGroupVisitor();
+        rootNode.accept(ruleGroupVisitor);
+
         final DocResourceManager docResourceManager = new DocResourceManager(outputFileManager, docParameters,
-                packageCollector);
+                packageCollector, rootNode.getRootPackage(), ruleGroupVisitor.hasSchemaRules());
 
         // emit HTML rules overview
-        final RulesOverviewEmitter rulesOverviewEmitter = new RulesOverviewEmitter(outputFileManager,
-                docParameters, docResourceManager);
-        rootNode.walk(rulesOverviewEmitter);
+        if (ruleGroupVisitor.hasSchemaRules())
+        {
+            final RulesOverviewEmitter rulesOverviewEmitter = new RulesOverviewEmitter(outputFileManager,
+                    docParameters, docResourceManager);
+            rootNode.walk(rulesOverviewEmitter);
+        }
 
         // emit HTML files
-        final boolean hasSchemaRules = rulesOverviewEmitter.hasSchemaRules();
         final PackageEmitter packageEmitter = new PackageEmitter(outputFileManager, docParameters,
                 docResourceManager, symbolCollector, packageCollector, usedByCollector, usedByChoiceCollector,
-                rootNode.getRootPackage(), hasSchemaRules);
+                rootNode.getRootPackage(), ruleGroupVisitor.hasSchemaRules());
         rootNode.walk(packageEmitter);
 
         outputFileManager.printReport();

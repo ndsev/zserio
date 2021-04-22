@@ -1,5 +1,6 @@
 package zserio.extension.doc;
 
+
 import java.io.File;
 import java.util.Set;
 
@@ -20,8 +21,7 @@ class SymbolCollaborationDotEmitter
             UsedByCollector usedByCollector) throws ZserioExtensionException
     {
         final String htmlRootDirectory = ".." + File.separator + ".." + File.separator + "..";
-        final TemplateDataContext context = new TemplateDataContext(docParameters.getWithSvgDiagrams(),
-                htmlRootDirectory);
+        final TemplateDataContext context = new TemplateDataContext(docParameters, htmlRootDirectory);
         final Set<AstNode> collaboratingNodes = usedByCollector.getCollaboratingNodes();
         for (AstNode node : collaboratingNodes)
             emitDotDiagram(outputFileManager, docParameters, usedByCollector, context, node);
