@@ -16,7 +16,7 @@ contain any generators.
 
 - **C++ extension** - This Java project contains C++ generator.
 
-- **C++ runtime library** - This C++ project contains runtime library for C++ extension which must be linked 
+- **C++ runtime library** - This C++ project contains runtime library for C++ extension which must be linked
 to generated C++ sources.
 
 - **Java extension** - This Java project contains Java generator.
@@ -52,7 +52,7 @@ Before you start building, make sure you have the following components installed
 The easiest way how to build zserio compiler is by using prepared Bash script `build.sh` located in project's
 folder `scripts`.
 
-This script builds Zserio projects and installs them in folder `distr` (located in project's root by default). 
+This script builds Zserio projects and installs them in folder `distr` (located in project's root by default).
 
 ### Usage
 
@@ -69,9 +69,7 @@ Package                  | Description
 `cpp`                    | Zserio C++ extension.
 `cpp_rt-linux32`         | Zserio C++ extension runtime library for native linux32 (gcc).
 `cpp_rt-linux64`         | Zserio C++ extension runtime library for native linux64 (gcc).
-`cpp_rt-windows32-mingw` | Zserio C++ extension runtime library for windows32 target (MinGW).
 `cpp_rt-windows64-mingw` | Zserio C++ extension runtime library for windows64 target (MinGW64).
-`cpp_rt-windows32-msvc`  | Zserio C++ extension runtime library for windows32 target (MSVC).
 `cpp_rt-windows64-msvc`  | Zserio C++ extension runtime library for windows64 target (MSVC).
 `java`                   | Zserio Java extension.
 `java_rt`                | Zserio Java extension runtime library.
@@ -82,9 +80,7 @@ Package                  | Description
 `zserio`                 | Zserio bundle (Zserio Core packed together with all already built extensions).
 `all-linux32`            | All available packages for linux32.
 `all-linux64`            | All available packages for linux64.
-`all-windows32-mingw`    | All available packages for windows32 (MinGW).
 `all-windows64-mingw`    | All available packages for windows64 (MinGW).
-`all-windows32-msvc`     | All available packages for windows32 (MSVC).
 `all-windows64-msvc`     | All available packages for windows64 (MSVC).
 
 ### Examples

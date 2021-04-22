@@ -375,9 +375,7 @@ Arguments:
 Package can be a combination of:
     cpp-linux32           Zserio C++ tests for linux32 target using gcc compiler.
     cpp-linux64           Zserio C++ tests for linux64 target using gcc compiler.
-    cpp-windows32-mingw   Zserio C++ tests for windows32 target (MinGW).
     cpp-windows64-mingw   Zserio C++ tests for windows64 target (MinGW64).
-    cpp-windows32-msvc    Zserio C++ tests for windows32 target (MSVC).
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
     java                  Zserio Java tests.
     python                Zserio Python tests.
@@ -385,9 +383,7 @@ Package can be a combination of:
     doc                   Zserio documentation tests.
     all-linux32           Zserio tests - all available linux32 packages.
     all-linux64           Zserio tests - all available linux64 packages.
-    all-windows32-mingw   Zserio tests - all available windows32 packages (MinGW).
     all-windows64-mingw   Zserio tests - all available windows64 packages (MinGW64).
-    all-windows32-msvc    Zserio tests - all available windows32 packages (MSVC).
     all-windows64-msvc    Zserio tests - all available windows64 packages (MSVC).
 
 Examples:
@@ -485,7 +481,7 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "cpp-linux32" | "cpp-linux64" | "cpp-windows32-"* | "cpp-windows64-"*)
+            "cpp-linux32" | "cpp-linux64" | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -506,7 +502,7 @@ parse_arguments()
                 eval ${PARAM_DOC_OUT}=1
                 ;;
 
-            "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
+            "all-linux32" | "all-linux64" | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1

@@ -607,11 +607,7 @@ compile_cpp_for_target()
         if [[ ${MAKE_TARGET} == "all" ]] ; then
             CMAKE_BUILD_TARGET="ALL_BUILD" # all target doesn't exist in MSVC solution
         fi
-        if [[ ${TARGET} == "windows32-msvc" ]] ; then
-            local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR}";
-        else
-            local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR} Win64";
-        fi
+        local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR} Win64";
     else
         local CMAKE_GENERATOR="${GCC_CMAKE_GENERATOR}"
         local CMAKE_BUILD_CONFIG=""
@@ -747,11 +743,8 @@ can_run_tests()
     ubuntu64)
         [[ "${TARGET_PLATFORM}" == "linux32" || "${TARGET_PLATFORM}" = "linux64" ]]
         ;;
-    windows32)
-        [[ "${TARGET_PLATFORM}" == "windows32-"* ]]
-        ;;
     windows64)
-        [[ "${TARGET_PLATFORM}" == "windows32-"* || "${TARGET_PLATFORM}" == "windows64-"* ]]
+        [[ "${TARGET_PLATFORM}" == "windows64-"* ]]
         ;;
     *)
         stderr_echo "can_run_tests: unknown current platform ${HOST_PLATFORM}!"
@@ -761,7 +754,7 @@ can_run_tests()
 
 # Determines the current host platform.
 #
-# Returns one of the supported platforms:
+# Returns one of the following platforms:
 # ubuntu32, ubuntu64, windows32, windows64
 get_host_platform()
 {

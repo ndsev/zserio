@@ -167,9 +167,7 @@ Package can be the combination of:
     cpp                      Zserio C++ extension.
     cpp_rt-linux32           Zserio C++ extension runtime library for native linux32 (gcc).
     cpp_rt-linux64           Zserio C++ extension runtime library for native linux64 (gcc).
-    cpp_rt-windows32-mingw   Zserio C++ extension runtime library for windows32 target (MinGW).
     cpp_rt-windows64-mingw   Zserio C++ extension runtime library for windows64 target (MinGW64).
-    cpp_rt-windows32-msvc    Zserio C++ extension runtime library for windows32 target (MSVC).
     cpp_rt-windows64-msvc    Zserio C++ extension runtime library for windows64 target (MSVC).
     java                     Zserio Java extension.
     java_rt                  Zserio Java extension runtime library.
@@ -180,10 +178,8 @@ Package can be the combination of:
     zserio                   Zserio bundle (Zserio Core packed together with all already built extensions).
     all-linux32              All available packages for linux32.
     all-linux64              All available packages for linux64.
-    all-windows32-mingw      All available packages for windows32 target (MinGW).
     all-windows64-mingw      All available packages for windows64 target (MinGW64).
-    all-windows32-msvc       All available packages for windows32 target (MSVC).
-    all-windows64-msvc       All available packages for windows32 target (MSVC).
+    all-windows64-msvc       All available packages for windows64 target (MSVC).
 
 Examples:
     $0 ant_task core cpp cpp_rt-linux64 java java_rt python python_rt xml doc
@@ -290,7 +286,7 @@ parse_arguments()
                 eval ${PARAM_CPP_OUT}=1
                 ;;
 
-            "cpp_rt-linux32" | "cpp_rt-linux64" | "cpp_rt-windows32-"* | "cpp_rt-windows64-"*)
+            "cpp_rt-linux32" | "cpp_rt-linux64" | "cpp_rt-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp_rt-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -324,7 +320,7 @@ parse_arguments()
                 eval ${PARAM_ZSERIO_OUT}=1
                 ;;
 
-            "all-linux32" | "all-linux64" | "all-windows32-"* | "all-windows64-"*)
+            "all-linux32" | "all-linux64" | "all-windows64-"*)
                 eval ${PARAM_ANT_TASK_OUT}=1
                 eval ${PARAM_CORE_OUT}=1
                 eval ${PARAM_CPP_OUT}=1
