@@ -67,26 +67,26 @@
       $(document).ready(function() {
         <@html_js_search_setup "symbolOverviewSearchValue"/>
 
-        // re-apply current left panel scroll
+        // try to re-apply current left panel scroll
         let symbolOverviewScrollTop = getItemFromStorage(sessionStorage, "symbolOverviewScrollTop");
         if (symbolOverviewScrollTop) {
           $('#symbol_overview').scrollTop(symbolOverviewScrollTop);
+          setItemToStorage(sessionStorage, "symbolOverviewScrollTop", null);
         }
+
+        // ensure that the active package is visible
+        scrollParentToChild($('#symbol_overview')[0], $('#symbol_overview .active')[0])
 
         // remember current symbol overview scroll position
         $("#symbol_overview .nav-link").on("click", function() {
           setItemToStorage(sessionStorage, "symbolOverviewScrollTop", $('#symbol_overview').scrollTop());
         });
 
-        $("#header .nav-link").on("click", function() {
-          setItemToStorage(sessionStorage, "symbolOverviewScrollTop", 0);
-        });
-
         // toc toggleable by the button
         $("#toc_button").click(toggleToc);
 
         // bootstrap's scrollspy setup
-        var scrollMarginTop = parseInt($('h1.anchor').css("scroll-margin-top"));
+        let scrollMarginTop = parseInt($('h1.anchor').css("scroll-margin-top"));
         $('body').scrollspy({
           target: '#toc',
           offset: scrollMarginTop
