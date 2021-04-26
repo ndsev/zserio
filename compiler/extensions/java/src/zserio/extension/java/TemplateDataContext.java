@@ -24,6 +24,7 @@ final class TemplateDataContext
         withWriterCode = javaParameters.getWithWriterCode();
         withValidationCode = javaParameters.getWithValidationCode();
         withRangeCheckCode = javaParameters.getWithRangeCheckCode();
+        withListSetterCode = javaParameters.getWithListSetterCode();
 
         generatorDescription =
                 "/**\n" +
@@ -73,6 +74,11 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
+    public boolean getWithListSetterCode()
+    {
+        return withListSetterCode;
+    }
+
     public String getGeneratorDescription()
     {
         return generatorDescription;
@@ -87,6 +93,7 @@ final class TemplateDataContext
 
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
+    private final boolean withListSetterCode;
     private final boolean withWriterCode;
 
     private final String generatorDescription;

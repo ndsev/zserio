@@ -36,12 +36,13 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         final boolean withWriterCode = context.getWithWriterCode();
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
+        final boolean withListSetterCode = context.getWithListSetterCode();
         caseMemberList = new ArrayList<CaseMember>();
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
         for (ChoiceCase choiceCaseType : choiceCaseTypes)
         {
             caseMemberList.add(new CaseMember(javaNativeMapper, withWriterCode, withRangeCheckCode,
-                    choiceType, choiceCaseType, javaExpressionFormatter,
+                    withListSetterCode, choiceType, choiceCaseType, javaExpressionFormatter,
                     context.getJavaCaseExpressionFormatter()));
         }
 
@@ -49,7 +50,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         if (choiceDefaultType != null)
         {
             defaultMember = new DefaultMember(javaNativeMapper, withWriterCode, withRangeCheckCode,
-                    choiceType, choiceDefaultType, javaExpressionFormatter);
+                    withListSetterCode, choiceType, choiceDefaultType, javaExpressionFormatter);
         }
         else
         {
@@ -102,8 +103,9 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public static class CaseMember
     {
         public CaseMember(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
-                boolean withRangeCheckCode, ChoiceType choiceType, ChoiceCase choiceCaseType,
-                ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaCaseExpressionFormatter)
+                boolean withRangeCheckCode, boolean withListSetter, ChoiceType choiceType,
+                ChoiceCase choiceCaseType, ExpressionFormatter javaExpressionFormatter,
+                ExpressionFormatter javaCaseExpressionFormatter)
                         throws ZserioExtensionException
         {
             caseList = new ArrayList<Case>();
@@ -114,7 +116,7 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
             final Field fieldType = choiceCaseType.getField();
             compoundField = (fieldType != null) ? new CompoundFieldTemplateData(javaNativeMapper,
-                    withWriterCode, withRangeCheckCode,  choiceType, fieldType, javaExpressionFormatter) :
+                    withWriterCode, withRangeCheckCode, withListSetter, choiceType, fieldType, javaExpressionFormatter) :
                         null;
         }
 
@@ -159,12 +161,12 @@ public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public static class DefaultMember
     {
         public DefaultMember(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
-                boolean withRangeCheckCode, ChoiceType choiceType, ChoiceDefault choiceDefaultType,
-                ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
+                boolean withRangeCheckCode, boolean withListSetter, ChoiceType choiceType,
+                ChoiceDefault choiceDefaultType, ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
         {
             final Field fieldType = choiceDefaultType.getField();
             compoundField = (fieldType != null) ? new CompoundFieldTemplateData(javaNativeMapper,
-                    withWriterCode, withRangeCheckCode, choiceType, fieldType, javaExpressionFormatter) :
+                    withWriterCode, withRangeCheckCode, withListSetter, choiceType, fieldType, javaExpressionFormatter) :
                         null;
         }
 

@@ -78,6 +78,16 @@ public class ExtensionParameters
     }
 
     /**
+     * Gets the list setter code flag.
+     *
+     * @returns True if list setter is enabled.
+     */
+    public boolean getWithListSetterCode()
+    {
+        return commandLineArguments.getwithListSetterCode();
+    }
+
+    /**
      * Gets the Pub/Sub code flag.
      */
     public boolean getWithPubsubCode()

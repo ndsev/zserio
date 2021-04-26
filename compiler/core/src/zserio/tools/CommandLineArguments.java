@@ -111,6 +111,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether the list setter code option is enabled.
+     *
+     * @returns True if command line arguments enable list setter code option.
+     */
+    public boolean getWithListSetterCode()
+    {
+        return withListSetterOption;
+    }
+
+    /**
      * Gets whether the Pub/Sub code option is enabled.
      *
      * @returns True if command line arguments enable Pub/Sub code option.
@@ -326,6 +336,16 @@ class CommandLineArguments
         writerCodeGroup.setRequired(false);
         options.addOptionGroup(writerCodeGroup);
 
+        final OptionGroup listSettersGroup = new OptionGroup();
+        option = new Option(OptionNameWithListSetter, false,
+                "enable java list setters generation (default)");
+        listSettersGroup.addOption(option);
+        option = new Option(OptionNameWithoutListSetter, false,
+                "disable java list setters generation");
+        listSettersGroup.addOption(option);
+        listSettersGroup.setRequired(false);
+        options.addOptionGroup(listSettersGroup);
+
         final OptionGroup unusedWarningsGroup = new OptionGroup();
         option = new Option(OptionNameWithUnusedWarnings, false, "enable unused warnings");
         unusedWarningsGroup.addOption(option);
@@ -365,6 +385,7 @@ class CommandLineArguments
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
+        withListSetterOption = !hasOption(OptionNameWithoutListSetter);
         withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
         withCrossExtensionCheckOption = !hasOption(OptionNameWithoutCrossExtensionCheck);
         final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
@@ -480,6 +501,8 @@ class CommandLineArguments
     private static final String OptionNameWithoutValidationCode = "withoutValidationCode";
     private static final String OptionNameWithWriterCode = "withWriterCode";
     private static final String OptionNameWithoutWriterCode = "withoutWriterCode";
+    private static final String OptionNameWithListSetter = "withListSetter";
+    private static final String OptionNameWithoutListSetter = "withoutListSetter";
     private static final String OptionNameWithUnusedWarnings = "withUnusedWarnings";
     private static final String OptionNameWithoutUnusedWarnings = "withoutUnusedWarnings";
     private static final String OptionNameWithCrossExtensionCheck = "withCrossExtensionCheck";
@@ -505,6 +528,7 @@ class CommandLineArguments
     private boolean withSqlCodeOption;
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
+    private boolean withListSetterOption;
     private boolean withUnusedWarningsOption;
     private boolean withCrossExtensionCheckOption;
     private List<String> topLevelPackageNameIds;
