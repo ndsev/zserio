@@ -280,8 +280,11 @@ private:
     void testBitSizeOfAligned(const ARRAY_TRAITS& arrayTraits,
             const std::vector<typename ARRAY_TRAITS::type>& array, size_t alignedBitSize)
     {
-        EXPECT_EQ(alignedBitSize, zserio::bitSizeOfAligned(arrayTraits, array, 0));
-        EXPECT_EQ(alignedBitSize + 1, zserio::bitSizeOfAligned(arrayTraits, array, 7));
+        EXPECT_EQ(0 + alignedBitSize, zserio::bitSizeOfAligned(arrayTraits, array, 0));
+        EXPECT_EQ(7 + alignedBitSize, zserio::bitSizeOfAligned(arrayTraits, array, 1));
+        EXPECT_EQ(5 + alignedBitSize, zserio::bitSizeOfAligned(arrayTraits, array, 3));
+        EXPECT_EQ(3 + alignedBitSize, zserio::bitSizeOfAligned(arrayTraits, array, 5));
+        EXPECT_EQ(1 + alignedBitSize, zserio::bitSizeOfAligned(arrayTraits, array, 7));
     }
 
     template <typename ARRAY_TRAITS>
@@ -324,9 +327,21 @@ private:
                 ArrayTestOffsetInitializer());
         EXPECT_EQ(0 + alignedBitSize, alignedBitPosition0);
 
+        const size_t alignedBitPosition1 = zserio::initializeOffsetsAligned(arrayTraits, array, 1,
+                ArrayTestOffsetInitializer());
+        EXPECT_EQ(1 + 7 + alignedBitSize, alignedBitPosition1);
+
+        const size_t alignedBitPosition3 = zserio::initializeOffsetsAligned(arrayTraits, array, 3,
+                ArrayTestOffsetInitializer());
+        EXPECT_EQ(3 + 5 + alignedBitSize, alignedBitPosition3);
+
+        const size_t alignedBitPosition5 = zserio::initializeOffsetsAligned(arrayTraits, array, 5,
+                ArrayTestOffsetInitializer());
+        EXPECT_EQ(5 + 3 + alignedBitSize, alignedBitPosition5);
+
         const size_t alignedBitPosition7 = zserio::initializeOffsetsAligned(arrayTraits, array, 7,
                 ArrayTestOffsetInitializer());
-        EXPECT_EQ(7 + alignedBitSize + 1, alignedBitPosition7);
+        EXPECT_EQ(7 + 1 + alignedBitSize, alignedBitPosition7);
     }
 
     template <typename ARRAY_TRAITS>
@@ -438,8 +453,9 @@ private:
             size_t alignedBitSize)
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+        writer.writeBool(false);
         zserio::writeAligned(arrayTraits, array, writer, ArrayTestOffsetChecker());
-        EXPECT_EQ(alignedBitSize, writer.getBitPosition());
+        EXPECT_EQ(1 + 7 + alignedBitSize, writer.getBitPosition());
     }
 
     template <typename ARRAY_TRAITS>

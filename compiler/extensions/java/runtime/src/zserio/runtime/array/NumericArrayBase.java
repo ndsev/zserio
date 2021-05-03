@@ -70,10 +70,12 @@ abstract class NumericArrayBase<E> extends ArrayBase<E>
      */
     protected int bitSizeOfAlignedImpl(long bitPosition, int numBits)
     {
-        if (length() > 1)
-            return BitPositionUtil.alignTo(Byte.SIZE, numBits) * (length() - 1) + numBits;
-        else
-            return bitSizeOfImpl(bitPosition, numBits);
+        if (length() == 0)
+            return 0;
+
+        final int firstAlignment = (int)(BitPositionUtil.alignTo(Byte.SIZE, bitPosition) - bitPosition);
+
+        return firstAlignment + numBits + (int)BitPositionUtil.alignTo(Byte.SIZE, numBits) * (length() - 1);
     }
 
     /**

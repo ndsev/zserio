@@ -76,14 +76,8 @@ ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitpositio
     <#if field.alignmentValue??>
 ${I}end_bitposition = zserio.bitposition.alignto(${field.alignmentValue}, end_bitposition)
     </#if>
-    <#if field.offset??>
-        <#if field.offset.containsIndex>
-            <#-- align to bytes only if the array is non-empty to match read/write behavior -->
-${I}if self.<@field_member_name field/>:
-${I}    end_bitposition = zserio.bitposition.alignto(8, end_bitposition)
-        <#else>
+    <#if field.offset?? && !field.offset.containsIndex>
 ${I}end_bitposition = zserio.bitposition.alignto(8, end_bitposition)
-        </#if>
     </#if>
 </#macro>
 

@@ -187,6 +187,14 @@ class ArrayTest(unittest.TestCase):
         array2_values = [DummyObject(3), DummyObject(4)]
         self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
+    @staticmethod
+    def _set_offset_method(_index, _bitoffset):
+        pass
+
+    @staticmethod
+    def _check_offset_method(_index, _bitoffset):
+        pass
+
     def _test_array(self, array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof,
                     array2_values):
         self._test_from_reader(array_traits, array1_values)
@@ -262,13 +270,14 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(bitsizeof_varuint64(len(array_values)) + expected_bitsize, auto_array.bitsizeof(0))
         self.assertEqual(bitsizeof_varuint64(len(array_values)) + expected_bitsize, auto_array.bitsizeof(7))
 
-        aligned_array = Array(array_traits, array_values, set_offset_method=not None)
-        self.assertEqual(expected_aligned_bitsize, aligned_array.bitsizeof(0))
+        aligned_array = Array(array_traits, array_values, set_offset_method=ArrayTest._set_offset_method)
+        self.assertEqual(0 + expected_aligned_bitsize, aligned_array.bitsizeof(0))
+        self.assertEqual(7 + expected_aligned_bitsize, aligned_array.bitsizeof(1))
+        self.assertEqual(5 + expected_aligned_bitsize, aligned_array.bitsizeof(3))
+        self.assertEqual(3 + expected_aligned_bitsize, aligned_array.bitsizeof(5))
+        self.assertEqual(1 + expected_aligned_bitsize, aligned_array.bitsizeof(7))
 
     def _test_initialize_offsets(self, array_traits, array_values, expected_bitsize, expected_aligned_bitsize):
-        def _set_offset_method(_index, _bitoffset):
-            pass
-
         array = Array(array_traits, array_values)
         self.assertEqual(0 + expected_bitsize, array.initialize_offsets(0))
         self.assertEqual(7 + expected_bitsize, array.initialize_offsets(7))
@@ -279,13 +288,14 @@ class ArrayTest(unittest.TestCase):
         self.assertEqual(7 + bitsizeof_varuint64(len(array_values)) + expected_bitsize,
                          auto_array.initialize_offsets(7))
 
-        aligned_array = Array(array_traits, array_values, set_offset_method=_set_offset_method)
+        aligned_array = Array(array_traits, array_values, set_offset_method=ArrayTest._set_offset_method)
         self.assertEqual(0 + expected_aligned_bitsize, aligned_array.initialize_offsets(0))
+        self.assertEqual(1 + 7 + expected_aligned_bitsize, aligned_array.initialize_offsets(1))
+        self.assertEqual(3 + 5 + expected_aligned_bitsize, aligned_array.initialize_offsets(3))
+        self.assertEqual(5 + 3 + expected_aligned_bitsize, aligned_array.initialize_offsets(5))
+        self.assertEqual(7 + 1 + expected_aligned_bitsize, aligned_array.initialize_offsets(7))
 
     def _test_read(self, array_traits, array_values):
-        def _check_offset_method(_index, _bitoffset):
-            pass
-
         array = Array(array_traits, array_values)
         writer = BitStreamWriter()
         array.write(writer)
@@ -302,11 +312,11 @@ class ArrayTest(unittest.TestCase):
         read_auto_array.read(reader, len(auto_array.raw_array))
         self.assertEqual(auto_array, read_auto_array)
 
-        aligned_array = Array(array_traits, array_values, check_offset_method=_check_offset_method)
+        aligned_array = Array(array_traits, array_values, check_offset_method=ArrayTest._check_offset_method)
         writer = BitStreamWriter()
         aligned_array.write(writer)
         reader = BitStreamReader(writer.byte_array)
-        read_aligned_array = Array(array_traits, check_offset_method=_check_offset_method)
+        read_aligned_array = Array(array_traits, check_offset_method=ArrayTest._check_offset_method)
         read_aligned_array.read(reader, len(aligned_array.raw_array))
         self.assertEqual(aligned_array, read_aligned_array)
 
@@ -323,9 +333,6 @@ class ArrayTest(unittest.TestCase):
                 Array(array_traits, is_implicit=True).read(reader)
 
     def _test_write(self, array_traits, array_values, expected_bitsize, expected_aligned_bitsize):
-        def _check_offset_method(_index, _bitoffset):
-            pass
-
         array = Array(array_traits, array_values)
         writer = BitStreamWriter()
         array.write(writer)
@@ -336,7 +343,8 @@ class ArrayTest(unittest.TestCase):
         auto_array.write(writer)
         self.assertEqual(bitsizeof_varuint64(len(array_values)) + expected_bitsize, writer.bitposition)
 
-        aligned_array = Array(array_traits, array_values, check_offset_method=_check_offset_method)
+        aligned_array = Array(array_traits, array_values, check_offset_method=ArrayTest._check_offset_method)
         writer = BitStreamWriter()
+        writer.write_bool(False)
         aligned_array.write(writer)
-        self.assertEqual(expected_aligned_bitsize, writer.bitposition)
+        self.assertEqual(1 + 7 + expected_aligned_bitsize, writer.bitposition)

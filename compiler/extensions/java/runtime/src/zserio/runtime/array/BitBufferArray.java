@@ -278,7 +278,14 @@ public class BitBufferArray extends ArrayBase<BitBuffer>
      */
     public int bitSizeOfAligned(long bitPosition)
     {
-        return bitSizeOf(bitPosition);
+        long endBitPosition = bitPosition;
+        for (int index = 0; index < data.length; index++)
+        {
+            endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
+            endBitPosition += BitSizeOfCalculator.getBitSizeOfBitBuffer(data[index]);
+        }
+
+        return (int)(endBitPosition - bitPosition);
     }
 
     /**

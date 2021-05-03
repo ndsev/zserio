@@ -43,14 +43,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#if field.alignmentValue??>
 ${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(${field.alignmentValue}, endBitPosition);
     </#if>
-    <#if field.offset??>
-        <#if field.offset.containsIndex>
-            <#-- align to bytes only if the array is non-empty to match read/write behavior -->
-${I}if (this.<@field_member_name field/>.length() > 0)
-${I}    endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
-        <#else>
+    <#if field.offset?? && !field.offset.containsIndex>
 ${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
-        </#if>
     </#if>
 </#macro>
 <#macro structure_bitsizeof_inner field indent>

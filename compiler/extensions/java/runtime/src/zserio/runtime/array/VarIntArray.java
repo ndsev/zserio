@@ -203,7 +203,11 @@ public class VarIntArray extends LongArrayBase
      */
     public int bitSizeOfAligned(long bitPosition)
     {
-        return bitSizeOf(bitPosition);
+        long endBitPosition = bitPosition;
+        endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
+        endBitPosition += bitSizeOf(endBitPosition);
+
+        return (int)(endBitPosition - bitPosition);
     }
 
     /**
@@ -258,9 +262,9 @@ public class VarIntArray extends LongArrayBase
     public long initializeOffsetsAligned(long bitPosition, OffsetSetter setter)
     {
         long currentBitPosition = bitPosition;
+        currentBitPosition = BitPositionUtil.alignTo(Byte.SIZE, currentBitPosition);
         for (int index = 0; index < data.length; index++)
         {
-            currentBitPosition = BitPositionUtil.alignTo(Byte.SIZE, currentBitPosition);
             setter.setOffset(index, BitPositionUtil.bitsToBytes(currentBitPosition));
             currentBitPosition += BitSizeOfCalculator.getBitSizeOfVarInt(data[index]);
         }

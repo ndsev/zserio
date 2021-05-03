@@ -130,13 +130,8 @@ bool ${name}::${field.optional.indicatorName}() const
     <#if field.alignmentValue??>
 ${I}endBitPosition = ::zserio::alignTo(${field.alignmentValue}, endBitPosition);
     </#if>
-    <#if field.offset??>
-        <#if field.offset.containsIndex>
-${I}if (<@compound_get_field field/>.size() > 0)
-${I}    endBitPosition = ::zserio::alignTo(8, endBitPosition);
-        <#else>
+    <#if field.offset?? && !field.offset.containsIndex>
 ${I}endBitPosition = ::zserio::alignTo(8, endBitPosition);
-        </#if>
     </#if>
 </#macro>
 <#macro structure_bitsizeof_field field indent>

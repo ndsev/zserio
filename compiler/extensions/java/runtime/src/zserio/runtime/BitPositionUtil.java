@@ -13,10 +13,10 @@ public class BitPositionUtil
      *
      * @return Aligned bit size.
      */
-    public static int alignTo(int alignmentValue, long bitPosition)
+    public static long alignTo(int alignmentValue, long bitPosition)
     {
-        return (int)((bitPosition > 0 && alignmentValue != 0) ?
-                (((bitPosition - 1) / alignmentValue) + 1) * alignmentValue : bitPosition);
+        return (bitPosition > 0 && alignmentValue != 0) ?
+                (((bitPosition - 1) / alignmentValue) + 1) * alignmentValue : bitPosition;
     }
 
     /**

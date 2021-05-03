@@ -127,6 +127,7 @@ class Array:
             if self._set_offset_method is None:
                 end_bitposition += size * element_size
             else:
+                end_bitposition = alignto(8, end_bitposition)
                 end_bitposition += element_size + (size - 1) * alignto(8, element_size)
         else:
             for element in self._raw_array:
