@@ -212,10 +212,11 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         if (offsetExpr != null)
         {
             final ZserioType exprZserioType = offsetExpr.getExprZserioType();
-            if (!(exprZserioType instanceof IntegerType) || ((IntegerType)exprZserioType).isSigned())
+            if (!(exprZserioType instanceof IntegerType && !((IntegerType)exprZserioType).isSigned() &&
+                    exprZserioType instanceof FixedSizeType))
             {
                 throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
-                        "' is not an unsigned integer type!");
+                        "' is not an unsigned fixed sized integer type!");
             }
 
             if (offsetExpr.containsFunctionCall())

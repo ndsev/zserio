@@ -20,6 +20,7 @@
         <testGen testName="indexed_offsets_error" zsFile="no_array_error.zs" ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="optional_expression_error.zs" ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="parameter_no_array_error.zs" ignoreErrors="true"/>
+        <testGen testName="indexed_offsets_error" zsFile="varuint_offset_array_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

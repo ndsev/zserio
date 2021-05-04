@@ -18,8 +18,9 @@
         <testGen testName="offsets_error" zsFile="function_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="signed_bitfield_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="signed_integer_error.zs" ignoreErrors="true"/>
-        <testGen testName="offsets_error" zsFile="signed_varint_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="string_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="varint_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="varuint_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

@@ -1,6 +1,6 @@
-package signed_varint_error;
+package varint_error;
 
-struct SignedVarintError
+struct VarintError
 {
     varint offset;
 offset:

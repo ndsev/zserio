@@ -80,5 +80,13 @@ public class IndexedOffsetsErrorTest
         assertTrue(zserioErrors.isPresent(error));
     }
 
+    @Test
+    public void varuintOffsetArray()
+    {
+        final String error = "varuint_offset_array_error.zs:6:1: " +
+                "Offset expression for field 'fields' is not an unsigned fixed sized integer type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
     private static ZserioErrors zserioErrors;
 }
