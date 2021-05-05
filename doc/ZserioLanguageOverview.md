@@ -855,7 +855,7 @@ implicit length array.
 ```
 struct LengthOfOperator
 {
-    uint8   implicitArray[];
+    implicit uint8 implicitArray[];
 
     function uint32 getLengthOfImplicitArray()
     {
