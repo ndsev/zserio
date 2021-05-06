@@ -16,6 +16,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      * @param location           AST node location.
      * @param typeInstantiation  Field type instantiation.
      * @param name               Field name.
+     * @param isPackable         Packable flag.
      * @param isAutoOptional     Auto optional flag.
      * @param alignmentExpr      Alignment expression or null if it's not defined.
      * @param offsetExpr         Offset expression or null if it's not defined.
@@ -24,12 +25,12 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      * @param constraintExpr     Constraint expression or null if it's not defined.
      * @param docComments        List of documentation comments belonging to this node.
      */
-    public Field(AstLocation location, TypeInstantiation typeInstantiation, String name, boolean isAutoOptional,
-            Expression alignmentExpr, Expression offsetExpr,Expression initializerExpr,
+    public Field(AstLocation location, TypeInstantiation typeInstantiation, String name, boolean isPackable,
+            boolean isAutoOptional, Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, List<DocComment> docComments)
     {
-        this(location, typeInstantiation, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
-                optionalClauseExpr, constraintExpr, false, null, docComments);
+        this(location, typeInstantiation, name, isPackable, isAutoOptional, alignmentExpr, offsetExpr,
+                initializerExpr, optionalClauseExpr, constraintExpr, false, null, docComments);
     }
 
     /**
@@ -44,8 +45,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
             Expression constraintExpr, List<DocComment> docComments)
     {
-        this(location, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr, false, null,
-                docComments);
+        this(location, fieldTypeInstantiation, name, false, false, null, null, null, null, constraintExpr,
+                false, null, docComments);
     }
 
     /**
@@ -61,7 +62,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name, boolean isVirtual,
             SqlConstraint sqlConstraint, List<DocComment> docComments)
     {
-        this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, isVirtual,
+        this(location, fieldTypeInstantiation, name, false, false, null, null, null, null, null, isVirtual,
                 sqlConstraint, docComments);
     }
 
@@ -76,7 +77,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
             List<DocComment> docComments)
     {
-        this(location, fieldTypeInstantiation, name, false, null, null, null, null, null, false, null,
+        this(location, fieldTypeInstantiation, name, false, false, null, null, null, null, null, false, null,
                 docComments);
     }
 
@@ -120,6 +121,16 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public TypeInstantiation getTypeInstantiation()
     {
         return typeInstantiation;
+    }
+
+    /**
+     * Gets flag which indicates if the field is packable.
+     *
+     * @return True if the field has been defined using "packable" keyword in Zserio.
+     */
+    public boolean isPackable()
+    {
+        return isPackable;
     }
 
     /**
@@ -208,6 +219,15 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      */
     void check(Package pkg)
     {
+        // check if can be packable (only integral types can be packable)
+        if (isPackable)
+        {
+            if (!(typeInstantiation.getBaseType() instanceof IntegerType))
+            {
+                throw new ParserException(this, "Only integral fields can be packable!");
+            }
+        }
+
         // check offset expression type
         if (offsetExpr != null)
         {
@@ -293,7 +313,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         final SqlConstraint instantiatedSqlConstraint = getSqlConstraint() == null ? null :
                 getSqlConstraint().instantiate(templateParameters, templateArguments);
 
-        return new Field(getLocation(), instantiatedTypeInstantiation, name, isAutoOptional,
+        return new Field(getLocation(), instantiatedTypeInstantiation, name, isPackable, isAutoOptional,
                 instantiatedAlignmentExpr, instantiatedOffsetExpr, instantiatedInitializerExpr,
                 instantiatedOptionalClauseExpr, instantiatedConstraintExpr,
                 isVirtual, instantiatedSqlConstraint, getDocComments());
@@ -318,7 +338,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         }
     }
 
-    private Field(AstLocation location, TypeInstantiation typeInstantiation, String name,
+    private Field(AstLocation location, TypeInstantiation typeInstantiation, String name, boolean isPackable,
             boolean isAutoOptional, Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, boolean isVirtual,
             SqlConstraint sqlConstraint, List<DocComment> docComments)
@@ -327,6 +347,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
         this.typeInstantiation = typeInstantiation;
         this.name = name;
+        this.isPackable = isPackable;
         this.isAutoOptional = isAutoOptional;
 
         this.alignmentExpr = alignmentExpr;
@@ -341,6 +362,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
     private final TypeInstantiation typeInstantiation;
     private final String name;
+    private final boolean isPackable;
     private final boolean isAutoOptional;
 
     private final Expression offsetExpr;

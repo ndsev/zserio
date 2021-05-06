@@ -94,6 +94,7 @@ structureFieldDefinition
     :   fieldAlignment?
         fieldOffset?
         OPTIONAL?
+        PACKABLE?
         fieldTypeId
         fieldInitializer?
         fieldOptionalClause?
@@ -110,7 +111,7 @@ fieldOffset
     ;
 
 fieldTypeId
-    :   IMPLICIT? typeInstantiation id fieldArrayRange?
+    :   PACKED? IMPLICIT? typeInstantiation id fieldArrayRange?
     ;
 
 fieldArrayRange

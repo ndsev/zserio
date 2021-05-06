@@ -18,6 +18,10 @@
         <testGen testName="structure_types_error" zsFile="indirect_array_recursion_error.zs"
             ignoreErrors="true"/>
         <testGen testName="structure_types_error" zsFile="indirect_recursion_error.zs" ignoreErrors="true"/>
+        <testGen testName="structure_types_error" zsFile="packable_array_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="structure_types_error" zsFile="packable_string_field_error.zs" ignoreErrors="true"/>
+        <testGen testName="structure_types_error" zsFile="packable_subtyped_enum_field_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="structure_types_error" zsFile="recursive_error.zs" ignoreErrors="true"/>
         <testGen testName="structure_types_error" zsFile="database_field_error.zs" ignoreErrors="true"/>
         <testGen testName="structure_types_error" zsFile="subtyped_table_field_error.zs" ignoreErrors="true"/>

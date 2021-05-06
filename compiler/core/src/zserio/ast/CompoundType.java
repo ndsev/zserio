@@ -107,7 +107,7 @@ public abstract class CompoundType extends TemplatableType
         return Collections.unmodifiableList(functions);
     }
 
-    // TODO[Mi-L@] These methods should not be part of this AST node. Move to some utilities or let generators
+    // TODO[Mi-L@] This method should not be part of this AST node. Move to some utilities or let generators
     //             to make it by themselves.
     /**
      * Checks if this compound type needs children initialization method.
@@ -144,9 +144,35 @@ public abstract class CompoundType extends TemplatableType
     }
 
     /**
-     * Checks if this compound type or any of its subfield contains some offset.
+     * Check if this compound type or any of its subfields contains some packable field.
      *
-     * @return true if this compound type contains some offset.
+     * @return True if this compound type contains some packable field.
+     */
+    public boolean hasPackableField()
+    {
+        for (Field field : fields)
+        {
+            if (field.isPackable())
+                return true;
+
+            final ZserioType fieldBaseType = field.getTypeInstantiation().getBaseType();
+            // TODO[Mi-L@]: currently only structures can be present in packed arrays
+            if (fieldBaseType instanceof StructureType)
+            {
+                final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+                // compound type can have itself as an optional field
+                if (childCompoundType != this && childCompoundType.hasPackableField())
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if this compound type or any of its subfields contains some offset.
+     *
+     * @return True if this compound type contains some offset.
      */
     public boolean hasFieldWithOffset()
     {

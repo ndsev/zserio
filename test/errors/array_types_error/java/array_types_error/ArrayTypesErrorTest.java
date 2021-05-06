@@ -98,6 +98,76 @@ public class ArrayTypesErrorTest
     }
 
     @Test
+    public void packedArrayBitmask()
+    {
+        final String error = "packed_array_bitmask_error.zs:11:12: " +
+                "Packed arrays are allowed only for integral types or " +
+                "for structures which contain packable fields!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayEnum()
+    {
+        final String error = "packed_array_enum_error.zs:11:12: " +
+                "Packed arrays are allowed only for integral types or " +
+                "for structures which contain packable fields!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayExtern()
+    {
+        final String error = "packed_array_extern_error.zs:5:12: " +
+                "Packed arrays are allowed only for integral types or " +
+                "for structures which contain packable fields!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayString()
+    {
+        final String error = "packed_array_string_error.zs:5:12: " +
+                "Packed arrays are allowed only for integral types or " +
+                "for structures which contain packable fields!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayUnion()
+    {
+        final String error = "packed_array_union_error.zs:15:12: " +
+                "Packed arrays are allowed only for integral types or " +
+                "for structures which contain packable fields!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayUnionInStructure()
+    {
+        final String error = "packed_array_union_in_structure_error.zs:20:12: " +
+                "Packed arrays are allowed only for integral types or " +
+                "for structures which contain packable fields!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayUnpackableStruct()
+    {
+        final String error = "packed_array_unpackable_struct_error.zs:10:12: " +
+                "Packed arrays are allowed only for integral types or " +
+                "for structures which contain packable fields!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedImplicitArray()
+    {
+        final String error = "packed_implicit_array_error.zs:5:12: Implicit arrays cannot be packed!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongArrayLengthType()
     {
         final String error = "wrong_array_length_type_error.zs:6:21: Invalid length expression for array. " +
