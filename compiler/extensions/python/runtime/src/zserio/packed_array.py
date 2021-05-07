@@ -90,16 +90,15 @@ class PackedArray:
 
         if size > 0:
             context_list = self._array_traits.create_context()
-            for index in range(size):
-                self._array_traits.init_context(iter(context_list), self._raw_array[index], index == 0)
+            for element in self._raw_array:
+                self._array_traits.init_context(iter(context_list), element)
             for context in context_list:
                 end_bitposition += context.bitsizeof_descriptor(end_bitposition)
 
-            for index in range(size):
+            for element in self._raw_array:
                 if self._set_offset_method is not None:
                     end_bitposition = alignto(8, end_bitposition)
-                end_bitposition += self._array_traits.bitsizeof(iter(context_list), end_bitposition,
-                                                                self._raw_array[index], index == 0)
+                end_bitposition += self._array_traits.bitsizeof(iter(context_list), end_bitposition, element)
 
         return end_bitposition - bitposition
 
@@ -119,7 +118,7 @@ class PackedArray:
         if size > 0:
             context_list = self._array_traits.create_context()
             for index in range(size):
-                self._array_traits.init_context(iter(context_list), self._raw_array[index], index == 0)
+                self._array_traits.init_context(iter(context_list), self._raw_array[index])
             for context in context_list:
                 end_bitposition += context.bitsizeof_descriptor(end_bitposition)
 
@@ -128,7 +127,7 @@ class PackedArray:
                     end_bitposition = alignto(8, end_bitposition)
                     self._set_offset_method(index, end_bitposition)
                 end_bitposition = self._array_traits.initialize_offsets(iter(context_list), end_bitposition,
-                                                                        self._raw_array[index], index == 0)
+                                                                        self._raw_array[index])
 
         return end_bitposition
 
@@ -174,8 +173,8 @@ class PackedArray:
 
         if size > 0:
             context_list = self._array_traits.create_context()
-            for index in range(size):
-                self._array_traits.init_context(iter(context_list), self._raw_array[index], index == 0)
+            for element in self._raw_array:
+                self._array_traits.init_context(iter(context_list), element)
             for context in context_list:
                 context.write_descriptor(writer)
 
@@ -183,42 +182,60 @@ class PackedArray:
                 if self._check_offset_method is not None:
                     writer.alignto(8)
                     self._check_offset_method(index, writer.bitposition)
-                self._array_traits.write(iter(context_list), writer, self._raw_array[index], index == 0)
+                self._array_traits.write(iter(context_list), writer, self._raw_array[index])
 
 class DeltaContext:
     """
     Context for delta packing created for each packable field.
+
+    Contexts are always newly created for each array operation (bitsizeof, initialize_offsets, read, write).
+    They must be initialized at first via calling the init method for each packable element present in the
+    array. After the full initialization, only a single method (bitsizeof, read, write) can be repeatedly
+    called for exactly the same sequence of packable elements.
+
+    Note that *_descriptor methods doesn't change context's internal state and can be called as needed. They
+    are designed to be called once for each context before the actual operation.
+
+    Example:
+    context = DeltaContext(array_traits)
+    for element in array:
+        context.init(element) # initialization step, needed for max_bit_number calculation
+    context.write_descriptor(writer)
+    for element in array:
+        context.write(writer, element)
     """
 
-    def __init__(self, packed_array_traits : typing.Any) -> None:
+    def __init__(self, array_traits : typing.Any) -> None:
         """
         Delta context constructor.
 
-        :param packed_array_traits: Standard array traits used for the first element or
+        :param array_traits: Standard array traits used for the first element or
                              in case that packing is not used.
         """
 
-        self._array_traits = packed_array_traits
-        self._max_bit_number = 0
-        self._previous_element = 0
+        self._array_traits = array_traits
         self._is_packed = True
+        self._max_bit_number = 0
+        self._previous_element : typing.Optional[int] = None
+        self._processing = False
 
-    def init(self, element : int, is_first : bool) -> None:
+    def init(self, element : int) -> None:
         """
         Makes initialization step for the provided array element.
 
         :param element: Current element of the array.
-        :param is_first: Denotes whether this element is the first element of the array.
         """
 
-        if not is_first:
+        if self._previous_element is None:
+            self._previous_element = element
+        else:
             delta = element - self._previous_element
             max_bit_number = delta.bit_length()
             if max_bit_number > self._max_bit_number:
                 self._max_bit_number = max_bit_number
                 if max_bit_number > self._MAX_BIT_NUMBER_LIMIT:
                     self._is_packed = False
-        self._previous_element = element
+            self._previous_element = element
 
     def bitsizeof_descriptor(self, _bitposition : int) -> int:
         """
@@ -242,13 +259,14 @@ class DeltaContext:
         :returns: Length of the element representation stored in the bit stream in bits.
         """
 
-        if self._is_packed:
-            return self._max_bit_number + 1
-        else:
+        if not self._processing or not self._is_packed:
+            self._processing = True
             if self._array_traits.HAS_BITSIZEOF_CONSTANT:
                 return self._array_traits.bitsizeof()
             else:
                 return self._array_traits.bitsizeof(bitposition, element)
+        else: # packed and not first
+            return self._max_bit_number + 1
 
     def write_descriptor(self, writer : BitStreamWriter) -> None:
         """
@@ -271,12 +289,15 @@ class DeltaContext:
         :param element: Element to write.
         """
 
-        if self._is_packed:
+        if not self._processing or not self._is_packed:
+            self._processing = True
+            self._previous_element = element
+            self._array_traits.write(writer, element)
+        else: # packed and not first
+            assert self._previous_element is not None
             delta = element - self._previous_element
             writer.write_signed_bits(delta, self._max_bit_number + 1)
             self._previous_element = element
-        else:
-            self._array_traits.write(writer, element)
 
     def read_descriptor(self, reader : BitStreamReader) -> None:
         """
@@ -290,7 +311,7 @@ class DeltaContext:
         if self._is_packed:
             self._max_bit_number = reader.read_bits(self._MAX_BIT_NUMBER_BITS)
 
-    def read(self, reader : BitStreamReader, index: int) -> int:
+    def read(self, reader : BitStreamReader, index : int) -> int:
         """
         Reads the packed element from the bit stream. This is not called for the first element since it's read
         using standard array traits.
@@ -299,12 +320,16 @@ class DeltaContext:
         :param index: Index of the element which is just read.
         """
 
-        if self._is_packed:
+        if not self._processing or not self._is_packed:
+            self._processing = True
+            element = self._array_traits.read(reader, index)
+            self._previous_element = element
+            return element
+        else: # packed and not first
+            assert self._previous_element is not None
             delta = reader.read_signed_bits(self._max_bit_number + 1)
             self._previous_element += delta
             return self._previous_element
-        else:
-            return self._array_traits.read(reader, index)
 
     _MAX_BIT_NUMBER_BITS = 6
     _MAX_BIT_NUMBER_LIMIT = 63
@@ -347,14 +372,14 @@ class DeltaArrayTraits:
     Note that only integral types are packable using delta packing.
     """
 
-    def __init__(self, packed_array_traits : typing.Any) -> None:
+    def __init__(self, array_traits : typing.Any) -> None:
         """
         Constructor.
 
-        :param packed_array_traits: Standard array traits.
+        :param array_traits: Standard array traits.
         """
 
-        self._array_traits = packed_array_traits
+        self._array_traits = array_traits
 
     def create_context(self) -> typing.List[DeltaContext]:
         """
@@ -367,78 +392,62 @@ class DeltaArrayTraits:
 
     @staticmethod
     def init_context(context_iterator : typing.Iterator[DeltaContext],
-                     element : int, is_first : bool) -> None:
+                     element : int) -> None:
         """
         Calls context initialization step for the current element.
 
         :param context_iterator: Delta context iterator.
         :param element: Current element.
-        :param is_first: Denotes whether this element is the first element of the array.
         """
 
         context = next(context_iterator)
-        context.init(element, is_first)
+        context.init(element)
 
-    def bitsizeof(self, context_iterator : typing.Iterator[DeltaContext], bitposition : int,
-                  element : int, is_first : bool) -> int:
+    @staticmethod
+    def bitsizeof(context_iterator : typing.Iterator[DeltaContext], bitposition : int, element : int) -> int:
         """
         Returns length of the array element stored in the bit stream in bits.
 
         :param context_iterator: Delta context iterator.
         :param bitposition: Current bit stream position.
         :param elemnet: Current element.
-        :param is_first: Denotes whether this element is the first element of the array.
         :returns: Length of the array element stored in the bit stream in bits.
         """
 
         context = next(context_iterator)
-        if is_first:
-            context.init(element, is_first=True)
-            if self._array_traits.HAS_BITSIZEOF_CONSTANT:
-                return self._array_traits.bitsizeof()
-            else:
-                return self._array_traits.bitsizeof(bitposition, element)
-        else:
-            return context.bitsizeof(bitposition, element)
+        return context.bitsizeof(bitposition, element)
 
-    def initialize_offsets(self, context_iterator : typing.Iterator[DeltaContext],
-                           bitposition : int, element : int, is_first : bool) -> int:
+    @staticmethod
+    def initialize_offsets(context_iterator : typing.Iterator[DeltaContext],
+                           bitposition : int, element : int) -> int:
         """
         Calls indexed offsets initialization for the current element.
 
         :param context_iterator: Delta context iterator.
         :param bitposition: Current bit stream position.
         :param element: Current element.
-        :param is_first: Denotes whether this element is the first element of the array.
         :returns: Updated bit stream position which points to the first bit after this element.
         """
 
         context = next(context_iterator)
-        if is_first:
-            context.init(element, is_first=True)
-            return self._array_traits.initialize_offsets(bitposition, element)
-        else:
-            return bitposition + context.bitsizeof(bitposition, element)
+        return bitposition + context.bitsizeof(bitposition, element)
 
-    def write(self, context_iterator : typing.Iterator[DeltaContext],
-              writer : BitStreamWriter, element : int, is_first : bool) -> None:
+    @staticmethod
+    def write(context_iterator : typing.Iterator[DeltaContext],
+              writer : BitStreamWriter, element : int) -> None:
         """
         Writes the element to the bit stream.
 
         :param context_iterator: Delta context iterator.
         :param writer: Bit stream writer.
         :param element: Element to write.
-        :param is_first: Denotes whether this element is the first element of the array.
         """
 
         context = next(context_iterator)
-        if is_first:
-            context.init(element, is_first=True)
-            self._array_traits.write(writer, element)
-        else:
-            context.write(writer, element)
+        context.write(writer, element)
 
-    def read(self, context_iterator : typing.Iterator[DeltaContext],
+    @staticmethod
+    def read(context_iterator : typing.Iterator[DeltaContext],
              reader : BitStreamReader, index : int) -> int:
         """
         Read an element from the bit stream.
@@ -450,12 +459,7 @@ class DeltaArrayTraits:
         """
 
         context = next(context_iterator)
-        if index == 0:
-            element = self._array_traits.read(reader, index)
-            context.init(element, is_first=True)
-            return element
-        else:
-            return context.read(reader, index)
+        return context.read(reader, index)
 
 class ObjectDeltaArrayTraits:
     """
@@ -489,7 +493,7 @@ class ObjectDeltaArrayTraits:
 
     @staticmethod
     def init_context(context_iterator : typing.Iterator[DeltaContext],
-                     element : typing.Any, is_first : bool) -> None:
+                     element : typing.Any) -> None:
         """
         Calls context initialization step for the current element.
 
@@ -498,47 +502,39 @@ class ObjectDeltaArrayTraits:
         :param is_first: Denotes whether this element is the first element of the array.
         """
 
-        element.init_packed_context(context_iterator, is_first)
+        element.init_packed_context(context_iterator)
 
-    def bitsizeof(self, context_iterator : typing.Iterator[DeltaContext],
-                  bitposition : int, element : typing.Any, is_first : bool) -> int:
+    @staticmethod
+    def bitsizeof(context_iterator : typing.Iterator[DeltaContext],
+                  bitposition : int, element : typing.Any) -> int:
         """
         Returns length of the array element stored in the bit stream in bits.
 
         :param context_iterator: Delta context iterator.
         :param bitposition: Current bit stream position.
         :param elemnet: Current element.
-        :param is_first: Denotes whether this element is the first element of the array.
         :returns: Length of the array element stored in the bit stream in bits.
         """
 
-        if is_first:
-            element.init_packed_context(context_iterator, is_first=True)
-            return self._array_traits.bitsizeof(bitposition, element)
-        else:
-            return element.bitsizeof_packed(context_iterator, bitposition)
+        return element.bitsizeof_packed(context_iterator, bitposition)
 
-    def initialize_offsets(self, context_iterator : typing.Iterator[DeltaContext],
-                           bitposition : int, element : typing.Any, is_first : bool) -> int:
+    @staticmethod
+    def initialize_offsets(context_iterator : typing.Iterator[DeltaContext],
+                           bitposition : int, element : typing.Any) -> int:
         """
         Calls indexed offsets initialization for the current element.
 
         :param context_iterator: Delta context iterator.
         :param bitposition: Current bit stream position.
         :param element: Current element.
-        :param is_first: Denotes whether this element is the first element of the array.
         :returns: Updated bit stream position which points to the first bit after this element.
         """
 
-        if is_first:
-            element.init_packed_context(context_iterator, is_first=True)
-            return self._array_traits.initialize_offsets(bitposition, element)
-        else:
-            return element.initialize_offsets_packed(context_iterator, bitposition)
+        return element.initialize_offsets_packed(context_iterator, bitposition)
 
     @staticmethod
     def write(context_iterator : typing.Iterator[DeltaContext], writer : BitStreamWriter,
-              element : typing.Any, is_first : bool) -> None:
+              element : typing.Any) -> None:
         """
         Writes the element to the bit stream.
 
@@ -548,11 +544,7 @@ class ObjectDeltaArrayTraits:
         :param is_first: Denotes whether this element is the first element of the array.
         """
 
-        if is_first:
-            element.init_packed_context(context_iterator, is_first=True)
-            element.write(writer)
-        else:
-            element.write_packed(context_iterator, writer)
+        element.write_packed(context_iterator, writer)
 
     def read(self, context_iterator : typing.Iterator[DeltaContext], reader : BitStreamReader,
              index : int) -> typing.Any:
@@ -565,11 +557,6 @@ class ObjectDeltaArrayTraits:
         :returns: Read element value.
         """
 
-        if index == 0:
-            element = self._array_traits.read(reader, index)
-            element.init_packed_context(context_iterator, is_first=True)
-            return element
-        else:
-            element = self._object_class()
-            element.read_packed(context_iterator, reader, index)
-            return element
+        element = self._object_class()
+        element.read_packed(context_iterator, reader, index)
+        return element
