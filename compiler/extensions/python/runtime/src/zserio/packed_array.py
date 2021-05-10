@@ -214,10 +214,10 @@ class DeltaContext:
         """
 
         self._array_traits = array_traits
-        self._is_packed = True
+        self._is_packed = False
         self._max_bit_number = 0
         self._previous_element : typing.Optional[int] = None
-        self._processing = False
+        self._processing_started = False
 
     def init(self, element : int) -> None:
         """
@@ -228,6 +228,7 @@ class DeltaContext:
 
         if self._previous_element is None:
             self._previous_element = element
+            self._is_packed = True
         else:
             delta = element - self._previous_element
             max_bit_number = delta.bit_length()
@@ -259,8 +260,8 @@ class DeltaContext:
         :returns: Length of the element representation stored in the bit stream in bits.
         """
 
-        if not self._processing or not self._is_packed:
-            self._processing = True
+        if not self._processing_started or not self._is_packed:
+            self._processing_started = True
             if self._array_traits.HAS_BITSIZEOF_CONSTANT:
                 return self._array_traits.bitsizeof()
             else:
@@ -289,8 +290,8 @@ class DeltaContext:
         :param element: Element to write.
         """
 
-        if not self._processing or not self._is_packed:
-            self._processing = True
+        if not self._processing_started or not self._is_packed:
+            self._processing_started = True
             self._previous_element = element
             self._array_traits.write(writer, element)
         else: # packed and not first
@@ -320,8 +321,8 @@ class DeltaContext:
         :param index: Index of the element which is just read.
         """
 
-        if not self._processing or not self._is_packed:
-            self._processing = True
+        if not self._processing_started or not self._is_packed:
+            self._processing_started = True
             element = self._array_traits.read(reader, index)
             self._previous_element = element
             return element
