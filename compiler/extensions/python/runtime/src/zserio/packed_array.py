@@ -9,6 +9,9 @@ from zserio.bitsizeof import bitsizeof_varsize
 from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
 from zserio.hashcode import calc_hashcode, HASH_SEED
+from zserio.array import (BitFieldArrayTraits, SignedBitFieldArrayTraits, VarUInt16ArrayTraits,
+                          VarUInt32ArrayTraits, VarUInt64ArrayTraits, VarInt16ArrayTraits, VarInt32ArrayTraits,
+                          VarInt64ArrayTraits, VarUIntArrayTraits, VarSizeArrayTraits, VarIntArrayTraits)
 
 class PackedArray:
     """
@@ -183,7 +186,100 @@ class PackedArray:
                     self._check_offset_method(index, writer.bitposition)
                 self._array_traits.write(iter(context_list), writer, self._raw_array[index])
 
-class DeltaContext:
+class PackingContext:
+    """
+    Base class for packing context. Default implementation doen't pack and just calls provided array traits.
+    """
+
+    def __init__(self, array_traits):
+        """
+        :param array_traits: Standard array traits.
+        """
+
+        self._array_traits = array_traits
+
+    def init(self, element : int) -> None:
+        """
+        Makes initialization step for the provided array element.
+
+        :param element: Current element of the array.
+        """
+
+        # default implementation does nothing
+
+    def bitsizeof_descriptor(self, _bitposition : int) -> int:
+        """
+        Returns length of the descriptor stored in the bit stream in bits.
+
+        :param _bitposition: Current bit stream position.
+        :returns: Length of the descriptor stored in the bit stream in bits.
+        """
+
+        assert self is not None
+        return 1
+
+    def bitsizeof(self, bitposition : int, element : int) -> int:
+        """
+        Returns length of the element representation stored in the bit stream in bits.
+
+        :param bitposition: Current bit stream position.
+        :param element: Current element.
+        :returns: Length of the element representation stored in the bit stream in bits.
+        """
+
+        if self._array_traits.HAS_BITSIZEOF_CONSTANT:
+            return self._array_traits.bitsizeof()
+        else:
+            return self._array_traits.bitsizeof(bitposition, element)
+
+    def write_descriptor(self, writer : BitStreamWriter) -> None:
+        """
+        Writes the delta packing descriptor to the bit stream. Called for all contexts before the first element
+        is written.
+
+        :param writer: Bit stream writer.
+        """
+
+        assert self is not None
+        writer.write_bool(False)
+
+    def write(self, writer : BitStreamWriter, element : int) -> None:
+        """
+        Writes the packed element representation to the bit stream. This is not called for the first element
+        since it's written using standard array traits.
+
+        :param writer: Bit stream writer.
+        :param element: Element to write.
+        """
+
+        self._array_traits.write(writer, element)
+
+    def read_descriptor(self, reader : BitStreamReader) -> None:
+        """
+        Reads the delta packing descriptor from the bit stream. Called for all context before the first element
+        is read.
+
+        :param reader: Bit stream reader.
+        """
+
+        assert self is not None
+        is_packed = reader.read_bool()
+        assert not is_packed
+
+    def read(self, reader : BitStreamReader, index : int) -> int:
+        """
+        Reads the packed element from the bit stream. This is not called for the first element since it's read
+        using standard array traits.
+
+        :param reader: Bit stream reader.
+        :param index: Index of the element which is just read.
+        """
+
+        return self._array_traits.read(reader, index)
+
+PackingContextIterator = typing.Iterator[PackingContext]
+
+class DeltaContext(PackingContext):
     """
     Context for delta packing created for each packable field.
 
@@ -205,26 +301,13 @@ class DeltaContext:
     """
 
     def __init__(self, array_traits : typing.Any) -> None:
-        """
-        Delta context constructor.
-
-        :param array_traits: Standard array traits used for the first element or
-                             in case that packing is not used.
-        """
-
-        self._array_traits = array_traits
+        super().__init__(array_traits)
         self._is_packed = False
         self._max_bit_number = 0
         self._previous_element : typing.Optional[int] = None
         self._processing_started = False
 
     def init(self, element : int) -> None:
-        """
-        Makes initialization step for the provided array element.
-
-        :param element: Current element of the array.
-        """
-
         if self._previous_element is None:
             self._previous_element = element
             self._is_packed = True
@@ -241,61 +324,28 @@ class DeltaContext:
             self._previous_element = element
 
     def bitsizeof_descriptor(self, _bitposition : int) -> int:
-        """
-        Returns length of the descriptor stored in the bit stream in bits.
-
-        :param _bitposition: Current bit stream position.
-        :returns: Length of the descriptor stored in the bit stream in bits.
-        """
-
         if self._is_packed:
             return 1 + self._MAX_BIT_NUMBER_BITS
         else:
             return 1
 
     def bitsizeof(self, bitposition : int, element : int) -> int:
-        """
-        Returns length of the element representation stored in the bit stream in bits.
-
-        :param bitposition: Current bit stream position.
-        :param element: Current element.
-        :returns: Length of the element representation stored in the bit stream in bits.
-        """
-
         if not self._processing_started or not self._is_packed:
             self._processing_started = True
-            if self._array_traits.HAS_BITSIZEOF_CONSTANT:
-                return self._array_traits.bitsizeof()
-            else:
-                return self._array_traits.bitsizeof(bitposition, element)
+            return super().bitsizeof(bitposition, element)
         else: # packed and not first
             return self._max_bit_number + 1
 
     def write_descriptor(self, writer : BitStreamWriter) -> None:
-        """
-        Writes the delta packing descriptor to the bit stream. Called for all contexts before the first element
-        is written.
-
-        :param writer: Bit stream writer.
-        """
-
         writer.write_bool(self._is_packed)
         if self._is_packed:
             writer.write_signed_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
 
     def write(self, writer : BitStreamWriter, element : int) -> None:
-        """
-        Writes the packed element representation to the bit stream. This is not called for the first element
-        since it's written using standard array traits.
-
-        :param writer: Bit stream writer.
-        :param element: Element to write.
-        """
-
         if not self._processing_started or not self._is_packed:
             self._processing_started = True
             self._previous_element = element
-            self._array_traits.write(writer, element)
+            super().write(writer, element)
         else: # packed and not first
             assert self._previous_element is not None
             delta = element - self._previous_element
@@ -303,29 +353,14 @@ class DeltaContext:
             self._previous_element = element
 
     def read_descriptor(self, reader : BitStreamReader) -> None:
-        """
-        Reads the delta packing descriptor from the bit stream. Called for all context before the first element
-        is read.
-
-        :param reader: Bit stream reader.
-        """
-
         self._is_packed = reader.read_bool()
         if self._is_packed:
             self._max_bit_number = reader.read_bits(self._MAX_BIT_NUMBER_BITS)
 
     def read(self, reader : BitStreamReader, index : int) -> int:
-        """
-        Reads the packed element from the bit stream. This is not called for the first element since it's read
-        using standard array traits.
-
-        :param reader: Bit stream reader.
-        :param index: Index of the element which is just read.
-        """
-
         if not self._processing_started or not self._is_packed:
             self._processing_started = True
-            element = self._array_traits.read(reader, index)
+            element = super().read(reader, index)
             self._previous_element = element
             return element
         else: # packed and not first
@@ -337,9 +372,9 @@ class DeltaContext:
     _MAX_BIT_NUMBER_BITS = 6
     _MAX_BIT_NUMBER_LIMIT = 63
 
-class DeltaContextBuilder:
+class PackingContextBuilder:
     """
-    Delta context builder used to separate generated API from the particular packing implementation.
+    Context builder used to separate generated API from the particular packing implementation.
     """
 
     def __init__(self) -> None:
@@ -347,32 +382,46 @@ class DeltaContextBuilder:
         Constructor.
         """
 
-        self._context_list : typing.List[DeltaContext] = []
+        self._context_list : typing.List[PackingContext] = []
 
-    def add_context(self, packed_array_traits : typing.Any) -> 'DeltaContextBuilder':
+    def add_context(self, array_traits : typing.Any) -> 'PackingContextBuilder':
         """
         Adds a packable field.
 
-        :param packed_array_traits: Standard array traits which determine type of the packable field.
+        :param array_traits: Standard array traits which determine type of the packable field.
         :returns: Self for convenient context building concatenation.
         """
 
-        self._context_list.append(DeltaContext(packed_array_traits))
+        if (isinstance(array_traits,(BitFieldArrayTraits,
+                                     SignedBitFieldArrayTraits,
+                                     VarUInt16ArrayTraits,
+                                     VarUInt32ArrayTraits,
+                                     VarUInt64ArrayTraits,
+                                     VarUIntArrayTraits,
+                                     VarSizeArrayTraits,
+                                     VarInt16ArrayTraits,
+                                     VarInt32ArrayTraits,
+                                     VarInt64ArrayTraits,
+                                     VarIntArrayTraits))):
+            self._context_list.append(DeltaContext(array_traits))
+        else:
+            self._context_list.append(PackingContext(array_traits))
+
         return self
 
-    def build(self) -> typing.List[DeltaContext]:
+    def build(self) -> typing.List[PackingContext]:
         """
         Returns built list of delta packing contexts.
         """
 
         return self._context_list
 
-class DeltaArrayTraits:
+class PackedArrayTraits:
     """
-    Delta array traits.
+    Packed array traits.
 
-    Delta array traits are used for all builtin packable types.
-    Note that only integral types are packable using delta packing.
+    Packed array traits are used for all built-in types. Packing context builder creates an appropriate
+    packing context for concrete types.
     """
 
     def __init__(self, array_traits : typing.Any) -> None:
@@ -384,22 +433,21 @@ class DeltaArrayTraits:
 
         self._array_traits = array_traits
 
-    def create_context(self) -> typing.List[DeltaContext]:
+    def create_context(self) -> typing.List[PackingContext]:
         """
-        Creates delta packing context.
+        Creates packing context.
 
-        :returns: List of delta packing contexts.
+        :returns: List of packing contexts.
         """
 
-        return DeltaContextBuilder().add_context(self._array_traits).build()
+        return PackingContextBuilder().add_context(self._array_traits).build()
 
     @staticmethod
-    def init_context(context_iterator : typing.Iterator[DeltaContext],
-                     element : int) -> None:
+    def init_context(context_iterator : PackingContextIterator, element : int) -> None:
         """
         Calls context initialization step for the current element.
 
-        :param context_iterator: Delta context iterator.
+        :param context_iterator: Packing context iterator.
         :param element: Current element.
         """
 
@@ -407,11 +455,11 @@ class DeltaArrayTraits:
         context.init(element)
 
     @staticmethod
-    def bitsizeof(context_iterator : typing.Iterator[DeltaContext], bitposition : int, element : int) -> int:
+    def bitsizeof(context_iterator : PackingContextIterator, bitposition : int, element : int) -> int:
         """
         Returns length of the array element stored in the bit stream in bits.
 
-        :param context_iterator: Delta context iterator.
+        :param context_iterator: Packing context iterator.
         :param bitposition: Current bit stream position.
         :param elemnet: Current element.
         :returns: Length of the array element stored in the bit stream in bits.
@@ -421,8 +469,7 @@ class DeltaArrayTraits:
         return context.bitsizeof(bitposition, element)
 
     @staticmethod
-    def initialize_offsets(context_iterator : typing.Iterator[DeltaContext],
-                           bitposition : int, element : int) -> int:
+    def initialize_offsets(context_iterator : PackingContextIterator, bitposition : int, element : int) -> int:
         """
         Calls indexed offsets initialization for the current element.
 
@@ -436,8 +483,7 @@ class DeltaArrayTraits:
         return bitposition + context.bitsizeof(bitposition, element)
 
     @staticmethod
-    def write(context_iterator : typing.Iterator[DeltaContext],
-              writer : BitStreamWriter, element : int) -> None:
+    def write(context_iterator : PackingContextIterator, writer : BitStreamWriter, element : int) -> None:
         """
         Writes the element to the bit stream.
 
@@ -450,8 +496,7 @@ class DeltaArrayTraits:
         context.write(writer, element)
 
     @staticmethod
-    def read(context_iterator : typing.Iterator[DeltaContext],
-             reader : BitStreamReader, index : int) -> int:
+    def read(context_iterator : PackingContextIterator, reader : BitStreamReader, index : int) -> int:
         """
         Read an element from the bit stream.
 
@@ -464,18 +509,17 @@ class DeltaArrayTraits:
         context = next(context_iterator)
         return context.read(reader, index)
 
-class ObjectDeltaArrayTraits:
+class ObjectPackedArrayTraits:
     """
-    Delta array traits for Zserio objects.
+    Packed array traits for Zserio objects.
 
-    This traits are used for Zserio objects which must implement special *_packed methods used to handle
-    packable fields.
+    This traits are used for Zserio objects which must implement special *_packed methods to allow itself
+    to be used in a packed array.
     """
 
-    def __init__(self,
-                 packed_object_creator : typing.Callable[[typing.Iterator[DeltaContext], BitStreamReader, int],
-                                                         typing.Any],
-                 packed_context_creator : typing.Callable[[DeltaContextBuilder], None]):
+    def __init__(self, packed_object_creator : typing.Callable[[PackingContextIterator, BitStreamReader, int],
+                                                               typing.Any],
+                 packed_context_creator : typing.Callable[[PackingContextBuilder], None]):
         """
         Constructor.
 
@@ -486,37 +530,34 @@ class ObjectDeltaArrayTraits:
         self._packed_object_creator = packed_object_creator
         self._packed_context_creator = packed_context_creator
 
-    def create_context(self) -> typing.List[DeltaContext]:
+    def create_context(self) -> typing.List[PackingContext]:
         """
-        Creates delta packing context.
+        Creates packing context.
 
         :returns: List of delta packing contexts.
         """
 
-        context_builder = DeltaContextBuilder()
+        context_builder = PackingContextBuilder()
         self._packed_context_creator(context_builder)
         return context_builder.build()
 
     @staticmethod
-    def init_context(context_iterator : typing.Iterator[DeltaContext],
-                     element : typing.Any) -> None:
+    def init_context(context_iterator : PackingContextIterator, element : typing.Any) -> None:
         """
         Calls context initialization step for the current element.
 
-        :param context_iterator: Delta context iterator.
+        :param context_iterator: Packing context iterator.
         :param element: Current element.
-        :param is_first: Denotes whether this element is the first element of the array.
         """
 
         element.init_packed_context(context_iterator)
 
     @staticmethod
-    def bitsizeof(context_iterator : typing.Iterator[DeltaContext],
-                  bitposition : int, element : typing.Any) -> int:
+    def bitsizeof(context_iterator : PackingContextIterator, bitposition : int, element : typing.Any) -> int:
         """
         Returns length of the array element stored in the bit stream in bits.
 
-        :param context_iterator: Delta context iterator.
+        :param context_iterator: Packing context iterator.
         :param bitposition: Current bit stream position.
         :param elemnet: Current element.
         :returns: Length of the array element stored in the bit stream in bits.
@@ -525,12 +566,12 @@ class ObjectDeltaArrayTraits:
         return element.bitsizeof_packed(context_iterator, bitposition)
 
     @staticmethod
-    def initialize_offsets(context_iterator : typing.Iterator[DeltaContext],
+    def initialize_offsets(context_iterator : PackingContextIterator,
                            bitposition : int, element : typing.Any) -> int:
         """
         Calls indexed offsets initialization for the current element.
 
-        :param context_iterator: Delta context iterator.
+        :param context_iterator: Packing context iterator.
         :param bitposition: Current bit stream position.
         :param element: Current element.
         :returns: Updated bit stream position which points to the first bit after this element.
@@ -539,7 +580,7 @@ class ObjectDeltaArrayTraits:
         return element.initialize_offsets_packed(context_iterator, bitposition)
 
     @staticmethod
-    def write(context_iterator : typing.Iterator[DeltaContext], writer : BitStreamWriter,
+    def write(context_iterator : PackingContextIterator, writer : BitStreamWriter,
               element : typing.Any) -> None:
         """
         Writes the element to the bit stream.
@@ -552,12 +593,12 @@ class ObjectDeltaArrayTraits:
 
         element.write_packed(context_iterator, writer)
 
-    def read(self, context_iterator : typing.Iterator[DeltaContext], reader : BitStreamReader,
+    def read(self, context_iterator : PackingContextIterator, reader : BitStreamReader,
              index : int) -> typing.Any:
         """
         Read an element from the bit stream.
 
-        :param context_iterator: Delta context iterator.
+        :param context_iterator: Packing context iterator.
         :param reader: Bit stream reader.
         :param index: Index of the current element.
         :returns: Read element value.

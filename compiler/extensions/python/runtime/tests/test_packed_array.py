@@ -1,7 +1,7 @@
 import unittest
 
-from zserio.array import BitFieldArrayTraits, SignedBitFieldArrayTraits, VarUIntArrayTraits
-from zserio.packed_array import PackedArray, DeltaArrayTraits, ObjectDeltaArrayTraits
+from zserio.array import BitFieldArrayTraits, SignedBitFieldArrayTraits, VarUIntArrayTraits, Float16ArrayTraits
+from zserio.packed_array import PackedArray, PackedArrayTraits, ObjectPackedArrayTraits
 from zserio.bitposition import alignto
 from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import bitsizeof_varuint64
@@ -81,7 +81,7 @@ class PackedArrayTest(unittest.TestCase):
 
     def test_bitfield_array(self):
         array_traits = BitFieldArrayTraits(64)
-        packed_array_traits = DeltaArrayTraits(array_traits)
+        packed_array_traits = PackedArrayTraits(array_traits)
         array1_values = [10, 11, 12]
         array2_values = [10, 10, 10] # zero delta
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values)
@@ -97,7 +97,7 @@ class PackedArrayTest(unittest.TestCase):
 
     def test_signed_bitfield_array(self):
         array_traits = SignedBitFieldArrayTraits(64)
-        packed_array_traits = DeltaArrayTraits(array_traits)
+        packed_array_traits = PackedArrayTraits(array_traits)
         array1_values = [-10, 11, -12]
         array2_values = [-10, -10, -10] # zero delta
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values)
@@ -113,7 +113,7 @@ class PackedArrayTest(unittest.TestCase):
 
     def test_varuint_array(self):
         array_traits = VarUIntArrayTraits()
-        packed_array_traits = DeltaArrayTraits(array_traits)
+        packed_array_traits = PackedArrayTraits(array_traits)
         array1_values = [100, 200, 300]
         array2_values = [300, 200, 100]
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values)
@@ -121,6 +121,35 @@ class PackedArrayTest(unittest.TestCase):
         array1_values = [UINT64_MIN, UINT64_MAX]
         array2_values = [UINT64_MAX, UINT64_MAX // 2, UINT64_MIN]
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values)
+
+    def test_float16_array(self):
+        class Float16BitsizeCalculator:
+            @staticmethod
+            def calc_max_delta_bits(_array_values):
+                return 0
+
+            @staticmethod
+            def calc_bitsize(_array_traits, array_values, _signed_max_delta_bits):
+                if array_values:
+                    return 1 + len(array_values) * 16
+                else:
+                    return 0
+
+            @staticmethod
+            def calc_aligned_bitsize(_array_traits, bitposition, array_values, _signed_max_delta_bits):
+                if array_values:
+                    end_bitposition = alignto(8, bitposition + 1)
+                    end_bitposition += len(array_values) * 16
+                    return end_bitposition - bitposition
+                else:
+                    return 0
+
+        array_traits = Float16ArrayTraits
+        packed_array_traits = PackedArrayTraits(array_traits)
+        array1_values = [-1.0, 1.0]
+        array2_values = []
+        self._test_array(array_traits, packed_array_traits, array1_values, array2_values,
+                         Float16BitsizeCalculator)
 
     def test_object_array(self):
         value_array_traits = BitFieldArrayTraits(31)
@@ -199,8 +228,8 @@ class PackedArrayTest(unittest.TestCase):
                     value_array_traits, bitposition, plain_values, signed_max_delta_bits)
 
         array_traits = None # not used
-        packed_array_traits = ObjectDeltaArrayTraits(DummyObject.create_packed,
-                                                     DummyObject.create_packed_context)
+        packed_array_traits = ObjectPackedArrayTraits(DummyObject.create_packed,
+                                                      DummyObject.create_packed_context)
         array1_values = [DummyObject(1), DummyObject(2)]
         array2_values = [DummyObject(3), DummyObject(4)]
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values,
