@@ -1,6 +1,6 @@
 import unittest
 
-from zserio.array import BitFieldArrayTraits, SignedBitFieldArrayTraits, VarUIntArrayTraits, ObjectArrayTraits
+from zserio.array import BitFieldArrayTraits, SignedBitFieldArrayTraits, VarUIntArrayTraits
 from zserio.packed_array import PackedArray, DeltaArrayTraits, ObjectDeltaArrayTraits
 from zserio.bitposition import alignto
 from zserio.bitreader import BitStreamReader
@@ -130,9 +130,9 @@ class PackedArrayTest(unittest.TestCase):
                 self._value = value
 
             @classmethod
-            def create(cls, reader, index):
-                instance = cls(index)
-                instance.read(reader)
+            def create_packed(cls, context_iterator, reader, index):
+                instance = cls()
+                instance.read_packed(context_iterator, reader, index)
 
                 return instance
 
@@ -145,19 +145,6 @@ class PackedArrayTest(unittest.TestCase):
             @property
             def value(self):
                 return self._value
-
-            @staticmethod
-            def bitsizeof(_bitposition):
-                return 31 # to make an unaligned type
-
-            def initialize_offsets(self, bitposition):
-                return bitposition + self.bitsizeof(bitposition)
-
-            def read(self, reader):
-                self._value = reader.read_bits(self.bitsizeof(0))
-
-            def write(self, writer):
-                writer.write_bits(self._value, self.bitsizeof(0))
 
             @staticmethod
             def create_packed_context(context_builder):
@@ -211,8 +198,9 @@ class PackedArrayTest(unittest.TestCase):
                 return PackedArrayTest.BitsizeCalculator.calc_aligned_bitsize(
                     value_array_traits, bitposition, plain_values, signed_max_delta_bits)
 
-        array_traits = ObjectArrayTraits(DummyObject.create)
-        packed_array_traits = ObjectDeltaArrayTraits(array_traits, DummyObject)
+        array_traits = None # not used
+        packed_array_traits = ObjectDeltaArrayTraits(DummyObject.create_packed,
+                                                     DummyObject.create_packed_context)
         array1_values = [DummyObject(1), DummyObject(2)]
         array2_values = [DummyObject(3), DummyObject(4)]
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values,

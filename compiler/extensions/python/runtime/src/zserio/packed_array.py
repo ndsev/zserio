@@ -4,7 +4,6 @@ The module implements abstraction for delta compressed arrays used by Zserio pyt
 
 import typing
 
-from zserio.array import ObjectArrayTraits
 from zserio.bitposition import alignto
 from zserio.bitsizeof import bitsizeof_varsize
 from zserio.bitreader import BitStreamReader
@@ -473,16 +472,19 @@ class ObjectDeltaArrayTraits:
     packable fields.
     """
 
-    def __init__(self, array_traits : ObjectArrayTraits, object_class : typing.Type):
+    def __init__(self,
+                 packed_object_creator : typing.Callable[[typing.Iterator[DeltaContext], BitStreamReader, int],
+                                                         typing.Any],
+                 packed_context_creator : typing.Callable[[DeltaContextBuilder], None]):
         """
         Constructor.
 
-        :param array_traits: Standard array traits.
-        :param object_class: Zserio object class.
+        :param packed_object_creator: Creator which creates packed object from the element index.
+        :param packed_context_creator: Creator which creates contexts for object packing.
         """
 
-        self._array_traits = array_traits
-        self._object_class = object_class
+        self._packed_object_creator = packed_object_creator
+        self._packed_context_creator = packed_context_creator
 
     def create_context(self) -> typing.List[DeltaContext]:
         """
@@ -492,7 +494,7 @@ class ObjectDeltaArrayTraits:
         """
 
         context_builder = DeltaContextBuilder()
-        self._object_class.create_packed_context(context_builder)
+        self._packed_context_creator(context_builder)
         return context_builder.build()
 
     @staticmethod
@@ -561,6 +563,4 @@ class ObjectDeltaArrayTraits:
         :returns: Read element value.
         """
 
-        element = self._object_class()
-        element.read_packed(context_iterator, reader, index)
-        return element
+        return self._packed_object_creator(context_iterator, reader, index)
