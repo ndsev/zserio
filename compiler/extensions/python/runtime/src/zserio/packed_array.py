@@ -232,6 +232,9 @@ class DeltaContext:
         else:
             delta = element - self._previous_element
             max_bit_number = delta.bit_length()
+            # if delta is negative, we need one bit more because of sign
+            # if delta is positive, we need one bit more because delta are treated as signed number
+            # if delta is zero, we need one bit more because bit_length() returned zero
             if max_bit_number > self._max_bit_number:
                 self._max_bit_number = max_bit_number
                 if max_bit_number > self._MAX_BIT_NUMBER_LIMIT:

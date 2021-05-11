@@ -163,9 +163,9 @@ class PackedArrayTest(unittest.TestCase):
             def create_packed_context(context_builder):
                 context_builder.add_context(value_array_traits)
 
-            def init_packed_context(self, context_iterator, is_first):
+            def init_packed_context(self, context_iterator):
                 context = next(context_iterator)
-                context.init(self._value, is_first)
+                context.init(self._value)
 
             def bitsizeof_packed(self, context_iterator, bitposition):
                 end_bitposition = bitposition
