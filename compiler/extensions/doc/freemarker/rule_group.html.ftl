@@ -8,8 +8,8 @@
     <@doc_comments_floating docComments, indent/>
 
 </#if>
-${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}">
-${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>RuleGroup ${symbol.name}</span>
+${I}<h2 class="anchor" id="${symbol.htmlLink.htmlAnchor}" title="RuleGroup ${symbol.name}">
+${I}  <span<#if docComments.isDeprecated> class="deprecated"</#if>>Rules</span>
 ${I}</h2>
 
 <#if hasStickyDocComments(docComments)>
