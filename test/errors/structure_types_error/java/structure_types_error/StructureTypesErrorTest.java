@@ -58,28 +58,6 @@ public class StructureTypesErrorTest
     }
 
     @Test
-    public void packableArrayField()
-    {
-        final String error = "packable_array_field_error.zs:5:20: Only integral fields can be packable!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
-    public void packableStringField()
-    {
-        final String error = "packable_string_field_error.zs:6:21: Only integral fields can be packable!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
-    public void packableSubtypedEnumField()
-    {
-        final String error =
-                "packable_subtyped_enum_field_error.zs:13:27: Only integral fields can be packable!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
     public void recursive()
     {
         final String error =

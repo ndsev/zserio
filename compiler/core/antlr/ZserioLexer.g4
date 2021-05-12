@@ -65,7 +65,6 @@ LENGTHOF            : 'lengthof' ;
 NUMBITS             : 'numbits' ;
 ON                  : 'on' ;
 OPTIONAL            : 'optional' ;
-PACKABLE            : 'packable' ;
 PACKAGE             : 'package' ;
 PACKED              : 'packed' ;
 PUBSUB              : 'pubsub' ;

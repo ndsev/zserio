@@ -246,7 +246,6 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     public Field visitStructureFieldDefinition(ZserioParser.StructureFieldDefinitionContext ctx)
     {
         final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
-        final boolean isPackable = ctx.PACKABLE() != null;
         final boolean isAutoOptional = ctx.OPTIONAL() != null;
         final Expression alignmentExpr = visitFieldAlignment(ctx.fieldAlignment());
         final Expression offsetExpr = visitFieldOffset(ctx.fieldOffset());
@@ -257,8 +256,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
 
         return new Field(fieldTypeId.getLocation(), fieldTypeId.getTypeInstantation(), fieldTypeId.getName(),
-                isPackable, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr, optionalClauseExpr,
-                constraintExpr, docComments);
+                isAutoOptional, alignmentExpr, offsetExpr, initializerExpr, optionalClauseExpr, constraintExpr,
+                docComments);
     }
 
     @Override

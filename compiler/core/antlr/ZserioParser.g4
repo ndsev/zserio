@@ -94,7 +94,6 @@ structureFieldDefinition
     :   fieldAlignment?
         fieldOffset?
         OPTIONAL?
-        PACKABLE?
         fieldTypeId
         fieldInitializer?
         fieldOptionalClause?

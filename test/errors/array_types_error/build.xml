@@ -25,15 +25,6 @@
         <testGen testName="array_types_error" zsFile="implicit_array_with_length_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_with_indexed_offsets_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="packed_array_bitmask_error.zs" ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="packed_array_enum_error.zs" ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="packed_array_extern_error.zs" ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="packed_array_string_error.zs" ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="packed_array_union_error.zs" ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="packed_array_union_in_structure_error.zs"
-            ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="packed_array_unpackable_struct_error.zs"
-            ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="packed_implicit_array_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="wrong_array_length_type_error.zs" ignoreErrors="true"/>
     </target>

@@ -159,16 +159,8 @@ public class ArrayInstantiation extends TypeInstantiation
         if (!isPacked)
             return true;
 
-        final ZserioType elementBaseType = getElementTypeInstantiation().getBaseType();
-
-        if (elementBaseType instanceof IntegerType)
-            return true;
-
-        // TODO[Mi-L@]: currently only structures can be present in packed arrays
-        if (elementBaseType instanceof StructureType)
-            return ((StructureType)elementBaseType).hasPackableField();
-
-        return false;
+        // TODO[Mi-L@]: Check whether the element base type can be packed and fire a warning otherwise?
+        return true;
     }
 
     private boolean checkImplicitArrayElementType()

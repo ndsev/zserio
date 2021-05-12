@@ -150,23 +150,8 @@ public abstract class CompoundType extends TemplatableType
      */
     public boolean hasPackableField()
     {
-        for (Field field : fields)
-        {
-            if (field.isPackable())
-                return true;
-
-            final ZserioType fieldBaseType = field.getTypeInstantiation().getBaseType();
-            // TODO[Mi-L@]: currently only structures can be present in packed arrays
-            if (fieldBaseType instanceof StructureType)
-            {
-                final CompoundType childCompoundType = (CompoundType)fieldBaseType;
-                // compound type can have itself as an optional field
-                if (childCompoundType != this && childCompoundType.hasPackableField())
-                    return true;
-            }
-        }
-
-        return false;
+        // TODO[Mi-L@]: Fire a warning in case that there is no packable field type?
+        return true;
     }
 
     /**
