@@ -14,9 +14,9 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import array_types.auto_array.AutoArray;
+import array_types.auto_array_uint8.AutoArray;
 
-public class AutoArrayTest
+public class AutoArrayUInt8Test
 {
     @Test
     public void bitSizeOfLength1() throws IOException, ZserioError

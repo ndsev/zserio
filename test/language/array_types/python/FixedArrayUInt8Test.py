@@ -3,10 +3,10 @@ import zserio
 
 from testutils import getZserioApi
 
-class FixedArrayTest(unittest.TestCase):
+class FixedArrayUInt8Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").fixed_array
+        cls.api = getZserioApi(__file__, "array_types.zs").fixed_array_uint8
 
     def testBitSizeOf(self):
         uint8Array = list(range(self.FIXED_ARRAY_LENGTH))

@@ -3,10 +3,10 @@ import zserio
 
 from testutils import getZserioApi
 
-class AutoArrayTest(unittest.TestCase):
+class AutoArrayUInt8Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").auto_array
+        cls.api = getZserioApi(__file__, "array_types.zs").auto_array_uint8
 
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.AUTO_ARRAY_LENGTH1)
@@ -48,7 +48,7 @@ class AutoArrayTest(unittest.TestCase):
 
     def _checkRead(self, numElements):
         writer = zserio.BitStreamWriter()
-        AutoArrayTest._writeAutoArrayToStream(writer, numElements)
+        AutoArrayUInt8Test._writeAutoArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoArray = self.api.AutoArray.from_reader(reader)
 

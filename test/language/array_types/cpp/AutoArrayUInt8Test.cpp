@@ -1,16 +1,16 @@
 #include "gtest/gtest.h"
 
-#include "array_types/auto_array/AutoArray.h"
+#include "array_types/auto_array_uint8/AutoArray.h"
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 
 namespace array_types
 {
-namespace auto_array
+namespace auto_array_uint8
 {
 
-class AutoArrayTest : public ::testing::Test
+class AutoArrayUInt8Test : public ::testing::Test
 {
 protected:
     void writeAutoArrayToByteArray(zserio::BitStreamWriter& writer, size_t length)
@@ -89,48 +89,48 @@ protected:
     static const size_t AUTO_ARRAY_LENGTH2;
 };
 
-const size_t AutoArrayTest::AUTO_ARRAY_LENGTH1 = 5;
-const size_t AutoArrayTest::AUTO_ARRAY_LENGTH2 = 10;
+const size_t AutoArrayUInt8Test::AUTO_ARRAY_LENGTH1 = 5;
+const size_t AutoArrayUInt8Test::AUTO_ARRAY_LENGTH2 = 10;
 
-TEST_F(AutoArrayTest, bitSizeOfLength1)
+TEST_F(AutoArrayUInt8Test, bitSizeOfLength1)
 {
     checkBitSizeOf(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayTest, bitSizeOfLength2)
+TEST_F(AutoArrayUInt8Test, bitSizeOfLength2)
 {
     checkBitSizeOf(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(AutoArrayTest, initializeOffsetsLength1)
+TEST_F(AutoArrayUInt8Test, initializeOffsetsLength1)
 {
     checkInitializeOffsets(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayTest, initializeOffsetsLength2)
+TEST_F(AutoArrayUInt8Test, initializeOffsetsLength2)
 {
     checkInitializeOffsets(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(AutoArrayTest, readLength1)
+TEST_F(AutoArrayUInt8Test, readLength1)
 {
     checkRead(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayTest, readLength2)
+TEST_F(AutoArrayUInt8Test, readLength2)
 {
     checkRead(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(AutoArrayTest, writeLength1)
+TEST_F(AutoArrayUInt8Test, writeLength1)
 {
     checkWrite(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayTest, writeLength2)
+TEST_F(AutoArrayUInt8Test, writeLength2)
 {
     checkWrite(AUTO_ARRAY_LENGTH2);
 }
 
-} // namespace auto_array
+} // namespace auto_array_uint8
 } // namespace array_types

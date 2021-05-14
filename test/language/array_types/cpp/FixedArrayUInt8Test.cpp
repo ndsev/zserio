@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "array_types/fixed_array/FixedArray.h"
+#include "array_types/fixed_array_uint8/FixedArray.h"
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
@@ -8,10 +8,10 @@
 
 namespace array_types
 {
-namespace fixed_array
+namespace fixed_array_uint8
 {
 
-class FixedArrayTest : public ::testing::Test
+class FixedArrayUInt8Test : public ::testing::Test
 {
 protected:
     void writeFixedArrayToByteArray(zserio::BitStreamWriter& writer)
@@ -23,7 +23,7 @@ protected:
     static const size_t FIXED_ARRAY_LENGTH = 5;
 };
 
-TEST_F(FixedArrayTest, bitSizeOf)
+TEST_F(FixedArrayUInt8Test, bitSizeOf)
 {
     std::vector<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
@@ -36,7 +36,7 @@ TEST_F(FixedArrayTest, bitSizeOf)
     ASSERT_EQ(FIXED_ARRAY_LENGTH * 8, fixedArray.bitSizeOf(bitPosition));
 }
 
-TEST_F(FixedArrayTest, initializeOffsets)
+TEST_F(FixedArrayUInt8Test, initializeOffsets)
 {
     std::vector<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
@@ -49,7 +49,7 @@ TEST_F(FixedArrayTest, initializeOffsets)
     ASSERT_EQ(bitPosition + FIXED_ARRAY_LENGTH * 8, fixedArray.initializeOffsets(bitPosition));
 }
 
-TEST_F(FixedArrayTest, read)
+TEST_F(FixedArrayUInt8Test, read)
 {
     zserio::BitStreamWriter writer;
     writeFixedArrayToByteArray(writer);
@@ -65,7 +65,7 @@ TEST_F(FixedArrayTest, read)
         ASSERT_EQ(i, uint8Array[i]);
 }
 
-TEST_F(FixedArrayTest, write)
+TEST_F(FixedArrayUInt8Test, write)
 {
     std::vector<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
@@ -88,7 +88,7 @@ TEST_F(FixedArrayTest, write)
         ASSERT_EQ(i, readUint8Array[i]);
 }
 
-TEST_F(FixedArrayTest, writeWrongArray)
+TEST_F(FixedArrayUInt8Test, writeWrongArray)
 {
     std::vector<uint8_t> uint8Array;
     const size_t wrongArrayLength = FIXED_ARRAY_LENGTH + 1;
@@ -102,5 +102,5 @@ TEST_F(FixedArrayTest, writeWrongArray)
     ASSERT_THROW(fixedArray.write(writer), zserio::CppRuntimeException);
 }
 
-} // namespace fixed_array
+} // namespace fixed_array_uint8
 } // namespace array_types

@@ -1,4 +1,4 @@
-package array_types.auto_array_recursion;
+package array_types.auto_array_uint8_recursion;
 
 struct AutoArrayRecursion
 {

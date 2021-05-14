@@ -3,10 +3,10 @@ import zserio
 
 from testutils import getZserioApi
 
-class AutoArrayRecursionTest(unittest.TestCase):
+class AutoArrayUInt8RecursionTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").auto_array_recursion
+        cls.api = getZserioApi(__file__, "array_types.zs").auto_array_uint8_recursion
 
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.AUTO_ARRAY_LENGTH1)
@@ -46,7 +46,7 @@ class AutoArrayRecursionTest(unittest.TestCase):
 
     def _checkRead(self, numElements):
         writer = zserio.BitStreamWriter()
-        AutoArrayRecursionTest._writeAutoArrayRecursionToStream(writer, numElements)
+        AutoArrayUInt8RecursionTest._writeAutoArrayRecursionToStream(writer, numElements)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         autoArrayRecursion = self.api.AutoArrayRecursion.from_reader(reader)

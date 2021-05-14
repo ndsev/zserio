@@ -1,4 +1,4 @@
-package array_types.auto_array;
+package array_types.auto_array_uint8;
 
 struct AutoArray
 {

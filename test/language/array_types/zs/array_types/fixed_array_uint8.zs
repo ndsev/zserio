@@ -1,4 +1,4 @@
-package array_types.fixed_array;
+package array_types.fixed_array_uint8;
 
 struct FixedArray
 {

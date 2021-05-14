@@ -14,9 +14,9 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import array_types.fixed_array.FixedArray;
+import array_types.fixed_array_uint8.FixedArray;
 
-public class FixedArrayTest
+public class FixedArrayUInt8Test
 {
     @Test
     public void bitSizeOf() throws IOException, ZserioError
