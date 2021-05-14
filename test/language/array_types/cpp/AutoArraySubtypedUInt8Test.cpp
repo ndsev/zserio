@@ -1,16 +1,16 @@
 #include "gtest/gtest.h"
 
-#include "array_types/subtyped_builtin_auto_array/SubtypedBuiltinAutoArray.h"
+#include "array_types/auto_array_subtyped_uint8/AutoArray.h"
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 
 namespace array_types
 {
-namespace subtyped_builtin_auto_array
+namespace auto_array_subtyped_uint8
 {
 
-class SubtypedBuiltinAutoArrayTest : public ::testing::Test
+class AutoArraySubtypedUInt8Test : public ::testing::Test
 {
 protected:
     void writeSubtypedBuiltinAutoArrayToByteArray(zserio::BitStreamWriter& writer, size_t length)
@@ -26,13 +26,13 @@ protected:
         array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             array.push_back(static_cast<ArrayElement>(i));
-        SubtypedBuiltinAutoArray subtypedBuiltinAutoArray;
-        subtypedBuiltinAutoArray.setArray(array);
+        AutoArray autoArray;
+        autoArray.setArray(array);
 
         const size_t bitPosition = 2;
         const size_t subtypedBuiltinAutoArrayBitSize = 8 + numElements * 8;
         ASSERT_EQ(subtypedBuiltinAutoArrayBitSize,
-                subtypedBuiltinAutoArray.bitSizeOf(bitPosition));
+                autoArray.bitSizeOf(bitPosition));
     }
 
     void checkInitializeOffsets(size_t numElements)
@@ -41,12 +41,12 @@ protected:
         array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             array.push_back(static_cast<ArrayElement>(i));
-        SubtypedBuiltinAutoArray subtypedBuiltinAutoArray;
-        subtypedBuiltinAutoArray.setArray(array);
+        AutoArray autoArray;
+        autoArray.setArray(array);
 
         const size_t bitPosition = 2;
         const size_t expectedEndBitPosition = bitPosition + 8 + numElements * 8;
-        ASSERT_EQ(expectedEndBitPosition, subtypedBuiltinAutoArray.initializeOffsets(bitPosition));
+        ASSERT_EQ(expectedEndBitPosition, autoArray.initializeOffsets(bitPosition));
     }
 
     void checkRead(size_t numElements)
@@ -56,9 +56,9 @@ protected:
         size_t writeBufferByteSize;
         const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-        SubtypedBuiltinAutoArray subtypedBuiltinAutoArray(reader);
+        AutoArray autoArray(reader);
 
-        const std::vector<ArrayElement>& array = subtypedBuiltinAutoArray.getArray();
+        const std::vector<ArrayElement>& array = autoArray.getArray();
         ASSERT_EQ(numElements, array.size());
         for (size_t i = 0; i < numElements; ++i)
             ASSERT_EQ(i, array[i]);
@@ -70,17 +70,17 @@ protected:
         array.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             array.push_back(static_cast<ArrayElement>(i));
-        SubtypedBuiltinAutoArray subtypedBuiltinAutoArray;
-        subtypedBuiltinAutoArray.setArray(array);
+        AutoArray autoArray;
+        autoArray.setArray(array);
 
         zserio::BitStreamWriter writer;
-        subtypedBuiltinAutoArray.write(writer);
+        autoArray.write(writer);
 
         size_t writeBufferByteSize;
         const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
         zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-        SubtypedBuiltinAutoArray readSubtypedBuiltinAutoArray(reader);
-        const std::vector<ArrayElement>& readArray = readSubtypedBuiltinAutoArray.getArray();
+        AutoArray readAutoArray(reader);
+        const std::vector<ArrayElement>& readArray = readAutoArray.getArray();
         ASSERT_EQ(numElements, readArray.size());
         for (size_t i = 0; i < numElements; ++i)
             ASSERT_EQ(i, readArray[i]);
@@ -90,48 +90,48 @@ protected:
     static const size_t AUTO_ARRAY_LENGTH2;
 };
 
-const size_t SubtypedBuiltinAutoArrayTest::AUTO_ARRAY_LENGTH1 = 5;
-const size_t SubtypedBuiltinAutoArrayTest::AUTO_ARRAY_LENGTH2 = 10;
+const size_t AutoArraySubtypedUInt8Test::AUTO_ARRAY_LENGTH1 = 5;
+const size_t AutoArraySubtypedUInt8Test::AUTO_ARRAY_LENGTH2 = 10;
 
-TEST_F(SubtypedBuiltinAutoArrayTest, bitSizeOfLength1)
+TEST_F(AutoArraySubtypedUInt8Test, bitSizeOfLength1)
 {
     checkBitSizeOf(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(SubtypedBuiltinAutoArrayTest, bitSizeOfLength2)
+TEST_F(AutoArraySubtypedUInt8Test, bitSizeOfLength2)
 {
     checkBitSizeOf(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(SubtypedBuiltinAutoArrayTest, initializeOffsetsLength1)
+TEST_F(AutoArraySubtypedUInt8Test, initializeOffsetsLength1)
 {
     checkInitializeOffsets(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(SubtypedBuiltinAutoArrayTest, initializeOffsetsLength2)
+TEST_F(AutoArraySubtypedUInt8Test, initializeOffsetsLength2)
 {
     checkInitializeOffsets(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(SubtypedBuiltinAutoArrayTest, readLength1)
+TEST_F(AutoArraySubtypedUInt8Test, readLength1)
 {
     checkRead(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(SubtypedBuiltinAutoArrayTest, readLength2)
+TEST_F(AutoArraySubtypedUInt8Test, readLength2)
 {
     checkRead(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(SubtypedBuiltinAutoArrayTest, writeLength1)
+TEST_F(AutoArraySubtypedUInt8Test, writeLength1)
 {
     checkWrite(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(SubtypedBuiltinAutoArrayTest, writeLength2)
+TEST_F(AutoArraySubtypedUInt8Test, writeLength2)
 {
     checkWrite(AUTO_ARRAY_LENGTH2);
 }
 
-} // namespace subtyped_builtin_auto_array
+} // namespace auto_array_subtyped_uint8
 } // namespace array_types

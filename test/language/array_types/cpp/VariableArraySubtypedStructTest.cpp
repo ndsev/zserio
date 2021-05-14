@@ -1,23 +1,23 @@
 #include "gtest/gtest.h"
 
-#include "array_types/variable_array_int8/VariableArray.h"
-
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/CppRuntimeException.h"
 
+#include "array_types/variable_array_subtyped_struct/VariableArray.h"
+
 namespace array_types
 {
-namespace variable_array_int8
+namespace variable_array_subtyped_struct
 {
 
-class VariableArrayInt8Test : public ::testing::Test
+class VariableArraySubtypedStructTest : public ::testing::Test
 {
 protected:
     void writeVariableArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
-        writer.writeSignedBits(static_cast<int8_t>(numElements), 8);
+        writer.writeSignedBits(static_cast<uint8_t>(numElements), 8);
         for (size_t i = 0; i < numElements; ++i)
         {
             writer.writeBits(static_cast<uint32_t>(i), 32);
@@ -26,20 +26,19 @@ protected:
     }
 };
 
-TEST_F(VariableArrayInt8Test, bitSizeOf)
+TEST_F(VariableArraySubtypedStructTest, bitSizeOf)
 {
     const size_t numElements = 33;
-    std::vector<TestStructure> compoundArray;
+    std::vector<ArrayElement> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        TestStructure testStructure;
-        testStructure.setId(static_cast<uint32_t>(i));
-        testStructure.setName(std::string("Name") + zserio::convertToString(i));
-        compoundArray.push_back(testStructure);
+        const ArrayElement arrayElement(static_cast<uint32_t>(i),
+                std::string("Name") + zserio::convertToString(i));
+        compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements));
+    variableArray.setNumElements(static_cast<uint8_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
@@ -48,20 +47,19 @@ TEST_F(VariableArrayInt8Test, bitSizeOf)
     ASSERT_EQ(expectedBitSize, variableArray.bitSizeOf(bitPosition));
 }
 
-TEST_F(VariableArrayInt8Test, initializeOffsets)
+TEST_F(VariableArraySubtypedStructTest, initializeOffsets)
 {
     const size_t numElements = 33;
-    std::vector<TestStructure> compoundArray;
+    std::vector<ArrayElement> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        TestStructure testStructure;
-        testStructure.setId(static_cast<uint32_t>(i));
-        testStructure.setName(std::string("Name") + zserio::convertToString(i));
-        compoundArray.push_back(testStructure);
+        const ArrayElement arrayElement(static_cast<uint32_t>(i),
+                std::string("Name") + zserio::convertToString(i));
+        compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements));
+    variableArray.setNumElements(static_cast<uint8_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
@@ -70,7 +68,7 @@ TEST_F(VariableArrayInt8Test, initializeOffsets)
     ASSERT_EQ(expectedEndBitPosition, variableArray.initializeOffsets(bitPosition));
 }
 
-TEST_F(VariableArrayInt8Test, read)
+TEST_F(VariableArraySubtypedStructTest, read)
 {
     const size_t numElements = 59;
     zserio::BitStreamWriter writer;
@@ -81,7 +79,7 @@ TEST_F(VariableArrayInt8Test, read)
     VariableArray variableArray(reader);
 
     ASSERT_EQ(numElements, static_cast<size_t>(variableArray.getNumElements()));
-    const std::vector<TestStructure>& compoundArray = variableArray.getCompoundArray();
+    const std::vector<ArrayElement>& compoundArray = variableArray.getCompoundArray();
     ASSERT_EQ(numElements, compoundArray.size());
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -90,20 +88,19 @@ TEST_F(VariableArrayInt8Test, read)
     }
 }
 
-TEST_F(VariableArrayInt8Test, write)
+TEST_F(VariableArraySubtypedStructTest, write)
 {
     const size_t numElements = 33;
-    std::vector<TestStructure> compoundArray;
+    std::vector<ArrayElement> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        TestStructure testStructure;
-        testStructure.setId(static_cast<uint32_t>(i));
-        testStructure.setName(std::string("Name") + zserio::convertToString(i));
-        compoundArray.push_back(testStructure);
+        const ArrayElement arrayElement(static_cast<uint32_t>(i),
+                std::string("Name") + zserio::convertToString(i));
+        compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements));
+    variableArray.setNumElements(static_cast<uint8_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     zserio::BitStreamWriter writer;
@@ -113,7 +110,7 @@ TEST_F(VariableArrayInt8Test, write)
     const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
     zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
     VariableArray readVariableArray(reader);
-    const std::vector<TestStructure>& readCompoundArray = readVariableArray.getCompoundArray();
+    const std::vector<ArrayElement>& readCompoundArray = readVariableArray.getCompoundArray();
     ASSERT_EQ(numElements, readCompoundArray.size());
     for (size_t i = 0; i < numElements; ++i)
     {
@@ -122,25 +119,24 @@ TEST_F(VariableArrayInt8Test, write)
     }
 }
 
-TEST_F(VariableArrayInt8Test, writeWrongArray)
+TEST_F(VariableArraySubtypedStructTest, writeWrongArray)
 {
     const size_t numElements = 33;
-    std::vector<TestStructure> compoundArray;
+    std::vector<ArrayElement> compoundArray;
     compoundArray.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
     {
-        TestStructure testStructure;
-        testStructure.setId(static_cast<uint32_t>(i));
-        testStructure.setName(std::string("Name") + zserio::convertToString(i));
-        compoundArray.push_back(testStructure);
+        const ArrayElement arrayElement(static_cast<uint32_t>(i),
+                std::string("Name") + zserio::convertToString(i));
+        compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<int8_t>(numElements + 1));
+    variableArray.setNumElements(static_cast<uint8_t>(numElements + 1));
     variableArray.setCompoundArray(compoundArray);
 
     zserio::BitStreamWriter writer;
     ASSERT_THROW(variableArray.write(writer), zserio::CppRuntimeException);
 }
 
-} // namespace variable_array_int8
+} // namespace variable_array_subtyped_struct
 } // namespace array_types

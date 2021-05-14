@@ -3,10 +3,10 @@ import zserio
 
 from testutils import getZserioApi
 
-class VariableArrayInt8Test(unittest.TestCase):
+class VariableArrayStructCastInt8Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").variable_array_int8
+        cls.api = getZserioApi(__file__, "array_types.zs").variable_array_struct_cast_int8
 
     def testBitSizeOf(self):
         numElements = 33
@@ -29,7 +29,7 @@ class VariableArrayInt8Test(unittest.TestCase):
     def testRead(self):
         numElements = 59
         writer = zserio.BitStreamWriter()
-        VariableArrayInt8Test._writeVariableArrayToStream(writer, numElements)
+        VariableArrayStructCastInt8Test._writeVariableArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         variableArray = self.api.VariableArray.from_reader(reader)
 

@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "array_types/variable_array_varuint/VariableArray.h"
+#include "array_types/variable_array_struct_cast_int8/VariableArray.h"
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
@@ -9,15 +9,15 @@
 
 namespace array_types
 {
-namespace variable_array_varuint
+namespace variable_array_struct_cast_int8
 {
 
-class VariableArrayVarUIntTest : public ::testing::Test
+class VariableArrayStructCastInt8Test : public ::testing::Test
 {
 protected:
     void writeVariableArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
-        writer.writeBits64(static_cast<uint64_t>(numElements), 8);
+        writer.writeSignedBits(static_cast<int8_t>(numElements), 8);
         for (size_t i = 0; i < numElements; ++i)
         {
             writer.writeBits(static_cast<uint32_t>(i), 32);
@@ -26,7 +26,7 @@ protected:
     }
 };
 
-TEST_F(VariableArrayVarUIntTest, bitSizeOf)
+TEST_F(VariableArrayStructCastInt8Test, bitSizeOf)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -39,7 +39,7 @@ TEST_F(VariableArrayVarUIntTest, bitSizeOf)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<uint64_t>(numElements));
+    variableArray.setNumElements(static_cast<int8_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
@@ -48,7 +48,7 @@ TEST_F(VariableArrayVarUIntTest, bitSizeOf)
     ASSERT_EQ(expectedBitSize, variableArray.bitSizeOf(bitPosition));
 }
 
-TEST_F(VariableArrayVarUIntTest, initializeOffsets)
+TEST_F(VariableArrayStructCastInt8Test, initializeOffsets)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -61,7 +61,7 @@ TEST_F(VariableArrayVarUIntTest, initializeOffsets)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<uint64_t>(numElements));
+    variableArray.setNumElements(static_cast<int8_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     const size_t bitPosition = 2;
@@ -70,7 +70,7 @@ TEST_F(VariableArrayVarUIntTest, initializeOffsets)
     ASSERT_EQ(expectedEndBitPosition, variableArray.initializeOffsets(bitPosition));
 }
 
-TEST_F(VariableArrayVarUIntTest, read)
+TEST_F(VariableArrayStructCastInt8Test, read)
 {
     const size_t numElements = 59;
     zserio::BitStreamWriter writer;
@@ -90,7 +90,7 @@ TEST_F(VariableArrayVarUIntTest, read)
     }
 }
 
-TEST_F(VariableArrayVarUIntTest, write)
+TEST_F(VariableArrayStructCastInt8Test, write)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -103,7 +103,7 @@ TEST_F(VariableArrayVarUIntTest, write)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<uint64_t>(numElements));
+    variableArray.setNumElements(static_cast<int8_t>(numElements));
     variableArray.setCompoundArray(compoundArray);
 
     zserio::BitStreamWriter writer;
@@ -122,7 +122,7 @@ TEST_F(VariableArrayVarUIntTest, write)
     }
 }
 
-TEST_F(VariableArrayVarUIntTest, writeWrongArray)
+TEST_F(VariableArrayStructCastInt8Test, writeWrongArray)
 {
     const size_t numElements = 33;
     std::vector<TestStructure> compoundArray;
@@ -135,12 +135,12 @@ TEST_F(VariableArrayVarUIntTest, writeWrongArray)
         compoundArray.push_back(testStructure);
     }
     VariableArray variableArray;
-    variableArray.setNumElements(static_cast<uint64_t>(numElements + 1));
+    variableArray.setNumElements(static_cast<int8_t>(numElements + 1));
     variableArray.setCompoundArray(compoundArray);
 
     zserio::BitStreamWriter writer;
     ASSERT_THROW(variableArray.write(writer), zserio::CppRuntimeException);
 }
 
-} // namespace variable_array_varuint
+} // namespace variable_array_struct_cast_int8
 } // namespace array_types

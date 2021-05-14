@@ -3,10 +3,10 @@ import zserio
 
 from testutils import getZserioApi
 
-class AutoArrayTest(unittest.TestCase):
+class AutoArraySubtypedUInt8Test(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").subtyped_builtin_auto_array
+        cls.api = getZserioApi(__file__, "array_types.zs").auto_array_subtyped_uint8
 
     def testBitSizeOfLength1(self):
         self._checkBitSizeOf(self.AUTO_ARRAY_LENGTH1)
@@ -34,34 +34,34 @@ class AutoArrayTest(unittest.TestCase):
 
     def _checkBitSizeOf(self, numElements):
         array = list(range(numElements))
-        subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray(array)
+        autoArray = self.api.AutoArray(array)
         bitPosition = 2
         autoArrayBitSize = 8 + numElements * 8
-        self.assertEqual(autoArrayBitSize, subtypedBuiltinAutoArray.bitsizeof(bitPosition))
+        self.assertEqual(autoArrayBitSize, autoArray.bitsizeof(bitPosition))
 
     def _checkInitializeOffsets(self, numElements):
         array = list(range(numElements))
-        subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray(array)
+        autoArray = self.api.AutoArray(array)
         bitPosition = 2
         expectedEndBitPosition = bitPosition + 8 + numElements * 8
-        self.assertEqual(expectedEndBitPosition, subtypedBuiltinAutoArray.initialize_offsets(bitPosition))
+        self.assertEqual(expectedEndBitPosition, autoArray.initialize_offsets(bitPosition))
 
     def _checkRead(self, numElements):
         writer = zserio.BitStreamWriter()
-        AutoArrayTest._writeAutoArrayToStream(writer, numElements)
+        AutoArraySubtypedUInt8Test._writeAutoArrayToStream(writer, numElements)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray.from_reader(reader)
+        autoArray = self.api.AutoArray.from_reader(reader)
 
-        array = subtypedBuiltinAutoArray.array
+        array = autoArray.array
         self.assertEqual(numElements, len(array))
         for i in range(numElements):
             self.assertEqual(i, array[i])
 
     def _checkWrite(self, numElements):
         array = list(range(numElements))
-        subtypedBuiltinAutoArray = self.api.SubtypedBuiltinAutoArray(array_=array)
-        bitBuffer = zserio.serialize(subtypedBuiltinAutoArray)
-        readAutoArray = zserio.deserialize(self.api.SubtypedBuiltinAutoArray, bitBuffer)
+        autoArray = self.api.AutoArray(array_=array)
+        bitBuffer = zserio.serialize(autoArray)
+        readAutoArray = zserio.deserialize(self.api.AutoArray, bitBuffer)
         readArray = readAutoArray.array
         self.assertEqual(numElements, len(readArray))
         for i in range(numElements):

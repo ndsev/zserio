@@ -1,1 +1,2 @@
 noExplicitConstructor:*/array_types/arrays_mapping/TestBitmask.h
+noExplicitConstructor:*/array_types/packed_arrays_mapping/TestBitmask.h

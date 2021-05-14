@@ -1,4 +1,4 @@
-package array_types.subtyped_struct_variable_array;
+package array_types.variable_array_subtyped_struct;
 
 struct TestStructure
 {
@@ -8,7 +8,7 @@ struct TestStructure
 
 subtype TestStructure ArrayElement;
 
-struct SubtypedStructVariableArray
+struct VariableArray
 {
     uint8           numElements;
     ArrayElement    compoundArray[numElements];

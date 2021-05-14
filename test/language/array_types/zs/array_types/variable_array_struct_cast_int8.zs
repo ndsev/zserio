@@ -1,4 +1,4 @@
-package array_types.variable_array_int8;
+package array_types.variable_array_struct_cast_int8;
 
 struct TestStructure
 {

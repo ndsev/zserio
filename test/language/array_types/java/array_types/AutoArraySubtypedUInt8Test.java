@@ -14,9 +14,9 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import array_types.subtyped_builtin_auto_array.SubtypedBuiltinAutoArray;
+import array_types.auto_array_subtyped_uint8.AutoArray;
 
-public class SubtypedBuiltinAutoArrayTest
+public class AutoArraySubtypedUInt8Test
 {
     @Test
     public void bitSizeOfLength1() throws IOException, ZserioError
@@ -72,10 +72,10 @@ public class SubtypedBuiltinAutoArrayTest
         for (short i = 0; i < numElements; ++i)
             array.setElementAt(i, i);
 
-        final SubtypedBuiltinAutoArray subtypedBuiltinAutoArray = new SubtypedBuiltinAutoArray(array);
+        final AutoArray autoArray = new AutoArray(array);
         final int bitPosition = 2;
         final int autoArrayBitSize = 8 + numElements * 8;
-        assertEquals(autoArrayBitSize, subtypedBuiltinAutoArray.bitSizeOf(bitPosition));
+        assertEquals(autoArrayBitSize, autoArray.bitSizeOf(bitPosition));
     }
 
     private void checkInitializeOffsets(short numElements) throws IOException, ZserioError
@@ -84,21 +84,21 @@ public class SubtypedBuiltinAutoArrayTest
         for (short i = 0; i < numElements; ++i)
             array.setElementAt(i, i);
 
-        final SubtypedBuiltinAutoArray subtypedBuiltinAutoArray = new SubtypedBuiltinAutoArray(array);
+        final AutoArray autoArray = new AutoArray(array);
         final int bitPosition = 2;
         final int expectedEndBitPosition = bitPosition + 8 + numElements * 8;
-        assertEquals(expectedEndBitPosition, subtypedBuiltinAutoArray.initializeOffsets(bitPosition));
+        assertEquals(expectedEndBitPosition, autoArray.initializeOffsets(bitPosition));
     }
 
     private void checkRead(short numElements) throws IOException, ZserioError
     {
         final File file = new File("test.bin");
-        writeSubtypedBuiltinAutoArrayToFile(file, numElements);
+        writeAutoArrayToFile(file, numElements);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final SubtypedBuiltinAutoArray subtypedBuiltinAutoArray = new SubtypedBuiltinAutoArray(stream);
+        final AutoArray autoArray = new AutoArray(stream);
         stream.close();
 
-        final UnsignedByteArray array = subtypedBuiltinAutoArray.getArray();
+        final UnsignedByteArray array = autoArray.getArray();
         assertEquals(numElements, array.length());
         for (short i = 0; i < numElements; ++i)
             assertEquals(i, array.elementAt(i));
@@ -110,20 +110,20 @@ public class SubtypedBuiltinAutoArrayTest
         for (short i = 0; i < numElements; ++i)
             array.setElementAt(i, i);
 
-        final SubtypedBuiltinAutoArray subtypedBuiltinAutoArray = new SubtypedBuiltinAutoArray(array);
+        final AutoArray autoArray = new AutoArray(array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        subtypedBuiltinAutoArray.write(writer);
+        autoArray.write(writer);
         writer.close();
 
-        final SubtypedBuiltinAutoArray readSubtypedBuiltinAutoArray = new SubtypedBuiltinAutoArray(file);
-        final UnsignedByteArray readArray = readSubtypedBuiltinAutoArray.getArray();
+        final AutoArray readAutoArray = new AutoArray(file);
+        final UnsignedByteArray readArray = readAutoArray.getArray();
         assertEquals(numElements, readArray.length());
         for (short i = 0; i < numElements; ++i)
             assertEquals(i, readArray.elementAt(i));
     }
 
-    private void writeSubtypedBuiltinAutoArrayToFile(File file, short numElements) throws IOException
+    private void writeAutoArrayToFile(File file, short numElements) throws IOException
     {
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
 

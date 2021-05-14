@@ -4,11 +4,12 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.File;
+import java.math.BigInteger;
 
 import org.junit.Test;
 
-import array_types.variable_array_int8.TestStructure;
-import array_types.variable_array_int8.VariableArray;
+import array_types.variable_array_struct_cast_varuint.TestStructure;
+import array_types.variable_array_struct_cast_varuint.VariableArray;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.array.ObjectArray;
@@ -17,7 +18,7 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-public class VariableArrayInt8Test
+public class VariableArrayStructCastVarUIntTest
 {
     @Test
     public void bitSizeOf() throws IOException, ZserioError
@@ -29,7 +30,7 @@ public class VariableArrayInt8Test
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
             compoundArray.setElementAt(testStructure, i);
         }
-        final VariableArray variableArray = new VariableArray(numElements, compoundArray);
+        final VariableArray variableArray = new VariableArray(BigInteger.valueOf(numElements), compoundArray);
         final int bitPosition = 2;
         final int numOneNumberIndexes = 10;
         final int expectedBitSize = (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
@@ -46,7 +47,7 @@ public class VariableArrayInt8Test
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
             compoundArray.setElementAt(testStructure, i);
         }
-        final VariableArray variableArray = new VariableArray(numElements, compoundArray);
+        final VariableArray variableArray = new VariableArray(BigInteger.valueOf(numElements), compoundArray);
         final int bitPosition = 2;
         final int numOneNumberIndexes = 10;
         final int expectedEndBitPosition = bitPosition + (1 + numElements * (4 + 7) - numOneNumberIndexes) * 8;
@@ -63,7 +64,7 @@ public class VariableArrayInt8Test
         final VariableArray variableArray = new VariableArray(stream);
         stream.close();
 
-        assertEquals(numElements, variableArray.getNumElements());
+        assertEquals(BigInteger.valueOf(numElements), variableArray.getNumElements());
         final ObjectArray<TestStructure> compoundArray = variableArray.getCompoundArray();
         assertEquals(numElements, compoundArray.length());
         for (byte i = 0; i < numElements; ++i)
@@ -84,14 +85,14 @@ public class VariableArrayInt8Test
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
             compoundArray.setElementAt(testStructure, i);
         }
-        final VariableArray variableArray = new VariableArray(numElements, compoundArray);
+        final VariableArray variableArray = new VariableArray(BigInteger.valueOf(numElements), compoundArray);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         variableArray.write(writer);
         writer.close();
 
         final VariableArray readVariableArray = new VariableArray(file);
-        assertEquals(numElements, readVariableArray.getNumElements());
+        assertEquals(BigInteger.valueOf(numElements), readVariableArray.getNumElements());
         final ObjectArray<TestStructure> readCompoundArray = readVariableArray.getCompoundArray();
         assertEquals(numElements, readCompoundArray.length());
         for (byte i = 0; i < numElements; ++i)
@@ -112,7 +113,7 @@ public class VariableArrayInt8Test
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
             compoundArray.setElementAt(testStructure, i);
         }
-        VariableArray variableArray = new VariableArray((byte)(numElements + 1), compoundArray);
+        VariableArray variableArray = new VariableArray(BigInteger.valueOf(numElements + 1), compoundArray);
 
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);

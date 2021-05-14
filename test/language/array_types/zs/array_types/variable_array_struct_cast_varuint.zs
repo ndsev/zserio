@@ -1,4 +1,4 @@
-package array_types.variable_array_varuint;
+package array_types.variable_array_struct_cast_varuint;
 
 struct TestStructure
 {
