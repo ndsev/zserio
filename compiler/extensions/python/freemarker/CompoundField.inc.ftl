@@ -159,7 +159,7 @@ ${I}zserio_reader.alignto(8)
         <#if field.isBuiltinType>
 ${I}self.<@field_member_name field/> = context.read(zserio_reader)
         <#elseif field.array??>
-${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zserio_reader)
+${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode/>
         <#else>
 ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_read_packed(zserio_context_iterator, <#rt>
         <#lt>zserio_reader<#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
