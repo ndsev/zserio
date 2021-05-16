@@ -36,16 +36,16 @@ ${I}result = zserio.hashcode.calc_hashcode(result, hash(self.<@field_member_name
 ${I}if <@field_argument_name field/> is None:
 ${I}    self.<@field_member_name field/> = None
 ${I}else:
-${I}    self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
+${I}    self.<@field_member_name field/> = <@array_field_constructor field, withWriterCode/>
         <#else>
-${I}self.<@field_member_name field/> = zserio.array.Array(<@array_field_constructor_parameters field, withWriterCode/>)
+${I}self.<@field_member_name field/> = <@array_field_constructor field, withWriterCode/>
         </#if>
     <#else>
 ${I}self.<@field_member_name field/> = <@field_argument_name field/>
     </#if>
 </#macro>
 
-<#macro compound_bitsizeof_field field indent>
+<#macro compound_bitsizeof_field field indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
@@ -53,21 +53,31 @@ ${I}self.<@field_member_name field/> = <@field_argument_name field/>
 ${I}end_bitposition += 1
         </#if>
 ${I}if self.${field.optional.indicatorName}():
-<@compound_bitsizeof_field_inner field, indent + 1/>
+<@compound_bitsizeof_field_inner field, indent + 1, packed/>
     <#else>
-<@compound_bitsizeof_field_inner field, indent/>
+<@compound_bitsizeof_field_inner field, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_bitsizeof_field_inner field indent>
+<#macro compound_bitsizeof_field_inner field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
-    <#if field.bitSize.value??>
-${I}end_bitposition += ${field.bitSize.value}
-    <#elseif field.bitSize.runtimeFunction??>
-${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
-    <#else>
+    <#if packed>
+        <#if field.isBuiltinType>
+${I}end_bitposition += context.bitsizeof(end_bitposition, self.<@field_member_name field/>)
+        <#elseif field.array??>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitposition)
+        <#else>
+${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(context_iterator, end_bitsizeof)
+        </#if>
+    <#else>
+        <#if field.bitSize.value??>
+${I}end_bitposition += ${field.bitSize.value}
+        <#elseif field.bitSize.runtimeFunction??>
+${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+        <#else>
+${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitposition)
+        </#if>
     </#if>
 </#macro>
 
@@ -81,7 +91,7 @@ ${I}end_bitposition = zserio.bitposition.alignto(8, end_bitposition)
     </#if>
 </#macro>
 
-<#macro compound_initialize_offsets_field field indent>
+<#macro compound_initialize_offsets_field field indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if !field.optional.clause??>
@@ -89,13 +99,13 @@ ${I}end_bitposition = zserio.bitposition.alignto(8, end_bitposition)
 ${I}end_bitposition += 1
         </#if>
 ${I}if self.${field.optional.indicatorName}():
-    <@compound_initialize_offsets_field_inner field, indent + 1/>
+    <@compound_initialize_offsets_field_inner field, indent + 1, packed/>
     <#else>
-<@compound_initialize_offsets_field_inner field, indent/>
+<@compound_initialize_offsets_field_inner field, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_initialize_offsets_field_inner field indent>
+<#macro compound_initialize_offsets_field_inner field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if field.offset?? && !field.offset.containsIndex>
@@ -103,16 +113,26 @@ ${I}# initialize offset
 ${I}value = zserio.bitposition.bits_to_bytes(end_bitposition)
 ${I}${field.offset.setter}
     </#if>
-    <#if field.bitSize.value??>
-${I}end_bitposition += ${field.bitSize.value}
-    <#elseif field.bitSize.runtimeFunction??>
-${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+    <#if packed>
+        <#if field.isBuiltinType>
+${I}end_bitposition += context.bitsizeof(end_bitposition, self.<@field_member_name field/>)
+        <#elseif field.array??>
+${I}end_bitposition += self.<@field_member_name field/>.initialize_offsets(end_bitposition)
+        <#else>
+${I}end_bitposition += self.<@field_member_name field/>.initialize_offsets_packed(context_iterator, end_bitsizeof)
+        </#if>
     <#else>
+        <#if field.bitSize.value??>
+${I}end_bitposition += ${field.bitSize.value}
+        <#elseif field.bitSize.runtimeFunction??>
+${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+        <#else>
 ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bitposition)
+        </#if>
     </#if>
 </#macro>
 
-<#macro compound_read_field field compoundName withWriterCode indent>
+<#macro compound_read_field field compoundName withWriterCode indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
@@ -120,13 +140,13 @@ ${I}if self.${field.optional.indicatorName}():
         <#else>
 ${I}if zserio_reader.read_bool():
         </#if>
-<@compound_read_field_inner field, compoundName, withWriterCode, indent + 1/>
+<@compound_read_field_inner field, compoundName, withWriterCode, indent + 1, packed/>
     <#else>
-<@compound_read_field_inner field, compoundName, withWriterCode, indent/>
+<@compound_read_field_inner field, compoundName, withWriterCode, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_read_field_inner field compoundName withWriterCode indent>
+<#macro compound_read_field_inner field compoundName withWriterCode indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
 ${I}zserio_reader.alignto(${field.alignmentValue})
@@ -135,27 +155,43 @@ ${I}zserio_reader.alignto(${field.alignmentValue})
 ${I}zserio_reader.alignto(8)
         <@compound_check_offset_field field, compoundName, "zserio_reader.bitposition", indent/>
     </#if>
-    <#if field.array??>
-${I}self.<@field_member_name field/> = zserio.array.Array.from_reader(<@array_field_from_reader_parameters field, withWriterCode/>)
-    <#elseif field.runtimeFunction??>
-${I}self.<@field_member_name field/> = zserio_reader.read_${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
+    <#if packed>
+        <#if field.isBuiltinType>
+${I}self.<@field_member_name field/> = context.read(zserio_reader)
+        <#elseif field.array??>
+${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zserio_reader)
+        <#else>
+${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_read_packed(zserio_context_iterator, <#rt>
+        <#lt>zserio_reader<#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
+        </#if>
     <#else>
+        <#if field.array??>
+${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode/>
+        <#elseif field.runtimeFunction??>
+${I}self.<@field_member_name field/> = zserio_reader.read_${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
+        <#else>
         <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
 ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zserio_reader<#rt>
         <#lt><#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
+        </#if>
     </#if>
     <@compound_check_constraint_field field, compoundName, indent/>
 </#macro>
 
 <#macro array_field_traits_parameter field>
-    zserio.array.${field.array.traitsName}<#t>
-        (<#t>
-    <#if field.array.requiresElementBitSize>
-        ${field.array.elementBitSize.value}<#t>
-    <#elseif field.array.requiresElementCreator>
-        self.<@element_creator_name field/><#t>
-    </#if>
+    <#if field.array.isPacked>zserio.packed_array.${field.array.packedTraitsName}(</#if><#t>
+    <#if field.array.isPacked && field.array.traits.requiresElementCreator>
+        self.<@packed_element_creator_name field/>, ${field.array.elementPythonTypeName}.create_packed_context<#t>
+    <#else>
+        zserio.array.${field.array.traits.name}(<#t>
+        <#if field.array.traits.requiresElementBitSize>
+            ${field.array.elementBitSize.value}<#t>
+        <#elseif field.array.traits.requiresElementCreator>
+            self.<@element_creator_name field/><#t>
+        </#if>
         )<#t>
+    </#if>
+    <#if field.array.isPacked>)</#if><#t>
 </#macro>
 
 <#macro array_field_keyword_parameters field withWriterCode>
@@ -168,17 +204,23 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
     </#if>
 </#macro>
 
-<#macro array_field_from_reader_parameters field withWriterCode>
-    <@array_field_traits_parameter field/><#t>
+<#macro array_field_from_reader field withWriterCode>
+    <#if field.array.isPacked>
+    zserio.packed_array.PackedArray.from_reader<#t>
+    <#else>
+    zserio.array.Array.from_reader<#t>
+    </#if>
+    (<@array_field_traits_parameter field/><#t>
     , zserio_reader<#t>
     <#if field.array.length??>, ${field.array.length}</#if><#t>
-    <@array_field_keyword_parameters field, withWriterCode/><#t>
+    <@array_field_keyword_parameters field, withWriterCode/>)<#t>
 </#macro>
 
-<#macro array_field_constructor_parameters field withWriterCode>
-    <@array_field_traits_parameter field/><#t>
+<#macro array_field_constructor field withWriterCode>
+    <#if field.array.isPacked>zserio.packed_array.PackedArray<#else>zserio.array.Array</#if><#t>
+    (<@array_field_traits_parameter field/><#t>
     , <@field_argument_name field/><#t>
-    <@array_field_keyword_parameters field, withWriterCode/><#t>
+    <@array_field_keyword_parameters field, withWriterCode/>)<#t>
 </#macro>
 
 <#macro compound_field_constructor_parameters compound>
@@ -187,24 +229,24 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
     </#list>
 </#macro>
 
-<#macro compound_write_field field compoundName, indent>
+<#macro compound_write_field field compoundName, indent, packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if self.${field.optional.indicatorName}():
         <#if !field.optional.clause??>
 ${I}    zserio_writer.write_bool(True)
         </#if>
-<@compound_write_field_inner field, compoundName, indent + 1/>
+<@compound_write_field_inner field, compoundName, indent + 1, packed/>
         <#if !field.optional.clause??>
 ${I}else:
 ${I}    zserio_writer.write_bool(False)
         </#if>
     <#else>
-<@compound_write_field_inner field, compoundName, indent/>
+<@compound_write_field_inner field, compoundName, indent, packed/>
     </#if>
 </#macro>
 
-<#macro compound_write_field_inner field compoundName indent>
+<#macro compound_write_field_inner field compoundName indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
 ${I}zserio_writer.alignto(${field.alignmentValue})
@@ -216,10 +258,21 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_constraint_field field, compoundName, indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
-    <#if field.runtimeFunction??>
-${I}zserio_writer.write_${field.runtimeFunction.suffix}(self.<@field_member_name field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
+    <#if packed>
+        <#if field.isBuiltinType>
+${I}context.write(zserio_writer, self.<@field_member_name field/>)
+        <#elseif field.array??>
+${I}self.<@field_member_name field/>.write(zserio_writer)
+        <#else>
+${I}self.<@field_member_name field/>.write_packed(zserio_context_iterator, zserio_writer, <#rt>
+        <#lt><#if field.compound??>, zserio_call_initialize_offsets=False</#if>)
+        </#if>
     <#else>
+        <#if field.runtimeFunction??>
+${I}zserio_writer.write_${field.runtimeFunction.suffix}(self.<@field_member_name field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
+        <#else>
 ${I}self.<@field_member_name field/>.write(zserio_writer<#if field.compound??>, zserio_call_initialize_offsets=False</#if>)
+        </#if>
     </#if>
 </#macro>
 
@@ -343,8 +396,12 @@ ${I}                                        (self.<@field_member_name field/>, l
     _element_creator_${field.snakeCaseName}<#t>
 </#macro>
 
+<#macro packed_element_creator_name field>
+    _packed_element_creator_${field.snakeCaseName}<#t>
+</#macro>
+
 <#macro define_element_creator field compoundName>
-   <#if field.array?? && field.array.requiresElementCreator>
+   <#if field.array?? && field.array.traits.requiresElementCreator>
         <#local usesElementCreatorIndex = false/>
         <#local extraConstructorArguments>
             <#if field.array.elementCompound??>
@@ -368,6 +425,19 @@ ${I}                                        (self.<@field_member_name field/>, l
         del zserio_index
         </#if>
         return ${field.array.elementPythonTypeName}.from_reader(zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
+
+    def <@packed_element_creator_name field/>(
+            self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+            zserio_reader: zserio.BitStreamReader, zserio_index: int) -> <#rt>
+        <#if field.array.elementIsRecursive>
+            <#lt>'${compoundName}':
+        <#else>
+            <#lt>${field.array.elementPythonTypeName}:
+        </#if>
+        <#if !usesElementCreatorIndex>
+        del zserio_index
+        </#if>
+        return ${field.array.elementPythonTypeName}.from_reader_packed(zserio_context_iterator, zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
     </#if>
 </#macro>
 

@@ -1,6 +1,7 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "CompoundField.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl"/>
+<#include "PackedArray.inc.ftl"/>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -41,6 +42,17 @@ class ${name}:
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
         instance = cls(${constructorParamList})
         instance.read(zserio_reader)
+
+        return instance
+
+    @classmethod
+    def from_reader_packed(
+            cls: typing.Type['${name}'],
+            zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+            zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
+            <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
+        instance = cls(${constructorParamList})
+        instance.read_packed(zserio_context_iterator, zserio_reader)
 
         return instance
 
@@ -110,12 +122,35 @@ ${I}<#rt>
         return ${function.resultExpression}
 </#list>
 
+    <@create_packed_context_definition fieldList/>
+
+    <@init_packed_context_definition fieldList/>
+
     def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
         end_bitposition = bitposition
     <#list fieldList as field>
         <@compound_bitsizeof_field field, 2/>
     </#list>
+
+        return end_bitposition - bitposition
+<#else>
+        del bitposition
+
+        return 0
+</#if>
+
+    def bitsizeof_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+                         bitposition: int = 0) -> int:
+<#if fieldList?has_content>
+        end_bitposition = bitposition
+<#list fieldList as field>
+
+    <#if field.isBuiltinType>
+        context = next(context_iterator)
+    </#if>
+        <@compound_bitsizeof_field field, 2, true/>
+</#list>
 
         return end_bitposition - bitposition
 <#else>
@@ -136,6 +171,23 @@ ${I}<#rt>
     <#else>
         return bitposition
     </#if>
+
+    def initialize_offsets_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+                                  bitposition: int) -> int:
+    <#if fieldList?has_content>
+        end_bitposition = bitposition
+
+        <#list fieldList as field>
+            <#if field.isBuiltinType>
+        context = next(context_iterator)
+            </#if>
+        <@compound_initialize_offsets_field field, 2, true/>
+        </#list>
+
+        return end_bitposition
+    <#else>
+        return bitposition
+    </#if>
 </#if>
 
 <#assign needsReadNewLines=false/>
@@ -150,6 +202,22 @@ ${I}<#rt>
     <#list fieldList as field>
         <@compound_read_field field, name, withWriterCode, 2/>
         <#if field?has_next && needsReadNewLines>
+
+        </#if>
+    </#list>
+<#else>
+        del zserio_reader
+</#if>
+
+    def read_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+                    zserio_reader: zserio.BitStreamReader) -> None:
+<#if fieldList?has_content>
+    <#list fieldList as field>
+        <#if field.isBuiltinType>
+        context = next(zserio_context_iterator)
+        </#if>
+        <@compound_read_field field, name, withWriterCode, 2, true/>
+        <#if field?has_next>
 
         </#if>
     </#list>
@@ -178,6 +246,31 @@ ${I}<#rt>
         <#list fieldList as field>
         <@compound_write_field field, name, 2/>
             <#if field?has_next && needsWriteNewLines>
+
+            </#if>
+        </#list>
+    <#else>
+        del zserio_writer
+        del zserio_call_initialize_offsets
+    </#if>
+
+    def write_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+                     zserio_writer: zserio.BitStreamWriter, *,
+                     zserio_call_initialize_offsets: bool = True) -> None:
+<#if fieldList?has_content>
+        <#if hasFieldWithOffset>
+        if zserio_call_initialize_offsets:
+            self.initialize_offsets(zserio_writer.bitposition)
+        <#else>
+        del zserio_call_initialize_offsets
+        </#if>
+
+        <#list fieldList as field>
+            <#if field.isBuiltinType>
+        context = next(zserio_context_iterator)
+            </#if>
+        <@compound_write_field field, name, 2, true/>
+            <#if field?has_next>
 
             </#if>
         </#list>

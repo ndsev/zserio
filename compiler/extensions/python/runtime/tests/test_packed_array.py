@@ -159,9 +159,9 @@ class PackedArrayTest(unittest.TestCase):
                 self._value = value
 
             @classmethod
-            def create_packed(cls, context_iterator, reader, index):
+            def create_packed(cls, context_iterator, reader, _index):
                 instance = cls()
-                instance.read_packed(context_iterator, reader, index)
+                instance.read_packed(context_iterator, reader)
 
                 return instance
 
@@ -203,9 +203,9 @@ class PackedArrayTest(unittest.TestCase):
                 context = next(context_iterator)
                 context.write(writer, self._value)
 
-            def read_packed(self, context_iterator, reader, index):
+            def read_packed(self, context_iterator, reader):
                 context = next(context_iterator)
-                self._value = context.read(reader, index)
+                self._value = context.read(reader)
 
         class DummyObjectBitsizeCalculator:
             @staticmethod
@@ -245,7 +245,11 @@ class PackedArrayTest(unittest.TestCase):
 
     def _test_array(self, array_traits, packed_array_traits, array1_values, array2_values,
                     bitsize_calculator=BitsizeCalculator):
+        self._test_from_reader(packed_array_traits, array1_values)
+        self._test_from_reader(packed_array_traits, array2_values)
+
         self._test_eq(packed_array_traits, array1_values, array2_values)
+
         self._test_hashcode(packed_array_traits, array1_values, array2_values)
 
         self._test_len(packed_array_traits, array1_values)
@@ -270,6 +274,14 @@ class PackedArrayTest(unittest.TestCase):
 
         self._test_write(array_traits, packed_array_traits, array1_values, bitsize_calculator)
         self._test_write(array_traits, packed_array_traits, array2_values, bitsize_calculator)
+
+    def _test_from_reader(self, packed_array_traits, array_values):
+        array = PackedArray(packed_array_traits, array_values)
+        writer = BitStreamWriter()
+        array.write(writer)
+        reader = BitStreamReader(writer.byte_array)
+        read_array = PackedArray.from_reader(packed_array_traits, reader, len(array_values))
+        self.assertEqual(array, read_array)
 
     def _test_eq(self, packed_array_traits, array1_values, array2_values):
         array1 = PackedArray(packed_array_traits, array1_values)

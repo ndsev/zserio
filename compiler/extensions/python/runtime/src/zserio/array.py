@@ -178,7 +178,8 @@ class Array:
             remaining_bits = reader.buffer_bitsize - reader.bitposition
             read_size = remaining_bits // element_size
             for index in range(read_size):
-                self._raw_array.append(self._array_traits.read(reader, index))
+                # we know that no traits NEEDS_READ_INDEX here
+                self._raw_array.append(self._array_traits.read(reader))
         else:
             if self._is_auto:
                 read_size = reader.read_varsize()
@@ -189,7 +190,10 @@ class Array:
                 if self._check_offset_method is not None:
                     reader.alignto(8)
                     self._check_offset_method(index, reader.bitposition)
-                self._raw_array.append(self._array_traits.read(reader, index))
+                if self._array_traits.NEEDS_READ_INDEX:
+                    self._raw_array.append(self._array_traits.read(reader, index))
+                else:
+                    self._raw_array.append(self._array_traits.read(reader))
 
     def write(self, writer: BitStreamWriter) -> None:
         """
@@ -214,6 +218,7 @@ class BitFieldArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_READ_INDEX = False
 
     def __init__(self, numbits: int) -> None:
         """
@@ -244,12 +249,11 @@ class BitFieldArrayTraits:
 
         return bitposition + self.bitsizeof()
 
-    def read(self, reader: BitStreamReader, _index: int) -> int:
+    def read(self, reader: BitStreamReader) -> int:
         """
         Reads unsigned fixed integer Zserio type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_bits(self._numbits)
@@ -270,6 +274,7 @@ class SignedBitFieldArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_READ_INDEX = False
 
     def __init__(self, numbits: int) -> None:
         """
@@ -300,12 +305,11 @@ class SignedBitFieldArrayTraits:
 
         return bitposition + self.bitsizeof()
 
-    def read(self, reader: BitStreamReader, _index: int) -> int:
+    def read(self, reader: BitStreamReader) -> int:
         """
         Reads signed fixed integer Zserio type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_signed_bits(self._numbits)
@@ -326,6 +330,7 @@ class VarUInt16ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -352,12 +357,11 @@ class VarUInt16ArrayTraits:
         return bitposition + VarUInt16ArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varuint16 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varuint16()
@@ -379,6 +383,7 @@ class VarUInt32ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -405,12 +410,11 @@ class VarUInt32ArrayTraits:
         return bitposition + VarUInt32ArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varuint32 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varuint32()
@@ -432,6 +436,7 @@ class VarUInt64ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -458,12 +463,11 @@ class VarUInt64ArrayTraits:
         return bitposition + VarUInt64ArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varuint64 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varuint64()
@@ -485,6 +489,7 @@ class VarUIntArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -511,12 +516,11 @@ class VarUIntArrayTraits:
         return bitposition + VarUIntArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varuint type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varuint()
@@ -538,6 +542,7 @@ class VarSizeArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -564,12 +569,11 @@ class VarSizeArrayTraits:
         return bitposition + VarSizeArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varsize type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varsize()
@@ -591,6 +595,7 @@ class VarInt16ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -617,12 +622,11 @@ class VarInt16ArrayTraits:
         return bitposition + VarInt16ArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varint16 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varint16()
@@ -644,6 +648,7 @@ class VarInt32ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -670,12 +675,11 @@ class VarInt32ArrayTraits:
         return bitposition + VarInt32ArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varint32 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varint32()
@@ -697,6 +701,7 @@ class VarInt64ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -723,12 +728,11 @@ class VarInt64ArrayTraits:
         return bitposition + VarInt64ArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varint64 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varint64()
@@ -750,6 +754,7 @@ class VarIntArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -776,12 +781,11 @@ class VarIntArrayTraits:
         return bitposition + VarIntArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> int:
+    def read(reader: BitStreamReader) -> int:
         """
         Reads Zserio varint type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_varint()
@@ -803,6 +807,7 @@ class Float16ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof() -> int:
@@ -827,12 +832,11 @@ class Float16ArrayTraits:
         return bitposition + Float16ArrayTraits.bitsizeof()
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> float:
+    def read(reader: BitStreamReader) -> float:
         """
         Reads Zserio float16 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_float16()
@@ -854,6 +858,7 @@ class Float32ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof() -> int:
@@ -878,12 +883,11 @@ class Float32ArrayTraits:
         return bitposition + Float32ArrayTraits.bitsizeof()
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> float:
+    def read(reader: BitStreamReader) -> float:
         """
         Reads Zserio float32 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_float32()
@@ -905,6 +909,7 @@ class Float64ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof() -> int:
@@ -929,12 +934,11 @@ class Float64ArrayTraits:
         return bitposition + Float64ArrayTraits.bitsizeof()
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> float:
+    def read(reader: BitStreamReader) -> float:
         """
         Reads Zserio float64 type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_float64()
@@ -956,6 +960,7 @@ class StringArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition, value: str) -> int:
@@ -982,12 +987,11 @@ class StringArrayTraits:
         return bitposition + StringArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> str:
+    def read(reader: BitStreamReader) -> str:
         """
         Reads Zserio string type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_string()
@@ -1009,6 +1013,7 @@ class BoolArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof() -> int:
@@ -1033,12 +1038,11 @@ class BoolArrayTraits:
         return bitposition + BoolArrayTraits.bitsizeof()
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> bool:
+    def read(reader: BitStreamReader) -> bool:
         """
         Reads Zserio bool type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_bool()
@@ -1060,6 +1064,7 @@ class BitBufferArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = False
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: BitBuffer) -> int:
@@ -1086,12 +1091,11 @@ class BitBufferArrayTraits:
         return bitposition + BitBufferArrayTraits.bitsizeof(bitposition, value)
 
     @staticmethod
-    def read(reader: BitStreamReader, _index: int) -> BitBuffer:
+    def read(reader: BitStreamReader) -> BitBuffer:
         """
         Reads Zserio extern bit buffer type from the bit stream.
 
         :param reader: Bit stream from which to read.
-        :param _index: Not used.
         """
 
         return reader.read_bitbuffer()
@@ -1113,6 +1117,7 @@ class ObjectArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_READ_INDEX = True
 
     def __init__(self, object_creator: typing.Callable[[BitStreamReader, int], typing.Any]) -> None:
         """
