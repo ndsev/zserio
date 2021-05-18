@@ -128,13 +128,6 @@ ${I}}
         this.objectChoice = <@field_argument_name field/>;
     }
 
-        <#if field.array?? && field.array.generateListSetter>
-    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> <@field_argument_name field/>)
-    {
-        ${field.setterName}(new ${field.javaTypeName}(<@field_argument_name field/>));
-    }
-
-        </#if>
     </#if>
 </#list>
 <@compound_functions compoundFunctionsData/>

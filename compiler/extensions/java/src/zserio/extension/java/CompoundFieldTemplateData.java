@@ -329,8 +329,6 @@ public final class CompoundFieldTemplateData
             requiresElementFactory = nativeType.requiresElementFactory();
             requiresParentContext = createRequiresParentContext(elementTypeInstantiation);
 
-            generateListSetter = createGenerateListSetter(elementTypeInstantiation);
-
             elementBitSize = new BitSize(elementTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
             isElementEnum = elementNativeType instanceof NativeEnumType;
             elementCompound = createCompound(javaNativeMapper, withWriterCode, javaExpressionFormatter,
@@ -365,11 +363,6 @@ public final class CompoundFieldTemplateData
         public boolean getRequiresParentContext()
         {
             return requiresParentContext;
-        }
-
-        public boolean getGenerateListSetter()
-        {
-            return generateListSetter;
         }
 
         public BitSize getElementBitSize()
@@ -419,29 +412,12 @@ public final class CompoundFieldTemplateData
             return false;
         }
 
-        private static boolean createGenerateListSetter(TypeInstantiation elementTypeInstantiation)
-        {
-            final ZserioType elementBaseType = elementTypeInstantiation.getBaseType();
-
-            boolean hasParameters = false;
-            if (elementTypeInstantiation instanceof ParameterizedTypeInstantiation)
-            {
-                final ParameterizedTypeInstantiation parameterizedInstantiation =
-                        (ParameterizedTypeInstantiation)elementTypeInstantiation;
-                hasParameters = !parameterizedInstantiation.getInstantiatedParameters().isEmpty();
-            }
-
-            return elementBaseType instanceof CompoundType || elementBaseType instanceof EnumType ||
-                    hasParameters;
-        }
-
         private final boolean       isImplicit;
         private final String        length;
         private final String        elementJavaTypeName;
         private final boolean       requiresElementBitSize;
         private final boolean       requiresElementFactory;
         private final boolean       requiresParentContext;
-        private final boolean       generateListSetter;
         private final BitSize       elementBitSize;
         private final boolean       isElementEnum;
         private final Compound      elementCompound;

@@ -92,13 +92,6 @@ ${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE,
         this.<@field_member_name field/> = <@field_argument_name field/>;
     }
 
-        <#if field.array?? && field.array.generateListSetter>
-    public void ${field.setterName}(java.util.List<${field.array.elementJavaTypeName}> <@field_argument_name field/>)
-    {
-        this.<@field_member_name field/> = new ${field.javaTypeName}(<@field_argument_name field/>);
-    }
-
-        </#if>
     </#if>
     <#if field.optional??>
     public boolean ${field.optional.indicatorName}()

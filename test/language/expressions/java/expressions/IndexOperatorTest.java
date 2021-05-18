@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
+import zserio.runtime.array.ObjectArray;
 
 import expressions.index_operator.*;
 
@@ -18,17 +19,18 @@ public class IndexOperatorTest
     @Test
     public void zeroLength() throws IOException
     {
-        ElementList list = createElementList(0);
+        final ElementList list = createElementList(0);
         assertEquals(LENGTH_SIZE, list.bitSizeOf());
-        list = readWrite(list);
-        assertEquals(0, list.getLength());
+
+        final ElementList readlist = readWrite(list);
+        assertEquals(0, readlist.getLength());
     }
 
     @Test
     public void oneElement() throws IOException
     {
         final int length = 1;
-        ElementList list = createElementList(length);
+        final ElementList list = createElementList(length);
         assertEquals(LENGTH_SIZE + FIELD16_SIZE, list.bitSizeOf());
         checkElements(readWrite(list), length);
     }
@@ -37,7 +39,7 @@ public class IndexOperatorTest
     public void twoElements() throws IOException
     {
         final int length = 2;
-        ElementList list = createElementList(length);
+        final ElementList list = createElementList(length);
         assertEquals(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
         checkElements(readWrite(list), length);
     }
@@ -46,7 +48,7 @@ public class IndexOperatorTest
     public void threeElements() throws IOException
     {
         final int length = 3;
-        ElementList list = createElementList(length);
+        final ElementList list = createElementList(length);
         assertEquals(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE + FIELD16_SIZE, list.bitSizeOf());
         checkElements(readWrite(list), length);
     }
@@ -55,41 +57,44 @@ public class IndexOperatorTest
     public void fourElements() throws IOException
     {
         final int length = 4;
-        ElementList list = createElementList(length);
+        final ElementList list = createElementList(length);
         assertEquals(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
         checkElements(readWrite(list), length);
     }
 
     private static ElementList createElementList(int length)
     {
-        ElementList list = new ElementList();
-        List<Element> elements = new ArrayList<Element>();
-        list.setElements(elements);
+        final ObjectArray<Element> elements = new ObjectArray<Element>(length);
         for (int i = 0; i < length; ++i)
         {
             final boolean isEven = i % 2 + 1 == 2;
-            Element element = new Element(isEven);
+            final Element element = new Element(isEven);
             if (isEven)
                 element.setField8((short)ELEMENTS[i]);
             else
                 element.setField16((short)ELEMENTS[i]);
 
-            elements.add(element);
+            elements.setElementAt(element, i);
         }
 
-        list.setLength(elements.size());
+        final ElementList list = new ElementList();
+        list.setLength(elements.length());
+        list.setElements(elements);
+
         return list;
     }
 
     private static ElementList readWrite(ElementList list) throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         list.write(writer);
-        byte[] buffer = writer.toByteArray();
+        final byte[] buffer = writer.toByteArray();
         writer.close();
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-        ElementList newList = new ElementList(reader);
+
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
+        final ElementList newList = new ElementList(reader);
         reader.close();
+
         return newList;
     }
 
@@ -99,7 +104,7 @@ public class IndexOperatorTest
         for (int i = 0; i < length; ++i)
         {
             final boolean isEven = i % 2 + 1 == 2;
-            Element element = list.getElements().elementAt(i);
+            final Element element = list.getElements().elementAt(i);
             assertEquals(ELEMENTS[i], isEven ? element.getField8() : element.getField16());
         }
     }
