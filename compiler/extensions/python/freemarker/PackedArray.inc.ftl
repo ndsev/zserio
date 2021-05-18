@@ -1,50 +1,42 @@
 <#include "CompoundField.inc.ftl">
 <#macro packed_create_context_definition fieldList>
-    <#local createPackedContextBody>
+    <#local createPackingContextBody>
         <#list fieldList as field>
             <#if field.isBuiltinType>
         context_builder.add_context(zserio.array.${field.arrayTraits.name}(<#rt>
                 <#lt><#if field.arrayTraits.requiresElementBitSize>${field.bitSize.value}</#if>))
             <#elseif !field.array??>
-        ${field.pythonTypeName}.create_packed_context(context_builder)
+        ${field.pythonTypeName}.create_packing_context(context_builder)
             </#if>
         </#list>
     </#local>
     @staticmethod
-    def create_packed_context(context_builder: zserio.packed_array.PackingContextBuilder):
-    <#if createPackedContextBody?has_content>
-        ${createPackedContextBody}<#t>
+    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder):
+    <#if createPackingContextBody?has_content>
+        ${createPackingContextBody}<#t>
     <#else>
         del context_builder
     </#if>
 </#macro>
 
-<#macro packed_init_context_definition fieldList>
-    <#local initPackedContextBody>
-        <#list fieldList as field>
-            <#if field.optional??>
-        if self.${field.optional.indicatorName}():
-            <@packed_init_context_inner field, 3/>
-            <#else>
-        <@packed_init_context_inner field, 2/>
-            </#if>
-        </#list>
-    </#local>
-    def init_packed_context(self, context_iterator: zserio.packed_array.PackingContextIterator):
-    <#if initPackedContextBody?has_content>
-        ${initPackedContextBody}<#t>
-    <#else>
-        del context_iterator
+<#macro packed_init_context_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if !field.array??>
+        <#if field.optional??>
+${I}if self.${field.optional.indicatorName}():
+    <@packed_init_context_field_inner field, indent+1/>
+        <#else>
+<@packed_init_context_field_inner field, indent/>
+        </#if>
     </#if>
 </#macro>
 
-<#macro packed_init_context_inner field indent>
+<#macro packed_init_context_field_inner field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isBuiltinType>
-${I}context = next(context_iterator)
-${I}context.init(self.<@field_member_name field/>)
-    <#elseif !field.array??>
-${I}<@field_member_name field/>.init_packed_context(context_iterator)
+${I}<@field_packing_context_name field/>.init(self.<@field_member_name field/>)
+    <#else><#-- arrays are solved in packed_init_context_field -->
+${I}self.<@field_member_name field/>.init_packing_context(context_iterator)
     </#if>
 </#macro>
 

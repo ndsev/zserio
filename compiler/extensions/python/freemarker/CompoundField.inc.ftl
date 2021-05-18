@@ -64,11 +64,11 @@ ${I}if self.${field.optional.indicatorName}():
     <@compound_align_field field, indent/>
     <#if packed>
         <#if field.isBuiltinType>
-${I}end_bitposition += context.bitsizeof(end_bitposition, self.<@field_member_name field/>)
+${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitposition)
         <#else>
-${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(context_iterator, end_bitsizeof)
+${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(context_iterator, end_bitposition)
         </#if>
     <#else>
         <#if field.bitSize.value??>
@@ -115,11 +115,11 @@ ${I}${field.offset.setter}
     </#if>
     <#if packed>
         <#if field.isBuiltinType>
-${I}end_bitposition += context.bitsizeof(end_bitposition, self.<@field_member_name field/>)
+${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}end_bitposition += self.<@field_member_name field/>.initialize_offsets(end_bitposition)
         <#else>
-${I}end_bitposition += self.<@field_member_name field/>.initialize_offsets_packed(context_iterator, end_bitsizeof)
+${I}end_bitposition += self.<@field_member_name field/>.initialize_offsets_packed(context_iterator, end_bitposition)
         </#if>
     <#else>
         <#if field.bitSize.value??>
@@ -157,11 +157,11 @@ ${I}zserio_reader.alignto(8)
     </#if>
     <#if packed>
         <#if field.isBuiltinType>
-${I}self.<@field_member_name field/> = context.read(zserio_reader)
+${I}self.<@field_member_name field/> = <@field_packing_context_name field/>.read(zserio_reader)
         <#elseif field.array??>
 ${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode/>
         <#else>
-${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_read_packed(zserio_context_iterator, <#rt>
+${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packed(zserio_context_iterator, <#rt>
         <#lt>zserio_reader<#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
         </#if>
     <#else>
@@ -181,7 +181,7 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
 <#macro array_field_traits_parameter field>
     <#if field.array.isPacked>zserio.packed_array.${field.array.packedTraitsName}(</#if><#t>
     <#if field.array.isPacked && field.array.traits.requiresElementCreator>
-        self.<@packed_element_creator_name field/>, ${field.array.elementPythonTypeName}.create_packed_context<#t>
+        self.<@packed_element_creator_name field/>, ${field.array.elementPythonTypeName}.create_packing_context<#t>
     <#else>
         zserio.array.${field.array.traits.name}(<#t>
         <#if field.array.traits.requiresElementBitSize>
@@ -260,11 +260,11 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed>
         <#if field.isBuiltinType>
-${I}context.write(zserio_writer, self.<@field_member_name field/>)
+${I}<@field_packing_context_name field/>.write(zserio_writer, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}self.<@field_member_name field/>.write(zserio_writer)
         <#else>
-${I}self.<@field_member_name field/>.write_packed(zserio_context_iterator, zserio_writer, <#rt>
+${I}self.<@field_member_name field/>.write_packed(zserio_context_iterator, zserio_writer<#rt>
         <#lt><#if field.compound??>, zserio_call_initialize_offsets=False</#if>)
         </#if>
     <#else>
@@ -447,6 +447,10 @@ ${I}                                        (self.<@field_member_name field/>, l
 
 <#macro field_argument_name field>
     ${field.snakeCaseName}_<#t>
+</#macro>
+
+<#macro field_packing_context_name field>
+    zserio_ctx_${field.snakeCaseName}<#t>
 </#macro>
 
 <#function has_field_any_read_check_code field compoundName indent>

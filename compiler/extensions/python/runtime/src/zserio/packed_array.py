@@ -579,7 +579,7 @@ class ObjectPackedArrayTraits:
         :param element: Current element.
         """
 
-        element.init_packed_context(context_iterator)
+        element.init_packing_context(context_iterator)
 
     @staticmethod
     def bitsizeof(context_iterator: PackingContextIterator, bitposition: int, element: typing.Any) -> int:
