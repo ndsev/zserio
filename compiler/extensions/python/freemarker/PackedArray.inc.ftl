@@ -1,5 +1,5 @@
 <#include "CompoundField.inc.ftl">
-<#macro create_packed_context_definition fieldList>
+<#macro packed_create_context_definition fieldList>
     <#local createPackedContextBody>
         <#list fieldList as field>
             <#if field.isBuiltinType>
@@ -19,14 +19,14 @@
     </#if>
 </#macro>
 
-<#macro init_packed_context_definition fieldList>
+<#macro packed_init_context_definition fieldList>
     <#local initPackedContextBody>
         <#list fieldList as field>
             <#if field.optional??>
         if self.${field.optional.indicatorName}():
-            <@init_packed_context_inner field, 3/>
+            <@packed_init_context_inner field, 3/>
             <#else>
-        <@init_packed_context_inner field, 2/>
+        <@packed_init_context_inner field, 2/>
             </#if>
         </#list>
     </#local>
@@ -38,7 +38,7 @@
     </#if>
 </#macro>
 
-<#macro init_packed_context_inner field indent>
+<#macro packed_init_context_inner field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isBuiltinType>
 ${I}context = next(context_iterator)
@@ -47,3 +47,12 @@ ${I}context.init(self.<@field_member_name field/>)
 ${I}<@field_member_name field/>.init_packed_context(context_iterator)
     </#if>
 </#macro>
+
+<#function packed_compound_needs_context_iterator fieldList>
+    <#list fieldList as field>
+        <#if field.isBuiltinType>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>

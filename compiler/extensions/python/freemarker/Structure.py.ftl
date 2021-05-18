@@ -122,9 +122,9 @@ ${I}<#rt>
         return ${function.resultExpression}
 </#list>
 
-    <@create_packed_context_definition fieldList/>
+    <@packed_create_context_definition fieldList/>
 
-    <@init_packed_context_definition fieldList/>
+    <@packed_init_context_definition fieldList/>
 
     def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
@@ -140,7 +140,8 @@ ${I}<#rt>
         return 0
 </#if>
 
-    def bitsizeof_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+    def bitsizeof_packed(self, <#if packed_compound_needs_context_iterator(fieldList)>_</#if><#rt>
+                         <#lt>context_iterator: zserio.packed_array.PackingContextIterator,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
         end_bitposition = bitposition
@@ -172,7 +173,8 @@ ${I}<#rt>
         return bitposition
     </#if>
 
-    def initialize_offsets_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+    def initialize_offsets_packed(self, <#if packed_compound_needs_context_iterator(fieldList)>_</#if><#rt>
+                                  <#lt>context_iterator: zserio.packed_array.PackingContextIterator,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
         end_bitposition = bitposition
@@ -209,7 +211,8 @@ ${I}<#rt>
         del zserio_reader
 </#if>
 
-    def read_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+    def read_packed(self, <#if packed_compound_needs_context_iterator(fieldList)>_</#if><#rt>
+                    <#lt>zserio_context_iterator: zserio.packed_array.PackingContextIterator,
                     zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
     <#list fieldList as field>
@@ -254,7 +257,8 @@ ${I}<#rt>
         del zserio_call_initialize_offsets
     </#if>
 
-    def write_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+    def write_packed(self, <#if packed_compound_needs_context_iterator(fieldList)>_</#if><#rt>
+                     <#lt>zserio_context_iterator: zserio.packed_array.PackingContextIterator,
                      zserio_writer: zserio.BitStreamWriter, *,
                      zserio_call_initialize_offsets: bool = True) -> None:
 <#if fieldList?has_content>
