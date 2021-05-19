@@ -176,10 +176,10 @@ class PackedArrayTest(unittest.TestCase):
                 return self._value
 
             @staticmethod
-            def create_packed_context(context_builder):
+            def create_packing_context(context_builder):
                 context_builder.add_context(value_array_traits)
 
-            def init_packed_context(self, context_iterator):
+            def init_packing_context(self, context_iterator):
                 context = next(context_iterator)
                 context.init(self._value)
 
@@ -229,7 +229,7 @@ class PackedArrayTest(unittest.TestCase):
 
         array_traits = None # not used
         packed_array_traits = ObjectPackedArrayTraits(DummyObject.create_packed,
-                                                      DummyObject.create_packed_context)
+                                                      DummyObject.create_packing_context)
         array1_values = [DummyObject(1), DummyObject(2)]
         array2_values = [DummyObject(3), DummyObject(4)]
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values,
