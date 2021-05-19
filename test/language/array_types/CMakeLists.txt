@@ -9,12 +9,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.h
 
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_struct_recursion/AutoArrayRecursion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_struct_recursion/AutoArrayRecursion.h
+
     ${ZSERIO_GEN_DIR}/array_types/auto_array_subtyped_uint8/ArrayElement.h
     ${ZSERIO_GEN_DIR}/array_types/auto_array_subtyped_uint8/AutoArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/auto_array_subtyped_uint8/AutoArray.h
-
-    ${ZSERIO_GEN_DIR}/array_types/auto_array_uint8_recursion/AutoArrayRecursion.cpp
-    ${ZSERIO_GEN_DIR}/array_types/auto_array_uint8_recursion/AutoArrayRecursion.h
 
     ${ZSERIO_GEN_DIR}/array_types/auto_array_uint8/AutoArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/auto_array_uint8/AutoArray.h
@@ -66,8 +66,8 @@ zserio_add_library(TARGET array_types_zs
 
 add_test_sources(
     cpp/ArraysMappingTest.cpp
+    cpp/AutoArrayStructRecursionTest.cpp
     cpp/AutoArraySubtypedUInt8Test.cpp
-    cpp/AutoArrayUInt8RecursionTest.cpp
     cpp/AutoArrayUInt8Test.cpp
     cpp/FixedArrayUInt8Test.cpp
     cpp/ImplicitArrayBit8Test.cpp

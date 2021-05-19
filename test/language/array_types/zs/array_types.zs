@@ -1,8 +1,8 @@
 package array_types;
 
 import array_types.arrays_mapping.*;
+import array_types.auto_array_struct_recursion.*;
 import array_types.auto_array_subtyped_uint8.*;
-import array_types.auto_array_uint8_recursion.*;
 import array_types.auto_array_uint8.*;
 import array_types.fixed_array_uint8.*;
 import array_types.implicit_array_bit8.*;

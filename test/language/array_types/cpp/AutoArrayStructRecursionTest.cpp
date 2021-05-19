@@ -1,16 +1,16 @@
 #include "gtest/gtest.h"
 
-#include "array_types/auto_array_uint8_recursion/AutoArrayRecursion.h"
+#include "array_types/auto_array_struct_recursion/AutoArrayRecursion.h"
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 
 namespace array_types
 {
-namespace auto_array_uint8_recursion
+namespace auto_array_struct_recursion
 {
 
-class AutoArrayUInt8RecursionTest : public ::testing::Test
+class AutoArrayStructRecursionTest : public ::testing::Test
 {
 protected:
     void fillAutoArrayRecursion(AutoArrayRecursion& autoArrayRecursion, size_t numElements)
@@ -106,48 +106,48 @@ protected:
     static const size_t AUTO_ARRAY_LENGTH2;
 };
 
-const size_t AutoArrayUInt8RecursionTest::AUTO_ARRAY_LENGTH1 = 5;
-const size_t AutoArrayUInt8RecursionTest::AUTO_ARRAY_LENGTH2 = 10;
+const size_t AutoArrayStructRecursionTest::AUTO_ARRAY_LENGTH1 = 5;
+const size_t AutoArrayStructRecursionTest::AUTO_ARRAY_LENGTH2 = 10;
 
-TEST_F(AutoArrayUInt8RecursionTest, bitSizeOfLength1)
+TEST_F(AutoArrayStructRecursionTest, bitSizeOfLength1)
 {
     checkBitSizeOf(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayUInt8RecursionTest, bitSizeOfLength2)
+TEST_F(AutoArrayStructRecursionTest, bitSizeOfLength2)
 {
     checkBitSizeOf(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(AutoArrayUInt8RecursionTest, initializeOffsetsLength1)
+TEST_F(AutoArrayStructRecursionTest, initializeOffsetsLength1)
 {
     checkInitializeOffsets(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayUInt8RecursionTest, initializeOffsetsLength2)
+TEST_F(AutoArrayStructRecursionTest, initializeOffsetsLength2)
 {
     checkInitializeOffsets(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(AutoArrayUInt8RecursionTest, readLength1)
+TEST_F(AutoArrayStructRecursionTest, readLength1)
 {
     checkRead(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayUInt8RecursionTest, readLength2)
+TEST_F(AutoArrayStructRecursionTest, readLength2)
 {
     checkRead(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(AutoArrayUInt8RecursionTest, writeLength1)
+TEST_F(AutoArrayStructRecursionTest, writeLength1)
 {
     checkWrite(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayUInt8RecursionTest, writeLength2)
+TEST_F(AutoArrayStructRecursionTest, writeLength2)
 {
     checkWrite(AUTO_ARRAY_LENGTH2);
 }
 
-} // namespace auto_array_uint8_recursion
+} // namespace auto_array_struct_recursion
 } // namespace array_types

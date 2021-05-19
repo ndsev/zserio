@@ -16,9 +16,9 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-import array_types.auto_array_uint8_recursion.AutoArrayRecursion;
+import array_types.auto_array_struct_recursion.AutoArrayRecursion;
 
-public class AutoArrayUInt8RecursionTest
+public class AutoArrayStructRecursionTest
 {
     @Test
     public void bitSizeOfLength1() throws IOException, ZserioError
