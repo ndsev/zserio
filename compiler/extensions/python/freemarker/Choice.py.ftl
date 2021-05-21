@@ -1,6 +1,7 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl"/>
+<#include "PackedArray.inc.ftl"/>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -11,20 +12,37 @@ selector == (${expressionList?first})<#rt>
 selector in (<#list expressionList as expression>${expression}<#if expression?has_next>, </#if></#list>)<#rt>
     </#if>
 </#macro>
-<#macro choice_if memberActionMacroName>
+<#macro choice_if memberActionMacroName packed=false contextIteratorVarName="">
         selector = ${selector}
+    <#if packed && fieldList?has_content>
+
+        <#list fieldList as field>
+            <#if field.isBuiltinType>
+        <@field_packing_context_name field/> = next(${contextIteratorVarName})
+            </#if>
+        </#list>
+
+    </#if>
     <#list caseMemberList as caseMember>
         <#if caseMember?has_next || !isDefaultUnreachable>
         <#if caseMember?is_first>if <#else>elif </#if><@choice_selector_condition caseMember.expressionList/>:
         <#else>
         else:
         </#if>
-            <@.vars[memberActionMacroName] caseMember, 3/>
+        <#if caseMember.compoundField??>
+            <@.vars[memberActionMacroName] caseMember.compoundField, 3, packed/>
+        <#else>
+            pass
+        </#if>
     </#list>
     <#if !isDefaultUnreachable>
         else:
         <#if defaultMember??>
-            <@.vars[memberActionMacroName] defaultMember, 3/>
+            <#if defaultMember.compoundField??>
+            <@.vars[memberActionMacroName] defaultMember.compoundField, 3, packed/>
+            <#else>
+            pass
+            </#if>
         <#else>
             raise zserio.PythonRuntimeException("No match in choice ${name}!")
         </#if>
@@ -71,6 +89,17 @@ class ${name}:
 
         return instance
 
+    @classmethod
+    def from_reader_packed(
+            cls: typing.Type['${name}'],
+            zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+            zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
+            <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
+        instance = cls(${constructorParamList})
+        instance.read_packed(zserio_context_iterator, zserio_reader)
+
+        return instance
+
     def __eq__(self, other: object) -> bool:
         if isinstance(other, ${name}):
             return (<@compound_compare_parameters compoundParametersData, 5/> and
@@ -109,19 +138,41 @@ class ${name}:
         return ${function.resultExpression}
 </#list>
 
-<#macro choice_bitsizeof_member member indent>
-    <#if member.compoundField??>
-        <@compound_bitsizeof_field member.compoundField, indent/>
-    <#else>
-        <#local I>${""?left_pad(indent * 4)}</#local>
-        <#lt>${I}pass
-    </#if>
+    <@packed_create_context_definition fieldList/>
+
+<#macro choice_init_packing_context_field field indent packed>
+    <@packed_init_context_field field, indent/>
 </#macro>
+    def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
+<#if packed_compound_needs_context_iterator(fieldList)>
+        <@choice_if "choice_init_packing_context_field", true, "context_iterator"/>
+<#else>
+        del context_iterator
+</#if>
+
     def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "choice_bitsizeof_member"/>
+        <@choice_if "compound_bitsizeof_field"/>
+
+        return end_bitposition - bitposition
+<#else>
+        del bitposition
+
+        return 0
+</#if>
+
+    def bitsizeof_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+                         bitposition: int = 0) -> int:
+<#if !packed_compound_needs_context_iterator(fieldList)>
+        del context_iterator
+
+</#if>
+<#if fieldList?has_content>
+        end_bitposition = bitposition
+
+        <@choice_if "compound_bitsizeof_field", true, "context_iterator"/>
 
         return end_bitposition - bitposition
 <#else>
@@ -131,19 +182,27 @@ class ${name}:
 </#if>
 <#if withWriterCode>
 
-    <#macro choice_initialize_offsets_member member indent>
-        <#local I>${""?left_pad(indent * 4)}</#local>
-        <#if member.compoundField??>
-            <@compound_initialize_offsets_field member.compoundField, indent/>
-        <#else>
-            <#lt>${I}pass
-        </#if>
-    </#macro>
     def initialize_offsets(self, bitposition: int) -> int:
     <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "choice_initialize_offsets_member"/>
+        <@choice_if "compound_initialize_offsets_field"/>
+
+        return end_bitposition
+    <#else>
+        return bitposition
+    </#if>
+
+    def initialize_offsets_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+                                  bitposition: int) -> int:
+<#if !packed_compound_needs_context_iterator(fieldList)>
+        del context_iterator
+
+</#if>
+    <#if fieldList?has_content>
+        end_bitposition = bitposition
+
+        <@choice_if "compound_initialize_offsets_field", true, "context_iterator"/>
 
         return end_bitposition
     <#else>
@@ -151,30 +210,33 @@ class ${name}:
     </#if>
 </#if>
 
-<#macro choice_read_member member indent>
-    <#if member.compoundField??>
-        <@compound_read_field member.compoundField, name, withWriterCode, indent/>
-    <#else>
-        <#local I>${""?left_pad(indent * 4)}</#local>
-        <#lt>${I}pass
-    </#if>
+<#macro choice_read_field field indent packed>
+    <@compound_read_field field, name, withWriterCode, indent, packed/>
 </#macro>
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-        <@choice_if "choice_read_member"/>
+        <@choice_if "choice_read_field"/>
 <#else>
+        del zserio_reader
+</#if>
+
+    def read_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+                    zserio_reader: zserio.BitStreamReader) -> None:
+<#if fieldList?has_content>
+    <#if !packed_compound_needs_context_iterator(fieldList)>
+        del zserio_context_iterator
+
+    </#if>
+        <@choice_if "choice_read_field", true, "zserio_context_iterator"/>
+<#else>
+        del zserio_context_iterator
         del zserio_reader
 </#if>
 <#if withWriterCode>
 
-    <#macro choice_write_member member indent>
-        <#if member.compoundField??>
-            <@compound_write_field member.compoundField, name, indent/>
-        <#else>
-            <#local I>${""?left_pad(indent * 4)}</#local>
-            <#lt>${I}pass
-        </#if>
-    </#macro>
+<#macro choice_write_field field indent packed>
+    <@compound_write_field field, name, indent, packed/>
+</#macro>
     def write(self, zserio_writer: zserio.BitStreamWriter, *,
               zserio_call_initialize_offsets: bool = True) -> None:
     <#if fieldList?has_content>
@@ -185,8 +247,30 @@ class ${name}:
         del zserio_call_initialize_offsets
         </#if>
 
-        <@choice_if "choice_write_member"/>
+        <@choice_if "choice_write_field"/>
     <#else>
+        del zserio_writer
+        del zserio_call_initialize_offsets
+    </#if>
+
+    def write_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+                    zserio_writer: zserio.BitStreamWriter, *,
+                    zserio_call_initialize_offsets: bool = True) -> None:
+    <#if fieldList?has_content>
+        <#if !packed_compound_needs_context_iterator(fieldList)>
+        del zserio_context_iterator
+
+        </#if>
+        <#if hasFieldWithOffset>
+        if zserio_call_initialize_offsets:
+            self.initialize_offsets(zserio_writer.bitposition)
+        <#else>
+        del zserio_call_initialize_offsets
+        </#if>
+
+        <@choice_if "choice_write_field", true, "zserio_context_iterator"/>
+    <#else>
+        del zserio_context_iterator
         del zserio_writer
         del zserio_call_initialize_offsets
     </#if>

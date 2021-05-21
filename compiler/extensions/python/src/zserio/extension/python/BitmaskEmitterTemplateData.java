@@ -13,6 +13,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.types.PythonNativeType;
 
 /**
  * FreeMarker template data for BitmaskEmitter.
@@ -28,6 +29,10 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         importPackage("zserio"); // needed at least for hash code calculation
 
         final TypeInstantiation bitmaskTypeInstantiation = bitmaskType.getTypeInstantiation();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
+        final PythonNativeType nativeType = pythonNativeMapper.getPythonType(bitmaskTypeInstantiation);
+
+        arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = createBitSize(bitmaskTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
@@ -41,6 +46,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         values = new ArrayList<BitmaskValueData>(bitmaskValues.size());
         for (BitmaskValue bitmaskValue : bitmaskValues)
             values.add(new BitmaskValueData(bitmaskValue));
+    }
+
+    public ArrayTraitsTemplateData getArrayTraits()
+    {
+        return arrayTraits;
     }
 
     public String getBitSize()
@@ -137,6 +147,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String lowerBound;

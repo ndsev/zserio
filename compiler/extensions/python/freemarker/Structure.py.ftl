@@ -124,10 +124,12 @@ ${I}<#rt>
 
     <@packed_create_context_definition fieldList/>
 
-    def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator):
+    def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
 <#if packed_compound_needs_context_iterator(fieldList)>
     <#list fieldList as field>
+        <#if field.isBuiltinType>
         <@field_packing_context_name field/> = next(context_iterator)
+        </#if>
         <@packed_init_context_field field, 2/>
     </#list>
 <#else>

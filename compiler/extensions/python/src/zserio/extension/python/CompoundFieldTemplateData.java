@@ -19,7 +19,6 @@ import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.extension.python.types.NativeArrayTraits;
 import zserio.extension.python.types.NativeArrayType;
 import zserio.extension.python.types.NativeBuiltinType;
 import zserio.extension.python.types.PythonNativeType;
@@ -58,7 +57,7 @@ public final class CompoundFieldTemplateData
         usesChoiceMember = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
         isBuiltinType = (nativeType instanceof NativeBuiltinType);
 
-        arrayTraits = new ArrayTraits(nativeType.getArrayTraits());
+        arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
         array = createArray(nativeType, fieldTypeInstantiation, parentType, pythonNativeMapper,
@@ -123,7 +122,7 @@ public final class CompoundFieldTemplateData
         return isBuiltinType;
     }
 
-    public ArrayTraits getArrayTraits()
+    public ArrayTraitsTemplateData getArrayTraits()
     {
         return arrayTraits;
     }
@@ -314,31 +313,6 @@ public final class CompoundFieldTemplateData
         private final boolean containsIndex;
     }
 
-    public static class ArrayTraits
-    {
-        public ArrayTraits(NativeArrayTraits nativeTraits)
-        {
-            this.nativeTraits = nativeTraits;
-        }
-
-        public String getName()
-        {
-            return nativeTraits.getName();
-        }
-
-        public boolean getRequiresElementBitSize()
-        {
-            return nativeTraits.getRequiresElementBitSize();
-        }
-
-        public boolean getRequiresElementCreator()
-        {
-            return nativeTraits.getRequiresElementCreator();
-        }
-
-        private final NativeArrayTraits nativeTraits;
-    }
-
     public static class Array
     {
         public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation, ZserioType parentType,
@@ -346,7 +320,7 @@ public final class CompoundFieldTemplateData
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             packedTraitsName = nativeType.getPackedArrayTraitsName();
-            traits = new ArrayTraits(nativeType.getArrayTraits());
+            traits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
 
             isImplicit = arrayInstantiation.isImplicit();
             isPacked = arrayInstantiation.isPacked();
@@ -367,7 +341,7 @@ public final class CompoundFieldTemplateData
             return packedTraitsName;
         }
 
-        public ArrayTraits getTraits()
+        public ArrayTraitsTemplateData getTraits()
         {
             return traits;
         }
@@ -418,7 +392,7 @@ public final class CompoundFieldTemplateData
         }
 
         private final String packedTraitsName;
-        private final ArrayTraits traits;
+        private final ArrayTraitsTemplateData traits;
         private final boolean isImplicit;
         private final boolean isPacked;
         private final String length;
@@ -605,7 +579,7 @@ public final class CompoundFieldTemplateData
     private final boolean usesChoiceMember;
     private final boolean isBuiltinType;
 
-    private final ArrayTraits arrayTraits;
+    private final ArrayTraitsTemplateData arrayTraits;
     private final BitSize bitSize;
     private final Offset offset;
     private final Array array;

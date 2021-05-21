@@ -11,7 +11,7 @@
         </#list>
     </#local>
     @staticmethod
-    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder):
+    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
     <#if createPackingContextBody?has_content>
         ${createPackingContextBody}<#t>
     <#else>

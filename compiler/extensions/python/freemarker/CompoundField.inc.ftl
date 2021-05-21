@@ -161,6 +161,7 @@ ${I}self.<@field_member_name field/> = <@field_packing_context_name field/>.read
         <#elseif field.array??>
 ${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode/>
         <#else>
+            <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
 ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packed(zserio_context_iterator, <#rt>
         <#lt>zserio_reader<#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
         </#if>
@@ -170,7 +171,7 @@ ${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWrit
         <#elseif field.runtimeFunction??>
 ${I}self.<@field_member_name field/> = zserio_reader.read_${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
         <#else>
-        <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
+            <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
 ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zserio_reader<#rt>
         <#lt><#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
         </#if>

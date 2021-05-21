@@ -228,7 +228,7 @@ class PackingContext:
 
         self._array_traits = array_traits
 
-    def init(self, element: int) -> None:
+    def init(self, element: typing.Any) -> None:
         """
         Makes initialization step for the provided array element.
 
@@ -248,7 +248,7 @@ class PackingContext:
         assert self is not None
         return 1
 
-    def bitsizeof(self, bitposition: int, element: int) -> int:
+    def bitsizeof(self, bitposition: int, element: typing.Any) -> int:
         """
         Returns length of the element representation stored in the bit stream in bits.
 
@@ -273,7 +273,7 @@ class PackingContext:
         assert self is not None
         writer.write_bool(False)
 
-    def write(self, writer: BitStreamWriter, element: int) -> None:
+    def write(self, writer: BitStreamWriter, element: typing.Any) -> None:
         """
         Writes the packed element representation to the bit stream. This is not called for the first element
         since it's written using standard array traits.
@@ -296,7 +296,7 @@ class PackingContext:
         is_packed = reader.read_bool()
         assert not is_packed
 
-    def read(self, reader: BitStreamReader) -> int:
+    def read(self, reader: BitStreamReader) -> typing.Any:
         """
         Reads the packed element from the bit stream. This is not called for the first element since it's read
         using standard array traits.
