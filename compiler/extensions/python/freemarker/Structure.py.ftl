@@ -159,7 +159,6 @@ ${I}<#rt>
     </#if>
         end_bitposition = bitposition
 <#list fieldList as field>
-
     <#if field.isBuiltinType>
         <@field_packing_context_name field/> = next(context_iterator)
     </#if>
@@ -195,7 +194,6 @@ ${I}<#rt>
 
         </#if>
         end_bitposition = bitposition
-
         <#list fieldList as field>
             <#if field.isBuiltinType>
         <@field_packing_context_name field/> = next(context_iterator)

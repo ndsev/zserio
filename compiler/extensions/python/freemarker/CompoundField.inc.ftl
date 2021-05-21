@@ -117,9 +117,9 @@ ${I}${field.offset.setter}
         <#if field.isBuiltinType>
 ${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
-${I}end_bitposition += self.<@field_member_name field/>.initialize_offsets(end_bitposition)
+${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bitposition)
         <#else>
-${I}end_bitposition += self.<@field_member_name field/>.initialize_offsets_packed(context_iterator, end_bitposition)
+${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets_packed(context_iterator, end_bitposition)
         </#if>
     <#else>
         <#if field.bitSize.value??>
