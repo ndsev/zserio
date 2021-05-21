@@ -55,7 +55,9 @@ public final class CompoundFieldTemplateData
         constraint = createConstraint(field, pythonExpressionFormatter);
 
         usesChoiceMember = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
-        isBuiltinType = (nativeType instanceof NativeBuiltinType);
+
+        isBuiltinType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
+                (pythonNativeMapper.getPythonType(fieldBaseType) instanceof NativeBuiltinType);
 
         arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
