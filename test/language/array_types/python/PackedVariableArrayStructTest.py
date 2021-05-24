@@ -17,6 +17,9 @@ class PackedVariableArrayStructTest(unittest.TestCase):
     def testBitSizeOfLength3(self):
         self._checkBitSizeOf(self.VARIABLE_ARRAY_LENGTH3)
 
+    def testBitSizeOfLength4(self):
+        self._checkBitSizeOf(self.VARIABLE_ARRAY_LENGTH4)
+
     def testWriteReadfLength1(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH1)
 
@@ -26,13 +29,17 @@ class PackedVariableArrayStructTest(unittest.TestCase):
     def testWriteReadfLength3(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH3)
 
+    def testWriteReadfLength4(self):
+        self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH4)
+
     def _checkBitSizeOf(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
         unpackedBitsizeOf = packedVariableArray.test_unpacked_array.bitsizeof()
         packedBitsizeOf = packedVariableArray.test_packed_array.bitsizeof()
-        minCompressionRatio = 0.8
+        minCompressionRatio = 0.7
         self.assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, "Unpacked array has " +
-                        str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits!")
+                        str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits, " +
+                        "compression ratio is " + str(packedBitsizeOf / unpackedBitsizeOf * 100) + "%!")
 
     def _checkWriteRead(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
@@ -66,13 +73,14 @@ class PackedVariableArrayStructTest(unittest.TestCase):
         testBitmask = (self.api.TestBitmask.Values.READ if (index % 2) == 0 else
                        self.api.TestBitmask.Values.CREATE)
         testOptional = index if (index % 2) == 0 else None
-        values = list(range(1, index, 2))
+        values = list(range(1, 18, 3))
         numValues = len(values)
 
         return self.api.TestStructure(id_=index, name_=name, test_choice_=testChoice, test_union_=testUnion,
             test_enum_=testEnum, test_bitmask_=testBitmask, test_optional_=testOptional, num_values_=numValues,
             unpacked_values_=values, packed_values_=values)
 
-    VARIABLE_ARRAY_LENGTH1 = 5
+    VARIABLE_ARRAY_LENGTH1 = 10
     VARIABLE_ARRAY_LENGTH2 = 50
     VARIABLE_ARRAY_LENGTH3 = 100
+    VARIABLE_ARRAY_LENGTH4 = 1000

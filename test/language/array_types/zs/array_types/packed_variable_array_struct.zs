@@ -33,18 +33,21 @@ bitmask uint8 TestBitmask
     CREATE = 111b
 };
 
+
+subtype bit:15 Bit15;
+
 struct TestStructure
 {
-    uint32         id;
-    string         name;
-    TestChoice(id) testChoice;
-    TestUnion      testUnion;
-    TestEnum       testEnum;
-    TestBitmask    testBitmask;
-    optional uint8 testOptional;
-    varsize        numValues;
-    varuint        unpackedValues[numValues];
-    packed varuint packedValues[numValues];
+    uint32          id;
+    string          name;
+    TestChoice(id)  testChoice;
+    TestUnion       testUnion;
+    TestEnum        testEnum;
+    TestBitmask     testBitmask;
+    optional Bit15  testOptional;
+    varsize         numValues;
+    varuint         unpackedValues[numValues];
+    packed varuint  packedValues[numValues];
 };
 
 struct TestUnpackedArray(varsize numElements)
