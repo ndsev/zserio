@@ -1,7 +1,6 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "CompoundField.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl"/>
-<#include "PackedArray.inc.ftl"/>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -122,15 +121,15 @@ ${I}<#rt>
         return ${function.resultExpression}
 </#list>
 
-    <@packed_create_context_definition fieldList/>
+    <@compound_create_packing_context_definition fieldList/>
 
     def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
-<#if packed_compound_needs_context_iterator(fieldList)>
+<#if compound_needs_packing_context_iterator(fieldList)>
     <#list fieldList as field>
         <#if field.isBuiltinType>
         <@field_packing_context_name field/> = next(context_iterator)
         </#if>
-        <@packed_init_context_field field, 2/>
+        <@compound_init_packing_context_field field, 2/>
     </#list>
 <#else>
         del context_iterator
@@ -153,7 +152,7 @@ ${I}<#rt>
     def bitsizeof_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
-    <#if !packed_compound_needs_context_iterator(fieldList)>
+    <#if !compound_needs_packing_context_iterator(fieldList)>
         del context_iterator
 
     </#if>
@@ -189,7 +188,7 @@ ${I}<#rt>
     def initialize_offsets_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
-        <#if !packed_compound_needs_context_iterator(fieldList)>
+        <#if !compound_needs_packing_context_iterator(fieldList)>
         del context_iterator
 
         </#if>
@@ -230,7 +229,7 @@ ${I}<#rt>
     def read_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
                     zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-    <#if !packed_compound_needs_context_iterator(fieldList)>
+    <#if !compound_needs_packing_context_iterator(fieldList)>
         del zserio_context_iterator
 
     </#if>
@@ -278,20 +277,12 @@ ${I}<#rt>
     </#if>
 
     def write_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
-                     zserio_writer: zserio.BitStreamWriter, *,
-                     zserio_call_initialize_offsets: bool = True) -> None:
+                     zserio_writer: zserio.BitStreamWriter) -> None:
     <#if fieldList?has_content>
-        <#if !packed_compound_needs_context_iterator(fieldList)>
+        <#if !compound_needs_packing_context_iterator(fieldList)>
         del zserio_context_iterator
 
         </#if>
-        <#if hasFieldWithOffset>
-        if zserio_call_initialize_offsets:
-            self.initialize_offsets(zserio_writer.bitposition)
-        <#else>
-        del zserio_call_initialize_offsets
-        </#if>
-
         <#list fieldList as field>
             <#if field.isBuiltinType>
         <@field_packing_context_name field/> = next(zserio_context_iterator)
@@ -304,7 +295,6 @@ ${I}<#rt>
     <#else>
         del zserio_context_iterator
         del zserio_writer
-        del zserio_call_initialize_offsets
     </#if>
 </#if>
 <#list fieldList as field>

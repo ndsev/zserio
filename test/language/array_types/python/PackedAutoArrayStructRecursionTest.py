@@ -87,7 +87,8 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
             self.assertEqual(i, element.id)
             self.assertEqual(0, len(element.packed_auto_array_recursion))
 
-    def _writePackedAutoArrayRecursionToStream(self, writer, numElements):
+    @staticmethod
+    def _writePackedAutoArrayRecursionToStream(writer, numElements):
         writer.write_bits(0, 8)
         writer.write_varsize(numElements)
         writer.write_bool(True)
@@ -95,7 +96,7 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
         writer.write_bits(maxBitNumber, 6)
         writer.write_bits(1, 8)
         writer.write_varsize(0)
-        for i in range(numElements - 1):
+        for _ in range(numElements - 1):
             writer.write_signed_bits(1, maxBitNumber + 1)
             writer.write_varsize(0)
 

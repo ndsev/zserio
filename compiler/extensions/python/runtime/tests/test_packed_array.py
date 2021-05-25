@@ -177,7 +177,7 @@ class PackedArrayTest(unittest.TestCase):
 
             @staticmethod
             def create_packing_context(context_builder):
-                context_builder.add_context(value_array_traits)
+                context_builder.add_context(BitFieldArrayTraits)
 
             def init_packing_context(self, context_iterator):
                 context = next(context_iterator)
@@ -187,7 +187,7 @@ class PackedArrayTest(unittest.TestCase):
                 end_bitposition = bitposition
 
                 context = next(context_iterator)
-                end_bitposition += context.bitsizeof(end_bitposition, self._value)
+                end_bitposition += context.bitsizeof(value_array_traits, end_bitposition, self._value)
 
                 return end_bitposition - bitposition
 
@@ -195,17 +195,17 @@ class PackedArrayTest(unittest.TestCase):
                 end_bitposition = bitposition
 
                 context = next(context_iterator)
-                end_bitposition += context.bitsizeof(end_bitposition, self._value)
+                end_bitposition += context.bitsizeof(value_array_traits, end_bitposition, self._value)
 
                 return end_bitposition
 
             def write_packed(self, context_iterator, writer):
                 context = next(context_iterator)
-                context.write(writer, self._value)
+                context.write(value_array_traits, writer, self._value)
 
             def read_packed(self, context_iterator, reader):
                 context = next(context_iterator)
-                self._value = context.read(reader)
+                self._value = context.read(value_array_traits, reader)
 
         class DummyObjectBitsizeCalculator:
             @staticmethod

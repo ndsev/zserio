@@ -1,3 +1,4 @@
+<#include "ArrayTraits.inc.ftl"/>
 <#macro compound_compare_field field>
     <#if field.optional??>(not self.${field.optional.indicatorName}() or </#if><#t>
 self.<@field_member_name field/> == other.<@field_member_name field/><#if field.optional??>)</#if><#rt>
@@ -64,7 +65,8 @@ ${I}if self.${field.optional.indicatorName}():
     <@compound_align_field field, indent/>
     <#if packed>
         <#if field.isBuiltinType>
-${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(end_bitposition, self.<@field_member_name field/>)
+${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(<#rt>
+        <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitposition)
         <#else>
@@ -115,7 +117,8 @@ ${I}${field.offset.setter}
     </#if>
     <#if packed>
         <#if field.isBuiltinType>
-${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(end_bitposition, self.<@field_member_name field/>)
+${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(<#rt>
+        <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bitposition)
         <#else>
@@ -157,7 +160,8 @@ ${I}zserio_reader.alignto(8)
     </#if>
     <#if packed>
         <#if field.isBuiltinType>
-${I}self.<@field_member_name field/> = <@field_packing_context_name field/>.read(zserio_reader)
+${I}self.<@field_member_name field/> = <@field_packing_context_name field/>.read(<#rt>
+        <#lt><@array_traits_create_field field/>, zserio_reader)
         <#elseif field.array??>
 ${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode/>
         <#else>
@@ -261,12 +265,12 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed>
         <#if field.isBuiltinType>
-${I}<@field_packing_context_name field/>.write(zserio_writer, self.<@field_member_name field/>)
+${I}<@field_packing_context_name field/>.write(<@array_traits_create_field field/>, <#rt>
+        <#lt>zserio_writer, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}self.<@field_member_name field/>.write(zserio_writer)
         <#else>
-${I}self.<@field_member_name field/>.write_packed(zserio_context_iterator, zserio_writer<#rt>
-        <#lt><#if field.compound??>, zserio_call_initialize_offsets=False</#if>)
+${I}self.<@field_member_name field/>.write_packed(zserio_context_iterator, zserio_writer)
         </#if>
     <#else>
         <#if field.runtimeFunction??>
@@ -453,6 +457,55 @@ ${I}                                        (self.<@field_member_name field/>, l
 <#macro field_packing_context_name field>
     zserio_ctx_${field.snakeCaseName}<#t>
 </#macro>
+
+<#macro compound_create_packing_context_definition fieldList>
+    <#local createPackingContextBody>
+        <#list fieldList as field>
+            <#if field.isBuiltinType>
+        context_builder.add_context(zserio.array.${field.arrayTraits.name})
+            <#elseif !field.array??>
+        ${field.pythonTypeName}.create_packing_context(context_builder)
+            </#if>
+        </#list>
+    </#local>
+    @staticmethod
+    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
+    <#if createPackingContextBody?has_content>
+        ${createPackingContextBody}<#t>
+    <#else>
+        del context_builder
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if !field.array??>
+        <#if field.optional??>
+${I}if self.${field.optional.indicatorName}():
+    <@compound_init_packing_context_field_inner field, indent+1/>
+        <#else>
+<@compound_init_packing_context_field_inner field, indent/>
+        </#if>
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field_inner field indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isBuiltinType>
+${I}<@field_packing_context_name field/>.init(self.<@field_member_name field/>)
+    <#else><#-- arrays are solved in packed_init_context_field -->
+${I}self.<@field_member_name field/>.init_packing_context(context_iterator)
+    </#if>
+</#macro>
+
+<#function compound_needs_packing_context_iterator fieldList>
+    <#list fieldList as field>
+        <#if field.isBuiltinType>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
 
 <#function has_field_any_read_check_code field compoundName indent>
     <#local checkCode>

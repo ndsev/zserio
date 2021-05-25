@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl"/>
+<#include "ArrayTraits.inc.ftl"/>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -28,7 +29,7 @@ class ${name}:
                            reader: zserio.BitStreamReader) -> '${name}':
         instance = cls()
         context = next(context_iterator)
-        instance._value = context.read(reader)
+        instance._value = context.read(<@array_traits_create arrayTraits, bitSize!/>, reader)
         return instance
 
     def __eq__(self, other: object) -> bool:
@@ -76,8 +77,7 @@ class ${name}:
 
     @staticmethod
     def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
-        context_builder.add_context(zserio.array.${arrayTraits.name}(<#rt>
-                <#lt><#if arrayTraits.requiresElementBitSize>${bitSize}</#if>))
+        context_builder.add_context(zserio.array.${arrayTraits.name})
 
     def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
         context = next(context_iterator)
@@ -93,7 +93,7 @@ class ${name}:
     def bitsizeof_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
                          bitposition: int) -> int:
         context = next(context_iterator)
-        return context.bitsizeof(bitposition, self._value)
+        return context.bitsizeof(<@array_traits_create arrayTraits, bitSize!/>, bitposition, self._value)
 <#if withWriterCode>
 
     def initialize_offsets(self, bit_position: int) -> int:
@@ -110,7 +110,7 @@ class ${name}:
     def write_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
                      writer: zserio.BitStreamWriter) -> None:
         context = next(context_iterator)
-        context.write(writer, self._value)
+        context.write(<@array_traits_create arrayTraits, bitSize!/>, writer, self._value)
 </#if>
 
     @property
