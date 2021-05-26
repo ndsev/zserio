@@ -14,6 +14,7 @@ import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
+import zserio.ast.ExternType;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
@@ -58,6 +59,7 @@ public final class CompoundFieldTemplateData
 
         isBuiltinType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
                 (pythonNativeMapper.getPythonType(fieldBaseType) instanceof NativeBuiltinType);
+        isExternType = fieldBaseType instanceof ExternType;
 
         arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
@@ -122,6 +124,11 @@ public final class CompoundFieldTemplateData
     public boolean getIsBuiltinType()
     {
         return isBuiltinType;
+    }
+
+    public boolean getIsExternType()
+    {
+        return isExternType;
     }
 
     public ArrayTraitsTemplateData getArrayTraits()
@@ -580,6 +587,7 @@ public final class CompoundFieldTemplateData
 
     private final boolean usesChoiceMember;
     private final boolean isBuiltinType;
+    private final boolean isExternType;
 
     private final ArrayTraitsTemplateData arrayTraits;
     private final BitSize bitSize;

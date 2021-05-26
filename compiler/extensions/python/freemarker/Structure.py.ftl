@@ -126,9 +126,7 @@ ${I}<#rt>
     def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
 <#if compound_needs_packing_context_iterator(fieldList)>
     <#list fieldList as field>
-        <#if field.isBuiltinType>
-        <@field_packing_context_name field/> = next(context_iterator)
-        </#if>
+        <@compound_packing_context_var_field field, "context_iterator", 2/>
         <@compound_init_packing_context_field field, 2/>
     </#list>
 <#else>
@@ -158,9 +156,7 @@ ${I}<#rt>
     </#if>
         end_bitposition = bitposition
     <#list fieldList as field>
-        <#if field.isBuiltinType>
-        <@field_packing_context_name field/> = next(context_iterator)
-        </#if>
+        <@compound_packing_context_var_field field, "context_iterator", 2/>
         <@compound_bitsizeof_field field, 2, true/>
     </#list>
 
@@ -194,9 +190,7 @@ ${I}<#rt>
         </#if>
         end_bitposition = bitposition
         <#list fieldList as field>
-            <#if field.isBuiltinType>
-        <@field_packing_context_name field/> = next(context_iterator)
-            </#if>
+        <@compound_packing_context_var_field field, "context_iterator", 2/>
         <@compound_initialize_offsets_field field, 2, true/>
         </#list>
 
@@ -234,9 +228,7 @@ ${I}<#rt>
 
     </#if>
     <#list fieldList as field>
-        <#if field.isBuiltinType>
-        <@field_packing_context_name field/> = next(zserio_context_iterator)
-        </#if>
+        <@compound_packing_context_var_field field, "zserio_context_iterator", 2/>
         <@compound_read_field field, name, withWriterCode, 2, true/>
         <#if field?has_next>
 
@@ -284,9 +276,7 @@ ${I}<#rt>
 
         </#if>
         <#list fieldList as field>
-            <#if field.isBuiltinType>
-        <@field_packing_context_name field/> = next(zserio_context_iterator)
-            </#if>
+        <@compound_packing_context_var_field field, "zserio_context_iterator", 2/>
         <@compound_write_field field, name, 2, true/>
             <#if field?has_next>
 

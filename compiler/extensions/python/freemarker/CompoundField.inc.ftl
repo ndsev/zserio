@@ -64,7 +64,7 @@ ${I}if self.${field.optional.indicatorName}():
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if packed>
-        <#if field.isBuiltinType>
+        <#if field.isBuiltinType || field.isExternType>
 ${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
@@ -116,7 +116,7 @@ ${I}value = zserio.bitposition.bits_to_bytes(end_bitposition)
 ${I}${field.offset.setter}
     </#if>
     <#if packed>
-        <#if field.isBuiltinType>
+        <#if field.isBuiltinType || field.isExternType>
 ${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
@@ -159,7 +159,7 @@ ${I}zserio_reader.alignto(8)
         <@compound_check_offset_field field, compoundName, "zserio_reader.bitposition", indent/>
     </#if>
     <#if packed>
-        <#if field.isBuiltinType>
+        <#if field.isBuiltinType || field.isExternType>
 ${I}self.<@field_member_name field/> = <@field_packing_context_name field/>.read(<#rt>
         <#lt><@array_traits_create_field field/>, zserio_reader)
         <#elseif field.array??>
@@ -264,7 +264,7 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed>
-        <#if field.isBuiltinType>
+        <#if field.isBuiltinType || field.isExternType>
 ${I}<@field_packing_context_name field/>.write(<@array_traits_create_field field/>, <#rt>
         <#lt>zserio_writer, self.<@field_member_name field/>)
         <#elseif field.array??>
@@ -461,7 +461,7 @@ ${I}                                        (self.<@field_member_name field/>, l
 <#macro compound_create_packing_context_definition fieldList>
     <#local createPackingContextBody>
         <#list fieldList as field>
-            <#if field.isBuiltinType>
+            <#if field.isBuiltinType || field.isExternType>
         context_builder.add_context(zserio.array.${field.arrayTraits.name})
             <#elseif !field.array??>
         ${field.pythonTypeName}.create_packing_context(context_builder)
@@ -491,16 +491,23 @@ ${I}if self.${field.optional.indicatorName}():
 
 <#macro compound_init_packing_context_field_inner field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isBuiltinType>
+    <#if field.isBuiltinType || field.isExternType>
 ${I}<@field_packing_context_name field/>.init(self.<@field_member_name field/>)
     <#else><#-- arrays are solved in packed_init_context_field -->
 ${I}self.<@field_member_name field/>.init_packing_context(context_iterator)
     </#if>
 </#macro>
 
+<#macro compound_packing_context_var_field field contextIteratorVarName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isBuiltinType || field.isExternType>
+${I}<@field_packing_context_name field/> = next(${contextIteratorVarName})
+    </#if>
+</#macro>
+
 <#function compound_needs_packing_context_iterator fieldList>
     <#list fieldList as field>
-        <#if field.isBuiltinType>
+        <#if !field.array??>
             <#return true>
         </#if>
     </#list>
