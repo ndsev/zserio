@@ -1,2 +1,11 @@
 noExplicitConstructor:*/array_types/arrays_mapping/TestBitmask.h
 noExplicitConstructor:*/array_types/packed_arrays_mapping/TestBitmask.h
+noExplicitConstructor:*/array_types/packed_variable_array_struct/TestChoice.cpp
+noExplicitConstructor:*/array_types/packed_variable_array_struct/TestBitmask.h
+
+uninitMemberVar:*/array_types/packed_variable_array_struct/TestChoice.cpp
+uninitMemberVar:*/array_types/packed_variable_array_struct/TestChoice.h
+uninitMemberVar:*/array_types/packed_variable_array_struct/TestPackedArray.cpp
+uninitMemberVar:*/array_types/packed_variable_array_struct/TestPackedArray.h
+uninitMemberVar:*/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
+uninitMemberVar:*/array_types/packed_variable_array_struct/TestUnpackedArray.h
