@@ -6,3 +6,5 @@ uninitMemberVar:*/parameterized_types/grand_child_param/Item.cpp
 uninitMemberVar:*/parameterized_types/grand_child_param/Item.h
 uninitMemberVar:*/parameterized_types/simple_param/Item.cpp
 uninitMemberVar:*/parameterized_types/simple_param/Item.h
+uninitMemberVar:*/parameterized_types/gen/parameterized_types/packed_array_element_param/Block.cpp
+uninitMemberVar:*/parameterized_types/gen/parameterized_types/packed_array_element_param/Block.h
