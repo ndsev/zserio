@@ -36,7 +36,7 @@ class PackedVariableArrayStructTest(unittest.TestCase):
         packedVariableArray = self._createPackedVariableArray(numElements)
         unpackedBitsizeOf = packedVariableArray.test_unpacked_array.bitsizeof()
         packedBitsizeOf = packedVariableArray.test_packed_array.bitsizeof()
-        minCompressionRatio = 0.7
+        minCompressionRatio = 0.75
         self.assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, "Unpacked array has " +
                         str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits, " +
                         "compression ratio is " + str(packedBitsizeOf / unpackedBitsizeOf * 100) + "%!")
@@ -65,6 +65,7 @@ class PackedVariableArrayStructTest(unittest.TestCase):
 
     def _createTestStructure(self, index):
         name = "name" + str(index)
+        data = zserio.BitBuffer(bytes([0xCD, 0xC0]), 10)
         testChoice = (self.api.TestChoice(index, value16_=index) if index in (0, 2, 4) else
                       self.api.TestChoice(index, value32_=index * 2))
         testUnion = (self.api.TestUnion(value16_=index) if (index % 2) == 0 else
@@ -73,12 +74,14 @@ class PackedVariableArrayStructTest(unittest.TestCase):
         testBitmask = (self.api.TestBitmask.Values.READ if (index % 2) == 0 else
                        self.api.TestBitmask.Values.CREATE)
         testOptional = index if (index % 2) == 0 else None
+        testDynamicBitfield = index % 3
         values = list(range(1, 18, 3))
         numValues = len(values)
 
-        return self.api.TestStructure(id_=index, name_=name, test_choice_=testChoice, test_union_=testUnion,
-            test_enum_=testEnum, test_bitmask_=testBitmask, test_optional_=testOptional, num_values_=numValues,
-            unpacked_values_=values, packed_values_=values)
+        return self.api.TestStructure(id_=index, name_=name, data_=data, test_choice_=testChoice,
+                                      test_union_=testUnion, test_enum_=testEnum, test_bitmask_=testBitmask,
+                                      test_optional_=testOptional, test_dynamic_bitfield_=testDynamicBitfield,
+                                      num_values_=numValues, unpacked_values_=values, packed_values_=values)
 
     VARIABLE_ARRAY_LENGTH1 = 10
     VARIABLE_ARRAY_LENGTH2 = 50

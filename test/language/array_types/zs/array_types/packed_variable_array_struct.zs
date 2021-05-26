@@ -25,7 +25,9 @@ enum uint8 TestEnum
     DARK_GREEN = 3
 };
 
-bitmask uint8 TestBitmask
+const bit:4 BITS_PER_BYTE = 8;
+
+bitmask bit<BITS_PER_BYTE> TestBitmask
 {
     NONE   = 000b,
     READ   = 010b,
@@ -33,21 +35,27 @@ bitmask uint8 TestBitmask
     CREATE = 111b
 };
 
-
 subtype bit:15 Bit15;
 
 struct TestStructure
 {
     uint32          id;
     string          name;
+    extern          data;
     TestChoice(id)  testChoice;
     TestUnion       testUnion;
     TestEnum        testEnum;
     TestBitmask     testBitmask;
     optional Bit15  testOptional;
+    bit<length()>   testDynamicBitfield;
     varsize         numValues;
     varuint         unpackedValues[numValues];
     packed varuint  packedValues[numValues];
+
+    function bit:5 length()
+    {
+        return (id & 0x07) + 9;
+    }
 };
 
 struct TestUnpackedArray(varsize numElements)

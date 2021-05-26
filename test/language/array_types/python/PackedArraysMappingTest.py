@@ -90,7 +90,7 @@ class PackedArraysMappingTest(unittest.TestCase):
 
     def testExternArrays(self):
         arraysMapping = self.api.ArraysMapping()
-        externArray = [zserio.BitBuffer(bytes([0xCD, 0x03]), 10)
+        externArray = [zserio.BitBuffer(bytes([0xCD, 0xC0]), 10)
                        for i in range(self.FIXED_ARRAY_LENGTH)]
         arraysMapping.extern_array = externArray
 
