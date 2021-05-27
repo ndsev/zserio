@@ -9,3 +9,5 @@ uninitMemberVar:*/array_types/packed_variable_array_struct/TestPackedArray.cpp
 uninitMemberVar:*/array_types/packed_variable_array_struct/TestPackedArray.h
 uninitMemberVar:*/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
 uninitMemberVar:*/array_types/packed_variable_array_struct/TestUnpackedArray.h
+uninitMemberVar:*/array_types/packed_variable_array_struct_recursion/Block.cpp
+uninitMemberVar:*/array_types/packed_variable_array_struct_recursion/Block.h
