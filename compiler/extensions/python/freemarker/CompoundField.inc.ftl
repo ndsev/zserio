@@ -65,14 +65,12 @@ ${I}if self.${field.optional.indicatorName}():
     <@compound_align_field field, indent/>
     <#if packed>
         <#if field.isBuiltinType || field.isExternType>
-${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(<#rt>
+${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitposition)
-        <#elseif field.optional?? && field.optional.isRecursive>
-${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(<@field_packing_context_iter_copy_name field/>, end_bitposition)
         <#else>
-${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(context_iterator, end_bitposition)
+${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(<@field_packing_context_node_name field/>, end_bitposition)
         </#if>
     <#else>
         <#if field.bitSize.value??>
@@ -119,14 +117,12 @@ ${I}${field.offset.setter}
     </#if>
     <#if packed>
         <#if field.isBuiltinType || field.isExternType>
-${I}end_bitposition += <@field_packing_context_name field/>.bitsizeof(<#rt>
+${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bitposition)
-        <#elseif field.optional?? && field.optional.isRecursive>
-${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets_packed(<@field_packing_context_iter_copy_name field/>, end_bitposition)
         <#else>
-${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets_packed(context_iterator, end_bitposition)
+${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets_packed(<@field_packing_context_node_name field/>, end_bitposition)
         </#if>
     <#else>
         <#if field.bitSize.value??>
@@ -164,17 +160,14 @@ ${I}zserio_reader.alignto(8)
     </#if>
     <#if packed>
         <#if field.isBuiltinType || field.isExternType>
-${I}self.<@field_member_name field/> = <@field_packing_context_name field/>.read(<#rt>
+${I}self.<@field_member_name field/> = <@field_packing_context_node_name field/>.context.read(<#rt>
         <#lt><@array_traits_create_field field/>, zserio_reader)
         <#elseif field.array??>
 ${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode/>
-        <#elseif field.optional?? && field.optional.isRecursive>
-            <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
-${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packed(<@field_packing_context_iter_copy_name field/>, <#rt>
-        <#lt>zserio_reader<#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
         <#else>
             <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
-${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packed(zserio_context_iterator, <#rt>
+${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packed(<#rt>
+        <@field_packing_context_node_name field/>, <#t>
         <#lt>zserio_reader<#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
         </#if>
     <#else>
@@ -273,14 +266,12 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed>
         <#if field.isBuiltinType || field.isExternType>
-${I}<@field_packing_context_name field/>.write(<@array_traits_create_field field/>, <#rt>
+${I}<@field_packing_context_node_name field/>.context.write(<@array_traits_create_field field/>, <#rt>
         <#lt>zserio_writer, self.<@field_member_name field/>)
         <#elseif field.array??>
 ${I}self.<@field_member_name field/>.write(zserio_writer)
-        <#elseif field.optional?? && field.optional.isRecursive>
-${I}self.<@field_member_name field/>.write_packed(<@field_packing_context_iter_copy_name field/>, zserio_writer)
         <#else>
-${I}self.<@field_member_name field/>.write_packed(zserio_context_iterator, zserio_writer)
+${I}self.<@field_member_name field/>.write_packed(<@field_packing_context_node_name field/>, zserio_writer)
         </#if>
     <#else>
         <#if field.runtimeFunction??>
@@ -442,7 +433,7 @@ ${I}                                        (self.<@field_member_name field/>, l
         return ${field.array.elementPythonTypeName}.from_reader(zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
 
     def <@packed_element_creator_name field/>(
-            self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+            self, zserio_context_node: zserio.packed_array.PackingContextNode,
             zserio_reader: zserio.BitStreamReader, zserio_index: int) -> <#rt>
         <#if field.array.elementIsRecursive>
             <#lt>'${compoundName}':
@@ -452,7 +443,7 @@ ${I}                                        (self.<@field_member_name field/>, l
         <#if !usesElementCreatorIndex>
         del zserio_index
         </#if>
-        return ${field.array.elementPythonTypeName}.from_reader_packed(zserio_context_iterator, zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
+        return ${field.array.elementPythonTypeName}.from_reader_packed(zserio_context_node, zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
     </#if>
 </#macro>
 
@@ -464,28 +455,28 @@ ${I}                                        (self.<@field_member_name field/>, l
     ${field.snakeCaseName}_<#t>
 </#macro>
 
-<#macro field_packing_context_name field>
-    zserio_ctx_${field.snakeCaseName}<#t>
-</#macro>
-
-<#macro field_packing_context_iter_copy_name field>
-    zserio_copy_ctx_iter_${field.snakeCaseName}<#t>
+<#macro field_packing_context_node_name field>
+    zserio_ctx_node_${field.snakeCaseName}<#t>
 </#macro>
 
 <#macro compound_create_packing_context_definition fieldList>
     <#local createPackingContextBody>
         <#list fieldList as field>
             <#if field.isBuiltinType || field.isExternType>
-        context_builder.add_context(zserio.array.${field.arrayTraits.name})
+        context_builder.add_leaf(zserio.array.${field.arrayTraits.name})
             <#elseif !field.array?? && !(field.optional?? && field.optional.isRecursive)>
         ${field.pythonTypeName}.create_packing_context(context_builder)
+            <#else>
+        context_builder.add_dummy_leaf()
             </#if>
         </#list>
     </#local>
     @staticmethod
     def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
     <#if createPackingContextBody?has_content>
+        context_builder.begin_node()
         ${createPackingContextBody}<#t>
+        context_builder.end_node()
     <#else>
         del context_builder
     </#if>
@@ -507,42 +498,26 @@ ${I}if self.${field.optional.indicatorName}():
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isBuiltinType || field.isExternType>
-${I}<@field_packing_context_name field/>.init(self.<@field_member_name field/>)
-    <#elseif field.optional?? && field.optional.isRecursive>
-${I}self.<@field_member_name field/>.init_packing_context(<@field_packing_context_iter_copy_name field/>)
+${I}<@field_packing_context_node_name field/>.context.init(self.<@field_member_name field/>)
     <#else>
-${I}self.<@field_member_name field/>.init_packing_context(context_iterator)
+${I}self.<@field_member_name field/>.init_packing_context(<@field_packing_context_node_name field/>)
     </#if>
 </#macro>
 
-<#macro compound_field_packing_context_var field contextIteratorVarName indent>
+<#macro compound_field_packing_context_node field fieldIndex contextNodeVarName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isBuiltinType || field.isExternType>
-${I}<@field_packing_context_name field/> = next(${contextIteratorVarName})
-    </#if>
-</#macro>
-
-<#macro compound_field_recursive_make_context_iterator_copies fieldList contextIteratorVarName indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#list fieldList as field>
+    <#if !field.array??>
         <#if field.optional?? && field.optional.isRecursive>
-${I}<@field_packing_context_iter_copy_name field/> = zserio.packed_array.copy_context_iterator(${contextIteratorVarName})
+${I}<@field_packing_context_node_name field/> = ${contextNodeVarName}
+        <#else>
+${I}<@field_packing_context_node_name field/> = ${contextNodeVarName}.children[${fieldIndex}]
         </#if>
-    </#list>
+    </#if>
 </#macro>
 
-<#function compound_needs_packing_context_iterator fieldList>
+<#function compound_needs_packing_context_node fieldList>
     <#list fieldList as field>
         <#if !field.array??>
-            <#return true>
-        </#if>
-    </#list>
-    <#return false>
-</#function>
-
-<#function compound_has_any_recursive_field filedList>
-    <#list fieldList as field>
-        <#if field.optional?? && field.optional.isRecursive>
             <#return true>
         </#if>
     </#list>

@@ -7,15 +7,12 @@
 <#macro choice_tag_name field>
     CHOICE_${field.snakeCaseName?upper_case}<#t>
 </#macro>
-<#macro union_if memberActionMacroName packed=false contextIteratorVarName="">
-    <#if packed && fieldList?has_content>
-        <#list fieldList as field>
-        <@compound_field_packing_context_var field, contextIteratorVarName, 2/>
-        </#list>
-
-    </#if>
+<#macro union_if memberActionMacroName packed=false contextNodeVarName="">
     <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choice_tag == self.<@choice_tag_name field/>:
+            <#if packed>
+            <@compound_field_packing_context_node field, field?index, contextNodeVarName, 3/>
+            </#if>
             <@.vars[memberActionMacroName] field, 3, packed/>
     </#list>
         else:
@@ -67,11 +64,11 @@ class ${name}:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['${name}'],
-            zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+            zserio_context_node: zserio.packed_array.PackingContextNode,
             zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
         instance = cls(${constructorParamList})
-        instance.read_packed(zserio_context_iterator, zserio_reader)
+        instance.read_packed(zserio_context_node, zserio_reader)
 
         return instance
 
@@ -135,11 +132,11 @@ ${initCode}<#t>
 ${I}pass
     </#if>
 </#macro>
-    def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
-<#if compound_needs_packing_context_iterator(fieldList)>
-        <@union_if "union_init_packing_context", true, "context_iterator"/>
+    def init_packing_context(self, context_node: zserio.packed_array.PackingContextNode) -> None:
+<#if compound_needs_packing_context_node(fieldList)>
+        <@union_if "union_init_packing_context", true, "context_node"/>
 <#else>
-        del context_iterator
+        del context_node
 </#if>
 
     def bitsizeof(self, bitposition: int = 0) -> int:
@@ -157,22 +154,22 @@ ${I}pass
         return 0
 </#if>
 
-    def bitsizeof_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+    def bitsizeof_packed(self, context_node: zserio.packed_array.PackingContextNode,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
-    <#if !compound_needs_packing_context_iterator(fieldList)>
-        del context_iterator
+    <#if !compound_needs_packing_context_node(fieldList)>
+        del context_node
 
     </#if>
         end_bitposition = bitposition
 
         end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
 
-        <@union_if "compound_bitsizeof_field", true, "context_iterator"/>
+        <@union_if "compound_bitsizeof_field", true, "context_node"/>
 
         return end_bitposition - bitposition
 <#else>
-        del context_iterator
+        del context_node
         del bitposition
 
         return 0
@@ -192,22 +189,22 @@ ${I}pass
         return bitposition
     </#if>
 
-    def initialize_offsets_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+    def initialize_offsets_packed(self, context_node: zserio.packed_array.PackingContextNode,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_iterator(fieldList)>
-        del context_iterator
+        <#if !compound_needs_packing_context_node(fieldList)>
+        del context_node
 
         </#if>
         end_bitposition = bitposition
 
         end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
 
-        <@union_if "compound_initialize_offsets_field", true, "context_iterator"/>
+        <@union_if "compound_initialize_offsets_field", true, "context_node"/>
 
         return end_bitposition
     <#else>
-        del context_iterator
+        del context_node
         return bitposition
     </#if>
 </#if>
@@ -224,18 +221,18 @@ ${I}pass
         del zserio_reader
 </#if>
 
-    def read_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+    def read_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
                     zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-    <#if !compound_needs_packing_context_iterator(fieldList)>
-        del zserio_context_iterator
+    <#if !compound_needs_packing_context_node(fieldList)>
+        del zserio_context_node
 
     </#if>
         self._choice_tag = zserio_reader.read_varsize()
 
-        <@union_if "union_read_field" true "zserio_context_iterator"/>
+        <@union_if "union_read_field" true "zserio_context_node"/>
 <#else>
-        del zserio_context_iterator
+        del zserio_context_node
         del zserio_reader
 </#if>
 <#if withWriterCode>
@@ -261,18 +258,18 @@ ${I}pass
         del zserio_call_initialize_offsets
     </#if>
 
-    def write_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+    def write_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
                     zserio_writer: zserio.BitStreamWriter) -> None:
     <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_iterator(fieldList)>
-        del zserio_context_iterator
+        <#if !compound_needs_packing_context_node(fieldList)>
+        del zserio_context_node
 
         </#if>
         zserio_writer.write_varsize(self._choice_tag)
 
-        <@union_if "union_write_field", true, "zserio_context_iterator"/>
+        <@union_if "union_write_field", true, "zserio_context_node"/>
     <#else>
-        del zserio_context_iterator
+        del zserio_context_node
         del zserio_writer
     </#if>
 </#if>

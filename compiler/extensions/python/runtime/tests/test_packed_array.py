@@ -2,12 +2,13 @@ import unittest
 
 from zserio.array import BitFieldArrayTraits, SignedBitFieldArrayTraits, VarUIntArrayTraits, Float16ArrayTraits
 from zserio.packed_array import PackedArray, PackedArrayTraits, ObjectPackedArrayTraits, PackingContextBuilder,\
-    copy_context_iterator
+    DeltaContext
 from zserio.bitposition import alignto
 from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import bitsizeof_varuint64
 from zserio.bitwriter import BitStreamWriter
 from zserio.limits import UINT64_MIN, UINT64_MAX, INT64_MIN, INT64_MAX
+from zserio.exception import PythonRuntimeException
 
 class PackedArrayTest(unittest.TestCase):
 
@@ -160,9 +161,9 @@ class PackedArrayTest(unittest.TestCase):
                 self._value = value
 
             @classmethod
-            def create_packed(cls, context_iterator, reader, _index):
+            def create_packed(cls, context_node, reader, _index):
                 instance = cls()
-                instance.read_packed(context_iterator, reader)
+                instance.read_packed(context_node, reader)
 
                 return instance
 
@@ -178,34 +179,36 @@ class PackedArrayTest(unittest.TestCase):
 
             @staticmethod
             def create_packing_context(context_builder):
-                context_builder.add_context(BitFieldArrayTraits)
+                context_builder.begin_node()
+                context_builder.add_leaf(BitFieldArrayTraits)
+                context_builder.end_node()
 
-            def init_packing_context(self, context_iterator):
-                context = next(context_iterator)
+            def init_packing_context(self, context_node):
+                context = context_node.children[0].context
                 context.init(self._value)
 
-            def bitsizeof_packed(self, context_iterator, bitposition):
+            def bitsizeof_packed(self, context_node, bitposition):
                 end_bitposition = bitposition
 
-                context = next(context_iterator)
+                context = context_node.children[0].context
                 end_bitposition += context.bitsizeof(value_array_traits, end_bitposition, self._value)
 
                 return end_bitposition - bitposition
 
-            def initialize_offsets_packed(self, context_iterator, bitposition):
+            def initialize_offsets_packed(self, context_node, bitposition):
                 end_bitposition = bitposition
 
-                context = next(context_iterator)
+                context = context_node.children[0].context
                 end_bitposition += context.bitsizeof(value_array_traits, end_bitposition, self._value)
 
                 return end_bitposition
 
-            def write_packed(self, context_iterator, writer):
-                context = next(context_iterator)
+            def write_packed(self, context_node, writer):
+                context = context_node.children[0].context
                 context.write(value_array_traits, writer, self._value)
 
-            def read_packed(self, context_iterator, reader):
-                context = next(context_iterator)
+            def read_packed(self, context_node, reader):
+                context = context_node.children[0].context
                 self._value = context.read(value_array_traits, reader)
 
         class DummyObjectBitsizeCalculator:
@@ -236,34 +239,47 @@ class PackedArrayTest(unittest.TestCase):
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values,
                          DummyObjectBitsizeCalculator)
 
-    def test_copy_context_iterator(self):
+    def test_packing_context_builder(self):
         builder = PackingContextBuilder()
-        builder.add_context(BitFieldArrayTraits)
-        builder.add_context(BitFieldArrayTraits)
-        builder.add_context(BitFieldArrayTraits)
+        builder.add_leaf(BitFieldArrayTraits)
+        packing_context_node = builder.build()
+        self.assertTrue(packing_context_node.has_context())
+        self.assertIsInstance(packing_context_node.context, DeltaContext)
 
-        context_list = builder.build()
+        builder = PackingContextBuilder()
+        builder.add_dummy_leaf()
+        packing_context_node = builder.build()
+        self.assertFalse(packing_context_node.has_context())
+        with self.assertRaises(PythonRuntimeException):
+            self.assertIsNone(packing_context_node.context)
+        self.assertFalse(packing_context_node.children)
 
-        context_iterator = iter(context_list)
-        context_iterator_copy = copy_context_iterator(context_iterator)
+        # only one top level node is allowed
+        builder = PackingContextBuilder()
+        builder.add_dummy_leaf()
+        builder.add_leaf(BitFieldArrayTraits)
+        with self.assertRaises(PythonRuntimeException):
+            packing_context_node = builder.build()
 
-        num_contexts = 0
-        while next(context_iterator, None) is not None:
-            num_contexts += 1
-        self.assertEqual(3, num_contexts)
-
-        self.assertIsNotNone(next(context_iterator_copy, None))
-        num_contexts = 1
-        context_iterator_copy_2 = copy_context_iterator(context_iterator_copy)
-        while next(context_iterator_copy, None) is not None:
-            num_contexts += 1
-        self.assertEqual(3, num_contexts)
-
-        # already moved to next before copying
-        num_contexts = 1
-        while next(context_iterator_copy_2, None) is not None:
-            num_contexts += 1
-        self.assertEqual(3, num_contexts)
+        builder = PackingContextBuilder()
+        builder.begin_node()
+        builder.add_dummy_leaf()
+        builder.add_leaf(BitFieldArrayTraits)
+        builder.end_node()
+        packing_context_node = builder.build()
+        self.assertFalse(packing_context_node.has_context())
+        with self.assertRaises(PythonRuntimeException):
+            self.assertIsNone(packing_context_node.context)
+        self.assertTrue(packing_context_node.children)
+        dummy_leaf = packing_context_node.children[0]
+        self.assertFalse(dummy_leaf.has_context())
+        with self.assertRaises(PythonRuntimeException):
+            self.assertIsNone(dummy_leaf.context)
+        self.assertFalse(dummy_leaf.children)
+        leaf = packing_context_node.children[1]
+        self.assertTrue(leaf.has_context())
+        self.assertFalse(leaf.children)
+        self.assertIsInstance(leaf.context, DeltaContext)
 
     @staticmethod
     def _set_offset_method(_index, _bitoffset):

@@ -165,7 +165,7 @@ class Array:
         :param reader: Bit stream from which to read.
         :param size: Number of elements to read or None in case of implicit or auto arrays.
 
-        :raises PythonRuntimeException: If the array does not have elements with constant bit size.
+        :raises PythonRuntimeException: If the implicit array does not have elements with constant bit size.
         """
 
         self._raw_array.clear()

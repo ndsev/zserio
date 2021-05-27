@@ -47,11 +47,11 @@ class ${name}:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['${name}'],
-            zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+            zserio_context_node: zserio.packed_array.PackingContextNode,
             zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
         instance = cls(${constructorParamList})
-        instance.read_packed(zserio_context_iterator, zserio_reader)
+        instance.read_packed(zserio_context_node, zserio_reader)
 
         return instance
 
@@ -123,18 +123,14 @@ ${I}<#rt>
 
     <@compound_create_packing_context_definition fieldList/>
 
-    def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
-<#if compound_needs_packing_context_iterator(fieldList)>
-    <#if compound_has_any_recursive_field(fieldList)>
-        <@compound_field_recursive_make_context_iterator_copies fieldList, "context_iterator", 2/>
-
-    </#if>
+    def init_packing_context(self, context_node: zserio.packed_array.PackingContextNode) -> None:
+<#if compound_needs_packing_context_node(fieldList)>
     <#list fieldList as field>
-        <@compound_field_packing_context_var field, "context_iterator", 2/>
+        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
         <@compound_init_packing_context_field field, 2/>
     </#list>
 <#else>
-        del context_iterator
+        del context_node
 </#if>
 
     def bitsizeof(self, bitposition: int = 0) -> int:
@@ -151,25 +147,22 @@ ${I}<#rt>
         return 0
 </#if>
 
-    def bitsizeof_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+    def bitsizeof_packed(self, context_node: zserio.packed_array.PackingContextNode,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
-    <#if !compound_needs_packing_context_iterator(fieldList)>
-        del context_iterator
-
-    <#elseif compound_has_any_recursive_field(fieldList)>
-        <@compound_field_recursive_make_context_iterator_copies fieldList, "context_iterator", 2/>
+    <#if !compound_needs_packing_context_node(fieldList)>
+        del context_node
 
     </#if>
         end_bitposition = bitposition
     <#list fieldList as field>
-        <@compound_field_packing_context_var field, "context_iterator", 2/>
+        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
         <@compound_bitsizeof_field field, 2, true/>
     </#list>
 
         return end_bitposition - bitposition
 <#else>
-        del context_iterator
+        del context_node
         del bitposition
 
         return 0
@@ -188,25 +181,22 @@ ${I}<#rt>
         return bitposition
     </#if>
 
-    def initialize_offsets_packed(self, context_iterator: zserio.packed_array.PackingContextIterator,
+    def initialize_offsets_packed(self, context_node: zserio.packed_array.PackingContextNode,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_iterator(fieldList)>
-        del context_iterator
-
-        <#elseif compound_has_any_recursive_field(fieldList)>
-        <@compound_field_recursive_make_context_iterator_copies fieldList, "context_iterator", 2/>
+        <#if !compound_needs_packing_context_node(fieldList)>
+        del context_node
 
         </#if>
         end_bitposition = bitposition
         <#list fieldList as field>
-        <@compound_field_packing_context_var field, "context_iterator", 2/>
+        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
         <@compound_initialize_offsets_field field, 2, true/>
         </#list>
 
         return end_bitposition
     <#else>
-        del context_iterator
+        del context_node
         return bitposition
     </#if>
 </#if>
@@ -230,25 +220,22 @@ ${I}<#rt>
         del zserio_reader
 </#if>
 
-    def read_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+    def read_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
                     zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-    <#if !compound_needs_packing_context_iterator(fieldList)>
-        del zserio_context_iterator
-
-    <#elseif compound_has_any_recursive_field(fieldList)>
-        <@compound_field_recursive_make_context_iterator_copies fieldList, "zserio_context_iterator", 2/>
+    <#if !compound_needs_packing_context_node(fieldList)>
+        del zserio_context_node
 
     </#if>
     <#list fieldList as field>
-        <@compound_field_packing_context_var field, "zserio_context_iterator", 2/>
+        <@compound_field_packing_context_node field, field?index, "zserio_context_node", 2/>
         <@compound_read_field field, name, withWriterCode, 2, true/>
         <#if field?has_next>
 
         </#if>
     </#list>
 <#else>
-        del zserio_context_iterator
+        del zserio_context_node
         del zserio_reader
 </#if>
 <#if withWriterCode>
@@ -281,25 +268,22 @@ ${I}<#rt>
         del zserio_call_initialize_offsets
     </#if>
 
-    def write_packed(self, zserio_context_iterator: zserio.packed_array.PackingContextIterator,
+    def write_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
                      zserio_writer: zserio.BitStreamWriter) -> None:
     <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_iterator(fieldList)>
-        del zserio_context_iterator
-
-        <#elseif compound_has_any_recursive_field(fieldList)>
-        <@compound_field_recursive_make_context_iterator_copies fieldList, "zserio_context_iterator", 2/>
+        <#if !compound_needs_packing_context_node(fieldList)>
+        del zserio_context_node
 
         </#if>
         <#list fieldList as field>
-        <@compound_field_packing_context_var field, "zserio_context_iterator", 2/>
+        <@compound_field_packing_context_node field, field?index, "zserio_context_node", 2/>
         <@compound_write_field field, name, 2, true/>
             <#if field?has_next>
 
             </#if>
         </#list>
     <#else>
-        del zserio_context_iterator
+        del zserio_context_node
         del zserio_writer
     </#if>
 </#if>
