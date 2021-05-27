@@ -127,7 +127,13 @@ class ${name}:
     <@compound_create_packing_context_definition fieldList/>
 
 <#macro union_init_packing_context field indent packed>
-    <@compound_init_packing_context_field field, indent/>
+    <#local initCode><@compound_init_packing_context_field field, indent/></#local>
+    <#if initCode?has_content>
+${initCode}<#t>
+    <#else>
+        <#local I>${""?left_pad(indent * 4)}</#local>
+${I}pass
+    </#if>
 </#macro>
     def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
 <#if compound_needs_packing_context_iterator(fieldList)>

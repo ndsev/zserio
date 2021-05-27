@@ -7,6 +7,9 @@ choice TestChoice(uint32 selector) on selector
     case 4:
         uint16 value16;
 
+    case 5:
+        packed uint32 array32[2];
+
     default:
         uint32 value32;
 };
@@ -14,6 +17,7 @@ choice TestChoice(uint32 selector) on selector
 union TestUnion
 {
     uint16 value16;
+    packed uint32 array32[2];
     uint32 value32;
 };
 
