@@ -68,10 +68,10 @@ class PackedVariableArrayStructTest(unittest.TestCase):
         data = zserio.BitBuffer(bytes([0xCD, 0xC0]), 10)
         testChoice = (self.api.TestChoice(index, value16_=index) if index in (0, 2, 4) else
                       self.api.TestChoice(index, array32_=[index * 2, index * 2 + 1]) if index == 5 else
-                      self.api.TestChoice(index, value32_=index * 2))
+                      self.api.TestChoice(index, value32_=self.api.Value32(index * 2)))
         testUnion = (self.api.TestUnion(value16_=index) if (index % 2) == 0 else
                      self.api.TestUnion(array32_=[index * 2, index * 2 + 1]) if index == 5 else
-                     self.api.TestUnion(value32_=index * 2))
+                     self.api.TestUnion(value32_=self.api.Value32(index * 2)))
         testEnum = self.api.TestEnum.DARK_RED if (index % 2) == 0 else self.api.TestEnum.DARK_GREEN
         testBitmask = (self.api.TestBitmask.Values.READ if (index % 2) == 0 else
                        self.api.TestBitmask.Values.CREATE)

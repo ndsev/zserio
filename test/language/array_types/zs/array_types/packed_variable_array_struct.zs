@@ -1,5 +1,10 @@
 package array_types.packed_variable_array_struct;
 
+struct Value32
+{
+    uint32 value32;
+};
+
 choice TestChoice(uint32 selector) on selector
 {
     case 0:
@@ -11,14 +16,14 @@ choice TestChoice(uint32 selector) on selector
         packed uint32 array32[2];
 
     default:
-        uint32 value32;
+        Value32 value32;
 };
 
 union TestUnion
 {
     uint16 value16;
     packed uint32 array32[2];
-    uint32 value32;
+    Value32 value32;
 };
 
 enum uint8 TestEnum
@@ -58,7 +63,8 @@ struct TestStructure
 
     function bit:5 length()
     {
-        return (id & 0x07) + 9;
+        // TODO[mikir]: Should be '%' or '&' as soon as it will work
+        return (id / 0x07) + 9;
     }
 };
 
