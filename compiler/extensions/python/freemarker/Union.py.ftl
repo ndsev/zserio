@@ -10,7 +10,7 @@
 <#macro union_if memberActionMacroName packed=false contextIteratorVarName="">
     <#if packed && fieldList?has_content>
         <#list fieldList as field>
-        <@compound_packing_context_var_field field, contextIteratorVarName, 2/>
+        <@compound_field_packing_context_var field, contextIteratorVarName, 2/>
         </#list>
 
     </#if>

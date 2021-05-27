@@ -125,8 +125,12 @@ ${I}<#rt>
 
     def init_packing_context(self, context_iterator: zserio.packed_array.PackingContextIterator) -> None:
 <#if compound_needs_packing_context_iterator(fieldList)>
+    <#if compound_has_any_recursive_field(fieldList)>
+        <@compound_field_recursive_make_context_iterator_copies fieldList, "context_iterator", 2/>
+
+    </#if>
     <#list fieldList as field>
-        <@compound_packing_context_var_field field, "context_iterator", 2/>
+        <@compound_field_packing_context_var field, "context_iterator", 2/>
         <@compound_init_packing_context_field field, 2/>
     </#list>
 <#else>
@@ -153,10 +157,13 @@ ${I}<#rt>
     <#if !compound_needs_packing_context_iterator(fieldList)>
         del context_iterator
 
+    <#elseif compound_has_any_recursive_field(fieldList)>
+        <@compound_field_recursive_make_context_iterator_copies fieldList, "context_iterator", 2/>
+
     </#if>
         end_bitposition = bitposition
     <#list fieldList as field>
-        <@compound_packing_context_var_field field, "context_iterator", 2/>
+        <@compound_field_packing_context_var field, "context_iterator", 2/>
         <@compound_bitsizeof_field field, 2, true/>
     </#list>
 
@@ -187,10 +194,13 @@ ${I}<#rt>
         <#if !compound_needs_packing_context_iterator(fieldList)>
         del context_iterator
 
+        <#elseif compound_has_any_recursive_field(fieldList)>
+        <@compound_field_recursive_make_context_iterator_copies fieldList, "context_iterator", 2/>
+
         </#if>
         end_bitposition = bitposition
         <#list fieldList as field>
-        <@compound_packing_context_var_field field, "context_iterator", 2/>
+        <@compound_field_packing_context_var field, "context_iterator", 2/>
         <@compound_initialize_offsets_field field, 2, true/>
         </#list>
 
@@ -226,9 +236,12 @@ ${I}<#rt>
     <#if !compound_needs_packing_context_iterator(fieldList)>
         del zserio_context_iterator
 
+    <#elseif compound_has_any_recursive_field(fieldList)>
+        <@compound_field_recursive_make_context_iterator_copies fieldList, "zserio_context_iterator", 2/>
+
     </#if>
     <#list fieldList as field>
-        <@compound_packing_context_var_field field, "zserio_context_iterator", 2/>
+        <@compound_field_packing_context_var field, "zserio_context_iterator", 2/>
         <@compound_read_field field, name, withWriterCode, 2, true/>
         <#if field?has_next>
 
@@ -274,9 +287,12 @@ ${I}<#rt>
         <#if !compound_needs_packing_context_iterator(fieldList)>
         del zserio_context_iterator
 
+        <#elseif compound_has_any_recursive_field(fieldList)>
+        <@compound_field_recursive_make_context_iterator_copies fieldList, "zserio_context_iterator", 2/>
+
         </#if>
         <#list fieldList as field>
-        <@compound_packing_context_var_field field, "zserio_context_iterator", 2/>
+        <@compound_field_packing_context_var field, "zserio_context_iterator", 2/>
         <@compound_write_field field, name, 2, true/>
             <#if field?has_next>
 

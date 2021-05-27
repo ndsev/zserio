@@ -3,6 +3,7 @@ The module implements abstraction for delta compressed arrays used by Zserio pyt
 """
 
 import typing
+import copy
 
 from zserio.bitposition import alignto
 from zserio.bitsizeof import bitsizeof_varsize
@@ -306,6 +307,15 @@ class PackingContext:
         return array_traits.read(reader)
 
 PackingContextIterator = typing.Iterator[PackingContext]
+
+def copy_context_iterator(context_iterator: PackingContextIterator) -> PackingContextIterator:
+    """
+    Makes a copy of the given context iterator.
+
+    :return: Copied context iterator.
+    """
+
+    return copy.copy(context_iterator)
 
 class DeltaContext(PackingContext):
     """

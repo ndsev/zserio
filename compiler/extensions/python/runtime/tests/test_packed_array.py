@@ -1,7 +1,8 @@
 import unittest
 
 from zserio.array import BitFieldArrayTraits, SignedBitFieldArrayTraits, VarUIntArrayTraits, Float16ArrayTraits
-from zserio.packed_array import PackedArray, PackedArrayTraits, ObjectPackedArrayTraits
+from zserio.packed_array import PackedArray, PackedArrayTraits, ObjectPackedArrayTraits, PackingContextBuilder,\
+    copy_context_iterator
 from zserio.bitposition import alignto
 from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import bitsizeof_varuint64
@@ -234,6 +235,35 @@ class PackedArrayTest(unittest.TestCase):
         array2_values = [DummyObject(3), DummyObject(4)]
         self._test_array(array_traits, packed_array_traits, array1_values, array2_values,
                          DummyObjectBitsizeCalculator)
+
+    def test_copy_context_iterator(self):
+        builder = PackingContextBuilder()
+        builder.add_context(BitFieldArrayTraits)
+        builder.add_context(BitFieldArrayTraits)
+        builder.add_context(BitFieldArrayTraits)
+
+        context_list = builder.build()
+
+        context_iterator = iter(context_list)
+        context_iterator_copy = copy_context_iterator(context_iterator)
+
+        num_contexts = 0
+        while next(context_iterator, None) is not None:
+            num_contexts += 1
+        self.assertEqual(3, num_contexts)
+
+        self.assertIsNotNone(next(context_iterator_copy, None))
+        num_contexts = 1
+        context_iterator_copy_2 = copy_context_iterator(context_iterator_copy)
+        while next(context_iterator_copy, None) is not None:
+            num_contexts += 1
+        self.assertEqual(3, num_contexts)
+
+        # already moved to next before copying
+        num_contexts = 1
+        while next(context_iterator_copy_2, None) is not None:
+            num_contexts += 1
+        self.assertEqual(3, num_contexts)
 
     @staticmethod
     def _set_offset_method(_index, _bitoffset):
