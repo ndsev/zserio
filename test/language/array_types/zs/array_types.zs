@@ -14,6 +14,7 @@ import array_types.packed_arrays_mapping.*;
 import array_types.packed_auto_array_struct_recursion.*;
 import array_types.packed_auto_array_uint8.*;
 import array_types.packed_fixed_array_uint8.*;
+import array_types.packed_variable_array_struct_recursion.*;
 import array_types.packed_variable_array_struct.*;
 import array_types.packed_variable_array_uint8.*;
 import array_types.variable_array_struct_cast_int8.*;
