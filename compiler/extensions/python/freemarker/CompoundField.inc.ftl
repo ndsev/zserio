@@ -459,26 +459,13 @@ ${I}                                        (self.<@field_member_name field/>, l
     zserio_ctx_node_${field.snakeCaseName}<#t>
 </#macro>
 
-<#macro compound_create_packing_context_definition fieldList>
-    <#local createPackingContextBody>
-        <#list fieldList as field>
-            <#if field.isBuiltinType || field.isExternType>
+<#macro compound_create_packing_context_field field>
+    <#if field.isBuiltinType || field.isExternType>
         context_builder.add_leaf(zserio.array.${field.arrayTraits.name})
-            <#elseif !field.array?? && !(field.optional?? && field.optional.isRecursive)>
+    <#elseif !field.array?? && !(field.optional?? && field.optional.isRecursive)>
         ${field.pythonTypeName}.create_packing_context(context_builder)
-            <#else>
-        context_builder.add_dummy_leaf()
-            </#if>
-        </#list>
-    </#local>
-    @staticmethod
-    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
-    <#if createPackingContextBody?has_content>
-        context_builder.begin_node()
-        ${createPackingContextBody}<#t>
-        context_builder.end_node()
     <#else>
-        del context_builder
+        context_builder.add_dummy_leaf()
     </#if>
 </#macro>
 
@@ -504,13 +491,13 @@ ${I}self.<@field_member_name field/>.init_packing_context(<@field_packing_contex
     </#if>
 </#macro>
 
-<#macro compound_field_packing_context_node field fieldIndex contextNodeVarName indent>
+<#macro compound_field_packing_context_node field childNodeIndex contextNodeVarName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if !field.array??>
         <#if field.optional?? && field.optional.isRecursive>
 ${I}<@field_packing_context_node_name field/> = ${contextNodeVarName}
         <#else>
-${I}<@field_packing_context_node_name field/> = ${contextNodeVarName}.children[${fieldIndex}]
+${I}<@field_packing_context_node_name field/> = ${contextNodeVarName}.children[${childNodeIndex}]
         </#if>
     </#if>
 </#macro>

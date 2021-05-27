@@ -11,13 +11,14 @@
     <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choice_tag == self.<@choice_tag_name field/>:
             <#if packed>
-            <@compound_field_packing_context_node field, field?index, contextNodeVarName, 3/>
+            <@compound_field_packing_context_node field, field?index + 1 , contextNodeVarName, 3/>
             </#if>
             <@.vars[memberActionMacroName] field, 3, packed/>
     </#list>
         else:
             raise zserio.PythonRuntimeException("No match in union ${name}!")
 </#macro>
+<#assign choiceTagArrayTraits="zserio.array.VarSizeArrayTraits">
 
 class ${name}:
 <#assign constructorAnnotatedParamList><@compound_constructor_annotated_parameters compoundParametersData, 3/></#assign>
@@ -121,7 +122,20 @@ class ${name}:
     def choice_tag(self) -> int:
         return self._choice_tag
 
-    <@compound_create_packing_context_definition fieldList/>
+    @staticmethod
+    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
+<#if fieldList?has_content>
+        context_builder.begin_node()
+        context_builder.add_leaf(${choiceTagArrayTraits})
+
+    <#list fieldList as field>
+        <@compound_create_packing_context_field field/>
+    </#list>
+
+        context_builder.end_node()
+<#else>
+        del context_builder
+</#if>
 
 <#macro union_init_packing_context field indent packed>
     <#local initCode><@compound_init_packing_context_field field, indent/></#local>
@@ -133,7 +147,8 @@ ${I}pass
     </#if>
 </#macro>
     def init_packing_context(self, context_node: zserio.packed_array.PackingContextNode) -> None:
-<#if compound_needs_packing_context_node(fieldList)>
+<#if fieldList?has_content>
+        context_node.children[0].context.init(self._choice_tag)
         <@union_if "union_init_packing_context", true, "context_node"/>
 <#else>
         del context_node
@@ -157,13 +172,10 @@ ${I}pass
     def bitsizeof_packed(self, context_node: zserio.packed_array.PackingContextNode,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
-    <#if !compound_needs_packing_context_node(fieldList)>
-        del context_node
-
-    </#if>
         end_bitposition = bitposition
 
-        end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
+        end_bitposition += context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
+                                                                      end_bitposition, self._choice_tag)
 
         <@union_if "compound_bitsizeof_field", true, "context_node"/>
 
@@ -192,13 +204,10 @@ ${I}pass
     def initialize_offsets_packed(self, context_node: zserio.packed_array.PackingContextNode,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_node(fieldList)>
-        del context_node
-
-        </#if>
         end_bitposition = bitposition
 
-        end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
+        end_bitposition += context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
+                                                                      end_bitposition, self._choice_tag)
 
         <@union_if "compound_initialize_offsets_field", true, "context_node"/>
 
@@ -224,11 +233,8 @@ ${I}pass
     def read_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
                     zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-    <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
-    </#if>
-        self._choice_tag = zserio_reader.read_varsize()
+        self._choice_tag = zserio_context_node.children[0].context.read(${choiceTagArrayTraits}(),
+                                                                        zserio_reader)
 
         <@union_if "union_read_field" true "zserio_context_node"/>
 <#else>
@@ -261,11 +267,8 @@ ${I}pass
     def write_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
                     zserio_writer: zserio.BitStreamWriter) -> None:
     <#if fieldList?has_content>
-        <#if !compound_needs_packing_context_node(fieldList)>
-        del zserio_context_node
-
-        </#if>
-        zserio_writer.write_varsize(self._choice_tag)
+        zserio_context_node.children[0].context.write(${choiceTagArrayTraits}(),
+                                                      zserio_writer, self._choice_tag)
 
         <@union_if "union_write_field", true, "zserio_context_node"/>
     <#else>

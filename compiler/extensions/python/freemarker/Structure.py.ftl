@@ -121,7 +121,17 @@ ${I}<#rt>
         return ${function.resultExpression}
 </#list>
 
-    <@compound_create_packing_context_definition fieldList/>
+    @staticmethod
+    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
+    <#if fieldList?has_content>
+        context_builder.begin_node()
+        <#list fieldList as field>
+        <@compound_create_packing_context_field field/>
+        </#list>
+        context_builder.end_node()
+    <#else>
+        del context_builder
+    </#if>
 
     def init_packing_context(self, context_node: zserio.packed_array.PackingContextNode) -> None:
 <#if compound_needs_packing_context_node(fieldList)>

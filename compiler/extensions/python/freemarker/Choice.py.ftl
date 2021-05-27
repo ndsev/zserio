@@ -138,7 +138,17 @@ class ${name}:
         return ${function.resultExpression}
 </#list>
 
-    <@compound_create_packing_context_definition fieldList/>
+    @staticmethod
+    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
+    <#if fieldList?has_content>
+        context_builder.begin_node()
+        <#list fieldList as field>
+        <@compound_create_packing_context_field field/>
+        </#list>
+        context_builder.end_node()
+    <#else>
+        del context_builder
+    </#if>
 
 <#macro choice_init_packing_context_field field indent packed>
     <#local initCode><@compound_init_packing_context_field field, indent/></#local>
