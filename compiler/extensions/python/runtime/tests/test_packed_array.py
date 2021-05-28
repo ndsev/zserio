@@ -32,13 +32,14 @@ class PackedArrayTest(unittest.TestCase):
                 return 0
 
             bitsize = 1 # descriptor bit - is packed
-            if signed_max_delta_bits <= 64:
+            if num_values > 1 and signed_max_delta_bits <= 64:
                 bitsize += 6 # descriptor bits - max bit number
                 if array_traits.HAS_BITSIZEOF_CONSTANT:
                     bitsize += array_traits.bitsizeof() # first element
                 else:
                     bitsize += array_traits.bitsizeof(0, array_values[0])
-                bitsize += (num_values - 1) * signed_max_delta_bits # remaining elements
+                if signed_max_delta_bits > 1:
+                    bitsize += (num_values - 1) * signed_max_delta_bits # remaining elements
                 return bitsize
             else:
                 if array_traits.HAS_BITSIZEOF_CONSTANT:
@@ -56,14 +57,14 @@ class PackedArrayTest(unittest.TestCase):
 
             end_bitposition = bitposition
             end_bitposition += 1 # descriptor bit - is packed
-            if signed_max_delta_bits <= 64:
+            if num_values > 1 and signed_max_delta_bits <= 64:
                 end_bitposition += 6 # descriptor bits - max bit number
                 end_bitposition = alignto(8, end_bitposition) # alignment before first element
                 if array_traits.HAS_BITSIZEOF_CONSTANT:
                     end_bitposition += array_traits.bitsizeof() # first element
                 else:
                     end_bitposition += array_traits.bitsizeof(end_bitposition, array_values[0])
-                if num_values > 1:
+                if signed_max_delta_bits > 1:
                     end_bitposition = alignto(8, end_bitposition) # alignment before the second element
                     end_bitposition += signed_max_delta_bits # second element (stored as delta)
                     # remaining elements including alignment

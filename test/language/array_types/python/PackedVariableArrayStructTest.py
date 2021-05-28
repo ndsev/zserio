@@ -36,7 +36,7 @@ class PackedVariableArrayStructTest(unittest.TestCase):
         packedVariableArray = self._createPackedVariableArray(numElements)
         unpackedBitsizeOf = packedVariableArray.test_unpacked_array.bitsizeof()
         packedBitsizeOf = packedVariableArray.test_packed_array.bitsizeof()
-        minCompressionRatio = 0.75
+        minCompressionRatio = 0.67
         self.assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, "Unpacked array has " +
                         str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits, " +
                         "compression ratio is " + str(packedBitsizeOf / unpackedBitsizeOf * 100) + "%!")
@@ -85,7 +85,7 @@ class PackedVariableArrayStructTest(unittest.TestCase):
                                       test_optional_=testOptional, test_dynamic_bitfield_=testDynamicBitfield,
                                       num_values_=numValues, unpacked_values_=values, packed_values_=values)
 
-    VARIABLE_ARRAY_LENGTH1 = 10
+    VARIABLE_ARRAY_LENGTH1 = 25
     VARIABLE_ARRAY_LENGTH2 = 50
     VARIABLE_ARRAY_LENGTH3 = 100
     VARIABLE_ARRAY_LENGTH4 = 1000

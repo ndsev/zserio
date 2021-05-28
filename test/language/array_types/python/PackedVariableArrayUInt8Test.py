@@ -108,7 +108,8 @@ class PackedVariableArrayUInt8Test(unittest.TestCase):
     def _calcPackedVariableArrayBitSize(self, numElements):
         bitSize = 8  # array size: numElements
         bitSize += 1 # packing descriptor: is_packed
-        bitSize += 6 # packing descriptor: max_bit_number
+        if numElements > 1:
+            bitSize += 6 # packing descriptor: max_bit_number
         bitSize += 8 # first element
         bitSize += (numElements - 1) * (self.PACKED_ARRAY_MAX_BIT_NUMBER + 1) # all deltas
 

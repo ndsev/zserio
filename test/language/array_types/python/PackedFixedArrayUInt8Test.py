@@ -12,14 +12,14 @@ class PackedFixedArrayUInt8Test(unittest.TestCase):
         uint8Array = self._createAutoArray()
         packedFixedArray = self.api.PackedFixedArray(uint8Array)
         bitPosition = 2
-        fixedArrayBitSize = self._calcPackedFixedArrayBitSize()
+        fixedArrayBitSize = PackedFixedArrayUInt8Test._calcPackedFixedArrayBitSize()
         self.assertEqual(fixedArrayBitSize, packedFixedArray.bitsizeof(bitPosition))
 
     def testInitializeOffsets(self):
         uint8Array = self._createAutoArray()
         packedFixedArray = self.api.PackedFixedArray(uint8Array)
         bitPosition = 2
-        expectedEndBitPosition = bitPosition + self._calcPackedFixedArrayBitSize()
+        expectedEndBitPosition = bitPosition + PackedFixedArrayUInt8Test._calcPackedFixedArrayBitSize()
         self.assertEqual(expectedEndBitPosition, packedFixedArray.initialize_offsets(bitPosition))
 
     def testRead(self):
@@ -47,43 +47,26 @@ class PackedFixedArrayUInt8Test(unittest.TestCase):
             packedFixedArray.write(writer)
 
     def _createAutoArray(self):
-        value = self.PACKED_ARRAY_ELEMENT0
-        uint8Array = [value]
-        value += self.PACKED_ARRAY_DELTA
-        for _ in range(self.FIXED_ARRAY_LENGTH - 1):
-            value += self.PACKED_ARRAY_DELTA
-            uint8Array.append(value)
-
-        return uint8Array
+        return [self.PACKED_ARRAY_ELEMENT] * self.FIXED_ARRAY_LENGTH
 
     def _checkPackedFixedArray(self, uint8Array):
         self.assertEqual(self.FIXED_ARRAY_LENGTH, len(uint8Array))
-        value = self.PACKED_ARRAY_ELEMENT0
-        self.assertEqual(value, uint8Array[0])
-        value += self.PACKED_ARRAY_DELTA
-        for i in range(1, self.FIXED_ARRAY_LENGTH - 1):
-            value += self.PACKED_ARRAY_DELTA
-            self.assertEqual(value, uint8Array[i])
+        for i in range(self.FIXED_ARRAY_LENGTH):
+            self.assertEqual(self.PACKED_ARRAY_ELEMENT, uint8Array[i])
 
     def _writePackedFixedArrayToStream(self, writer):
         writer.write_bool(True)
         writer.write_bits(self.PACKED_ARRAY_MAX_BIT_NUMBER, 6)
-        value = self.PACKED_ARRAY_ELEMENT0
-        writer.write_bits(value, 8)
-        writer.write_signed_bits(self.PACKED_ARRAY_DELTA * 2, self.PACKED_ARRAY_MAX_BIT_NUMBER + 1)
-        for _ in range(self.FIXED_ARRAY_LENGTH - 2):
-            writer.write_signed_bits(self.PACKED_ARRAY_DELTA, self.PACKED_ARRAY_MAX_BIT_NUMBER + 1)
+        writer.write_bits(self.PACKED_ARRAY_ELEMENT, 8)
 
-    def _calcPackedFixedArrayBitSize(self):
+    @staticmethod
+    def _calcPackedFixedArrayBitSize():
         bitSize = 1  # packing descriptor: is_packed
         bitSize += 6 # packing descriptor: max_bit_number
         bitSize += 8 # first element
-        bitSize += (self.FIXED_ARRAY_LENGTH - 1) * (self.PACKED_ARRAY_MAX_BIT_NUMBER + 1) # all deltas
 
         return bitSize
 
     FIXED_ARRAY_LENGTH = 5
-
-    PACKED_ARRAY_ELEMENT0 = 1
-    PACKED_ARRAY_DELTA = 2
-    PACKED_ARRAY_MAX_BIT_NUMBER = 3
+    PACKED_ARRAY_MAX_BIT_NUMBER = 0
+    PACKED_ARRAY_ELEMENT = 100

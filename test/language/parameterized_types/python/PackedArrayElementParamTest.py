@@ -30,7 +30,7 @@ class PackedArrayElementParamTest(unittest.TestCase):
         database = self._createDatabase(numBlocks)
         unpackedBitsizeOf = PackedArrayElementParamTest._calcUnpackedDatabaseBitSize(numBlocks)
         packedBitsizeOf = database.bitsizeof()
-        minCompressionRatio = 0.2
+        minCompressionRatio = 0.12
         self.assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, "Unpacked array has " +
                         str(unpackedBitsizeOf) + " bits, packed array has " + str(packedBitsizeOf) + " bits, " +
                         "compression ratio is " + str(packedBitsizeOf / unpackedBitsizeOf * 100) + "%!")

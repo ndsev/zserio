@@ -356,8 +356,9 @@ class DeltaContext(PackingContext):
     def init(self, element: int) -> None:
         if self._previous_element is None:
             self._previous_element = element
-            self._is_packed = True
         else:
+            if self._max_bit_number <= self._MAX_BIT_NUMBER_LIMIT:
+                self._is_packed = True
             delta = element - self._previous_element
             max_bit_number = delta.bit_length()
             # if delta is negative, we need one bit more because of sign
@@ -380,7 +381,7 @@ class DeltaContext(PackingContext):
             self._processing_started = True
             return super().bitsizeof(array_traits, bitposition, element)
         else: # packed and not first
-            return self._max_bit_number + 1
+            return self._max_bit_number + 1 if self._max_bit_number > 0 else 0
 
     def write_descriptor(self, writer: BitStreamWriter) -> None:
         writer.write_bool(self._is_packed)
@@ -394,9 +395,10 @@ class DeltaContext(PackingContext):
             super().write(array_traits, writer, element)
         else: # packed and not first
             assert self._previous_element is not None
-            delta = element - self._previous_element
-            writer.write_signed_bits(delta, self._max_bit_number + 1)
-            self._previous_element = element
+            if self._max_bit_number > 0:
+                delta = element - self._previous_element
+                writer.write_signed_bits(delta, self._max_bit_number + 1)
+                self._previous_element = element
 
     def read_descriptor(self, reader: BitStreamReader) -> None:
         self._is_packed = reader.read_bool()
@@ -411,8 +413,9 @@ class DeltaContext(PackingContext):
             return element
         else: # packed and not first
             assert self._previous_element is not None
-            delta = reader.read_signed_bits(self._max_bit_number + 1)
-            self._previous_element += delta
+            if self._max_bit_number > 0:
+                delta = reader.read_signed_bits(self._max_bit_number + 1)
+                self._previous_element += delta
             return self._previous_element
 
     _MAX_BIT_NUMBER_BITS = 6

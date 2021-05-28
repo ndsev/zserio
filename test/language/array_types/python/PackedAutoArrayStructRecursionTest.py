@@ -47,13 +47,15 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
     def _checkBitSizeOf(self, numElements):
         packedAutoArrayRecursion = self._createPackedAutoArrayRecursion(numElements)
         bitPosition = 2
-        autoArrayRecursionBitSize = 8 + 8 + 1 + 6 + 8 + 8 + (numElements - 1) * (8 + 2)
+        autoArrayRecursionBitSize = (
+            PackedAutoArrayStructRecursionTest._calcPackedAutoArrayRecursionBitSize(numElements))
         self.assertEqual(autoArrayRecursionBitSize, packedAutoArrayRecursion.bitsizeof(bitPosition))
 
     def _checkInitializeOffsets(self, numElements):
         packedAutoArrayRecursion = self._createPackedAutoArrayRecursion(numElements)
         bitPosition = 2
-        expectedEndBitPosition = bitPosition + 8 + 8 + 1 + 6 + 8 + 8 + (numElements - 1) * (8 + 2)
+        expectedEndBitPosition = bitPosition + (
+            PackedAutoArrayStructRecursionTest._calcPackedAutoArrayRecursionBitSize(numElements))
         self.assertEqual(expectedEndBitPosition, packedAutoArrayRecursion.initialize_offsets(bitPosition))
 
     def _checkRead(self, numElements):
@@ -99,6 +101,18 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
         for _ in range(numElements - 1):
             writer.write_signed_bits(1, maxBitNumber + 1)
             writer.write_varsize(0)
+
+    @staticmethod
+    def _calcPackedAutoArrayRecursionBitSize(numElements):
+        bitSize = 8 # id
+        bitSize += 8 # varsize (length of auto array)
+        bitSize += 1 # packing descriptor: is_packed
+        if numElements > 1:
+            bitSize += 6 # packing descriptor: max_bit_number
+        bitSize += 8 + 8 # first element
+        bitSize += (numElements - 1) * (8 + 2) # all deltas
+
+        return bitSize
 
     AUTO_ARRAY_LENGTH1 = 1
     AUTO_ARRAY_LENGTH2 = 5
