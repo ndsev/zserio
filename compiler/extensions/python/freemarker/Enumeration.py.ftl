@@ -46,7 +46,8 @@ class ${name}(enum.Enum):
                                   bitposition: int) -> int:
         return bitposition + self.bitsizeof_packed(context_node, bitposition)
 
-    def write(self, writer: zserio.BitStreamWriter) -> None:
+    def write(self, writer: zserio.BitStreamWriter, *, zserio_call_initialize_offsets: bool = True) -> None:
+        del zserio_call_initialize_offsets
         writer.write_${runtimeFunction.suffix}(self.value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 

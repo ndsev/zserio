@@ -1171,4 +1171,4 @@ class ObjectArrayTraits:
         :param value: Zserio object type to write.
         """
 
-        value.write(writer)
+        value.write(writer, zserio_call_initialize_offsets=False)

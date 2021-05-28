@@ -177,7 +177,8 @@ class ArrayTest(unittest.TestCase):
             def read(self, reader):
                 self._value = reader.read_bits(self.bitsizeof(0))
 
-            def write(self, writer):
+            def write(self, writer, *, zserio_call_initialize_offsets=True):
+                del zserio_call_initialize_offsets
                 writer.write_bits(self._value, self.bitsizeof(0))
 
         array_traits = ObjectArrayTraits(DummyObject.create)

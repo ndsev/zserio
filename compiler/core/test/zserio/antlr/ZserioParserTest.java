@@ -116,6 +116,9 @@ public class ZserioParserTest
         checkParseTree("fieldTypeId", "uint32 value[22]",
                 "(fieldTypeId (typeInstantiation (typeReference (builtinType (intType uint32)))) (id value) " +
                         "(fieldArrayRange [ (expression (literal 22)) ]))");
+        checkParseTree("fieldTypeId", "packed uint64 value[]",
+                "(fieldTypeId packed (typeInstantiation (typeReference (builtinType (intType uint64)))) " +
+                "(id value) (fieldArrayRange [ ]))");
         checkParseTree("fieldTypeId", "Parameterized(param) field",
                 "(fieldTypeId (typeInstantiation (typeReference (qualifiedName (id Parameterized))) " +
                         "(typeArguments ( (typeArgument (expression (id param))) ))) (id field))");

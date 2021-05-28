@@ -121,7 +121,7 @@ class PythonNativeMapper
 
         if (instantiation.isPacked())
         {
-            if (nativeType.getArrayTraits() instanceof NativeObjectArrayTraits)
+            if (nativeType.getArrayTraits().getRequiresElementCreator())
                 return new NativePackedArrayType("ObjectPackedArrayTraits", nativeType);
             else
                 return new NativePackedArrayType("PackedArrayTraits", nativeType);
