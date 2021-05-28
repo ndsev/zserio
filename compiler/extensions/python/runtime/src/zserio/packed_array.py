@@ -122,7 +122,7 @@ class PackedArray:
             end_bitposition += bitsizeof_varsize(size)
 
         if size > 0:
-            context_node= self._array_traits.create_context()
+            context_node = self._array_traits.create_context()
             for element in self._raw_array:
                 self._array_traits.init_context(context_node, element)
             end_bitposition += PackedArray._bitsizeof_descriptor(context_node, end_bitposition)

@@ -5,8 +5,8 @@ package zserio.extension.python.types;
  */
 public class NativePackedArrayType extends NativeArrayType
 {
-    public NativePackedArrayType(String packedArrayTraitsName, NativeArrayType arrayType)
+    public NativePackedArrayType(NativeArrayTraits arrayTraits, String packedArrayTraitsName)
     {
-        super("packed_array", "PackedArray", arrayType.getArrayTraits(), packedArrayTraitsName);
+        super("packed_array", "PackedArray", arrayTraits, packedArrayTraitsName);
     }
 }
