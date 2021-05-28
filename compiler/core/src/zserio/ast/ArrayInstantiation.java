@@ -2,6 +2,8 @@ package zserio.ast;
 
 import java.util.List;
 
+import zserio.tools.ZserioToolPrinter;
+
 /**
  * AST node for array type instantiation.
  */
@@ -130,12 +132,7 @@ public class ArrayInstantiation extends TypeInstantiation
     @Override
     void check()
     {
-        if (!checkPackedArrayElementType())
-        {
-            throw new ParserException(elementTypeInstantiation,
-                    "Packed arrays are allowed only for integral types or for structures " +
-                    "which contain packable fields!");
-        }
+        checkPackedArrayElementType();
 
         if (!checkImplicitArrayElementType())
         {
@@ -154,13 +151,39 @@ public class ArrayInstantiation extends TypeInstantiation
         }
     }
 
-    private boolean checkPackedArrayElementType()
+    /**
+     * Check whether the baseType is packable.
+     *
+     * @param baseType Base type to check.
+     *
+     * @return True when the base type is packable, false otherwise.
+     */
+    static boolean isBaseTypePackable(ZserioType baseType)
     {
-        if (!isPacked)
-            return true;
+        return baseType instanceof IntegerType ||
+                baseType instanceof EnumType || baseType instanceof BitmaskType;
+    }
 
-        // TODO[Mi-L@]: Check whether the element base type can be packed and fire a warning otherwise?
-        return true;
+    private void checkPackedArrayElementType()
+    {
+        if (isPacked)
+        {
+            final ZserioType elementBaseType = getElementTypeInstantiation().getBaseType();
+
+            if (elementBaseType instanceof CompoundType)
+            {
+                if (!((CompoundType)elementBaseType).hasPackableField())
+                {
+                    ZserioToolPrinter.printWarning(getElementTypeInstantiation(),
+                            "'" + elementBaseType.getName() + "' doesn't contain any packable field!");
+                }
+            }
+            else if (!(isBaseTypePackable(elementBaseType)))
+            {
+                ZserioToolPrinter.printWarning(getElementTypeInstantiation(),
+                        "'" + elementBaseType.getName() + "' is not packable element type!");
+            }
+        }
     }
 
     private boolean checkImplicitArrayElementType()

@@ -1,0 +1,32 @@
+<project name="arrays_warning" basedir="." default="run">
+    <testProperties testPath="warnings/arrays_warning" testName="arrays_warning"/>
+
+    <target name="prepare">
+        <testPrepare testName="arrays_warning"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="arrays_warning"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="arrays_warning.zs.gen_is_uptodate">
+        <testGenClean testName="arrays_warning"/>
+        <testGen testName="arrays_warning" zsFile="arrays_warning.zs"/>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="arrays_warning"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="arrays_warning"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="arrays_warning"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="arrays_warning"/>
+    </target>
+</project>
