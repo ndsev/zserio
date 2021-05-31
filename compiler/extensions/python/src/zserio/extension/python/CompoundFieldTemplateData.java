@@ -45,6 +45,8 @@ public final class CompoundFieldTemplateData
 
         propertyName = AccessorNameFormatter.getPropertyName(field);
 
+        isPackable = field.getIsPackable();
+
         final ExpressionFormatter pythonExpressionFormatter =
                 context.getPythonExpressionFormatter(importCollector);
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
@@ -89,6 +91,11 @@ public final class CompoundFieldTemplateData
     public String getPropertyName()
     {
         return propertyName;
+    }
+
+    public boolean getIsPackable()
+    {
+        return isPackable;
     }
 
     public RangeCheck getRangeCheck()
@@ -577,6 +584,7 @@ public final class CompoundFieldTemplateData
     private final String snakeCaseName;
     private final String pythonTypeName;
     private final String propertyName;
+    private final boolean isPackable;
 
     private final RangeCheck rangeCheck;
     private final Optional optional;

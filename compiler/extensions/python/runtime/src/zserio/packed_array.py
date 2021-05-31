@@ -528,11 +528,12 @@ class PackingContextBuilder:
 
     def add_dummy_leaf(self) -> 'PackingContextBuilder':
         """
-        Adds a dummy leaf which is used for array and recursive fields.
+        Adds a dummy leaf which is used for array and recursive fields or for fields which are not packable
+        from whatever reason (e.g. fields which are used as an offsets).
 
         Dummy leaf doesn't have context and has no children. We need it to simplify generated code which uses
         field indices to get a proper context nodes and it would be difficult when we would not create
-        child nodes for arrays or recursive fields.
+        child nodes for unpackable fields.
 
         :returns: Self for convenience.
         """

@@ -160,7 +160,7 @@ public abstract class CompoundType extends TemplatableType
                 if (childCompoundType != this && childCompoundType.hasPackableField())
                     return true;
             }
-            else if (ArrayInstantiation.isBaseTypePackable(fieldBaseType))
+            else if (field.getIsPackable() && ArrayInstantiation.isBaseTypePackable(fieldBaseType))
             {
                 return true;
             }
