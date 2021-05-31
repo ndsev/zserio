@@ -1,7 +1,5 @@
 import unittest
 
-import zserio
-
 from testutils import getZserioApi
 
 class PackedArraysMappingTest(unittest.TestCase):
@@ -49,14 +47,6 @@ class PackedArraysMappingTest(unittest.TestCase):
         arraysMapping.uint8_value = 8
         arraysMapping.variable_intfield_long_array = intArray
 
-    def testFloatArrays(self):
-        arraysMapping = self.api.ArraysMapping()
-        floatArray = [i / (i + 1) for i in range(self.FIXED_ARRAY_LENGTH)]
-
-        arraysMapping.float16_array = floatArray
-        arraysMapping.float32_array = floatArray
-        arraysMapping.float64_array = floatArray
-
     def testVariableUnsignedIntegerArrays(self):
         arraysMapping = self.api.ArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
@@ -75,24 +65,6 @@ class PackedArraysMappingTest(unittest.TestCase):
         arraysMapping.varint32_array = intArray
         arraysMapping.varint64_array = intArray
         arraysMapping.varint_array = intArray
-
-    def testBoolArray(self):
-        arraysMapping = self.api.ArraysMapping()
-        boolArray = [i % 2 == 0 for i in range(self.FIXED_ARRAY_LENGTH)]
-
-        arraysMapping.bool_array = boolArray
-
-    def testStringArrays(self):
-        arraysMapping = self.api.ArraysMapping()
-        stringArray = ["Test" + str(i) for i in range(self.FIXED_ARRAY_LENGTH)]
-
-        arraysMapping.string_array = stringArray
-
-    def testExternArrays(self):
-        arraysMapping = self.api.ArraysMapping()
-        externArray = [zserio.BitBuffer(bytes([0xCD, 0xC0]), 10)
-                       for i in range(self.FIXED_ARRAY_LENGTH)]
-        arraysMapping.extern_array = externArray
 
     def testCompoundArray(self):
         arraysMapping = self.api.ArraysMapping()

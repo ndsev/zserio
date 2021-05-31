@@ -49,11 +49,6 @@ struct PackedArraysMapping
     packed int:64           intfield64Array[5];
     packed int<uint8Value>  variableIntfieldLongArray[5];
 
-    // packed float arrays
-    packed float16          float16Array[5];
-    packed float32          float32Array[5];
-    packed float64          float64Array[5];
-
     // packed variable unsigned integer arrays
     packed varuint16        varuint16Array[5];
     packed varuint32        varuint32Array[5];
@@ -66,15 +61,6 @@ struct PackedArraysMapping
     packed varint32         varint32Array[5];
     packed varint64         varint64Array[5];
     packed varint           varintArray[5];
-
-    // packed boolean array
-    packed bool             boolArray[5];
-
-    // packed string arrays
-    packed string           stringArray[5];
-
-    // packed extern array
-    packed extern           externArray[5];
 
     // packed compound array
     packed TestStructure    compoundArray[5];
