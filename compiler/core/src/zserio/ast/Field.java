@@ -336,12 +336,6 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                 }
             }
 
-            for (Field referencedFieldObject : offsetExpr.getReferencedSymbolObjects(Field.class))
-                System.out.println("referencedFieldObject:  " + referencedFieldObject.getName());
-            System.out.println("ExprType = " + offsetExpr.getExprType());
-            System.out.println("ExprZserioType = " + offsetExpr.getExprZserioType());
-            System.out.println("ExprSymbolObject = " + offsetExpr.getExprSymbolObject());
-
             if (offsetExpr.op2() == null)
             {
                 final AstNode symbolObject = offsetExpr.getExprSymbolObject();
