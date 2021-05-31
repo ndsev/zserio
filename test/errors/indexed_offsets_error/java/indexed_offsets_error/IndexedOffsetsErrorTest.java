@@ -73,6 +73,14 @@ public class IndexedOffsetsErrorTest
     }
 
     @Test
+    public void packedOffsetArray()
+    {
+        final String error = "packed_offset_array_error.zs:14:1: " +
+                "Packed array cannot be used as indexed offset array!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void parameterNoArray()
     {
         final String error = "parameter_no_array_error.zs:10:19: " +

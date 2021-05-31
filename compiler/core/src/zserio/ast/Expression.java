@@ -2,7 +2,7 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -342,13 +342,14 @@ public class Expression extends AstNodeBase
     /**
      * Gets all objects of given class referenced from the expression.
      *
-     * @param clazz Class of which objects should be found.
+     * @param clazz Class of which object should be found.
      *
      * @return Set of objects of given class referenced from the expression.
      */
     public <T extends AstNode> Set<T> getReferencedSymbolObjects(Class<? extends T> clazz)
     {
-        final Set<T> referencedSymbolObjects = new HashSet<T>();
+        // LinkedHashSet is used intentionally to guarantee insert order
+        final Set<T> referencedSymbolObjects = new LinkedHashSet<T>();
         addReferencedSymbolObject(referencedSymbolObjects, clazz);
 
         return referencedSymbolObjects;

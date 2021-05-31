@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 /**
  * AST node for compound fields.
@@ -204,27 +205,24 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
+     * Gets flag which indicates if the field is packable.
+     *
+     * Currently, all fields are packable except of fields which are used as offsets.
+     *
+     * @return true if the field is packable.
+     */
+    public boolean getIsPackable()
+    {
+        return isPackable;
+    }
+
+    /**
      * Checks the compound field.
      */
     void check(Package pkg)
     {
         // check offset expression type
-        if (offsetExpr != null)
-        {
-            final ZserioType exprZserioType = offsetExpr.getExprZserioType();
-            if (!(exprZserioType instanceof IntegerType && !((IntegerType)exprZserioType).isSigned() &&
-                    exprZserioType instanceof FixedSizeType))
-            {
-                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
-                        "' is not an unsigned fixed sized integer type!");
-            }
-
-            if (offsetExpr.containsFunctionCall())
-                throw new ParserException(offsetExpr, "Function call cannot be used in offset expression!");
-
-            if (offsetExpr.op2() == null)
-                checkSingleOffsetExpression();
-        }
+        checkOffsetExpression();
 
         // check alignment expression type
         if (alignmentExpr != null)
@@ -299,22 +297,69 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                 isVirtual, instantiatedSqlConstraint, getDocComments());
     }
 
-    private void checkSingleOffsetExpression()
+    private void checkOffsetExpression()
     {
-        final AstNode symbolObject = offsetExpr.getExprSymbolObject();
-        if (symbolObject instanceof Parameter)
+        if (offsetExpr != null)
         {
-            final Parameter parameter = (Parameter)symbolObject;
-            if (parameter.getTypeReference().getBaseTypeReference().getType() instanceof BuiltInType)
+            final ZserioType exprZserioType = offsetExpr.getExprZserioType();
+            if (!(exprZserioType instanceof IntegerType && !((IntegerType)exprZserioType).isSigned() &&
+                    exprZserioType instanceof FixedSizeType))
             {
-                throw new ParserException(offsetExpr, "Built-in type parameter '" + parameter.getName() +
-                        "' cannot be used as an offset!");
+                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
+                        "' is not an unsigned fixed sized integer type!");
             }
-        }
-        else if (symbolObject instanceof Constant)
-        {
-            throw new ParserException(offsetExpr, "Constant '" + ((Constant)symbolObject).getName() +
-                    "' cannot be used as an offset!");
+
+            if (offsetExpr.containsFunctionCall())
+                throw new ParserException(offsetExpr, "Function call cannot be used in offset expression!");
+
+            if (offsetExpr.getExprSymbolObject() instanceof Field)
+            {
+                // the offset has been evaluated to the single field => mark it as not packable
+                final Field offsetField = (Field) offsetExpr.getExprSymbolObject();
+                offsetField.isPackable = false;
+            }
+            else
+            {
+                // the offset has been evaluated to the array => find the last evaluated array instantiation
+                final Set<Field> referencedFieldObjects = offsetExpr.getReferencedSymbolObjects(Field.class);
+                ArrayInstantiation lastReferencedArrayInst = null;
+                for (Field referencedFieldObject : referencedFieldObjects)
+                {
+                    final TypeInstantiation referencedTypeInst = referencedFieldObject.getTypeInstantiation();
+                    if (referencedTypeInst instanceof ArrayInstantiation)
+                        lastReferencedArrayInst = (ArrayInstantiation)referencedTypeInst;
+                }
+                if (lastReferencedArrayInst != null && lastReferencedArrayInst.isPacked())
+                {
+                    throw new ParserException(offsetExpr,
+                            "Packed array cannot be used as indexed offset array!");
+                }
+            }
+
+            for (Field referencedFieldObject : offsetExpr.getReferencedSymbolObjects(Field.class))
+                System.out.println("referencedFieldObject:  " + referencedFieldObject.getName());
+            System.out.println("ExprType = " + offsetExpr.getExprType());
+            System.out.println("ExprZserioType = " + offsetExpr.getExprZserioType());
+            System.out.println("ExprSymbolObject = " + offsetExpr.getExprSymbolObject());
+
+            if (offsetExpr.op2() == null)
+            {
+                final AstNode symbolObject = offsetExpr.getExprSymbolObject();
+                if (symbolObject instanceof Parameter)
+                {
+                    final Parameter parameter = (Parameter)symbolObject;
+                    if (parameter.getTypeReference().getBaseTypeReference().getType() instanceof BuiltInType)
+                    {
+                        throw new ParserException(offsetExpr, "Built-in type parameter '" +
+                                parameter.getName() + "' cannot be used as an offset!");
+                    }
+                }
+                else if (symbolObject instanceof Constant)
+                {
+                    throw new ParserException(offsetExpr, "Constant '" + ((Constant)symbolObject).getName() +
+                            "' cannot be used as an offset!");
+                }
+            }
         }
     }
 
@@ -337,6 +382,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
         this.isVirtual = isVirtual;
         this.sqlConstraint = sqlConstraint;
+
+        this.isPackable = true;
     }
 
     private final TypeInstantiation typeInstantiation;
@@ -351,4 +398,6 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
     private final boolean isVirtual;
     private final SqlConstraint sqlConstraint;
+
+    private boolean isPackable;
 }
