@@ -2,7 +2,7 @@ package signed_bitfield_error;
 
 struct SignedBitfieldError
 {
-    int<12> offsets[];
-offsets[@index]:
+    int<12> offset;
+offset:
     uint32  values[];
 };

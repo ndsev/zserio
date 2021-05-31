@@ -2,14 +2,14 @@ package function_error;
 
 struct Holder
 {
-    uint32 offsets[];
+    uint32 offset;
 };
 
 struct Test
 {
     Holder holder;
 
-getHolderField().offsets[@index]:
+getHolderField().offset:
     uint32 array[];
 
     function Holder getHolderField()
