@@ -16,6 +16,7 @@
         <testGen testName="offsets_error" zsFile="constant_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="float_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="function_error.zs" ignoreErrors="true"/>
+        <testGen testName="offsets_error" zsFile="packed_offset_array_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="signed_bitfield_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="signed_integer_error.zs" ignoreErrors="true"/>
         <testGen testName="offsets_error" zsFile="string_error.zs" ignoreErrors="true"/>

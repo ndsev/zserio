@@ -56,6 +56,13 @@ public class OffsetsErrorTest
     }
 
     @Test
+    public void packed_offset_array()
+    {
+        final String error = "packed_offset_array_error.zs:17:1: Packed array cannot be used as offset array!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void signed_bitfield()
     {
         final String error = "signed_bitfield_error.zs:6:1: " +

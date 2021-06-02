@@ -19,7 +19,12 @@
         <testGen testName="indexed_offsets_error" zsFile="enum_value_expression_error.zs" ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="no_array_error.zs" ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="optional_expression_error.zs" ignoreErrors="true"/>
-        <testGen testName="indexed_offsets_error" zsFile="packed_offset_array_error.zs" ignoreErrors="true"/>
+        <testGen testName="indexed_offsets_error" zsFile="packed_complex_offset_array_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="indexed_offsets_error" zsFile="packed_param_offset_array_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="indexed_offsets_error" zsFile="packed_simple_offset_array_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="parameter_no_array_error.zs" ignoreErrors="true"/>
         <testGen testName="indexed_offsets_error" zsFile="varuint_offset_array_error.zs" ignoreErrors="true"/>
     </target>

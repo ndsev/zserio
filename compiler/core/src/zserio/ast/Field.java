@@ -217,6 +217,32 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
+     * Evaluates the compound field.
+     *
+     * This method calculates and sets isPackable flag.
+     */
+    void evaluate()
+    {
+        if (offsetExpr != null)
+        {
+            // the offset must be evaluated to the field (single or array) => mark it as not packable
+            final Set<Field> referencedFieldObjects = offsetExpr.getReferencedSymbolObjects(Field.class);
+            if (!referencedFieldObjects.isEmpty())
+            {
+                final Field referencedField =  referencedFieldObjects.iterator().next();
+                final TypeInstantiation referencedFieldInst = referencedField.getTypeInstantiation();
+                if (referencedFieldInst instanceof ArrayInstantiation &&
+                        ((ArrayInstantiation)referencedFieldInst).isPacked())
+                {
+                    throw new ParserException(offsetExpr, "Packed array cannot be used as offset array!");
+                }
+
+                referencedField.isPackable = false;
+            }
+        }
+    }
+
+    /**
      * Checks the compound field.
      */
     void check(Package pkg)
@@ -311,30 +337,6 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
             if (offsetExpr.containsFunctionCall())
                 throw new ParserException(offsetExpr, "Function call cannot be used in offset expression!");
-
-            if (offsetExpr.getExprSymbolObject() instanceof Field)
-            {
-                // the offset has been evaluated to the single field => mark it as not packable
-                final Field offsetField = (Field) offsetExpr.getExprSymbolObject();
-                offsetField.isPackable = false;
-            }
-            else
-            {
-                // the offset has been evaluated to the array => find the last evaluated array instantiation
-                final Set<Field> referencedFieldObjects = offsetExpr.getReferencedSymbolObjects(Field.class);
-                ArrayInstantiation lastReferencedArrayInst = null;
-                for (Field referencedFieldObject : referencedFieldObjects)
-                {
-                    final TypeInstantiation referencedTypeInst = referencedFieldObject.getTypeInstantiation();
-                    if (referencedTypeInst instanceof ArrayInstantiation)
-                        lastReferencedArrayInst = (ArrayInstantiation)referencedTypeInst;
-                }
-                if (lastReferencedArrayInst != null && lastReferencedArrayInst.isPacked())
-                {
-                    throw new ParserException(offsetExpr,
-                            "Packed array cannot be used as indexed offset array!");
-                }
-            }
 
             if (offsetExpr.op2() == null)
             {

@@ -10,6 +10,12 @@ struct StructWithoutPackable
 {
     float32 field1;
     extern field2;
+    uint32 offset; // offset is always unpackable
+offset:
+    string field3;
+    uint32 offsets[]; // offsets are always unpackable
+offsets[@index]:
+    bool array1[]; 
 };
 
 enum uint8 TestEnum
