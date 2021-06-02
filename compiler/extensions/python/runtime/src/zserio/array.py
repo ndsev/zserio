@@ -40,6 +40,7 @@ class Array:
 
         self._raw_array: typing.List = [] if raw_array is None else raw_array
         self._array_traits: typing.Any = array_traits
+        self._packed_array_traits : typing.Any = array_traits.packed_traits
         self._is_auto: bool = is_auto
         self._is_implicit: bool = is_implicit
         self._set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = set_offset_method
@@ -72,6 +73,36 @@ class Array:
         instance = cls(array_traits, is_auto=is_auto, is_implicit=is_implicit,
                        set_offset_method=set_offset_method, check_offset_method=check_offset_method)
         instance.read(reader, size)
+
+        return instance
+
+    @classmethod
+    def from_reader_packed(
+            cls: typing.Type['Array'],
+            array_traits: typing.Any,
+            reader: BitStreamReader,
+            size: int = 0,
+            *,
+            is_auto: bool = False,
+            set_offset_method: typing.Optional[typing.Callable[[int, int], None]] = None,
+            check_offset_method:
+            typing.Optional[typing.Callable[[int, int], None]] = None) -> 'Array':
+        """
+        Constructs packed array and reads elements from the given bit stream reader.
+
+        :param packed_array_traits: Packed array traits which specify the array type.
+        :param reader: Bit stream from which to read.
+        :param size: Number of elements to read or None in case of implicit or auto arrays.
+        :param raw_array: Native python list which will be hold by this abstraction.
+        :param is_auto: True if mapped Zserio array is auto array.
+        :param set_offset_method:  Set offset method if mapped Zserio array is indexed offset array.
+        :param check_offset_method: Check offset method if mapped Zserio array is indexed offset array.
+        :returns: Array instance filled using given bit stream reader.
+        """
+
+        instance = cls(array_traits, is_auto=is_auto, is_implicit=False, set_offset_method=set_offset_method,
+                       check_offset_method=check_offset_method)
+        instance.read_packed(reader, size)
 
         return instance
 
@@ -108,7 +139,6 @@ class Array:
 
         return self._raw_array
 
-
     def bitsizeof(self, bitposition: int) -> int:
         """
         Returns length of array stored in the bit stream in bits.
@@ -137,6 +167,32 @@ class Array:
 
         return end_bitposition - bitposition
 
+    def bitsizeof_packed(self, bitposition: int) -> int:
+        """
+        Returns length of the packed array stored in the bit stream in bits.
+
+        :param bitposition: Current bit stream position.
+        :returns: Length of the array stored in the bit stream in bits.
+        """
+
+        end_bitposition = bitposition
+        size = len(self._raw_array)
+        if self._is_auto:
+            end_bitposition += bitsizeof_varsize(size)
+
+        if size > 0:
+            context_node = self._packed_array_traits.create_context()
+            for element in self._raw_array:
+                self._packed_array_traits.init_context(context_node, element)
+            end_bitposition += Array._bitsizeof_descriptor(context_node, end_bitposition)
+
+            for element in self._raw_array:
+                if self._set_offset_method is not None:
+                    end_bitposition = alignto(8, end_bitposition)
+                end_bitposition += self._packed_array_traits.bitsizeof(context_node, end_bitposition, element)
+
+        return end_bitposition - bitposition
+
     def initialize_offsets(self, bitposition: int) -> int:
         """
         Initializes indexed offsets for the array.
@@ -155,6 +211,34 @@ class Array:
                 end_bitposition = alignto(8, end_bitposition)
                 self._set_offset_method(index, end_bitposition)
             end_bitposition = self._array_traits.initialize_offsets(end_bitposition, self._raw_array[index])
+
+        return end_bitposition
+
+    def initialize_offsets_packed(self, bitposition: int) -> int:
+        """
+        Initializes indexed offsets for the packed array.
+
+        :param bitposition: Current bit stream position.
+        :returns: Updated bit stream position which points to the first bit after the array.
+        """
+
+        end_bitposition = bitposition
+        size = len(self._raw_array)
+        if self._is_auto:
+            end_bitposition += bitsizeof_varsize(size)
+
+        if size > 0:
+            context_node = self._packed_array_traits.create_context()
+            for index in range(size):
+                self._packed_array_traits.init_context(context_node, self._raw_array[index])
+            end_bitposition += Array._bitsizeof_descriptor(context_node, end_bitposition)
+
+            for index in range(size):
+                if self._set_offset_method is not None:
+                    end_bitposition = alignto(8, end_bitposition)
+                    self._set_offset_method(index, end_bitposition)
+                end_bitposition = self._packed_array_traits.initialize_offsets(context_node, end_bitposition,
+                                                                               self._raw_array[index])
 
         return end_bitposition
 
@@ -195,6 +279,34 @@ class Array:
                 else:
                     self._raw_array.append(self._array_traits.read(reader))
 
+    def read_packed(self, reader: BitStreamReader, size: int = 0) -> None:
+        """
+        Reads packed array from the bit stream.
+
+        :param reader: Bit stream from which to read.
+        :param size: Number of elements to read or 0 in case of auto arrays.
+        """
+
+        self._raw_array.clear()
+
+        if self._is_implicit:
+            raise PythonRuntimeException("Array: Implicit array cannot be packed!")
+
+        if self._is_auto:
+            read_size = reader.read_varsize()
+        else:
+            read_size = size
+
+        if read_size > 0:
+            context_node = self._packed_array_traits.create_context()
+            Array._read_descriptor(context_node, reader)
+
+            for index in range(read_size):
+                if self._check_offset_method is not None:
+                    reader.alignto(8)
+                    self._check_offset_method(index, reader.bitposition)
+                self._raw_array.append(self._packed_array_traits.read(context_node, reader, index))
+
     def write(self, writer: BitStreamWriter) -> None:
         """
         Writes array to the bit stream.
@@ -212,6 +324,557 @@ class Array:
                 self._check_offset_method(index, writer.bitposition)
             self._array_traits.write(writer, self._raw_array[index])
 
+    def write_packed(self, writer: BitStreamWriter) -> None:
+        """
+        Writes packed array to the bit stream.
+
+        :param writer: Bit stream where to write.
+        """
+
+        size = len(self._raw_array)
+
+        if self._is_auto:
+            writer.write_varsize(size)
+
+        if size > 0:
+            context_node = self._packed_array_traits.create_context()
+            for element in self._raw_array:
+                self._packed_array_traits.init_context(context_node, element)
+            Array._write_descriptor(context_node, writer)
+
+            for index in range(size):
+                if self._check_offset_method is not None:
+                    writer.alignto(8)
+                    self._check_offset_method(index, writer.bitposition)
+                self._packed_array_traits.write(context_node, writer, self._raw_array[index])
+
+    @staticmethod
+    def _bitsizeof_descriptor(context_node: 'PackingContextNode', bitposition: int):
+        end_bitposition = bitposition
+        if context_node.has_context():
+            end_bitposition += context_node.context.bitsizeof_descriptor(end_bitposition)
+        else:
+            for child_node in context_node.children:
+                end_bitposition += Array._bitsizeof_descriptor(child_node, end_bitposition)
+        return end_bitposition - bitposition
+
+    @staticmethod
+    def _read_descriptor(context_node: 'PackingContextNode', reader: BitStreamReader):
+        if context_node.has_context():
+            context_node.context.read_descriptor(reader)
+        else:
+            for child_node in context_node.children:
+                Array._read_descriptor(child_node, reader)
+
+    @staticmethod
+    def _write_descriptor(context_node: 'PackingContextNode', writer: BitStreamWriter):
+        if context_node.has_context():
+            context_node.context.write_descriptor(writer)
+        else:
+            for child_node in context_node.children:
+                Array._write_descriptor(child_node, writer)
+
+class PackingContext:
+    """
+    Base class for packing context. Default implementation doen't pack and just calls provided array traits.
+    """
+
+    def init(self, _element: typing.Any) -> None:
+        """
+        Makes initialization step for the provided array element.
+
+        :param _element: Current element of the array.
+        """
+
+        # default implementation does nothing
+
+    def bitsizeof_descriptor(self, _bitposition: int) -> int:
+        """
+        Returns length of the descriptor stored in the bit stream in bits.
+
+        :param _bitposition: Current bit stream position.
+        :returns: Length of the descriptor stored in the bit stream in bits.
+        """
+
+        assert self is not None
+        return 1
+
+    def bitsizeof(self, array_traits: typing.Any, bitposition: int, element: typing.Any) -> int:
+        """
+        Returns length of the element representation stored in the bit stream in bits.
+
+        :param array_traits: Standard array traits.
+        :param bitposition: Current bit stream position.
+        :param element: Current element.
+        :returns: Length of the element representation stored in the bit stream in bits.
+        """
+
+        assert self is not None
+        if array_traits.HAS_BITSIZEOF_CONSTANT:
+            return array_traits.bitsizeof()
+        else:
+            return array_traits.bitsizeof(bitposition, element)
+
+    def write_descriptor(self, writer: BitStreamWriter) -> None:
+        """
+        Writes the delta packing descriptor to the bit stream. Called for all contexts before the first element
+        is written.
+
+        :param writer: Bit stream writer.
+        """
+
+        assert self is not None
+        writer.write_bool(False)
+
+    def write(self, array_traits: typing.Any, writer: BitStreamWriter, element: typing.Any) -> None:
+        """
+        Writes the packed element representation to the bit stream. This is not called for the first element
+        since it's written using standard array traits.
+
+        :param array_traits: Standard array traits.
+        :param writer: Bit stream writer.
+        :param element: Element to write.
+        """
+
+        assert self is not None
+        array_traits.write(writer, element)
+
+    def read_descriptor(self, reader: BitStreamReader) -> None:
+        """
+        Reads the delta packing descriptor from the bit stream. Called for all context before the first element
+        is read.
+
+        :param reader: Bit stream reader.
+        """
+
+        assert self is not None
+        is_packed = reader.read_bool()
+        assert not is_packed
+
+    def read(self, array_traits: typing.Any, reader: BitStreamReader) -> typing.Any:
+        """
+        Reads the packed element from the bit stream. This is not called for the first element since it's read
+        using standard array traits.
+
+        :param array_traits: Standard array traits.
+        :param reader: Bit stream reader.
+        """
+
+        assert self is not None
+        return array_traits.read(reader)
+
+class DeltaContext(PackingContext):
+    """
+    Context for delta packing created for each packable field.
+
+    Contexts are always newly created for each array operation (bitsizeof, initialize_offsets, read, write).
+    They must be initialized at first via calling the init method for each packable element present in the
+    array. After the full initialization, only a single method (bitsizeof, read, write) can be repeatedly
+    called for exactly the same sequence of packable elements.
+
+    Note that *_descriptor* methods doesn't change context's internal state and can be called as needed. They
+    are designed to be called once for each context before the actual operation.
+
+    Example::
+
+        context = DeltaContext(array_traits)
+        for element in array:
+            context.init(element) # initialization step, needed for max_bit_number calculation
+        context.write_descriptor(writer)
+        for element in array:
+            context.write(writer, element)
+    """
+
+    def __init__(self) -> None:
+        self._is_packed = False
+        self._max_bit_number = 0
+        self._previous_element: typing.Optional[int] = None
+        self._processing_started = False
+
+    def init(self, element: int) -> None:
+        if self._previous_element is None:
+            self._previous_element = element
+        else:
+            if self._max_bit_number <= self._MAX_BIT_NUMBER_LIMIT:
+                self._is_packed = True
+            delta = element - self._previous_element
+            max_bit_number = delta.bit_length()
+            # if delta is negative, we need one bit more because of sign
+            # if delta is positive, we need one bit more because delta are treated as signed number
+            # if delta is zero, we need one bit more because bit_length() returned zero
+            if max_bit_number > self._max_bit_number:
+                self._max_bit_number = max_bit_number
+                if max_bit_number > self._MAX_BIT_NUMBER_LIMIT:
+                    self._is_packed = False
+            self._previous_element = element
+
+    def bitsizeof_descriptor(self, _bitposition: int) -> int:
+        if self._is_packed:
+            return 1 + self._MAX_BIT_NUMBER_BITS
+        else:
+            return 1
+
+    def bitsizeof(self, array_traits: typing.Any, bitposition: int, element: int) -> int:
+        if not self._processing_started or not self._is_packed:
+            self._processing_started = True
+            return super().bitsizeof(array_traits, bitposition, element)
+        else: # packed and not first
+            return self._max_bit_number + 1 if self._max_bit_number > 0 else 0
+
+    def write_descriptor(self, writer: BitStreamWriter) -> None:
+        writer.write_bool(self._is_packed)
+        if self._is_packed:
+            writer.write_signed_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
+
+    def write(self, array_traits: typing.Any, writer: BitStreamWriter, element: int) -> None:
+        if not self._processing_started or not self._is_packed:
+            self._processing_started = True
+            self._previous_element = element
+            super().write(array_traits, writer, element)
+        else: # packed and not first
+            assert self._previous_element is not None
+            if self._max_bit_number > 0:
+                delta = element - self._previous_element
+                writer.write_signed_bits(delta, self._max_bit_number + 1)
+                self._previous_element = element
+
+    def read_descriptor(self, reader: BitStreamReader) -> None:
+        self._is_packed = reader.read_bool()
+        if self._is_packed:
+            self._max_bit_number = reader.read_bits(self._MAX_BIT_NUMBER_BITS)
+
+    def read(self, array_traits: typing.Any, reader: BitStreamReader) -> int:
+        if not self._processing_started or not self._is_packed:
+            self._processing_started = True
+            element = super().read(array_traits, reader)
+            self._previous_element = element
+            return element
+        else: # packed and not first
+            assert self._previous_element is not None
+            if self._max_bit_number > 0:
+                delta = reader.read_signed_bits(self._max_bit_number + 1)
+                self._previous_element += delta
+            return self._previous_element
+
+    _MAX_BIT_NUMBER_BITS = 6
+    _MAX_BIT_NUMBER_LIMIT = 63
+
+class PackingContextNode:
+    """
+    Packing context node which allows to keep packing contexts in a tree which corresponds with
+    the user defined Zserio tree.
+    """
+
+    def __init__(self, *, children: typing.Optional[typing.List['PackingContextNode']] = None,
+                 context: typing.Optional[PackingContext] = None) -> None:
+        """
+        Constructor.
+
+        :param children: Child context nodes.
+        :param context: Packing context in case of leaf node.
+        """
+
+        self._children = children if children is not None else []
+        self._context = context
+
+    def has_context(self):
+        """
+        Checks whether this node has a context.
+
+        :returns: True when this is a leaf, False otherwise.
+        """
+
+        return self._context is not None
+
+    @property
+    def children(self) -> typing.List['PackingContextNode']:
+        """
+        Gets children of the current node.
+
+        :return: Child context nodes.
+        """
+
+        return self._children
+
+    @property
+    def context(self) -> PackingContext:
+        """
+        Gets packing context for leaf nodes.
+
+        :return: Packing context for leafs, None otherwise.
+        :raises PythonRuntimeException: When called on a node which is not leaf.
+        """
+
+        if self._context is None:
+            raise PythonRuntimeException("PackingContextNode is not a leaf!")
+        return self._context
+
+class PackingContextBuilder:
+    """
+    Context builder used to separate generated API from the particular packing implementation.
+    """
+
+    def __init__(self) -> None:
+        """
+        Constructor.
+        """
+
+        self._context_nodes_stack: typing.List[typing.List[PackingContextNode]] = [[]]
+
+    def begin_node(self):
+        """
+        Marks beginning of the new context node.
+
+        Called when entering a compound type.
+        """
+        self._context_nodes_stack.append([])
+
+    def end_node(self):
+        """
+        Creates a new context node which will contain children added since the last begin_node call.
+
+        Called when leaving a compound type.
+        """
+
+        children = self._context_nodes_stack.pop()
+        self._context_nodes_stack[-1].append(PackingContextNode(children=children))
+
+    def add_leaf(self, array_traits_class: typing.Type) -> 'PackingContextBuilder':
+        """
+        Adds a leaf packing context node for a field.
+
+        :param array_traits_class: Standard array traits class which is used to choose proper packing.
+        :returns: Self for convenience.
+        """
+
+        if (array_traits_class in (BitFieldArrayTraits,
+                                   SignedBitFieldArrayTraits,
+                                   VarUInt16ArrayTraits,
+                                   VarUInt32ArrayTraits,
+                                   VarUInt64ArrayTraits,
+                                   VarUIntArrayTraits,
+                                   VarSizeArrayTraits,
+                                   VarInt16ArrayTraits,
+                                   VarInt32ArrayTraits,
+                                   VarInt64ArrayTraits,
+                                   VarIntArrayTraits)):
+            self._context_nodes_stack[-1].append(PackingContextNode(context=DeltaContext()))
+        elif array_traits_class is not None:
+            self._context_nodes_stack[-1].append(PackingContextNode(context=PackingContext()))
+
+        return self
+
+    def add_dummy_leaf(self) -> 'PackingContextBuilder':
+        """
+        Adds a dummy leaf which is used for array and recursive fields or for fields which are not packable
+        from whatever reason (e.g. fields which are used as an offsets).
+
+        Dummy leaf doesn't have context and has no children. We need it to simplify generated code which uses
+        field indices to get a proper context nodes and it would be difficult when we would not create
+        child nodes for unpackable fields.
+
+        :returns: Self for convenience.
+        """
+
+        self._context_nodes_stack[-1].append(PackingContextNode())
+        return self
+
+    def build(self) -> PackingContextNode:
+        """
+        Returns built list of delta packing contexts.
+
+        :returns: Root packing context node.
+        :raises PythonRuntimeException: When builder is wrongly used.
+        """
+
+        if len(self._context_nodes_stack) != 1 or len(self._context_nodes_stack[0]) != 1:
+            raise PythonRuntimeException("Cannot build context!")
+        return self._context_nodes_stack[0][0]
+
+class PackedArrayTraits:
+    """
+    Packed array traits.
+
+    Packed array traits are used for all built-in types. Packing context builder creates an appropriate
+    packing context for concrete types.
+    """
+
+    def __init__(self, array_traits: typing.Any) -> None:
+        """
+        Constructor.
+
+        :param array_traits: Standard array traits.
+        """
+
+        self._array_traits = array_traits
+
+    def create_context(self) -> PackingContextNode:
+        """
+        Creates packing context.
+
+        :returns: List of packing contexts.
+        """
+
+        return PackingContextBuilder().add_leaf(type(self._array_traits)).build()
+
+    @staticmethod
+    def init_context(context_node: PackingContextNode, element: int) -> None:
+        """
+        Calls context initialization step for the current element.
+
+        :param context_node: Packing context node.
+        :param element: Current element.
+        """
+
+        context = context_node.context
+        context.init(element)
+
+    def bitsizeof(self, context_node: PackingContextNode, bitposition: int, element: int) -> int:
+        """
+        Returns length of the array element stored in the bit stream in bits.
+
+        :param context_node: Packing context node.
+        :param bitposition: Current bit stream position.
+        :param elemnet: Current element.
+        :returns: Length of the array element stored in the bit stream in bits.
+        """
+
+        context = context_node.context
+        return context.bitsizeof(self._array_traits, bitposition, element)
+
+    def initialize_offsets(self, context_node: PackingContextNode, bitposition: int, element: int) -> int:
+        """
+        Calls indexed offsets initialization for the current element.
+
+        :param context_node: Packing context node.
+        :param bitposition: Current bit stream position.
+        :param element: Current element.
+        :returns: Updated bit stream position which points to the first bit after this element.
+        """
+
+        context = context_node.context
+        return bitposition + context.bitsizeof(self._array_traits, bitposition, element)
+
+    def write(self, context_node: PackingContextNode, writer: BitStreamWriter, element: int) -> None:
+        """
+        Writes the element to the bit stream.
+
+        :param context_node: Packing context node.
+        :param writer: Bit stream writer.
+        :param element: Element to write.
+        """
+
+        context = context_node.context
+        context.write(self._array_traits, writer, element)
+
+    def read(self, context_node: PackingContextNode, reader: BitStreamReader, _index: int) -> int:
+        """
+        Read an element from the bit stream.
+
+        :param context_node: Packing context node.
+        :param reader: Bit stream reader.
+        :param _index: Not used.
+        :returns: Read element value.
+        """
+
+        context = context_node.context
+        return context.read(self._array_traits, reader)
+
+class ObjectPackedArrayTraits:
+    """
+    Packed array traits for Zserio objects.
+
+    This traits are used for Zserio objects which must implement special *_packed* methods to allow itself
+    to be used in a packed array.
+    """
+
+    def __init__(self, packed_object_creator: typing.Callable[[PackingContextNode, BitStreamReader, int],
+                                                              typing.Any],
+                 packing_context_creator: typing.Callable[[PackingContextBuilder], None]):
+        """
+        Constructor.
+
+        :param packed_object_creator: Creator which creates packed object from the element index.
+        :param packing_context_creator: Creator which creates contexts for object packing.
+        """
+
+        self._packed_object_creator = packed_object_creator
+        self._packing_context_creator = packing_context_creator
+
+    def create_context(self) -> PackingContextNode:
+        """
+        Creates packing context.
+
+        :returns: List of delta packing contexts.
+        """
+
+        context_builder = PackingContextBuilder()
+        self._packing_context_creator(context_builder)
+        return context_builder.build()
+
+    @staticmethod
+    def init_context(context_node: PackingContextNode, element: typing.Any) -> None:
+        """
+        Calls context initialization step for the current element.
+
+        :param context_node: Packing context node.
+        :param element: Current element.
+        """
+
+        element.init_packing_context(context_node)
+
+    @staticmethod
+    def bitsizeof(context_node: PackingContextNode, bitposition: int, element: typing.Any) -> int:
+        """
+        Returns length of the array element stored in the bit stream in bits.
+
+        :param context_node: Packing context node.
+        :param bitposition: Current bit stream position.
+        :param elemnet: Current element.
+        :returns: Length of the array element stored in the bit stream in bits.
+        """
+
+        return element.bitsizeof_packed(context_node, bitposition)
+
+    @staticmethod
+    def initialize_offsets(context_node: PackingContextNode,
+                           bitposition: int, element: typing.Any) -> int:
+        """
+        Calls indexed offsets initialization for the current element.
+
+        :param context_node: Packing context node.
+        :param bitposition: Current bit stream position.
+        :param element: Current element.
+        :returns: Updated bit stream position which points to the first bit after this element.
+        """
+
+        return element.initialize_offsets_packed(context_node, bitposition)
+
+    @staticmethod
+    def write(context_node: PackingContextNode, writer: BitStreamWriter, element: typing.Any) -> None:
+        """
+        Writes the element to the bit stream.
+
+        :param context_node: Packing context node.
+        :param writer: Bit stream writer.
+        :param element: Element to write.
+        :param is_first: Denotes whether this element is the first element of the array.
+        """
+
+        element.write_packed(context_node, writer)
+
+    def read(self, context_node: PackingContextNode, reader: BitStreamReader, index: int) -> typing.Any:
+        """
+        Read an element from the bit stream.
+
+        :param context_node: Packing context node.
+        :param reader: Bit stream reader.
+        :param index: Index of the current element.
+        :returns: Read element value.
+        """
+
+        return self._packed_object_creator(context_node, reader, index)
+
 class BitFieldArrayTraits:
     """
     Array traits for unsigned fixed integer Zserio types (uint16, uint32, uint64, bit:5, etc...).
@@ -228,6 +891,16 @@ class BitFieldArrayTraits:
         """
 
         self._numbits = numbits
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     def bitsizeof(self) -> int:
         """
@@ -285,6 +958,16 @@ class SignedBitFieldArrayTraits:
 
         self._numbits = numbits
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     def bitsizeof(self) -> int:
         """
         Returns length of signed fixed integer Zserio type stored in the bit stream in bits.
@@ -331,6 +1014,16 @@ class VarUInt16ArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -385,6 +1078,16 @@ class VarUInt32ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
         """
@@ -437,6 +1140,16 @@ class VarUInt64ArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -491,6 +1204,16 @@ class VarUIntArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
         """
@@ -543,6 +1266,16 @@ class VarSizeArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -597,6 +1330,16 @@ class VarInt16ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
         """
@@ -649,6 +1392,16 @@ class VarInt32ArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -703,6 +1456,16 @@ class VarInt64ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
         """
@@ -755,6 +1518,16 @@ class VarIntArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: int) -> int:
@@ -809,6 +1582,16 @@ class Float16ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_READ_INDEX = False
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     @staticmethod
     def bitsizeof() -> int:
         """
@@ -859,6 +1642,16 @@ class Float32ArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof() -> int:
@@ -911,6 +1704,16 @@ class Float64ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_READ_INDEX = False
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     @staticmethod
     def bitsizeof() -> int:
         """
@@ -961,6 +1764,16 @@ class StringArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof(_bitposition, value: str) -> int:
@@ -1015,6 +1828,16 @@ class BoolArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_READ_INDEX = False
 
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
+
     @staticmethod
     def bitsizeof() -> int:
         """
@@ -1065,6 +1888,16 @@ class BitBufferArrayTraits:
 
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = False
+
+    @property
+    def packed_traits(self) -> PackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        :returns: PackedArrayTraits instance.
+        """
+
+        return PackedArrayTraits(self)
 
     @staticmethod
     def bitsizeof(_bitposition: int, value: BitBuffer) -> int:
@@ -1119,7 +1952,10 @@ class ObjectArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_READ_INDEX = True
 
-    def __init__(self, object_creator: typing.Callable[[BitStreamReader, int], typing.Any]) -> None:
+    def __init__(self, object_creator: typing.Callable[[BitStreamReader, int], typing.Any],
+                 packed_object_creator: typing.Callable[[PackingContextNode, BitStreamReader, int],
+                                                         typing.Any],
+                 packing_context_creator: typing.Callable[[PackingContextBuilder], None]) -> None:
         """
         Constructor.
 
@@ -1127,6 +1963,17 @@ class ObjectArrayTraits:
         """
 
         self._object_creator = object_creator
+        self._packed_traits = ObjectPackedArrayTraits(packed_object_creator, packing_context_creator)
+
+    @property
+    def packed_traits(self) -> ObjectPackedArrayTraits:
+        """
+        Gets packed array traits.
+
+        @return ObjectPackedArrayTraits instance.
+        """
+
+        return self._packed_traits
 
     @staticmethod
     def bitsizeof(bitposition: int, value: typing.Any) -> int:

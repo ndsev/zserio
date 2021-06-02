@@ -335,7 +335,6 @@ public final class CompoundFieldTemplateData
                 PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
-            packedTraitsName = nativeType.getPackedArrayTraitsName();
             traits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
 
             isImplicit = arrayInstantiation.isImplicit();
@@ -350,11 +349,6 @@ public final class CompoundFieldTemplateData
             elementIsRecursive = (elementTypeInstantiation.getBaseType() == parentType);
             elementBitSize = new BitSize(elementTypeInstantiation, pythonExpressionFormatter);
             elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);
-        }
-
-        public String getPackedTraitsName()
-        {
-            return packedTraitsName;
         }
 
         public ArrayTraitsTemplateData getTraits()
@@ -407,7 +401,6 @@ public final class CompoundFieldTemplateData
             return pythonExpressionFormatter.formatGetter(lengthExpression);
         }
 
-        private final String packedTraitsName;
         private final ArrayTraitsTemplateData traits;
         private final boolean isImplicit;
         private final boolean isPacked;
@@ -561,7 +554,8 @@ public final class CompoundFieldTemplateData
 
         if (!(nativeType instanceof NativeArrayType))
         {
-            throw new ZserioExtensionException("Inconsistent base type '" + typeInstantiation.getClass().getName() +
+            throw new ZserioExtensionException("Inconsistent base type '" +
+                    typeInstantiation.getClass().getName() +
                     "' and native type '" + nativeType.getClass().getName() + "'!");
         }
 

@@ -34,7 +34,6 @@ import zserio.extension.python.types.NativeArrayType;
 import zserio.extension.python.types.NativeBitBufferType;
 import zserio.extension.python.types.NativeBuiltinType;
 import zserio.extension.python.types.NativeFixedSizeIntArrayTraits;
-import zserio.extension.python.types.NativePackedArrayType;
 import zserio.extension.python.types.NativeSubtype;
 import zserio.extension.python.types.NativeUserType;
 import zserio.extension.python.types.PythonNativeType;
@@ -110,17 +109,8 @@ class PythonNativeMapper
         final ZserioType elementBaseType = elementInstantiation.getBaseType();
 
         final PythonNativeType nativeType = getPythonType(elementBaseType);
-        if (instantiation.isPacked())
-        {
-            if (nativeType.getArrayTraits().getRequiresElementCreator())
-                return new NativePackedArrayType(nativeType.getArrayTraits(), "ObjectPackedArrayTraits");
-            else
-                return new NativePackedArrayType(nativeType.getArrayTraits(), "PackedArrayTraits");
-        }
-        else
-        {
-            return new NativeArrayType(nativeType.getArrayTraits());
-        }
+
+        return new NativeArrayType(nativeType.getArrayTraits());
     }
 
     private class TypeMapperVisitor extends ZserioAstDefaultVisitor

@@ -25,7 +25,7 @@ class ${name}:
 
     @classmethod
     def from_reader_packed(cls: typing.Type['${name}'],
-                           context_node: zserio.packed_array.PackingContextNode,
+                           context_node: zserio.array.PackingContextNode,
                            reader: zserio.BitStreamReader) -> '${name}':
         instance = cls()
         instance._value = context_node.context.read(<@array_traits_create arrayTraits, bitSize!/>, reader)
@@ -75,10 +75,10 @@ class ${name}:
         return ${name}.from_value(~self._value & ${upperBound})
 
     @staticmethod
-    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
+    def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:
         context_builder.add_leaf(zserio.array.${arrayTraits.name})
 
-    def init_packing_context(self, context_node: zserio.packed_array.PackingContextNode) -> None:
+    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
         context_node.context.init(self._value)
 
     def bitsizeof(self, _bit_position: int = 0) -> int:
@@ -88,7 +88,7 @@ class ${name}:
         return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self._value)
 </#if>
 
-    def bitsizeof_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
                          bitposition: int) -> int:
         return context_node.context.bitsizeof(<@array_traits_create arrayTraits, bitSize!/>,
                                               bitposition, self._value)
@@ -97,7 +97,7 @@ class ${name}:
     def initialize_offsets(self, bit_position: int) -> int:
         return bit_position + self.bitsizeof(bit_position)
 
-    def initialize_offsets_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
         return bitposition + self.bitsizeof_packed(context_node, bitposition)
 
@@ -106,7 +106,7 @@ class ${name}:
         writer.write_${runtimeFunction.suffix}(self._value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 
-    def write_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def write_packed(self, context_node: zserio.array.PackingContextNode,
                      writer: zserio.BitStreamWriter) -> None:
         context_node.context.write(<@array_traits_create arrayTraits, bitSize!/>, writer, self._value)
 </#if>

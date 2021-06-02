@@ -223,6 +223,13 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      */
     void evaluate()
     {
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+            if (arrayInstantiation.isImplicit())
+                isPackable = false;
+        }
+
         if (offsetExpr != null)
         {
             // the offset must be evaluated to the field (single or array) => mark it as not packable

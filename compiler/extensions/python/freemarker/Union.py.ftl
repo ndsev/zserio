@@ -65,7 +65,7 @@ class ${name}:
     @classmethod
     def from_reader_packed(
             cls: typing.Type['${name}'],
-            zserio_context_node: zserio.packed_array.PackingContextNode,
+            zserio_context_node: zserio.array.PackingContextNode,
             zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
             <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
         instance = cls(${constructorParamList})
@@ -123,7 +123,7 @@ class ${name}:
         return self._choice_tag
 
     @staticmethod
-    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
+    def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:
 <#if fieldList?has_content>
         context_builder.begin_node()
         context_builder.add_leaf(${choiceTagArrayTraits})
@@ -146,7 +146,7 @@ ${initCode}<#t>
 ${I}pass
     </#if>
 </#macro>
-    def init_packing_context(self, context_node: zserio.packed_array.PackingContextNode) -> None:
+    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
 <#if fieldList?has_content>
         context_node.children[0].context.init(self._choice_tag)
         <@union_if "union_init_packing_context", true, "context_node"/>
@@ -169,7 +169,7 @@ ${I}pass
         return 0
 </#if>
 
-    def bitsizeof_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
         end_bitposition = bitposition
@@ -201,7 +201,7 @@ ${I}pass
         return bitposition
     </#if>
 
-    def initialize_offsets_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
         end_bitposition = bitposition
@@ -230,7 +230,7 @@ ${I}pass
         del zserio_reader
 </#if>
 
-    def read_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
+    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                     zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
         self._choice_tag = zserio_context_node.children[0].context.read(${choiceTagArrayTraits}(),
@@ -264,7 +264,7 @@ ${I}pass
         del zserio_call_initialize_offsets
     </#if>
 
-    def write_packed(self, zserio_context_node: zserio.packed_array.PackingContextNode,
+    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                     zserio_writer: zserio.BitStreamWriter) -> None:
     <#if fieldList?has_content>
         zserio_context_node.children[0].context.write(${choiceTagArrayTraits}(),

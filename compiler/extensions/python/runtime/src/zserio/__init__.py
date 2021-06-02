@@ -26,7 +26,6 @@ import zserio.builtin as builtin
 import zserio.exception as exception
 import zserio.hashcode as hashcode
 import zserio.limits as limits
-import zserio.packed_array as packed_array
 import zserio.pubsub as pubsub
 import zserio.service as service
 

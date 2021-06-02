@@ -75,6 +75,8 @@ ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(<@field
 ${I}end_bitposition += ${field.bitSize.value}
         <#elseif field.bitSize.runtimeFunction??>
 ${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+        <#elseif field.array??>
+${I}end_bitposition += self.<@field_member_name field/>.bitsizeof<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(end_bitposition)
         <#else>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitposition)
         </#if>
@@ -125,6 +127,8 @@ ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets_packed
 ${I}end_bitposition += ${field.bitSize.value}
         <#elseif field.bitSize.runtimeFunction??>
 ${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
+        <#elseif field.array??>
+${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(end_bitposition)
         <#else>
 ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bitposition)
         </#if>
@@ -166,7 +170,7 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packe
         </#if>
     <#else>
         <#if field.array??>
-${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode/>
+${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode, packed/>
         <#elseif field.runtimeFunction??>
 ${I}self.<@field_member_name field/> = zserio_reader.read_${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
         <#else>
@@ -179,19 +183,15 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
 </#macro>
 
 <#macro array_field_traits_parameter field>
-    <#if field.array.isPacked>zserio.packed_array.${field.array.packedTraitsName}(</#if><#t>
-    <#if field.array.isPacked && field.array.traits.requiresElementCreator>
-        self.<@packed_element_creator_name field/>, ${field.array.elementPythonTypeName}.create_packing_context<#t>
-    <#else>
-        zserio.array.${field.array.traits.name}(<#t>
+    zserio.array.${field.array.traits.name}(<#t>
         <#if field.array.traits.requiresElementBitSize>
             ${field.array.elementBitSize.value}<#t>
         <#elseif field.array.traits.requiresElementCreator>
-            self.<@element_creator_name field/><#t>
+            self.<@element_creator_name field/>, <#t>
+            self.<@packed_element_creator_name field/>, <#t>
+            ${field.array.elementPythonTypeName}.create_packing_context<#t>
         </#if>
-        )<#t>
-    </#if>
-    <#if field.array.isPacked>)</#if><#t>
+    )<#t>
 </#macro>
 
 <#macro array_field_keyword_parameters field withWriterCode>
@@ -204,23 +204,16 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
     </#if>
 </#macro>
 
-<#macro array_field_from_reader field withWriterCode>
-    <#if field.array.isPacked>
-    zserio.packed_array.PackedArray.from_reader<#t>
-    <#else>
-    zserio.array.Array.from_reader<#t>
-    </#if>
-    (<@array_field_traits_parameter field/><#t>
-    , zserio_reader<#t>
-    <#if field.array.length??>, ${field.array.length}</#if><#t>
-    <@array_field_keyword_parameters field, withWriterCode/>)<#t>
+<#macro array_field_from_reader field withWriterCode packed=false>
+    zserio.array.Array.from_reader<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(<#t>
+            <@array_field_traits_parameter field/>, zserio_reader<#t>
+            <#if field.array.length??>, ${field.array.length}</#if><#t>
+            <@array_field_keyword_parameters field, withWriterCode/>)<#t>
 </#macro>
 
 <#macro array_field_constructor field withWriterCode>
-    <#if field.array.isPacked>zserio.packed_array.PackedArray<#else>zserio.array.Array</#if><#t>
-    (<@array_field_traits_parameter field/><#t>
-    , <@field_argument_name field/><#t>
-    <@array_field_keyword_parameters field, withWriterCode/>)<#t>
+    zserio.array.Array(<@array_field_traits_parameter field/>, <#t>
+            <@field_argument_name field/><@array_field_keyword_parameters field, withWriterCode/>)<#t>
 </#macro>
 
 <#macro compound_field_constructor_parameters compound>
@@ -268,6 +261,8 @@ ${I}self.<@field_member_name field/>.write_packed(<@field_packing_context_node_n
     <#else>
         <#if field.runtimeFunction??>
 ${I}zserio_writer.write_${field.runtimeFunction.suffix}(self.<@field_member_name field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
+        <#elseif field.array??>
+${I}self.<@field_member_name field/>.write<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(zserio_writer)
         <#else>
 ${I}self.<@field_member_name field/>.write(zserio_writer<#if field.compound??>, zserio_call_initialize_offsets=False</#if>)
         </#if>
@@ -425,7 +420,7 @@ ${I}                                        (self.<@field_member_name field/>, l
         return ${field.array.elementPythonTypeName}.from_reader(zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
 
     def <@packed_element_creator_name field/>(
-            self, zserio_context_node: zserio.packed_array.PackingContextNode,
+            self, zserio_context_node: zserio.array.PackingContextNode,
             zserio_reader: zserio.BitStreamReader, zserio_index: int) -> <#rt>
         <#if field.array.elementIsRecursive>
             <#lt>'${compoundName}':

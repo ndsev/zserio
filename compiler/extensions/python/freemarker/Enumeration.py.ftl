@@ -15,15 +15,15 @@ class ${name}(enum.Enum):
 
     @classmethod
     def from_reader_packed(cls: typing.Type['${name}'],
-                           context_node: zserio.packed_array.PackingContextNode,
+                           context_node: zserio.array.PackingContextNode,
                            reader: zserio.BitStreamReader) -> '${name}':
         return cls(context_node.context.read(<@array_traits_create arrayTraits, bitSize!/>, reader))
 
     @staticmethod
-    def create_packing_context(context_builder: zserio.packed_array.PackingContextBuilder) -> None:
+    def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:
         context_builder.add_leaf(zserio.array.${arrayTraits.name})
 
-    def init_packing_context(self, context_node: zserio.packed_array.PackingContextNode) -> None:
+    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
         context_node.context.init(self.value)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
@@ -33,7 +33,7 @@ class ${name}(enum.Enum):
         return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self.value)
 </#if>
 
-    def bitsizeof_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
                          bitposition: int) -> int:
         return context_node.context.bitsizeof(<@array_traits_create arrayTraits, bitSize!/>,
                                               bitposition, self.value)
@@ -42,7 +42,7 @@ class ${name}(enum.Enum):
     def initialize_offsets(self, bitposition: int) -> int:
         return bitposition + self.bitsizeof(bitposition)
 
-    def initialize_offsets_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
         return bitposition + self.bitsizeof_packed(context_node, bitposition)
 
@@ -51,7 +51,7 @@ class ${name}(enum.Enum):
         writer.write_${runtimeFunction.suffix}(self.value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
 
-    def write_packed(self, context_node: zserio.packed_array.PackingContextNode,
+    def write_packed(self, context_node: zserio.array.PackingContextNode,
                      writer: zserio.BitStreamWriter) -> None:
         context_node.context.write(<@array_traits_create arrayTraits, bitSize!/>, writer, self.value)
 </#if>
