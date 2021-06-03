@@ -9,8 +9,8 @@ struct Database
 
 struct BlockHeader
 {
-    uint16  numItems;
-    uint32  offset;
+    uint16  numItems; // this is packable
+    uint32  offset;   // this is unpackable because it stores offset
 };
 
 struct Block(BlockHeader header)
