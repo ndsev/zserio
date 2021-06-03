@@ -23,6 +23,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.NativeIntegralType;
+import zserio.tools.ZserioToolPrinter;
 
 public class CompoundFieldTemplateData
 {
@@ -445,6 +446,12 @@ public class CompoundFieldTemplateData
             traitsName = nativeType.getArrayTraitsName();
             hasTemplatedTraits = nativeType.hasTemplatedTraits();
             isImplicit = arrayInstantiation.isImplicit();
+            if (arrayInstantiation.isPacked())
+            {
+                ZserioToolPrinter.printError(arrayInstantiation.getLocation(),
+                        "Unimplemented packed array field reached!");
+                throw new ZserioExtensionException("Packed arrays not implemented!");
+            }
             length = createLength(arrayInstantiation, cppExpressionFormatter);
             final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
             elementCppTypeName = elementNativeType.getFullName();
