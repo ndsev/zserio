@@ -4,6 +4,11 @@ struct StructWithPackable
 {
     string field1;
     uint32 field2; // packable
+};
+
+struct StructWithPackableArray
+{
+    string field1;
     uint16 array1[]; // packable
 };
 
@@ -46,4 +51,5 @@ struct CompoundHasNoPackableFieldWarning
     packed StructWithoutPackable array2[];
     packed UnionWithPackableField array3[];
     packed ChoiceWithoutPackableField(true) array4[];
+    packed StructWithPackableArray array5[];
 };

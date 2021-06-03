@@ -205,21 +205,21 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Gets flag which indicates if the field is packable.
+     * Gets flag which indicates if the field cannot be packed due to some logical reason given by the schema.
      *
-     * Currently, all fields are packable except of fields which are used as offsets.
+     * Currently this is true for fields which are used as offsets or fields which are implicit arrays.
      *
-     * @return true if the field is packable.
+     * @return true if the field is unpackable.
      */
-    public boolean isPackable()
+    public boolean isUnpackable()
     {
-        return isPackable;
+        return isUnpackable;
     }
 
     /**
      * Evaluates the compound field.
      *
-     * This method calculates and sets isPackable flag.
+     * This method calculates and sets isUnpackable flag.
      */
     void evaluate()
     {
@@ -227,7 +227,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         {
             final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
             if (arrayInstantiation.isImplicit())
-                isPackable = false;
+                isUnpackable = true;
         }
 
         if (offsetExpr != null)
@@ -244,7 +244,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                     throw new ParserException(offsetExpr, "Packed array cannot be used as offset array!");
                 }
 
-                referencedField.isPackable = false;
+                referencedField.isUnpackable = true;
             }
         }
     }
@@ -386,7 +386,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         this.isVirtual = isVirtual;
         this.sqlConstraint = sqlConstraint;
 
-        this.isPackable = true;
+        this.isUnpackable = false;
     }
 
     private final TypeInstantiation typeInstantiation;
@@ -402,5 +402,5 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     private final boolean isVirtual;
     private final SqlConstraint sqlConstraint;
 
-    private boolean isPackable;
+    private boolean isUnpackable;
 }

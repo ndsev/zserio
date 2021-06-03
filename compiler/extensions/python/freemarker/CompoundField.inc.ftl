@@ -63,7 +63,7 @@ ${I}if self.${field.optional.indicatorName}():
 <#macro compound_bitsizeof_field_inner field indent packed>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
-    <#if packed && field.isPackable && !field.array??>
+    <#if packed && !field.isUnpackable && !field.array??>
         <#if field.isBuiltinType || field.isExternType>
 ${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
@@ -76,7 +76,7 @@ ${I}end_bitposition += ${field.bitSize.value}
         <#elseif field.bitSize.runtimeFunction??>
 ${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
         <#elseif field.array??>
-${I}end_bitposition += self.<@field_member_name field/>.bitsizeof<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(end_bitposition)
+${I}end_bitposition += self.<@field_member_name field/>.bitsizeof<@array_field_packed_suffix field, packed/>(end_bitposition)
         <#else>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof(end_bitposition)
         </#if>
@@ -115,7 +115,7 @@ ${I}# initialize offset
 ${I}value = zserio.bitposition.bits_to_bytes(end_bitposition)
 ${I}${field.offset.setter}
     </#if>
-    <#if packed && field.isPackable && !field.array??>
+    <#if packed && !field.isUnpackable && !field.array??>
         <#if field.isBuiltinType || field.isExternType>
 ${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
@@ -128,7 +128,7 @@ ${I}end_bitposition += ${field.bitSize.value}
         <#elseif field.bitSize.runtimeFunction??>
 ${I}end_bitposition += zserio.bitsizeof.bitsizeof_${field.bitSize.runtimeFunction.suffix}(self.<@field_member_name field/>)
         <#elseif field.array??>
-${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(end_bitposition)
+${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets<@array_field_packed_suffix field, packed/>(end_bitposition)
         <#else>
 ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bitposition)
         </#if>
@@ -158,7 +158,7 @@ ${I}zserio_reader.alignto(${field.alignmentValue})
 ${I}zserio_reader.alignto(8)
         <@compound_check_offset_field field, compoundName, "zserio_reader.bitposition", indent/>
     </#if>
-    <#if packed && field.isPackable && !field.array??>
+    <#if packed && !field.isUnpackable && !field.array??>
         <#if field.isBuiltinType || field.isExternType>
 ${I}self.<@field_member_name field/> = <@field_packing_context_node_name field/>.context.read(<#rt>
         <#lt><@array_traits_create_field field/>, zserio_reader)
@@ -205,10 +205,16 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
 </#macro>
 
 <#macro array_field_from_reader field withWriterCode packed=false>
-    zserio.array.Array.from_reader<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(<#t>
+    zserio.array.Array.from_reader<@array_field_packed_suffix field, packed/>(<#t>
             <@array_field_traits_parameter field/>, zserio_reader<#t>
             <#if field.array.length??>, ${field.array.length}</#if><#t>
             <@array_field_keyword_parameters field, withWriterCode/>)<#t>
+</#macro>
+
+<#macro array_field_packed_suffix field packed>
+    <#if (packed && !field.isUnpackable) || field.array.isPacked>
+        _packed<#t>
+    </#if>
 </#macro>
 
 <#macro array_field_constructor field withWriterCode>
@@ -251,7 +257,7 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_constraint_field field, compoundName, indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
-    <#if packed && field.isPackable && !field.array??>
+    <#if packed && !field.isUnpackable && !field.array??>
         <#if field.isBuiltinType || field.isExternType>
 ${I}<@field_packing_context_node_name field/>.context.write(<@array_traits_create_field field/>, <#rt>
         <#lt>zserio_writer, self.<@field_member_name field/>)
@@ -262,7 +268,7 @@ ${I}self.<@field_member_name field/>.write_packed(<@field_packing_context_node_n
         <#if field.runtimeFunction??>
 ${I}zserio_writer.write_${field.runtimeFunction.suffix}(self.<@field_member_name field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>)
         <#elseif field.array??>
-${I}self.<@field_member_name field/>.write<#if (packed && field.isPackable) || field.array.isPacked>_packed</#if>(zserio_writer)
+${I}self.<@field_member_name field/>.write<@array_field_packed_suffix field, packed/>(zserio_writer)
         <#else>
 ${I}self.<@field_member_name field/>.write(zserio_writer<#if field.compound??>, zserio_call_initialize_offsets=False</#if>)
         </#if>
@@ -447,7 +453,7 @@ ${I}                                        (self.<@field_member_name field/>, l
 </#macro>
 
 <#macro compound_create_packing_context_field field>
-    <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
+    <#if !field.isUnpackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
         <#if field.isBuiltinType || field.isExternType>
         context_builder.add_leaf(zserio.array.${field.arrayTraits.name})
         <#else>
@@ -460,7 +466,7 @@ ${I}                                        (self.<@field_member_name field/>, l
 
 <#macro compound_init_packing_context_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isPackable && !field.array??>
+    <#if !field.isUnpackable && !field.array??>
         <#if field.optional??>
 ${I}if self.${field.optional.indicatorName}():
     <@compound_init_packing_context_field_inner field, indent+1/>
@@ -482,7 +488,7 @@ ${I}self.<@field_member_name field/>.init_packing_context(<@field_packing_contex
 
 <#macro compound_field_packing_context_node field childNodeIndex contextNodeVarName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isPackable && !field.array??>
+    <#if !field.isUnpackable && !field.array??>
         <#if field.optional?? && field.optional.isRecursive>
 ${I}<@field_packing_context_node_name field/> = ${contextNodeVarName}
         <#else>
@@ -493,7 +499,7 @@ ${I}<@field_packing_context_node_name field/> = ${contextNodeVarName}.children[$
 
 <#function compound_needs_packing_context_node fieldList>
     <#list fieldList as field>
-        <#if field.isPackable && !field.array??>
+        <#if !field.isUnpackable && !field.array??>
             <#return true>
         </#if>
     </#list>
