@@ -17,6 +17,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import zserio.ast.ArrayInstantiation;
 import zserio.ast.ArrayType;
 import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
@@ -249,6 +250,8 @@ public class XmlAstWriter implements ZserioAstVisitor
         fieldXmlElement.setAttribute("name", field.getName());
         if (field.isOptional())
             fieldXmlElement.setAttribute("isOptional", "true");
+        if (field.getIsVirtual())
+            fieldXmlElement.setAttribute("isVirtual", "true");
 
         currentXmlElement.appendChild(fieldXmlElement);
         final Element oldCurrentXmlElement = currentXmlElement;
@@ -400,7 +403,18 @@ public class XmlAstWriter implements ZserioAstVisitor
     @Override
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
-        visitAstNode(typeInstantiation, "TYPE_INSTANTIATION");
+        final Element xmlElement = xmlDoc.createElement("TYPE_INSTANTIATION");
+
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+            if (arrayInstantiation.isImplicit())
+                xmlElement.setAttribute("isImplicit", "true");
+            if (arrayInstantiation.isPacked())
+                xmlElement.setAttribute("isPacked", "true");
+        }
+
+        visitAstNode(typeInstantiation, xmlElement);
     }
 
     @Override
