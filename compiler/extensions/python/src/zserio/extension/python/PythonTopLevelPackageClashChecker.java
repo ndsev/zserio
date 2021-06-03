@@ -10,8 +10,10 @@ import zserio.tools.ZserioToolPrinter;
  * Top level package name clash checker.
  *
  * Checks that top level packages don't clash with used Python modules or packages - e.g. 'typing'.
+ *
+ * Note: Regarding 'typing', consider if importing 'typing' in zserio runtime __int__.py could help.
  */
-class PythonTopLevelPacakgeClashChecker extends DefaultTreeWalker
+class PythonTopLevelPackageClashChecker extends DefaultTreeWalker
 {
     @Override
     public boolean traverseTemplateInstantiations()

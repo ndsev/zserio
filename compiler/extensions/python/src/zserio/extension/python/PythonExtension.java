@@ -50,8 +50,8 @@ public class PythonExtension implements Extension
                 new ReservedKeywordsClashChecker("Python", PYTHON_KEYWORDS);
         rootNode.walk(pythonKeywordsClashChecker);
 
-        final PythonTopLevelPacakgeClashChecker topLevelPackageClashChecker =
-                new PythonTopLevelPacakgeClashChecker();
+        final PythonTopLevelPackageClashChecker topLevelPackageClashChecker =
+                new PythonTopLevelPackageClashChecker();
         rootNode.walk(topLevelPackageClashChecker);
 
         final PythonModuleClashChecker moduleClashChecker = new PythonModuleClashChecker();
