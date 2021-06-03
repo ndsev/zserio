@@ -111,6 +111,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
             {
                 final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
                 isArrayImplicit = arrayInstantiation.isImplicit();
+                isArrayPacked = arrayInstantiation.isPacked();
                 arrayRange = "[" +
                         formatExpression(arrayInstantiation.getLengthExpression(), docExpressionFormatter) +
                         "]";
@@ -119,6 +120,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
             else
             {
                 isArrayImplicit = false;
+                isArrayPacked = false;
                 arrayRange = "";
             }
 
@@ -206,6 +208,11 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
             return isArrayImplicit;
         }
 
+        public boolean getIsArrayPacked()
+        {
+            return isArrayPacked;
+        }
+
         public String getArrayRange()
         {
             return arrayRange;
@@ -247,6 +254,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
         private final String alignmentExpression;
         private final String constraintExpression;
         private final boolean isArrayImplicit;
+        private final boolean isArrayPacked;
         private final String arrayRange;
         private final String initializerExpression;
         private final String optionalClauseExpression;
