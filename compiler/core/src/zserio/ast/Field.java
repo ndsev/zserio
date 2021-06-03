@@ -124,17 +124,6 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Gets flag which indicates if the field is optional.
-     *
-     * @return True if the field has been defined using "optional" keyword in Zserio or if the field
-     *         has optional clause.
-     */
-    public boolean isOptional()
-    {
-        return isAutoOptional || optionalClauseExpr != null;
-    }
-
-    /**
      * Gets alignment expression associated with the field.
      *
      * @return Alignment expression or null if no alignment expression has been specified.
@@ -205,13 +194,24 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
+     * Gets flag which indicates if the field is optional.
+     *
+     * @return True if the field has been defined using "optional" keyword in Zserio or if the field
+     *         has optional clause.
+     */
+    public boolean isOptional()
+    {
+        return isAutoOptional || optionalClauseExpr != null;
+    }
+
+    /**
      * Gets flag which indicates if the field is packable.
      *
      * Currently, all fields are packable except of fields which are used as offsets.
      *
      * @return true if the field is packable.
      */
-    public boolean getIsPackable()
+    public boolean isPackable()
     {
         return isPackable;
     }

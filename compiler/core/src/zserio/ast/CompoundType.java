@@ -152,7 +152,7 @@ public abstract class CompoundType extends TemplatableType
     {
         for (Field field : fields)
         {
-            if (field.getIsPackable())
+            if (field.isPackable())
             {
                 final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
                 ZserioType fieldBaseType = typeInstantiation.getBaseType();

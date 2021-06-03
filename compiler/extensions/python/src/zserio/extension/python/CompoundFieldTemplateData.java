@@ -45,7 +45,7 @@ public final class CompoundFieldTemplateData
 
         propertyName = AccessorNameFormatter.getPropertyName(field);
 
-        isPackable = field.getIsPackable();
+        isPackable = field.isPackable();
 
         final ExpressionFormatter pythonExpressionFormatter =
                 context.getPythonExpressionFormatter(importCollector);
