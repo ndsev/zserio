@@ -217,7 +217,7 @@ public class SqlTableType extends CompoundType
 
         for (Field tableField : getFields())
         {
-            if (tableField.getIsVirtual())
+            if (tableField.isVirtual())
             {
                 throw new ParserException(tableField,
                         "Ordinary table '" + this.getName() + "' cannot contain virtual column '" +

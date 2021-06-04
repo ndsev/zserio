@@ -167,7 +167,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
 
-            isVirtual = field.getIsVirtual();
+            isVirtual = field.isVirtual();
             parameters = new ArrayList<ParameterTemplateData>();
 
             if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)

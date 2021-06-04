@@ -146,7 +146,7 @@ public class CompoundTypeTemplateData extends PackageTemplateDataBase
             }
 
             docComments = new DocCommentsTemplateData(context, field.getDocComments());
-            isVirtual = field.getIsVirtual();
+            isVirtual = field.isVirtual();
             isAutoOptional = field.isOptional() && field.getOptionalClauseExpr() == null;
             alignmentExpression = formatExpression(field.getAlignmentExpr(), docExpressionFormatter);
             constraintExpression = formatExpression(field.getConstraintExpr(), docExpressionFormatter);

@@ -195,7 +195,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 }
             }
 
-            isVirtual = field.getIsVirtual();
+            isVirtual = field.isVirtual();
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = (fieldSqlConstraint == null) ? null :
                 javaExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());

@@ -250,7 +250,7 @@ public class XmlAstWriter implements ZserioAstVisitor
         fieldXmlElement.setAttribute("name", field.getName());
         if (field.isOptional())
             fieldXmlElement.setAttribute("isOptional", "true");
-        if (field.getIsVirtual())
+        if (field.isVirtual())
             fieldXmlElement.setAttribute("isVirtual", "true");
 
         currentXmlElement.appendChild(fieldXmlElement);

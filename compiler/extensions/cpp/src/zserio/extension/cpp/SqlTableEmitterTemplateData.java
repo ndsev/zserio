@@ -208,7 +208,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = (fieldSqlConstraint == null) ? null :
                 cppExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
-            isVirtual = field.getIsVirtual();
+            isVirtual = field.isVirtual();
 
             getterName = AccessorNameFormatter.getGetterName(field);
             setterName = AccessorNameFormatter.getSetterName(field);

@@ -188,7 +188,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      *
      * @return true if the field is virtual column in SQL table.
      */
-    public boolean getIsVirtual()
+    public boolean isVirtual()
     {
         return isVirtual;
     }
