@@ -15,7 +15,8 @@
     </target>
 
     <target name="gen.checkWarnings" depends="gen">
-        <testGenCheckWarnings testName="indexed_offsets"/>
+        <!-- TODO[mikir]: Remove maxWarnings once packed arrays are implemented in Java! -->
+        <testGenCheckWarnings testName="indexed_offsets" maxWarnings="2"/>
     </target>
 
     <target name="compile" depends="gen.checkWarnings">

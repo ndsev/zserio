@@ -46,6 +46,7 @@ zserio_add_library(TARGET indexed_offsets_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
+    IGNORE_WARNINGS ON # TODO[mikir]: Remove it once packed arrays are implemented in C++!
 )
 
 add_test_sources(

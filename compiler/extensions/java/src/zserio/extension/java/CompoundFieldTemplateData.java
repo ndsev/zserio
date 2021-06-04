@@ -324,9 +324,8 @@ public final class CompoundFieldTemplateData
             isImplicit = arrayInstantiation.isImplicit();
             if (arrayInstantiation.isPacked())
             {
-                ZserioToolPrinter.printError(arrayInstantiation.getLocation(),
+                ZserioToolPrinter.printWarning(arrayInstantiation.getLocation(),
                         "Unimplemented packed array field reached!");
-                throw new ZserioExtensionException("Packed arrays not implemented!");
             }
             length = createLength(arrayInstantiation, javaExpressionFormatter);
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
