@@ -10,6 +10,11 @@ public class NativeUserType extends PythonNativeType
 {
     public NativeUserType(PackageName packageName, String name)
     {
-        super(packageName, PythonSymbolConverter.symbolToModule(name), name);
+        this(packageName, name, new NativeArrayTraits("ObjectArrayTraits", false, true));
+    }
+
+    protected NativeUserType(PackageName packageName, String name, NativeArrayTraits arrayTraits)
+    {
+        super(packageName, PythonSymbolConverter.symbolToModule(name), name, arrayTraits);
     }
 }

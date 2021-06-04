@@ -2,6 +2,8 @@ package zserio.ast;
 
 import java.util.List;
 
+import zserio.tools.ZserioToolPrinter;
+
 /**
  * AST node for array type instantiation.
  */
@@ -13,15 +15,18 @@ public class ArrayInstantiation extends TypeInstantiation
      * @param location             AST node location.
      * @param typeReference        Reference to the instantiated type definition.
      * @param elementTypeArguments Arguments for the type instantiation.
+     * @param isPacked             Whether this array is packed.
      * @param isImplicit           Whether this is an implicit array.
      * @param lengthExpression     Array length expression.
      */
     public ArrayInstantiation(AstLocation location, TypeReference typeReference,
-            TypeInstantiation elementTypeInstantiation, boolean isImplicit, Expression lengthExpression)
+            TypeInstantiation elementTypeInstantiation, boolean isPacked,
+            boolean isImplicit, Expression lengthExpression)
     {
         super(location, typeReference);
 
         this.elementTypeInstantiation = elementTypeInstantiation;
+        this.isPacked = isPacked;
         this.isImplicit = isImplicit;
         this.lengthExpression = lengthExpression;
     }
@@ -44,6 +49,19 @@ public class ArrayInstantiation extends TypeInstantiation
     public TypeInstantiation getElementTypeInstantiation()
     {
         return elementTypeInstantiation;
+    }
+
+    /**
+     * Gets whether the array is a packed array.
+     *
+     * \note Packed arrays can be defined only for integral types or
+     *       for structures which contain packable fields.
+     *
+     * \return True if the array is packed, false otherwise.
+     */
+    public boolean isPacked()
+    {
+        return isPacked;
     }
 
     /**
@@ -84,7 +102,7 @@ public class ArrayInstantiation extends TypeInstantiation
                 getLengthExpression().instantiate(templateParameters, templateArguments);
 
         return new ArrayInstantiation(getLocation(), instantiatedTypeReference,
-                instantiatedElementTypeInstantiation, isImplicit, instantiatedLengthExpression);
+                instantiatedElementTypeInstantiation, isPacked, isImplicit, instantiatedLengthExpression);
     }
 
     @Override
@@ -114,6 +132,8 @@ public class ArrayInstantiation extends TypeInstantiation
     @Override
     void check()
     {
+        checkPackedArrayElementType();
+
         if (!checkImplicitArrayElementType())
         {
             throw new ParserException(elementTypeInstantiation,
@@ -127,6 +147,41 @@ public class ArrayInstantiation extends TypeInstantiation
             {
                 throw new ParserException(lengthExpression,
                         "Invalid length expression for array. Length must be integer!");
+            }
+        }
+    }
+
+    /**
+     * Check whether the baseType is packable.
+     *
+     * @param baseType Base type to check.
+     *
+     * @return True when the base type is packable, false otherwise.
+     */
+    static boolean isBaseTypePackable(ZserioType baseType)
+    {
+        return baseType instanceof IntegerType ||
+                baseType instanceof EnumType || baseType instanceof BitmaskType;
+    }
+
+    private void checkPackedArrayElementType()
+    {
+        if (isPacked)
+        {
+            final ZserioType elementBaseType = getElementTypeInstantiation().getBaseType();
+
+            if (elementBaseType instanceof CompoundType)
+            {
+                if (!((CompoundType)elementBaseType).hasPackableField())
+                {
+                    ZserioToolPrinter.printWarning(getElementTypeInstantiation(),
+                            "'" + elementBaseType.getName() + "' doesn't contain any packable field!");
+                }
+            }
+            else if (!(isBaseTypePackable(elementBaseType)))
+            {
+                ZserioToolPrinter.printWarning(getElementTypeInstantiation(),
+                        "'" + elementBaseType.getName() + "' is not packable element type!");
             }
         }
     }
@@ -148,6 +203,7 @@ public class ArrayInstantiation extends TypeInstantiation
     }
 
     private final TypeInstantiation elementTypeInstantiation;
+    private final boolean isPacked;
     private final boolean isImplicit;
     private final Expression lengthExpression;
 

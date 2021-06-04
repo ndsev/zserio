@@ -66,6 +66,7 @@ NUMBITS             : 'numbits' ;
 ON                  : 'on' ;
 OPTIONAL            : 'optional' ;
 PACKAGE             : 'package' ;
+PACKED              : 'packed' ;
 PUBSUB              : 'pubsub' ;
 PUBLISH             : 'publish' ;
 RETURN              : 'return' ;

@@ -683,6 +683,36 @@ struct AutoArrayCandidate
 };
 ```
 
+### Packed Arrays
+
+An array type can be packed indicated by a `packed` keyword. The only supported packing algorithm is
+delta compression which is applied for packed arrays of:
+
+- all integer types (uint32, varuint, ...)
+- enumeration types
+- bitmask types
+- compound types which contain integer types, enumeration, bitmask types or inner packable arrays
+
+All other arrays declared as `packed` will stay unpacked. However in this case, the encoder will automatically
+store some additional packing information into the bit stream.
+
+**Example**
+```
+struct PackedArrays
+{
+    packed uint8   header[256];
+    packed int16   items[];
+    uint16         numItems;
+    packed Element elements[numItems];
+};
+```
+
+> Note: Packed implicit length arrays and packed arrays which are using as offsets are forbidden.
+
+> Note: Fields which are used as offsets will be never packed because it would break offsets feature.
+
+> Since `2.4.0`
+
 [top](#language-guide)
 
 ## Alignment and Offsets

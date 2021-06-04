@@ -2,7 +2,7 @@ package signed_integer_error;
 
 struct SignedIntegerError
 {
-    int32   offsets[];
-offsets[@index]:
+    int32   offset;
+offset:
     uint32  values[];
 };

@@ -2,6 +2,7 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 /**
  * AST node for compound fields.
@@ -25,11 +26,11 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      * @param docComments        List of documentation comments belonging to this node.
      */
     public Field(AstLocation location, TypeInstantiation typeInstantiation, String name, boolean isAutoOptional,
-            Expression alignmentExpr, Expression offsetExpr,Expression initializerExpr,
+            Expression alignmentExpr, Expression offsetExpr, Expression initializerExpr,
             Expression optionalClauseExpr, Expression constraintExpr, List<DocComment> docComments)
     {
-        this(location, typeInstantiation, name, isAutoOptional, alignmentExpr, offsetExpr, initializerExpr,
-                optionalClauseExpr, constraintExpr, false, null, docComments);
+        this(location, typeInstantiation, name, isAutoOptional, alignmentExpr, offsetExpr,
+                initializerExpr, optionalClauseExpr, constraintExpr, false, null, docComments);
     }
 
     /**
@@ -44,8 +45,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     public Field(AstLocation location, TypeInstantiation fieldTypeInstantiation, String name,
             Expression constraintExpr, List<DocComment> docComments)
     {
-        this(location, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr, false, null,
-                docComments);
+        this(location, fieldTypeInstantiation, name, false, null, null, null, null, constraintExpr,
+                false, null, docComments);
     }
 
     /**
@@ -123,17 +124,6 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Gets flag which indicates if the field is optional.
-     *
-     * @return True if the field has been defined using "optional" keyword in Zserio or if the field
-     *         has optional clause.
-     */
-    public boolean isOptional()
-    {
-        return isAutoOptional || optionalClauseExpr != null;
-    }
-
-    /**
      * Gets alignment expression associated with the field.
      *
      * @return Alignment expression or null if no alignment expression has been specified.
@@ -204,27 +194,68 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
+     * Gets flag which indicates if the field is optional.
+     *
+     * @return True if the field has been defined using "optional" keyword in Zserio or if the field
+     *         has optional clause.
+     */
+    public boolean isOptional()
+    {
+        return isAutoOptional || optionalClauseExpr != null;
+    }
+
+    /**
+     * Gets flag which indicates if the field cannot be packed due to some logical reason given by the schema.
+     *
+     * Currently this is true for fields which are used as offsets or fields which are implicit arrays.
+     *
+     * @return true if the field is unpackable.
+     */
+    public boolean isUnpackable()
+    {
+        return isUnpackable;
+    }
+
+    /**
+     * Evaluates the compound field.
+     *
+     * This method calculates and sets isUnpackable flag.
+     */
+    void evaluate()
+    {
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+            if (arrayInstantiation.isImplicit())
+                isUnpackable = true;
+        }
+
+        if (offsetExpr != null)
+        {
+            // the offset must be evaluated to the field (single or array) => mark it as not packable
+            final Set<Field> referencedFieldObjects = offsetExpr.getReferencedSymbolObjects(Field.class);
+            if (!referencedFieldObjects.isEmpty())
+            {
+                final Field referencedField =  referencedFieldObjects.iterator().next();
+                final TypeInstantiation referencedFieldInst = referencedField.getTypeInstantiation();
+                if (referencedFieldInst instanceof ArrayInstantiation &&
+                        ((ArrayInstantiation)referencedFieldInst).isPacked())
+                {
+                    throw new ParserException(offsetExpr, "Packed array cannot be used as offset array!");
+                }
+
+                referencedField.isUnpackable = true;
+            }
+        }
+    }
+
+    /**
      * Checks the compound field.
      */
     void check(Package pkg)
     {
         // check offset expression type
-        if (offsetExpr != null)
-        {
-            final ZserioType exprZserioType = offsetExpr.getExprZserioType();
-            if (!(exprZserioType instanceof IntegerType && !((IntegerType)exprZserioType).isSigned() &&
-                    exprZserioType instanceof FixedSizeType))
-            {
-                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
-                        "' is not an unsigned fixed sized integer type!");
-            }
-
-            if (offsetExpr.containsFunctionCall())
-                throw new ParserException(offsetExpr, "Function call cannot be used in offset expression!");
-
-            if (offsetExpr.op2() == null)
-                checkSingleOffsetExpression();
-        }
+        checkOffsetExpression();
 
         // check alignment expression type
         if (alignmentExpr != null)
@@ -299,22 +330,39 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                 isVirtual, instantiatedSqlConstraint, getDocComments());
     }
 
-    private void checkSingleOffsetExpression()
+    private void checkOffsetExpression()
     {
-        final AstNode symbolObject = offsetExpr.getExprSymbolObject();
-        if (symbolObject instanceof Parameter)
+        if (offsetExpr != null)
         {
-            final Parameter parameter = (Parameter)symbolObject;
-            if (parameter.getTypeReference().getBaseTypeReference().getType() instanceof BuiltInType)
+            final ZserioType exprZserioType = offsetExpr.getExprZserioType();
+            if (!(exprZserioType instanceof IntegerType && !((IntegerType)exprZserioType).isSigned() &&
+                    exprZserioType instanceof FixedSizeType))
             {
-                throw new ParserException(offsetExpr, "Built-in type parameter '" + parameter.getName() +
-                        "' cannot be used as an offset!");
+                throw new ParserException(offsetExpr, "Offset expression for field '" + getName() +
+                        "' is not an unsigned fixed sized integer type!");
             }
-        }
-        else if (symbolObject instanceof Constant)
-        {
-            throw new ParserException(offsetExpr, "Constant '" + ((Constant)symbolObject).getName() +
-                    "' cannot be used as an offset!");
+
+            if (offsetExpr.containsFunctionCall())
+                throw new ParserException(offsetExpr, "Function call cannot be used in offset expression!");
+
+            if (offsetExpr.op2() == null)
+            {
+                final AstNode symbolObject = offsetExpr.getExprSymbolObject();
+                if (symbolObject instanceof Parameter)
+                {
+                    final Parameter parameter = (Parameter)symbolObject;
+                    if (parameter.getTypeReference().getBaseTypeReference().getType() instanceof BuiltInType)
+                    {
+                        throw new ParserException(offsetExpr, "Built-in type parameter '" +
+                                parameter.getName() + "' cannot be used as an offset!");
+                    }
+                }
+                else if (symbolObject instanceof Constant)
+                {
+                    throw new ParserException(offsetExpr, "Constant '" + ((Constant)symbolObject).getName() +
+                            "' cannot be used as an offset!");
+                }
+            }
         }
     }
 
@@ -337,6 +385,8 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
         this.isVirtual = isVirtual;
         this.sqlConstraint = sqlConstraint;
+
+        this.isUnpackable = false;
     }
 
     private final TypeInstantiation typeInstantiation;
@@ -351,4 +401,6 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
 
     private final boolean isVirtual;
     private final SqlConstraint sqlConstraint;
+
+    private boolean isUnpackable;
 }

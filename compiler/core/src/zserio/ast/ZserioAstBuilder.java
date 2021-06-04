@@ -247,7 +247,6 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     {
         final FieldTypeId fieldTypeId = visitFieldTypeId(ctx.fieldTypeId());
         final boolean isAutoOptional = ctx.OPTIONAL() != null;
-
         final Expression alignmentExpr = visitFieldAlignment(ctx.fieldAlignment());
         final Expression offsetExpr = visitFieldOffset(ctx.fieldOffset());
         final Expression initializerExpr = visitFieldInitializer(ctx.fieldInitializer());
@@ -1152,6 +1151,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final boolean isArray = ctx.fieldArrayRange() != null;
         if (isArray)
         {
+            final boolean isPacked = ctx.PACKED() != null;
             final boolean isImplicit = ctx.IMPLICIT() != null;
             final ZserioParser.ExpressionContext exprCtx = ctx.fieldArrayRange().expression();
             final Expression lengthExpression = (exprCtx != null) ? (Expression)visit(exprCtx) : null;
@@ -1160,7 +1160,7 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             final TypeReference arrayTypeReference =
                     new TypeReference(arrayTypeLocation, currentPackage, arrayType);
             typeInstantiation = new ArrayInstantiation(arrayTypeLocation, arrayTypeReference,
-                    typeInstantiation, isImplicit, lengthExpression);
+                    typeInstantiation, isPacked, isImplicit, lengthExpression);
         }
 
         return new FieldTypeId(location, typeInstantiation, name);

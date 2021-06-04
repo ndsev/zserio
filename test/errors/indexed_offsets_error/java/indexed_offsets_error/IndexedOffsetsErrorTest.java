@@ -73,6 +73,30 @@ public class IndexedOffsetsErrorTest
     }
 
     @Test
+    public void packedComplexOffsetArray()
+    {
+        final String error = "packed_complex_offset_array_error.zs:19:1: " +
+                "Packed array cannot be used as offset array!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedParamOffsetArray()
+    {
+        final String error = "packed_param_offset_array_error.zs:18:1: " +
+                "Packed array cannot be used as offset array!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedSimpleOffsetArray()
+    {
+        final String error = "packed_simple_offset_array_error.zs:7:1: " +
+                "Packed array cannot be used as offset array!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void parameterNoArray()
     {
         final String error = "parameter_no_array_error.zs:10:19: " +

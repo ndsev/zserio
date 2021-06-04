@@ -9,14 +9,18 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.h
 
-    ${ZSERIO_GEN_DIR}/array_types/auto_array_recursion/AutoArrayRecursion.cpp
-    ${ZSERIO_GEN_DIR}/array_types/auto_array_recursion/AutoArrayRecursion.h
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_struct_recursion/AutoArrayRecursion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_struct_recursion/AutoArrayRecursion.h
 
-    ${ZSERIO_GEN_DIR}/array_types/auto_array/AutoArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/auto_array/AutoArray.h
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_subtyped_uint8/ArrayElement.h
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_subtyped_uint8/AutoArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_subtyped_uint8/AutoArray.h
 
-    ${ZSERIO_GEN_DIR}/array_types/fixed_array/FixedArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/fixed_array/FixedArray.h
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_uint8/AutoArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_uint8/AutoArray.h
+
+    ${ZSERIO_GEN_DIR}/array_types/fixed_array_uint8/FixedArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/fixed_array_uint8/FixedArray.h
 
     ${ZSERIO_GEN_DIR}/array_types/implicit_array_bit8/ImplicitArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/implicit_array_bit8/ImplicitArray.h
@@ -33,25 +37,21 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.h
 
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/ArrayElement.h
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/SubtypedBuiltinAutoArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_builtin_auto_array/SubtypedBuiltinAutoArray.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/VariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/VariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/TestStructure.h
 
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/ArrayElement.h
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/SubtypedStructVariableArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/SubtypedStructVariableArray.h
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/array_types/subtyped_struct_variable_array/TestStructure.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_varuint/VariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_varuint/VariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_varuint/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_varuint/TestStructure.h
 
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/VariableArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/VariableArray.h
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_int8/TestStructure.h
-
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/VariableArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/VariableArray.h
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/array_types/variable_array_varuint/TestStructure.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/ArrayElement.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/VariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/VariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/TestStructure.h
 )
 
 zserio_add_library(TARGET array_types_zs
@@ -66,18 +66,18 @@ zserio_add_library(TARGET array_types_zs
 
 add_test_sources(
     cpp/ArraysMappingTest.cpp
-    cpp/AutoArrayRecursionTest.cpp
-    cpp/AutoArrayTest.cpp
-    cpp/FixedArrayTest.cpp
+    cpp/AutoArrayStructRecursionTest.cpp
+    cpp/AutoArraySubtypedUInt8Test.cpp
+    cpp/AutoArrayUInt8Test.cpp
+    cpp/FixedArrayUInt8Test.cpp
     cpp/ImplicitArrayBit8Test.cpp
     cpp/ImplicitArrayInt24Test.cpp
     cpp/ImplicitArrayFloat16Test.cpp
     cpp/ImplicitArrayUInt8Test.cpp
     cpp/ImplicitArrayUInt64Test.cpp
-    cpp/SubtypedBuiltinAutoArrayTest.cpp
-    cpp/SubtypedStructVariableArrayTest.cpp
-    cpp/VariableArrayInt8Test.cpp
-    cpp/VariableArrayVarUIntTest.cpp
+    cpp/VariableArrayStructCastInt8Test.cpp
+    cpp/VariableArrayStructCastVarUIntTest.cpp
+    cpp/VariableArraySubtypedStructTest.cpp
 )
 
 add_test_dependencies(array_types_zs)

@@ -10,6 +10,7 @@ import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.types.PythonNativeType;
 
 /**
  * FreeMarker template data for EnumerationEmitter.
@@ -26,6 +27,10 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         importPackage("zserio");
 
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
+        final PythonNativeType nativeType = pythonNativeMapper.getPythonType(enumTypeInstantiation);
+
+        arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = createBitSize(enumTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
@@ -36,6 +41,11 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
             items.add(new EnumItemData(enumItem));
+    }
+
+    public ArrayTraitsTemplateData getArrayTraits()
+    {
+        return arrayTraits;
     }
 
     public String getBitSize()
@@ -93,6 +103,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final List<EnumItemData> items;

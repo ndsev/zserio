@@ -70,12 +70,32 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         {
             final ZserioParser.FieldArrayRangeContext fieldArrayRangeCtx = ctx.fieldArrayRange();
             if (fieldArrayRangeCtx == null)
+            {
                 throw new ParserException(ctx.IMPLICIT().getSymbol(),
                         "Implicit keyword can be used only for arrays!");
+            }
 
             if (fieldArrayRangeCtx.expression() != null)
+            {
                 throw new ParserException(fieldArrayRangeCtx.expression().getStart(),
                         "Length expression is not allowed for implicit arrays!");
+            }
+        }
+
+        if (ctx.PACKED() != null)
+        {
+            final ZserioParser.FieldArrayRangeContext fieldArrayRangeCtx = ctx.fieldArrayRange();
+            if (fieldArrayRangeCtx == null)
+            {
+                throw new ParserException(ctx.PACKED().getSymbol(),
+                        "Packed keyword can be used only for arrays!");
+            }
+
+            if (ctx.IMPLICIT() != null)
+            {
+                throw new ParserException(ctx.IMPLICIT().getSymbol(),
+                        "Implicit arrays cannot be packed!");
+            }
         }
 
         return visitChildren(ctx);

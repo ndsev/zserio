@@ -118,6 +118,7 @@ public class ZserioLexerTest
                 "on " +
                 "optional " +
                 "package " +
+                "packed " +
                 "publish " +
                 "pubsub " +
                 "return " +
@@ -184,6 +185,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.ON);
         checkToken(lexer, ZserioLexer.OPTIONAL);
         checkToken(lexer, ZserioLexer.PACKAGE);
+        checkToken(lexer, ZserioLexer.PACKED);
         checkToken(lexer, ZserioLexer.PUBLISH);
         checkToken(lexer, ZserioLexer.PUBSUB);
         checkToken(lexer, ZserioLexer.RETURN);

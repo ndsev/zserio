@@ -44,6 +44,17 @@ class ${name}:
 
         return instance
 
+    @classmethod
+    def from_reader_packed(
+            cls: typing.Type['${name}'],
+            zserio_context_node: zserio.array.PackingContextNode,
+            zserio_reader: zserio.BitStreamReader<#if constructorAnnotatedParamList?has_content>,
+            <#lt>${constructorAnnotatedParamList}</#if>) -> '${name}':
+        instance = cls(${constructorParamList})
+        instance.read_packed(zserio_context_node, zserio_reader)
+
+        return instance
+
 <#macro structure_compare_fields fieldList indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list fieldList as field>
@@ -110,6 +121,28 @@ ${I}<#rt>
         return ${function.resultExpression}
 </#list>
 
+    @staticmethod
+    def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:
+    <#if fieldList?has_content>
+        context_builder.begin_node()
+        <#list fieldList as field>
+        <@compound_create_packing_context_field field/>
+        </#list>
+        context_builder.end_node()
+    <#else>
+        del context_builder
+    </#if>
+
+    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
+<#if compound_needs_packing_context_node(fieldList)>
+    <#list fieldList as field>
+        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
+        <@compound_init_packing_context_field field, 2/>
+    </#list>
+<#else>
+        del context_node
+</#if>
+
     def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
         end_bitposition = bitposition
@@ -119,6 +152,27 @@ ${I}<#rt>
 
         return end_bitposition - bitposition
 <#else>
+        del bitposition
+
+        return 0
+</#if>
+
+    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
+                         bitposition: int = 0) -> int:
+<#if fieldList?has_content>
+    <#if !compound_needs_packing_context_node(fieldList)>
+        del context_node
+
+    </#if>
+        end_bitposition = bitposition
+    <#list fieldList as field>
+        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
+        <@compound_bitsizeof_field field, 2, true/>
+    </#list>
+
+        return end_bitposition - bitposition
+<#else>
+        del context_node
         del bitposition
 
         return 0
@@ -134,6 +188,25 @@ ${I}<#rt>
 
         return end_bitposition
     <#else>
+        return bitposition
+    </#if>
+
+    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
+                                  bitposition: int) -> int:
+    <#if fieldList?has_content>
+        <#if !compound_needs_packing_context_node(fieldList)>
+        del context_node
+
+        </#if>
+        end_bitposition = bitposition
+        <#list fieldList as field>
+        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
+        <@compound_initialize_offsets_field field, 2, true/>
+        </#list>
+
+        return end_bitposition
+    <#else>
+        del context_node
         return bitposition
     </#if>
 </#if>
@@ -154,6 +227,25 @@ ${I}<#rt>
         </#if>
     </#list>
 <#else>
+        del zserio_reader
+</#if>
+
+    def read_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+                    zserio_reader: zserio.BitStreamReader) -> None:
+<#if fieldList?has_content>
+    <#if !compound_needs_packing_context_node(fieldList)>
+        del zserio_context_node
+
+    </#if>
+    <#list fieldList as field>
+        <@compound_field_packing_context_node field, field?index, "zserio_context_node", 2/>
+        <@compound_read_field field, name, withWriterCode, 2, true/>
+        <#if field?has_next>
+
+        </#if>
+    </#list>
+<#else>
+        del zserio_context_node
         del zserio_reader
 </#if>
 <#if withWriterCode>
@@ -184,6 +276,25 @@ ${I}<#rt>
     <#else>
         del zserio_writer
         del zserio_call_initialize_offsets
+    </#if>
+
+    def write_packed(self, zserio_context_node: zserio.array.PackingContextNode,
+                     zserio_writer: zserio.BitStreamWriter) -> None:
+    <#if fieldList?has_content>
+        <#if !compound_needs_packing_context_node(fieldList)>
+        del zserio_context_node
+
+        </#if>
+        <#list fieldList as field>
+        <@compound_field_packing_context_node field, field?index, "zserio_context_node", 2/>
+        <@compound_write_field field, name, 2, true/>
+            <#if field?has_next>
+
+            </#if>
+        </#list>
+    <#else>
+        del zserio_context_node
+        del zserio_writer
     </#if>
 </#if>
 <#list fieldList as field>

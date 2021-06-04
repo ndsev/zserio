@@ -7,9 +7,9 @@ import zserio.ast.PackageName;
  */
 public class NativeBuiltinType extends PythonNativeType
 {
-    public NativeBuiltinType(String builtinTypeName)
+    public NativeBuiltinType(String builtinTypeName, NativeArrayTraits arrayTraits)
     {
-        super(BUILTIN_TYPE_PACKAGE_NAME, BUILTIN_TYPE_MODULE_NAME, builtinTypeName);
+        super(BUILTIN_TYPE_PACKAGE_NAME, BUILTIN_TYPE_MODULE_NAME, builtinTypeName, arrayTraits);
     }
 
     private static final PackageName BUILTIN_TYPE_PACKAGE_NAME = PackageName.EMPTY;

@@ -28,6 +28,7 @@ import zserio.extension.java.types.NativeFloatType;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
 import zserio.extension.java.types.NativeObjectArrayType;
+import zserio.tools.ZserioToolPrinter;
 
 public final class CompoundFieldTemplateData
 {
@@ -321,6 +322,12 @@ public final class CompoundFieldTemplateData
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
             isImplicit = arrayInstantiation.isImplicit();
+            if (arrayInstantiation.isPacked())
+            {
+                ZserioToolPrinter.printError(arrayInstantiation.getLocation(),
+                        "Unimplemented packed array field reached!");
+                throw new ZserioExtensionException("Packed arrays not implemented!");
+            }
             length = createLength(arrayInstantiation, javaExpressionFormatter);
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementJavaTypeName = elementNativeType.getFullName();

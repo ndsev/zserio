@@ -13,6 +13,7 @@
         <#if field.isVirtual>sql_virtual </#if><#t>
         <#if field.isAutoOptional>optional </#if><#t>
         <#if field.isArrayImplicit>implicit </#if><#t>
+        <#if field.isArrayPacked>packed </#if><#t>
     </#local>
 ${I}<tbody class="anchor-group" id="${field.symbol.htmlLink.htmlAnchor}">
     <#if hasDocComments(field.docComments)>

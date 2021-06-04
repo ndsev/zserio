@@ -110,7 +110,7 @@ fieldOffset
     ;
 
 fieldTypeId
-    :   IMPLICIT? typeInstantiation id fieldArrayRange?
+    :   PACKED? IMPLICIT? typeInstantiation id fieldArrayRange?
     ;
 
 fieldArrayRange

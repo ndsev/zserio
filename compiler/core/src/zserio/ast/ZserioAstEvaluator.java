@@ -97,6 +97,13 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     }
 
     @Override
+    public void visitField(Field field)
+    {
+        field.visitChildren(this);
+        field.evaluate();
+    }
+
+    @Override
     public void visitBitmaskValue(BitmaskValue bitmaskValue)
     {
         bitmaskValue.visitChildren(this);

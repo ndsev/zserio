@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl"/>
+<#include "ArrayTraits.inc.ftl"/>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -20,6 +21,14 @@ class ${name}:
     def from_reader(cls: typing.Type['${name}'], reader: zserio.BitStreamReader) -> '${name}':
         instance = cls()
         instance._value = reader.read_${runtimeFunction.suffix}(${runtimeFunction.arg!})
+        return instance
+
+    @classmethod
+    def from_reader_packed(cls: typing.Type['${name}'],
+                           context_node: zserio.array.PackingContextNode,
+                           reader: zserio.BitStreamReader) -> '${name}':
+        instance = cls()
+        instance._value = context_node.context.read(<@array_traits_create arrayTraits, bitSize!/>, reader)
         return instance
 
     def __eq__(self, other: object) -> bool:
@@ -65,20 +74,41 @@ class ${name}:
     def __invert__(self) -> '${name}':
         return ${name}.from_value(~self._value & ${upperBound})
 
+    @staticmethod
+    def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:
+        context_builder.add_leaf(zserio.array.${arrayTraits.name})
+
+    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
+        context_node.context.init(self._value)
+
     def bitsizeof(self, _bit_position: int = 0) -> int:
 <#if bitSize??>
         return ${bitSize}
 <#else>
         return zserio.bitsizeof.bitsizeof_${runtimeFunction.suffix}(self._value)
 </#if>
+
+    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
+                         bitposition: int) -> int:
+        return context_node.context.bitsizeof(<@array_traits_create arrayTraits, bitSize!/>,
+                                              bitposition, self._value)
 <#if withWriterCode>
 
     def initialize_offsets(self, bit_position: int) -> int:
         return bit_position + self.bitsizeof(bit_position)
 
-    def write(self, writer: zserio.BitStreamWriter) -> None:
+    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
+                                  bitposition: int) -> int:
+        return bitposition + self.bitsizeof_packed(context_node, bitposition)
+
+    def write(self, writer: zserio.BitStreamWriter, *, zserio_call_initialize_offsets: bool = True) -> None:
+        del zserio_call_initialize_offsets
         writer.write_${runtimeFunction.suffix}(self._value<#rt>
                                                <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>)
+
+    def write_packed(self, context_node: zserio.array.PackingContextNode,
+                     writer: zserio.BitStreamWriter) -> None:
+        context_node.context.write(<@array_traits_create arrayTraits, bitSize!/>, writer, self._value)
 </#if>
 
     @property

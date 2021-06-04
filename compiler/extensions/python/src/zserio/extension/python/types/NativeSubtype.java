@@ -9,7 +9,7 @@ public class NativeSubtype extends NativeUserType
 {
     public NativeSubtype(PackageName packageName, String name, PythonNativeType nativeTargetBaseType)
     {
-        super(packageName, name);
+        super(packageName, name, nativeTargetBaseType.getArrayTraits());
         this.nativeTargetBaseType = nativeTargetBaseType;
     }
 

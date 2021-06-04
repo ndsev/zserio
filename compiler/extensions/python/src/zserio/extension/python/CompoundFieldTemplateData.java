@@ -14,6 +14,7 @@ import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
+import zserio.ast.ExternType;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
@@ -44,6 +45,8 @@ public final class CompoundFieldTemplateData
 
         propertyName = AccessorNameFormatter.getPropertyName(field);
 
+        isUnpackable = field.isUnpackable();
+
         final ExpressionFormatter pythonExpressionFormatter =
                 context.getPythonExpressionFormatter(importCollector);
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
@@ -55,8 +58,12 @@ public final class CompoundFieldTemplateData
         constraint = createConstraint(field, pythonExpressionFormatter);
 
         usesChoiceMember = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
-        isBuiltinType = (nativeType instanceof NativeBuiltinType);
 
+        isBuiltinType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
+                (pythonNativeMapper.getPythonType(fieldBaseType) instanceof NativeBuiltinType);
+        isExternType = fieldBaseType instanceof ExternType;
+
+        arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
         array = createArray(nativeType, fieldTypeInstantiation, parentType, pythonNativeMapper,
@@ -84,6 +91,11 @@ public final class CompoundFieldTemplateData
     public String getPropertyName()
     {
         return propertyName;
+    }
+
+    public boolean getIsUnpackable()
+    {
+        return isUnpackable;
     }
 
     public RangeCheck getRangeCheck()
@@ -119,6 +131,16 @@ public final class CompoundFieldTemplateData
     public boolean getIsBuiltinType()
     {
         return isBuiltinType;
+    }
+
+    public boolean getIsExternType()
+    {
+        return isExternType;
+    }
+
+    public ArrayTraitsTemplateData getArrayTraits()
+    {
+        return arrayTraits;
     }
 
     public BitSize getBitSize()
@@ -313,11 +335,10 @@ public final class CompoundFieldTemplateData
                 PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
-            traitsName = nativeType.getTraitsName();
-            requiresElementBitSize = nativeType.getRequiresElementBitSize();
-            requiresElementCreator = nativeType.getRequiresElementCreator();
+            traits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
 
             isImplicit = arrayInstantiation.isImplicit();
+            isPacked = arrayInstantiation.isPacked();
             length = createLength(arrayInstantiation, pythonExpressionFormatter);
 
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
@@ -330,24 +351,19 @@ public final class CompoundFieldTemplateData
             elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);
         }
 
-        public String getTraitsName()
+        public ArrayTraitsTemplateData getTraits()
         {
-            return traitsName;
-        }
-
-        public boolean getRequiresElementBitSize()
-        {
-            return requiresElementBitSize;
-        }
-
-        public boolean getRequiresElementCreator()
-        {
-            return requiresElementCreator;
+            return traits;
         }
 
         public boolean getIsImplicit()
         {
             return isImplicit;
+        }
+
+        public boolean getIsPacked()
+        {
+            return isPacked;
         }
 
         public String getLength()
@@ -385,10 +401,9 @@ public final class CompoundFieldTemplateData
             return pythonExpressionFormatter.formatGetter(lengthExpression);
         }
 
-        private final String traitsName;
-        private final boolean requiresElementBitSize;
-        private final boolean requiresElementCreator;
+        private final ArrayTraitsTemplateData traits;
         private final boolean isImplicit;
+        private final boolean isPacked;
         private final String length;
         private final String elementPythonTypeName;
         private final boolean elementIsRecursive;
@@ -539,7 +554,8 @@ public final class CompoundFieldTemplateData
 
         if (!(nativeType instanceof NativeArrayType))
         {
-            throw new ZserioExtensionException("Inconsistent base type '" + typeInstantiation.getClass().getName() +
+            throw new ZserioExtensionException("Inconsistent base type '" +
+                    typeInstantiation.getClass().getName() +
                     "' and native type '" + nativeType.getClass().getName() + "'!");
         }
 
@@ -562,6 +578,7 @@ public final class CompoundFieldTemplateData
     private final String snakeCaseName;
     private final String pythonTypeName;
     private final String propertyName;
+    private final boolean isUnpackable;
 
     private final RangeCheck rangeCheck;
     private final Optional optional;
@@ -572,7 +589,9 @@ public final class CompoundFieldTemplateData
 
     private final boolean usesChoiceMember;
     private final boolean isBuiltinType;
+    private final boolean isExternType;
 
+    private final ArrayTraitsTemplateData arrayTraits;
     private final BitSize bitSize;
     private final Offset offset;
     private final Array array;
