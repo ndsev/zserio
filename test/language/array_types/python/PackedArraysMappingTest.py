@@ -5,83 +5,83 @@ from testutils import getZserioApi
 class PackedArraysMappingTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").arrays_mapping
+        cls.api = getZserioApi(__file__, "array_types.zs").packed_arrays_mapping
 
     def testUnsignedIntegerArrays(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.uint8_array = intArray
-        arraysMapping.uint16_array = intArray
-        arraysMapping.uint32_array = intArray
-        arraysMapping.uint64_array = intArray
+        packedArraysMapping.uint8_array = intArray
+        packedArraysMapping.uint16_array = intArray
+        packedArraysMapping.uint32_array = intArray
+        packedArraysMapping.uint64_array = intArray
 
     def testSignedIntegerArrays(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.int8_array = intArray
-        arraysMapping.int16_array = intArray
-        arraysMapping.int32_array = intArray
-        arraysMapping.int64_array = intArray
+        packedArraysMapping.int8_array = intArray
+        packedArraysMapping.int16_array = intArray
+        packedArraysMapping.int32_array = intArray
+        packedArraysMapping.int64_array = intArray
 
     def testUnsignedBitfieldArrays(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.bitfield8_array = intArray
-        arraysMapping.bitfield16_array = intArray
-        arraysMapping.bitfield32_array = intArray
-        arraysMapping.bitfield63_array = intArray
-        arraysMapping.uint8_value = 8
-        arraysMapping.variable_bitfield_long_array = intArray
+        packedArraysMapping.bitfield8_array = intArray
+        packedArraysMapping.bitfield16_array = intArray
+        packedArraysMapping.bitfield32_array = intArray
+        packedArraysMapping.bitfield63_array = intArray
+        packedArraysMapping.uint8_value = 8
+        packedArraysMapping.variable_bitfield_long_array = intArray
 
     def testSignedBitfieldArrays(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.intfield8_array = intArray
-        arraysMapping.intfield16_array = intArray
-        arraysMapping.intfield32_array = intArray
-        arraysMapping.intfield64_array = intArray
-        arraysMapping.uint8_value = 8
-        arraysMapping.variable_intfield_long_array = intArray
+        packedArraysMapping.intfield8_array = intArray
+        packedArraysMapping.intfield16_array = intArray
+        packedArraysMapping.intfield32_array = intArray
+        packedArraysMapping.intfield64_array = intArray
+        packedArraysMapping.uint8_value = 8
+        packedArraysMapping.variable_intfield_long_array = intArray
 
     def testVariableUnsignedIntegerArrays(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.varuint16_array = intArray
-        arraysMapping.varuint32_array = intArray
-        arraysMapping.varuint64_array = intArray
-        arraysMapping.varuint_array = intArray
-        arraysMapping.varsize_array = intArray
+        packedArraysMapping.varuint16_array = intArray
+        packedArraysMapping.varuint32_array = intArray
+        packedArraysMapping.varuint64_array = intArray
+        packedArraysMapping.varuint_array = intArray
+        packedArraysMapping.varsize_array = intArray
 
     def testVariableSignedIntegerArrays(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         intArray = list(range(self.FIXED_ARRAY_LENGTH))
 
-        arraysMapping.varint16_array = intArray
-        arraysMapping.varint32_array = intArray
-        arraysMapping.varint64_array = intArray
-        arraysMapping.varint_array = intArray
+        packedArraysMapping.varint16_array = intArray
+        packedArraysMapping.varint32_array = intArray
+        packedArraysMapping.varint64_array = intArray
+        packedArraysMapping.varint_array = intArray
 
     def testCompoundArray(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         compoundArray = [self.api.TestStructure() for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.compound_array = compoundArray
+        packedArraysMapping.compound_array = compoundArray
 
     def testEnumArray(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         enumArray = [self.api.TestEnum(self.api.TestEnum.VALUE1) for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.enum_array = enumArray
+        packedArraysMapping.enum_array = enumArray
 
     def testBitmaskArray(self):
-        arraysMapping = self.api.ArraysMapping()
+        packedArraysMapping = self.api.PackedArraysMapping()
         bitmaskArray = [self.api.TestBitmask.Values.MASK1 for i in range(self.FIXED_ARRAY_LENGTH)]
 
-        arraysMapping.bitmask_array = bitmaskArray
+        packedArraysMapping.bitmask_array = bitmaskArray
 
     FIXED_ARRAY_LENGTH = 5
