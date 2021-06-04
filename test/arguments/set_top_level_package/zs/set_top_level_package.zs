@@ -5,7 +5,7 @@ import set_top_level_package.enumeration.Enumeration;
 
 subtype uint8 U8;
 
-choice SimpleChoice(Enumeration e) on e
+choice SimpleChoice(Enumeration value) on value
 {
     case STRING:
         string stringField;
@@ -16,12 +16,18 @@ choice SimpleChoice(Enumeration e) on e
     default: ; // empty
 };
 
+struct SimpleTemplate<E>
+{
+    bool    boolField;
+    bit:5   expressionField if valueof(E.ITEM_MIN) == 0;
+};
 struct SimpleStructure
 {
-    bit:3           numberA;
-    U8              numberB = set_top_level_package.constant.CONST : numberB > valueof(Enumeration.ITEM_MIN) &&
-                        numberB > valueof(set_top_level_package.enumeration.Enumeration.ITEM_MAX);
-    bit:7           numberC;
-    set_top_level_package.enumeration.Enumeration e = Enumeration.EMPTY;
-    SimpleChoice(e) simpleChoice;
+    bit:3 numberA;
+    U8 numberB = set_top_level_package.constant.CONST : numberB > valueof(Enumeration.ITEM_MIN) &&
+                    numberB > valueof(set_top_level_package.enumeration.Enumeration.ITEM_MAX);
+    bit:7 numberC;
+    set_top_level_package.enumeration.Enumeration value = Enumeration.EMPTY;
+    SimpleChoice(value) simpleChoice;
+    SimpleTemplate<set_top_level_package.enumeration.Enumeration> simpleTemplate;
 };

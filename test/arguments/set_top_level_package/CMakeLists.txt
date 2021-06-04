@@ -9,6 +9,8 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/company/appl/SimpleChoice.h
     ${ZSERIO_GEN_DIR}/company/appl/SimpleStructure.cpp
     ${ZSERIO_GEN_DIR}/company/appl/SimpleStructure.h
+    ${ZSERIO_GEN_DIR}/company/appl/SimpleTemplate_Enumeration.cpp
+    ${ZSERIO_GEN_DIR}/company/appl/SimpleTemplate_Enumeration.h
     ${ZSERIO_GEN_DIR}/company/appl/U8.h
 )
 

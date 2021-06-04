@@ -681,12 +681,13 @@ public class Expression extends AstNodeBase
                     // template parameter has been found
                     final TypeReference templateArgumentReference =
                             templateArguments.get(index).getTypeReference();
-                    final PackageName templateArgumentPackage =
+                    final PackageName templateArgumentPackageName =
                             templateArgumentReference.getReferencedPackageName();
-                    if (!templateArgumentPackage.isEmpty())
+                    if (!templateArgumentPackageName.isEmpty())
                     {
                         // found template argument is type reference with specified package
-                        return createInstantiationTree(templateArgumentPackage,
+                        return createInstantiationTree(templateArgumentPackageName,
+                                templateArgumentReference.getType().getPackage().getTopLevelPackageName(),
                                 templateArgumentReference.getReferencedTypeName());
                     }
                     instantiatedText = templateArgumentReference.getReferencedTypeName();
@@ -704,14 +705,21 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private Expression createInstantiationTree(PackageName templateArgumentPackage, String templateArgumentName)
+    private Expression createInstantiationTree(PackageName templateArgumentPackageName,
+            PackageName topLevelPackageName, String templateArgumentName)
     {
-        final List<String> templateArgumentPackageIds = templateArgumentPackage.getIdList();
+        // strip top level package because all expressions are given without top level package
+        final List<String> templateArgumentPackageIds = templateArgumentPackageName.getIdList();
+        final List<String> topLevelPackageIds = topLevelPackageName.getIdList();
+        final int firstIdIndex = topLevelPackageIds.size();
+        if (firstIdIndex >= templateArgumentPackageIds.size())
+            throw new InternalError("Mismatch of package name and top level package name!");
         Expression operand1 = new Expression(getLocation(), pkg, ZserioParser.ID,
-                templateArgumentPackageIds.get(0), ExpressionFlag.IS_DOT_LEFT_OPERAND_ID, null, null, null);
+                templateArgumentPackageIds.get(firstIdIndex), ExpressionFlag.IS_DOT_LEFT_OPERAND_ID, null, null,
+                null);
         final List<String> expressionIds = new ArrayList<String>(templateArgumentPackageIds);
         expressionIds.add(templateArgumentName);
-        for (int i = 1; i < expressionIds.size(); i++)
+        for (int i = firstIdIndex + 1; i < expressionIds.size(); i++)
         {
             final Expression operand2 = new Expression(getLocation(), pkg, ZserioParser.ID,
                     expressionIds.get(i), ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID, null, null, null);

@@ -15,7 +15,7 @@ protected:
     static const size_t SIMPLE_STRUCTURE_BIT_SIZE;
 };
 
-const size_t SetTopLevelPackageTest::SIMPLE_STRUCTURE_BIT_SIZE = 26;
+const size_t SetTopLevelPackageTest::SIMPLE_STRUCTURE_BIT_SIZE = 32;
 
 TEST_F(SetTopLevelPackageTest, emptyConstructor)
 {
