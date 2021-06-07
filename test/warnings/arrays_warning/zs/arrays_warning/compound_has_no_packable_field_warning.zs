@@ -22,7 +22,6 @@ offset:
     uint32 offsets[]; // offsets are always unpackable
 offsets[@index]:
     bool array1[];
-    implicit uint16 implicitArray[]; // implicit arrays are always unpackable
 };
 
 enum uint8 TestEnum

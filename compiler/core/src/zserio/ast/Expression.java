@@ -308,6 +308,17 @@ public class Expression extends AstNodeBase
     }
 
     /**
+     * Gets lower bound for integer expression.
+     *
+     * @return Returns lower bound for integer expression or null if expression is not integer or if lower bound
+     *         of integer expression is not possible to evaluate during compile time.
+     */
+    public BigInteger getIntegerLowerBound()
+    {
+        return expressionIntegerValue.getLowerBound();
+    }
+
+    /**
      * Gets upper bound for integer expression.
      *
      * @return Returns upper bound for integer expression or null if expression is not integer or if upper bound

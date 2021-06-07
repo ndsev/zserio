@@ -75,34 +75,40 @@ public class StructureType extends CompoundType
         // check optional clause of all fields
         checkOptionalFields();
 
-        // check that implicit array field is the last one in the structure
-        checkImplicitArrayFields();
+        // check implicit arrays
+        checkImplicitArrays();
+    }
+
+    @Override
+    protected boolean hasBranchWithoutImplicitArray()
+    {
+        // all fields must have branch without implicit array
+        for (Field field : getFields())
+        {
+            if (!hasFieldBranchWithoutImplicitArray(field))
+                return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    protected boolean hasEmptyBranch(boolean implicitCanBeEmpty)
+    {
+        // all fields must have empty branch
+        for (Field field : getFields())
+        {
+            if (!hasFieldEmptyBranch(field, implicitCanBeEmpty))
+                return false;
+        }
+
+        return true;
     }
 
     private void checkOptionalFields()
     {
         for (Field field : getFields())
             checkOptionalField(field);
-    }
-
-    private void checkImplicitArrayFields()
-    {
-        final List<Field> fields = getFields();
-        final int numFields = fields.size();
-        for (int i = 0; i < numFields; ++i)
-        {
-            final Field field = fields.get(i);
-            final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            if (fieldTypeInstantiation instanceof ArrayInstantiation)
-            {
-                final ArrayInstantiation arrayTypeInstantiation = (ArrayInstantiation)fieldTypeInstantiation;
-                if (arrayTypeInstantiation.isImplicit() && i != (numFields - 1))
-                {
-                    throw new ParserException(field,
-                            "Implicit array must be defined at the end of structure!");
-                }
-            }
-        }
     }
 
     private static void checkOptionalField(Field field)
@@ -146,6 +152,31 @@ public class StructureType extends CompoundType
                     // clauses OR optional clause of parameter is not the same as optional clause of field
                     ZserioToolPrinter.printWarning(field, "Parameterized field '" + field.getName() +
                             "' has different optional clause than parameters.");
+                }
+            }
+        }
+    }
+
+    private void checkImplicitArrays()
+    {
+        // once first unconditional implicit array is found, all following fields must provide an alternative
+        // to become empty
+        boolean hasImplicitArray = false;
+        for (Field field : getFields())
+        {
+            if (!hasImplicitArray)
+            {
+                hasImplicitArray = !hasFieldBranchWithoutImplicitArray(field);
+            }
+            else
+            {
+                final boolean implicitCanBeEmpty = true;
+                if (!hasFieldEmptyBranch(field, implicitCanBeEmpty))
+                {
+                    final ParserStackedException stackedException = new ParserStackedException(
+                            field.getLocation(), "Field '" + field.getName() + "' follows an implicit array!");
+                    trackImplicitArray(stackedException);
+                    throw stackedException;
                 }
             }
         }

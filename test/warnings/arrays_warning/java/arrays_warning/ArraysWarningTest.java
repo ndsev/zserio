@@ -20,11 +20,11 @@ public class ArraysWarningTest
     @Test
     public void compoundHasNoPackableField()
     {
-        final String warning1 = "compound_has_no_packable_field_warning.zs:51:12: " +
+        final String warning1 = "compound_has_no_packable_field_warning.zs:50:12: " +
                 "'StructWithoutPackable' doesn't contain any packable field!";
         assertTrue(zserioWarnings.isPresent(warning1));
 
-        final String warning2 = "compound_has_no_packable_field_warning.zs:53:12: " +
+        final String warning2 = "compound_has_no_packable_field_warning.zs:52:12: " +
                 "'ChoiceWithoutPackableField' doesn't contain any packable field!";
         assertTrue(zserioWarnings.isPresent(warning2));
     }

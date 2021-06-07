@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
@@ -263,6 +264,131 @@ public abstract class CompoundType extends TemplatableType
         validator = new ScopeSymbolValidator();
         for (Function function : functions)
             validator.validate(function.getName(), function);
+    }
+
+    protected boolean hasBranchWithoutImplicitArray()
+    {
+        throw new InternalError("CompoundType.hasBranchWithoutImplicitArray() is not implemented!");
+    }
+
+    protected boolean hasFieldBranchWithoutImplicitArray(Field field)
+    {
+        final boolean implicitCanBeEmpty = false;
+        if (hasFieldEmptyBranch(field, implicitCanBeEmpty))
+            return true;
+
+        final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+        ZserioType fieldBaseType = typeInstantiation.getBaseType();
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+            if (arrayInstantiation.isImplicit())
+                return false;
+
+            if (arrayInstantiation.getLengthExpression() == null || // auto array can be empty
+                    (arrayInstantiation.getLengthExpression().getIntegerLowerBound() != null &&
+                            arrayInstantiation.getLengthExpression().getIntegerLowerBound().compareTo(
+                                    BigInteger.ZERO) <= 0))
+            {
+                // may be zero length array
+                return true;
+            }
+
+            fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
+        }
+
+        if (fieldBaseType instanceof CompoundType)
+        {
+            final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+            if (childCompoundType != this) // prevent recursion (can occur in case of non-empty array)
+                return childCompoundType.hasBranchWithoutImplicitArray();
+        }
+
+        return true;
+    }
+
+    protected void trackImplicitArray(ParserStackedException stackedException)
+    {
+        for (Field field : fields)
+        {
+            if (!hasFieldBranchWithoutImplicitArray(field))
+            {
+                stackedException.pushMessage(field.getLocation(), "    implicit array is used here");
+
+                final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+                ZserioType fieldBaseType = typeInstantiation.getBaseType();
+
+                if (typeInstantiation instanceof ArrayInstantiation)
+                {
+                    final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+                    fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
+                }
+
+                if (fieldBaseType instanceof CompoundType)
+                {
+                    final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+                    if (childCompoundType != this)
+                        childCompoundType.trackImplicitArray(stackedException);
+                }
+
+                break;
+            }
+        }
+    }
+
+    protected boolean hasEmptyBranch(boolean imlicitCanBeEmpty)
+    {
+        throw new InternalError("CompoundType.hasEmptyBranch() is not implemented!");
+    }
+
+    protected boolean hasFieldEmptyBranch(Field field, boolean implicitCanBeEmpty)
+    {
+        if (field.isOptional())
+        {
+            if (field.getOptionalClauseExpr() != null)
+                return true; // non-auto optional, thus can be empty
+            else
+                return false; // auto optional, needs at least one byte
+        }
+
+        final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+        ZserioType fieldBaseType = typeInstantiation.getBaseType();
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+
+            // we don't care about multiple consecutive implicit arrays
+            // (first array will read rest of the buffer and remaining implicit arras will be empty)
+            if (arrayInstantiation.isImplicit())
+                return implicitCanBeEmpty;
+
+            if (arrayInstantiation.getLengthExpression() == null)
+                return false; // auto array, needs at least size
+
+            if (arrayInstantiation.getLengthExpression().getIntegerLowerBound() != null &&
+                    arrayInstantiation.getLengthExpression().getIntegerLowerBound().compareTo(
+                            BigInteger.ZERO) <= 0)
+            {
+                return true; // may be zero length array
+            }
+            else if (arrayInstantiation.isPacked())
+            {
+                // when cannot be zero length array, packed array will always contain at least some descriptor
+                return false;
+            }
+
+            final TypeInstantiation elementInstantiation = arrayInstantiation.getElementTypeInstantiation();
+            fieldBaseType = elementInstantiation.getBaseType();
+        }
+
+        if (fieldBaseType instanceof CompoundType)
+        {
+            final CompoundType childCompoundType = (CompoundType)fieldBaseType;
+            if (childCompoundType != this)  // prevent recursion (can occur in case of non-empty array)
+                return childCompoundType.hasEmptyBranch(implicitCanBeEmpty);
+        }
+
+        return false;
     }
 
     private void checkDirectRecursion()

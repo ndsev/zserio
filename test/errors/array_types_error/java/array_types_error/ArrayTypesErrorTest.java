@@ -42,6 +42,20 @@ public class ArrayTypesErrorTest
     }
 
     @Test
+    public void implicitArrayComplexWithFieldBehind()
+    {
+        final String errors[] =
+        {
+            "implicit_array_complex_with_field_behind_error.zs:6:21:     implicit array is used here",
+            "implicit_array_complex_with_field_behind_error.zs:12:24:     implicit array is used here",
+            "implicit_array_complex_with_field_behind_error.zs:19:37:     implicit array is used here",
+            "implicit_array_complex_with_field_behind_error.zs:41:40:     implicit array is used here",
+            "implicit_array_complex_with_field_behind_error.zs:44:12: Field 'field' follows an implicit array!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void implicitArrayCompound()
     {
         final String error = "implicit_array_compound_error.zs:10:14: " +
@@ -60,9 +74,12 @@ public class ArrayTypesErrorTest
     @Test
     public void implicitArrayNotLast()
     {
-        final String error = "implicit_array_not_last_error.zs:5:21: Implicit array must be defined at the " +
-                "end of structure!";
-        assertTrue(zserioErrors.isPresent(error));
+        final String errors[] =
+        {
+            "implicit_array_not_last_error.zs:5:21:     implicit array is used here",
+            "implicit_array_not_last_error.zs:6:21: Field 'wrong' follows an implicit array!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -74,11 +91,49 @@ public class ArrayTypesErrorTest
     }
 
     @Test
+    public void implicitArrayStructNotLast()
+    {
+        final String errors[] =
+        {
+            "implicit_array_struct_not_last_error.zs:6:20:     implicit array is used here",
+            "implicit_array_struct_not_last_error.zs:11:24:     implicit array is used here",
+            "implicit_array_struct_not_last_error.zs:12:12: Field 'anotherField' follows an implicit array!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void implicitArrayVarint()
     {
         final String error = "implicit_array_varint_error.zs:5:14: " +
                 "Implicit arrays are allowed only for types which have fixed size rounded to bytes!";
         assertTrue(zserioErrors.isPresent(error));
+    }
+
+
+    @Test
+    public void implicitArrayWithAutoArrayBehind()
+    {
+        final String errors[] =
+        {
+            "implicit_array_with_auto_array_behind_error.zs:5:21:     implicit array is used here",
+            "implicit_array_with_auto_array_behind_error.zs:10:24:     implicit array is used here",
+            "implicit_array_with_auto_array_behind_error.zs:11:12: Field 'array' follows an implicit array!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
+    public void implicitArrayWithAutoOptionalBehind()
+    {
+        final String errors[] =
+        {
+            "implicit_array_with_auto_optional_behind_error.zs:5:21:     implicit array is used here",
+            "implicit_array_with_auto_optional_behind_error.zs:10:24:     implicit array is used here",
+            "implicit_array_with_auto_optional_behind_error.zs:11:21: " +
+                    "Field 'autoOptional' follows an implicit array!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
     }
 
     @Test
@@ -96,6 +151,19 @@ public class ArrayTypesErrorTest
                 "Implicit arrays cannot have indexed offsets!";
         assertTrue(zserioErrors.isPresent(error));
     }
+
+    @Test
+    public void implicitArrayWithPackedArrayBehind()
+    {
+        final String errors[] =
+        {
+            "implicit_array_with_packed_array_behind_error.zs:5:21:     implicit array is used here",
+            "implicit_array_with_packed_array_behind_error.zs:19:24:     implicit array is used here",
+            "implicit_array_with_packed_array_behind_error.zs:22:29: " +
+                    "Field 'packedArray2' follows an implicit array!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    };
 
     @Test
     public void packedImplicitArray()

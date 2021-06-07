@@ -174,6 +174,50 @@ public class ChoiceType extends CompoundType
         checkDuplicatedCases();
     }
 
+    @Override
+    protected boolean hasBranchWithoutImplicitArray()
+    {
+        // at least one field must have branch without implicit array, or at least one case must lead to empty
+        // choice, or it must be empty choice
+        for (ChoiceCase choiceCase : choiceCases)
+        {
+            if (choiceCase.getField() == null || hasFieldBranchWithoutImplicitArray(choiceCase.getField()))
+                return true;
+        }
+
+        if (choiceDefault != null)
+        {
+            if (choiceDefault.getField() == null ||
+                    hasFieldBranchWithoutImplicitArray(choiceDefault.getField()))
+            {
+                return true;
+            }
+        }
+
+        return getFields().isEmpty();
+    }
+
+    @Override
+    protected boolean hasEmptyBranch(boolean implicitCanBeEmpty)
+    {
+        // at least one field must have empty branch, or at least one case must lead to empty choice,
+        // or it must be empty choice
+        for (ChoiceCase choiceCase : choiceCases)
+        {
+            if (choiceCase.getField() == null || hasFieldEmptyBranch(choiceCase.getField(), implicitCanBeEmpty))
+                return true;
+        }
+
+        if (choiceDefault != null)
+        {
+            if (choiceDefault.getField() == null ||
+                    hasFieldEmptyBranch(choiceDefault.getField(), implicitCanBeEmpty))
+                return true;
+        }
+
+        return getFields().isEmpty();
+    }
+
     private boolean checkUnreachableDefault()
     {
         boolean isDefaulUnreachable = false;

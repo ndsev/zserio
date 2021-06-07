@@ -16,14 +16,24 @@
         <testGen testName="array_types_error" zsFile="implicit_array_bitfield_with_wrong_length_error.zs"
             ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_bool_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_complex_with_field_behind_error.zs"
+                ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_compound_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_dynamic_bitfield_error.zs"
             ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_not_last_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_string_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_struct_not_last_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_varint_error.zs" ignoreErrors="true"/>
-        <testGen testName="array_types_error" zsFile="implicit_array_with_length_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_with_auto_array_behind_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_with_auto_optional_behind_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="implicit_array_with_indexed_offsets_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_with_length_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="implicit_array_with_packed_array_behind_error.zs"
             ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="packed_implicit_array_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="wrong_array_length_type_error.zs" ignoreErrors="true"/>

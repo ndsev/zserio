@@ -63,4 +63,24 @@ public class UnionType extends CompoundType
         super.check();
         checkTableFields();
     }
+
+    @Override
+    protected boolean hasBranchWithoutImplicitArray()
+    {
+        // at least one field must have branch without implicit array, or it must be empty union
+        for (Field field : getFields())
+        {
+            if (hasFieldBranchWithoutImplicitArray(field))
+                return true;
+        }
+
+        return getFields().isEmpty();
+    }
+
+    @Override
+    protected boolean hasEmptyBranch(boolean implicitCanBeEmpty)
+    {
+        // contains at least choice tag!
+        return false;
+    }
 };
