@@ -286,12 +286,11 @@ public abstract class CompoundType extends TemplatableType
                 return false;
 
             if (arrayInstantiation.getLengthExpression() == null || // auto array can be empty
-                    (arrayInstantiation.getLengthExpression().getIntegerLowerBound() != null &&
-                            arrayInstantiation.getLengthExpression().getIntegerLowerBound().compareTo(
-                                    BigInteger.ZERO) <= 0))
+                    arrayInstantiation.getLengthExpression().getIntegerLowerBound() == null ||
+                    arrayInstantiation.getLengthExpression().getIntegerLowerBound().compareTo(
+                            BigInteger.ZERO) <= 0)
             {
-                // may be zero length array
-                return true;
+                return true; // may be empty array
             }
 
             fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
@@ -358,18 +357,18 @@ public abstract class CompoundType extends TemplatableType
             final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
 
             // we don't care about multiple consecutive implicit arrays
-            // (first array will read rest of the buffer and remaining implicit arras will be empty)
+            // (first array will read rest of the buffer and remaining implicit arrays will be empty)
             if (arrayInstantiation.isImplicit())
                 return implicitCanBeEmpty;
 
             if (arrayInstantiation.getLengthExpression() == null)
                 return false; // auto array, needs at least size
 
-            if (arrayInstantiation.getLengthExpression().getIntegerLowerBound() != null &&
+            if (arrayInstantiation.getLengthExpression().getIntegerLowerBound() == null ||
                     arrayInstantiation.getLengthExpression().getIntegerLowerBound().compareTo(
                             BigInteger.ZERO) <= 0)
             {
-                return true; // may be zero length array
+                return true; // may be empty array
             }
             else if (arrayInstantiation.isPacked())
             {
@@ -386,6 +385,7 @@ public abstract class CompoundType extends TemplatableType
             final CompoundType childCompoundType = (CompoundType)fieldBaseType;
             if (childCompoundType != this)  // prevent recursion (can occur in case of non-empty array)
                 return childCompoundType.hasEmptyBranch(implicitCanBeEmpty);
+            // note: never ending recursion should have been caught by checkDirectRecursion
         }
 
         return false;
@@ -396,15 +396,31 @@ public abstract class CompoundType extends TemplatableType
         // check recursive fields which are not arrays
         for (Field field : fields)
         {
-            final ZserioType fieldBaseType = field.getTypeInstantiation().getBaseType();
-            if (!field.isOptional() && !(fieldBaseType instanceof ArrayType))
+            if (field.isOptional())
+                continue;
+
+            final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+            ZserioType fieldBaseType = typeInstantiation.getBaseType();
+
+            if (typeInstantiation instanceof ArrayInstantiation)
             {
-                if (fieldBaseType == this)
+                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
+                fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
+
+                if (arrayInstantiation.getLengthExpression() == null || // auto array can be empty
+                        arrayInstantiation.getLengthExpression().getIntegerLowerBound() == null ||
+                        arrayInstantiation.getLengthExpression().getIntegerLowerBound().compareTo(
+                                BigInteger.ZERO) <= 0)
                 {
-                    // this field is not array or optional and it is recursive
-                    throw new ParserException(field, "Field '" + field.getName() +
-                            "' is recursive and neither optional nor array!");
+                    continue; // may be empty array
                 }
+            }
+
+            if (fieldBaseType == this)
+            {
+                // this field is not array or optional and it is recursive
+                throw new ParserException(field, "Field '" + field.getName() +
+                        "' is recursive and neither optional nor array which can be empty!");
             }
         }
     }

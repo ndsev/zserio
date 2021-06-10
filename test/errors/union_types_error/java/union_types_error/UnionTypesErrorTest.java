@@ -31,8 +31,8 @@ public class UnionTypesErrorTest
     @Test
     public void recursive()
     {
-        final String error =
-                "recursive_error.zs:6:17: Field 'field2' is recursive and neither optional nor array!";
+        final String error = "recursive_error.zs:6:17: " +
+                "Field 'field2' is recursive and neither optional nor array which can be empty!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

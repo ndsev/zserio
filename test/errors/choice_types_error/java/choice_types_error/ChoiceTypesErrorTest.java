@@ -119,8 +119,8 @@ public class ChoiceTypesErrorTest
     @Test
     public void recursive()
     {
-        final String error =
-                "recursive_error.zs:12:28: Field 'recursiveValue' is recursive and neither optional nor array!";
+        final String error = "recursive_error.zs:12:28: " +
+                "Field 'recursiveValue' is recursive and neither optional nor array which can be empty!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

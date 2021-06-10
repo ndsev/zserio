@@ -166,6 +166,13 @@ public class ArrayTypesErrorTest
     };
 
     @Test
+    public void nonEmptyArrayRecursion()
+    {
+        final String error = "non_empty_array_recursion_error.zs:9:33: ";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void packedImplicitArray()
     {
         final String error = "packed_implicit_array_error.zs:5:12: Implicit arrays cannot be packed!";
