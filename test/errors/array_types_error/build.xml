@@ -36,6 +36,18 @@
         <testGen testName="array_types_error" zsFile="implicit_array_with_packed_array_behind_error.zs"
             ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="non_empty_array_recursion_error.zs" ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="packed_array_choice_has_no_packable_field_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="packed_array_struct_has_no_packable_field_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="packed_array_unpackable_bool_element_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="packed_array_unpackable_extern_element_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="packed_array_unpackable_float_element_error.zs"
+            ignoreErrors="true"/>
+        <testGen testName="array_types_error" zsFile="packed_array_unpackable_string_element_error.zs"
+            ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="packed_implicit_array_error.zs" ignoreErrors="true"/>
         <testGen testName="array_types_error" zsFile="wrong_array_length_type_error.zs" ignoreErrors="true"/>
     </target>

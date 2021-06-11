@@ -9,8 +9,6 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.ZserioType;
-import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;

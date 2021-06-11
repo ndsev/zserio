@@ -168,7 +168,56 @@ public class ArrayTypesErrorTest
     @Test
     public void nonEmptyArrayRecursion()
     {
-        final String error = "non_empty_array_recursion_error.zs:9:33: ";
+        final String error = "non_empty_array_recursion_error.zs:9:33: " +
+                "Field 'array3' is recursive and neither optional nor array which can be empty!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayChoiceHasNoPackableField()
+    {
+        final String error = "packed_array_choice_has_no_packable_field_error.zs:40:12: " +
+                "'ChoiceWithoutPackableField' doesn't contain any packable field!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayStructHasNoPackableField()
+    {
+        final String error = "packed_array_struct_has_no_packable_field_error.zs:44:12: " +
+                "'StructWithoutPackable' doesn't contain any packable field!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayUnpackableBoolElement()
+    {
+        final String error =
+                "packed_array_unpackable_bool_element_error.zs:23:12: 'bool' is not packable element type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayUnpackableExternElement()
+    {
+        final String error =
+                "packed_array_unpackable_extern_element_error.zs:6:12: 'extern' is not packable element type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayUnpackableFloatElement()
+    {
+        final String error =
+                "packed_array_unpackable_float_element_error.zs:6:12: 'float64' is not packable element type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void packedArrayUnpackableStringElement()
+    {
+        final String error =
+                "packed_array_unpackable_string_element_error.zs:6:12: 'string' is not packable element type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

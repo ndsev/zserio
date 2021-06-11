@@ -205,15 +205,16 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Gets flag which indicates if the field cannot be packed due to some logical reason given by the schema.
+     * Gets flag which indicates if the field is is packable.
      *
-     * Currently this is true for fields which are used as offsets or fields which are implicit arrays.
+     * Currently this is true for integral fields which fulfill other requirements to be packable and also
+     * for all compounds, which however can have no packable fields at all.
      *
-     * @return true if the field is unpackable.
+     * @return true if the field is packable.
      */
-    public boolean isUnpackable()
+    public boolean isPackable()
     {
-        return isUnpackable;
+        return isPackable;
     }
 
     /**
@@ -223,12 +224,17 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
      */
     void evaluate()
     {
+        ZserioType fieldBaseType = typeInstantiation.getBaseType();
         if (typeInstantiation instanceof ArrayInstantiation)
         {
             final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
             if (arrayInstantiation.isImplicit())
-                isUnpackable = true;
+                isPackable = false;
+            fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
         }
+
+        if (!(fieldBaseType instanceof CompoundType) && !ArrayInstantiation.isSimpleTypePackable(fieldBaseType))
+            isPackable = false;
 
         if (offsetExpr != null)
         {
@@ -244,7 +250,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                     throw new ParserException(offsetExpr, "Packed array cannot be used as offset array!");
                 }
 
-                referencedField.isUnpackable = true;
+                referencedField.isPackable = false;
             }
         }
     }
@@ -386,7 +392,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         this.isVirtual = isVirtual;
         this.sqlConstraint = sqlConstraint;
 
-        this.isUnpackable = false;
+        this.isPackable = true;
     }
 
     private final TypeInstantiation typeInstantiation;
@@ -402,5 +408,5 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     private final boolean isVirtual;
     private final SqlConstraint sqlConstraint;
 
-    private boolean isUnpackable;
+    private boolean isPackable;
 }

@@ -2,8 +2,6 @@ package zserio.ast;
 
 import java.util.List;
 
-import zserio.tools.ZserioToolPrinter;
-
 /**
  * AST node for array type instantiation.
  */
@@ -158,7 +156,7 @@ public class ArrayInstantiation extends TypeInstantiation
      *
      * @return True when the base type is packable, false otherwise.
      */
-    static boolean isBaseTypePackable(ZserioType baseType)
+    static boolean isSimpleTypePackable(ZserioType baseType)
     {
         return baseType instanceof IntegerType ||
                 baseType instanceof EnumType || baseType instanceof BitmaskType;
@@ -174,13 +172,13 @@ public class ArrayInstantiation extends TypeInstantiation
             {
                 if (!((CompoundType)elementBaseType).hasPackableField())
                 {
-                    ZserioToolPrinter.printWarning(getElementTypeInstantiation(),
+                    throw new ParserException(getElementTypeInstantiation(),
                             "'" + elementBaseType.getName() + "' doesn't contain any packable field!");
                 }
             }
-            else if (!(isBaseTypePackable(elementBaseType)))
+            else if (!(isSimpleTypePackable(elementBaseType)))
             {
-                ZserioToolPrinter.printWarning(getElementTypeInstantiation(),
+                throw new ParserException(getElementTypeInstantiation(),
                         "'" + elementBaseType.getName() + "' is not packable element type!");
             }
         }

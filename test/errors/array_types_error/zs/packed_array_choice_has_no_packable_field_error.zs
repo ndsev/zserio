@@ -1,4 +1,4 @@
-package arrays_warning.compound_has_no_packable_field_warning;
+package packed_array_choice_has_no_packable_field_error;
 
 struct StructWithPackable
 {
@@ -10,18 +10,6 @@ struct StructWithPackableArray
 {
     string field1;
     uint16 array1[]; // packable
-};
-
-struct StructWithoutPackable
-{
-    float32 field1;
-    extern field2;
-    uint32 offset; // offset is always unpackable
-offset:
-    string field3;
-    uint32 offsets[]; // offsets are always unpackable
-offsets[@index]:
-    bool array1[];
 };
 
 enum uint8 TestEnum
@@ -44,11 +32,10 @@ choice ChoiceWithoutPackableField(bool selector) on selector
         extern field2;
 };
 
-struct CompoundHasNoPackableFieldWarning
+struct PackedArrayChoiceHasNoPackableFieldError
 {
     packed StructWithPackable array1[];
-    packed StructWithoutPackable array2[];
-    packed UnionWithPackableField array3[];
+    packed UnionWithPackableField array2[];
+    packed StructWithPackableArray array3[];
     packed ChoiceWithoutPackableField(true) array4[];
-    packed StructWithPackableArray array5[];
 };

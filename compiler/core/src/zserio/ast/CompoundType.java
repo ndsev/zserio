@@ -153,7 +153,7 @@ public abstract class CompoundType extends TemplatableType
     {
         for (Field field : fields)
         {
-            if (!field.isUnpackable())
+            if (field.isPackable())
             {
                 final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
                 ZserioType fieldBaseType = typeInstantiation.getBaseType();
@@ -168,12 +168,13 @@ public abstract class CompoundType extends TemplatableType
                 if (fieldBaseType instanceof CompoundType)
                 {
                     final CompoundType childCompoundType = (CompoundType)fieldBaseType;
-                    // compound type can have itself as an optional field
+                    // compound type can have itself in recursion
                     if (childCompoundType != this && childCompoundType.hasPackableField())
                         return true;
                 }
-                else if (ArrayInstantiation.isBaseTypePackable(fieldBaseType))
+                else
                 {
+                    // non-compound type is packable if Field.isPackable() returns true
                     return true;
                 }
             }
@@ -405,15 +406,16 @@ public abstract class CompoundType extends TemplatableType
             if (typeInstantiation instanceof ArrayInstantiation)
             {
                 final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
 
-                if (arrayInstantiation.getLengthExpression() == null || // auto array can be empty
+                if (arrayInstantiation.getLengthExpression() == null || // auto or implicit array can be empty
                         arrayInstantiation.getLengthExpression().getIntegerLowerBound() == null ||
                         arrayInstantiation.getLengthExpression().getIntegerLowerBound().compareTo(
                                 BigInteger.ZERO) <= 0)
                 {
                     continue; // may be empty array
                 }
+
+                fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
             }
 
             if (fieldBaseType == this)
