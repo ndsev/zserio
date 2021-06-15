@@ -693,9 +693,6 @@ delta compression which is applied for packed arrays of:
 - bitmask types
 - compound types which contain integer types, enumeration, bitmask types or inner packable arrays
 
-All other arrays declared as `packed` will stay unpacked. However in this case, the encoder will automatically
-store some additional packing information into the bit stream.
-
 **Example**
 ```
 struct PackedArrays
