@@ -1,4 +1,7 @@
 <#include "FileHeader.inc.ftl"/>
+<#if withTypeInfoCode>
+    <#include "TypeInfo.inc.ftl"/>
+</#if>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -30,7 +33,7 @@
         </#if>
     </#list>
 </#if>
-<#if hasBlobField>
+<#if hasBlobField || withTypeInfoCode>
     <@package_imports ["zserio"]/>
 </#if>
 
@@ -101,6 +104,38 @@ class ${name}:
         self._connection: apsw.Connection = connection
         self._table_name: str = table_name
         self._attached_db_name: str = attached_db_name
+<#if withTypeInfoCode>
+
+    @staticmethod
+    def type_info() -> zserio.typeinfo.TypeInfo:
+        columns: typing.List[zserio.typeinfo.MemberInfo] = [
+    <#list fields as field>
+            <@member_info_table_field field field?has_next/>
+    </#list>
+        ]
+        attributes = {
+            zserio.typeinfo.TypeAttribute.COLUMNS : columns<#rt>
+    <#if sqlConstraint??>
+            <#lt>,
+            zserio.typeinfo.TypeAttribute.SQL_CONSTRAINT : ${sqlConstraint}<#rt>
+    </#if>
+    <#if virtualTableUsing??>
+            <#lt>,
+            zserio.typeinfo.TypeAttribute.VIRTUAL_TABLE_USING : '${virtualTableUsing}'<#rt>
+    </#if>
+    <#if isWithoutRowId>
+            <#lt>,
+            zserio.typeinfo.TypeAttribute.WITHOUT_ROWID : None<#rt>
+    </#if>
+    <#if templateInstantiation??>
+            <#lt>,
+            <@type_info_template_instantiation_attributes templateInstantiation/>
+    </#if>
+
+        }
+
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+</#if>
 <#if withWriterCode>
 
     def create_table(self) -> None:

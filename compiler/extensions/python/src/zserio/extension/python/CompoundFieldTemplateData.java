@@ -40,6 +40,17 @@ public final class CompoundFieldTemplateData
 
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
+
+        if (fieldTypeInstantiation instanceof ArrayInstantiation)
+        {
+            typeInfo = new TypeInfoTemplateData(context,
+                    ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation());
+        }
+        else
+        {
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), nativeType);
+        }
+
         importCollector.importType(nativeType);
         pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
 
@@ -81,6 +92,11 @@ public final class CompoundFieldTemplateData
     public String getSnakeCaseName()
     {
         return snakeCaseName;
+    }
+
+    public TypeInfoTemplateData getTypeInfo()
+    {
+        return typeInfo;
     }
 
     public String getPythonTypeName()
@@ -342,11 +358,13 @@ public final class CompoundFieldTemplateData
             length = createLength(arrayInstantiation, pythonExpressionFormatter);
 
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
+            final ZserioType elementBaseType = elementTypeInstantiation.getBaseType();
             final PythonNativeType elementNativeType =
                     pythonNativeMapper.getPythonType(elementTypeInstantiation);
             importCollector.importType(elementNativeType);
+
             elementPythonTypeName = PythonFullNameFormatter.getFullName(elementNativeType);
-            elementIsRecursive = (elementTypeInstantiation.getBaseType() == parentType);
+            elementIsRecursive = (elementBaseType == parentType);
             elementBitSize = new BitSize(elementTypeInstantiation, pythonExpressionFormatter);
             elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);
         }
@@ -576,6 +594,7 @@ public final class CompoundFieldTemplateData
 
     private final String name;
     private final String snakeCaseName;
+    private final TypeInfoTemplateData typeInfo;
     private final String pythonTypeName;
     private final String propertyName;
     private final boolean isPackable;

@@ -1,6 +1,9 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "CompoundField.inc.ftl"/>
 <#include "CompoundParameter.inc.ftl"/>
+<#if withTypeInfoCode>
+    <#include "TypeInfo.inc.ftl"/>
+</#if>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -54,6 +57,37 @@ class ${name}:
         instance.read_packed(zserio_context_node, zserio_reader)
 
         return instance
+<#if withTypeInfoCode>
+
+    @staticmethod
+    def type_info() -> zserio.typeinfo.TypeInfo:
+        fields: typing.List[zserio.typeinfo.MemberInfo] = [
+    <#list fieldList as field>
+            <@member_info_field field field?has_next/>
+    </#list>
+        ]
+    <#if compoundParametersData.list?has_content>
+        parameters: typing.List[zserio.typeinfo.MemberInfo] = [
+        <#list compoundParametersData.list as parameter>
+            <@member_info_parameter parameter parameter?has_next/>
+        </#list>
+        ]
+    </#if>
+        attributes = {
+            zserio.typeinfo.TypeAttribute.FIELDS : fields<#rt>
+    <#if compoundParametersData.list?has_content>
+            <#lt>,
+            zserio.typeinfo.TypeAttribute.PARAMETERS : parameters<#rt>
+    </#if>
+    <#if templateInstantiation??>
+            <#lt>,
+            <@type_info_template_instantiation_attributes templateInstantiation/>
+    </#if>
+
+        }
+
+        return zserio.typeinfo.TypeInfo("${schemaTypeName}", ${name}, attributes=attributes)
+</#if>
 
 <#macro structure_compare_fields fieldList indent>
     <#local I>${""?left_pad(indent * 4)}</#local>

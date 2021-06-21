@@ -32,6 +32,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         {
             fieldList.add(new CompoundFieldTemplateData(context, compoundType, fieldType, this));
         }
+
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
     }
 
     public boolean getWithRangeCheckCode()
@@ -59,9 +61,15 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return fieldList;
     }
 
+    public TemplateInstantiationTemplateData getTemplateInstantiation()
+    {
+        return templateInstantiation;
+    }
+
     private final boolean withRangeCheckCode;
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
     private final boolean hasFieldWithOffset;
     private final List<CompoundFieldTemplateData> fieldList;
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }

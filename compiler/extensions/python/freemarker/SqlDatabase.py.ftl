@@ -1,7 +1,13 @@
 <#include "FileHeader.inc.ftl"/>
+<#if withTypeInfoCode>
+    <#include "TypeInfo.inc.ftl"/>
+</#if>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
+<#if withTypeInfoCode>
+    <@package_imports ["zserio"]/>
+</#if>
 <#if withWriterCode>
     <#assign hasWithoutRowIdTable=false/>
     <#list fields as field>
@@ -45,6 +51,21 @@ class ${name}:
         instance._is_external = False
 
         return instance
+<#if withTypeInfoCode>
+
+    @staticmethod
+    def type_info() -> zserio.typeinfo.TypeInfo:
+        tables: typing.List[zserio.typeinfo.MemberInfo] = [
+    <#list fields as field>
+            <@member_info_database_field field field?has_next/>
+    </#list>
+        ]
+        attributes = {
+            zserio.typeinfo.TypeAttribute.TABLES : tables
+        }
+
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+</#if>
 
     def close(self) -> None:
         if not self._is_external:

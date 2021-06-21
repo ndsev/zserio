@@ -1,5 +1,8 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "ArrayTraits.inc.ftl"/>
+<#if withTypeInfoCode>
+    <#include "TypeInfo.inc.ftl"/>
+</#if>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -18,6 +21,24 @@ class ${name}(enum.Enum):
                            context_node: zserio.array.PackingContextNode,
                            reader: zserio.BitStreamReader) -> '${name}':
         return cls(context_node.context.read(<@array_traits_create arrayTraits, bitSize!/>, reader))
+<#if withTypeInfoCode>
+
+    @staticmethod
+    def type_info():
+        attributes = {
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingType/>,
+    <#if underlyingType.isDynamicBitField>
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: ['${bitSize}'],
+    </#if>
+            zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
+    <#list items as item>
+                zserio.typeinfo.ItemInfo('${item.schemaName}', ${name}.${item.name})<#if item?has_next>,</#if>
+    </#list>
+            ]
+        }
+
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+</#if>
 
     @staticmethod
     def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:

@@ -3,6 +3,7 @@ package zserio.extension.python;
 import java.util.StringJoiner;
 
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
 import zserio.extension.common.ZserioExtensionException;
@@ -18,12 +19,13 @@ class PythonExtensionParameters
 {
     public PythonExtensionParameters(ExtensionParameters parameters) throws ZserioExtensionException
     {
-        outputDir = parameters.getCommandLineArg(OptionPython);
+        outputDir = parameters.getCommandLineArg(OptionNamePython);
         withWriterCode = parameters.getWithWriterCode();
         withPubsubCode = parameters.getWithPubsubCode();
         withServiceCode = parameters.getWithServiceCode();
         withSqlCode = parameters.getWithSqlCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
+        withTypeInfoCode = parameters.argumentExists(OptionNameWithTypeInfoCode);
 
         final StringJoiner description = new StringJoiner(", ");
         if (withWriterCode)
@@ -36,6 +38,8 @@ class PythonExtensionParameters
             description.add("sqlCode");
         if (withRangeCheckCode)
             description.add("rangeCheckCode");
+        if (withTypeInfoCode)
+            description.add("typeInfoCode");
         parametersDescription = description.toString();
     }
 
@@ -69,6 +73,11 @@ class PythonExtensionParameters
         return withRangeCheckCode;
     }
 
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCode;
+    }
+
     public String getParametersDescription()
     {
         return parametersDescription;
@@ -76,18 +85,28 @@ class PythonExtensionParameters
 
     static void registerOptions(Options options)
     {
-        Option optionPython = new Option(OptionPython, true, "generate Python sources");
+        Option optionPython = new Option(OptionNamePython, true, "generate Python sources");
         optionPython.setArgName("outputDir");
         optionPython.setRequired(false);
         options.addOption(optionPython);
+
+        final OptionGroup schemaInfoGroup = new OptionGroup();
+        Option option = new Option(OptionNameWithTypeInfoCode, false, "enable type info in Python code");
+        schemaInfoGroup.addOption(option);
+        option = new Option(OptionNameWithoutTypeInfoCode, false, "disable type info in Python code (default)");
+        schemaInfoGroup.addOption(option);
+        schemaInfoGroup.setRequired(false);
+        options.addOptionGroup(schemaInfoGroup);
     }
 
     static boolean hasOptionPython(ExtensionParameters parameters)
     {
-        return parameters.argumentExists(OptionPython);
+        return parameters.argumentExists(OptionNamePython);
     }
 
-    final static String OptionPython = "python";
+    final static String OptionNamePython = "python";
+    final static String OptionNameWithTypeInfoCode = "withTypeInfoCode";
+    final static String OptionNameWithoutTypeInfoCode = "withoutTypeInfoCode";
 
     private final String outputDir;
     private final boolean withWriterCode;
@@ -95,5 +114,6 @@ class PythonExtensionParameters
     private final boolean withServiceCode;
     private final boolean withSqlCode;
     private final boolean withRangeCheckCode;
+    private final boolean withTypeInfoCode;
     private final String parametersDescription;
 }

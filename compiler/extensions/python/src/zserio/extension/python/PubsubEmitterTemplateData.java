@@ -63,9 +63,10 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         {
             name = message.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
-            topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             final PythonNativeType pythonType = pythonNativeMapper.getPythonType(message.getType());
             importCollector.importType(pythonType);
+            typeInfo = new TypeInfoTemplateData(message.getType(), pythonType);
+            topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             typeFullName = PythonFullNameFormatter.getFullName(pythonType);
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
@@ -79,6 +80,11 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         public String getSnakeCaseName()
         {
             return snakeCaseName;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public String getTopicDefinition()
@@ -103,6 +109,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String snakeCaseName;
+        private final TypeInfoTemplateData typeInfo;
         private final String topicDefinition;
         private final String typeFullName;
         private final boolean isPublished;

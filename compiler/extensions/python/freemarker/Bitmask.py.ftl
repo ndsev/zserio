@@ -1,5 +1,8 @@
 <#include "FileHeader.inc.ftl"/>
 <#include "ArrayTraits.inc.ftl"/>
+<#if withTypeInfoCode>
+    <#include "TypeInfo.inc.ftl"/>
+</#if>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -30,6 +33,24 @@ class ${name}:
         instance = cls()
         instance._value = context_node.context.read(<@array_traits_create arrayTraits, bitSize!/>, reader)
         return instance
+<#if withTypeInfoCode>
+
+    @staticmethod
+    def type_info():
+        attributes = {
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingType/>,
+    <#if underlyingType.isDynamicBitField>
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: ['${bitSize}'],
+    </#if>
+            zserio.typeinfo.TypeAttribute.BITMASK_VALUES: [
+    <#list values as value>
+                zserio.typeinfo.ItemInfo('${value.schemaName}', ${name}.Values.${value.name})<#if value?has_next>,</#if>
+    </#list>
+            ]
+        }
+
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+</#if>
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, ${name}):

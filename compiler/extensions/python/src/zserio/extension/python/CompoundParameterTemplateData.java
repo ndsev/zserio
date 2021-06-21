@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.Parameter;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
@@ -37,9 +38,11 @@ public final class CompoundParameterTemplateData
         {
             name = parameter.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
+            final TypeReference parameterTypeReference = parameter.getTypeReference();
             final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(
-                    parameter.getTypeReference());
+                    parameterTypeReference);
             importCollector.importType(nativeType);
+            typeInfo = new TypeInfoTemplateData(parameterTypeReference, nativeType);
             pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
             propertyName = AccessorNameFormatter.getPropertyName(parameter);
         }
@@ -54,6 +57,11 @@ public final class CompoundParameterTemplateData
             return snakeCaseName;
         }
 
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
+        }
+
         public String getPythonTypeName()
         {
             return pythonTypeName;
@@ -66,6 +74,7 @@ public final class CompoundParameterTemplateData
 
         private final String name;
         private final String snakeCaseName;
+        private final TypeInfoTemplateData typeInfo;
         private final String pythonTypeName;
         private final String propertyName;
     }

@@ -1,4 +1,7 @@
 <#include "FileHeader.inc.ftl"/>
+<#if withTypeInfoCode>
+    <#include "TypeInfo.inc.ftl"/>
+</#if>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
@@ -6,6 +9,21 @@
 class ${name}:
     def __init__(self, pubsub: zserio.PubsubInterface) -> None:
         self._pubsub = pubsub
+<#if withTypeInfoCode>
+
+    @staticmethod
+    def type_info() -> zserio.typeinfo.TypeInfo:
+        messages: typing.List[zserio.typeinfo.MemberInfo] = [
+    <#list messageList as message>
+            <@member_info_message message, message?has_next/>
+    </#list>
+        ]
+        attributes = {
+            zserio.typeinfo.TypeAttribute.MESSAGES : messages
+        }
+
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+</#if>
 <#list messageList as message>
     <#if message.isPublished>
 

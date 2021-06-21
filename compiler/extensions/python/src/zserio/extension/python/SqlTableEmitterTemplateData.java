@@ -6,9 +6,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import zserio.ast.BitmaskType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.FixedSizeType;
 import zserio.ast.Parameter;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
@@ -62,6 +64,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 }
             }
         }
+
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, sqlTableType, this);
     }
 
     public String getSqlConstraint()
@@ -92,6 +96,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public Iterable<ExplicitParameterTemplateData> getExplicitParameters()
     {
         return explicitParameters;
+    }
+
+    public TemplateInstantiationTemplateData getTemplateInstantiation()
+    {
+        return templateInstantiation;
     }
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
@@ -166,6 +175,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             name = field.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), nativeType);
 
             isVirtual = field.isVirtual();
             parameters = new ArrayList<ParameterTemplateData>();
@@ -187,6 +197,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             sqlConstraint = (fieldSqlConstraint == null) ? null :
                     pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
+            bitSize = createBitSize(fieldTypeInstantiation, pythonSqlIndirectExpressionFormatter);
             enumData = (fieldBaseType instanceof EnumType) ? new EnumTemplateData(nativeType) : null;
             bitmaskData = (fieldBaseType instanceof BitmaskType) ? new BitmaskTemplateData(nativeType) : null;
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
@@ -200,6 +211,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getSnakeCaseName()
         {
             return snakeCaseName;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public String getPythonTypeName()
@@ -220,6 +236,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getSqlConstraint()
         {
             return sqlConstraint;
+        }
+
+        public String getBitSize()
+        {
+            return bitSize;
         }
 
         public EnumTemplateData getEnumData()
@@ -331,13 +352,35 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final String expression;
         }
 
+        private static String createBitSize(TypeInstantiation typeInstantiation,
+                ExpressionFormatter pythonSqlIndirectExpressionFormatter) throws ZserioExtensionException
+        {
+            String bitSizeOfValue = null;
+            if (typeInstantiation.getBaseType() instanceof FixedSizeType)
+            {
+                return PythonLiteralFormatter.formatDecimalLiteral(
+                        ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
+            }
+            else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+            {
+                final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                        (DynamicBitFieldInstantiation)typeInstantiation;
+                bitSizeOfValue = pythonSqlIndirectExpressionFormatter.formatGetter(
+                        dynamicBitFieldInstantiation.getLengthExpression());
+            }
+
+            return bitSizeOfValue;
+        }
+
         private final String name;
         private final String snakeCaseName;
+        private final TypeInfoTemplateData typeInfo;
         private final String pythonTypeName;
 
         private final boolean isVirtual;
         private final List<ParameterTemplateData> parameters;
         private final String sqlConstraint;
+        private final String bitSize;
         private final EnumTemplateData enumData;
         private final BitmaskTemplateData bitmaskData;
         private final SqlTypeTemplateData sqlTypeData;
@@ -351,4 +394,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     private final List<FieldTemplateData> fields = new ArrayList<FieldTemplateData>();
     private final SortedSet<ExplicitParameterTemplateData> explicitParameters =
             new TreeSet<ExplicitParameterTemplateData>();
+
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }

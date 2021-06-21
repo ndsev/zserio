@@ -1,9 +1,27 @@
 <#include "FileHeader.inc.ftl"/>
+<#if withTypeInfoCode>
+    <#include "TypeInfo.inc.ftl"/>
+</#if>
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
 
 class ${name}:
+<#if withTypeInfoCode>
+    @staticmethod
+    def type_info() -> zserio.typeinfo.TypeInfo:
+        methods: typing.List[zserio.typeinfo.MemberInfo] = [
+    <#list methodList as method>
+            <@member_info_method method method?has_next/>
+    </#list>
+        ]
+        attributes = {
+            zserio.typeinfo.TypeAttribute.METHODS : methods
+        }
+
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+
+</#if>
     class Service(zserio.ServiceInterface):
         def __init__(self) -> None:
             self._method_map = {

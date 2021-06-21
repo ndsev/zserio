@@ -30,6 +30,10 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(enumTypeInstantiation);
 
+        underlyingType = new TypeInfoTemplateData(enumTypeInstantiation.getTypeReference(), nativeType);
+        if (getWithTypeInfoCode())
+            importType(nativeType);
+
         arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = createBitSize(enumTypeInstantiation);
 
@@ -41,6 +45,11 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
             items.add(new EnumItemData(enumItem));
+    }
+
+    public TypeInfoTemplateData getUnderlyingType()
+    {
+        return underlyingType;
     }
 
     public ArrayTraitsTemplateData getArrayTraits()
@@ -67,8 +76,14 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     {
         public EnumItemData(EnumItem enumItem) throws ZserioExtensionException
         {
+            schemaName = enumItem.getName();
             name = PythonSymbolConverter.enumItemToSymbol(enumItem.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(enumItem.getValue());
+        }
+
+        public String getSchemaName()
+        {
+            return schemaName;
         }
 
         public String getName()
@@ -81,6 +96,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        private final String schemaName;
         private final String name;
         private final String value;
     }
@@ -103,6 +119,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final TypeInfoTemplateData underlyingType;
     private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;

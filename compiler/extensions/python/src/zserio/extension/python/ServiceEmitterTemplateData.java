@@ -3,9 +3,9 @@ package zserio.extension.python;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.CompoundType;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
-import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
@@ -55,14 +55,16 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             clientMethodName = AccessorNameFormatter.getServiceClientMethodName(serviceMethod);
 
-            final ZserioType responseType = serviceMethod.getResponseType();
+            final CompoundType responseType = serviceMethod.getResponseType();
             final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseType);
             importCollector.importType(pythonResponseType);
+            responseTypeInfo = new TypeInfoTemplateData(responseType, pythonResponseType);
             responseTypeFullName = PythonFullNameFormatter.getFullName(pythonResponseType);
 
-            final ZserioType requestType = serviceMethod.getRequestType();
+            final CompoundType requestType = serviceMethod.getRequestType();
             final PythonNativeType pythonRequestType = typeMapper.getPythonType(requestType);
             importCollector.importType(pythonRequestType);
+            requestTypeInfo = new TypeInfoTemplateData(requestType, pythonRequestType);
             requestTypeFullName = PythonFullNameFormatter.getFullName(pythonRequestType);
         }
 
@@ -81,9 +83,19 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return clientMethodName;
         }
 
+        public TypeInfoTemplateData getResponseTypeInfo()
+        {
+            return responseTypeInfo;
+        }
+
         public String getResponseTypeFullName()
         {
             return responseTypeFullName;
+        }
+
+        public TypeInfoTemplateData getRequestTypeInfo()
+        {
+            return requestTypeInfo;
         }
 
         public String getRequestTypeFullName()
@@ -94,7 +106,9 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         private final String name;
         private final String snakeCaseName;
         private final String clientMethodName;
+        private final TypeInfoTemplateData responseTypeInfo;
         private final String responseTypeFullName;
+        private final TypeInfoTemplateData requestTypeInfo;
         private final String requestTypeFullName;
     }
 

@@ -32,6 +32,10 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(bitmaskTypeInstantiation);
 
+        underlyingType = new TypeInfoTemplateData(bitmaskTypeInstantiation.getTypeReference(), nativeType);
+        if (getWithTypeInfoCode())
+            importType(nativeType);
+
         arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
         bitSize = createBitSize(bitmaskTypeInstantiation);
 
@@ -46,6 +50,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         values = new ArrayList<BitmaskValueData>(bitmaskValues.size());
         for (BitmaskValue bitmaskValue : bitmaskValues)
             values.add(new BitmaskValueData(bitmaskValue));
+    }
+
+    public TypeInfoTemplateData getUnderlyingType()
+    {
+        return underlyingType;
     }
 
     public ArrayTraitsTemplateData getArrayTraits()
@@ -104,9 +113,15 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     {
         public BitmaskValueData(BitmaskValue bitmaskValue) throws ZserioExtensionException
         {
+            schemaName = bitmaskValue.getName();
             name = PythonSymbolConverter.bitmaskValueToSymbol(bitmaskValue.getName());
             value = PythonLiteralFormatter.formatDecimalLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
+        }
+
+        public String getSchemaName()
+        {
+            return schemaName;
         }
 
         public String getName()
@@ -124,6 +139,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             return isZero;
         }
 
+        private final String schemaName;
         private final String name;
         private final String value;
         private final boolean isZero;
@@ -147,6 +163,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final TypeInfoTemplateData underlyingType;
     private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
