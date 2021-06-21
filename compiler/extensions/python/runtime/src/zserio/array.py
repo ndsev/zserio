@@ -591,7 +591,7 @@ class PackingContextNode:
         """
         Gets children of the current node.
 
-        :return: Child context nodes.
+        :returns: Child context nodes.
         """
 
         return self._children
@@ -601,7 +601,7 @@ class PackingContextNode:
         """
         Gets packing context for leaf nodes.
 
-        :return: Packing context for leafs, None otherwise.
+        :returns: Packing context for leafs, None otherwise.
         :raises PythonRuntimeException: When called on a node which is not leaf.
         """
 
@@ -1970,7 +1970,7 @@ class ObjectArrayTraits:
         """
         Gets packed array traits.
 
-        @return ObjectPackedArrayTraits instance.
+        :returns: ObjectPackedArrayTraits instance.
         """
 
         return self._packed_traits

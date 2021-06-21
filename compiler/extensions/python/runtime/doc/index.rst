@@ -14,6 +14,7 @@ Zserio Python runtime library documentation
 .. automodapi:: zserio.float
 .. automodapi:: zserio.hashcode
 .. automodapi:: zserio.limits
+.. automodapi:: zserio.typeinfo
 
 Indices and tables
 ==================
