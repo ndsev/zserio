@@ -50,10 +50,13 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def _checkComplexStruct(self, type_info):
         self.assertEqual("with_type_info_code.ComplexStruct", type_info.schema_name)
         self.assertEqual(self.api.ComplexStruct, type_info.py_type)
-        self.assertEqual(1, len(type_info.attributes))
+        self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
         self.assertEqual(6, len(fields))
+        self.assertIn(TypeAttribute.FUNCTIONS, type_info.attributes)
+        functions = type_info.attributes[TypeAttribute.FUNCTIONS]
+        self.assertEqual(1, len(functions))
 
         # simpleStruct
         member_info = fields[0]
@@ -137,6 +140,20 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
         self.assertEqual(None, member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
+        # firstArrayElement
+        member_info = functions[0]
+        self.assertEqual("firstArrayElement", member_info.schema_name)
+        self.assertEqual("uint32", member_info.type_info.schema_name)
+        self.assertEqual(int, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.FUNCTION_NAME, member_info.attributes)
+        self.assertEqual("first_array_element", member_info.attributes[MemberAttribute.FUNCTION_NAME])
+        self.assertIn(MemberAttribute.FUNCTION_RESULT, member_info.attributes)
+        self.assertEqual("(self.array[0]) if (len(self.array) > 0) else (0)",
+                         member_info.attributes[MemberAttribute.FUNCTION_RESULT])
+
+
     def _checkParameterizedStruct(self, type_info):
         self.assertEqual("with_type_info_code.ParameterizedStruct", type_info.schema_name)
         self.assertEqual(self.api.ParameterizedStruct, type_info.py_type)
@@ -174,7 +191,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.UNDERLYING_TYPE, type_info.attributes)
         underlying_info = type_info.attributes[TypeAttribute.UNDERLYING_TYPE]
-        self.assertEqual("uint16", underlying_info.schema_name)
+        self.assertEqual("with_type_info_code.EnumUnderlyingType", underlying_info.schema_name)
         self.assertEqual(int, underlying_info.py_type)
         self.assertFalse(underlying_info.attributes)
         self.assertIn(TypeAttribute.ENUM_ITEMS, type_info.attributes)
@@ -230,12 +247,15 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def _checkSimpleUnion(self, type_info):
         self.assertEqual("with_type_info_code.SimpleUnion", type_info.schema_name)
         self.assertEqual(self.api.SimpleUnion, type_info.py_type)
-        self.assertEqual(2, len(type_info.attributes))
+        self.assertEqual(3, len(type_info.attributes))
         self.assertIn(TypeAttribute.SELECTOR, type_info.attributes)
         self.assertIsNone(type_info.attributes[TypeAttribute.SELECTOR])
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
         self.assertEqual(2, len(fields))
+        self.assertIn(TypeAttribute.FUNCTIONS, type_info.attributes)
+        functions = type_info.attributes[TypeAttribute.FUNCTIONS]
+        self.assertEqual(1, len(functions))
 
         # testBitmask
         member_info = fields[0]
@@ -253,10 +273,23 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("simple_struct", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
+        # simpleStructFieldU32
+        member_info = functions[0]
+        self.assertEqual("simpleStructFieldU32", member_info.schema_name)
+        self.assertEqual("uint32", member_info.type_info.schema_name)
+        self.assertEqual(int, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.FUNCTION_NAME, member_info.attributes)
+        self.assertEqual("simple_struct_field_u32", member_info.attributes[MemberAttribute.FUNCTION_NAME])
+        self.assertIn(MemberAttribute.FUNCTION_RESULT, member_info.attributes)
+        self.assertEqual("self.simple_struct.field_u32",
+                         member_info.attributes[MemberAttribute.FUNCTION_RESULT])
+
     def _checkSimpleChoice(self, type_info):
         self.assertEqual("with_type_info_code.SimpleChoice", type_info.schema_name)
         self.assertEqual(self.api.SimpleChoice, type_info.py_type)
-        self.assertEqual(4, len(type_info.attributes))
+        self.assertEqual(5, len(type_info.attributes))
         self.assertIn(TypeAttribute.PARAMETERS, type_info.attributes)
         parameters = type_info.attributes[TypeAttribute.PARAMETERS]
         self.assertEqual(1, len(parameters))
@@ -268,6 +301,9 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
         self.assertEqual(2, len(fields))
+        self.assertIn(TypeAttribute.FUNCTIONS, type_info.attributes)
+        functions = type_info.attributes[TypeAttribute.FUNCTIONS]
+        self.assertEqual(1, len(functions))
 
         # selector
         member_info = parameters[0]
@@ -321,6 +357,19 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(1, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("field_default", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # fieldTwoFuncCall
+        member_info = functions[0]
+        self.assertEqual("fieldTwoFuncCall", member_info.schema_name)
+        self.assertEqual("uint32", member_info.type_info.schema_name)
+        self.assertEqual(int, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.FUNCTION_NAME, member_info.attributes)
+        self.assertEqual("field_two_func_call", member_info.attributes[MemberAttribute.FUNCTION_NAME])
+        self.assertIn(MemberAttribute.FUNCTION_RESULT, member_info.attributes)
+        self.assertEqual("self.field_two.simple_struct_field_u32()",
+                         member_info.attributes[MemberAttribute.FUNCTION_RESULT])
 
     def _checkTS32(self, type_info):
         self.assertEqual("with_type_info_code.TS32", type_info.schema_name)

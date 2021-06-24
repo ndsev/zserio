@@ -13,6 +13,13 @@ ${I})<#if comma>,</#if>
             )<#if comma>,</#if>
 </#macro>
 
+<#macro member_info_function function comma>
+            zserio.typeinfo.MemberInfo(
+                '${function.schemaName}', <@type_info function.returnTypeInfo/>,
+                <@member_info_function_attributes function/><#t>
+            )<#if comma>,</#if>
+</#macro>
+
 <#macro member_info_database_field field comma>
             zserio.typeinfo.MemberInfo(
                 '${field.name}', <@type_info field.typeInfo/>,
@@ -140,6 +147,13 @@ ${I}}
 <#macro member_info_parameter_attributes parameter>
                 attributes={
                     zserio.typeinfo.MemberAttribute.PROPERTY_NAME : '${parameter.propertyName}'
+                }
+</#macro>
+
+<#macro member_info_function_attributes function>
+                attributes={
+                    zserio.typeinfo.MemberAttribute.FUNCTION_NAME : '${function.functionName}',
+                    zserio.typeinfo.MemberAttribute.FUNCTION_RESULT : '${function.resultExpression}'
                 }
 </#macro>
 

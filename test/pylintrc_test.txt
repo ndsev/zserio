@@ -67,4 +67,4 @@ max-public-methods=30
 max-returns=10
 
 # Maximum number of statements in function / method body.
-max-statements=80
+max-statements=100

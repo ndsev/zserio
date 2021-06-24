@@ -14,6 +14,11 @@ struct ComplexStruct
     optional ParameterizedStruct(simpleStruct) paramStructArray[];
     bit<simpleStruct.fieldU32> dynamicBitField;
     packed bit<simpleStruct.fieldU32 + dynamicBitField> dynamicBitFieldArray[];
+
+    function uint32 firstArrayElement()
+    {
+        return lengthof(array) > 0 ? array[0] : 0;
+    }
 };
 
 struct ParameterizedStruct(SimpleStruct simple)
@@ -21,7 +26,9 @@ struct ParameterizedStruct(SimpleStruct simple)
     uint8 array[simple.fieldU32];
 };
 
-enum uint16 TestEnum
+subtype uint16 EnumUnderlyingType;
+
+enum EnumUnderlyingType TestEnum
 {
     One,
     TWO = 5,
@@ -39,6 +46,11 @@ union SimpleUnion
 {
     TestBitmask testBitmask;
     SimpleStruct simpleStruct;
+
+    function uint32 simpleStructFieldU32()
+    {
+        return simpleStruct.fieldU32;
+    }
 };
 
 choice SimpleChoice(TestEnum selector) on selector
@@ -49,6 +61,11 @@ choice SimpleChoice(TestEnum selector) on selector
         SimpleUnion fieldTwo;
     default:
         string fieldDefault;
+
+    function uint32 fieldTwoFuncCall()
+    {
+        return fieldTwo.simpleStructFieldU32();
+    }
 };
 
 struct TemplatedStruct<T>

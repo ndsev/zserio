@@ -73,11 +73,22 @@ class ${name}:
         </#list>
         ]
     </#if>
+    <#if compoundFunctionsData.list?has_content>
+        functions: typing.List[zserio.typeinfo.MemberInfo] = [
+        <#list compoundFunctionsData.list as function>
+            <@member_info_function function function?has_next/>
+        </#list>
+        ]
+    </#if>
         attributes = {
             zserio.typeinfo.TypeAttribute.FIELDS : fields<#rt>
     <#if compoundParametersData.list?has_content>
             <#lt>,
             zserio.typeinfo.TypeAttribute.PARAMETERS : parameters<#rt>
+    </#if>
+    <#if compoundFunctionsData.list?has_content>
+            <#lt>,
+            zserio.typeinfo.TypeAttribute.FUNCTIONS : functions<#rt>
     </#if>
     <#if templateInstantiation??>
             <#lt>,
@@ -151,7 +162,7 @@ ${I}<#rt>
 </#list>
 <#list compoundFunctionsData.list as function>
 
-    def ${function.name}(self) -> ${function.returnPythonTypeName}:
+    def ${function.functionName}(self) -> ${function.returnPythonTypeName}:
         return ${function.resultExpression}
 </#list>
 

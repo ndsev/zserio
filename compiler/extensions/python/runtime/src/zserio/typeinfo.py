@@ -78,6 +78,11 @@ class TypeInfo:
           * denotes that the compound type is parameterized type, the value contains non-empty list of
             parameters MemberInfo, for non-parameterized types the attribute is not present
 
+        * `(TypeAttribute.FUNCTIONS, [MemberInfo(...), MemberInfo(...), ...])`
+
+          * denotes that the compound type has functions, the value contains non-empty list of functions
+            MemberInfo, for compounds without functions the attribute is not present
+
         * `(TypeAttribute.SELECTOR, None`) `(TypeAttribute.SELECTOR, 'param1')`
 
           * denotes that the type is either a union (when the value is None) or choice when the
@@ -143,6 +148,7 @@ class TypeAttribute(enum.Enum):
     BITMASK_VALUES = enum.auto()
     FIELDS = enum.auto()
     PARAMETERS = enum.auto()
+    FUNCTIONS = enum.auto()
     SELECTOR = enum.auto()
     CASES = enum.auto()
     TEMPLATE_NAME = enum.auto()
@@ -230,6 +236,14 @@ class MemberInfo:
 
           * denotes that the member has a constraint, the value contains the constraint expression
 
+        * `(MemberAttribute.FUNCTION_NAME, 'function_name')`
+
+          * keeps the generated function name
+
+        * `MemberAttribute.FUNCTION_RESULT, 'field1 + 5')`
+
+          * keeps the result expression of a function
+
         * `(MemberAttribute.ARRAY_LENGTH, None)`, `(MemberAttribute.ARRAY_LENGTH, 'field1 + 10')`
 
           * denotes that the member is an array, when the value is None, then it's an auto array,
@@ -269,7 +283,7 @@ class MemberInfo:
 
         * `(MemberAttribute.CLIENT_METHOD_NAME, 'client_method_name')`
 
-          * keeps name of the method in the generated Client class
+          * keeps the name of the method in the generated Client class
 
         * `(MemberAttribute.REQUEST_TYPE, request_type.type_info())`
 
@@ -294,6 +308,8 @@ class MemberAttribute(enum.Enum):
     INITIALIZER = enum.auto()
     OPTIONAL = enum.auto()
     CONSTRAINT = enum.auto()
+    FUNCTION_NAME = enum.auto()
+    FUNCTION_RESULT = enum.auto()
     ARRAY_LENGTH = enum.auto()
     IMPLICIT = enum.auto()
     PACKED = enum.auto()
