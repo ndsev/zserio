@@ -190,7 +190,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitTypeInstantiation(TypeInstantiation typeInstantiation)
     {
         typeInstantiation.visitChildren(this);
-        typeInstantiation.check();
+        typeInstantiation.check(currentTemplateInstantiation);
     }
 
     @Override
@@ -206,7 +206,9 @@ public class ZserioAstChecker extends ZserioAstWalker
         {
             try
             {
+                currentTemplateInstantiation = instantiation;
                 instantiation.accept(this);
+                currentTemplateInstantiation = null;
             }
             catch (ParserException e)
             {
@@ -227,4 +229,5 @@ public class ZserioAstChecker extends ZserioAstWalker
     private final List<ZserioType> definedTypes = new ArrayList<ZserioType>();
 
     private Package currentPackage = null;
+    private ZserioTemplatableType currentTemplateInstantiation = null;
 };

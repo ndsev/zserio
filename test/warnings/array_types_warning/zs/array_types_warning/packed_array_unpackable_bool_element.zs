@@ -1,4 +1,4 @@
-package packed_array_unpackable_bool_element_error;
+package array_types_warning.packed_array_unpackable_bool_element;
 
 bitmask uint8 TestBitmask
 {
@@ -12,7 +12,7 @@ enum uint16 TestEnum
     TWO
 };
 
-struct PackedArrayUnpackableBoolElementError
+struct PackedArrayUnpackableBoolElement
 {
     packed uint32 array1[];
     packed TestEnum array2[];

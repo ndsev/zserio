@@ -2,6 +2,8 @@ package zserio.ast;
 
 import java.util.List;
 
+import zserio.tools.ZserioToolPrinter;
+
 /**
  * AST node for array type instantiation.
  */
@@ -128,9 +130,9 @@ public class ArrayInstantiation extends TypeInstantiation
     }
 
     @Override
-    void check()
+    void check(ZserioTemplatableType currentTemplateInstantiation)
     {
-        checkPackedArrayElementType();
+        checkPackedArrayElementType(currentTemplateInstantiation);
 
         if (!checkImplicitArrayElementType())
         {
@@ -162,7 +164,7 @@ public class ArrayInstantiation extends TypeInstantiation
                 baseType instanceof EnumType || baseType instanceof BitmaskType;
     }
 
-    private void checkPackedArrayElementType()
+    private void checkPackedArrayElementType(ZserioTemplatableType currentTemplateInstantiation)
     {
         if (isPacked)
         {
@@ -172,16 +174,31 @@ public class ArrayInstantiation extends TypeInstantiation
             {
                 if (!((CompoundType)elementBaseType).hasPackableField())
                 {
-                    throw new ParserException(getElementTypeInstantiation(),
+                    printInstantiationWarning(currentTemplateInstantiation,
                             "'" + elementBaseType.getName() + "' doesn't contain any packable field!");
                 }
             }
             else if (!(isSimpleTypePackable(elementBaseType)))
             {
-                throw new ParserException(getElementTypeInstantiation(),
+                printInstantiationWarning(currentTemplateInstantiation,
                         "'" + elementBaseType.getName() + "' is not packable element type!");
             }
         }
+    }
+
+    private void printInstantiationWarning(ZserioTemplatableType currentTemplateInstantiation, String message)
+    {
+        if (currentTemplateInstantiation != null)
+        {
+            for (TypeReference instantiationReference :
+                    currentTemplateInstantiation.getReversedInstantiationReferenceStack())
+            {
+                ZserioToolPrinter.printWarning(instantiationReference.getLocation(),
+                        "In instantiation of '" + instantiationReference.getReferencedTypeName() +
+                        "' required from here");
+            }
+        }
+        ZserioToolPrinter.printWarning(getElementTypeInstantiation(), message);
     }
 
     private boolean checkImplicitArrayElementType()

@@ -126,7 +126,7 @@ public class TypeInstantiation extends AstNodeBase
     /**
      * Checks the type instantiation.
      */
-    void check()
+    void check(ZserioTemplatableType currentTemplateInstantiation)
     {
         // overridden by particular instantiations
     }

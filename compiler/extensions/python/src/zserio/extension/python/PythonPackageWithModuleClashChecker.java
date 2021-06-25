@@ -1,6 +1,5 @@
 package zserio.extension.python;
 
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -189,10 +188,8 @@ class PythonPackageWithModuleClashChecker extends DefaultTreeWalker
             final ZserioTemplatableType templatable = (ZserioTemplatableType)packageSymbol;
             if (templatable.getTemplate() != null)
             {
-                final ArrayDeque<TypeReference> reversedStack = new ArrayDeque<TypeReference>();
-                for (TypeReference instantiationReference : templatable.getInstantiationReferenceStack())
-                    reversedStack.push(instantiationReference);
-                for (TypeReference instantiationReference : reversedStack)
+                for (TypeReference instantiationReference :
+                        templatable.getReversedInstantiationReferenceStack())
                 {
                     ZserioToolPrinter.printError(instantiationReference.getLocation(),
                             "In instantiation of '" + instantiationReference.getReferencedTypeName() +

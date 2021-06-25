@@ -59,6 +59,16 @@ abstract class TemplatableType extends DocumentableAstNode implements ZserioTemp
     }
 
     @Override
+    public ArrayDeque<TypeReference> getReversedInstantiationReferenceStack()
+    {
+        final ArrayDeque<TypeReference> reversedInstantiationReferenceStack = new ArrayDeque<TypeReference>();
+        for (TypeReference instantiationReference : instantiationReferenceStack)
+            reversedInstantiationReferenceStack.push(instantiationReference);
+
+        return reversedInstantiationReferenceStack;
+    }
+
+    @Override
     public String getInstantiationName()
     {
         return instantiationName;

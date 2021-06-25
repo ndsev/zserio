@@ -36,6 +36,13 @@ public interface ZserioTemplatableType extends ZserioScopedType
     public Iterable<TypeReference> getInstantiationReferenceStack();
 
     /**
+     * Gets reversed stack of instantiations leading to this instantiation.
+     *
+     * @return Stack of type references.
+     */
+    public Iterable<TypeReference> getReversedInstantiationReferenceStack();
+
+    /**
      * Gets the unique instantiation name.
      *
      * @return Instantiation name unique in the package where template is located.

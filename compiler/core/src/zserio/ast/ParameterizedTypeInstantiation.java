@@ -171,7 +171,7 @@ public class ParameterizedTypeInstantiation extends TypeInstantiation
     }
 
     @Override
-    void check()
+    void check(ZserioTemplatableType currentTemplateInstantiation)
     {
         // check all argument types in instantiated parameter list
         for (InstantiatedParameter instantiatedParameter : instantiatedParameters)
