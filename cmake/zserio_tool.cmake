@@ -10,7 +10,7 @@
 #     OPTIONS Zserio tool options.
 #     IGNORE_WARNINGS Whether to ignore warnings.
 #     LOG_FILENAME Name of file where to store the zserio error log.
-cmake_minimum_required(VERSION 2.8.12.2)
+cmake_minimum_required(VERSION 3.1.0)
 
 separate_arguments(OPTIONS)
 

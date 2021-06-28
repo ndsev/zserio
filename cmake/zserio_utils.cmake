@@ -98,9 +98,9 @@ function(zserio_add_library)
         endif ()
     endif ()
 
-    # check if the library is header only
+    # check if library is header only
     if ("${VALUE_OUT_FILES}" STREQUAL "EMPTY")
-        SET(VALUE_OUT_FILES "")
+        set(VALUE_OUT_FILES "")
     endif ()
     string(FIND "${VALUE_OUT_FILES}" ".cpp" SOURCE_FILE_POSITION)
 
@@ -131,12 +131,6 @@ function(zserio_add_library)
     # delete whole directory even if Zserio generated a file that's not listed in ZSERIO_GENERATED_SOURCES
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${VALUE_OUT_DIR})
 
-    if (MSVC)
-        compiler_reset_warnings_as_errors()
-        # needed to take effect since we are in the function
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
-    endif ()
-
     # add a static library
     if (SOURCE_FILE_POSITION EQUAL -1)
         add_library(${VALUE_TARGET} INTERFACE)
@@ -163,6 +157,8 @@ function(zserio_add_library)
         cppcheck_add_custom_command(TARGET ${VALUE_TARGET}
                                     SOURCE_DIR "${VALUE_OUT_DIR}"
                                     INCLUDE_DIR "${VALUE_OUT_DIR}"
-                                    SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}")
+                                    SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}"
+                                    # add suppression needed due to generated field constructors
+                                    OPTIONS --suppress=useInitializationList:*gen*/*.h)
     endif ()
 endfunction()
