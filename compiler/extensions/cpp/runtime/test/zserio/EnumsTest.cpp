@@ -1,8 +1,9 @@
 #include <array>
 
 #include "zserio/Enums.h"
+#include "zserio/BitStreamReader.h"
+#include "zserio/BitStreamWriter.h"
 #include "zserio/CppRuntimeException.h"
-#include "zserio/StringConvertUtil.h"
 
 #include "gtest/gtest.h"
 
@@ -41,8 +42,8 @@ inline size_t enumToOrdinal<Color>(Color value)
     case Color::BLACK:
         return 3;
     default:
-        throw zserio::CppRuntimeException("Unknown value for enumeration Color: " +
-                zserio::convertToString(static_cast<uint8_t>(value)) + "!");
+        throw zserio::CppRuntimeException("Unknown value for enumeration Color: ") +
+                static_cast<uint8_t>(value) + "!";
     }
 }
 
@@ -57,8 +58,7 @@ inline Color valueToEnum<Color>(typename std::underlying_type<Color>::type rawVa
     case UINT8_C(7):
         return Color(rawValue);
     default:
-        throw zserio::CppRuntimeException("Unknown value for enumeration Color: " +
-                zserio::convertToString(rawValue) + "!");
+        throw zserio::CppRuntimeException("Unknown value for enumeration Color: ") + rawValue + "!";
     }
 }
 
@@ -93,7 +93,7 @@ TEST(EnumsTest, enumToOrdinal)
     EXPECT_EQ(2, enumToOrdinal(Color::BLUE));
     EXPECT_EQ(3, enumToOrdinal(Color::BLACK));
 
-    EXPECT_THROW(enumToOrdinal(valueToEnum<Color>(1)), CppRuntimeException);
+    EXPECT_THROW(enumToOrdinal(static_cast<Color>(1)), CppRuntimeException);
 }
 
 TEST(EnumsTest, valueToEnum)
@@ -112,8 +112,6 @@ TEST(EnumsTest, enumToValue)
     EXPECT_EQ(2, enumToValue(Color::RED));
     EXPECT_EQ(3, enumToValue(Color::BLUE));
     EXPECT_EQ(7, enumToValue(Color::BLACK));
-
-    EXPECT_THROW(enumToValue(valueToEnum<Color>(1)), CppRuntimeException);
 }
 
 TEST(EnumsTest, enumToString)
@@ -124,7 +122,7 @@ TEST(EnumsTest, enumToString)
     EXPECT_EQ(std::string("BLUE"), enumToString(Color::BLUE));
     EXPECT_EQ(std::string("BLACK"), enumToString(Color::BLACK));
 
-    EXPECT_THROW(enumToString(valueToEnum<Color>(1)), CppRuntimeException);
+    EXPECT_THROW(enumToString(static_cast<Color>(1)), CppRuntimeException);
 }
 
 TEST(EnumsTest, bitSizeOf)
@@ -140,13 +138,12 @@ TEST(EnumsTest, initializeOffsets)
 
 TEST(EnumsTest, writeAndRead)
 {
-    BitStreamWriter out;
+    static uint8_t WRITE_BUFFER[1];
+    BitStreamWriter out(WRITE_BUFFER, sizeof(WRITE_BUFFER));
     const Color writeColor = Color::NONE;
     write(out, writeColor);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = out.getWriteBuffer(writeBufferByteSize);
-    BitStreamReader in(writeBuffer, writeBufferByteSize);
+    BitStreamReader in(out.getWriteBuffer(), out.getBitPosition(), BitsTag());
 
     const Color readColor = read<Color>(in);
     EXPECT_EQ(writeColor, readColor);

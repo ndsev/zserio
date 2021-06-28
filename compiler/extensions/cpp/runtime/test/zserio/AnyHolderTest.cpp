@@ -2,6 +2,8 @@
 
 #include "zserio/AnyHolder.h"
 
+#include "TrackingAllocator.h"
+
 #include "gtest/gtest.h"
 
 namespace zserio
@@ -22,7 +24,7 @@ private:
 
 TEST(AnyHolderTest, emptyConstructor)
 {
-    AnyHolder any;
+    AnyHolder<> any;
     ASSERT_FALSE(any.hasValue());
 }
 
@@ -31,7 +33,7 @@ TEST(AnyHolderTest, lvalueConstructor)
     std::vector<int> values{1, 2, 3};
     void* origAddress = &values[0];
 
-    AnyHolder any{values};
+    AnyHolder<> any{values};
 
     const std::vector<int>& anyValues = any.get<std::vector<int>>();
     ASSERT_NE(origAddress, &anyValues[0]);
@@ -44,7 +46,7 @@ TEST(AnyHolderTest, rvalueConstructor)
     std::vector<int> origValues{values};
     void* origAddress = &values[0];
 
-    AnyHolder any{std::move(values)};
+    AnyHolder<> any{std::move(values)};
 
     const std::vector<int>& anyValues = any.get<std::vector<int>>();
     ASSERT_EQ(origAddress, &anyValues[0]);
@@ -53,11 +55,11 @@ TEST(AnyHolderTest, rvalueConstructor)
 
 TEST(AnyHolderTest, copyConstructor)
 {
-    AnyHolder any;
+    AnyHolder<> any;
     const int intValue = 0xDEAD;
     any.set(intValue);
 
-    AnyHolder anyCopy(any);
+    AnyHolder<> anyCopy(any);
     ASSERT_EQ(intValue, anyCopy.get<int>());
     ASSERT_THROW(anyCopy.get<float>(), CppRuntimeException);
 
@@ -69,7 +71,7 @@ TEST(AnyHolderTest, copyConstructor)
     std::vector<int>& anyValues = any.get<std::vector<int>>();
     ASSERT_EQ(origAddress, &anyValues[0]);
 
-    AnyHolder copiedAny{any};
+    AnyHolder<> copiedAny{any};
 
     const std::vector<int>& copiedAnyValues = copiedAny.get<std::vector<int>>();
     ASSERT_NE(origAddress, &copiedAnyValues[0]);
@@ -78,11 +80,11 @@ TEST(AnyHolderTest, copyConstructor)
 
 TEST(AnyHolderTest, copyAssignmentOperator)
 {
-    AnyHolder any;
+    AnyHolder<> any;
     const int intValue = 0xDEAD;
     any.set(intValue);
 
-    AnyHolder anyCopy = any;
+    AnyHolder<> anyCopy = any;
     ASSERT_EQ(intValue, anyCopy.get<int>());
     ASSERT_THROW(anyCopy.get<float>(), CppRuntimeException);
 
@@ -94,7 +96,7 @@ TEST(AnyHolderTest, copyAssignmentOperator)
     std::vector<int>& anyValues = any.get<std::vector<int>>();
     ASSERT_EQ(origAddress, &anyValues[0]);
 
-    AnyHolder copiedAny;
+    AnyHolder<> copiedAny;
     copiedAny = any;
 
     const std::vector<int>& copiedAnyValues = copiedAny.get<std::vector<int>>();
@@ -107,9 +109,9 @@ TEST(AnyHolderTest, moveConstructorValueOnHeap)
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
     void* origAddress = &values[0];
-    AnyHolder any{std::move(values)};
+    AnyHolder<> any{std::move(values)};
 
-    AnyHolder movedAny{std::move(any)};
+    AnyHolder<> movedAny{std::move(any)};
     ASSERT_TRUE(movedAny.isType<std::vector<int>>());
 
     const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
@@ -120,17 +122,27 @@ TEST(AnyHolderTest, moveConstructorValueOnHeap)
 TEST(AnyHolderTest, moveConstructorValueInPlace)
 {
     uint32_t value = 10;
-    AnyHolder any(value);
+    AnyHolder<> any(value);
 
-    AnyHolder movedAny{std::move(any)};
+    AnyHolder<> movedAny{std::move(any)};
     ASSERT_TRUE(movedAny.isType<uint32_t>());
     uint32_t& movedValue = movedAny.get<uint32_t>();
     ASSERT_EQ(value, movedValue);
 
     movedValue = 20;
-    AnyHolder otherMoved{std::move(movedAny)};
+    AnyHolder<> otherMoved{std::move(movedAny)};
     ASSERT_TRUE(otherMoved.isType<uint32_t>());
     ASSERT_EQ(20, otherMoved.get<uint32_t>());
+}
+
+TEST(AnyHolderTest, moveConstructorNoValue)
+{
+    TrackingAllocatorNonProp<uint8_t> alloc1, alloc2;
+
+    AnyHolder<TrackingAllocatorNonProp<uint8_t>> any1(alloc1);
+    AnyHolder<TrackingAllocatorNonProp<uint8_t>> any2(std::move(any1), alloc2);
+    ASSERT_FALSE(any1.hasValue());
+    ASSERT_FALSE(any2.hasValue());
 }
 
 TEST(AnyHolderTest, moveAssignmentOperatorValueOnHeap)
@@ -138,29 +150,39 @@ TEST(AnyHolderTest, moveAssignmentOperatorValueOnHeap)
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
     void* origAddress = &values[0];
-    AnyHolder any{std::move(values)};
+    AnyHolder<> any{std::move(values)};
 
-    AnyHolder movedAny;
+    AnyHolder<> movedAny;
     movedAny = std::move(any);
 
     const std::vector<int>& movedAnyValues = movedAny.get<std::vector<int>>();
     ASSERT_EQ(origAddress, &movedAnyValues[0]);
     ASSERT_EQ(origValues, movedAnyValues);
+
+    TrackingAllocatorNonProp<uint8_t> alloc1;
+    TrackingAllocatorNonProp<uint8_t> alloc2;
+
+    std::vector<int> vals1{1, 2, 3};
+    std::vector<int> vals2{4, 5, 6};
+    AnyHolder<TrackingAllocatorNonProp<uint8_t>> anyInt1(vals1, alloc1);
+    AnyHolder<TrackingAllocatorNonProp<uint8_t>> anyInt2(vals2, alloc2);
+    anyInt2 = std::move(anyInt1);
+    ASSERT_EQ(vals1, anyInt2.get<std::vector<int>>());
 }
 
 TEST(AnyHolderTest, moveAssignmentOperatorValueInPlace)
 {
     uint32_t value = 10;
-    AnyHolder any(value);
+    AnyHolder<> any(value);
 
-    AnyHolder movedAny;
+    AnyHolder<> movedAny;
     movedAny = std::move(any);
     ASSERT_TRUE(movedAny.isType<uint32_t>());
     uint32_t& movedValue = movedAny.get<uint32_t>();
     ASSERT_EQ(value, movedValue);
 
     movedValue = 20;
-    AnyHolder otherMoved;
+    AnyHolder<> otherMoved;
     otherMoved = std::move(movedAny);
     ASSERT_TRUE(otherMoved.isType<uint32_t>());
     ASSERT_EQ(20, otherMoved.get<uint32_t>());
@@ -170,12 +192,16 @@ TEST(AnyHolderTest, lvalueAssignmentOperator)
 {
     std::vector<int> values{1, 2, 3};
     void* origAddress = &values[0];
-    AnyHolder any;
+    AnyHolder<> any;
     any = values;
 
     const std::vector<int>& anyValues = any.get<std::vector<int>>();
     ASSERT_NE(origAddress, &anyValues[0]);
     ASSERT_EQ(values, anyValues);
+
+    any = values;
+    ASSERT_EQ(values, anyValues);
+    ASSERT_TRUE(any.hasValue());
 }
 
 TEST(AnyHolderTest, rvalueAssignmentOperator)
@@ -183,7 +209,7 @@ TEST(AnyHolderTest, rvalueAssignmentOperator)
     std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
     void* origAddress = &values[0];
-    AnyHolder any;
+    AnyHolder<> any;
     any = std::move(values);
 
     std::vector<int>& anyValues = any.get<std::vector<int>>();
@@ -193,7 +219,7 @@ TEST(AnyHolderTest, rvalueAssignmentOperator)
 
 TEST(AnyHolderTest, reset)
 {
-    AnyHolder any{std::vector<int>{1, 2, 3}};
+    AnyHolder<> any{std::vector<int>{1, 2, 3}};
     ASSERT_TRUE(any.hasValue());
     ASSERT_EQ(1, any.get<std::vector<int>>()[0]);
 
@@ -210,13 +236,13 @@ TEST(AnyHolderTest, reset)
 
 TEST(AnyHolderTest, unitializedGet)
 {
-    AnyHolder any;
+    AnyHolder<> any;
     ASSERT_THROW(any.get<int>(), zserio::CppRuntimeException);
 }
 
 TEST(AnyHolderTest, setGet)
 {
-    AnyHolder any;
+    AnyHolder<> any;
 
     const int intValue = 0xDEAD;
     any.set(intValue);
@@ -240,7 +266,7 @@ TEST(AnyHolderTest, setGet)
 
 TEST(AnyHolderTest, isType)
 {
-    AnyHolder any;
+    AnyHolder<> any;
     ASSERT_FALSE(any.isType<int>());
 
     const int intValue = 0xDEAD;
@@ -255,7 +281,7 @@ TEST(AnyHolderTest, isType)
 
 TEST(AnyHolderTest, hasValue)
 {
-    AnyHolder any;
+    AnyHolder<> any;
     ASSERT_FALSE(any.hasValue());
 
     const int intValue = 0xDEAD;
@@ -268,12 +294,12 @@ TEST(AnyHolderTest, hasValue)
 
 TEST(AnyHolderTest, constGet)
 {
-    AnyHolder any;
+    AnyHolder<> any;
 
     const int intValue = 0xDEAD;
     any.set(intValue);
 
-    const AnyHolder constAny(any);
+    const AnyHolder<> constAny(any);
     ASSERT_EQ(intValue, constAny.get<int>());
 }
 

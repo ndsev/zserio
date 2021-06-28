@@ -7,12 +7,13 @@
 
 #include <type_traits>
 
-#include "zserio/BitStreamReader.h"
-#include "zserio/BitStreamWriter.h"
-
 // This should be implemented in runtime library header.
 namespace zserio
 {
+
+// forward declarations
+class BitStreamReader;
+class BitStreamWriter;
 
 /**
  * Enum traits for Zserio enums.

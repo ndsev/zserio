@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+#include "zserio/BlobBuffer.h"
+#include "zserio/StringView.h"
+#include "zserio/Span.h"
 #include "zserio/Types.h"
 
 namespace zserio
@@ -24,8 +27,10 @@ public:
      *
      * \throw ServiceException if the call fails.
      */
-    virtual void callMethod(const std::string& methodName, const std::vector<uint8_t>& requestData,
-            std::vector<uint8_t>& responseData, void* context = nullptr) = 0;
+    virtual void callMethod(
+            StringView methodName,
+            Span<const uint8_t> requestData,
+            IBlobBuffer& responseData, void* context = nullptr) = 0;
 };
 
 } // namespace zserio

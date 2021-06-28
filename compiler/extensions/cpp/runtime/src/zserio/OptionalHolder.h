@@ -6,6 +6,7 @@
 
 #include "zserio/CppRuntimeException.h"
 #include "zserio/Types.h"
+#include "zserio/UniquePtr.h"
 
 namespace zserio
 {
@@ -28,8 +29,390 @@ struct NullOptType
  */
 constexpr NullOptType NullOpt{int()};
 
+/**
+ * Helper type for specification of in-place construction.
+ */
+struct InPlaceT
+{
+    constexpr explicit InPlaceT() = default;
+};
+
+/**
+  * Constant used as a marker for in-place construction.
+  */
+constexpr InPlaceT InPlace{};
+
 namespace detail
 {
+
+/**
+ * Base class for optional holders. Provides common interface for various types of optional holders.
+ */
+template <typename T, typename Derived>
+class optional_holder_base
+{
+public:
+    /**
+     * Operator equality.
+     *
+     * \param other Other holder to compare.
+     *
+     * \return True when the other holder has same value as this. False otherwise.
+     */
+    bool operator==(const optional_holder_base& other) const
+    {
+        if (this == &other)
+            return true;
+
+        if (getDerived()->hasValue() != other.getDerived()->hasValue())
+            return false;
+
+        if (getDerived()->hasValue())
+            return get() == other.get();
+
+        return true;
+    }
+
+    /**
+     * Bool operator.
+     *
+     * Evaluates to true when this holder has assigned any value.
+     */
+    explicit operator bool() const noexcept
+    {
+        return getDerived()->hasValue();
+    }
+
+    /**
+     * Dereference operator ->.
+     *
+     * \return Const reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    const T* operator->() const
+    {
+        return std::addressof(get());
+    }
+
+    /**
+     * Dereference operator ->.
+     *
+     * \return Reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    T* operator->()
+    {
+        return std::addressof(get());
+    }
+
+    /**
+     * Gets held value.
+     *
+     * \return Const reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    const T& value() const
+    {
+        return get();
+    }
+
+    /**
+     * Gets held value.
+     *
+     * \return Reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    T& value()
+    {
+        return get();
+    }
+
+protected:
+    void checkHasValue() const
+    {
+        if (!getDerived()->hasValue())
+            throw CppRuntimeException("Trying to access value of non-present optional field!");
+    }
+
+private:
+    T& get()
+    {
+        return getDerived()->operator*();
+    }
+
+    const T& get() const
+    {
+        return getDerived()->operator*();
+    }
+
+    Derived* getDerived()
+    {
+        return static_cast<Derived*>(this);
+    }
+
+    const Derived* getDerived() const
+    {
+        return static_cast<const Derived*>(this);
+    }
+};
+
+/**
+ * Optional holder implementation that stores the object on heap.
+ */
+template <typename T, typename ALLOC>
+class heap_optional_holder : public optional_holder_base<T, heap_optional_holder<T, ALLOC>>
+{
+public:
+    using allocator_type = ALLOC;
+    using allocator_traits = std::allocator_traits<allocator_type>;
+    using storage_type = zserio::unique_ptr<T, allocator_type>;
+
+    /**
+     * Getter for the allocator.
+     *
+     * \return Allocator that is used for the dynamic memory allocat
+     */
+    allocator_type get_allocator() const
+    {
+        return m_storage.get_deleter().get_allocator();
+    }
+
+    /**
+     * Empty constructor which creates an unset holder.
+     *
+     * \param allocator Allocator to be used to perform dynamic memory allocations.
+     */
+    explicit constexpr heap_optional_holder(const allocator_type& allocator = allocator_type()) noexcept :
+        m_storage(nullptr, allocator)
+    {}
+
+    /**
+     * Constructor from zserio::NullOpt constant to create an unset holder.
+     *
+     * \param allocator Allocator to be used to perform dynamic memory allocations.
+     */
+    constexpr heap_optional_holder(NullOptType, const allocator_type& allocator = allocator_type()) noexcept :
+        m_storage(nullptr, allocator)
+    {}
+
+    /**
+     * Constructor from a given value.
+     *
+     * \param value Value to store in the holder.
+     * \param allocator Allocator to be used to perform dynamic memory allocations.
+     */
+    heap_optional_holder(const T& value, const allocator_type& allocator = allocator_type()) :
+        m_storage(zserio::allocate_unique<T, allocator_type>(allocator, value))
+    {}
+
+    /**
+     * Constructor from a given value passed by rvalue reference.
+     *
+     * \param value Value to store in the holder.
+     * \param allocator Allocator to be used to perform dynamic memory allocations.
+     */
+    heap_optional_holder(T&& value, const allocator_type& allocator = allocator_type()) :
+        m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::move(value)))
+    {}
+
+    /**
+     * Constructor that initializes the value inplace by forwarding the arguments to the object's constructor.
+     *
+     * \param allocator Allocator to be used for dynamic memory allocations.
+     * \param u Parameters for object's constructor.
+     */
+    template <typename ...U>
+    heap_optional_holder(const allocator_type& allocator, U&& ...u) :
+        m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::forward<U>(u)...))
+    {}
+
+    /**
+     * Copy constructor.
+     *
+     * \param other Other holder to copy.
+     */
+    heap_optional_holder(const heap_optional_holder& other) :
+        m_storage(copy_initialize(other,
+            allocator_traits::select_on_container_copy_construction(other.m_storage.get_deleter().get_allocator())))
+    {}
+
+    /**
+     * Copy constructor.
+     *
+     * \param other Other holder to copy.
+     * \param allocator Allocator to be used for dynamic memory allocations.
+     */
+    heap_optional_holder(const heap_optional_holder& other, const allocator_type& allocator) :
+        m_storage(copy_initialize(other, allocator))
+    {}
+
+    /**
+     * Move constructor.
+     *
+     * \param other Other holder to move.
+     */
+    heap_optional_holder(heap_optional_holder&& other) noexcept = default;
+
+    /**
+     * Allocator-extended move constructor.
+     *
+     * \param other Other holder to move.
+     * \param allocator Allocator to be used for dynamic memory allocations.
+     */
+    heap_optional_holder(heap_optional_holder&& other, const allocator_type& allocator) :
+        m_storage(move_initialize(std::move(other), allocator))
+    {
+        other.reset();
+    }
+
+    /**
+     * Assignment operator.
+     *
+     * \param other Other holder to copy-assign.
+     *
+     * \return Reference to the current holder.
+     */
+    heap_optional_holder& operator=(const heap_optional_holder& other)
+    {
+        if (this == &other)
+            return *this;
+
+        m_storage = copy_initialize(other,
+            allocator_traits::propagate_on_container_copy_assignment::value ?
+                other.m_storage.get_deleter().get_allocator() :
+                m_storage.get_deleter().get_allocator());
+
+        return *this;
+    }
+
+    /**
+     * Move assignment operator.
+     *
+     * \param other Other holder to move-assign.
+     *
+     * \return Reference to the current holder.
+     */
+    heap_optional_holder& operator=(heap_optional_holder&& other)
+    {
+        if (this == &other)
+            return *this;
+
+        m_storage = move_initialize(std::move(other),
+            allocator_traits::propagate_on_container_move_assignment::value ?
+                other.m_storage.get_deleter().get_allocator() :
+                m_storage.get_deleter().get_allocator());
+        other.reset();
+
+        return *this;
+    }
+
+    /**
+     * Assignment operator from value.
+     *
+     * \param value Value to assign.
+     *
+     * \return Reference to the current holder.
+     */
+    heap_optional_holder& operator=(const T& value)
+    {
+        set(value);
+
+        return *this;
+    }
+
+    /**
+     * Assignment operator from rvalue reference to value.
+     *
+     * \param value Value to move-assign.
+     *
+     * \return Reference to the current holder.
+     */
+    heap_optional_holder& operator=(T&& value)
+    {
+        set(std::move(value));
+
+        return *this;
+    }
+
+    /**
+     * Resets the current holder (switch to the unset state).
+     */
+    void reset() noexcept
+    {
+        m_storage.reset();
+    }
+
+    /**
+     * Gets whether the holder has any value.
+     *
+     * \return True when this holder has assigned any value. False otherwise.
+     */
+    bool hasValue() const noexcept
+    {
+        return bool(m_storage);
+    }
+
+    /**
+     * Dereference operator *.
+     *
+     * \return Const reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    const T& operator*() const
+    {
+        this->checkHasValue();
+        return *m_storage.get();
+    }
+
+    /**
+     * Dereference operator *.
+     *
+     * \return Reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    T& operator*()
+    {
+        this->checkHasValue();
+        return *m_storage.get();
+    }
+
+private:
+    template <typename U = T>
+    void set(U&& value)
+    {
+        reset();
+        m_storage = zserio::allocate_unique<T, allocator_type>(
+            m_storage.get_deleter().get_allocator(), std::forward<U>(value));
+    }
+
+    static storage_type copy_initialize(const heap_optional_holder& other, const allocator_type& allocator)
+    {
+        return other.hasValue() ?
+            zserio::allocate_unique<T, allocator_type>(allocator, *other) :
+            storage_type(nullptr, allocator);
+    }
+
+    static storage_type move_initialize(heap_optional_holder&& other, const allocator_type& allocator)
+    {
+        if (other.hasValue())
+        {
+            return allocator == other.m_storage.get_deleter().get_allocator() ?
+                std::move(other.m_storage) :
+                zserio::allocate_unique<T, allocator_type>(allocator, std::move(*other));
+        }
+        else
+            return storage_type(nullptr, allocator);
+    }
+
+    storage_type m_storage;
+};
+
 
 /**
  * In place storage for optional holder.
@@ -59,7 +442,7 @@ public:
      *
      * \param other Other storage to move.
      */
-    in_place_storage(in_place_storage&& other)
+    in_place_storage(in_place_storage&& other) noexcept(std::is_nothrow_move_constructible<T>::value)
     {
         move(std::move(other));
     }
@@ -119,120 +502,22 @@ private:
 };
 
 /**
- * Heap storage for optional holder.
+ * Optional holder implementation for Zserio which allows usage of in place storage.
  */
 template <typename T>
-class heap_storage
-{
-public:
-    /**
-     * Constructor.
-     */
-    heap_storage() : m_heap(nullptr) {}
-
-    /**
-     * Destructor.
-     */
-    ~heap_storage()
-    {
-        delete [] m_heap;
-        m_heap = nullptr;
-    }
-
-    /**
-     * Copying is disallowed.
-     * \{
-     */
-    heap_storage(const heap_storage&) = delete;
-    heap_storage& operator=(const heap_storage&) = delete;
-    /** \} */
-
-    /**
-     * Move constructor.
-     *
-     * \param other Other storage to move.
-     */
-    heap_storage(heap_storage&& other)
-    {
-        move(std::move(other));
-    }
-
-    /**
-     * Move assignment operator.
-     *
-     * \param other Other storage to move.
-     *
-     * \return Reference to the current storage.
-     */
-    heap_storage& operator=(heap_storage&& other)
-    {
-        move(std::move(other));
-
-        return *this;
-    }
-
-    /**
-     * Gets pointer to the underlying on-heap memory.
-     *
-     * Allocates the memory if it's not yet allocated.
-     *
-     * \return Pointer to the storage.
-     */
-    void* getStorage()
-    {
-        if (m_heap == nullptr)
-            m_heap = new unsigned char [sizeof(T)];
-
-        return m_heap;
-    }
-
-    /**
-     * Gets pointer to the stored object.
-     *
-     * \return Const pointer to the object.
-     */
-    const T* getObject() const
-    {
-        return reinterpret_cast<const T*>(m_heap);
-    }
-
-    /**
-     * Gets pointer to the stored object.
-     *
-     * \return Pointer to the object.
-     */
-    T* getObject()
-    {
-        return reinterpret_cast<T*>(m_heap);
-    }
-
-private:
-    void move(heap_storage&& other)
-    {
-        m_heap = other.m_heap;
-        other.m_heap = nullptr;
-    }
-
-    unsigned char* m_heap;
-};
-
-/**
- * Optional holder implementation for Zserio which allows usage of both heap and in place storage.
- */
-template <typename T, typename STORAGE>
-class optional_holder
+class inplace_optional_holder : public optional_holder_base<T, inplace_optional_holder<T>>
 {
 public:
     /**
      * Empty constructor which creates an unset holder.
      */
-    constexpr optional_holder() noexcept
+    constexpr inplace_optional_holder() noexcept
     {}
 
     /**
      * Constructor from zserio::NullOpt constant to create an unset holder.
      */
-    constexpr optional_holder(NullOptType) noexcept
+    constexpr inplace_optional_holder(NullOptType) noexcept
     {}
 
     /**
@@ -240,9 +525,9 @@ public:
      *
      * \param value Value to store in the holder.
      */
-    optional_holder(const T& value)
+    inplace_optional_holder(const T& value)
     {
-        new (getStorage()) T(value);
+        new (m_storage.getStorage()) T(value);
         m_hasValue = true;
     }
 
@@ -251,9 +536,9 @@ public:
      *
      * \param value Value to store in the holder.
      */
-    optional_holder(T&& value)
+    inplace_optional_holder(T&& value)
     {
-        new (getStorage()) T(std::move(value));
+        new (m_storage.getStorage()) T(std::move(value));
         m_hasValue = true;
     }
 
@@ -262,11 +547,11 @@ public:
      *
      * \param other Other holder to copy.
      */
-    optional_holder(const optional_holder<T, STORAGE>& other)
+    inplace_optional_holder(const inplace_optional_holder& other)
     {
         if (other.hasValue())
         {
-            new (getStorage()) T(*other.m_storage.getObject());
+            new (m_storage.getStorage()) T(*other.m_storage.getObject());
             m_hasValue = true;
         }
     }
@@ -276,7 +561,8 @@ public:
      *
      * \param other Other holder to move.
      */
-    optional_holder(optional_holder<T, STORAGE>&& other)
+    inplace_optional_holder(inplace_optional_holder&& other) 
+            noexcept(std::is_nothrow_move_constructible<in_place_storage<T>>::value)
     {
         if (other.hasValue())
         {
@@ -287,9 +573,21 @@ public:
     }
 
     /**
+     * Constructor that initializes the value inplace by forwarding the arguments to the object's constructor.
+     *
+     * \param u Parameters for object's constructor.
+     */
+    template <typename ...U>
+    explicit inplace_optional_holder(InPlaceT, U&& ...u)
+    {
+        new (m_storage.getStorage()) T(std::forward<U>(u)...);
+        m_hasValue = true;
+    }
+
+    /**
      * Destructor.
      */
-    ~optional_holder()
+    ~inplace_optional_holder()
     {
         reset();
     }
@@ -301,14 +599,14 @@ public:
      *
      * \return Reference to the current holder.
      */
-    optional_holder<T, STORAGE>& operator=(const optional_holder<T, STORAGE>& other)
+    inplace_optional_holder& operator=(const inplace_optional_holder& other)
     {
         if (this != &other)
         {
             reset();
             if (other.hasValue())
             {
-                new (getStorage()) T(*other.m_storage.getObject());
+                new (m_storage.getStorage()) T(*other.m_storage.getObject());
                 m_hasValue = true;
             }
         }
@@ -323,7 +621,7 @@ public:
      *
      * \return Reference to the current holder.
      */
-    optional_holder& operator=(optional_holder<T, STORAGE>&& other)
+    inplace_optional_holder& operator=(inplace_optional_holder&& other)
     {
         if (this != &other)
         {
@@ -339,6 +637,7 @@ public:
         return *this;
     }
 
+
     /**
      * Assignment operator from value.
      *
@@ -346,7 +645,7 @@ public:
      *
      * \return Reference to the current holder.
      */
-    optional_holder& operator=(const T& value)
+    inplace_optional_holder& operator=(const T& value)
     {
         set(value);
 
@@ -360,89 +659,11 @@ public:
      *
      * \return Reference to the current holder.
      */
-    optional_holder& operator=(T&& value)
+    inplace_optional_holder& operator=(T&& value)
     {
         set(std::move(value));
 
         return *this;
-    }
-
-    /**
-     * Operator equality.
-     *
-     * \param other Other holder to compare.
-     *
-     * \return True when the other holder has same value as this. False otherwise.
-     */
-    bool operator==(const optional_holder<T, STORAGE>& other) const
-    {
-        if (this != &other)
-        {
-            if (hasValue() && other.hasValue())
-                return *(m_storage.getObject()) == *(other.m_storage.getObject());
-
-            return (!hasValue() && !other.hasValue());
-        }
-
-        return true;
-    }
-
-    /**
-     * Bool operator.
-     *
-     * Evaluates to true when this holder has assigned any value.
-     */
-    explicit operator bool() const noexcept
-    {
-        return hasValue();
-    }
-
-    /**
-     * Dereference operator *.
-     *
-     * \return Const reference to the assigned value.
-     *
-     * \throw CppRuntimeException when the holder is unset.
-     */
-    const T& operator*() const
-    {
-        return *get();
-    }
-
-    /**
-     * Dereference operator *.
-     *
-     * \return Reference to the assigned value.
-     *
-     * \throw CppRuntimeException when the holder is unset.
-     */
-    T& operator*()
-    {
-        return *get();
-    }
-
-    /**
-     * Dereference operator ->.
-     *
-     * \return Const reference to the assigned value.
-     *
-     * \throw CppRuntimeException when the holder is unset.
-     */
-    const T* operator->() const
-    {
-        return get();
-    }
-
-    /**
-     * Dereference operator ->.
-     *
-     * \return Reference to the assigned value.
-     *
-     * \throw CppRuntimeException when the holder is unset.
-     */
-    T* operator->()
-    {
-        return get();
     }
 
     /**
@@ -458,30 +679,6 @@ public:
     }
 
     /**
-     * Gets held value.
-     *
-     * \return Const reference to the assigned value.
-     *
-     * \throw CppRuntimeException when the holder is unset.
-     */
-    const T& value() const
-    {
-        return *get();
-    }
-
-    /**
-     * Gets held value.
-     *
-     * \return Reference to the assigned value.
-     *
-     * \throw CppRuntimeException when the holder is unset.
-     */
-    T& value()
-    {
-        return *get();
-    }
-
-    /**
      * Gets whether the holder has any value.
      *
      * \return True when this holder has assigned any value. False otherwise.
@@ -491,97 +688,60 @@ public:
         return m_hasValue;
     }
 
+    /**
+     * Dereference operator *.
+     *
+     * \return Const reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    const T& operator*() const
+    {
+        this->checkHasValue();
+        return *m_storage.getObject();
+    }
+
+    /**
+     * Dereference operator *.
+     *
+     * \return Reference to the assigned value.
+     *
+     * \throw CppRuntimeException when the holder is unset.
+     */
+    T& operator*()
+    {
+        this->checkHasValue();
+        return *m_storage.getObject();
+    }
+
 private:
     template <typename U = T>
     void set(U&& value)
     {
         reset();
-        new (getStorage()) T(std::forward<U>(value));
+        new (m_storage.getStorage()) T(std::forward<U>(value));
         m_hasValue = true;
     }
 
-    T* get()
-    {
-        checkHasValue();
-        return m_storage.getObject();
-    }
-
-    const T* get() const
-    {
-        checkHasValue();
-        return m_storage.getObject();
-    }
-
-    void* getStorage()
-    {
-        return m_storage.getStorage();
-    }
-
-    void checkHasValue() const
-    {
-        if (!hasValue())
-            throw CppRuntimeException("Trying to access value of non-present optional field!");
-    }
-
-    STORAGE m_storage;
-    bool    m_hasValue = false;
+    in_place_storage<T> m_storage;
+    bool m_hasValue = false;
 };
-
-/**
- * Trait constaining a logic which decides what storage is used.
- *
- * In place storage is used for small types, heap logic is used for bigger types.
- *
- * Generated code can specialize this template to force a storage type for a particular type.
- * It can be necessary e.g. for recursive types where it's not possible to calculate sizeof in compile time.
- */
-template <typename T>
-struct is_optimized_in_place
-{
-    static const bool value = (sizeof(in_place_storage<T>) <= 8 * sizeof(uint64_t) - sizeof(bool));
-};
-
-/**
- * Optimized optional storgage where storage is choosen using is_optimized_in_place trait.
- *
- * \{
- */
-template <typename T, bool IS_IN_PLACE>
-struct optimized_optional_storage
-{
-    typedef detail::in_place_storage<T> type;
-};
-
-template <typename T>
-struct optimized_optional_storage<T, false>
-{
-    typedef detail::heap_storage<T> type;
-};
-/** \} */
 
 } // namespace detail
 
+// Be aware that if Inplace/HeapOptionalHolder is defined by typename, C++ compiler will have problem with
+// template function overload, see HashCodeUtil.h (overloads for objects and for Inplace/HeapOptionalHolder).
 /**
  * Optional holder which uses in place storage.
  */
 template <typename T>
-using InPlaceOptionalHolder = detail::optional_holder<T, detail::in_place_storage<T>>;
+using InplaceOptionalHolder = detail::inplace_optional_holder<T>;
 
 /**
  * Optional holder which uses heap storage.
  */
-template <typename T>
-using HeapOptionalHolder = detail::optional_holder<T, detail::heap_storage<T>>;
-
-// Be aware that if OptionalHolder is defined by typename, C++ compiler will have problem with template
-// function overload, see HashCodeUtil.h (overloads for objects and for OptionalHolder).
-/**
- * Optional holder which decides in compile time which storage is used - in place for small types and
- * heap for bigger ones.
- */
-template <typename T>
-using OptionalHolder = detail::optional_holder<
-        T, typename detail::optimized_optional_storage<T, detail::is_optimized_in_place<T>::value>::type>;
+template <typename T, typename ALLOC = std::allocator<T>>
+using HeapOptionalHolder = detail::heap_optional_holder<T, ALLOC>;
 
 } // namespace zserio
 

@@ -4,7 +4,7 @@
 #include "zserio/Arrays.h"
 #include "zserio/Enums.h"
 #include "zserio/CppRuntimeException.h"
-#include "zserio/StringConvertUtil.h"
+#include "zserio/BitBuffer.h"
 
 #include "gtest/gtest.h"
 
@@ -44,8 +44,7 @@ DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
     case UINT8_C(2):
         return DummyEnum(rawValue);
     default:
-        throw CppRuntimeException("Unknown value for enumeration DummyEnum: " +
-                convertToString(rawValue) + "!");
+        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") + rawValue + "!";
     }
 }
 
@@ -86,10 +85,10 @@ public:
         static const DummyBitmask WRITE;
     };
 
-    DummyBitmask() : m_value(0) {};
+    DummyBitmask() : m_value(0) {}
     explicit DummyBitmask(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
-    {};
+    {}
 
     explicit DummyBitmask(underlying_type value) :
         m_value(value)
@@ -166,10 +165,12 @@ public:
         return m_value == other.m_value;
     }
 
+    // GCOV_EXCL_START - the method is here only to simulate real generated object
     uint32_t getValue() const
     {
         return m_value;
     }
+    // GCOV_EXCL_STOP
 
     void write(BitStreamWriter& out, PreWriteAction)
     {
@@ -363,7 +364,7 @@ private:
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::write(arrayTraits, array, writer);
-        BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
+        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         std::vector<typename ARRAY_TRAITS::type> readArray;
         zserio::read(arrayReadTraits, readArray, reader, array.size());
         EXPECT_EQ(array, readArray);
@@ -375,7 +376,7 @@ private:
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::writeAuto(arrayTraits, array, writer);
-        BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
+        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         std::vector<typename ARRAY_TRAITS::type> autoReadArray;
         zserio::readAuto(arrayReadTraits, autoReadArray, reader);
         EXPECT_EQ(array, autoReadArray);
@@ -387,7 +388,7 @@ private:
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::writeAligned(arrayTraits, array, writer, ArrayTestOffsetChecker());
-        BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
+        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         std::vector<typename ARRAY_TRAITS::type> alignedReadArray;
         zserio::readAligned(arrayReadTraits, alignedReadArray, reader, array.size(), ArrayTestOffsetChecker());
         EXPECT_EQ(array, alignedReadArray);
@@ -399,7 +400,7 @@ private:
     {
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::writeAlignedAuto(arrayTraits, array, writer, ArrayTestOffsetChecker());
-        BitStreamReader reader(m_byteBuffer, BUFFER_SIZE);
+        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         std::vector<typename ARRAY_TRAITS::type> alignedAutoReadArray;
         zserio::readAlignedAuto(arrayReadTraits, alignedAutoReadArray, reader, ArrayTestOffsetChecker());
         EXPECT_EQ(array, alignedAutoReadArray);
@@ -415,8 +416,8 @@ private:
 
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         zserio::write(arrayTraits, array, writer);
-        const size_t implicitByteSize = writer.getBitPosition() / 8;
-        BitStreamReader reader(m_byteBuffer, implicitByteSize);
+
+        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         std::vector<typename ARRAY_TRAITS::type> implicitReadArray;
         zserio::readImplicit(arrayReadTraits, implicitReadArray, reader);
         EXPECT_EQ(array, implicitReadArray);
@@ -747,7 +748,7 @@ TEST_F(ArraysTest, stringArray)
     const size_t stringBitSize = (sizeof("StringX") - 1) * 8; // without terminating character
     const size_t elementBitSize = stringLengthBitSize + stringBitSize;
     std::vector<std::string> array = {"String0", "String1", "String2"};
-    testArray(StringArrayTraits(), array, elementBitSize);
+    testArray(StringArrayTraits<>(), array, elementBitSize);
 }
 
 TEST_F(ArraysTest, bitBufferArray)
@@ -757,7 +758,7 @@ TEST_F(ArraysTest, bitBufferArray)
     const size_t elementBitSize = bitBufferLengthBitSize + bitBufferBitSize;
     std::vector<BitBuffer> array = {BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize),
             BitBuffer(bitBufferBitSize)};
-    testArray(BitBufferArrayTraits(), array, elementBitSize);
+    testArray(BitBufferArrayTraits<>(), array, elementBitSize);
 }
 
 TEST_F(ArraysTest, enumArray)
@@ -765,6 +766,10 @@ TEST_F(ArraysTest, enumArray)
     std::vector<DummyEnum> array = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};
     const size_t elementBitSize = 8;
     testArray(EnumArrayTraits<DummyEnum>(), array, elementBitSize);
+
+    std::vector<DummyEnum> invalidArray = {static_cast<DummyEnum>(10)};
+    ASSERT_THROW(testArray(EnumArrayTraits<DummyEnum>(), invalidArray, elementBitSize),
+            zserio::CppRuntimeException);
 }
 
 TEST_F(ArraysTest, bitmaskArray)

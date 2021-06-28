@@ -1,11 +1,36 @@
-duplicateExpressionTernary:*/src/zserio/AnyHolder.h:250
+useStlAlgorithm:*/src/zserio/HashCodeUtil.h:101
 
-unusedStructMember:*/src/zserio/BitStreamReader.h:63
-unusedStructMember:*/src/zserio/BitStreamReader.h:64
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:198
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:208
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:218
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:520
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:528
+noExplicitConstructor:*/src/zserio/OptionalHolder.h:539
 
-useStlAlgorithm:*/src/zserio/HashCodeUtil.h:186
+unusedStructMember:*/src/zserio/BitStreamReader.h:54
+unusedStructMember:*/src/zserio/BitStreamReader.h:55
 
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:235
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:243
-noExplicitConstructor:*/src/zserio/OptionalHolder.h:254
-unusedStructMember:*/src/zserio/OptionalHolder.h:541
+// gtest asserts are converted to normal asserts using cppcheck's config googletest.cfg
+assertWithSideEffect:*/test/*
+
+knownConditionTrueFalse:*/test/zserio/InplaceOptionalHolderTest.cpp:106
+constArgument:*/test/zserio/InplaceOptionalHolderTest.cpp:188
+constArgument:*/test/zserio/InplaceOptionalHolderTest.cpp:189
+
+constArgument:*/test/zserio/HeapOptionalHolderTest.cpp:388
+constArgument:*/test/zserio/HeapOptionalHolderTest.cpp:389
+
+oppositeExpression:*/test/zserio/MemoryResourceTest.cpp:84
+
+noExplicitConstructor:*/src/zserio/Span.h:113
+noExplicitConstructor:*/src/zserio/Span.h:125
+noExplicitConstructor:*/src/zserio/Span.h:137
+noExplicitConstructor:*/src/zserio/Span.h:149
+noExplicitConstructor:*/src/zserio/Span.h:161
+
+noExplicitConstructor:*/src/zserio/StringView.h:53
+noExplicitConstructor:*/src/zserio/StringView.h:73
+
+unreachableCode:*/src/zserio/StringView.h:783
+
+noExplicitConstructor:*/test/zserio/TrackingAllocator.h:66

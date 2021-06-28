@@ -1,8 +1,6 @@
 #ifndef ZSERIO_CONSTRAINT_EXCEPTION_H_INC
 #define ZSERIO_CONSTRAINT_EXCEPTION_H_INC
 
-#include <string>
-
 #include "zserio/CppRuntimeException.h"
 
 namespace zserio
@@ -11,15 +9,10 @@ namespace zserio
 /**
  * Exception thrown when a constraint check fails.
  */
-class ConstraintException : public CppRuntimeException
+class ConstraintException : public detail::CppRuntimeExceptionHelper<ConstraintException>
 {
 public:
-    /**
-     * Constructor.
-     *
-     * \param message Description of the constraint check failure.
-     */
-    explicit ConstraintException(const std::string& message) : CppRuntimeException(message) {}
+    using BaseType::CppRuntimeExceptionHelper;
 };
 
 } // namespace zserio

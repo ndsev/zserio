@@ -1,47 +1,82 @@
-#include "zserio/StringConvertUtil.h"
+#include <limits>
 
 #include "gtest/gtest.h"
+
+#include "zserio/StringConvertUtil.h"
 
 namespace zserio
 {
 
-TEST(StringConvertUtilTest, simpleTypes)
+TEST(StringConvertUtilTest, convertInt8)
 {
-    const bool boolValue = true;
-    const std::string boolValueInString = convertToString(boolValue);
-    EXPECT_EQ("true", boolValueInString);
+    using type = int8_t;
+    const type value = std::numeric_limits<type>::min();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
+}
 
-    const char charValue = 10;
-    const std::string charValueInString = convertToString(charValue);
-    EXPECT_EQ("10", charValueInString);
+TEST(StringConvertUtilTest, convertUInt8)
+{
+    using type = uint8_t;
+    const type value = std::numeric_limits<type>::max();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
+}
 
-    const signed char signedCharValue = -10;
-    const std::string signedCharValueInString = convertToString(signedCharValue);
-    EXPECT_EQ("-10", signedCharValueInString);
+TEST(StringConvertUtilTest, convertInt16)
+{
+    using type = int16_t;
+    const type value = std::numeric_limits<type>::min();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
+}
 
-    const unsigned char unsignedCharValue = 10;
-    const std::string unsignedCharValueInString = convertToString(unsignedCharValue);
-    EXPECT_EQ("10", unsignedCharValueInString);
+TEST(StringConvertUtilTest, convertUInt16)
+{
+    using type = uint16_t;
+    const type value = std::numeric_limits<type>::max();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
+}
 
-    const int intValue = 10;
-    const std::string intValueInString = convertToString(intValue);
-    EXPECT_EQ("10", intValueInString);
+TEST(StringConvertUtilTest, convertInt32)
+{
+    using type = int32_t;
+    const type value = std::numeric_limits<type>::min();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
+}
 
-    const long longValue = 123456789L;
-    const std::string longValueInString = convertToString(longValue);
-    EXPECT_EQ("123456789", longValueInString);
+TEST(StringConvertUtilTest, convertUInt32)
+{
+    using type = uint32_t;
+    const type value = std::numeric_limits<type>::max();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
+}
 
-    const float floatValue = 9.9f;
-    const std::string floatValueInString = convertToString(floatValue);
-    EXPECT_EQ("9.9", floatValueInString);
+TEST(StringConvertUtilTest, convertInt64)
+{
+    using type = int64_t;
+    const type value = std::numeric_limits<type>::min();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
+}
 
-    const std::string stringValue = "string";
-    const std::string stringValueInString = convertToString(stringValue);
-    EXPECT_EQ("string", stringValueInString);
-
-    const char* rawStringValue = "raw string";
-    const std::string rawStringValueInString = convertToString(rawStringValue);
-    EXPECT_EQ("raw string", rawStringValueInString);
+TEST(StringConvertUtilTest, convertUInt64)
+{
+    using type = uint64_t;
+    const type value = std::numeric_limits<type>::max();
+    char buffer[24];
+    const char* valueInString = convertIntToString(buffer, value);
+    EXPECT_EQ(std::to_string(value), valueInString);
 }
 
 } // namespace zserio

@@ -10,7 +10,8 @@ class FloatUtilTest : public ::testing::Test
 protected:
     uint16_t createFloat16Value(uint16_t sign, uint16_t exponent, uint16_t significand)
     {
-        return (sign << FLOAT16_SIGN_BIT_POSITION) | (exponent << FLOAT16_EXPONENT_BIT_POSITION) | significand;
+        return static_cast<uint16_t>((sign << FLOAT16_SIGN_BIT_POSITION) |
+                (exponent << FLOAT16_EXPONENT_BIT_POSITION) | significand);
     }
 
     uint32_t createFloat32Value(uint32_t sign, uint32_t exponent, uint32_t significand)
@@ -91,12 +92,12 @@ const FloatUtilTest::TestFloat64Element FloatUtilTest::TEST_FLOAT64_DATA[] =
 {
     { 0, 0,    UINT64_C(0),                 0.0 },
     { 1, 0,    UINT64_C(0),                -0.0 },
-    { 0, 1023, UINT64_C(0),                +1.0f },
-    { 1, 1023, UINT64_C(0),                -1.0f },
-    { 0, 1024, UINT64_C(0xC000000000000),  3.5f },       // 2^1 (1 + 2^-1 + 2^-2)
-    { 0, 1022, UINT64_C(0xC000000000000),  0.875f },     // 2^-1 (1 + 2^-1 + 2^-2)
-    { 0, 1026, UINT64_C(0x3C00000000000),  9.875f },     // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
-    { 0, 1022, UINT64_C(0x3C00000000000),  0.6171875f }  // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    { 0, 1023, UINT64_C(0),                +1.0 },
+    { 1, 1023, UINT64_C(0),                -1.0 },
+    { 0, 1024, UINT64_C(0xC000000000000),  3.5 },       // 2^1 (1 + 2^-1 + 2^-2)
+    { 0, 1022, UINT64_C(0xC000000000000),  0.875 },     // 2^-1 (1 + 2^-1 + 2^-2)
+    { 0, 1026, UINT64_C(0x3C00000000000),  9.875 },     // 2^3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
+    { 0, 1022, UINT64_C(0x3C00000000000),  0.6171875 }  // 2^-3 (1 + 2^-3 + 2^-4 + 2^-5 + 2^-6)
 };
 
 const uint16_t FloatUtilTest::FLOAT16_SIGN_BIT_POSITION = UINT16_C(15);

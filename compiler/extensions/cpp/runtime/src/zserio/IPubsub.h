@@ -1,9 +1,9 @@
 #ifndef ZSERIO_IPUBSUB_H_INC
 #define ZSERIO_IPUBSUB_H_INC
 
-#include <functional>
-#include <vector>
-#include <string>
+#include <memory>
+#include "zserio/StringView.h"
+#include "zserio/Span.h"
 #include "zserio/Types.h"
 
 namespace zserio
@@ -23,7 +23,12 @@ public:
     /**
      * OnTopic callback which invoked for subscribed messages.
      */
-    using OnTopic = std::function<void(const std::string& topic, const std::vector<uint8_t>& data)>;
+    class OnTopicCallback
+    {
+    public:
+        virtual ~OnTopicCallback() = default;
+        virtual void operator()(StringView topic, Span<const uint8_t> data) = 0;
+    };
 
     /**
      * Publishes given data as a specified topic.
@@ -34,7 +39,7 @@ public:
      *
      * \throw PubsubException when publishing fails.
      */
-    virtual void publish(const std::string& topic, const std::vector<uint8_t>& data, void* context) = 0;
+    virtual void publish(StringView topic, Span<const uint8_t> data, void* context) = 0;
 
     /**
      * Subscribes a topic.
@@ -48,7 +53,8 @@ public:
      * \return Subscription ID.
      * \throw PubsubException when subscribing fails.
      */
-    virtual SubscriptionId subscribe(const std::string& topic, const OnTopic& callback, void* context) = 0;
+    virtual SubscriptionId subscribe(
+            StringView topic, const std::shared_ptr<OnTopicCallback>& callback, void* context) = 0;
 
     /**
      * Unsubscribes the subscription with the given ID.

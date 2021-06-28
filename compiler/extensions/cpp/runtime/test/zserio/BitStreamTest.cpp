@@ -15,7 +15,7 @@ namespace zserio
 class BitStreamTest : public ::testing::Test
 {
 public:
-    BitStreamTest() : m_externalWriter(m_byteBuffer, BUFFER_SIZE), m_dummyWriter(NULL, 0)
+    BitStreamTest() : m_externalWriter(m_byteBuffer, BUFFER_SIZE), m_dummyWriter(nullptr, 0)
     {
         memset(m_byteBuffer, 0, BUFFER_SIZE);
     }
@@ -34,9 +34,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         for (size_t i = 0; i < N; ++i)
         {
             ASSERT_EQ(readerFunc(reader), values[i]);
@@ -54,9 +52,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(1, reader.readBits(1));
         ASSERT_EQ(2, reader.readBits(2));
         ASSERT_EQ(42, reader.readBits(12));
@@ -73,9 +69,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(1, reader.readBits(1));
         ASSERT_EQ(UINT64_C(42424242424242), reader.readBits64(48));
         ASSERT_EQ(UINT64_C(0xFFFFFFFFFFFFFFFE), reader.readBits64(64));
@@ -90,9 +84,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(-1, reader.readSignedBits(5));
         ASSERT_EQ(3, reader.readSignedBits(12));
         ASSERT_EQ(-142, reader.readSignedBits(9));
@@ -108,9 +100,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(INT64_C(1), reader.readSignedBits(4));
         ASSERT_EQ(INT64_C(-1), reader.readSignedBits64(48));
         ASSERT_EQ(INT64_C(-42424242), reader.readSignedBits64(61));
@@ -132,9 +122,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(UINT8_C(0xCA), reader.readBits(8));
         ASSERT_EQ(UINT16_C(0xCAFE), reader.readBits(16));
         ASSERT_EQ(UINT32_C(0xCAFEC0), reader.readBits(24));
@@ -175,9 +163,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(0, reader.getBitPosition());
         ASSERT_EQ(1, reader.readBits(1));
         ASSERT_EQ(1, reader.getBitPosition());
@@ -185,7 +171,7 @@ protected:
         ASSERT_EQ(4, reader.getBitPosition());
         ASSERT_EQ(3, reader.readBits(3));
         ASSERT_EQ(7, reader.getBitPosition());
-        ASSERT_THROW(reader.setBitPosition(writeBufferSize * 8 + 1), CppRuntimeException);
+        ASSERT_THROW(reader.setBitPosition(writer.getBitPosition() + 1), CppRuntimeException);
 
         reader.setBitPosition(4);
         ASSERT_EQ(4, reader.getBitPosition());
@@ -219,9 +205,7 @@ protected:
         if (!writer.hasWriteBuffer())
             return;
 
-        size_t writeBufferSize = 0;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferSize);
-        BitStreamReader reader(writeBuffer, writeBufferSize);
+        BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), BitsTag());
         ASSERT_EQ(1, reader.readBits(1));
         reader.alignTo(4);
         ASSERT_EQ(1, reader.readBits(1));
@@ -245,42 +229,36 @@ private:
 
 protected:
     BitStreamWriter m_externalWriter;
-    BitStreamWriter m_internalWriter;
     BitStreamWriter m_dummyWriter;
 };
 
 TEST_F(BitStreamTest, readBits)
 {
     testReadBits(m_externalWriter);
-    testReadBits(m_internalWriter);
     testReadBits(m_dummyWriter);
 }
 
 TEST_F(BitStreamTest, readBits64)
 {
     testReadBits64(m_externalWriter);
-    testReadBits64(m_internalWriter);
     testReadBits64(m_dummyWriter);
 }
 
 TEST_F(BitStreamTest, readSignedBits)
 {
     testReadSignedBits(m_externalWriter);
-    testReadSignedBits(m_internalWriter);
     testReadSignedBits(m_dummyWriter);
 }
 
 TEST_F(BitStreamTest, readSignedBits64)
 {
     testReadSignedBits64(m_externalWriter);
-    testReadSignedBits64(m_internalWriter);
     testReadSignedBits64(m_dummyWriter);
 }
 
 TEST_F(BitStreamTest, alignedBytes)
 {
     testAlignedBytes(m_externalWriter);
-    testAlignedBytes(m_internalWriter);
     testAlignedBytes(m_dummyWriter);
 }
 
@@ -321,7 +299,6 @@ TEST_F(BitStreamTest, readVarInt64)
     std::function<int64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt64;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -350,7 +327,6 @@ TEST_F(BitStreamTest, readVarInt32)
     std::function<int32_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt32;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -373,7 +349,6 @@ TEST_F(BitStreamTest, readVarInt16)
     std::function<int16_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt16;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -414,7 +389,6 @@ TEST_F(BitStreamTest, readVarUInt64)
     std::function<uint64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt64;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -443,7 +417,6 @@ TEST_F(BitStreamTest, readVarUInt32)
     std::function<uint32_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt32;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -466,7 +439,6 @@ TEST_F(BitStreamTest, readVarUInt16)
     std::function<uint16_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt16;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -529,7 +501,6 @@ TEST_F(BitStreamTest, readVarInt)
     std::function<int64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarInt;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -571,7 +542,6 @@ TEST_F(BitStreamTest, readVarUInt)
     std::function<uint64_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarUInt;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -603,7 +573,6 @@ TEST_F(BitStreamTest, readVarSize)
     std::function<uint32_t(BitStreamReader&)> readerFunc = &BitStreamReader::readVarSize;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -615,7 +584,6 @@ TEST_F(BitStreamTest, readFloat16)
     std::function<float(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat16;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -627,7 +595,6 @@ TEST_F(BitStreamTest, readFloat32)
     std::function<float(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat32;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -639,7 +606,6 @@ TEST_F(BitStreamTest, readFloat64)
     std::function<double(BitStreamReader&)> readerFunc = &BitStreamReader::readFloat64;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -652,11 +618,13 @@ TEST_F(BitStreamTest, readString)
         "Price: \xE2\x82\xAC 3 what's this? -> \xC2\xA2" /* '€' '¢' */
     };
 
-    std::function<void (BitStreamWriter&, const std::string&)> writerFunc = &BitStreamWriter::writeString;
-    std::function<std::string (BitStreamReader&)> readerFunc = &BitStreamReader::readString;
+    std::function<void (BitStreamWriter&, const std::string&)> writerFunc =
+            &BitStreamWriter::writeString<std::allocator<char>>;
+    std::function<std::string (BitStreamReader&)> readerFunc =
+            std::bind(&BitStreamReader::readString<
+                    std::allocator<char>>, std::placeholders::_1, std::allocator<char>());
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -668,7 +636,6 @@ TEST_F(BitStreamTest, readBool)
     std::function<bool(BitStreamReader&)> readerFunc = &BitStreamReader::readBool;
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
@@ -680,25 +647,25 @@ TEST_F(BitStreamTest, readBitBuffer)
         BitBuffer(std::vector<uint8_t>({0xAB, 0xCD, 0xFE}), 23)
     };
 
-    std::function<void (BitStreamWriter&, const BitBuffer&)> writerFunc = &BitStreamWriter::writeBitBuffer;
-    std::function<BitBuffer (BitStreamReader&)> readerFunc = &BitStreamReader::readBitBuffer;
+    std::function<void (BitStreamWriter&, const BitBuffer&)> writerFunc =
+                &BitStreamWriter::writeBitBuffer<std::allocator<uint8_t>>;
+    std::function<BitBuffer (BitStreamReader&)> readerFunc =
+            std::bind(&BitStreamReader::readBitBuffer<
+                    std::allocator<char>>, std::placeholders::_1, std::allocator<uint8_t>());
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
-    testBitStreamValues(values, m_internalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
 }
 
 TEST_F(BitStreamTest, setBitPosition)
 {
     testSetBitPosition(m_externalWriter, false);
-    testSetBitPosition(m_internalWriter, true);
     testSetBitPosition(m_dummyWriter, false);
 }
 
 TEST_F(BitStreamTest, alignTo)
 {
     testAlignTo(m_externalWriter);
-    testAlignTo(m_internalWriter);
     testAlignTo(m_dummyWriter);
 }
 

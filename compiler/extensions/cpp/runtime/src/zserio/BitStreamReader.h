@@ -2,10 +2,13 @@
 #define ZSERIO_BIT_STREAM_READER_H_INC
 
 #include <cstddef>
+#include <cstring>
 #include <string>
 
 #include "zserio/Types.h"
+#include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
+#include "zserio/RebindAlloc.h"
 
 namespace zserio
 {
@@ -33,18 +36,6 @@ public:
         explicit ReaderContext(const uint8_t* buffer, size_t bufferBitSize);
 
         /**
-         * Constructor from the file name.
-         *
-         * \param filename Filename of the binary file to read.
-         */
-        explicit ReaderContext(const std::string& filename);
-
-        /**
-         * Destructor.
-         */
-        ~ReaderContext();
-
-        /**
          * Copying and moving is disallowed!
          * \{
          */
@@ -65,8 +56,7 @@ public:
         };
 
         uint8_t* buffer; /**< Buffer to read from. */
-        BitPosType bufferBitSize; /**< Size of the buffer in bits. */
-        bool hasInternalBuffer; /**< Whether the reader has internal buffer. True when reading from file. */
+        const BitPosType bufferBitSize; /**< Size of the buffer in bits. */
 
         BitCache cache; /**< Bit cache to optimize bit reading. */
         uint8_t cacheNumBits; /**< Num bits available in the bit cache. */
@@ -86,18 +76,29 @@ public:
     explicit BitStreamReader(const uint8_t* buffer, size_t bufferByteSize);
 
     /**
-     * Constructor from bit buffer.
+     * Constructor from buffer passed as a Span.
      *
-     * \param buffer Bit buffer to read from.
+     * \param buffer Buffer to read.
      */
-    explicit BitStreamReader(const BitBuffer& bitBuffer);
+    explicit BitStreamReader(Span<const uint8_t> buffer);
 
     /**
-     * Constructor from the file name.
+     * Constructor from raw buffer with exact bit size.
      *
-     * \param filename Filename of the binary file to read.
+     * \param buffer Pointer to buffer to read.
+     * \param bufferBitSize Size of the buffer in bits.
      */
-    explicit BitStreamReader(const std::string& filename);
+    explicit BitStreamReader(const uint8_t* buffer, size_t bufferBitSize, BitsTag);
+
+    /**
+     * Constructor from bit buffer.
+     *
+     * \param bitBuffer Bit buffer to read from.
+     */
+    template <typename ALLOC>
+    explicit BitStreamReader(const BasicBitBuffer<ALLOC>& bitBuffer) :
+            BitStreamReader(bitBuffer.getBuffer(), bitBuffer.getBitSize(), BitsTag())
+    {}
 
     /**
      * Destructor.
@@ -229,7 +230,19 @@ public:
      *
      * \return Read string.
      */
-    std::string readString();
+    template <typename ALLOC = std::allocator<char>>
+    std::basic_string<char, std::char_traits<char>, zserio::RebindAlloc<ALLOC, char>> readString(
+            const ALLOC& alloc = ALLOC())
+    {
+        std::basic_string<char, std::char_traits<char>, zserio::RebindAlloc<ALLOC, char>> value{alloc};
+        const size_t len = static_cast<size_t>(readVarSize());
+        value.reserve(len);
+        for (size_t i = 0; i < len; ++i)
+        {
+            value.push_back(static_cast<char>(readChar()));
+        }
+        return value;
+    }
 
     /**
      * Reads bool as a single bit.
@@ -243,7 +256,38 @@ public:
      *
      * \return Read bit buffer.
      */
-    BitBuffer readBitBuffer();
+    template <typename ALLOC = std::allocator<uint8_t>>
+    BasicBitBuffer<RebindAlloc<ALLOC, uint8_t>> readBitBuffer(const ALLOC& allocator = ALLOC())
+    {
+        const size_t bitSize = static_cast<size_t>(readVarSize());
+        size_t numBytesToRead = bitSize / 8;
+        const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToRead * 8);
+        BasicBitBuffer<RebindAlloc<ALLOC, uint8_t>> bitBuffer(bitSize, allocator);
+        uint8_t* buffer = bitBuffer.getBuffer();
+        const BitPosType beginBitPosition = getBitPosition();
+        if ((beginBitPosition & 0x07) != 0)
+        {
+            // we are not aligned to byte
+            while (numBytesToRead > 0)
+            {
+                *buffer = static_cast<uint8_t>(readBits(8));
+                buffer++;
+                numBytesToRead--;
+            }
+        }
+        else
+        {
+            // we are aligned to byte
+            setBitPosition(beginBitPosition + numBytesToRead * 8);
+            memcpy(buffer, m_context.buffer + beginBitPosition / 8, numBytesToRead);
+            buffer += numBytesToRead;
+        }
+
+        if (numRestBits > 0)
+            *buffer = static_cast<uint8_t>(readBits(numRestBits) << (8 - numRestBits));
+
+        return bitBuffer;
+    }
 
     /**
      * Gets current bit position.
@@ -274,6 +318,8 @@ public:
     size_t getBufferBitSize() const { return m_context.bufferBitSize; }
 
 private:
+    uint8_t readChar();
+
     ReaderContext m_context;
 };
 

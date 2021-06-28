@@ -1,10 +1,7 @@
 #include <limits>
 
-#include "zserio/CppRuntimeException.h"
-#include "zserio/StringConvertUtil.h"
-#include "zserio/BitPositionUtil.h"
 #include "zserio/BitSizeOfCalculator.h"
-#include "zserio/VarSizeUtil.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {
@@ -119,8 +116,8 @@ static size_t bitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, siz
 
     if (byteSize > numMaxValues)
     {
-        throw CppRuntimeException("BitSizeOfCalculator: Value '" + convertToString(value) +
-                "' is out of range for " + std::string(varIntName) + "!");
+        throw CppRuntimeException("BitSizeOfCalculator: Value '") + value +
+                "' is out of range for " + varIntName + "!";
     }
 
     return bytesToBits(byteSize);
@@ -178,22 +175,6 @@ size_t bitSizeOfVarUInt(uint64_t value)
 size_t bitSizeOfVarSize(uint32_t value)
 {
     return bitSizeOfVarIntImpl(value, VarSizeMaxValues, VarSizeMaxNumValues, "varsize");
-}
-
-size_t bitSizeOfString(const std::string& stringValue)
-{
-    const size_t stringSize = stringValue.size();
-
-    // the string consists of varsize for size followed by the UTF-8 encoded string
-    return bitSizeOfVarSize(convertSizeToUInt32(stringSize)) + bytesToBits(stringSize);
-}
-
-size_t bitSizeOfBitBuffer(const BitBuffer& bitBuffer)
-{
-    const size_t bitBufferSize = bitBuffer.getBitSize();
-
-    // bit buffer consists of varsize for bit size followed by the bits
-    return bitSizeOfVarSize(convertSizeToUInt32(bitBufferSize)) + bitBufferSize;
 }
 
 } // namespace zserio

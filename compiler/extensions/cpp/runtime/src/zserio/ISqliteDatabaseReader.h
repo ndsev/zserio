@@ -4,7 +4,7 @@
 #include <string>
 #include <set>
 
-#include <sqlite3.h>
+#include "zserio/SqliteConnection.h"
 
 namespace zserio
 {
@@ -21,9 +21,9 @@ public:
     /**
      * Returns current database connection.
      *
-     * \return SQLite database connection or NULL if the database is not open.
+     * \return SQLite database connection.
      */
-    virtual sqlite3* connection() = 0;
+    virtual SqliteConnection& connection() noexcept = 0;
 };
 
 } // namespace zserio

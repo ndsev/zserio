@@ -1,48 +1,116 @@
 #ifndef ZSERIO_STRING_CONVERT_UTIL_H_INC
 #define ZSERIO_STRING_CONVERT_UTIL_H_INC
 
-#include <string>
+#include "zserio/String.h"
+#include "zserio/RebindAlloc.h"
 #include <sstream>
 
 namespace zserio
 {
 
-/**
- * Utilities for conversion of a given value to string.
- *
- * \param value Value to convert.
- *
- * \return String representation of the given value.
- *
- * \{
- */
-template <typename T>
-std::string convertToString(T value)
+namespace detail
 {
-    std::stringstream stream;
-    stream << value;
 
-    return stream.str();
+/**
+ * Converts integer value to string into the given buffer.
+ *
+ * The string is filled from backwards starting at the 24th byte.
+ *
+ * \return Beginning of the resulting string which is null-terminated.
+ */
+template <typename T,
+        typename std::enable_if<std::is_unsigned<T>::value && !std::is_same<T, bool>::value, int>::type = 0>
+const char* convertIntToString(char buffer[24], T value, bool isNegative)
+{
+    static const char DIGITS[] = "0001020304050607080910111213141516171819"
+                                 "2021222324252627282930313233343536373839"
+                                 "4041424344454647484950515253545556575859"
+                                 "6061626364656667686970717273747576777879"
+                                 "8081828384858687888990919293949596979899";
+
+    static const size_t BUFFER_SIZE = 24;
+    char* bufferEnd = buffer + BUFFER_SIZE;
+
+    *--bufferEnd = 0; // always terminate with '\0'
+
+    while (value >= 100)
+    {
+        const unsigned int index = static_cast<unsigned int>((value % 100) * 2);
+        value /= 100;
+        *--bufferEnd = DIGITS[index + 1];
+        *--bufferEnd = DIGITS[index];
+    }
+
+    if (value < 10)
+    {
+        *--bufferEnd = static_cast<char>('0' + value);
+    }
+    else
+    {
+        const unsigned int index = static_cast<unsigned int>(value * 2);
+        *--bufferEnd = DIGITS[index + 1];
+        *--bufferEnd = DIGITS[index];
+    }
+
+    if (isNegative)
+        *--bufferEnd = '-';
+
+    return bufferEnd;
 }
 
-template <>
-std::string convertToString<bool>(bool value);
+} // namespace detail
 
-template <>
-std::string convertToString<char>(char value);
+/**
+ * Converts unsigned integral value to string and writes the result to the given buffer.
+ * Note that the buffer is filled from behind.
+ *
+ * \param buffer Buffer to fill with the string representation of the given value.
+ * \param value  Value to convert.
+ *
+ * \return Pointer to the beginning of the resulting string.
+ */
+template <typename T,
+        typename std::enable_if<std::is_unsigned<T>::value, int>::type = 0>
+const char* convertIntToString(char buffer[24], T value)
+{
+    return detail::convertIntToString(buffer, value, false);
+}
 
-template <>
-std::string convertToString<signed char>(signed char value);
+/**
+ * Converts signed integral value to string and writes the result to the given buffer.
+ * Note that the buffer is filled from behind.
+ *
+ * \param buffer Buffer to fill with the string representation of the given value.
+ * \param value  Value to convert.
+ *
+ * \return Pointer to the beginning of the resulting string.
+ */
+template <typename T, typename std::enable_if<std::is_signed<T>::value, int>::type = 0>
+const char* convertIntToString(char buffer[24], T value)
+{
+    using unsigned_type = typename std::make_unsigned<T>::type;
+    unsigned_type absValue = static_cast<unsigned_type>(value);
+    const bool isNegative = value < 0;
+    if (isNegative)
+        absValue = 0 - absValue;
 
-template <>
-std::string convertToString<unsigned char>(unsigned char value);
+    return detail::convertIntToString(buffer, absValue, isNegative);
+}
 
-template <>
-std::string convertToString<unsigned int>(unsigned int value);
-
-template <>
-std::string convertToString<int>(int value);
-/** \} */
+/**
+ * Converts an integral value to string using the given allocator. Defined for convenience.
+ *
+ * \param value     Value to convert.
+ * \param allocator Allocator to use for the string allocation.
+ *
+ * \return String representation of the given value.
+ */
+template <typename ALLOC, typename T>
+zserio::string<zserio::RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLOC())
+{
+    char buffer[24];
+    return zserio::string<zserio::RebindAlloc<ALLOC, char>>(convertIntToString(buffer, value), allocator);
+}
 
 } // namespace zserio
 

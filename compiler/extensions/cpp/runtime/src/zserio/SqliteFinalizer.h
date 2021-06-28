@@ -1,7 +1,7 @@
 #ifndef ZSERIO_SQLITE_FINALIZER_H_INC
 #define ZSERIO_SQLITE_FINALIZER_H_INC
 
-#include <sqlite3.h>
+#include "sqlite3.h"
 
 namespace zserio
 {
