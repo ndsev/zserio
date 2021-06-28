@@ -486,7 +486,7 @@ public final class CompoundFieldTemplateData
             private final String    expression;
         }
 
-        final ArrayList<InstantiatedParameterData>  instantiatedParameters;
+        private final ArrayList<InstantiatedParameterData> instantiatedParameters;
     }
 
     private static Optional createOptional(Field field, ExpressionFormatter javaExpressionFormatter)

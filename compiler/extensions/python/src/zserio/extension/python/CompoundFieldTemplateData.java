@@ -474,7 +474,7 @@ public final class CompoundFieldTemplateData
             private final boolean containsIndex;
         }
 
-        final List<InstantiatedParameterData> instantiatedParameters;
+        private final List<InstantiatedParameterData> instantiatedParameters;
     }
 
     private static RangeCheck createRangeCheck(TypeInstantiation typeInstantiation, boolean withRangeCheckCode,
