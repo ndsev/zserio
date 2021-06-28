@@ -68,6 +68,6 @@ jobs:
     - name: Archive Zserio artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: Zserio distr artifact
-        path: distr
+        name: zserio-release
+        path: release-*
 
