@@ -6,11 +6,13 @@
 #include <array>
 
 #include <zserio/Enums.h>
+#include <zserio/BitStreamReader.h>
+#include <zserio/BitStreamWriter.h>
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
 <@system_includes headerSystemIncludes/>
-<@user_includes headerUserIncludes, true/>
+<@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
 enum class ${name} : ${baseCppTypeName}

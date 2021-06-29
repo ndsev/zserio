@@ -1,32 +1,61 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
 <@file_header generatorDescription/>
+<#if withValidationCode>
+    <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
+</#if>
 
 <@include_guard_begin package.path, name/>
 
 #include <memory>
-#include <string>
-#include <vector>
 #include <array>
-#include <set>
-#include <map>
+<@type_includes types.set/>
+<@type_includes types.vector/>
+<@type_includes types.map/>
+<@type_includes types.vector/>
+<@type_includes types.string/>
+<@type_includes types.uniquePtr/>
+#include <zserio/AllocatorHolder.h>
+#include <zserio/StringView.h>
 #include <zserio/ISqliteDatabase<#if !withWriterCode>Reader</#if>.h>
 #include <zserio/SqliteConnection.h>
+<#if withValidationCode>
+#include <zserio/IValidationObserver.h>
+</#if>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-class ${name} : public ::zserio::ISqliteDatabase<#if !withWriterCode>Reader</#if>
+class ${name} : public ::zserio::ISqliteDatabase<#if !withWriterCode>Reader</#if>,
+        public ::zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:
-    typedef ::std::map<::std::string, ::std::string> TRelocationMap;
+<#if withValidationCode && needsParameterProvider>
+    class IParameterProvider
+    {
+    public:
+        virtual ~IParameterProvider() = default;
 
-    explicit ${name}(const ::std::string& fileName,
-            const TRelocationMap& tableToDbFileNameRelocationMap = TRelocationMap());
+        <#list fields as field>
+            <#if field.hasExplicitParameters>
+        virtual ${field.cppTypeName}::IParameterProvider& <@sql_db_table_parameter_provider_getter field/> = 0;
+            </#if>
+        </#list>
+    };
+
+</#if>
+    typedef <@map_type_name types.string.name, types.string.name/> TRelocationMap;
+
+    explicit ${name}(const ${types.string.name}& dbFileName,
+            const TRelocationMap& tableToDbFileNameRelocationMap = TRelocationMap(),
+            const allocator_type& allocator = allocator_type());
+    explicit ${name}(const ${types.string.name}& fileName, const allocator_type& allocator);
     explicit ${name}(sqlite3* externalConnection,
-            const TRelocationMap& tableToAttachedDbNameRelocationMap = TRelocationMap());
+            const TRelocationMap& tableToAttachedDbNameRelocationMap = TRelocationMap(),
+            const allocator_type& allocator = allocator_type());
+    explicit ${name}(sqlite3* externalConnection, const allocator_type& allocator);
 
-    ~${name}();
+    virtual ~${name}() override;
 
     ${name}(const ${name}&) = delete;
     ${name}& operator=(const ${name}&) = delete;
@@ -34,37 +63,42 @@ public:
     ${name}(${name}&&) = delete;
     ${name}& operator=(${name}&&) = delete;
 
-    sqlite3* connection() noexcept;
+    ::zserio::SqliteConnection& connection() noexcept override;
 
 <#list fields as field>
     ${field.cppTypeName}& ${field.getterName}() noexcept;
 </#list>
 <#if withWriterCode>
 
-    virtual void createSchema();
-    virtual void createSchema(const ::std::set<::std::string>& withoutRowIdTableNamesBlackList);
-    virtual void deleteSchema();
+    virtual void createSchema() override;
+    virtual void createSchema(const <@set_type_name types.string.name/>& withoutRowIdTableNamesBlackList);
+    virtual void deleteSchema() override;
+</#if>
+<#if withValidationCode>
+
+    void validate(::zserio::IValidationObserver& validationObserver<#rt>
+            <#lt><#if needsParameterProvider>, IParameterProvider& parameterProvider</#if>);
 </#if>
 
     <#-- cannot be constexpr since constexpr must be defined inline -->
-    static const char* databaseName() noexcept;
-    static const ::std::array<const char*, ${fields?size}>& tableNames() noexcept;
+    static ::zserio::StringView databaseName() noexcept;
+    static const ::std::array<::zserio::StringView, ${fields?size}>& tableNames() noexcept;
 
 private:
-    void initTables(const TRelocationMap& tableToAttachedDbNameRelocationMap);
-    void attachDatabase(const ::std::string& fileName, const ::std::string& attachedDbName);
+    void initTables();
+    void attachDatabase(::zserio::StringView fileName, ::zserio::StringView attachedDbName);
     void detachDatabases();
 
 <#list fields as field>
-    <#-- can be constexpr since it is privated and therefore used only from a single cpp unit -->
-    static constexpr const char* <@sql_db_table_name_getter field/> noexcept;
+    static ::zserio::StringView <@sql_db_table_name_getter field/> noexcept;
 </#list>
 
     ::zserio::SqliteConnection m_db;
-    ::std::vector<::std::string> m_attachedDbList;
+    <@vector_type_name types.string.name/> m_attachedDbList;
+    TRelocationMap m_tableToAttachedDbNameRelocationMap;
 
 <#list fields as field>
-    ::std::unique_ptr<${field.cppTypeName}> <@sql_field_member_name field/>;
+    <@unique_ptr_type_name field.cppTypeName/> <@sql_field_member_name field/>;
 </#list>
 };
 <@namespace_end package.path/>

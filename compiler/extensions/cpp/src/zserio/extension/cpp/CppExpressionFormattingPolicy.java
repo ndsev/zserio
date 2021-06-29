@@ -18,7 +18,6 @@ import zserio.ast.Function;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
-import zserio.extension.common.StringEscapeConverter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.symbols.CppNativeSymbol;
 import zserio.extension.cpp.types.CppNativeType;
@@ -122,12 +121,10 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     }
 
     @Override
-    public String getStringLiteral(Expression expr)
+    public String getStringLiteral(Expression expr) throws ZserioExtensionException
     {
-        // string literals in C++ does not support unicode escapes from interval <'\u0000', '\u0031'>
-        final String escapedStringLiteral = StringEscapeConverter.convertUnicodeToHexEscapes(expr.getText());
-
-        return "::std::string(" + escapedStringLiteral + ")";
+        // must solve all constant string expressions in the generator to prevent dynamic allocations in runtime
+        throw new ZserioExtensionException("String literals cannot occur in C++ expressions!");
     }
 
     @Override

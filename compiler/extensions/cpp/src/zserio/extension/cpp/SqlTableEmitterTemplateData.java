@@ -1,5 +1,6 @@
 package zserio.extension.cpp;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
@@ -8,6 +9,7 @@ import java.util.TreeSet;
 import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.CompoundType;
+import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumType;
 import zserio.ast.Parameter;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
@@ -15,6 +17,7 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.IntegerType;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
@@ -25,7 +28,9 @@ import zserio.extension.common.sql.types.NativeBlobType;
 import zserio.extension.common.sql.types.NativeIntegerType;
 import zserio.extension.common.sql.types.NativeRealType;
 import zserio.extension.common.sql.types.SqlNativeType;
+import zserio.extension.cpp.SqlTableEmitterTemplateData.FieldTemplateData.SqlRangeCheckData;
 import zserio.extension.cpp.types.CppNativeType;
+import zserio.extension.cpp.types.NativeIntegralType;
 import zserio.tools.HashUtil;
 
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
@@ -36,10 +41,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         super(context, tableType);
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
-        sqlConstraint = (tableSqlConstraint == null) ? null :
-            cppExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
+        sqlConstraint = createSqlConstraint(tableType.getSqlConstraint());
         virtualTableUsing = tableType.getVirtualTableUsingString();
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
@@ -54,7 +56,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         boolean requiresOwnerContext = false;
         for (Field tableField : tableFields)
         {
-            final FieldTemplateData field = new FieldTemplateData(cppNativeMapper, cppExpressionFormatter,
+            final FieldTemplateData field = new FieldTemplateData(cppNativeMapper,
                     cppSqlIndirectExpressionFormatter, sqlNativeTypeMapper, tableType, tableField, this);
             fields.add(field);
 
@@ -193,7 +195,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public static class FieldTemplateData
     {
         public FieldTemplateData(CppNativeMapper cppNativeMapper,
-                ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
                 SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioExtensionException
         {
@@ -206,8 +207,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             cppTypeName = nativeFieldType.getFullName();
             cppArgumentTypeName = nativeFieldType.getArgumentTypeName();
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
-            sqlConstraint = (fieldSqlConstraint == null) ? null :
-                cppExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
+            sqlConstraint = createSqlConstraint(fieldSqlConstraint);
+            isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
+            isPrimaryKey = table.isFieldPrimaryKey(field);
             isVirtual = field.isVirtual();
 
             getterName = AccessorNameFormatter.getGetterName(field);
@@ -217,6 +219,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             typeParameters = new ArrayList<ParameterTemplateData>();
             boolean hasImplicitParameters = false;
+            boolean hasExplicitParameters = false;
             if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
             {
                 final ParameterizedTypeInstantiation parameterizedInstantiation =
@@ -227,17 +230,28 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                             cppNativeMapper, cppSqlIndirectExpressionFormatter,
                             table, field, parameter, includeCollector);
                     typeParameters.add(parameterTemplateData);
-                    if (!parameterTemplateData.getIsExplicit())
+                    if (parameterTemplateData.getIsExplicit())
+                        hasExplicitParameters = true;
+                    else
                         hasImplicitParameters = true;
                 }
             }
             this.hasImplicitParameters = hasImplicitParameters;
+            this.hasExplicitParameters = hasExplicitParameters;
 
             isSimpleType = nativeFieldType.isSimpleType();
             isBoolean = fieldBaseType instanceof BooleanType;
             enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
             bitmaskData = createBitmaskTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
+
+            TypeInstantiation rangeCheckInstantiation = fieldTypeInstantiation;
+            if (enumData != null)
+                rangeCheckInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+            else if (bitmaskData != null)
+                rangeCheckInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
+            sqlRangeCheckData = createRangeCheckData(cppNativeMapper, cppSqlIndirectExpressionFormatter,
+                    rangeCheckInstantiation);
             needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
                     ((CompoundType)fieldBaseType).needsChildrenInitialization();
         }
@@ -260,6 +274,16 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getSqlConstraint()
         {
             return sqlConstraint;
+        }
+
+        public boolean getIsNotNull()
+        {
+            return isNotNull;
+        }
+
+        public boolean getIsPrimaryKey()
+        {
+            return isPrimaryKey;
         }
 
         public boolean getIsVirtual()
@@ -297,6 +321,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return hasImplicitParameters;
         }
 
+        public boolean getHasExplicitParameters()
+        {
+            return hasExplicitParameters;
+        }
+
         public boolean getIsSimpleType()
         {
             return isSimpleType;
@@ -320,6 +349,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public SqlTypeTemplateData getSqlTypeData()
         {
             return sqlTypeData;
+        }
+
+        public SqlRangeCheckData getSqlRangeCheckData()
+        {
+            return sqlRangeCheckData;
         }
 
         public boolean getNeedsChildrenInitialization()
@@ -470,7 +504,58 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isReal;
         }
 
-        private EnumTemplateData createEnumTemplateData(CppNativeMapper cppNativeMapper,
+        public static class SqlRangeCheckData
+        {
+            public SqlRangeCheckData(boolean checkLowerBound, String lowerBound, String upperBound,
+                    String sqlCppTypeName, String bitFieldLength, boolean isSigned) throws ZserioExtensionException
+            {
+                this.checkLowerBound = checkLowerBound;
+                this.lowerBound = lowerBound;
+                this.upperBound = upperBound;
+                this.sqlCppTypeName = sqlCppTypeName;
+                this.bitFieldLength = bitFieldLength;
+                this.isSigned = isSigned;
+            }
+
+            public boolean getCheckLowerBound()
+            {
+                return checkLowerBound;
+            }
+
+            public String getLowerBound()
+            {
+                return lowerBound;
+            }
+
+            public String getUpperBound()
+            {
+                return upperBound;
+            }
+
+            public String getSqlCppTypeName()
+            {
+                return sqlCppTypeName;
+            }
+
+            public String getBitFieldLength()
+            {
+                return bitFieldLength;
+            }
+
+            public boolean getIsSigned()
+            {
+                return isSigned;
+            }
+
+            private final boolean checkLowerBound;
+            private final String lowerBound;
+            private final String upperBound;
+            private final String sqlCppTypeName;
+            private final String bitFieldLength;
+            private final boolean isSigned;
+        }
+
+        private static EnumTemplateData createEnumTemplateData(CppNativeMapper cppNativeMapper,
                 ZserioType fieldBaseType, IncludeCollector includeCollector) throws ZserioExtensionException
         {
             if (!(fieldBaseType instanceof EnumType))
@@ -479,7 +564,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return new EnumTemplateData(cppNativeMapper, (EnumType)fieldBaseType, includeCollector);
         }
 
-        private BitmaskTemplateData createBitmaskTemplateData(CppNativeMapper cppNativeMapper,
+        private static BitmaskTemplateData createBitmaskTemplateData(CppNativeMapper cppNativeMapper,
                 ZserioType fieldBaseType, IncludeCollector includeCollector) throws ZserioExtensionException
         {
             if (!(fieldBaseType instanceof BitmaskType))
@@ -492,6 +577,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String cppTypeName;
         private final String cppArgumentTypeName;
         private final String sqlConstraint;
+        private final boolean isNotNull;
+        private final boolean isPrimaryKey;
         private final boolean isVirtual;
         private final String getterName;
         private final String setterName;
@@ -499,12 +586,79 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String indicatorName;
         private final List<ParameterTemplateData> typeParameters;
         private final boolean hasImplicitParameters;
+        private final boolean hasExplicitParameters;
         private final boolean isBoolean;
         private final EnumTemplateData enumData;
         private final BitmaskTemplateData bitmaskData;
         private final SqlTypeTemplateData sqlTypeData;
+        private final SqlRangeCheckData sqlRangeCheckData;
         private final boolean isSimpleType;
         private final boolean needsChildrenInitialization;
+    }
+
+    private static String createSqlConstraint(SqlConstraint sqlConstraint) throws ZserioExtensionException
+    {
+        if (sqlConstraint == null)
+            return null;
+
+        final String stringValue = sqlConstraint.getConstraintExpr().getStringValue();
+        if (stringValue == null)
+            throw new ZserioExtensionException("Unexpected sql constraint which is a non-constant string!");
+
+        return CppLiteralFormatter.formatStringLiteral(stringValue);
+    }
+
+    private static SqlRangeCheckData createRangeCheckData(CppNativeMapper cppNativeMapper,
+            ExpressionFormatter cppSqlIndirectExpressionFormatter, TypeInstantiation typeInstantiation)
+                    throws ZserioExtensionException
+    {
+        // in SQL, don't do range check non-integer types
+        if (!(typeInstantiation.getBaseType() instanceof IntegerType))
+            return null;
+
+        final String bitFieldLength = getDynamicBitFieldLength(typeInstantiation,
+                cppSqlIndirectExpressionFormatter);
+        final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(typeInstantiation);
+        final boolean isSigned = nativeType.isSigned();
+        final IntegerType typeToCheck = (IntegerType)typeInstantiation.getBaseType();
+
+        final BigInteger zserioLowerBound = typeToCheck.getLowerBound(typeInstantiation);
+        final BigInteger zserioUpperBound = typeToCheck.getUpperBound(typeInstantiation);
+        boolean checkLowerBound = true;
+        boolean checkUpperBound = true;
+        // since we use sqlite_column_int64, it has no sense to test 64-bit types
+        final NativeIntegralType sqlNativeType = (isSigned) ? cppNativeMapper.getInt64Type() :
+                cppNativeMapper.getUInt64Type();
+        if (bitFieldLength == null)
+        {
+            final BigInteger nativeLowerBound = sqlNativeType.getLowerBound();
+            checkLowerBound = nativeLowerBound.compareTo(zserioLowerBound) < 0;
+
+            final BigInteger nativeUpperBound = sqlNativeType.getUpperBound();
+            checkUpperBound = nativeUpperBound.compareTo(zserioUpperBound) > 0;
+            final boolean hasFullRange = !checkLowerBound && !checkUpperBound;
+            if (hasFullRange)
+                return null;
+        }
+
+        final String lowerBound = nativeType.formatLiteral(zserioLowerBound);
+        final String upperBound = nativeType.formatLiteral(zserioUpperBound);
+        final String sqlCppTypeName = sqlNativeType.getFullName();
+
+        return new SqlRangeCheckData(checkLowerBound, lowerBound, upperBound, sqlCppTypeName,
+                bitFieldLength, isSigned);
+    }
+
+    private static String getDynamicBitFieldLength(TypeInstantiation instantiation,
+            ExpressionFormatter cppSqlIndirectExpressionFormatter) throws ZserioExtensionException
+    {
+        if (!(instantiation instanceof DynamicBitFieldInstantiation))
+            return null;
+
+        final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                (DynamicBitFieldInstantiation)instantiation;
+        return cppSqlIndirectExpressionFormatter.formatGetter(
+                dynamicBitFieldInstantiation.getLengthExpression());
     }
 
     private final List<FieldTemplateData> fields;

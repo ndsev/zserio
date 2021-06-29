@@ -1,29 +1,29 @@
-<#macro parameter_member_name param>
-    m_${param.name}_<#t>
+<#macro parameter_member_name paramName>
+    m_${paramName}_<#t>
 </#macro>
 
-<#macro parameter_argument_name param>
-    ${param.name}_<#t>
+<#macro parameter_argument_name paramName>
+    ${paramName}_<#t>
 </#macro>
 
 <#macro compound_parameter_constructor_initializers compoundParametersData, indent, trailingComma>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterNamePrefix><#if !compoundParameter.isSimpleType>&</#if></#local>
-${I}<@parameter_member_name compoundParameter/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter/>)<#if compoundParameter?has_next || trailingComma>,</#if>
+${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
     </#list>
 </#macro>
 
 <#macro compound_parameter_initialize compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-${I}<@parameter_member_name compoundParameter/> = <#if !compoundParameter.isSimpleType>&</#if><@parameter_argument_name compoundParameter/>;
+${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.isSimpleType>&</#if><@parameter_argument_name compoundParameter.name/>;
     </#list>
 </#macro>
 
 <#macro compound_parameter_copy_argument_list compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if !compoundParameter.isSimpleType>*(</#if>other.<@parameter_member_name compoundParameter/><#t>
+        <#if !compoundParameter.isSimpleType>*(</#if>other.<@parameter_member_name compoundParameter.name/><#t>
             <#if !compoundParameter.isSimpleType>)</#if><#if compoundParameter?has_next>, </#if><#t>
     </#list>
 </#macro>
@@ -33,7 +33,7 @@ ${I}<@parameter_member_name compoundParameter/> = <#if !compoundParameter.isSimp
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterType><#if compoundParametersData.withWriterCode && !compoundParameter.isSimpleType><#rt>
         <#lt>${compoundParameter.cppTypeName}&<#else>${compoundParameter.cppArgumentTypeName}</#if></#local>
-${I}${parameterType} <@parameter_argument_name compoundParameter/><#rt>
+${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
         <#if compoundParameter?has_next>
             <#lt>,
         </#if>
@@ -62,7 +62,7 @@ ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterNam
         throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
                 "is not initialized!");
 
-    return *<@parameter_member_name compoundParameter/>;
+    return *<@parameter_member_name compoundParameter.name/>;
 }
 
         </#if>
@@ -72,7 +72,7 @@ ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.ge
         throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
                 "is not initialized!");
 
-    return <#if !compoundParameter.isSimpleType>*</#if><@parameter_member_name compoundParameter/>;
+    return <#if !compoundParameter.isSimpleType>*</#if><@parameter_member_name compoundParameter.name/>;
 }
 
     </#list>
@@ -83,7 +83,7 @@ ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.ge
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterCppTypeName><#if compoundParameter.isSimpleType>${compoundParameter.cppArgumentTypeName}<#else><#rt>
         <#lt><#if !compoundParametersData.withWriterCode>const </#if>${compoundParameter.cppTypeName}*</#if></#local>
-    ${parameterCppTypeName} <@parameter_member_name compoundParameter/>;
+    ${parameterCppTypeName} <@parameter_member_name compoundParameter.name/>;
     </#list>
 </#macro>
 

@@ -32,20 +32,97 @@ import zserio.ast.VarIntegerType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.symbols.CppNativeSymbol;
 import zserio.extension.cpp.types.CppNativeType;
+import zserio.extension.cpp.types.NativeAnyHolderType;
 import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.NativeBitBufferType;
 import zserio.extension.cpp.types.NativeBitFieldArrayType;
+import zserio.extension.cpp.types.NativeBlobBufferType;
 import zserio.extension.cpp.types.NativeBooleanType;
 import zserio.extension.cpp.types.NativeCompoundType;
 import zserio.extension.cpp.types.NativeDoubleType;
 import zserio.extension.cpp.types.NativeFloatType;
+import zserio.extension.cpp.types.NativeHeapOptionalHolderType;
+import zserio.extension.cpp.types.NativeInplaceOptionalHolderType;
 import zserio.extension.cpp.types.NativeIntegralType;
+import zserio.extension.cpp.types.NativeMapType;
 import zserio.extension.cpp.types.NativeObjectArrayType;
+import zserio.extension.cpp.types.NativeSetType;
 import zserio.extension.cpp.types.NativeStringType;
+import zserio.extension.cpp.types.NativeStringViewType;
+import zserio.extension.cpp.types.NativeUniquePtrType;
 import zserio.extension.cpp.types.NativeUserType;
+import zserio.extension.cpp.types.NativeVectorType;
 
 public class CppNativeMapper
 {
+    /**
+     * Constructor from types context.
+     *
+     * @param typesContext Types context to construct from.
+     */
+    public CppNativeMapper(TypesContext typesContext)
+    {
+        this.typesContext = typesContext;
+
+        anyHolderType = new NativeAnyHolderType(typesContext, uint8Type);
+        uniquePtrType = new NativeUniquePtrType(typesContext);
+        heapOptionalHolderType = new NativeHeapOptionalHolderType(typesContext);
+        inplaceOptionalHolderType = new NativeInplaceOptionalHolderType();
+
+        stringType = new NativeStringType(typesContext);
+        stringViewType = new NativeStringViewType();
+        vectorType = new NativeVectorType(typesContext);
+        mapType = new NativeMapType(typesContext);
+        setType = new NativeSetType(typesContext);
+        bitBufferType = new NativeBitBufferType(typesContext, uint8Type);
+        blobBufferType = new NativeBlobBufferType(typesContext, uint8Type);
+
+        booleanArrayType = new NativeArrayType(booleanType, "BoolArrayTraits", false, typesContext, vectorType);
+        stringArrayType = new NativeArrayType(stringType,
+                "StringArrayTraits<" + typesContext.getAllocatorDefinition().getAllocatorType() + ">",
+                false, typesContext, vectorType);
+
+        float16ArrayType = new NativeArrayType(floatType, "Float16ArrayTraits", false,
+                typesContext, vectorType);
+        float32ArrayType = new NativeArrayType(floatType, "Float32ArrayTraits", false,
+                typesContext, vectorType);
+        float64ArrayType = new NativeArrayType(doubleType, "Float64ArrayTraits", false,
+                typesContext, vectorType);
+
+        bitBufferArrayType = new NativeArrayType(bitBufferType,
+                "BitBufferArrayTraits<" + typesContext.getAllocatorDefinition().getAllocatorType() + ">",
+                false, typesContext, vectorType);
+
+        int8ArrayType = new NativeArrayType(int8Type, "StdIntArrayTraits", true, typesContext, vectorType);
+        int16ArrayType = new NativeArrayType(int16Type, "StdIntArrayTraits", true, typesContext, vectorType);
+        int32ArrayType = new NativeArrayType(int32Type, "StdIntArrayTraits", true, typesContext, vectorType);
+        int64ArrayType = new NativeArrayType(int64Type, "StdIntArrayTraits", true, typesContext, vectorType);
+
+        uint8ArrayType = new NativeArrayType(uint8Type, "StdIntArrayTraits", true, typesContext, vectorType);
+        uint16ArrayType = new NativeArrayType(uint16Type, "StdIntArrayTraits", true, typesContext, vectorType);
+        uint32ArrayType = new NativeArrayType(uint32Type, "StdIntArrayTraits", true, typesContext, vectorType);
+        uint64ArrayType = new NativeArrayType(uint64Type, "StdIntArrayTraits", true, typesContext, vectorType);
+
+        varInt16ArrayType = new NativeArrayType(int16Type, "VarIntNNArrayTraits", true,
+                typesContext, vectorType);
+        varInt32ArrayType = new NativeArrayType(int32Type, "VarIntNNArrayTraits", true,
+                typesContext, vectorType);
+        varInt64ArrayType = new NativeArrayType(int64Type, "VarIntNNArrayTraits", true,
+                typesContext, vectorType);
+        varIntArrayType = new NativeArrayType(int64Type, "VarIntArrayTraits", true, typesContext, vectorType);
+
+        varUInt16ArrayType = new NativeArrayType(uint16Type, "VarIntNNArrayTraits", true,
+                typesContext, vectorType);
+        varUInt32ArrayType = new NativeArrayType(uint32Type, "VarIntNNArrayTraits", true,
+                typesContext, vectorType);
+        varUInt64ArrayType = new NativeArrayType(uint64Type, "VarIntNNArrayTraits", true,
+                typesContext, vectorType);
+        varUIntArrayType = new NativeArrayType(uint64Type, "VarIntArrayTraits", true, typesContext, vectorType);
+
+        varSizeArrayType = new NativeArrayType(uint32Type, "VarSizeArrayTraits", false,
+                typesContext, vectorType);
+    }
+
     /**
      * Returns a C++ symbol that can hold an instance of Zserio symbol.
      *
@@ -160,6 +237,71 @@ public class CppNativeMapper
         }
 
         return (NativeIntegralType)nativeType;
+    }
+
+    public NativeAnyHolderType getAnyHolderType()
+    {
+        return anyHolderType;
+    }
+
+    public NativeUniquePtrType getUniquePtrType()
+    {
+        return uniquePtrType;
+    }
+
+    public NativeHeapOptionalHolderType getHeapOptionalHolderType()
+    {
+        return heapOptionalHolderType;
+    }
+
+    public NativeInplaceOptionalHolderType getInplaceOptionalHolderType()
+    {
+        return inplaceOptionalHolderType;
+    }
+
+    public NativeStringType getStringType()
+    {
+        return stringType;
+    }
+
+    public NativeStringViewType getStringViewType()
+    {
+        return stringViewType;
+    }
+
+    public NativeVectorType getVectorType()
+    {
+        return vectorType;
+    }
+
+    public NativeMapType getMapType()
+    {
+        return mapType;
+    }
+
+    public NativeSetType getSetType()
+    {
+        return setType;
+    }
+
+    public NativeBitBufferType getBitBufferType()
+    {
+        return bitBufferType;
+    }
+
+    public NativeBlobBufferType getBlobBufferType()
+    {
+        return blobBufferType;
+    }
+
+    public NativeIntegralType getUInt64Type()
+    {
+        return uint64Type;
+    }
+
+    public NativeIntegralType getInt64Type()
+    {
+        return int64Type;
     }
 
     private CppNativeType mapArray(ArrayInstantiation instantiation) throws ZserioExtensionException
@@ -316,7 +458,8 @@ public class CppNativeMapper
             {
                 // use the original instantiation so that subtype is kept
                 final CppNativeType nativeElementType = CppNativeMapper.this.getCppType(originalInstantiation);
-                cppType = new NativeArrayType(nativeElementType, "EnumArrayTraits", true);
+                cppType = new NativeArrayType(nativeElementType, "EnumArrayTraits", true,
+                        typesContext, vectorType);
             }
             catch (ZserioExtensionException exception)
             {
@@ -331,7 +474,8 @@ public class CppNativeMapper
             {
                 // use the original instantiation so that subtype is kept
                 final CppNativeType nativeElementType = CppNativeMapper.this.getCppType(originalInstantiation);
-                cppType = new NativeArrayType(nativeElementType, "BitmaskArrayTraits", true);
+                cppType = new NativeArrayType(nativeElementType, "BitmaskArrayTraits", true,
+                        typesContext, vectorType);
             }
             catch (ZserioExtensionException exception)
             {
@@ -370,7 +514,7 @@ public class CppNativeMapper
         @Override
         public void visitStringType(StringType type)
         {
-            cppType = stdStringArrayType;
+            cppType = stringArrayType;
         }
 
         @Override
@@ -486,7 +630,8 @@ public class CppNativeMapper
             try
             {
                 // use the original instantiation so that subtype is kept
-                cppType = new NativeObjectArrayType(CppNativeMapper.this.getCppType(originalInstantiation));
+                cppType = new NativeObjectArrayType(CppNativeMapper.this.getCppType(originalInstantiation),
+                        CppNativeMapper.this.typesContext, CppNativeMapper.this.vectorType);
             }
             catch (ZserioExtensionException exception)
             {
@@ -499,7 +644,8 @@ public class CppNativeMapper
             try
             {
                 // use the original instantiation so that subtype is kept
-                cppType = new NativeBitFieldArrayType(CppNativeMapper.this.getCppType(originalInstantiation));
+                cppType = new NativeBitFieldArrayType(CppNativeMapper.this.getCppType(originalInstantiation),
+                        CppNativeMapper.this.typesContext, CppNativeMapper.this.vectorType);
             }
             catch (ZserioExtensionException exception)
             {
@@ -743,16 +889,27 @@ public class CppNativeMapper
         private ZserioExtensionException thrownException = null;
     }
 
+    private final TypesContext typesContext;
+
+    private final NativeAnyHolderType anyHolderType;
+    private final NativeUniquePtrType uniquePtrType;
+    private final NativeHeapOptionalHolderType heapOptionalHolderType;
+    private final NativeInplaceOptionalHolderType inplaceOptionalHolderType;
+
     private final static String INCLUDE_DIR_SEPARATOR = "/";
     private final static String HEADER_SUFFIX = ".h";
 
     private final static NativeBooleanType booleanType = new NativeBooleanType();
-    private final static NativeStringType stringType = new NativeStringType();
+    private final NativeStringType stringType;
+    private final NativeStringViewType stringViewType;
+    private final NativeVectorType vectorType;
+    private final NativeMapType mapType;
+    private final NativeSetType setType;
+    private final NativeBitBufferType bitBufferType;
+    private final NativeBlobBufferType blobBufferType;
 
     private final static NativeFloatType floatType = new NativeFloatType();
     private final static NativeDoubleType doubleType = new NativeDoubleType();
-
-    private final static NativeBitBufferType bitBufferType = new NativeBitBufferType();
 
     private final static NativeIntegralType uint8Type = new NativeIntegralType(8, false);
     private final static NativeIntegralType uint16Type = new NativeIntegralType(16, false);
@@ -764,57 +921,34 @@ public class CppNativeMapper
     private final static NativeIntegralType int32Type = new NativeIntegralType(32, true);
     private final static NativeIntegralType int64Type = new NativeIntegralType(64, true);
 
-    private final static NativeArrayType booleanArrayType =
-            new NativeArrayType(booleanType, "BoolArrayTraits", false);
-    private final static NativeArrayType stdStringArrayType =
-            new NativeArrayType(stringType, "StringArrayTraits", false);
+    private final NativeArrayType booleanArrayType;
+    private final NativeArrayType stringArrayType;
 
-    private final static NativeArrayType float16ArrayType =
-            new NativeArrayType(floatType, "Float16ArrayTraits", false);
-    private final static NativeArrayType float32ArrayType =
-            new NativeArrayType(floatType, "Float32ArrayTraits", false);
-    private final static NativeArrayType float64ArrayType =
-            new NativeArrayType(doubleType, "Float64ArrayTraits", false);
+    private final NativeArrayType float16ArrayType;
+    private final NativeArrayType float32ArrayType;
+    private final NativeArrayType float64ArrayType;
 
-    private final static NativeArrayType bitBufferArrayType =
-            new NativeArrayType(bitBufferType, "BitBufferArrayTraits", false);
+    private final NativeArrayType bitBufferArrayType;
 
-    private final static NativeArrayType int8ArrayType =
-            new NativeArrayType(int8Type, "StdIntArrayTraits", true);
-    private final static NativeArrayType int16ArrayType =
-            new NativeArrayType(int16Type, "StdIntArrayTraits", true);
-    private final static NativeArrayType int32ArrayType =
-            new NativeArrayType(int32Type, "StdIntArrayTraits", true);
-    private final static NativeArrayType int64ArrayType =
-            new NativeArrayType(int64Type, "StdIntArrayTraits", true);
+    private final NativeArrayType int8ArrayType;
+    private final NativeArrayType int16ArrayType;
+    private final NativeArrayType int32ArrayType;
+    private final NativeArrayType int64ArrayType;
 
-    private final static NativeArrayType uint8ArrayType =
-            new NativeArrayType(uint8Type, "StdIntArrayTraits", true);
-    private final static NativeArrayType uint16ArrayType =
-            new NativeArrayType(uint16Type, "StdIntArrayTraits", true);
-    private final static NativeArrayType uint32ArrayType =
-            new NativeArrayType(uint32Type, "StdIntArrayTraits", true);
-    private final static NativeArrayType uint64ArrayType =
-            new NativeArrayType(uint64Type, "StdIntArrayTraits", true);
+    private final NativeArrayType uint8ArrayType;
+    private final NativeArrayType uint16ArrayType;
+    private final NativeArrayType uint32ArrayType;
+    private final NativeArrayType uint64ArrayType;
 
-    private final static NativeArrayType varInt16ArrayType =
-            new NativeArrayType(int16Type, "VarIntNNArrayTraits", true);
-    private final static NativeArrayType varInt32ArrayType =
-            new NativeArrayType(int32Type, "VarIntNNArrayTraits", true);
-    private final static NativeArrayType varInt64ArrayType =
-            new NativeArrayType(int64Type, "VarIntNNArrayTraits", true);
-    private final static NativeArrayType varIntArrayType =
-            new NativeArrayType(int64Type, "VarIntArrayTraits", true);
+    private final NativeArrayType varInt16ArrayType;
+    private final NativeArrayType varInt32ArrayType;
+    private final NativeArrayType varInt64ArrayType;
+    private final NativeArrayType varIntArrayType;
 
-    private final static NativeArrayType varUInt16ArrayType =
-            new NativeArrayType(uint16Type, "VarIntNNArrayTraits", true);
-    private final static NativeArrayType varUInt32ArrayType =
-            new NativeArrayType(uint32Type, "VarIntNNArrayTraits", true);
-    private final static NativeArrayType varUInt64ArrayType =
-            new NativeArrayType(uint64Type, "VarIntNNArrayTraits", true);
-    private final static NativeArrayType varUIntArrayType =
-            new NativeArrayType(uint64Type, "VarIntArrayTraits", true);
+    private final NativeArrayType varUInt16ArrayType;
+    private final NativeArrayType varUInt32ArrayType;
+    private final NativeArrayType varUInt64ArrayType;
+    private final NativeArrayType varUIntArrayType;
 
-    private final static NativeArrayType varSizeArrayType =
-            new NativeArrayType(uint32Type, "VarSizeArrayTraits", false);
+    private final NativeArrayType varSizeArrayType;
 }

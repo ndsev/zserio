@@ -2,15 +2,22 @@ package zserio.extension.cpp.types;
 
 import zserio.ast.PackageName;
 import zserio.extension.cpp.CppFullNameFormatter;
+import zserio.extension.cpp.TypesContext;
 
 public class NativeArrayType extends CppNativeType
 {
-    public NativeArrayType(CppNativeType elementType, String arrayTraitsName, boolean hasTemplatedTraits)
+    public NativeArrayType(CppNativeType elementType, String arrayTraitsName, boolean hasTemplatedTraits,
+            TypesContext typesContext, NativeVectorType nativeVectorType)
     {
-        super(STD_PACKAGE_NAME, "vector<" + elementType.getFullName() + ">");
+        super(nativeVectorType.getPackageName(), nativeVectorType.getName() + "<" +
+                elementType.getFullName() +
+                (nativeVectorType.needsAllocatorArgument() ?
+                        ", " + typesContext.getAllocatorDefinition().getAllocatorType() +
+                                "<" + elementType.getFullName() + ">" : "") + ">");
         this.arrayTraitsName = CppFullNameFormatter.getFullName(ZSERIO_PACKAGE_NAME, arrayTraitsName);
         this.hasTemplatedTraits = hasTemplatedTraits;
-        addSystemIncludeFile("vector");
+
+        addIncludeFiles(nativeVectorType);
         addSystemIncludeFile(ARRAY_TRAITS_INCLUDE);
         addIncludeFiles(elementType);
     }
@@ -35,7 +42,6 @@ public class NativeArrayType extends CppNativeType
         return arrayTraitsName;
     }
 
-    private static final PackageName STD_PACKAGE_NAME = new PackageName.Builder().addId("std").get();
     private static final PackageName ZSERIO_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();
     private static final String ARRAY_TRAITS_INCLUDE = "zserio/Arrays.h";
 

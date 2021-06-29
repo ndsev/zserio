@@ -9,8 +9,9 @@
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
+<@type_includes types.string/>
 <@system_includes headerSystemIncludes/>
-<@user_includes headerUserIncludes, true/>
+<@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
 class ${name}
@@ -66,15 +67,15 @@ public:
     size_t initializeOffsets(size_t bitPosition) const;
 </#if>
 
-    int hashCode() const;
-
-    void read(::zserio::BitStreamReader& in);
+    uint32_t hashCode() const;
 <#if withWriterCode>
+
     void write(::zserio::BitStreamWriter& out,
             ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS) const;
 </#if>
 
-    std::string toString() const;
+    ${types.string.name} toString(const ${types.string.name}::allocator_type& allocator =
+            ${types.string.name}::allocator_type()) const;
 
 private:
     static underlying_type readValue(::zserio::BitStreamReader& in);

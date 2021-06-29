@@ -11,7 +11,8 @@
     <#list compoundFunctionsData.list as compoundFunction>
 ${compoundFunction.returnTypeName} ${compoundName}::${compoundFunction.name}() const
 {
-    return static_cast<${compoundFunction.returnTypeName}>(${compoundFunction.resultExpression});
+    return <#if compoundFunction.isSimpleReturnType>static_cast<${compoundFunction.returnTypeName}>(</#if><#rt>
+            <#lt>${compoundFunction.resultExpression}<#if compoundFunction.isSimpleReturnType>)</#if>;
 }
 
     </#list>

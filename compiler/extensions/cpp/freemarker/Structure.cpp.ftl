@@ -22,36 +22,37 @@
 
 <@inner_classes_definition fieldList/>
 <#macro empty_constructor_field_initialization>
-    <#assign needsComma=false>
     <#list fieldList as field>
-        <#if field.initializer?? || (field.isSimpleType && !(field.optional??))>
-            <#assign needsEmptyConstructorInitMacro=true>
-            <#if needsComma>
-                <#lt>,
+        <@field_member_name field/>(<#rt>
+        <#if field.initializer??>
+            <#-- cannot be compound or array since it has initializer! -->
+            <#if field.optional??>
+                <#if field.holderNeedsAllocator>allocator<#else>::zserio::InPlace</#if>, <#t>
             </#if>
-        <@field_member_name field/>(<#if field.initializer??>${field.initializer}<#else>${field.cppTypeName}()</#if>)<#rt>
-            <#assign needsComma=true>
+            static_cast<${field.cppTypeName}>(${field.initializer})<#t>
+            <#if field.needsAllocator>, allocator</#if><#t>
+        <#else>
+            <#if field.optional??>
+                ::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if><#t>
+            <#else>
+                <#if field.needsAllocator>allocator<#elseif field.isSimpleType>${field.cppTypeName}()</#if><#t>
+            </#if>
         </#if>
+        <#lt>)<#if field?has_next>,</#if>
     </#list>
-    <#if needsComma>
-
-    </#if>
 </#macro>
 <#if withWriterCode>
-    <#assign needsEmptyConstructorInitMacro=false>
-    <#list fieldList as field>
-        <#if field.initializer?? || (field.isSimpleType && !(field.optional??))>
-            <#assign needsEmptyConstructorInitMacro=true>
-            <#break>
-        </#if>
-    </#list>
-    <#assign emptyConstructorInitMacroName><#if needsEmptyConstructorInitMacro>empty_constructor_field_initialization</#if></#assign>
+    <#assign emptyConstructorInitMacroName><#if fieldList?has_content>empty_constructor_field_initialization</#if></#assign>
     <@compound_constructor_definition compoundConstructorsData, emptyConstructorInitMacroName/>
 
 </#if>
 <#macro read_constructor_field_initialization>
     <#list fieldList as field>
-        <@field_member_name field/>(${field.readerName}(in))<#if field?has_next>,</#if>
+        <@field_member_name field/>(${field.readerName}(in<#rt>
+        <#if field.needsAllocator || field.holderNeedsAllocator>
+                , allocator<#t>
+        </#if>
+                <#lt>))<#if field?has_next>,</#if>
     </#list>
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
@@ -67,6 +68,8 @@
 <@compound_move_assignment_operator_definition compoundConstructorsData/>
 
 </#if>
+<@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
+
 <#if needs_compound_initialization(compoundConstructorsData)>
 <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
 
@@ -170,7 +173,8 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
     <#if field.offset?? && !field.offset.containsIndex>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}{
-${I}    const ${field.offset.typeName} value = (${field.offset.typeName})::zserio::bitsToBytes(endBitPosition);
+${I}    const ${field.offset.typeName} value =
+${I}            static_cast<${field.offset.typeName}>(::zserio::bitsToBytes(endBitPosition));
 ${I}    ${field.offset.setter};
 ${I}}
     </#if>
@@ -223,9 +227,9 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
     return true;
 }
 
-int ${name}::hashCode() const
+uint32_t ${name}::hashCode() const
 {
-    int result = ::zserio::HASH_SEED;
+    uint32_t result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
 <#list fieldList as field>
@@ -240,13 +244,6 @@ int ${name}::hashCode() const
     </#if>
 </#list>
     return result;
-}
-
-void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
-{
-<#list fieldList as field>
-    <@field_member_name field/> = ${field.readerName}(in);
-</#list>
 }
 <#if withWriterCode>
 
@@ -277,7 +274,12 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 </#if>
 <#list fieldList as field>
 
-<@field_type_name field/> ${name}::${field.readerName}(::zserio::BitStreamReader& in)
+<@field_type_name field/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
+    <#if field.needsAllocator || field.holderNeedsAllocator>
+        <#lt>,
+        const allocator_type& allocator<#rt>
+    </#if>
+    <#lt>)
 {
     <@compound_read_field field, name, 1/>
 }

@@ -26,11 +26,21 @@ public abstract class CppNativeType
         this.simpleType = simpleType;
     }
 
+    /**
+     * Returns the full name of the type.
+     *
+     * @return The name of the type including package or namespace name (if the type is contained in one).
+     */
     public String getFullName()
     {
         return CppFullNameFormatter.getFullName(packageName, name);
     }
 
+    /**
+     * Returns the short name of the type.
+     *
+     * @return The name of the type excluding package or namespace name.
+     */
     public String getName()
     {
         return name;
@@ -87,12 +97,14 @@ public abstract class CppNativeType
 
     protected void addSystemIncludeFile(String include)
     {
-        systemIncludeFiles.add(include);
+        if (include != null)
+            systemIncludeFiles.add(include);
     }
 
     protected void addUserIncludeFile(String include)
     {
-        userIncludeFiles.add(include);
+        if (include != null)
+            userIncludeFiles.add(include);
     }
 
     /**

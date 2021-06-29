@@ -1,8 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <@file_header generatorDescription/>
 
-#include <string>
-
 #include <zserio/HashCodeUtil.h>
 #include <zserio/StringConvertUtil.h>
 <#if upperBound??>
@@ -11,7 +9,7 @@
 <@system_includes cppSystemIncludes/>
 
 <@user_include package.path, "${name}.h"/>
-<@user_includes cppUserIncludes, true/>
+<@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
 ${name}::${name}(::zserio::BitStreamReader& in) :
@@ -24,10 +22,7 @@ ${name}::${name}(underlying_type value) :
     m_value(value)
 {
     if (m_value > ${upperBound})
-    {
-        throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: " +
-                ::zserio::convertToString(value) + "!");
-    }
+        throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") + value + "!";
 }
 </#if>
 
@@ -47,16 +42,11 @@ size_t ${name}::initializeOffsets(size_t bitPosition) const
 }
 </#if>
 
-int ${name}::hashCode() const
+uint32_t ${name}::hashCode() const
 {
-    int result = ::zserio::HASH_SEED;
+    uint32_t result = ::zserio::HASH_SEED;
     result = ::zserio::calcHashCode(result, m_value);
     return result;
-}
-
-void ${name}::read(::zserio::BitStreamReader& in)
-{
-    m_value = readValue(in);
 }
 <#if withWriterCode>
 
@@ -66,9 +56,9 @@ void ${name}::write(::zserio::BitStreamWriter& out, ::zserio::PreWriteAction) co
 }
 </#if>
 
-std::string ${name}::toString() const
+${types.string.name} ${name}::toString(const ${types.string.name}::allocator_type& allocator) const
 {
-    std::string result;
+    ${types.string.name} result(allocator);
 <#list values as value>
     <#if !value.isZero>
     if ((*this & ${name}::Values::${value.name}) == ${name}::Values::${value.name})
@@ -82,7 +72,7 @@ std::string ${name}::toString() const
         result += "${zeroValueName}";
 </#if>
 
-    return ::zserio::convertToString(m_value) + "[" + result + "]";
+    return ::zserio::toString<${types.string.name}::allocator_type>(m_value, allocator) + "[" + result + "]";
 }
 
 ${name}::underlying_type ${name}::readValue(::zserio::BitStreamReader& in)
