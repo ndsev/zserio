@@ -373,23 +373,27 @@ Arguments:
     package               Specify the package to test.
 
 Package can be a combination of:
-    cpp-linux32           Zserio C++ tests for linux32 target using gcc compiler.
-    cpp-linux64           Zserio C++ tests for linux64 target using gcc compiler.
+    cpp-linux32-gcc       Zserio C++ tests for linux32 target using gcc compiler.
+    cpp-linux64-gcc       Zserio C++ tests for linux64 target using gcc compiler.
+    linux32-clang         Zserio ASIL C++ extension tests for linux32 target using Clang compiler.
+    linux64-clang         Zserio ASIL C++ extension tests for linux64 target using Clang compiler.
     cpp-windows64-mingw   Zserio C++ tests for windows64 target (MinGW64).
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
     java                  Zserio Java tests.
     python                Zserio Python tests.
     xml                   Zserio XML tests.
     doc                   Zserio documentation tests.
-    all-linux32           Zserio tests - all available linux32 packages.
-    all-linux64           Zserio tests - all available linux64 packages.
+    all-linux32-gcc       Zserio tests - all available linux32 packages (gcc).
+    all-linux64-gcc       Zserio tests - all available linux64 packages (gcc).
+    all-linux32-clang     Zserio tests - all available linux32 packages (Clang).
+    all-linux64-clang     Zserio tests - all available linux64 packages (Clang).
     all-windows64-mingw   Zserio tests - all available windows64 packages (MinGW64).
     all-windows64-msvc    Zserio tests - all available windows64 packages (MSVC).
 
 Examples:
-    $0 java cpp-linux64
-    $0 -t language/sql_tables cpp-linux64
-    $0 all-linux64
+    $0 java cpp-linux64-gcc
+    $0 -t language/sql_tables cpp-linux64-gcc
+    $0 all-linux64-gcc
 
 EOF
 }
@@ -481,7 +485,7 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "cpp-linux32" | "cpp-linux64" | "cpp-windows64-"*)
+            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -502,7 +506,7 @@ parse_arguments()
                 eval ${PARAM_DOC_OUT}=1
                 ;;
 
-            "all-linux32" | "all-linux64" | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 eval ${PARAM_JAVA_OUT}=1
                 eval ${PARAM_PYTHON_OUT}=1

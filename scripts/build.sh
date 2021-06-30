@@ -165,8 +165,10 @@ Package can be the combination of:
     ant_task                 Zserio Ant task.
     core                     Zserio Core.
     cpp                      Zserio C++ extension.
-    cpp_rt-linux32           Zserio C++ extension runtime library for native linux32 (gcc).
-    cpp_rt-linux64           Zserio C++ extension runtime library for native linux64 (gcc).
+    cpp_rt-linux32-gcc       Zserio C++ extension runtime library for native linux32 (gcc).
+    cpp_rt-linux64-gcc       Zserio C++ extension runtime library for native linux64 (gcc).
+    cpp_rt-linux32-clang   Zserio ASIL C++ extension runtime library for native linux32 (Clang).
+    cpp_rt-linux64-clang   Zserio ASIL C++ extension runtime library for native linux64 (Clang).
     cpp_rt-windows64-mingw   Zserio C++ extension runtime library for windows64 target (MinGW64).
     cpp_rt-windows64-msvc    Zserio C++ extension runtime library for windows64 target (MSVC).
     java                     Zserio Java extension.
@@ -176,13 +178,15 @@ Package can be the combination of:
     xml                      Zserio XML extension.
     doc                      Zserio Documentation extension.
     zserio                   Zserio bundle (Zserio Core packed together with all already built extensions).
-    all-linux32              All available packages for linux32.
-    all-linux64              All available packages for linux64.
+    all-linux32-gcc          All available packages for linux32 (gcc).
+    all-linux64-gcc          All available packages for linux64 (gcc).
+    all-linux32-clang        All available packages for linux32 (Clang).
+    all-linux64-clang        All available packages for linux64 (Clang).
     all-windows64-mingw      All available packages for windows64 target (MinGW64).
     all-windows64-msvc       All available packages for windows64 target (MSVC).
 
 Examples:
-    $0 ant_task core cpp cpp_rt-linux64 java java_rt python python_rt xml doc
+    $0 ant_task core cpp cpp_rt-linux64-gcc java java_rt python python_rt xml doc
     $0 zserio
 
 EOF
@@ -286,7 +290,7 @@ parse_arguments()
                 eval ${PARAM_CPP_OUT}=1
                 ;;
 
-            "cpp_rt-linux32" | "cpp_rt-linux64" | "cpp_rt-windows64-"*)
+            "cpp_rt-linux32-"* | "cpp_rt-linux64-"* | "cpp_rt-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp_rt-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -320,7 +324,7 @@ parse_arguments()
                 eval ${PARAM_ZSERIO_OUT}=1
                 ;;
 
-            "all-linux32" | "all-linux64" | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
                 eval ${PARAM_ANT_TASK_OUT}=1
                 eval ${PARAM_CORE_OUT}=1
                 eval ${PARAM_CPP_OUT}=1
@@ -506,6 +510,14 @@ main()
         local CMAKELISTS_DIR="${ZSERIO_PROJECT_ROOT}/compiler/extensions/cpp/runtime"
         local CPP_BUILD_DIR="${ZSERIO_BUILD_DIR}/runtime_libs/cpp"
         local CMAKE_ARGS=(-DCMAKE_INSTALL_PREFIX="${ZSERIO_DISTR_DIR}/runtime_libs")
+        if [ ! -z "${GCOVR_BIN}" ]; then
+            CMAKE_ARGS+=(
+                    -DZSERIO_CODE_COVERAGE_ENABLE=ON
+                    -DGCOVR_BIN="${GCOVR_BIN}"
+            )
+        else
+            CMAKE_ARGS+=(-DZSERIO_CODE_COVERAGE_ENABLE=OFF)
+        fi
         local CTEST_ARGS=()
         compile_cpp "${ZSERIO_PROJECT_ROOT}" "${CPP_BUILD_DIR}" "${CMAKELISTS_DIR}" PARAM_CPP_TARGET_ARRAY[@] \
                     CMAKE_ARGS[@] CTEST_ARGS[@] ${CPP_TARGET}

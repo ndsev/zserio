@@ -82,7 +82,7 @@ set_global_cpp_variables()
         return 1
     fi
 
-    GCC_CMAKE_GENERATOR="${GCC_CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
+    MAKE_CMAKE_GENERATOR="${MAKE_CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
     MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 14 2015}"
 
     # Extra arguments to be passed by CMake to a native build tool
@@ -90,6 +90,12 @@ set_global_cpp_variables()
 
     # cppcheck home directoty is empty by default
     CPPCHECK_HOME="${CPPCHECK_HOME:-""}"
+
+    # gcovr binary to use for coverage report, by default is empty
+    GCOVR_BIN="${GCOVR_BIN:-""}"
+
+    # Sanitizers configuration - sanitizers disabled by default
+    SANITIZERS_ENABLED="${SANITIZERS_ENABLED:-0}"
 
     return 0
 }
@@ -345,11 +351,13 @@ Uses the following environment variables for building:
     ANT                    Ant executable to use. Default is "ant".
     ANT_EXTRA_ARGS         Extra arguments to Ant. Default is empty string.
     CMAKE                  CMake executable to use. Default is "cmake".
-    GCC_CMAKE_GENERATOR    CMake generator to use with GCC compiler. Default is
+    MAKE_CMAKE_GENERATOR   CMake generator to use for build using Makefiles. Default is
                            "Eclipse CDT4 - Unix Makefiles".
     MSVC_CMAKE_GENERATOR   CMake generator to use with MSVC compiler. Default is
                            "Visual Studio 14 2015". Note that "Win64" suffix is
                            added automatically for windows64-mscv target.
+    CLANG_VERSION_SUFFIX   Clang compilers version suffix. Default is empty.
+                           Set e.g. "-8" to use "clang-8" instead of "clang".
     CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
     CMAKE_BUILD_OPTIONS    Arguments to be passed by CMake to a native build tool.
     CTEST                  Ctest executable to use. Default is "ctest".
@@ -366,10 +374,9 @@ Uses the following environment variables for building:
     CPPCHECK_HOME          Home directory of cppcheck tool where cppcheck
                            binary is located. If set, cppcheck will be called.
                            Default is empty string.
-    PYLINT_ENABLED         Defines whether to run pylint. Default is 0 (disabled).
-    PYLINT_EXTRA_ARGS      Extra arguments to pylint. Default is empty string.
-    MYPY_ENABLED           Defines whether to run mypy. Default is 0 (disabled).
-    MYPY_EXTRA_ARGS        Extra arguments to mypy. Default is empty string.
+    GCOVR_BIN              Gcovr binary to use for coverage report generation.
+                           Default is empty string.
+    SANITIZERS_ENABLED     Defines whether to use sanitizers. Default is 0 (disabled).
 
     Either set these directly, or create 'scripts/build-env.sh' that sets
     these. It's sourced automatically if it exists.
@@ -580,8 +587,15 @@ compile_cpp_for_target()
                 "-DCMAKE_PREFIX_PATH=${SQLITE_RELEASE_ROOT}/${TARGET}")
 
     if [ -n "${CPPCHECK_HOME}" ] ; then
-        CMAKE_ARGS=("${CMAKE_ARGS[@]}"
-                    "-DCPPCHECK_HOME=${CPPCHECK_HOME}")
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DCPPCHECK_HOME=${CPPCHECK_HOME}")
+    else
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-UCPPCHECK_HOME")
+    fi
+
+    if [ ${SANITIZERS_ENABLED} -eq 1 ] ; then
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DSANITIZERS_ENABLED=ON")
+    else
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-DSANITIZERS_ENABLED=OFF")
     fi
 
     # detect build type
@@ -609,7 +623,7 @@ compile_cpp_for_target()
         fi
         local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR} Win64";
     else
-        local CMAKE_GENERATOR="${GCC_CMAKE_GENERATOR}"
+        local CMAKE_GENERATOR="${MAKE_CMAKE_GENERATOR}"
         local CMAKE_BUILD_CONFIG=""
     fi
 
@@ -639,6 +653,16 @@ compile_cpp_for_target()
             stderr_echo "Tests on target ${TARGET} failed with return code ${CTEST_RESULT}."
             popd > /dev/null
             return 1
+        fi
+
+        if [[ ! -z "${GCOVR_BIN}" ]] ; then
+            "${CMAKE}" --build . --target coverage
+            local COVERAGE_RESULT=$?
+            if [ ${COVERAGE_RESULT} -ne 0 ] ; then
+                stderr_echo "Generating of coverage report failed with return code ${COVERAGE_RESULT}."
+                popd > /dev/null
+                return 1
+            fi
         fi
     fi
 
@@ -738,10 +762,10 @@ can_run_tests()
     # assume on 64bit both 32bit and 64bit executables can be run
     case "${HOST_PLATFORM}" in
     ubuntu32)
-        [[ "${TARGET_PLATFORM}" == "linux32" ]]
+        [[ "${TARGET_PLATFORM}" == "linux32-"* ]]
         ;;
     ubuntu64)
-        [[ "${TARGET_PLATFORM}" == "linux32" || "${TARGET_PLATFORM}" = "linux64" ]]
+        [[ "${TARGET_PLATFORM}" == "linux32-"* || "${TARGET_PLATFORM}" = "linux64-"* ]]
         ;;
     windows64)
         [[ "${TARGET_PLATFORM}" == "windows64-"* ]]
