@@ -16,17 +16,18 @@ protected:
     {
         VarUInt16RangeCheckCompound varUInt16RangeCheckCompound;
         varUInt16RangeCheckCompound.setValue(value);
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         varUInt16RangeCheckCompound.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         const VarUInt16RangeCheckCompound readVarUInt16RangeCheckCompound(reader);
         ASSERT_EQ(varUInt16RangeCheckCompound, readVarUInt16RangeCheckCompound);
     }
 
     static const uint16_t VARUINT16_LOWER_BOUND;
     static const uint16_t VARUINT16_UPPER_BOUND;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint16_t VarUInt16RangeCheckTest::VARUINT16_LOWER_BOUND = UINT16_C(0);

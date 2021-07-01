@@ -1,0 +1,7 @@
+uninitMemberVar:*/allocation_choice/AllocationChoice.cpp
+uninitMemberVar:*/allocation_choice/AllocationChoice.h
+uninitMemberVar:*/sql_allocation/ParameterizedBlob.cpp
+
+noExplicitConstructor:*/sql_allocation/Role.h
+
+variableScope:*/sql_allocation/SqlAllocationTable.cpp

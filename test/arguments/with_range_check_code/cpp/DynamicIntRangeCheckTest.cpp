@@ -17,11 +17,10 @@ protected:
         DynamicIntRangeCheckCompound dynamicIntRangeCheckCompound;
         dynamicIntRangeCheckCompound.setNumBits(numBits);
         dynamicIntRangeCheckCompound.setValue(value);
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
+
         dynamicIntRangeCheckCompound.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         const DynamicIntRangeCheckCompound readDynamicIntRangeCheckCompound(reader);
         ASSERT_EQ(dynamicIntRangeCheckCompound, readDynamicIntRangeCheckCompound);
     }
@@ -29,6 +28,8 @@ protected:
     static const uint8_t NUM_BITS;
     static const int64_t DYNAMIC_INT_LOWER_BOUND;
     static const int64_t DYNAMIC_INT_UPPER_BOUND;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t DynamicIntRangeCheckTest::NUM_BITS = 10;

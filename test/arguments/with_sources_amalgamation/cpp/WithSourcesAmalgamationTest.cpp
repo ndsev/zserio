@@ -8,6 +8,10 @@
 namespace with_sources_amalgamation
 {
 
+using allocator_type = zserio::RebindAlloc<WorldDb::allocator_type, uint8_t>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
 class WithSourcesAmalgamation : public ::testing::Test
 {
 protected:
@@ -58,14 +62,14 @@ TEST_F(WithSourcesAmalgamation, readWriteWorldDb)
 
     GeoMapTable::Row row;
     row.setTileId(13);
-    row.setTile(_imported_tile_::Tile{42, 1, std::vector<uint8_t>{0xab}});
+    row.setTile(_imported_tile_::Tile{42, 1, vector_type<uint8_t>{0xab}});
     row.setEmpty(___::Empty());
-    std::vector<GeoMapTable::Row> rows;
+    vector_type<GeoMapTable::Row> rows;
     rows.push_back(row);
     europe.write(rows);
 
     GeoMapTable::Reader reader = europe.createReader();
-    std::vector<GeoMapTable::Row> readRows;
+    vector_type<GeoMapTable::Row> readRows;
     while (reader.hasNext())
         readRows.push_back(reader.next());
 

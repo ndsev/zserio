@@ -16,17 +16,18 @@ protected:
     {
         Bit4RangeCheckCompound bit4RangeCheckCompound;
         bit4RangeCheckCompound.setValue(value);
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         bit4RangeCheckCompound.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         const Bit4RangeCheckCompound readBit4RangeCheckCompound(reader);
         ASSERT_EQ(bit4RangeCheckCompound, readBit4RangeCheckCompound);
     }
 
     static const uint8_t BIT4_LOWER_BOUND;
     static const uint8_t BIT4_UPPER_BOUND;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t Bit4RangeCheckTest::BIT4_LOWER_BOUND = UINT8_C(0);
@@ -49,9 +50,9 @@ TEST_F(Bit4RangeCheckTest, bit4AboveUpperBound)
         checkBit4Value(BIT4_UPPER_BOUND + 1);
         FAIL() << "Actual: no exception, Expected: zserio::CppRuntimeException";
     }
-    catch (const zserio::CppRuntimeException& excpt)
+    catch (const zserio::CppRuntimeException& e)
     {
-        ASSERT_STREQ("Value 16 of Bit4RangeCheckCompound.value exceeds the range of <0..15>!", excpt.what());
+        ASSERT_STREQ("Value 16 of Bit4RangeCheckCompound.value exceeds the range of <0..15>!", e.what());
     }
 }
 

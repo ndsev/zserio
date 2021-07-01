@@ -8,23 +8,33 @@ offsetEnd:
     uint8   end;
 };
 
-const int32 N_ITEMS = 10;
-
 enum int64 TestEnum
 {
-    NONE  = 0,
+    NONE  = 1, // do not use 0 to check that NULL sqlite value is properly skipped during validation
     RED   = 2,
     BLUE  = 4,
     BLACK = 7
 };
 
+bitmask uint8 TestBitmask
+{
+    NONE  = 000b,
+    READ  = 010b,
+    WRITE = 100b,
+    CREATE = 111b
+};
+
 sql_table SimpleTable
 {
-    uint64   rowid sql "PRIMARY KEY NOT NULL"; // this is aliased by SQLite to rowid
-    bool     fieldBool sql "NOT NULL";
-    bit:5    fieldNonBlob;
+    uint64         rowid sql "PRIMARY KEY NOT NULL"; // this is aliased by SQLite to rowid
+    bool           fieldBool sql "NOT NULL";
+    bit:5          fieldBit5;
+    bit<fieldBit5> fieldDynamicBit sql "NOT NULL";
+    varint16       fieldVarInt16 sql "NOT NULL";
+    string         fieldString sql "NOT NULL";
     RootStruct(explicit localCount1) fieldBlob sql "NOT NULL";
-    TestEnum fieldEnum sql "NOT NULL";
+    TestEnum       fieldEnum;
+    TestBitmask    fieldBitmask sql "NOT NULL";
 };
 
 sql_database SimpleTableValidationDb

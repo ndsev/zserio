@@ -18,17 +18,18 @@ protected:
         const bool selector = true;
         choiceBit4RangeCheckCompound.initialize(selector);
         choiceBit4RangeCheckCompound.setValue(value);
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         choiceBit4RangeCheckCompound.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         const ChoiceBit4RangeCheckCompound readChoiceBit4RangeCheckCompound(reader, selector);
         ASSERT_EQ(choiceBit4RangeCheckCompound, readChoiceBit4RangeCheckCompound);
     }
 
     static const uint8_t BIT4_LOWER_BOUND;
     static const uint8_t BIT4_UPPER_BOUND;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t ChoiceBit4RangeCheckTest::BIT4_LOWER_BOUND = UINT8_C(0);
