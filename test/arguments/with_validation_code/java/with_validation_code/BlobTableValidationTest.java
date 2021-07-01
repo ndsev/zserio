@@ -63,7 +63,7 @@ public class BlobTableValidationTest
 
     private void insertRowWithNoneStandardBlob(Connection connection) throws SQLException
     {
-        final String sqlCommand = "INSERT INTO blobTable(id, blob) VALUES (?, ?)";
+        final String sqlCommand = "INSERT INTO blobTable(id, blob, nullableBlob) VALUES (?, ?, ?)";
         final PreparedStatement statement = connection.prepareStatement(sqlCommand);
         try
         {
@@ -74,7 +74,9 @@ public class BlobTableValidationTest
             final byte[] bytesBlob = ZserioIO.write(blob);
             bytesBlob[1] = (byte)0xFF;      // none standard NaN
             bytesBlob[2] = (byte)0xFF;      // set skipped bits
-            statement.setBytes(argIdx, bytesBlob);
+            statement.setBytes(argIdx++, bytesBlob);
+
+            statement.setNull(argIdx++, java.sql.Types.BLOB);
 
             statement.execute();
         }
