@@ -20,6 +20,8 @@ protected:
     static const uint64_t DARK_RED_VALUE;
     static const uint64_t DARK_BLUE_VALUE;
     static const uint64_t DARK_GREEN_VALUE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const size_t UInt64EnumTest::DARK_COLOR_BITSIZEOF = 64;
@@ -75,12 +77,10 @@ TEST_F(UInt64EnumTest, initializeOffsets)
 
 TEST_F(UInt64EnumTest, read)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits64(static_cast<uint64_t>(DarkColor::DARK_RED), DARK_COLOR_BITSIZEOF);
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     DarkColor darkColor(zserio::read<DarkColor>(reader));
     ASSERT_EQ(DARK_RED_VALUE, zserio::enumToValue(darkColor));
 }
@@ -88,12 +88,10 @@ TEST_F(UInt64EnumTest, read)
 TEST_F(UInt64EnumTest, write)
 {
     const DarkColor darkColor(DarkColor::dark_blue);
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     zserio::write(writer, darkColor);
 
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ASSERT_EQ(DARK_BLUE_VALUE, reader.readBits64(DARK_COLOR_BITSIZEOF));
 }
 
