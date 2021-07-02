@@ -4,14 +4,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "explicit_parameters/ExplicitParametersDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace explicit_parameters
 {
 namespace explicit_same_as_field
 {
+
+using allocator_type = ExplicitParametersDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class ExplicitSameAsFieldTest : public ::testing::Test
 {
@@ -30,32 +36,32 @@ public:
     }
 
 protected:
-    void fillSameAsFieldTableRow(SameAsFieldTable::Row& row, uint32_t id, const std::string& name)
+    void fillSameAsFieldTableRow(SameAsFieldTable::Row& row, uint32_t id, const string_type& name)
     {
         row.setId(id);
         row.setName(name);
         row.setCount(SAME_AS_FIELD_TABLE_COUNT);
 
         TestBlob testBlob;
-        std::vector<uint8_t>& values = testBlob.getValues();
+        vector_type<uint8_t>& values = testBlob.getValues();
         for (uint32_t i = 0; i < SAME_AS_FIELD_TABLE_COUNT; ++i)
             values.push_back(static_cast<uint8_t>(id));
         row.setBlob(testBlob);
 
         TestBlob testBlobExplicit;
-        std::vector<uint8_t>& valuesExplicit = testBlobExplicit.getValues();
+        vector_type<uint8_t>& valuesExplicit = testBlobExplicit.getValues();
         for (uint32_t i = 0; i < SAME_AS_FIELD_TABLE_COUNT_EXPLICIT; ++i)
             valuesExplicit.push_back(static_cast<uint8_t>(id + 1));
         row.setBlobExplicit(testBlobExplicit);
     }
 
-    void fillSameAsFieldTableRows(std::vector<SameAsFieldTable::Row>& rows)
+    void fillSameAsFieldTableRows(vector_type<SameAsFieldTable::Row>& rows)
     {
         rows.clear();
         rows.reserve(NUM_SAME_AS_FIELD_TABLE_ROWS);
         for (uint32_t id = 0; id < NUM_SAME_AS_FIELD_TABLE_ROWS; ++id)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const string_type name = "Name" + zserio::toString<allocator_type>(id);
             SameAsFieldTable::Row row;
             fillSameAsFieldTableRow(row, id, name);
             rows.push_back(row);
@@ -71,8 +77,8 @@ protected:
         ASSERT_EQ(row1.getBlobExplicit(), row2.getBlobExplicit());
     }
 
-    static void checkSameAsFieldTableRows(const std::vector<SameAsFieldTable::Row>& rows1,
-            const std::vector<SameAsFieldTable::Row>& rows2)
+    static void checkSameAsFieldTableRows(const vector_type<SameAsFieldTable::Row>& rows1,
+            const vector_type<SameAsFieldTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -108,13 +114,13 @@ TEST_F(ExplicitSameAsFieldTest, readWithoutCondition)
     SameAsFieldTable& sameAsFieldTable = m_database->getSameAsFieldTable();
 
     SameAsFieldTableParameterProvider parameterProvider;
-    std::vector<SameAsFieldTable::Row> writtenRows;
+    vector_type<SameAsFieldTable::Row> writtenRows;
     fillSameAsFieldTableRows(writtenRows);
     sameAsFieldTable.write(parameterProvider, writtenRows);
 
     SameAsFieldTable::Reader reader = sameAsFieldTable.createReader(parameterProvider);
 
-    std::vector<SameAsFieldTable::Row> readRows;
+    vector_type<SameAsFieldTable::Row> readRows;
     while (reader.hasNext())
         readRows.push_back(reader.next());
     checkSameAsFieldTableRows(writtenRows, readRows);
@@ -125,11 +131,11 @@ TEST_F(ExplicitSameAsFieldTest, readWithCondition)
     SameAsFieldTable& sameAsFieldTable = m_database->getSameAsFieldTable();
 
     SameAsFieldTableParameterProvider parameterProvider;
-    std::vector<SameAsFieldTable::Row> writtenRows;
+    vector_type<SameAsFieldTable::Row> writtenRows;
     fillSameAsFieldTableRows(writtenRows);
     sameAsFieldTable.write(parameterProvider, writtenRows);
 
-    const std::string condition = "name='Name1'";
+    const string_type condition = "name='Name1'";
     SameAsFieldTable::Reader reader = sameAsFieldTable.createReader(parameterProvider, condition);
 
     ASSERT_TRUE(reader.hasNext());
@@ -145,14 +151,14 @@ TEST_F(ExplicitSameAsFieldTest, update)
     SameAsFieldTable& sameAsFieldTable = m_database->getSameAsFieldTable();
 
     SameAsFieldTableParameterProvider parameterProvider;
-    std::vector<SameAsFieldTable::Row> writtenRows;
+    vector_type<SameAsFieldTable::Row> writtenRows;
     fillSameAsFieldTableRows(writtenRows);
     sameAsFieldTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
     SameAsFieldTable::Row updateRow;
     fillSameAsFieldTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "id=" + zserio::toString<allocator_type>(updateRowId);
     sameAsFieldTable.update(parameterProvider, updateRow, updateCondition);
 
     SameAsFieldTable::Reader reader = sameAsFieldTable.createReader(parameterProvider, updateCondition);

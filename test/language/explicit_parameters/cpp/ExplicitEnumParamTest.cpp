@@ -4,14 +4,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "explicit_parameters/ExplicitParametersDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace explicit_parameters
 {
 namespace explicit_enum_param
 {
+
+using allocator_type = ExplicitParametersDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class ExplicitEnumParamTest : public ::testing::Test
 {
@@ -30,36 +36,36 @@ public:
     }
 
 protected:
-    void fillEnumParamTableRow(EnumParamTable::Row& row, uint32_t id, const std::string& name)
+    void fillEnumParamTableRow(EnumParamTable::Row& row, uint32_t id, const string_type& name)
     {
         row.setId(id);
         row.setName(name);
 
         TestBlob testBlob1;
-        std::vector<uint8_t>& values1 = testBlob1.getValues();
+        vector_type<uint8_t>& values1 = testBlob1.getValues();
         for (uint32_t i = 0; i < ::zserio::enumToValue(ENUM_PARAM_TABLE_COUNT1); ++i)
             values1.push_back(static_cast<uint8_t>(id));
         row.setBlob1(testBlob1);
 
         TestBlob testBlob2;
-        std::vector<uint8_t>& values2 = testBlob2.getValues();
+        vector_type<uint8_t>& values2 = testBlob2.getValues();
         for (uint32_t i = 0; i < ::zserio::enumToValue(ENUM_PARAM_TABLE_COUNT2); ++i)
             values2.push_back(static_cast<uint8_t>(id + 1));
         row.setBlob2(testBlob2);
 
         TestBlob testBlob3;
-        std::vector<uint8_t>& values3 = testBlob3.getValues();
+        vector_type<uint8_t>& values3 = testBlob3.getValues();
         for (uint32_t i = 0; i < ::zserio::enumToValue(ENUM_PARAM_TABLE_COUNT1); ++i)
             values3.push_back(static_cast<uint8_t>(id + 2));
         row.setBlob3(testBlob3);
     }
 
-    void fillEnumParamTableRows(std::vector<EnumParamTable::Row>& rows)
+    void fillEnumParamTableRows(vector_type<EnumParamTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t id = 0; id < NUM_ENUM_PARAM_TABLE_ROWS; ++id)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const string_type name = "Name" + zserio::toString<allocator_type>(id);
             EnumParamTable::Row row;
             fillEnumParamTableRow(row, id, name);
             rows.push_back(row);
@@ -78,8 +84,8 @@ protected:
         ASSERT_EQ(row2.getBlob1().getCount(), row2.getBlob3().getCount());
     }
 
-    static void checkEnumParamTableRows(const std::vector<EnumParamTable::Row>& rows1,
-            const std::vector<EnumParamTable::Row>& rows2)
+    static void checkEnumParamTableRows(const vector_type<EnumParamTable::Row>& rows1,
+            const vector_type<EnumParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -120,13 +126,13 @@ TEST_F(ExplicitEnumParamTest, readWithoutCondition)
     EnumParamTable& enumParamTable = m_database->getEnumParamTable();
 
     EnumParamTableParameterProvider parameterProvider;
-    std::vector<EnumParamTable::Row> writtenRows;
+    vector_type<EnumParamTable::Row> writtenRows;
     fillEnumParamTableRows(writtenRows);
     enumParamTable.write(parameterProvider, writtenRows);
 
     EnumParamTable::Reader reader = enumParamTable.createReader(parameterProvider);
 
-    std::vector<EnumParamTable::Row> readRows;
+    vector_type<EnumParamTable::Row> readRows;
     while (reader.hasNext())
         readRows.push_back(reader.next());
     checkEnumParamTableRows(writtenRows, readRows);
@@ -137,11 +143,11 @@ TEST_F(ExplicitEnumParamTest, readWithCondition)
     EnumParamTable& enumParamTable = m_database->getEnumParamTable();
 
     EnumParamTableParameterProvider parameterProvider;
-    std::vector<EnumParamTable::Row> writtenRows;
+    vector_type<EnumParamTable::Row> writtenRows;
     fillEnumParamTableRows(writtenRows);
     enumParamTable.write(parameterProvider, writtenRows);
 
-    const std::string condition = "name='Name1'";
+    const string_type condition = "name='Name1'";
     EnumParamTable::Reader reader = enumParamTable.createReader(parameterProvider, condition);
 
     ASSERT_TRUE(reader.hasNext());
@@ -157,14 +163,14 @@ TEST_F(ExplicitEnumParamTest, update)
     EnumParamTable& enumParamTable = m_database->getEnumParamTable();
 
     EnumParamTableParameterProvider parameterProvider;
-    std::vector<EnumParamTable::Row> writtenRows;
+    vector_type<EnumParamTable::Row> writtenRows;
     fillEnumParamTableRows(writtenRows);
     enumParamTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
     EnumParamTable::Row updateRow;
     fillEnumParamTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "id=" + zserio::toString<allocator_type>(updateRowId);
     enumParamTable.update(parameterProvider, updateRow, updateCondition);
 
     EnumParamTable::Reader reader = enumParamTable.createReader(parameterProvider, updateCondition);
