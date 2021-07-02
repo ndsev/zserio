@@ -40,7 +40,7 @@ protected:
             ASSERT_FALSE(autoOptionalMemberAlignment.isAutoOptionalFieldUsed());
         }
 
-        ASSERT_EQ(field, (int)autoOptionalMemberAlignment.getField());
+        ASSERT_EQ(field, autoOptionalMemberAlignment.getField());
     }
 
     void fillAutoOptionalMemberAlignment(AutoOptionalMemberAlignment& autoOptionalMemberAlignment,
@@ -53,6 +53,7 @@ protected:
 
     static const size_t WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
     static const size_t WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const size_t AutoOptionalMemberAlignmentTest::WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96;
@@ -63,12 +64,10 @@ TEST_F(AutoOptionalMemberAlignmentTest, readWithOptional)
     const bool hasAutoOptional = true;
     const int32_t autoOptionalField = 0x1234;
     const int32_t field = 0x7654;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeAutoOptionalMemberAlignmentToByteArray(writer, hasAutoOptional, autoOptionalField, field);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     AutoOptionalMemberAlignment autoOptionalMemberAlignment(reader);
     checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
 }
@@ -78,12 +77,10 @@ TEST_F(AutoOptionalMemberAlignmentTest, readWithoutOptional)
     const bool hasAutoOptional = false;
     const int32_t autoOptionalField = 0;
     const int32_t field = 0x2222;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeAutoOptionalMemberAlignmentToByteArray(writer, hasAutoOptional, autoOptionalField, field);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     AutoOptionalMemberAlignment autoOptionalMemberAlignment(reader);
     checkAutoOptionalMemberAlignment(autoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
 }
@@ -136,14 +133,13 @@ TEST_F(AutoOptionalMemberAlignmentTest, writeWithOptional)
     AutoOptionalMemberAlignment autoOptionalMemberAlignment;
     fillAutoOptionalMemberAlignment(autoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     autoOptionalMemberAlignment.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     AutoOptionalMemberAlignment readAutoOptionalMemberAlignment(reader);
-    checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
+    checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField,
+            field);
     ASSERT_TRUE(autoOptionalMemberAlignment == readAutoOptionalMemberAlignment);
 }
 
@@ -155,14 +151,13 @@ TEST_F(AutoOptionalMemberAlignmentTest, writeWithoutOptional)
     AutoOptionalMemberAlignment autoOptionalMemberAlignment;
     fillAutoOptionalMemberAlignment(autoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     autoOptionalMemberAlignment.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     AutoOptionalMemberAlignment readAutoOptionalMemberAlignment(reader);
-    checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField, field);
+    checkAutoOptionalMemberAlignment(readAutoOptionalMemberAlignment, hasAutoOptional, autoOptionalField,
+            field);
     ASSERT_TRUE(autoOptionalMemberAlignment == readAutoOptionalMemberAlignment);
 }
 
