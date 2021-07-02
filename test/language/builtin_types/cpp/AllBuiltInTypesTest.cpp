@@ -5,23 +5,31 @@
 #include "builtin_types/all_builtin_types/AllBuiltInTypes.h"
 #include "builtin_types/all_builtin_types/ExternalStructure.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace builtin_types
 {
 namespace all_builtin_types
 {
 
+using allocator_type = AllBuiltInTypes::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
+
 class AllBuiltInTypesTest : public ::testing::Test
 {
 protected:
-    zserio::BitBuffer getExternalBitBuffer()
+    BitBuffer getExternalBitBuffer()
     {
         ExternalStructure externalStructure(0xCD, 0x03);
-        zserio::BitStreamWriter writer;
+        BitBuffer bitBuffer = BitBuffer(externalStructure.bitSizeOf());
+        zserio::BitStreamWriter writer(bitBuffer);
         externalStructure.write(writer);
-        size_t bufferSize;
-        const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-        return zserio::BitBuffer(buffer, writer.getBitPosition());
+        return bitBuffer;
     }
 
 protected:
@@ -327,17 +335,17 @@ TEST_F(AllBuiltInTypesTest, boolType)
 
 TEST_F(AllBuiltInTypesTest, stringType)
 {
-    const std::string testString("TEST");
+    const string_type testString("TEST");
     m_allBuiltInTypes.setStringType(testString);
-    const std::string& stringType = m_allBuiltInTypes.getStringType();
+    const string_type& stringType = m_allBuiltInTypes.getStringType();
     ASSERT_TRUE(stringType.compare(testString) == 0);
 }
 
 TEST_F(AllBuiltInTypesTest, externType)
 {
-    const zserio::BitBuffer testExtern = getExternalBitBuffer();
+    const BitBuffer testExtern = getExternalBitBuffer();
     m_allBuiltInTypes.setExternType(testExtern);
-    const zserio::BitBuffer& externType = m_allBuiltInTypes.getExternType();
+    const BitBuffer& externType = m_allBuiltInTypes.getExternType();
     ASSERT_EQ(testExtern, externType);
 }
 
@@ -426,12 +434,11 @@ TEST_F(AllBuiltInTypesTest, readWrite)
     m_allBuiltInTypes.setStringType("TEST");
     m_allBuiltInTypes.setExternType(getExternalBitBuffer());
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     m_allBuiltInTypes.write(writer);
-    size_t bufferSize;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const AllBuiltInTypes readAllBuiltInTypes(reader);
 
     ASSERT_TRUE(m_allBuiltInTypes == readAllBuiltInTypes);
