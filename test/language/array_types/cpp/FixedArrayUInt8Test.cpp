@@ -4,12 +4,16 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
+#include "zserio/RebindAlloc.h"
 
 namespace array_types
 {
 namespace fixed_array_uint8
 {
+
+using allocator_type = FixedArray::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class FixedArrayUInt8Test : public ::testing::Test
 {
@@ -21,11 +25,12 @@ protected:
     }
 
     static const size_t FIXED_ARRAY_LENGTH = 5;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(FixedArrayUInt8Test, bitSizeOf)
 {
-    std::vector<uint8_t> uint8Array;
+    vector_type<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -38,7 +43,7 @@ TEST_F(FixedArrayUInt8Test, bitSizeOf)
 
 TEST_F(FixedArrayUInt8Test, initializeOffsets)
 {
-    std::vector<uint8_t> uint8Array;
+    vector_type<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
@@ -49,16 +54,15 @@ TEST_F(FixedArrayUInt8Test, initializeOffsets)
     ASSERT_EQ(bitPosition + FIXED_ARRAY_LENGTH * 8, fixedArray.initializeOffsets(bitPosition));
 }
 
-TEST_F(FixedArrayUInt8Test, read)
+TEST_F(FixedArrayUInt8Test, readConstructor)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeFixedArrayToByteArray(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     FixedArray fixedArray(reader);
 
-    const std::vector<uint8_t>& uint8Array = fixedArray.getUint8Array();
+    const vector_type<uint8_t>& uint8Array = fixedArray.getUint8Array();
     const size_t numElements = FIXED_ARRAY_LENGTH;
     ASSERT_EQ(numElements, uint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
@@ -67,21 +71,19 @@ TEST_F(FixedArrayUInt8Test, read)
 
 TEST_F(FixedArrayUInt8Test, write)
 {
-    std::vector<uint8_t> uint8Array;
+    vector_type<uint8_t> uint8Array;
     uint8Array.reserve(FIXED_ARRAY_LENGTH);
     for (size_t i = 0; i < FIXED_ARRAY_LENGTH; ++i)
         uint8Array.push_back(static_cast<uint8_t>(i));
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     fixedArray.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     FixedArray readFixedArray(reader);
-    const std::vector<uint8_t>& readUint8Array = readFixedArray.getUint8Array();
+    const vector_type<uint8_t>& readUint8Array = readFixedArray.getUint8Array();
     const size_t numElements = FIXED_ARRAY_LENGTH;
     ASSERT_EQ(numElements, readUint8Array.size());
     for (size_t i = 0; i < numElements; ++i)
@@ -90,7 +92,7 @@ TEST_F(FixedArrayUInt8Test, write)
 
 TEST_F(FixedArrayUInt8Test, writeWrongArray)
 {
-    std::vector<uint8_t> uint8Array;
+    vector_type<uint8_t> uint8Array;
     const size_t wrongArrayLength = FIXED_ARRAY_LENGTH + 1;
     uint8Array.reserve(wrongArrayLength);
     for (size_t i = 0; i < wrongArrayLength; ++i)
@@ -98,7 +100,7 @@ TEST_F(FixedArrayUInt8Test, writeWrongArray)
     FixedArray fixedArray;
     fixedArray.setUint8Array(uint8Array);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(fixedArray.write(writer), zserio::CppRuntimeException);
 }
 

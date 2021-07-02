@@ -2,10 +2,19 @@
 
 #include "array_types/arrays_mapping/ArraysMapping.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace array_types
 {
 namespace arrays_mapping
 {
+
+using allocator_type = ArraysMapping::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
 class ArraysMappingTest : public ::testing::Test
 {
@@ -17,115 +26,115 @@ TEST_F(ArraysMappingTest, unsignedIntegerArrays)
 {
     ArraysMapping arraysMapping;
 
-    arraysMapping.setUint8Array(std::vector<uint8_t>(fixedArrayLength));
-    arraysMapping.setUint16Array(std::vector<uint16_t>(fixedArrayLength));
-    arraysMapping.setUint32Array(std::vector<uint32_t>(fixedArrayLength));
-    arraysMapping.setUint64Array(std::vector<uint64_t>(fixedArrayLength));
+    arraysMapping.setUint8Array(vector_type<uint8_t>(fixedArrayLength));
+    arraysMapping.setUint16Array(vector_type<uint16_t>(fixedArrayLength));
+    arraysMapping.setUint32Array(vector_type<uint32_t>(fixedArrayLength));
+    arraysMapping.setUint64Array(vector_type<uint64_t>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, signedIntegerArrays)
 {
     ArraysMapping arraysMapping;
 
-    arraysMapping.setInt8Array(std::vector<int8_t>(fixedArrayLength));
-    arraysMapping.setInt16Array(std::vector<int16_t>(fixedArrayLength));
-    arraysMapping.setInt32Array(std::vector<int32_t>(fixedArrayLength));
-    arraysMapping.setInt64Array(std::vector<int64_t>(fixedArrayLength));
+    arraysMapping.setInt8Array(vector_type<int8_t>(fixedArrayLength));
+    arraysMapping.setInt16Array(vector_type<int16_t>(fixedArrayLength));
+    arraysMapping.setInt32Array(vector_type<int32_t>(fixedArrayLength));
+    arraysMapping.setInt64Array(vector_type<int64_t>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, unsignedBitfieldArrays)
 {
     ArraysMapping arraysMapping;
 
-    arraysMapping.setBitfield8Array(std::vector<uint8_t>(fixedArrayLength));
-    arraysMapping.setBitfield16Array(std::vector<uint16_t>(fixedArrayLength));
-    arraysMapping.setBitfield32Array(std::vector<uint32_t>(fixedArrayLength));
-    arraysMapping.setBitfield63Array(std::vector<uint64_t>(fixedArrayLength));
+    arraysMapping.setBitfield8Array(vector_type<uint8_t>(fixedArrayLength));
+    arraysMapping.setBitfield16Array(vector_type<uint16_t>(fixedArrayLength));
+    arraysMapping.setBitfield32Array(vector_type<uint32_t>(fixedArrayLength));
+    arraysMapping.setBitfield63Array(vector_type<uint64_t>(fixedArrayLength));
     arraysMapping.setUint8Value(8);
-    arraysMapping.setVariableBitfieldLongArray(std::vector<uint64_t>(fixedArrayLength));
-    arraysMapping.setVariableBitfieldIntArray(std::vector<uint32_t>(fixedArrayLength));
-    arraysMapping.setVariableBitfieldShortArray(std::vector<uint16_t>(fixedArrayLength));
-    arraysMapping.setVariableBitfieldByteArray(std::vector<uint8_t>(fixedArrayLength));
+    arraysMapping.setVariableBitfieldLongArray(vector_type<uint64_t>(fixedArrayLength));
+    arraysMapping.setVariableBitfieldIntArray(vector_type<uint32_t>(fixedArrayLength));
+    arraysMapping.setVariableBitfieldShortArray(vector_type<uint16_t>(fixedArrayLength));
+    arraysMapping.setVariableBitfieldByteArray(vector_type<uint8_t>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, signedBitfieldArrays)
 {
     ArraysMapping arraysMapping;
 
-    arraysMapping.setIntfield8Array(std::vector<int8_t>(fixedArrayLength));
-    arraysMapping.setIntfield16Array(std::vector<int16_t>(fixedArrayLength));
-    arraysMapping.setIntfield32Array(std::vector<int32_t>(fixedArrayLength));
-    arraysMapping.setIntfield64Array(std::vector<int64_t>(fixedArrayLength));
+    arraysMapping.setIntfield8Array(vector_type<int8_t>(fixedArrayLength));
+    arraysMapping.setIntfield16Array(vector_type<int16_t>(fixedArrayLength));
+    arraysMapping.setIntfield32Array(vector_type<int32_t>(fixedArrayLength));
+    arraysMapping.setIntfield64Array(vector_type<int64_t>(fixedArrayLength));
     arraysMapping.setUint8Value(8);
-    arraysMapping.setVariableIntfieldLongArray(std::vector<int64_t>(fixedArrayLength));
-    arraysMapping.setVariableIntfieldIntArray(std::vector<int32_t>(fixedArrayLength));
-    arraysMapping.setVariableIntfieldShortArray(std::vector<int16_t>(fixedArrayLength));
-    arraysMapping.setVariableIntfieldByteArray(std::vector<int8_t>(fixedArrayLength));
+    arraysMapping.setVariableIntfieldLongArray(vector_type<int64_t>(fixedArrayLength));
+    arraysMapping.setVariableIntfieldIntArray(vector_type<int32_t>(fixedArrayLength));
+    arraysMapping.setVariableIntfieldShortArray(vector_type<int16_t>(fixedArrayLength));
+    arraysMapping.setVariableIntfieldByteArray(vector_type<int8_t>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, float16Array)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setFloat16Array(std::vector<float>(fixedArrayLength));
-    arraysMapping.setFloat32Array(std::vector<float>(fixedArrayLength));
-    arraysMapping.setFloat64Array(std::vector<double>(fixedArrayLength));
+    arraysMapping.setFloat16Array(vector_type<float>(fixedArrayLength));
+    arraysMapping.setFloat32Array(vector_type<float>(fixedArrayLength));
+    arraysMapping.setFloat64Array(vector_type<double>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, variableUnsignedIntegerArrays)
 {
     ArraysMapping arraysMapping;
 
-    arraysMapping.setVaruint16Array(std::vector<uint16_t>(fixedArrayLength));
-    arraysMapping.setVaruint32Array(std::vector<uint32_t>(fixedArrayLength));
-    arraysMapping.setVaruint64Array(std::vector<uint64_t>(fixedArrayLength));
-    arraysMapping.setVaruintArray(std::vector<uint64_t>(fixedArrayLength));
-    arraysMapping.setVarsizeArray(std::vector<uint32_t>(fixedArrayLength));
+    arraysMapping.setVaruint16Array(vector_type<uint16_t>(fixedArrayLength));
+    arraysMapping.setVaruint32Array(vector_type<uint32_t>(fixedArrayLength));
+    arraysMapping.setVaruint64Array(vector_type<uint64_t>(fixedArrayLength));
+    arraysMapping.setVaruintArray(vector_type<uint64_t>(fixedArrayLength));
+    arraysMapping.setVarsizeArray(vector_type<uint32_t>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, variableSignedIntegerArrays)
 {
     ArraysMapping arraysMapping;
 
-    arraysMapping.setVarint16Array(std::vector<int16_t>(fixedArrayLength));
-    arraysMapping.setVarint32Array(std::vector<int32_t>(fixedArrayLength));
-    arraysMapping.setVarint64Array(std::vector<int64_t>(fixedArrayLength));
-    arraysMapping.setVarintArray(std::vector<int64_t>(fixedArrayLength));
+    arraysMapping.setVarint16Array(vector_type<int16_t>(fixedArrayLength));
+    arraysMapping.setVarint32Array(vector_type<int32_t>(fixedArrayLength));
+    arraysMapping.setVarint64Array(vector_type<int64_t>(fixedArrayLength));
+    arraysMapping.setVarintArray(vector_type<int64_t>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, boolArray)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setBoolArray(std::vector<bool>(fixedArrayLength));
+    arraysMapping.setBoolArray(vector_type<bool>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, stringArray)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setStringArray(std::vector<std::string>(fixedArrayLength));
+    arraysMapping.setStringArray(vector_type<string_type>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, externArray)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setExternArray(std::vector<zserio::BitBuffer>(fixedArrayLength));
+    arraysMapping.setExternArray(vector_type<BitBuffer>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, compoundArray)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setCompoundArray(std::vector<TestStructure>(fixedArrayLength));
+    arraysMapping.setCompoundArray(vector_type<TestStructure>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, enumArray)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setEnumArray(std::vector<TestEnum>(fixedArrayLength));
+    arraysMapping.setEnumArray(vector_type<TestEnum>(fixedArrayLength));
 }
 
 TEST_F(ArraysMappingTest, bitmaskArray)
 {
     ArraysMapping arraysMapping;
-    arraysMapping.setBitmaskArray(std::vector<TestBitmask>(fixedArrayLength));
+    arraysMapping.setBitmaskArray(vector_type<TestBitmask>(fixedArrayLength));
 }
 
 } // namespace arrays_mapping

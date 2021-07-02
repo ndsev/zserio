@@ -4,11 +4,16 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/RebindAlloc.h"
 
 namespace array_types
 {
 namespace implicit_array_float16
 {
+
+using allocator_type = ImplicitArray::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class ImplicitArrayFloat16Test : public ::testing::Test
 {
@@ -18,12 +23,14 @@ protected:
         for (size_t i = 0; i < numElements; ++i)
             writer.writeFloat16(static_cast<float>(i));
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(ImplicitArrayFloat16Test, bitSizeOf)
 {
     const size_t numElements = 55;
-    std::vector<float> array;
+    vector_type<float> array;
     array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
         array.push_back(static_cast<float>(i));
@@ -37,7 +44,7 @@ TEST_F(ImplicitArrayFloat16Test, bitSizeOf)
 TEST_F(ImplicitArrayFloat16Test, initializeOffsets)
 {
     const size_t numElements = 55;
-    std::vector<float> array;
+    vector_type<float> array;
     array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
         array.push_back(static_cast<float>(i));
@@ -48,17 +55,16 @@ TEST_F(ImplicitArrayFloat16Test, initializeOffsets)
     ASSERT_EQ(bitPosition + numElements * 16, implicitArray.initializeOffsets(bitPosition));
 }
 
-TEST_F(ImplicitArrayFloat16Test, read)
+TEST_F(ImplicitArrayFloat16Test, readConstructor)
 {
     const size_t numElements = 99;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeImplicitArrayToByteArray(writer, numElements);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ImplicitArray implicitArray(reader);
 
-    const std::vector<float>& array = implicitArray.getArray();
+    const vector_type<float>& array = implicitArray.getArray();
     ASSERT_EQ(numElements, array.size());
     for (size_t i = 0; i < numElements; ++i)
         ASSERT_EQ(static_cast<float>(i), array[i]);
@@ -67,21 +73,19 @@ TEST_F(ImplicitArrayFloat16Test, read)
 TEST_F(ImplicitArrayFloat16Test, write)
 {
     const size_t numElements = 55;
-    std::vector<float> array;
+    vector_type<float> array;
     array.reserve(numElements);
     for (size_t i = 0; i < numElements; ++i)
         array.push_back(static_cast<float>(i));
     ImplicitArray implicitArray;
     implicitArray.setArray(array);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     implicitArray.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ImplicitArray readImplicitArray(reader);
-    const std::vector<float>& readArray = readImplicitArray.getArray();
+    const vector_type<float>& readArray = readImplicitArray.getArray();
     ASSERT_EQ(numElements, readArray.size());
     for (size_t i = 0; i < numElements; ++i)
         ASSERT_EQ(static_cast<float>(i), readArray[i]);
