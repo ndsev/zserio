@@ -22,6 +22,7 @@
 #include "constants/INT8_MIN_CONSTANT.h"
 #include "constants/INTFIELD8_MAX_CONSTANT.h"
 #include "constants/INTFIELD8_MIN_CONSTANT.h"
+#include "constants/JOINED_STRING_CONSTANT.h"
 #include "constants/OCTAL_ESC_STRING_CONSTANT.h"
 #include "constants/READ_PERMISSION.h"
 #include "constants/READ_PERMISSION_VALUE.h"
@@ -30,6 +31,7 @@
 #include "constants/SUBTYPE_BLUE_COLOR_CONSTANT.h"
 #include "constants/SUBTYPE_INT25_CONSTANT.h"
 #include "constants/SUBTYPE_READ_PERMISSION.h"
+#include "constants/SUBTYPE_STRING_CONSTANT.h"
 #include "constants/UINT16_MAX_CONSTANT.h"
 #include "constants/UINT16_MIN_CONSTANT.h"
 #include "constants/UINT32_FULL_MASK.h"
@@ -60,6 +62,9 @@
 #include "constants/VARUINT_MIN_CONSTANT.h"
 #include "constants/VARSIZE_MAX_CONSTANT.h"
 #include "constants/VARSIZE_MIN_CONSTANT.h"
+#include "constants/StringSubtype.h"
+
+using namespace zserio::literals;
 
 namespace constants
 {
@@ -192,7 +197,7 @@ TEST(ConstantsTest, float32Constant)
 
 TEST(ConstantsTest, float64Constant)
 {
-    float diff = 3.1314 - FLOAT64_CONSTANT;
+    double diff = 3.1314 - FLOAT64_CONSTANT;
     if (diff < 0.0)
         diff = -diff;
     ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
@@ -300,27 +305,32 @@ TEST(ConstantsTest, boolFalseConstant)
 
 TEST(ConstantsTest, stringConstant)
 {
-    ASSERT_EQ("Test \"Quated\" String", STRING_CONSTANT);
+    ASSERT_EQ("Test \"Quated\" String"_sv, STRING_CONSTANT);
+}
+
+TEST(ConstantsTest, joinedStringConstant)
+{
+    ASSERT_EQ("This is: Test \"Quated\" String"_sv, JOINED_STRING_CONSTANT);
 }
 
 TEST(ConstantsTest, unicodeEscStringConstant)
 {
-    ASSERT_EQ("Test string with unicode escape \x19", UNICODE_ESC_STRING_CONSTANT);
+    ASSERT_EQ("Test string with unicode escape \x19"_sv, UNICODE_ESC_STRING_CONSTANT);
 }
 
 TEST(ConstantsTest, hexEscStringConstant)
 {
-    ASSERT_EQ("Test string with hexadecimal escape \x19", HEX_ESC_STRING_CONSTANT);
+    ASSERT_EQ("Test string with hexadecimal escape \x19"_sv, HEX_ESC_STRING_CONSTANT);
 }
 
 TEST(ConstantsTest, octalEscStringConstant)
 {
-    ASSERT_EQ("Test string with octal escape \031", OCTAL_ESC_STRING_CONSTANT);
+    ASSERT_EQ("Test string with octal escape \031"_sv, OCTAL_ESC_STRING_CONSTANT);
 }
 
 TEST(ConstantsTest, stringPascalCaseConstant)
 {
-    ASSERT_EQ("Different naming convention", StringPascalCaseConstant);
+    ASSERT_EQ("Different naming convention"_sv, StringPascalCaseConstant);
 }
 
 TEST(ConstantsTest, constantDefinedByConstant)
@@ -343,6 +353,13 @@ TEST(ConstantsTest, subtypeToInt25Constant)
     ASSERT_EQ(25, SUBTYPE_INT25_CONSTANT);
     const Int25Subtype expectedValue = 25;
     ASSERT_EQ(expectedValue, SUBTYPE_INT25_CONSTANT);
+}
+
+TEST(ConstantsTest, subtypeToStringConstant)
+{
+    ASSERT_EQ("Subtype string constant"_sv, SUBTYPE_STRING_CONSTANT);
+    const StringSubtype expectedValue = "Subtype string constant";
+    ASSERT_EQ(zserio::StringView(expectedValue), SUBTYPE_STRING_CONSTANT);
 }
 
 TEST(ConstantsTest, subtypeToEnumConstant)

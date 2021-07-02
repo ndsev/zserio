@@ -288,6 +288,12 @@ public class ConstantsTest
     }
 
     @Test
+    public void joinedStringConstant()
+    {
+        assertEquals("This is: Test \"Quated\" String", JOINED_STRING_CONSTANT.JOINED_STRING_CONSTANT);
+    }
+
+    @Test
     public void unicodeEscStringConstant()
     {
         assertEquals("Test string with unicode escape \u0019",
@@ -336,6 +342,12 @@ public class ConstantsTest
     public void subtypeToInt25Constant()
     {
         assertEquals(25, SUBTYPE_INT25_CONSTANT.SUBTYPE_INT25_CONSTANT);
+    }
+
+    @Test
+    public void subtypeToStringConstant()
+    {
+        assertEquals("Subtype string constant", SUBTYPE_STRING_CONSTANT.SUBTYPE_STRING_CONSTANT);
     }
 
     @Test

@@ -146,6 +146,9 @@ class BitfieldEnumTest(unittest.TestCase):
     def testStringConstant(self):
         self.assertEqual('Test "Quated" String', self.api.STRING_CONSTANT)
 
+    def testJoinedStringConsant(self):
+        self.assertEqual('This is: Test "Quated" String', self.api.JOINED_STRING_CONSTANT)
+
     def testUnicodeEscStringConstant(self):
         self.assertEqual("Test string with unicode escape \x19", self.api.UNICODE_ESC_STRING_CONSTANT)
 
@@ -170,6 +173,10 @@ class BitfieldEnumTest(unittest.TestCase):
     def testSubtypeToInt25Constant(self):
         self.assertEqual(25, self.api.SUBTYPE_INT25_CONSTANT)
         self.assertEqual(self.api.Int25Subtype(25), self.api.SUBTYPE_INT25_CONSTANT)
+
+    def testSubtypeToStringConstant(self):
+        self.assertEqual(self.api.StringSubtype("Subtype string constant"), self.api.SUBTYPE_STRING_CONSTANT)
+        self.assertEqual("Subtype string constant", self.api.SUBTYPE_STRING_CONSTANT)
 
     def testSubtypeToEnumConstant(self):
         self.assertEqual(self.api.ColorsSubtype.BLUE, self.api.SUBTYPE_BLUE_COLOR_CONSTANT)
