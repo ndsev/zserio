@@ -32,9 +32,10 @@ protected:
 
         default:
             FAIL() << "Bad choice selector";
-            break;
         }
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(BitmaskParamChoiceTest, emptyConstructor)
@@ -47,11 +48,10 @@ TEST_F(BitmaskParamChoiceTest, bitStreamReaderConstructor)
 {
     const Selector selector = Selector::Values::BLACK;
     const uint8_t value = 99;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeBitmaskParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     BitmaskParamChoice bitmaskParamChoice(reader, selector);
     ASSERT_EQ(selector, bitmaskParamChoice.getSelector());
     ASSERT_EQ(value, bitmaskParamChoice.getBlack());
@@ -122,6 +122,20 @@ TEST_F(BitmaskParamChoiceTest, moveAssignmentOperator)
     bitmaskParamChoiceMoved = std::move(bitmaskParamChoice);
     ASSERT_EQ(selector, bitmaskParamChoiceMoved.getSelector());
     ASSERT_EQ(value, bitmaskParamChoiceMoved.getWhite());
+}
+
+TEST_F(BitmaskParamChoiceTest, propagateAllocatorCopyConstructor)
+{
+    const Selector selector = Selector::Values::BLACK;
+    BitmaskParamChoice bitmaskParamChoice;
+    bitmaskParamChoice.initialize(selector);
+    const uint8_t value = 99;
+    bitmaskParamChoice.setBlack(value);
+
+    const BitmaskParamChoice bitmaskParamChoiceCopy(zserio::PropagateAllocator, bitmaskParamChoice,
+            BitmaskParamChoice::allocator_type());
+    ASSERT_EQ(selector, bitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(value, bitmaskParamChoiceCopy.getBlack());
 }
 
 TEST_F(BitmaskParamChoiceTest, initialize)
@@ -249,23 +263,6 @@ TEST_F(BitmaskParamChoiceTest, hashCode)
     ASSERT_NE(bitmaskParamChoice1.hashCode(), bitmaskParamChoice2.hashCode());
 }
 
-TEST_F(BitmaskParamChoiceTest, read)
-{
-    const Selector selector = Selector::Values::BLACK;
-    zserio::BitStreamWriter writer;
-    const uint8_t value = 99;
-    writeBitmaskParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    BitmaskParamChoice bitmaskParamChoice;
-    bitmaskParamChoice.initialize(selector);
-    bitmaskParamChoice.read(reader);
-
-    ASSERT_EQ(selector, bitmaskParamChoice.getSelector());
-    ASSERT_EQ(value, bitmaskParamChoice.getBlack());
-}
-
 TEST_F(BitmaskParamChoiceTest, write)
 {
     const Selector selectorB = Selector::Values::BLACK;
@@ -273,11 +270,10 @@ TEST_F(BitmaskParamChoiceTest, write)
     bitmaskParamChoiceB.initialize(selectorB);
     const uint8_t valueB = 99;
     bitmaskParamChoiceB.setBlack(valueB);
-    zserio::BitStreamWriter writerB;
+    zserio::BitStreamWriter writerB(bitBuffer);
     bitmaskParamChoiceB.write(writerB);
-    size_t writeBufferByteSizeB;
-    const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
-    zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
+
+    zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     BitmaskParamChoice readBitmaskParamChoiceB(readerB, selectorB);
     ASSERT_EQ(valueB, readBitmaskParamChoiceB.getBlack());
 
@@ -286,11 +282,10 @@ TEST_F(BitmaskParamChoiceTest, write)
     bitmaskParamChoiceW.initialize(selectorW);
     const uint8_t valueW = 234;
     bitmaskParamChoiceW.setWhite(valueW);
-    zserio::BitStreamWriter writerW;
+    zserio::BitStreamWriter writerW(bitBuffer);
     bitmaskParamChoiceW.write(writerW);
-    size_t writeBufferByteSizeW;
-    const uint8_t* writeBufferW = writerW.getWriteBuffer(writeBufferByteSizeW);
-    zserio::BitStreamReader readerW(writeBufferW, writeBufferByteSizeW);
+
+    zserio::BitStreamReader readerW(writerW.getWriteBuffer(), writerW.getBitPosition(), zserio::BitsTag());
     BitmaskParamChoice readBitmaskParamChoiceW(readerW, selectorW);
     ASSERT_EQ(valueW, readBitmaskParamChoiceW.getWhite());
 
@@ -299,11 +294,10 @@ TEST_F(BitmaskParamChoiceTest, write)
     bitmaskParamChoiceBW.initialize(selectorBW);
     const uint16_t valueBW = 65535;
     bitmaskParamChoiceBW.setBlackAndWhite(valueBW);
-    zserio::BitStreamWriter writerBW;
+    zserio::BitStreamWriter writerBW(bitBuffer);
     bitmaskParamChoiceBW.write(writerBW);
-    size_t writeBufferByteSizeBW;
-    const uint8_t* writeBufferBW = writerBW.getWriteBuffer(writeBufferByteSizeBW);
-    zserio::BitStreamReader readerBW(writeBufferBW, writeBufferByteSizeBW);
+
+    zserio::BitStreamReader readerBW(writerBW.getWriteBuffer(), writerBW.getBitPosition(), zserio::BitsTag());
     BitmaskParamChoice readBitmaskParamChoiceBW(readerBW, selectorBW);
     ASSERT_EQ(valueBW, readBitmaskParamChoiceBW.getBlackAndWhite());
 }

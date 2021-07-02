@@ -20,6 +20,8 @@ protected:
         else
             writer.writeSignedBits(value, 16);
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(BoolParamChoiceTest, emptyConstructor)
@@ -32,11 +34,10 @@ TEST_F(BoolParamChoiceTest, bitStreamReaderConstructor)
 {
     const bool selector = true;
     const int8_t value = 99;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeBoolParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     BoolParamChoice boolParamChoice(reader, selector);
     ASSERT_EQ(selector, boolParamChoice.getSelector());
     ASSERT_EQ(value, boolParamChoice.getBlack());
@@ -110,6 +111,20 @@ TEST_F(BoolParamChoiceTest, moveAssignmentOperator)
     boolParamChoiceMoved = std::move(boolParamChoice);
     ASSERT_EQ(selector, boolParamChoiceMoved.getSelector());
     ASSERT_EQ(value, boolParamChoiceMoved.getGrey());
+}
+
+TEST_F(BoolParamChoiceTest, propagateAllocatorCopyConstructor)
+{
+    const bool selector = true;
+    BoolParamChoice boolParamChoice;
+    boolParamChoice.initialize(selector);
+    const int8_t value = 99;
+    boolParamChoice.setBlack(value);
+
+    BoolParamChoice boolParamChoiceCopy(zserio::PropagateAllocator, boolParamChoice,
+            BoolParamChoice::allocator_type());
+    ASSERT_EQ(selector, boolParamChoiceCopy.getSelector());
+    ASSERT_EQ(value, boolParamChoiceCopy.getBlack());
 }
 
 TEST_F(BoolParamChoiceTest, initialize)
@@ -209,23 +224,6 @@ TEST_F(BoolParamChoiceTest, hashCode)
     ASSERT_NE(boolParamChoice1.hashCode(), boolParamChoice2.hashCode());
 }
 
-TEST_F(BoolParamChoiceTest, read)
-{
-    const bool selector = true;
-    zserio::BitStreamWriter writer;
-    const int8_t value = 99;
-    writeBoolParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    BoolParamChoice boolParamChoice;
-    boolParamChoice.initialize(selector);
-    boolParamChoice.read(reader);
-
-    ASSERT_EQ(selector, boolParamChoice.getSelector());
-    ASSERT_EQ(value, boolParamChoice.getBlack());
-}
-
 TEST_F(BoolParamChoiceTest, write)
 {
     bool selector = true;
@@ -233,11 +231,10 @@ TEST_F(BoolParamChoiceTest, write)
     boolParamChoiceB.initialize(selector);
     const int8_t valueB = 99;
     boolParamChoiceB.setBlack(valueB);
-    zserio::BitStreamWriter writerB;
+    zserio::BitStreamWriter writerB(bitBuffer);
     boolParamChoiceB.write(writerB);
-    size_t writeBufferByteSizeB;
-    const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
-    zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
+
+    zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     BoolParamChoice readBoolParamChoiceB(readerB, selector);
     ASSERT_EQ(valueB, readBoolParamChoiceB.getBlack());
 
@@ -246,11 +243,10 @@ TEST_F(BoolParamChoiceTest, write)
     boolParamChoiceG.initialize(selector);
     const int16_t valueG = 234;
     boolParamChoiceG.setGrey(valueG);
-    zserio::BitStreamWriter writerG;
+    zserio::BitStreamWriter writerG(bitBuffer);
     boolParamChoiceG.write(writerG);
-    size_t writeBufferByteSizeG;
-    const uint8_t* writeBufferG = writerG.getWriteBuffer(writeBufferByteSizeG);
-    zserio::BitStreamReader readerG(writeBufferG, writeBufferByteSizeG);
+
+    zserio::BitStreamReader readerG(writerG.getWriteBuffer(), writerG.getBitPosition(), zserio::BitsTag());
     BoolParamChoice readBoolParamChoiceG(readerG, selector);
     ASSERT_EQ(valueG, readBoolParamChoiceG.getGrey());
 }

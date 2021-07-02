@@ -33,6 +33,8 @@ protected:
     static const uint8_t VARIANT_A_SELECTOR;
     static const uint8_t VARIANT_B_SELECTOR;
     static const uint8_t DEFAULT_SELECTOR;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t DefaultEmptyChoiceTest::VARIANT_A_SELECTOR = 1;
@@ -42,31 +44,12 @@ const uint8_t DefaultEmptyChoiceTest::DEFAULT_SELECTOR = 3;
 TEST_F(DefaultEmptyChoiceTest, bitStreamReaderConstructor)
 {
     const uint8_t tag = VARIANT_A_SELECTOR;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const int8_t value = 99;
     writeDefaultEmptyChoiceToByteArray(writer, tag, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const DefaultEmptyChoice defaultEmptyChoice(reader, tag);
-    ASSERT_EQ(tag, defaultEmptyChoice.getTag());
-    ASSERT_EQ(value, defaultEmptyChoice.getA());
-}
-
-TEST_F(DefaultEmptyChoiceTest, read)
-{
-    const uint8_t tag = VARIANT_A_SELECTOR;
-    zserio::BitStreamWriter writer;
-    const int8_t value = 99;
-    writeDefaultEmptyChoiceToByteArray(writer, tag, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    DefaultEmptyChoice defaultEmptyChoice;
-    defaultEmptyChoice.initialize(tag);
-    defaultEmptyChoice.read(reader);
-
     ASSERT_EQ(tag, defaultEmptyChoice.getTag());
     ASSERT_EQ(value, defaultEmptyChoice.getA());
 }
@@ -79,11 +62,10 @@ TEST_F(DefaultEmptyChoiceTest, write)
 
     const VariantA valueA = 99;
     defaultEmptyChoice.setA(valueA);
-    zserio::BitStreamWriter writerA;
+    zserio::BitStreamWriter writerA(bitBuffer);
     defaultEmptyChoice.write(writerA);
-    size_t writeBufferByteSizeA;
-    const uint8_t* writeBufferA = writerA.getWriteBuffer(writeBufferByteSizeA);
-    zserio::BitStreamReader readerA(writeBufferA, writeBufferByteSizeA);
+
+    zserio::BitStreamReader readerA(writerA.getWriteBuffer(), writerA.getBitPosition(), zserio::BitsTag());
     DefaultEmptyChoice readDefaultEmptyChoiceA(readerA, tagA);
     ASSERT_EQ(valueA, readDefaultEmptyChoiceA.getA());
 
@@ -91,21 +73,20 @@ TEST_F(DefaultEmptyChoiceTest, write)
     defaultEmptyChoice.initialize(tagB);
     const VariantB valueB = 234;
     defaultEmptyChoice.setB(valueB);
-    zserio::BitStreamWriter writerB;
+    zserio::BitStreamWriter writerB(bitBuffer);
     defaultEmptyChoice.write(writerB);
-    size_t writeBufferByteSizeB;
-    const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
-    zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
+
+    zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     DefaultEmptyChoice readDefaultEmptyChoiceB(readerB, tagB);
     ASSERT_EQ(valueB, readDefaultEmptyChoiceB.getB());
 
     const uint8_t tagDefault= DEFAULT_SELECTOR;
     defaultEmptyChoice.initialize(tagDefault);
-    zserio::BitStreamWriter writerDefault;
+    zserio::BitStreamWriter writerDefault(bitBuffer);
     defaultEmptyChoice.write(writerDefault);
-    size_t writeBufferByteSizeDefault;
-    const uint8_t* writeBufferDefault = writerDefault.getWriteBuffer(writeBufferByteSizeDefault);
-    zserio::BitStreamReader readerDefault(writeBufferDefault, writeBufferByteSizeDefault);
+
+    zserio::BitStreamReader readerDefault(writerDefault.getWriteBuffer(),
+            writerDefault.getBitPosition(), zserio::BitsTag());
     DefaultEmptyChoice readDefaultEmptyChoiceDefault(readerDefault, tagDefault);
     ASSERT_EQ(tagDefault, readDefaultEmptyChoiceDefault.getTag());
 }

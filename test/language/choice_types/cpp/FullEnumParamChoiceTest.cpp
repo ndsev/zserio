@@ -32,9 +32,10 @@ protected:
 
         default:
             FAIL() << "Bad choice selector";
-            break;
         }
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(FullEnumParamChoiceTest, emptyConstructor)
@@ -47,11 +48,10 @@ TEST_F(FullEnumParamChoiceTest, bitStreamReaderConstructor)
 {
     const Selector selector = Selector::BLACK;
     const int8_t value = 99;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeFullEnumParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     FullEnumParamChoice fullEnumParamChoice(reader, selector);
     ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
     ASSERT_EQ(value, fullEnumParamChoice.getBlack());
@@ -121,6 +121,20 @@ TEST_F(FullEnumParamChoiceTest, moveAssignmentOperator)
     fullEnumParamChoiceMoved = std::move(fullEnumParamChoice);
     ASSERT_EQ(selector, fullEnumParamChoiceMoved.getSelector());
     ASSERT_EQ(value, fullEnumParamChoiceMoved.getGrey());
+}
+
+TEST_F(FullEnumParamChoiceTest, propagateAllocatorCopyConstructor)
+{
+    const Selector selector = Selector::BLACK;
+    FullEnumParamChoice fullEnumParamChoice;
+    fullEnumParamChoice.initialize(selector);
+    const int8_t value = 99;
+    fullEnumParamChoice.setBlack(value);
+
+    const FullEnumParamChoice fullEnumParamChoiceCopy(zserio::PropagateAllocator, fullEnumParamChoice,
+            FullEnumParamChoice::allocator_type());
+    ASSERT_EQ(selector, fullEnumParamChoiceCopy.getSelector());
+    ASSERT_EQ(value, fullEnumParamChoiceCopy.getBlack());
 }
 
 TEST_F(FullEnumParamChoiceTest, initialize)
@@ -237,23 +251,6 @@ TEST_F(FullEnumParamChoiceTest, hashCode)
     ASSERT_NE(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
 }
 
-TEST_F(FullEnumParamChoiceTest, read)
-{
-    const Selector selector = Selector::BLACK;
-    zserio::BitStreamWriter writer;
-    const int8_t value = 99;
-    writeFullEnumParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    FullEnumParamChoice fullEnumParamChoice;
-    fullEnumParamChoice.initialize(selector);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    fullEnumParamChoice.read(reader);
-
-    ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
-    ASSERT_EQ(value, fullEnumParamChoice.getBlack());
-}
-
 TEST_F(FullEnumParamChoiceTest, write)
 {
     Selector selector = Selector::BLACK;
@@ -261,11 +258,10 @@ TEST_F(FullEnumParamChoiceTest, write)
     fullEnumParamChoiceB.initialize(selector);
     const int8_t valueB = 99;
     fullEnumParamChoiceB.setBlack(valueB);
-    zserio::BitStreamWriter writerB;
+    zserio::BitStreamWriter writerB(bitBuffer);
     fullEnumParamChoiceB.write(writerB);
-    size_t writeBufferByteSizeB;
-    const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
-    zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
+
+    zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     FullEnumParamChoice readEnumParamChoiceB(readerB, selector);
     ASSERT_EQ(valueB, readEnumParamChoiceB.getBlack());
 
@@ -274,11 +270,10 @@ TEST_F(FullEnumParamChoiceTest, write)
     fullEnumParamChoiceG.initialize(selector);
     const int16_t valueG = 234;
     fullEnumParamChoiceG.setGrey(valueG);
-    zserio::BitStreamWriter writerG;
+    zserio::BitStreamWriter writerG(bitBuffer);
     fullEnumParamChoiceG.write(writerG);
-    size_t writeBufferByteSizeG;
-    const uint8_t* writeBufferG = writerG.getWriteBuffer(writeBufferByteSizeG);
-    zserio::BitStreamReader readerG(writeBufferG, writeBufferByteSizeG);
+
+    zserio::BitStreamReader readerG(writerG.getWriteBuffer(), writerG.getBitPosition(), zserio::BitsTag());
     FullEnumParamChoice readEnumParamChoiceG(readerG, selector);
     ASSERT_EQ(valueG, readEnumParamChoiceG.getGrey());
 
@@ -287,11 +282,10 @@ TEST_F(FullEnumParamChoiceTest, write)
     fullEnumParamChoiceW.initialize(selector);
     const int32_t valueW = 65535;
     fullEnumParamChoiceW.setWhite(valueW);
-    zserio::BitStreamWriter writerW;
+    zserio::BitStreamWriter writerW(bitBuffer);
     fullEnumParamChoiceW.write(writerW);
-    size_t writeBufferByteSizeW;
-    const uint8_t* writeBufferW = writerW.getWriteBuffer(writeBufferByteSizeW);
-    zserio::BitStreamReader readerW(writeBufferW, writeBufferByteSizeW);
+
+    zserio::BitStreamReader readerW(writerW.getWriteBuffer(), writerW.getBitPosition(), zserio::BitsTag());
     FullEnumParamChoice readEnumParamChoiceW(readerW, selector);
     ASSERT_EQ(valueW, readEnumParamChoiceW.getWhite());
 }

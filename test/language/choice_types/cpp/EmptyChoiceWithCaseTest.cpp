@@ -20,7 +20,7 @@ TEST(EmptyChoiceWithCaseTest, emptyConstructor)
 TEST(EmptyChoiceWithCaseTest, bitStreamReaderConstructor)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamReader reader(NULL, 0);
+    zserio::BitStreamReader reader(nullptr, 0);
 
     EmptyChoiceWithCase emptyChoiceWithCase(reader, selector);
     ASSERT_EQ(selector, emptyChoiceWithCase.getSelector());
@@ -73,6 +73,18 @@ TEST(EmptyChoiceWithCaseTest, moveAssignmentOperator)
     emptyChoiceWithCaseMoved = std::move(emptyChoiceWithCase);
     ASSERT_EQ(selector, emptyChoiceWithCaseMoved.getSelector());
     ASSERT_EQ(0, emptyChoiceWithCaseMoved.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithCaseTest, propagateAllocatorCopyConstructor)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithCase emptyChoiceWithCase;
+    emptyChoiceWithCase.initialize(selector);
+    const EmptyChoiceWithCase emptyChoiceWithCaseCopy(zserio::PropagateAllocator, emptyChoiceWithCase,
+            EmptyChoiceWithCase::allocator_type());
+    ASSERT_EQ(selector, emptyChoiceWithCaseCopy.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithCaseCopy.bitSizeOf());
 }
 
 TEST(EmptyChoiceWithCaseTest, initialize)
@@ -133,28 +145,17 @@ TEST(EmptyChoiceWithCaseTest, hashCode)
     ASSERT_NE(emptyChoiceWithCase1.hashCode(), emptyChoiceWithCase3.hashCode());
 }
 
-TEST(EmptyChoiceWithCaseTest, read)
-{
-    const uint8_t selector = 1;
-    EmptyChoiceWithCase emptyChoiceWithCase;
-    emptyChoiceWithCase.initialize(selector);
-    zserio::BitStreamReader reader(NULL, 0);
-    emptyChoiceWithCase.read(reader);
-    ASSERT_EQ(selector, emptyChoiceWithCase.getSelector());
-    ASSERT_EQ(0, emptyChoiceWithCase.bitSizeOf());
-}
-
 TEST(EmptyChoiceWithCaseTest, write)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     EmptyChoiceWithCase emptyChoiceWithCase;
     emptyChoiceWithCase.initialize(selector);
     emptyChoiceWithCase.write(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    ASSERT_EQ(0, writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    ASSERT_EQ(0, writer.getBitPosition());
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), 0);
     EmptyChoiceWithCase readEmptyChoiceWithCase(reader, selector);
     ASSERT_EQ(emptyChoiceWithCase, readEmptyChoiceWithCase);
 }

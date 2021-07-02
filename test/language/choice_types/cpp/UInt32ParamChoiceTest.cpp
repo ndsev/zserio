@@ -44,6 +44,8 @@ protected:
     static const uint32_t EMPTY_SELECTOR1;
     static const uint32_t EMPTY_SELECTOR2;
     static const uint32_t VARIANT_C_SELECTOR;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint32_t UInt32ParamChoiceTest::VARIANT_A_SELECTOR = 1;
@@ -63,13 +65,11 @@ TEST_F(UInt32ParamChoiceTest, emptyConstructor)
 TEST_F(UInt32ParamChoiceTest, bitStreamReaderConstructor)
 {
     const uint32_t selector = VARIANT_A_SELECTOR;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const int8_t value = 99;
     writeUInt32ParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const UInt32ParamChoice uint32ParamChoice(reader, selector);
     ASSERT_EQ(selector, uint32ParamChoice.getSelector());
     ASSERT_EQ(value, uint32ParamChoice.getA());
@@ -142,6 +142,21 @@ TEST_F(UInt32ParamChoiceTest, moveAssignmentOperator)
     uint32ParamChoiceMoved = std::move(uint32ParamChoice);
     ASSERT_EQ(selector, uint32ParamChoiceMoved.getSelector());
     ASSERT_EQ(value, uint32ParamChoiceMoved.getB());
+}
+
+TEST_F(UInt32ParamChoiceTest, propagateAllocatorCopyConstructor)
+{
+    const uint32_t selector = VARIANT_A_SELECTOR;
+    UInt32ParamChoice uint32ParamChoice;
+    uint32ParamChoice.initialize(selector);
+
+    const VariantA value = 99;
+    uint32ParamChoice.setA(value);
+
+    const UInt32ParamChoice uint32ParamChoiceCopy(zserio::PropagateAllocator, uint32ParamChoice,
+            UInt32ParamChoice::allocator_type());
+    ASSERT_EQ(selector, uint32ParamChoiceCopy.getSelector());
+    ASSERT_EQ(value, uint32ParamChoiceCopy.getA());
 }
 
 TEST_F(UInt32ParamChoiceTest, initialize)
@@ -274,12 +289,11 @@ TEST_F(UInt32ParamChoiceTest, hashCode)
 TEST_F(UInt32ParamChoiceTest, read)
 {
     const uint32_t selector = VARIANT_A_SELECTOR;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const int8_t value = 99;
     writeUInt32ParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     UInt32ParamChoice uint32ParamChoice;
     uint32ParamChoice.initialize(selector);
     uint32ParamChoice.read(reader);
@@ -296,11 +310,10 @@ TEST_F(UInt32ParamChoiceTest, write)
 
     const VariantA valueA = 99;
     uint32ParamChoice.setA(valueA);
-    zserio::BitStreamWriter writerA;
+    zserio::BitStreamWriter writerA(bitBuffer);
     uint32ParamChoice.write(writerA);
-    size_t writeBufferByteSizeA;
-    const uint8_t* writeBufferA = writerA.getWriteBuffer(writeBufferByteSizeA);
-    zserio::BitStreamReader readerA(writeBufferA, writeBufferByteSizeA);
+
+    zserio::BitStreamReader readerA(writerA.getWriteBuffer(), writerA.getBitPosition(), zserio::BitsTag());
     UInt32ParamChoice readUInt32ParamChoiceA(readerA, selectorA);
     ASSERT_EQ(valueA, readUInt32ParamChoiceA.getA());
 
@@ -308,11 +321,10 @@ TEST_F(UInt32ParamChoiceTest, write)
     uint32ParamChoice.initialize(selectorB);
     const VariantB valueB = 234;
     uint32ParamChoice.setB(valueB);
-    zserio::BitStreamWriter writerB;
+    zserio::BitStreamWriter writerB(bitBuffer);
     uint32ParamChoice.write(writerB);
-    size_t writeBufferByteSizeB;
-    const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
-    zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
+
+    zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     UInt32ParamChoice readUInt32ParamChoiceB(readerB, selectorB);
     ASSERT_EQ(valueB, readUInt32ParamChoiceB.getB());
 
@@ -320,11 +332,10 @@ TEST_F(UInt32ParamChoiceTest, write)
     uint32ParamChoice.initialize(selectorC);
     const VariantC valueC = 65535;
     uint32ParamChoice.setC(valueC);
-    zserio::BitStreamWriter writerC;
+    zserio::BitStreamWriter writerC(bitBuffer);
     uint32ParamChoice.write(writerC);
-    size_t writeBufferByteSizeC;
-    const uint8_t* writeBufferC = writerC.getWriteBuffer(writeBufferByteSizeC);
-    zserio::BitStreamReader readerC(writeBufferC, writeBufferByteSizeC);
+
+    zserio::BitStreamReader readerC(writerC.getWriteBuffer(), writerC.getBitPosition(), zserio::BitsTag());
     UInt32ParamChoice readUInt32ParamChoiceC(readerC, selectorC);
     ASSERT_EQ(valueC, readUInt32ParamChoiceC.getC());
 }

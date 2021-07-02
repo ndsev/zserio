@@ -2,18 +2,24 @@
 
 #include "choice_types/choice_with_array/TestChoice.h"
 
+#include "zserio/RebindAlloc.h"
+
 // just testChoice setters and getters
 namespace choice_types
 {
 namespace choice_with_array
 {
 
+using allocator_type = TestChoice::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
 // The following three tests are here because of tests of move operator for arrays.
 TEST(ChoiceWithArrayTest, fieldConstructor)
 {
-    TestChoice choice8(std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    TestChoice choice8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
     choice8.initialize(8);
-    TestChoice choice16(std::vector<int16_t>{ -1, 1 });
+    TestChoice choice16(vector_type<int16_t>{ -1, 1 });
     choice16.initialize(16);
 
     ASSERT_EQ(3, choice8.getArray8().size());
@@ -21,7 +27,7 @@ TEST(ChoiceWithArrayTest, fieldConstructor)
     ASSERT_THROW(choice8.getArray16(), zserio::CppRuntimeException);
     ASSERT_THROW(choice16.getArray8(), zserio::CppRuntimeException);
 
-    std::vector<Data8> data8 = { Data8{1}, Data8{2}, Data8{3} };
+    vector_type<Data8> data8 = { Data8{1}, Data8{2}, Data8{3} };
     const void* dataPtr = &data8[0];
     TestChoice choiceData8Copied(data8);
     choiceData8Copied.initialize(8);
@@ -33,7 +39,7 @@ TEST(ChoiceWithArrayTest, fieldConstructor)
 
 TEST(ChoiceWithArrayTest, moveConstructor)
 {
-    TestChoice choice8(std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    TestChoice choice8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
     choice8.initialize(8);
     const void* dataPtr = &choice8.getArray8()[0];
     TestChoice choice8Moved(std::move(choice8));
@@ -42,7 +48,7 @@ TEST(ChoiceWithArrayTest, moveConstructor)
 
 TEST(ChoiceWithArrayTest, moveAssignmentOperator)
 {
-    TestChoice choice8(std::vector<Data8>{ Data8{1}, Data8{2} , Data8{3} });
+    TestChoice choice8(vector_type<Data8>{ Data8{1}, Data8{2} , Data8{3} });
     choice8.initialize(8);
     const void* dataPtr = &choice8.getArray8()[0];
     TestChoice choice8Moved;
@@ -54,7 +60,7 @@ TEST(ChoiceWithArrayTest, array8)
 {
     TestChoice testChoice;
     testChoice.initialize(8);
-    std::vector<Data8> data8(4);
+    vector_type<Data8> data8(4);
     const void* dataPtr = &data8[0];
     testChoice.setArray8(data8);
     ASSERT_EQ(4, testChoice.getArray8().size());
@@ -68,7 +74,7 @@ TEST(ChoiceWithArrayTest, array16)
 {
     TestChoice testChoice;
     testChoice.initialize(16);
-    std::vector<int16_t> array16(4);
+    vector_type<int16_t> array16(4);
     const void* dataPtr = &array16[0];
     testChoice.setArray16(array16);
     ASSERT_EQ(4, testChoice.getArray16().size());
