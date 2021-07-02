@@ -6,13 +6,20 @@
 
 #include "gtest/gtest.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace gif
 {
+
+using allocator_type = GifFile::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class GifTest : public ::testing::Test
 {
 protected:
-    bool readFileToBuffer(const std::string& fileName, std::vector<uint8_t>& buffer)
+    bool readFileToBuffer(const string_type& fileName, vector_type<uint8_t>& buffer)
     {
         std::ifstream inputStream(fileName.c_str(), std::ios::binary);
         if (!inputStream)
@@ -22,36 +29,36 @@ protected:
         const size_t fileSize = static_cast<size_t>(inputStream.tellg());
         inputStream.seekg(0, inputStream.beg);
         buffer.resize(fileSize);
-        inputStream.read(reinterpret_cast<char*>(&buffer[0]), buffer.size());
+        inputStream.read(reinterpret_cast<char*>(&buffer[0]), static_cast<std::streamsize>(buffer.size()));
         const bool result = (inputStream) ? true : false;
         inputStream.close();
 
         return result;
     }
 
-    void convertUInt8ArrayToString(const std::vector<uint8_t>& array, std::string& outputString)
+    void convertUInt8ArrayToString(const vector_type<uint8_t>& array, string_type& outputString)
     {
-        for (std::vector<uint8_t>::const_iterator it = array.begin(); it != array.end(); ++it)
+        for (vector_type<uint8_t>::const_iterator it = array.begin(); it != array.end(); ++it)
             outputString.append(1, static_cast<char>(*it));
     }
 };
 
 TEST_F(GifTest, OnePixGif)
 {
-    const std::string onePixGifFileName("others/gif/data/1pix.gif");
-    std::vector<uint8_t> buffer;
+    const string_type onePixGifFileName("others/gif/data/1pix.gif");
+    vector_type<uint8_t> buffer;
     ASSERT_TRUE(readFileToBuffer(onePixGifFileName, buffer));
     zserio::BitStreamReader reader(&buffer[0], buffer.size());
     const GifFile gifFile(reader);
 
-    std::string fileFormat;
+    string_type fileFormat;
     convertUInt8ArrayToString(gifFile.getSignature().getFormat(), fileFormat);
-    const std::string expectedGifFileFormat("GIF");
+    const string_type expectedGifFileFormat("GIF");
     ASSERT_EQ(expectedGifFileFormat, fileFormat);
 
-    std::string fileVersion;
+    string_type fileVersion;
     convertUInt8ArrayToString(gifFile.getSignature().getVersion(), fileVersion);
-    const std::string expectedGifFileVersion("89a");
+    const string_type expectedGifFileVersion("89a");
     ASSERT_EQ(expectedGifFileVersion, fileVersion);
 
     const screen_descriptor::ScreenDescriptor& screenDescriptor = gifFile.getScreen();
