@@ -3,6 +3,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/RebindAlloc.h"
 
 #include "constraints/array_lengthof_constraint/ArrayLengthofConstraint.h"
 
@@ -10,6 +11,10 @@ namespace constraints
 {
 namespace array_lengthof_constraint
 {
+
+using allocator_type = ArrayLengthofConstraint::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class ArrayLengthofConstraintTest : public ::testing::Test
 {
@@ -24,63 +29,54 @@ protected:
     static const uint8_t CORRECT_LENGTH = 6;
     static const uint8_t WRONG_LENGTH_LESS = 3;
     static const uint8_t WRONG_LENGTH_GREATER = 12;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t ArrayLengthofConstraintTest::CORRECT_LENGTH;
 const uint8_t ArrayLengthofConstraintTest::WRONG_LENGTH_LESS;
 const uint8_t ArrayLengthofConstraintTest::WRONG_LENGTH_GREATER;
 
-TEST_F(ArrayLengthofConstraintTest, readCorrectLength)
+TEST_F(ArrayLengthofConstraintTest, readConstructorCorrectLength)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeArrayLengthofConstraintToByteArray(writer, CORRECT_LENGTH);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ArrayLengthofConstraint arrayLengthofConstraint;
-    arrayLengthofConstraint.read(reader);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ArrayLengthofConstraint arrayLengthofConstraint(reader);
     ASSERT_EQ(CORRECT_LENGTH, arrayLengthofConstraint.getArray().size());
 }
 
-TEST_F(ArrayLengthofConstraintTest, readWrongLengthLess)
+TEST_F(ArrayLengthofConstraintTest, readConstructorWrongLengthLess)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeArrayLengthofConstraintToByteArray(writer, WRONG_LENGTH_LESS);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ArrayLengthofConstraint arrayLengthofConstraint;
-    ASSERT_THROW(arrayLengthofConstraint.read(reader), zserio::CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(ArrayLengthofConstraint arrayLengthofConstraint(reader), zserio::CppRuntimeException);
 }
 
-TEST_F(ArrayLengthofConstraintTest, readWrongLengthGreater)
+TEST_F(ArrayLengthofConstraintTest, readConstructorWrongLengthGreater)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeArrayLengthofConstraintToByteArray(writer, WRONG_LENGTH_GREATER);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    ArrayLengthofConstraint arrayLengthofConstraint;
-    ASSERT_THROW(arrayLengthofConstraint.read(reader), zserio::CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(ArrayLengthofConstraint arrayLengthofConstraint(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(ArrayLengthofConstraintTest, writeCorrectLength)
 {
     ArrayLengthofConstraint arrayLengthofConstraint;
-    std::vector<uint32_t>& array = arrayLengthofConstraint.getArray();
+    vector_type<uint32_t>& array = arrayLengthofConstraint.getArray();
     array.resize(CORRECT_LENGTH);
     for (size_t i = 0; i < CORRECT_LENGTH; ++i)
         array[i] = static_cast<uint32_t>(i);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     arrayLengthofConstraint.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ArrayLengthofConstraint readArrayLengthofConstraint(reader);
     ASSERT_EQ(CORRECT_LENGTH, readArrayLengthofConstraint.getArray().size());
     ASSERT_TRUE(arrayLengthofConstraint == readArrayLengthofConstraint);
@@ -89,24 +85,24 @@ TEST_F(ArrayLengthofConstraintTest, writeCorrectLength)
 TEST_F(ArrayLengthofConstraintTest, writeWrongLengthLess)
 {
     ArrayLengthofConstraint arrayLengthofConstraint;
-    std::vector<uint32_t>& array = arrayLengthofConstraint.getArray();
+    vector_type<uint32_t>& array = arrayLengthofConstraint.getArray();
     array.resize(WRONG_LENGTH_LESS);
     for (size_t i = 0; i < WRONG_LENGTH_LESS; ++i)
         array[i] = static_cast<uint32_t>(i);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(arrayLengthofConstraint.write(writer), zserio::CppRuntimeException);
 }
 
 TEST_F(ArrayLengthofConstraintTest, writeWrongLengthGreater)
 {
     ArrayLengthofConstraint arrayLengthofConstraint;
-    std::vector<uint32_t>& array = arrayLengthofConstraint.getArray();
+    vector_type<uint32_t>& array = arrayLengthofConstraint.getArray();
     array.resize(WRONG_LENGTH_GREATER);
     for (size_t i = 0; i < WRONG_LENGTH_GREATER; ++i)
         array[i] = static_cast<uint32_t>(i);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(arrayLengthofConstraint.write(writer), zserio::CppRuntimeException);
 }
 
