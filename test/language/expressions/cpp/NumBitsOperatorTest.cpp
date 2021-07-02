@@ -15,10 +15,11 @@ namespace
     {
         if (value == 0)
             return 0;
+
         if (value == 1)
             return 1;
 
-        return (uint8_t)(floor(log(value - 1) / log(2.0)) + 1);
+        return static_cast<uint8_t>(log2(value - 1) + 1);
     }
 }
 
@@ -28,7 +29,8 @@ TEST(NumBitsOperatorTest, GetNumBits8)
     for (uint8_t value8 = 1; value8 < 255; ++value8)
     {
         numBitsFunctions.setValue8(value8);
-        ASSERT_EQ(calculateExpectedNumBits(value8), numBitsFunctions.funcGetNumBits8());
+        ASSERT_EQ(calculateExpectedNumBits(value8), numBitsFunctions.funcGetNumBits8()) <<
+                "value8=" << static_cast<uint32_t>(value8);
     }
 }
 
@@ -38,27 +40,30 @@ TEST(NumBitsOperatorTest, GetNumBits16)
     for (uint16_t value16 = 1; value16 < 65535; ++value16)
     {
         numBitsFunctions.setValue16(value16);
-        ASSERT_EQ(calculateExpectedNumBits(value16), numBitsFunctions.funcGetNumBits16());
+        ASSERT_EQ(calculateExpectedNumBits(value16), numBitsFunctions.funcGetNumBits16()) <<
+                "value16=" << value16;
     }
 }
 
 TEST(NumBitsOperatorTest, GetNumBits32)
 {
     NumBitsFunctions numBitsFunctions;
-    for (uint32_t value32 = 1; value32 < (uint32_t)1 << 31; value32<<=1)
+    for (uint32_t value32 = 1; value32 < (UINT32_C(1) << 31); value32<<=1)
     {
         numBitsFunctions.setValue32(value32);
-        ASSERT_EQ(calculateExpectedNumBits(value32), numBitsFunctions.funcGetNumBits32());
+        ASSERT_EQ(calculateExpectedNumBits(value32), numBitsFunctions.funcGetNumBits32()) <<
+                "value32=" << value32;
     }
 }
 
 TEST(NumBitsOperatorTest, GetNumBits64)
 {
     NumBitsFunctions numBitsFunctions;
-    for (uint64_t value64 = 1; value64 < (uint64_t)1 << 48; value64<<=1)
+    for (uint64_t value64 = 1; value64 < (UINT64_C(1) << 48); value64<<=1)
     {
         numBitsFunctions.setValue64(value64);
-        ASSERT_EQ(calculateExpectedNumBits(value64), numBitsFunctions.funcGetNumBits64());
+        ASSERT_EQ(calculateExpectedNumBits(value64), numBitsFunctions.funcGetNumBits64())
+                << "value64=" << value64;
     }
 }
 
