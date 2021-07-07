@@ -2,17 +2,22 @@
 
 #include "gtest/gtest.h"
 
+#include "member_access/access_within_type/Message.h"
+
+#include "zserio/RebindAlloc.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/StringConvertUtil.h"
-#include "zserio/CppRuntimeException.h"
-
-#include "member_access/access_within_type/Message.h"
 
 namespace member_access
 {
 namespace access_within_type
 {
+
+using allocator_type = Message::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class AccessWithinTypeTest : public ::testing::Test
 {
@@ -34,11 +39,11 @@ protected:
         ASSERT_EQ(expectedVersionValue, message.getHeader().getVersion());
         ASSERT_EQ(numSentences, message.getHeader().getNumSentences());
 
-        const std::vector<std::string>& sentences = message.getSentences();
+        const vector_type<string_type>& sentences = message.getSentences();
         ASSERT_EQ(numSentences, sentences.size());
         for (uint16_t i = 0; i < numSentences; ++i)
         {
-            const std::string& expectedSentence = getSentence(i);
+            const string_type& expectedSentence = getSentence(i);
             ASSERT_EQ(expectedSentence, sentences[i]);
         }
     }
@@ -50,30 +55,30 @@ protected:
         header.setNumSentences(numSentences);
 
         const uint16_t numStrings = (wrongArrayLength) ? numSentences - 1 : numSentences;
-        std::vector<std::string>& sentences = message.getSentences();
+        vector_type<string_type>& sentences = message.getSentences();
         sentences.reserve(numStrings);
         for (uint16_t i = 0; i < numStrings; ++i)
             sentences.push_back(getSentence(i));
     }
 
-    std::string getSentence(uint16_t index)
+    string_type getSentence(uint16_t index)
     {
-        return std::string("This is sentence #") + zserio::convertToString(index);
+        return string_type("This is sentence #") + zserio::toString<allocator_type>(index);
     }
 
     static const uint16_t   VERSION_VALUE = 0xAB;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(AccessWithinTypeTest, read)
 {
     const uint16_t numSentences = 10;
     const bool wrongArrayLength = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeMessageToByteArray(writer, numSentences, wrongArrayLength);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Message message(reader);
     checkMessage(message, numSentences);
 }
@@ -82,11 +87,9 @@ TEST_F(AccessWithinTypeTest, readWrongArrayLength)
 {
     const uint16_t numSentences = 10;
     const bool wrongArrayLength = true;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeMessageToByteArray(writer, numSentences, wrongArrayLength);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
 
     ASSERT_THROW(Message message(reader), zserio::CppRuntimeException);
 }
@@ -98,12 +101,10 @@ TEST_F(AccessWithinTypeTest, write)
     Message message;
     fillMessage(message, numSentences, wrongArrayLength);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     message.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Message readMessage(reader);
     checkMessage(readMessage, numSentences);
     ASSERT_TRUE(message == readMessage);
@@ -116,7 +117,7 @@ TEST_F(AccessWithinTypeTest, writeWrongArrayLength)
     Message message;
     fillMessage(message, numSentences, wrongArrayLength);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(message.write(writer), zserio::CppRuntimeException);
 }
 
