@@ -1,20 +1,26 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-
-#include <sqlite3.h>
+#include <memory>
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "sql_databases/db_with_relocation/EuropeDb.h"
 #include "sql_databases/db_with_relocation/AmericaDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/SqliteFinalizer.h"
 
 namespace sql_databases
 {
 namespace db_with_relocation
 {
+
+using allocator_type = EuropeDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class DbWithRelocationTest : public ::testing::Test
 {
@@ -43,43 +49,36 @@ public:
     }
 
 protected:
-    bool isTableInDb(zserio::ISqliteDatabase& database, const std::string& checkTableName)
+    bool isTableInDb(zserio::ISqliteDatabase& database, const string_type& checkTableName)
     {
-        sqlite3_stmt* statement;
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(database.connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                database.connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+            return false;
+
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr ||
+                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
         {
-            sqlite3_finalize(statement);
             return false;
         }
-
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
-            return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
 
-    const std::string m_europeDbFileName;
-    const std::string m_americaDbFileName;
-    const std::string m_relocatedSlovakiaTableName;
-    const std::string m_relocatedCzechiaTableName;
+    const string_type m_europeDbFileName;
+    const string_type m_americaDbFileName;
+    const string_type m_relocatedSlovakiaTableName;
+    const string_type m_relocatedCzechiaTableName;
 
     std::unique_ptr<EuropeDb> m_europeDb;
     std::unique_ptr<AmericaDb> m_americaDb;
 
-    std::set<std::string> m_attachedDatabasesNames;
+    std::set<string_type> m_attachedDatabasesNames;
 };
 
 TEST_F(DbWithRelocationTest, tableGetters)
@@ -103,7 +102,7 @@ TEST_F(DbWithRelocationTest, relocatedSlovakiaTable)
 
     // write to relocated table
     int32_t updateTileId = 1;
-    std::vector<CountryMapTable::Row> writtenRows(1);
+    vector_type<CountryMapTable::Row> writtenRows(1);
     CountryMapTable::Row& row = writtenRows.back();
     row.setTileId(updateTileId);
     Tile writtenTile;
@@ -120,11 +119,11 @@ TEST_F(DbWithRelocationTest, relocatedSlovakiaTable)
     updatedTile.setVersion('b');
     updatedTile.setData('B');
     updateRow.setTile(updatedTile);
-    const std::string updateCondition = std::string("tileId=") + zserio::convertToString(updateTileId);
+    const string_type updateCondition = string_type("tileId=") + zserio::toString<allocator_type>(updateTileId);
     relocatedTable.update(updateRow, updateCondition);
 
     // read it back
-    std::vector<CountryMapTable::Row> readRows;
+    vector_type<CountryMapTable::Row> readRows;
     CountryMapTable::Reader reader = relocatedTable.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -141,7 +140,7 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
 
     // write to relocated table
     int32_t updateTileId = 1;
-    std::vector<CountryMapTable::Row> writtenRows(1);
+    vector_type<CountryMapTable::Row> writtenRows(1);
     CountryMapTable::Row& row = writtenRows.back();
     row.setTileId(updateTileId);
     Tile writtenTile;
@@ -158,11 +157,11 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
     updatedTile.setVersion('d');
     updatedTile.setData('D');
     updateRow.setTile(updatedTile);
-    const std::string updateCondition = std::string("tileId=") + zserio::convertToString(updateTileId);
+    const string_type updateCondition = string_type("tileId=") + zserio::toString<allocator_type>(updateTileId);
     relocatedTable.update(updateRow, updateCondition);
 
     // read it back
-    std::vector<CountryMapTable::Row> readRows;
+    vector_type<CountryMapTable::Row> readRows;
     CountryMapTable::Reader reader = relocatedTable.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -174,20 +173,15 @@ TEST_F(DbWithRelocationTest, relocatedCzechiaTable)
 
 TEST_F(DbWithRelocationTest, attachedDatabases)
 {
-    sqlite3* connection = m_americaDb->connection();
+    std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_americaDb->connection().prepareStatement("PRAGMA database_list"));
 
-    sqlite3_stmt* stmt = NULL;
-    const int result = sqlite3_prepare_v2(connection, "PRAGMA database_list", -1, &stmt, NULL);
-    ASSERT_EQ(SQLITE_OK, result);
-
-    while (sqlite3_step(stmt) == SQLITE_ROW)
+    while (sqlite3_step(statement.get()) == SQLITE_ROW)
     {
-        const char* databaseName = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        const char* databaseName = reinterpret_cast<const char*>(sqlite3_column_text(statement.get(), 1));
         ASSERT_EQ(1, m_attachedDatabasesNames.count(databaseName));
         m_attachedDatabasesNames.erase(databaseName);
     }
-
-    sqlite3_finalize(stmt);
 
     ASSERT_EQ(1, m_attachedDatabasesNames.size());
     ASSERT_EQ(0, m_attachedDatabasesNames.count("main"));

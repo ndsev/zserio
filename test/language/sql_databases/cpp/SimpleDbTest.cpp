@@ -1,17 +1,29 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-
-#include <sqlite3.h>
+#include <memory>
+#include <set>
+#include <algorithm>
 
 #include "gtest/gtest.h"
 
 #include "sql_databases/simple_db/WorldDb.h"
 
+#include "zserio/RebindAlloc.h"
+#include "zserio/SqliteFinalizer.h"
+#include "zserio/StringView.h"
+
 namespace sql_databases
 {
 namespace simple_db
 {
+
+using allocator_type = WorldDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+template <typename T, typename COMPARE = std::less<T>>
+using set_type = std::set<T, COMPARE, zserio::RebindAlloc<allocator_type, T>>;
 
 class SimpleDbTest : public ::testing::Test
 {
@@ -23,51 +35,42 @@ public:
     }
 
 protected:
-    bool isTableInDb(zserio::ISqliteDatabase& database, const std::string& checkTableName)
+    bool isTableInDb(zserio::ISqliteDatabase& database, const string_type& checkTableName)
     {
-        sqlite3_stmt* statement;
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(database.connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                database.connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
-        {
-            sqlite3_finalize(statement);
             return false;
-        }
 
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
             return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
 
-    const std::string m_dbFileName;
+    const string_type m_dbFileName;
 
-    const std::string m_worldDbName;
-    const std::string m_europeTableName;
-    const std::string m_americaTableName;
+    const string_type m_worldDbName;
+    const string_type m_europeTableName;
+    const string_type m_americaTableName;
 };
 
 TEST_F(SimpleDbTest, externalConstructor)
 {
-    sqlite3 *externalConnection = NULL;
+    sqlite3 *externalConnection = nullptr;
     const int result = sqlite3_open(m_dbFileName.c_str(), &externalConnection);
     ASSERT_EQ(SQLITE_OK, result);
 
     {
         WorldDb database(externalConnection);
         database.createSchema();
-        ASSERT_EQ(externalConnection, database.connection());
+        ASSERT_EQ(externalConnection, database.connection().getConnection());
+        ASSERT_EQ(zserio::SqliteConnection::EXTERNAL_CONNECTION, database.connection().getConnectionType());
     }
 
     ASSERT_EQ(SQLITE_OK, sqlite3_close(externalConnection));
@@ -76,7 +79,7 @@ TEST_F(SimpleDbTest, externalConstructor)
 TEST_F(SimpleDbTest, fileNameConstructor)
 {
     WorldDb database(m_dbFileName);
-    ASSERT_TRUE(database.connection() != NULL);
+    ASSERT_TRUE(database.connection().getConnection() != nullptr);
 }
 
 TEST_F(SimpleDbTest, fileNameConstructorException)
@@ -113,7 +116,7 @@ TEST_F(SimpleDbTest, createSchemaWithoutRowIdBlackList)
 
     ASSERT_FALSE(isTableInDb(database, m_europeTableName));
     ASSERT_FALSE(isTableInDb(database, m_americaTableName));
-    const std::set<std::string> withoutRowIdTableNamesBlackList;
+    const set_type<string_type> withoutRowIdTableNamesBlackList;
     database.createSchema(withoutRowIdTableNamesBlackList);
     ASSERT_TRUE(isTableInDb(database, m_europeTableName));
     ASSERT_TRUE(isTableInDb(database, m_americaTableName));
@@ -133,14 +136,20 @@ TEST_F(SimpleDbTest, deleteSchema)
 
 TEST_F(SimpleDbTest, databaseName)
 {
-    ASSERT_EQ(m_worldDbName, WorldDb::databaseName());
+    ASSERT_EQ(::zserio::StringView(m_worldDbName), WorldDb::databaseName());
 }
 
 TEST_F(SimpleDbTest, tableNames)
 {
-    std::vector<std::string> tableNames(WorldDb::tableNames().begin(), WorldDb::tableNames().end());
+    vector_type<string_type> tableNames;
+    std::transform(WorldDb::tableNames().begin(), WorldDb::tableNames().end(), std::back_inserter(tableNames),
+            [](zserio::StringView name) -> string_type
+            {
+                return zserio::stringViewToString(name, allocator_type());
+            }
+    );
 
-    std::vector<std::string> expectedTableNames;
+    vector_type<string_type> expectedTableNames;
     expectedTableNames.push_back(m_europeTableName);
     expectedTableNames.push_back(m_americaTableName);
 
