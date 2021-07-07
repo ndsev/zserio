@@ -2,7 +2,7 @@ package indexed_offsets.optional_nested_indexed_offset_array;
 
 struct Header
 {
-    int16   length;
+    uint16   length;
     uint32  offsets[length];
 };
 

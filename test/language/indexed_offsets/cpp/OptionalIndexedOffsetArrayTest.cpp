@@ -1,14 +1,20 @@
 #include "gtest/gtest.h"
 
+#include "indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.h"
+
+#include "zserio/RebindAlloc.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-
-#include "indexed_offsets/optional_indexed_offset_array/OptionalIndexedOffsetArray.h"
 
 namespace indexed_offsets
 {
 namespace optional_indexed_offset_array
 {
+
+using allocator_type = OptionalIndexedOffsetArray::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class OptionalIndexedOffsetArrayTest : public ::testing::Test
 {
@@ -48,7 +54,7 @@ protected:
 
     void checkOffsets(const OptionalIndexedOffsetArray& optionalIndexedOffsetArray, uint16_t offsetShift)
     {
-        const std::vector<uint32_t>& offsets = optionalIndexedOffsetArray.getOffsets();
+        const vector_type<uint32_t>& offsets = optionalIndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
@@ -69,7 +75,7 @@ protected:
 
         if (hasOptional)
         {
-            const std::vector<std::string>& data = optionalIndexedOffsetArray.getData();
+            const vector_type<string_type>& data = optionalIndexedOffsetArray.getData();
             const size_t expectedNumElements = NUM_ELEMENTS;
             ASSERT_EQ(expectedNumElements, data.size());
             for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
@@ -83,7 +89,7 @@ protected:
     void fillOptionalIndexedOffsetArray(OptionalIndexedOffsetArray& optionalIndexedOffsetArray,
             bool hasOptional, bool createWrongOffsets)
     {
-        std::vector<uint32_t>& offsets = optionalIndexedOffsetArray.getOffsets();
+        vector_type<uint32_t>& offsets = optionalIndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
@@ -109,7 +115,7 @@ protected:
         if (hasOptional)
         {
             bitSize += 7;
-            for (short i = 0; i < NUM_ELEMENTS; ++i)
+            for (size_t i = 0; i < NUM_ELEMENTS; ++i)
                 bitSize += zserio::bitSizeOfString(m_data[i]);
         }
         bitSize += 6;
@@ -124,19 +130,20 @@ protected:
 
     static const uint8_t    FIELD_VALUE = 63;
 
-    std::vector<std::string> m_data;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+
+private:
+    vector_type<string_type> m_data;
 };
 
 TEST_F(OptionalIndexedOffsetArrayTest, readWithOptional)
 {
     const bool hasOptional = true;
     const bool writeWrongOffsets = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeOptionalIndexedOffsetArrayToByteArray(writer, hasOptional, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalIndexedOffsetArray optionalIndexedOffsetArray(reader);
     checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
 }
@@ -145,12 +152,10 @@ TEST_F(OptionalIndexedOffsetArrayTest, readWithoutOptional)
 {
     const bool hasOptional = false;
     const bool writeWrongOffsets = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeOptionalIndexedOffsetArrayToByteArray(writer, hasOptional, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalIndexedOffsetArray optionalIndexedOffsetArray(reader);
     checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
 }
@@ -185,7 +190,7 @@ TEST_F(OptionalIndexedOffsetArrayTest, initializeOffsetsWithOptional)
     fillOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional, createWrongOffsets);
 
     const size_t bitPosition = 0;
-    const size_t expectedBitSize = getOptionalIndexedOffsetArrayBitSize(hasOptional);;
+    const size_t expectedBitSize = getOptionalIndexedOffsetArrayBitSize(hasOptional);
     ASSERT_EQ(expectedBitSize, optionalIndexedOffsetArray.initializeOffsets(bitPosition));
     checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
 }
@@ -198,7 +203,7 @@ TEST_F(OptionalIndexedOffsetArrayTest, initializeOffsetsWithoutOptional)
     fillOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional, createWrongOffsets);
 
     const size_t bitPosition = 0;
-    const size_t expectedBitSize = getOptionalIndexedOffsetArrayBitSize(hasOptional);;
+    const size_t expectedBitSize = getOptionalIndexedOffsetArrayBitSize(hasOptional);
     ASSERT_EQ(expectedBitSize, optionalIndexedOffsetArray.initializeOffsets(bitPosition));
 }
 
@@ -209,13 +214,11 @@ TEST_F(OptionalIndexedOffsetArrayTest, writeWithOptional)
     OptionalIndexedOffsetArray optionalIndexedOffsetArray;
     fillOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     optionalIndexedOffsetArray.write(writer);
     checkOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalIndexedOffsetArray readOptionalIndexedOffsetArray(reader);
     checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional);
     ASSERT_TRUE(optionalIndexedOffsetArray == readOptionalIndexedOffsetArray);
@@ -228,12 +231,10 @@ TEST_F(OptionalIndexedOffsetArrayTest, writeWithoutOptional)
     OptionalIndexedOffsetArray optionalIndexedOffsetArray;
     fillOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     optionalIndexedOffsetArray.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalIndexedOffsetArray readOptionalIndexedOffsetArray(reader);
     checkOptionalIndexedOffsetArray(readOptionalIndexedOffsetArray, hasOptional);
     ASSERT_TRUE(optionalIndexedOffsetArray == readOptionalIndexedOffsetArray);
