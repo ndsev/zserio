@@ -3,15 +3,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/SqliteException.h"
-
 #include "sql_constraints/TestDb.h"
 #include "sql_constraints/field_constraints/FieldConstraintsTable.h"
+
+#include "zserio/SqliteException.h"
+#include "zserio/RebindAlloc.h"
 
 namespace sql_constraints
 {
 namespace field_constraints
 {
+
+using allocator_type = FieldConstraintsTable::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class FieldConstraintsTest : public ::testing::Test
 {
@@ -77,7 +82,7 @@ TEST_F(FieldConstraintsTest, withoutSql)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.resetWithoutSql();
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_NO_THROW(fieldConstraintsTable.write(rows));
 }
@@ -88,7 +93,7 @@ TEST_F(FieldConstraintsTest, sqlNotNull)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.resetSqlNotNull();
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(fieldConstraintsTable.write(rows), zserio::SqliteException);
 }
@@ -99,7 +104,7 @@ TEST_F(FieldConstraintsTest, sqlDefaultNull)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.resetSqlDefaultNull();
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_NO_THROW(fieldConstraintsTable.write(rows));
 }
@@ -110,7 +115,7 @@ TEST_F(FieldConstraintsTest, sqlCheckConstant)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.setSqlCheckConstant(WRONG_CONSTRAINTS_CONSTANT);
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(fieldConstraintsTable.write(rows), zserio::SqliteException);
 }
@@ -121,7 +126,7 @@ TEST_F(FieldConstraintsTest, sqlCheckImportedConstant)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.setSqlCheckImportedConstant(WRONG_IMPORTED_CONSTRAINTS_CONSTANT);
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(fieldConstraintsTable.write(rows), zserio::SqliteException);
 }
@@ -132,7 +137,7 @@ TEST_F(FieldConstraintsTest, sqlCheckUnicodeEscape)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.setSqlCheckUnicodeEscape(WRONG_UNICODE_ESCAPE_CONST);
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(fieldConstraintsTable.write(rows), zserio::SqliteException);
 }
@@ -143,7 +148,7 @@ TEST_F(FieldConstraintsTest, sqlCheckHexEscape)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.setSqlCheckHexEscape(WRONG_HEX_ESCAPE_CONST);
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(fieldConstraintsTable.write(rows), zserio::SqliteException);
 }
@@ -154,7 +159,7 @@ TEST_F(FieldConstraintsTest, sqlCheckOctalEscape)
     FieldConstraintsTable::Row row;
     fillRow(row);
     row.setSqlCheckOctalEscape(WRONG_OCTAL_ESCAPE_CONST);
-    std::vector<FieldConstraintsTable::Row> rows;
+    vector_type<FieldConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_THROW(fieldConstraintsTable.write(rows), zserio::SqliteException);
 }
