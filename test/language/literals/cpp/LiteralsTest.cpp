@@ -23,6 +23,8 @@
 #include "literals/OCTAL_ZERO.h"
 #include "literals/STRING.h"
 
+using namespace zserio::literals;
+
 namespace literals
 {
 
@@ -85,7 +87,7 @@ TEST(LiteralsTest, float32Literal)
 
 TEST(LiteralsTest, float64Literal)
 {
-    float diff = 15.234 - FLOAT64;
+    double diff = 15.234 - FLOAT64;
     if (diff < 0.0)
         diff = -diff;
     ASSERT_TRUE(diff <= std::numeric_limits<double>::epsilon());
@@ -93,7 +95,7 @@ TEST(LiteralsTest, float64Literal)
 
 TEST(LiteralsTest, String)
 {
-    ASSERT_EQ("String with escaped values \x31 \x32 \063 \n \t \f \r \\ \"", STRING);
+    ASSERT_EQ("String with escaped values \x31 \x32 \063 \n \t \f \r \\ \""_sv, STRING);
 }
 
 } // namespace literals
