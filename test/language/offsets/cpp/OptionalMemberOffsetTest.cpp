@@ -44,7 +44,7 @@ protected:
             ASSERT_FALSE(optionalMemberOffset.isOptionalFieldUsed());
         }
 
-        ASSERT_EQ(field, (int)optionalMemberOffset.getField());
+        ASSERT_EQ(field, optionalMemberOffset.getField());
     }
 
     void fillOptionalMemberOffset(OptionalMemberOffset& optionalMemberOffset, bool hasOptional,
@@ -62,35 +62,33 @@ protected:
 
     static const size_t OPTIONAL_FIELD_OFFSET = 5;
     static const size_t WRONG_OPTIONAL_FIELD_OFFSET = 0;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-TEST_F(OptionalMemberOffsetTest, readWithOptional)
+TEST_F(OptionalMemberOffsetTest, readConstructorWithOptional)
 {
     const bool hasOptional = true;
     const int32_t optionalField = 0x1212;
     const int32_t field = 0x2121;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeOptionalMemberOffsetToByteArray(writer, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField, field);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberOffset optionalMemberOffset(reader);
     checkOptionalMemberOffset(optionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField, field);
 }
 
-TEST_F(OptionalMemberOffsetTest, readWithoutOptional)
+TEST_F(OptionalMemberOffsetTest, readConstructorWithoutOptional)
 {
     const bool hasOptional = false;
     const uint32_t optionalFieldOffset = 0xABCD;
     const int32_t optionalField = 0;
     const int32_t field = 0x2121;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeOptionalMemberOffsetToByteArray(writer, hasOptional, optionalFieldOffset, optionalField, field);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberOffset optionalMemberOffset(reader);
     checkOptionalMemberOffset(optionalMemberOffset, hasOptional, optionalFieldOffset, optionalField, field);
 }
@@ -152,13 +150,11 @@ TEST_F(OptionalMemberOffsetTest, writeWithOptional)
     fillOptionalMemberOffset(optionalMemberOffset, hasOptional, WRONG_OPTIONAL_FIELD_OFFSET, optionalField,
             field);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     optionalMemberOffset.write(writer);
     checkOptionalMemberOffset(optionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField, field);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberOffset readOptionalMemberOffset(reader);
     checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField,
             field);
@@ -174,12 +170,10 @@ TEST_F(OptionalMemberOffsetTest, writeWithoutOptional)
     OptionalMemberOffset optionalMemberOffset;
     fillOptionalMemberOffset(optionalMemberOffset, hasOptional, optionalFieldOffset, optionalField, field);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     optionalMemberOffset.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberOffset readOptionalMemberOffset(reader);
     checkOptionalMemberOffset(readOptionalMemberOffset, hasOptional, optionalFieldOffset, optionalField, field);
     ASSERT_TRUE(optionalMemberOffset == readOptionalMemberOffset);

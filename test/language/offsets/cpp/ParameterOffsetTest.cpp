@@ -55,30 +55,28 @@ protected:
     static const uint32_t   ROOM_OFFSET = 6;
 
     static const size_t     SCHOOL_BIT_SIZE = (ROOM_OFFSET + 2) * 8;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-TEST_F(ParameterOffsetTest, read)
+TEST_F(ParameterOffsetTest, readConstructor)
 {
     const bool writeWrongOffset = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeSchoolToByteArray(writer, writeWrongOffset);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const School school(reader);
     checkSchool(school);
 }
 
-TEST_F(ParameterOffsetTest, readWrongOffsets)
+TEST_F(ParameterOffsetTest, readConstructorWrongOffsets)
 {
     const bool writeWrongOffset = true;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeSchoolToByteArray(writer, writeWrongOffset);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EXPECT_THROW(School school(reader), zserio::CppRuntimeException);
 }
 
@@ -133,13 +131,11 @@ TEST_F(ParameterOffsetTest, write)
     School school;
     fillSchool(school, createWrongOffset);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     school.write(writer);
     checkSchool(school);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const School readSchool(reader);
     checkSchool(readSchool);
     ASSERT_TRUE(school == readSchool);
@@ -151,7 +147,7 @@ TEST_F(ParameterOffsetTest, writeWithPosition)
     School school;
     fillSchool(school, createWrongOffset);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
     writer.writeBits(0, bitPosition);
     school.write(writer);
@@ -165,7 +161,7 @@ TEST_F(ParameterOffsetTest, writeWrongOffset)
     School school;
     fillSchool(school, createWrongOffset);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(school.write(writer, zserio::NO_PRE_WRITE_ACTION), zserio::CppRuntimeException);
 }
 
