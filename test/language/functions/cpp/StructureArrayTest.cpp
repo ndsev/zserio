@@ -46,7 +46,7 @@ protected:
     {
         structureArray.setNumElements(NUM_ITEM_ELEMENTS);
 
-        std::vector<Item>& values = structureArray.getValues();
+        auto& values = structureArray.getValues();
         values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
 
         structureArray.setPos(pos);
@@ -59,23 +59,17 @@ protected:
         const Item readElement = structureArray.funcGetElement();
         ASSERT_EQ(m_items[pos], readElement);
 
-        zserio::BitStreamWriter writtenWriter;
+        zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
         structureArray.write(writtenWriter);
-        size_t writtenWriterBufferByteSize;
-        const uint8_t* writtenWriterBuffer = writtenWriter.getWriteBuffer(writtenWriterBufferByteSize);
 
-        zserio::BitStreamWriter expectedWriter;
+        zserio::BitBuffer expectedBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter expectedWriter(expectedBitBuffer);
         writeStructureArrayToByteArray(expectedWriter, pos);
-        size_t expectedWriterBufferByteSize;
-        const uint8_t* expectedWriterBuffer = expectedWriter.getWriteBuffer(expectedWriterBufferByteSize);
 
-        std::vector<uint8_t> writtenWriterVector(writtenWriterBuffer,
-                                                 writtenWriterBuffer + writtenWriterBufferByteSize);
-        std::vector<uint8_t> expectedWriterVector(expectedWriterBuffer,
-                                                  expectedWriterBuffer + expectedWriterBufferByteSize);
-        ASSERT_EQ(expectedWriterVector, writtenWriterVector);
+        ASSERT_EQ(expectedBitBuffer, writtenBitBuffer);
 
-        zserio::BitStreamReader reader(writtenWriterBuffer, writtenWriterBufferByteSize);
+        zserio::BitStreamReader reader(writtenBitBuffer);
         const StructureArray readStructureArray(reader);
         ASSERT_EQ(structureArray, readStructureArray);
     }

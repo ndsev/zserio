@@ -38,12 +38,12 @@ protected:
     {
         if (value <= MAX_ONE_BYTE_VALUE)
         {
-            customVarInt.setVal1((uint8_t)value);
+            customVarInt.setVal1(static_cast<uint8_t>(value));
         }
         else if (value <= 0xFFFF)
         {
             customVarInt.setVal1(TWO_BYTES_INDICATOR);
-            customVarInt.setVal2((uint16_t)value);
+            customVarInt.setVal2(static_cast<uint16_t>(value));
         }
         else
         {
@@ -59,23 +59,17 @@ protected:
         const uint32_t readValue = customVarInt.funcGetValue();
         ASSERT_EQ(value, readValue);
 
-        zserio::BitStreamWriter writtenWriter;
+        zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
         customVarInt.write(writtenWriter);
-        size_t writtenWriterBufferByteSize;
-        const uint8_t* writtenWriterBuffer = writtenWriter.getWriteBuffer(writtenWriterBufferByteSize);
 
-        zserio::BitStreamWriter expectedWriter;
+        zserio::BitBuffer expectedBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter expectedWriter(expectedBitBuffer);
         writeCustomVarIntToByteArray(expectedWriter, value);
-        size_t expectedWriterBufferByteSize;
-        const uint8_t* expectedWriterBuffer = expectedWriter.getWriteBuffer(expectedWriterBufferByteSize);
 
-        std::vector<uint8_t> writtenWriterVector(writtenWriterBuffer,
-                                                 writtenWriterBuffer + writtenWriterBufferByteSize);
-        std::vector<uint8_t> expectedWriterVector(expectedWriterBuffer,
-                                                  expectedWriterBuffer + expectedWriterBufferByteSize);
-        ASSERT_EQ(expectedWriterVector, writtenWriterVector);
+        ASSERT_EQ(expectedBitBuffer, writtenBitBuffer);
 
-        zserio::BitStreamReader reader(writtenWriterBuffer, writtenWriterBufferByteSize);
+        zserio::BitStreamReader reader(writtenBitBuffer);
         const CustomVarInt readcustomVarInt(reader);
         ASSERT_EQ(customVarInt, readcustomVarInt);
     }

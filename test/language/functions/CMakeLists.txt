@@ -36,6 +36,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/functions/structure_parent_child_value/ChildValue.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_parent_child_value/ChildValue.h
 
+    ${ZSERIO_GEN_DIR}/functions/structure_string/CONST.h
+    ${ZSERIO_GEN_DIR}/functions/structure_string/FIELD.h
+    ${ZSERIO_GEN_DIR}/functions/structure_string/StringPool.cpp
+    ${ZSERIO_GEN_DIR}/functions/structure_string/StringPool.h
+    ${ZSERIO_GEN_DIR}/functions/structure_string/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/functions/structure_string/TestStructure.h
+
     ${ZSERIO_GEN_DIR}/functions/structure_value/CustomVarInt.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_value/CustomVarInt.h
     ${ZSERIO_GEN_DIR}/functions/structure_value/CustomVarList.cpp
@@ -68,6 +75,7 @@ add_test_sources(
     cpp/StructureOptionalTest.cpp
     cpp/StructureParamTest.cpp
     cpp/StructureParentChildValueTest.cpp
+    cpp/StructureStringTest.cpp
     cpp/StructureValueTest.cpp
     cpp/UnionArrayTest.cpp
 )

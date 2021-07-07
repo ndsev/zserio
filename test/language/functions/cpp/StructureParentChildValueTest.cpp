@@ -38,23 +38,17 @@ TEST_F(FunctionsStructureParentChildValueTest, checkParentValue)
     createParentValue(parentValue);
     ASSERT_EQ(CHILD_VALUE, parentValue.funcGetValue());
 
-    zserio::BitStreamWriter writtenWriter;
+    zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
     parentValue.write(writtenWriter);
-    size_t writtenWriterBufferByteSize;
-    const uint8_t* writtenWriterBuffer = writtenWriter.getWriteBuffer(writtenWriterBufferByteSize);
 
-    zserio::BitStreamWriter expectedWriter;
+    zserio::BitBuffer expectedBitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter expectedWriter(expectedBitBuffer);
     writeParentValueToByteArray(expectedWriter);
-    size_t expectedWriterBufferByteSize;
-    const uint8_t* expectedWriterBuffer = expectedWriter.getWriteBuffer(expectedWriterBufferByteSize);
 
-    std::vector<uint8_t> writtenWriterVector(writtenWriterBuffer,
-                                             writtenWriterBuffer + writtenWriterBufferByteSize);
-    std::vector<uint8_t> expectedWriterVector(expectedWriterBuffer,
-                                              expectedWriterBuffer + expectedWriterBufferByteSize);
-    ASSERT_EQ(expectedWriterVector, writtenWriterVector);
+    ASSERT_EQ(expectedBitBuffer, writtenBitBuffer);
 
-    zserio::BitStreamReader reader(writtenWriterBuffer, writtenWriterBufferByteSize);
+    zserio::BitStreamReader reader(writtenBitBuffer);
     const ParentValue readParentValue(reader);
     ASSERT_EQ(parentValue, readParentValue);
 }

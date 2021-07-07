@@ -49,23 +49,17 @@ protected:
         const uint8_t expectedValue = calculateValue(defaultValue, externalValue);
         ASSERT_EQ(expectedValue, valueConsumerCreator.getValueCalculator().funcValue());
 
-        zserio::BitStreamWriter writtenWriter;
+        zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
         valueConsumerCreator.write(writtenWriter);
-        size_t writtenWriterBufferByteSize;
-        const uint8_t* writtenWriterBuffer = writtenWriter.getWriteBuffer(writtenWriterBufferByteSize);
 
-        zserio::BitStreamWriter expectedWriter;
+        zserio::BitBuffer expectedBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter expectedWriter(expectedBitBuffer);
         writeValueConsumerCreatorToByteArray(expectedWriter, defaultValue, externalValue);
-        size_t expectedWriterBufferByteSize;
-        const uint8_t* expectedWriterBuffer = expectedWriter.getWriteBuffer(expectedWriterBufferByteSize);
 
-        std::vector<uint8_t> writtenWriterVector(writtenWriterBuffer,
-                                                 writtenWriterBuffer + writtenWriterBufferByteSize);
-        std::vector<uint8_t> expectedWriterVector(expectedWriterBuffer,
-                                                  expectedWriterBuffer + expectedWriterBufferByteSize);
-        ASSERT_EQ(expectedWriterVector, writtenWriterVector);
+        ASSERT_EQ(expectedBitBuffer, writtenBitBuffer);
 
-        zserio::BitStreamReader reader(writtenWriterBuffer, writtenWriterBufferByteSize);
+        zserio::BitStreamReader reader(writtenBitBuffer);
         const ValueConsumerCreator readValueConsumerCreator(reader);
         ASSERT_EQ(valueConsumerCreator, readValueConsumerCreator);
     }

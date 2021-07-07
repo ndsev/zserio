@@ -28,7 +28,7 @@ protected:
     {
         parentStructure.setNumChildren(NUM_CHILDREN);
 
-        std::vector<ChildStructure>& children = parentStructure.getChildren();
+        auto& children = parentStructure.getChildren();
         for (uint8_t i = 0; i < NUM_CHILDREN; ++i)
         {
             ChildStructure child;
@@ -57,23 +57,17 @@ TEST_F(FunctionsStructureArrayParamTest, checkParentStructure)
     const uint8_t expectedChildBitSize = CHILD_BIT_SIZE;
     ASSERT_EQ(expectedChildBitSize, parentStructure.funcGetChildBitSize());
 
-    zserio::BitStreamWriter writtenWriter;
+    zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
     parentStructure.write(writtenWriter);
-    size_t writtenWriterBufferByteSize;
-    const uint8_t* writtenWriterBuffer = writtenWriter.getWriteBuffer(writtenWriterBufferByteSize);
 
-    zserio::BitStreamWriter expectedWriter;
+    zserio::BitBuffer expectedBitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter expectedWriter(expectedBitBuffer);
     writeParentStructureToByteArray(expectedWriter);
-    size_t expectedWriterBufferByteSize;
-    const uint8_t* expectedWriterBuffer = expectedWriter.getWriteBuffer(expectedWriterBufferByteSize);
 
-    std::vector<uint8_t> writtenWriterVector(writtenWriterBuffer,
-                                             writtenWriterBuffer + writtenWriterBufferByteSize);
-    std::vector<uint8_t> expectedWriterVector(expectedWriterBuffer,
-                                              expectedWriterBuffer + expectedWriterBufferByteSize);
-    ASSERT_EQ(expectedWriterVector, writtenWriterVector);
+    ASSERT_EQ(expectedBitBuffer, writtenBitBuffer);
 
-    zserio::BitStreamReader reader(writtenWriterBuffer, writtenWriterBufferByteSize);
+    zserio::BitStreamReader reader(writtenBitBuffer);
     const ParentStructure readParentStructure(reader);
     ASSERT_EQ(parentStructure, readParentStructure);
 }
