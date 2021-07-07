@@ -1,16 +1,24 @@
 #include "gtest/gtest.h"
 
 #include "TestPubsub.h"
-#include "zserio/PubsubException.h"
 
 #include "pubsub_types/simple_pubsub/SimplePubsubProvider.h"
 #include "pubsub_types/simple_pubsub/SimplePubsubClient.h"
 #include "pubsub_types/simple_pubsub/SimplePubsub.h"
 
+#include "zserio/PubsubException.h"
+#include "zserio/RebindAlloc.h"
+
+using namespace zserio::literals;
+using namespace utils;
+
 namespace pubsub_types
 {
 namespace simple_pubsub
 {
+
+using allocator_type = SimplePubsub::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
 
 class SimplePubsubTest : public ::testing::Test
 {
@@ -18,101 +26,168 @@ public:
     SimplePubsubTest()
     :   simplePubsubProvider(pubsub),
         simplePubsubClient(pubsub),
-        simplePubsub(pubsub)
+        simplePubsub(createPubsub())
     {}
 
+protected:
+    class TestPubsubImpl : public TestPubsub<allocator_type>
+    {
+    public:
+        struct Context
+        {
+            bool seenByPubsub = false;
+        };
+
+    protected:
+        virtual void processPublishContext(void* context) override
+        {
+            if (context == nullptr)
+                return;
+
+            static_cast<Context*>(context)->seenByPubsub = true;
+        }
+
+        virtual void processSubscribeContext(void* context) override
+        {
+            if (context == nullptr)
+                return;
+
+            static_cast<Context*>(context)->seenByPubsub = true;
+        }
+    };
+
 private:
-    TestPubsub pubsub;
+    TestPubsubImpl pubsub;
 
 protected:
     SimplePubsubProvider simplePubsubProvider;
     SimplePubsubClient simplePubsubClient;
     SimplePubsub simplePubsub;
+
+private:
+    // check that move constructor works correctly
+    SimplePubsub createPubsub()
+    {
+        // cannot be const because we need to move-construct it
+        SimplePubsub createdSimplePubsub(pubsub);
+        return createdSimplePubsub;
+    }
 };
 
 TEST_F(SimplePubsubTest, powerOfTwoClientAndProvider)
 {
-    simplePubsubProvider.subscribeRequest(
-        [this](const std::string& topic, const Int32Value& value)
+    struct RequestCallback : public SimplePubsubProvider::SimplePubsubProviderCallback<Int32Value>
+    {
+        explicit RequestCallback(SimplePubsubProvider& provider) :
+                simplePubsubProvider(provider)
+        {}
+
+        void operator()(zserio::StringView topic, const Int32Value& value) override
         {
-            ASSERT_EQ("simple_pubsub/request", topic);
+            ASSERT_EQ("simple_pubsub/request"_sv, topic);
             const uint64_t absValue = value.getValue() > 0
                     ? static_cast<uint64_t>(value.getValue())
                     : static_cast<uint64_t>(-value.getValue());
             UInt64Value result{absValue * absValue};
             simplePubsubProvider.publishPowerOfTwo(result);
         }
-    );
 
-    uint64_t result = 0;
-    simplePubsubClient.subscribePowerOfTwo(
-        [&result](const std::string& topic, const UInt64Value& value)
+        SimplePubsubProvider& simplePubsubProvider;
+    };
+
+    simplePubsubProvider.subscribeRequest(
+            std::allocate_shared<RequestCallback>(allocator_type(), simplePubsubProvider));
+
+    struct PowerOfTwoCallback : public SimplePubsubClient::SimplePubsubClientCallback<UInt64Value>
+    {
+        void operator()(zserio::StringView topic, const UInt64Value& value) override
         {
-            ASSERT_EQ("simple_pubsub/power_of_two", topic);
+            ASSERT_EQ("simple_pubsub/power_of_two"_sv, topic);
             result = value.getValue();
         }
-    );
+
+        uint64_t result;
+    };
+
+    std::shared_ptr<PowerOfTwoCallback> powerOfTwoCallback =
+            std::allocate_shared<PowerOfTwoCallback>(allocator_type());
+    simplePubsubClient.subscribePowerOfTwo(powerOfTwoCallback);
 
     Int32Value request{13};
     simplePubsubClient.publishRequest(request);
-    ASSERT_EQ(169, result);
+    ASSERT_EQ(169, powerOfTwoCallback->result);
 
     request.setValue(-13);
     simplePubsubClient.publishRequest(request);
-    ASSERT_EQ(169, result);
+    ASSERT_EQ(169, powerOfTwoCallback->result);
 
     request.setValue(2);
     simplePubsubClient.publishRequest(request);
-    ASSERT_EQ(4, result);
+    ASSERT_EQ(4, powerOfTwoCallback->result);
 
     request.setValue(-2);
     simplePubsubClient.publishRequest(request);
-    ASSERT_EQ(4, result);
+    ASSERT_EQ(4, powerOfTwoCallback->result);
 }
 
 TEST_F(SimplePubsubTest, powerOfTwoSimplePubsub)
 {
-    simplePubsub.subscribeRequest(
-        [this](const std::string& topic, const Int32Value& value)
+    struct RequestCallback : public SimplePubsub::SimplePubsubCallback<Int32Value>
+    {
+        explicit RequestCallback(SimplePubsub& pubsub) :
+                simplePubsub(pubsub)
+        {}
+
+        void operator()(zserio::StringView topic, const Int32Value& value) override
         {
-            ASSERT_EQ("simple_pubsub/request", topic);
+            ASSERT_EQ("simple_pubsub/request"_sv, topic);
             const uint64_t absValue = value.getValue() > 0
                     ? static_cast<uint64_t>(value.getValue())
                     : static_cast<uint64_t>(-value.getValue());
             UInt64Value result{absValue * absValue};
             simplePubsub.publishPowerOfTwo(result);
         }
-    );
 
-    uint64_t result = 0;
-    simplePubsub.subscribePowerOfTwo(
-        [&result](const std::string& topic, const UInt64Value& value)
+        SimplePubsub& simplePubsub;
+    };
+
+    simplePubsub.subscribeRequest(std::allocate_shared<RequestCallback>(allocator_type(), simplePubsub));
+
+    struct PowerOfTwoCallback : public SimplePubsub::SimplePubsubCallback<UInt64Value>
+    {
+        void operator()(zserio::StringView topic, const UInt64Value& value) override
         {
-            ASSERT_EQ("simple_pubsub/power_of_two", topic);
+            ASSERT_EQ("simple_pubsub/power_of_two"_sv, topic);
             result = value.getValue();
         }
-    );
+
+        uint64_t result;
+    };
+
+    std::shared_ptr<PowerOfTwoCallback> powerOfTwoCallback =
+            std::allocate_shared<PowerOfTwoCallback>(allocator_type());
+    simplePubsub.subscribePowerOfTwo(powerOfTwoCallback);
 
     Int32Value request{13};
     simplePubsub.publishRequest(request);
-    ASSERT_EQ(169, result);
+    ASSERT_EQ(169, powerOfTwoCallback->result);
 
     request.setValue(-13);
     simplePubsub.publishRequest(request);
-    ASSERT_EQ(169, result);
+    ASSERT_EQ(169, powerOfTwoCallback->result);
 
     request.setValue(2);
     simplePubsub.publishRequest(request);
-    ASSERT_EQ(4, result);
+    ASSERT_EQ(4, powerOfTwoCallback->result);
 
     request.setValue(-2);
     simplePubsub.publishRequest(request);
-    ASSERT_EQ(4, result);
+    ASSERT_EQ(4, powerOfTwoCallback->result);
 }
 
 TEST_F(SimplePubsubTest, publishRequestWithContext)
 {
-    TestPubsub::Context context;
+    TestPubsubImpl::Context context;
     ASSERT_FALSE(context.seenByPubsub);
     Int32Value request{42};
     simplePubsub.publishRequest(request, &context);
@@ -121,60 +196,78 @@ TEST_F(SimplePubsubTest, publishRequestWithContext)
 
 TEST_F(SimplePubsubTest, subscribeRequestWithContext)
 {
-    TestPubsub::Context context;
+    TestPubsubImpl::Context context;
     ASSERT_FALSE(context.seenByPubsub);
-    simplePubsub.subscribeRequest([](const std::string&, const Int32Value&){}, &context);
+
+    struct RequestCallback : public SimplePubsub::SimplePubsubCallback<Int32Value>
+    {
+        void operator()(zserio::StringView, const Int32Value&) override
+        {}
+    };
+
+    simplePubsub.subscribeRequest(std::allocate_shared<RequestCallback>(allocator_type()), &context);
     ASSERT_TRUE(context.seenByPubsub);
 }
 
 TEST_F(SimplePubsubTest, unsubscribe)
 {
-    auto id0 = simplePubsub.subscribeRequest(
-        [this](const std::string& topic, const Int32Value& value)
+    struct RequestCallback : public SimplePubsub::SimplePubsubCallback<Int32Value>
+    {
+        explicit RequestCallback(SimplePubsub& pubsub) :
+                simplePubsub(pubsub)
+        {}
+
+        void operator()(zserio::StringView topic, const Int32Value& value) override
         {
-            ASSERT_EQ("simple_pubsub/request", topic);
+            ASSERT_EQ("simple_pubsub/request"_sv, topic);
             const uint64_t absValue = value.getValue() > 0
                     ? static_cast<uint64_t>(value.getValue())
                     : static_cast<uint64_t>(-value.getValue());
             UInt64Value result{absValue * absValue};
             simplePubsub.publishPowerOfTwo(result);
         }
-    );
 
-    uint64_t result1 = 0;
-    auto id1 = simplePubsub.subscribePowerOfTwo(
-        [&result1](const std::string& topic, const UInt64Value& value)
-        {
-            ASSERT_EQ("simple_pubsub/power_of_two", topic);
-            result1 = value.getValue();
-        }
-    );
+        SimplePubsub& simplePubsub;
+    };
 
-    uint64_t result2 = 0;
-    auto id2 = simplePubsub.subscribePowerOfTwo(
-        [&result2](const std::string& topic, const UInt64Value& value)
+    auto id0 = simplePubsub.subscribeRequest(
+            std::allocate_shared<RequestCallback>(allocator_type(), simplePubsub));
+
+    struct PowerOfTwoCallback : public SimplePubsub::SimplePubsubCallback<UInt64Value>
+    {
+        void operator()(zserio::StringView topic, const UInt64Value& value) override
         {
-            ASSERT_EQ("simple_pubsub/power_of_two", topic);
-            result2 = value.getValue();
+            ASSERT_EQ("simple_pubsub/power_of_two"_sv, topic);
+            result = value.getValue();
         }
-    );
+
+        uint64_t result;
+    };
+
+    std::shared_ptr<PowerOfTwoCallback> powerOfTwoCallback1 =
+            std::allocate_shared<PowerOfTwoCallback>(allocator_type());
+    auto id1 = simplePubsub.subscribePowerOfTwo(powerOfTwoCallback1);
+
+    std::shared_ptr<PowerOfTwoCallback> powerOfTwoCallback2 =
+            std::allocate_shared<PowerOfTwoCallback>(allocator_type());
+    auto id2 = simplePubsub.subscribePowerOfTwo(powerOfTwoCallback2);
 
     Int32Value request{13};
     simplePubsub.publishRequest(request);
-    ASSERT_EQ(169, result1);
-    ASSERT_EQ(169, result2);
+    ASSERT_EQ(169, powerOfTwoCallback1->result);
+    ASSERT_EQ(169, powerOfTwoCallback2->result);
 
     simplePubsub.unsubscribe(id1);
     request.setValue(2);
     simplePubsub.publishRequest(request);
-    ASSERT_EQ(169, result1); // shall not be changed!
-    ASSERT_EQ(4, result2);
+    ASSERT_EQ(169, powerOfTwoCallback1->result); // shall not be changed!
+    ASSERT_EQ(4, powerOfTwoCallback2->result);
 
     simplePubsub.unsubscribe(id0); // unsubscribe publisher
     request.setValue(3);
     simplePubsub.publishRequest(request);
-    ASSERT_EQ(169, result1); // shall not be changed!
-    ASSERT_EQ(4, result2); // shall not be changed!
+    ASSERT_EQ(169, powerOfTwoCallback1->result); // shall not be changed!
+    ASSERT_EQ(4, powerOfTwoCallback2->result); // shall not be changed!
 
     simplePubsub.unsubscribe(id2);
 }

@@ -23,8 +23,6 @@ zserio_add_library(TARGET pubsub_types_zs
 )
 
 add_test_sources(
-    cpp/TestPubsub.cpp
-    cpp/TestPubsub.h
     cpp/SimplePubsubTest.cpp
 )
 
