@@ -32,6 +32,8 @@ protected:
         ASSERT_EQ(subtypedBitfieldParam.getExtraValue(), reader.readBits(32));
     }
 
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+
 private:
     static const ParamType SUBTYPED_BITFIELD_PARAM;
     static const uint16_t SUBTYPED_BITFIELD_PARAM_VALUE;
@@ -47,12 +49,10 @@ TEST_F(SubtypedBitfieldParamTest, write)
     SubtypedBitfieldParamHolder subtypedBitfieldParamHolder;
     fillSubtypedBitfieldParamHolder(subtypedBitfieldParamHolder);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     subtypedBitfieldParamHolder.write(writer);
 
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkSubtypedBitfieldParamHolderInBitStream(reader, subtypedBitfieldParamHolder);
     reader.setBitPosition(0);
 

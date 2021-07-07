@@ -25,6 +25,8 @@ protected:
     static const uint32_t FIELD2;
 
     static const size_t BIT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 // used int to cause selection of field constructor instead of read constructor
@@ -37,21 +39,18 @@ const size_t ParameterizedTypesCompoundAndFieldWithSameParamTest::BIT_SIZE = 32 
 
 TEST_F(ParameterizedTypesCompoundAndFieldWithSameParamTest, bitStreamReaderConstructor)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeToByteArray(writer);
 
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
-
     {
-        zserio::BitStreamReader reader(buffer, bufferSize);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         Compound compound = Compound(reader, PARAM);
         ASSERT_EQ(compound.getField1().getValue(), FIELD1);
         ASSERT_EQ(compound.getField2().getValue(), FIELD2);
     }
 
     {
-        zserio::BitStreamReader reader(buffer, bufferSize);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SameParamTest sameParamTest = SameParamTest(reader);
         ASSERT_EQ(PARAM, sameParamTest.getCompound().getParam());
         ASSERT_EQ(FIELD1, sameParamTest.getCompound().getField1().getValue());

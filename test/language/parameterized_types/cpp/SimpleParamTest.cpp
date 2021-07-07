@@ -39,6 +39,8 @@ protected:
 
     static const size_t ITEM_BIT_SIZE_WITHOUT_OPTIONAL;
     static const size_t ITEM_BIT_SIZE_WITH_OPTIONAL;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint32_t ParameterizedTypesSimpleParamTest::LOWER_VERSION = 9;
@@ -79,14 +81,12 @@ TEST_F(ParameterizedTypesSimpleParamTest, fieldConstructor)
 TEST_F(ParameterizedTypesSimpleParamTest, bitStreamReaderConstructor)
 {
     const uint32_t version = HIGHER_VERSION;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const uint16_t itemParam = ITEM_PARAM;
     const uint32_t itemExtraParam = ITEM_EXTRA_PARAM;
     writeItemToByteArray(writer, version, itemParam, itemExtraParam);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Item item(reader, version);
     ASSERT_EQ(version, item.getVersion());
     ASSERT_EQ(itemParam, item.getParam());
@@ -142,6 +142,20 @@ TEST_F(ParameterizedTypesSimpleParamTest, moveAssignmentOperator)
     ASSERT_EQ(ITEM_PARAM, movedItem.getParam());
     ASSERT_TRUE(movedItem.isExtraParamUsed());
     ASSERT_EQ(ITEM_EXTRA_PARAM, movedItem.getExtraParam());
+}
+
+TEST_F(ParameterizedTypesSimpleParamTest, propagateAllocatorCopyConstructor)
+{
+    Item item;
+    item.setParam(ITEM_PARAM);
+    item.setExtraParam(ITEM_EXTRA_PARAM);
+
+    const Item itemCopy1(zserio::PropagateAllocator, item, Item::allocator_type());
+    ASSERT_THROW(itemCopy1.getVersion(), zserio::CppRuntimeException);
+
+    item.initialize(HIGHER_VERSION);
+    const Item itemCopy2(zserio::PropagateAllocator, item, Item::allocator_type());
+    ASSERT_EQ(item.getVersion(), itemCopy2.getVersion());
 }
 
 TEST_F(ParameterizedTypesSimpleParamTest, bitSizeOf)
@@ -212,12 +226,10 @@ TEST_F(ParameterizedTypesSimpleParamTest, write)
     item.setParam(ITEM_PARAM);
     item.setExtraParam(ITEM_EXTRA_PARAM);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     item.write(writer);
 
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkItemInBitStream(reader, version, item);
     reader.setBitPosition(0);
 
