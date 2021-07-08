@@ -19,11 +19,53 @@ TEST(EmptyUnionTest, emptyConstructor)
 
 TEST(EmptyUnionTest, bitStreamReaderConstructor)
 {
-    zserio::BitStreamReader reader(NULL, 0);
+    zserio::BitStreamReader reader(nullptr, 0);
 
     EmptyUnion emptyUnion(reader);
     ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
     ASSERT_EQ(0, emptyUnion.bitSizeOf());
+}
+
+TEST(EmptyUnionTest, copyConstructor)
+{
+    EmptyUnion emptyUnion;
+    EmptyUnion emptyUnionCopy(emptyUnion);
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnionCopy.choiceTag());
+    ASSERT_EQ(0, emptyUnionCopy.bitSizeOf());
+}
+
+TEST(EmptyUnionTest, assignmentOperator)
+{
+    EmptyUnion emptyUnion;
+    EmptyUnion emptyUnionCopy;
+    emptyUnionCopy = emptyUnion;
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnionCopy.choiceTag());
+    ASSERT_EQ(0, emptyUnionCopy.bitSizeOf());
+}
+
+TEST(EmptyUnionTest, moveConstructor)
+{
+    EmptyUnion emptyUnion;
+    EmptyUnion emptyUnionMoved(std::move(emptyUnion));
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnionMoved.choiceTag());
+    ASSERT_EQ(0, emptyUnionMoved.bitSizeOf());
+}
+
+TEST(EmptyUnionTest, moveAssignmentOperator)
+{
+    EmptyUnion emptyUnion;
+    EmptyUnion emptyUnionMoved;
+    emptyUnionMoved = std::move(emptyUnion);
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnionMoved.choiceTag());
+    ASSERT_EQ(0, emptyUnionMoved.bitSizeOf());
+}
+
+TEST(EmptyUnionTest, propagateAllocatorCopyConstructor)
+{
+    EmptyUnion emptyUnion;
+    EmptyUnion emptyUnionCopy(zserio::PropagateAllocator, emptyUnion, EmptyUnion::allocator_type());
+    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnionCopy.choiceTag());
+    ASSERT_EQ(0, emptyUnionCopy.bitSizeOf());
 }
 
 TEST(EmptyUnionTest, choiceTag)
@@ -60,25 +102,15 @@ TEST(EmptyUnionTest, hashCode)
     ASSERT_EQ(emptyUnion1.hashCode(), emptyUnion2.hashCode());
 }
 
-TEST(EmptyUnionTest, read)
-{
-    zserio::BitStreamReader reader(NULL, 0);
-    EmptyUnion emptyUnion;
-    emptyUnion.read(reader);
-    ASSERT_EQ(EmptyUnion::UNDEFINED_CHOICE, emptyUnion.choiceTag());
-    ASSERT_EQ(0, emptyUnion.bitSizeOf());
-}
-
 TEST(EmptyUnionTest, write)
 {
     EmptyUnion emptyUnion;
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     emptyUnion.write(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
 
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EmptyUnion readEmptyUnion(reader);
     ASSERT_TRUE(emptyUnion == readEmptyUnion);
 }

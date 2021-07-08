@@ -1,16 +1,20 @@
 #include "gtest/gtest.h"
 
+#include "union_types/simple_union/SimpleUnion.h"
+
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/CppRuntimeException.h"
-
-#include "union_types/simple_union/SimpleUnion.h"
+#include "zserio/RebindAlloc.h"
 
 namespace union_types
 {
 namespace simple_union
 {
+
+using allocator_type = SimpleUnion::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
 
 class SimpleUnionTest : public ::testing::Test
 {
@@ -41,17 +45,19 @@ protected:
 
     static const int8_t CASE1_FIELD;
     static const uint16_t CASE2_FIELD;
-    static const std::string CASE3_FIELD;
+    static const string_type CASE3_FIELD;
     static const int8_t CASE4_FIELD;
     static const size_t UNION_CASE1_BIT_SIZE;
     static const size_t UNION_CASE2_BIT_SIZE;
     static const size_t UNION_CASE3_BIT_SIZE;
     static const size_t UNION_CASE4_BIT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const int8_t SimpleUnionTest::CASE1_FIELD = 13;
 const uint16_t SimpleUnionTest::CASE2_FIELD = 65535;
-const std::string SimpleUnionTest::CASE3_FIELD = "SimpleUnion";
+const string_type SimpleUnionTest::CASE3_FIELD = "SimpleUnion";
 const int8_t SimpleUnionTest::CASE4_FIELD = 42;
 const size_t SimpleUnionTest::UNION_CASE1_BIT_SIZE =
         zserio::bitSizeOfVarUInt64(SimpleUnion::CHOICE_case1Field) + 8;
@@ -73,38 +79,34 @@ TEST_F(SimpleUnionTest, emptyConstructor)
 TEST_F(SimpleUnionTest, bitStreamReaderConstructor)
 {
     {
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         writeSimpleUnionCase1ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion simpleUnion(reader);
         ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
     }
     {
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         writeSimpleUnionCase2ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion simpleUnion(reader);
         ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
     }
     {
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         writeSimpleUnionCase3ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion simpleUnion(reader);
         ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
     }
     {
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         writeSimpleUnionCase4ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion simpleUnion(reader);
         ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
     }
@@ -129,7 +131,7 @@ TEST_F(SimpleUnionTest, fieldConstructor)
         ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
     }
     {
-        std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+        string_type movedString(1000, 'a'); // long enough to prevent small string optimization
         const void* ptr = movedString.data();
         SimpleUnion simpleUnion(std::move(movedString));
         const void* movedPtr = simpleUnion.getCase3Field().data();
@@ -153,7 +155,6 @@ TEST_F(SimpleUnionTest, copyConstructor)
     SimpleUnion simpleUnionCopy(simpleUnion);
     ASSERT_EQ(CASE1_FIELD, simpleUnionCopy.getCase1Field());
 }
-
 
 TEST_F(SimpleUnionTest, assignmentOperator)
 {
@@ -182,6 +183,22 @@ TEST_F(SimpleUnionTest, moveAssignmentOperator)
     SimpleUnion simpleUnionMoved;
     simpleUnionMoved = std::move(simpleUnion);
     ASSERT_EQ(CASE4_FIELD, simpleUnionMoved.getCase4Field());
+}
+
+TEST_F(SimpleUnionTest, propagateAllocatorCopyConstructor)
+{
+    SimpleUnion simpleUnion;
+    {
+        SimpleUnion simpleUnionCopy(zserio::PropagateAllocator, simpleUnion, SimpleUnion::allocator_type());
+        ASSERT_EQ(SimpleUnion::UNDEFINED_CHOICE, simpleUnionCopy.choiceTag());
+        ASSERT_THROW(simpleUnionCopy.bitSizeOf(), zserio::CppRuntimeException);
+    }
+
+    simpleUnion.setCase1Field(CASE1_FIELD);
+    {
+        SimpleUnion simpleUnionCopy(zserio::PropagateAllocator, simpleUnion, SimpleUnion::allocator_type());
+        ASSERT_EQ(CASE1_FIELD, simpleUnionCopy.getCase1Field());
+    }
 }
 
 TEST_F(SimpleUnionTest, choiceTag)
@@ -218,12 +235,12 @@ TEST_F(SimpleUnionTest, getCase3Field)
     simpleUnion.setCase3Field(CASE3_FIELD);
     ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
 
-    std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+    string_type movedString(1000, 'a'); // long enough to prevent small string optimization
     const void* ptr = movedString.data();
     simpleUnion.setCase3Field(std::move(movedString));
     const void* movedPtr = simpleUnion.getCase3Field().data();
     ASSERT_EQ(ptr, movedPtr);
-    std::string& case3 = simpleUnion.getCase3Field();
+    string_type& case3 = simpleUnion.getCase3Field();
     case3 = CASE3_FIELD;
     ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
 }
@@ -322,98 +339,46 @@ TEST_F(SimpleUnionTest, hashCode)
     ASSERT_EQ(simpleUnion1.hashCode(), simpleUnion2.hashCode());
 }
 
-TEST_F(SimpleUnionTest, read)
-{
-    {
-        zserio::BitStreamWriter writer;
-        writeSimpleUnionCase1ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-        SimpleUnion simpleUnion;
-        simpleUnion.read(reader);
-        ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
-    }
-    {
-        zserio::BitStreamWriter writer;
-        writeSimpleUnionCase2ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-        SimpleUnion simpleUnion;
-        simpleUnion.read(reader);
-        ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
-    }
-    {
-        zserio::BitStreamWriter writer;
-        writeSimpleUnionCase3ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-        SimpleUnion simpleUnion;
-        simpleUnion.read(reader);
-        ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
-    }
-    {
-        zserio::BitStreamWriter writer;
-        writeSimpleUnionCase4ToByteArray(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-        SimpleUnion simpleUnion;
-        simpleUnion.read(reader);
-        ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
-    }
-}
-
 TEST_F(SimpleUnionTest, write)
 {
     SimpleUnion simpleUnion;
     {
         simpleUnion.setCase1Field(CASE1_FIELD);
 
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         simpleUnion.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
 
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion readSimpleUnion(reader);
         ASSERT_TRUE(simpleUnion == readSimpleUnion);
     }
     {
         simpleUnion.setCase2Field(CASE2_FIELD);
 
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         simpleUnion.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
 
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion readSimpleUnion(reader);
         ASSERT_TRUE(simpleUnion == readSimpleUnion);
     }
     {
         simpleUnion.setCase3Field(CASE3_FIELD);
 
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         simpleUnion.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
 
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion readSimpleUnion(reader);
         ASSERT_TRUE(simpleUnion == readSimpleUnion);
     }
     {
         simpleUnion.setCase4Field(CASE4_FIELD);
 
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         simpleUnion.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
 
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         SimpleUnion readSimpleUnion(reader);
         ASSERT_TRUE(simpleUnion == readSimpleUnion);
     }

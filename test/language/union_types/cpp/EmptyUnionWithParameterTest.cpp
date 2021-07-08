@@ -22,7 +22,7 @@ TEST(EmptyUnionWithParameterTest, emptyConstructor)
 
 TEST(EmptyUnionWithParameterTest, bitStreamReaderConstructor)
 {
-    zserio::BitStreamReader reader(NULL, 0);
+    zserio::BitStreamReader reader(nullptr, 0);
     EmptyUnionWithParameter emptyUnionWithParameter(reader, 1);
     ASSERT_EQ(1, emptyUnionWithParameter.getParam());
     ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
@@ -98,6 +98,21 @@ TEST(EmptyUnionWithParameterTest, moveAssignmentOperator)
     }
 }
 
+TEST(EmptyUnionWithParameterTest, propagateAllocatorCopyConstructor)
+{
+    EmptyUnionWithParameter emptyUnionWithParameter;
+    EmptyUnionWithParameter emptyUnionCopy1WithParameter(zserio::PropagateAllocator,
+            emptyUnionWithParameter, EmptyUnionWithParameter::allocator_type());
+
+    ASSERT_THROW(emptyUnionWithParameter.getParam(), zserio::CppRuntimeException);
+    ASSERT_THROW(emptyUnionCopy1WithParameter.getParam(), zserio::CppRuntimeException);
+
+    emptyUnionWithParameter.initialize(1);
+    EmptyUnionWithParameter emptyUnionCopy2WithParameter(zserio::PropagateAllocator,
+            emptyUnionWithParameter, EmptyUnionWithParameter::allocator_type());
+    ASSERT_EQ(emptyUnionWithParameter.getParam(), emptyUnionCopy2WithParameter.getParam());
+}
+
 TEST(EmptyUnionWithParameterTest, initialize)
 {
     EmptyUnionWithParameter emptyUnionWithParameter;
@@ -137,10 +152,10 @@ TEST(EmptyUnionWithParameterTest, operatorEquality)
 {
     EmptyUnionWithParameter emptyUnionWithParameter1;
     EmptyUnionWithParameter emptyUnionWithParameter2;
-    ASSERT_THROW(emptyUnionWithParameter1 == emptyUnionWithParameter2, zserio::CppRuntimeException);
+    ASSERT_THROW(emptyUnionWithParameter1.operator==(emptyUnionWithParameter2), zserio::CppRuntimeException);
 
     emptyUnionWithParameter1.initialize(1);
-    ASSERT_THROW(emptyUnionWithParameter1 == emptyUnionWithParameter2, zserio::CppRuntimeException);
+    ASSERT_THROW(emptyUnionWithParameter1.operator==(emptyUnionWithParameter2), zserio::CppRuntimeException);
 
     emptyUnionWithParameter2.initialize(1);
     ASSERT_TRUE(emptyUnionWithParameter1 == emptyUnionWithParameter2);
@@ -166,26 +181,16 @@ TEST(EmptyUnionWithParameterTest, hashCode)
     ASSERT_NE(emptyUnionWithParameter1.hashCode(), emptyUnionWithParameter2.hashCode());
 }
 
-TEST(EmptyUnionWithParameterTest, read)
-{
-    zserio::BitStreamReader reader(NULL, 0);
-    EmptyUnionWithParameter emptyUnionWithParameter;
-    emptyUnionWithParameter.read(reader);
-    ASSERT_EQ(EmptyUnionWithParameter::UNDEFINED_CHOICE, emptyUnionWithParameter.choiceTag());
-    ASSERT_EQ(0, emptyUnionWithParameter.bitSizeOf());
-}
-
 TEST(EmptyUnionWithParameterTest, write)
 {
     EmptyUnionWithParameter emptyUnionWithParameter;
     emptyUnionWithParameter.initialize(1);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     emptyUnionWithParameter.write(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
 
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EmptyUnionWithParameter readEmptyUnionWithParameter(reader, 1);
     ASSERT_TRUE(emptyUnionWithParameter == readEmptyUnionWithParameter);
 }

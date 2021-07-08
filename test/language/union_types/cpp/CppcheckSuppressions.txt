@@ -1,5 +1,4 @@
 uninitMemberVar:*/union_types/empty_union_with_parameter/EmptyUnionWithParameter.cpp
 uninitMemberVar:*/union_types/union_with_parameterized_field/ArrayHolder.cpp
-uninitMemberVar:*/union_types/union_with_parameterized_field/ArrayHolder.h
 uninitMemberVar:*/union_types/union_with_parameter/TestUnion.cpp
 uninitMemberVar:*/union_types/union_with_parameter/TestUnion.h
