@@ -55,7 +55,11 @@ jobs:
         wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip -P "${GITHUB_WORKSPACE}"
         unzip "${GITHUB_WORKSPACE}"/spotbugs-3.1.12.zip
     - name: Build Zserio
-      run: scripts/build.sh all-linux64-gcc cpp_rt-linux64-clang
+      run: scripts/build.sh all-linux64-gcc
+      env: GCOVR_BIN=gcovr
+    - name: Build Zserio runtime using clang
+      run: scripts/build.sh cpp_rt-linux64-clang
+      env: SANITIZERS_ENABLED=1
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
