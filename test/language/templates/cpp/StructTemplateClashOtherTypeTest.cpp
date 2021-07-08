@@ -11,12 +11,11 @@ TEST(StructTemplateClashOtherTypeTest, readWrite)
 {
     InstantiationNameClashOtherType instantiationNameClashOtherType(Test_uint32_99604043(42));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     instantiationNameClashOtherType.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     InstantiationNameClashOtherType readInstantiationNameClashOtherType(reader);
 
     ASSERT_TRUE(instantiationNameClashOtherType == readInstantiationNameClashOtherType);

@@ -12,12 +12,11 @@ TEST(InstantiateOnlyNestedTest, readWrite)
     InstantiateOnlyNested instantiateOnlyNested;
     instantiateOnlyNested.setTest32(pkg::Test_uint32{N32{13}});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     instantiateOnlyNested.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     InstantiateOnlyNested readInstantiateOnlyNested(reader);
 
     ASSERT_TRUE(instantiateOnlyNested == readInstantiateOnlyNested);

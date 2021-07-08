@@ -15,12 +15,11 @@ TEST(StructLongTemplateArgumentTest, readWrite)
             ThisIsVeryVeryVeryLongNamedStructure("StringV"));
     StructLongTemplateArgument structLongTemplateArgument(templ);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structLongTemplateArgument.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     StructLongTemplateArgument readStructLongTemplateArgument(reader);
 
     ASSERT_TRUE(structLongTemplateArgument == readStructLongTemplateArgument);

@@ -12,12 +12,11 @@ TEST(SubtypeTemplateWithBuiltinTest, readWrite)
     SubtypeTemplateWithBuiltin subtypeTemplateWithBuiltin;
     subtypeTemplateWithBuiltin.setTest(TestStructure_uint32{13});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     subtypeTemplateWithBuiltin.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     SubtypeTemplateWithBuiltin readSubtypeTemplateWithBuiltin(reader);
 
     ASSERT_TRUE(subtypeTemplateWithBuiltin == readSubtypeTemplateWithBuiltin);

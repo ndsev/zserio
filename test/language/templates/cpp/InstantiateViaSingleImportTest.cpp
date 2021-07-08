@@ -13,12 +13,11 @@ TEST(InstantiateViaSingleImportTest, readWrite)
     instantiateViaSingleImport.setTest32(pkg::U32{13});
     instantiateViaSingleImport.setTestStr(pkg::Test_string{"test"});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     instantiateViaSingleImport.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     InstantiateViaSingleImport readInstantiateViaSingleImport(reader);
 
     ASSERT_TRUE(instantiateViaSingleImport == readInstantiateViaSingleImport);

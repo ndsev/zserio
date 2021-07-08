@@ -14,12 +14,11 @@ TEST(ChoiceTemplatedFieldTest, readWrite)
     choiceTemplatedField.setChoice1(TemplatedChoice_uint32_uint16{static_cast<uint32_t>(42)});
     choiceTemplatedField.setChoice2(TemplatedChoice_Compound_uint32_uint16{Compound_uint32{42}});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     choiceTemplatedField.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ChoiceTemplatedField readChoiceTemplatedField(reader);
 
     ASSERT_TRUE(choiceTemplatedField == readChoiceTemplatedField);

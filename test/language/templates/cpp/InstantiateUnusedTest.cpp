@@ -11,12 +11,11 @@ TEST(InstantiateUnusedTest, readWrite)
 {
     U32 u32{13}; // check that unused template is instantiated via the instantiate command
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     u32.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     U32 readU32(reader);
 
     ASSERT_TRUE(u32 == readU32);

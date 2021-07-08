@@ -15,12 +15,11 @@ TEST(ExpressionFullTemplateArgumentTest, readWrite)
     ASSERT_FALSE(colorExternal.isExpressionFieldUsed());
 
     FullTemplateArgumentHolder fullTemplateArgumentHolder(colorInternal, colorExternal);
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     fullTemplateArgumentHolder.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const FullTemplateArgumentHolder readFullTemplateArgumentHolder(reader);
 
     ASSERT_TRUE(fullTemplateArgumentHolder == readFullTemplateArgumentHolder);

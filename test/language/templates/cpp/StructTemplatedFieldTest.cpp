@@ -2,24 +2,28 @@
 
 #include "templates/struct_templated_field/StructTemplatedField.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace templates
 {
 namespace struct_templated_field
 {
+
+using allocator_type = StructTemplatedField::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
 
 TEST(StructTemplatedFieldTest, readWrite)
 {
     StructTemplatedField structTemplatedField;
     structTemplatedField.setUint32Field(Field_uint32{42});
     structTemplatedField.setCompoundField(Field_Compound{Compound{42}});
-    structTemplatedField.setStringField(Field_string{std::string{"string"}});
+    structTemplatedField.setStringField(Field_string{string_type{"string"}});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structTemplatedField.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     StructTemplatedField readStructTemplatedField(reader);
 
     ASSERT_TRUE(structTemplatedField == readStructTemplatedField);

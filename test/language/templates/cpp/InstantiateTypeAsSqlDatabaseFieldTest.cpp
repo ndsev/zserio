@@ -4,10 +4,17 @@
 
 #include "templates/instantiate_type_as_sql_database_field/InstantiateTypeAsSqlDatabaseFieldDb.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace templates
 {
 namespace instantiate_type_as_sql_database_field
 {
+
+using allocator_type = InstantiateTypeAsSqlDatabaseFieldDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class InstantiateTypeAsSqlDatabaseFieldTest : public ::testing::Test
 {
@@ -17,11 +24,11 @@ public:
         std::remove(DB_FILE_NAME.c_str());
     }
 
-    static const std::string DB_FILE_NAME;
+    static const string_type DB_FILE_NAME;
 
 protected:
     template <typename T>
-    void assertEqualRows(const std::vector<T>& rows1, const std::vector<T>& rows2)
+    void assertEqualRows(const vector_type<T>& rows1, const vector_type<T>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -38,7 +45,7 @@ protected:
     }
 };
 
-const std::string InstantiateTypeAsSqlDatabaseFieldTest::DB_FILE_NAME =
+const string_type InstantiateTypeAsSqlDatabaseFieldTest::DB_FILE_NAME =
         "instantiate_type_as_sql_database_field_test.sqlite";
 
 TEST_F(InstantiateTypeAsSqlDatabaseFieldTest, readWrite)
@@ -47,7 +54,7 @@ TEST_F(InstantiateTypeAsSqlDatabaseFieldTest, readWrite)
     instantiateTypeAsSqlDatabaseFieldDb.createSchema();
 
     StringTable& stringTable = instantiateTypeAsSqlDatabaseFieldDb.getStringTable();
-    std::vector<StringTable::Row> stringTableRows;
+    vector_type<StringTable::Row> stringTableRows;
     StringTable::Row stringRow1;
     stringRow1.setId(0);
     stringRow1.setData("test");
@@ -55,7 +62,7 @@ TEST_F(InstantiateTypeAsSqlDatabaseFieldTest, readWrite)
     stringTable.write(stringTableRows);
 
     StringTable& otherStringTable = instantiateTypeAsSqlDatabaseFieldDb.getOtherStringTable();
-    std::vector<StringTable::Row> otherStringTableRows;
+    vector_type<StringTable::Row> otherStringTableRows;
     StringTable::Row otherStringRow1;
     otherStringRow1.setId(0);
     otherStringRow1.setData("other test");
@@ -63,11 +70,11 @@ TEST_F(InstantiateTypeAsSqlDatabaseFieldTest, readWrite)
     otherStringTable.write(otherStringTableRows);
 
     InstantiateTypeAsSqlDatabaseFieldDb readInstantiateTypeAsSqlDatabaseFieldDb(DB_FILE_NAME);
-    std::vector<StringTable::Row> readStringTableRows;
+    vector_type<StringTable::Row> readStringTableRows;
     auto readerString = readInstantiateTypeAsSqlDatabaseFieldDb.getStringTable().createReader();
     while (readerString.hasNext())
         readStringTableRows.push_back(readerString.next());
-    std::vector<StringTable::Row> readOtherStringTableRows;
+    vector_type<StringTable::Row> readOtherStringTableRows;
     auto readerOtherString = readInstantiateTypeAsSqlDatabaseFieldDb.getOtherStringTable().createReader();
     while (readerOtherString.hasNext())
         readOtherStringTableRows.push_back(readerOtherString.next());

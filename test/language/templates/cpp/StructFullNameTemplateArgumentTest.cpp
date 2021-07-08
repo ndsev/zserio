@@ -2,10 +2,15 @@
 
 #include "templates/struct_full_name_template_argument/StructFullNameTemplateArgument.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace templates
 {
 namespace struct_full_name_template_argument
 {
+
+using allocator_type = StructFullNameTemplateArgument::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
 
 TEST(StructFullNameTemplateArgumentTest, readWrite)
 {
@@ -15,12 +20,11 @@ TEST(StructFullNameTemplateArgumentTest, readWrite)
     structFullNameTemplateArgument.setStructInternal(
             TemplatedStruct_Storage_A3A4B101{Storage{std::string{"string"}}});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structFullNameTemplateArgument.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     StructFullNameTemplateArgument readStructFullNameTemplateArgument(reader);
 
     ASSERT_TRUE(structFullNameTemplateArgument == readStructFullNameTemplateArgument);
