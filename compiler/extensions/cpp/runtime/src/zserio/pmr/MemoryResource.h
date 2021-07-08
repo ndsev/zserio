@@ -14,6 +14,8 @@ namespace pmr
 class MemoryResource
 {
 public:
+    // this empty constructor is necessary for gcc 9.3.0 bug which causes test coverage failure
+    MemoryResource() {};
     virtual ~MemoryResource() = default;
 
     void* allocate(size_t bytes, size_t alignment = alignof(max_align_t))

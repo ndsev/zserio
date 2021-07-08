@@ -135,12 +135,11 @@ namespace detail
             return holder;
         }
 
-        // GCOV_EXCL_START - it is not expected that this version of clone is called on heap version
-        virtual IHolder<ALLOC>* clone(void*) const override
+        // due to gcovr bug, exclusion markers must be defined in this way
+        virtual IHolder<ALLOC>* clone(void*) const override // GCOV_EXCL_START
         {
             throw std::logic_error("Unexpected clone call.");
-        }
-        // GCOV_EXCL_STOP
+        } // GCOV_EXCL_STOP
 
         virtual IHolder<ALLOC>* move(const ALLOC& allocator) override
         {
@@ -149,12 +148,11 @@ namespace detail
             return holder;
         }
 
-        // GCOV_EXCL_START - it is not expected that this version of move is called on heap version
-        virtual IHolder<ALLOC>* move(void*) override
+        // due to gcovr bug, exclusion markers must be defined in this way
+        virtual IHolder<ALLOC>* move(void*) override // GCOV_EXCL_START
         {
             throw std::logic_error("Unexpected clone call.");
-        }
-        // GCOV_EXCL_STOP
+        } // GCOV_EXCL_STOP
 
         virtual void destroy(const ALLOC& allocator) override
         {
@@ -179,12 +177,11 @@ namespace detail
             return new (storage) this_type();
         }
 
-        // GCOV_EXCL_START - it is not expected that this version of clone is called on non-heap version
-        virtual IHolder<ALLOC>* clone(const ALLOC&) const override
+        // due to gcovr bug, exclusion markers must be defined in this way
+        virtual IHolder<ALLOC>* clone(const ALLOC&) const override // GCOV_EXCL_START
         {
             throw std::logic_error("Unexpected clone call.");
-        }
-        // GCOV_EXCL_STOP
+        } // GCOV_EXCL_STOP
 
         virtual IHolder<ALLOC>* clone(void* storage) const override
         {
@@ -193,12 +190,11 @@ namespace detail
             return holder;
         }
 
-        // GCOV_EXCL_START - it is not expected that this version of clone is called on non-heap version
-        virtual IHolder<ALLOC>* move(const ALLOC&) override
+        // due to gcovr bug, exclusion markers must be defined in this way
+        virtual IHolder<ALLOC>* move(const ALLOC&) override // GCOV_EXCL_START
         {
             throw std::logic_error("Unexpected clone call.");
-        }
-        // GCOV_EXCL_STOP
+        } // GCOV_EXCL_STOP
 
         virtual IHolder<ALLOC>* move(void* storage) override
         {
