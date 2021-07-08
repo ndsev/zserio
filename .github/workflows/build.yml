@@ -57,7 +57,7 @@ jobs:
     - name: Build Zserio
       run: scripts/build.sh all-linux64-gcc
       env:
-        GCOVR_BIN: "gcovr"
+        GCOVR_BIN: "" # coverage disabled
     - name: Build Zserio runtime using clang
       run: scripts/build.sh cpp_rt-linux64-clang
       env:
