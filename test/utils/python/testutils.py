@@ -150,7 +150,8 @@ def _processExtraArgs(extraArgs):
 
     if extraArgs is None:
         extraArgs = []
-    extraArgs += os.environ["ZSERIO_EXTRA_ARGS"].split(" ")
+    if "ZSERIO_EXTRA_ARGS" in os.environ:
+        extraArgs += os.environ["ZSERIO_EXTRA_ARGS"].split(" ")
 
     return extraArgs
 

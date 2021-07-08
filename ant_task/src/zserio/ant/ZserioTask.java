@@ -138,7 +138,8 @@ public class ZserioTask extends Task
             }
         }
 
-        argsList.addAll(Arrays.asList(extraArgs.split(" ")));
+        if (!extraArgs.isEmpty())
+            argsList.addAll(Arrays.asList(extraArgs.split(" ")));
 
         String [] args = new String[argsList.size()];
         argsList.toArray(args);
