@@ -6,10 +6,64 @@
 
 #include "subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h"
 
+#include "zserio/pmr/PolymorphicAllocator.h"
+#include "zserio/RebindAlloc.h"
+
 namespace subtypes
 {
 namespace param_structure_subtype
 {
+
+using allocator_type = zserio::RebindAlloc<ParameterizedSubtypeStruct::allocator_type, uint8_t>;
+
+template <typename ALLOC>
+struct MethodNames
+{
+    // TODO[Mi-L@]: Since we don't know allocator name provided by user, we use just the fixed substring here
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
+            ">& getParameterizedSubtypeArray()";
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
+            ">& getParameterizedSubtypeArray() const";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
+            "void setParameterizedSubtypeArray(const ::";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
+            "void setParameterizedSubtypeArray(::";
+};
+
+template <>
+struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
+{
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
+            "::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+                            "getParameterizedSubtypeArray()";
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
+                "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+                        "getParameterizedSubtypeArray() const";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
+            "void setParameterizedSubtypeArray("
+                    "const ::zserio::pmr::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+                    "parameterizedSubtypeArray_)";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
+            "void setParameterizedSubtypeArray(::zserio::pmr::vector<::subtypes::param_structure_subtype::"
+                    "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
+};
+
+template <>
+struct MethodNames<::std::allocator<uint8_t>>
+{
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
+            "::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+                    "getParameterizedSubtypeArray()";
+    static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
+            "const ::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+                    "getParameterizedSubtypeArray() const";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
+            "void setParameterizedSubtypeArray(const ::std::vector<::subtypes::param_structure_subtype::"
+                    "ParameterizedSubtype>& parameterizedSubtypeArray_)";
+    static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
+            "void setParameterizedSubtypeArray(::std::vector<::subtypes::param_structure_subtype::"
+                    "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
+};
 
 namespace
 {
@@ -38,8 +92,8 @@ TEST(ParamStructureSubtypeTest, testSubtype)
     ParameterizedSubtypeStruct s;
     ParameterizedSubtype& parameterizedSubtype = s.getParameterizedSubtype();
     ParameterizedStruct& parameterizedStruct = s.getParameterizedSubtype();
-    std::vector<ParameterizedSubtype>& parameterizedSubtypeArray = s.getParameterizedSubtypeArray();
-    std::vector<ParameterizedStruct>& parameterizedStructArray = s.getParameterizedSubtypeArray();
+    auto& parameterizedSubtypeArray = s.getParameterizedSubtypeArray();
+    auto& parameterizedStructArray = s.getParameterizedSubtypeArray();
     ASSERT_EQ(&parameterizedSubtype, &parameterizedStruct);
     ASSERT_EQ(&parameterizedSubtypeArray, &parameterizedStructArray);
 
@@ -54,7 +108,8 @@ TEST(ParamStructureSubtypeTest, testSubtype)
             "::subtypes::param_structure_subtype::ParameterizedSubtype& getParameterizedSubtype()"));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "const ::subtypes::param_structure_subtype::ParameterizedSubtype& getParameterizedSubtype() const"));
+            "const ::subtypes::param_structure_subtype::ParameterizedSubtype& "
+                    "getParameterizedSubtype() const"));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
             "void setParameterizedSubtype"
@@ -62,20 +117,16 @@ TEST(ParamStructureSubtypeTest, testSubtype)
 
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-                "getParameterizedSubtypeArray()"));
+            MethodNames<allocator_type>::GET_PARAMETERIZED_SUBTYPE_ARRAY));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "const ::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
-                "getParameterizedSubtypeArray() const"));
+            MethodNames<allocator_type>::GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "void setParameterizedSubtypeArray(const ::std::vector<::subtypes::param_structure_subtype::"
-                "ParameterizedSubtype>& parameterizedSubtypeArray_)"));
+            MethodNames<allocator_type>::SET_PARAMETERIZED_SYBTYPE_ARRAY));
     ASSERT_TRUE(isCodeInFilePresent(
             "language/subtypes/gen/subtypes/param_structure_subtype/ParameterizedSubtypeStruct.h",
-            "void setParameterizedSubtypeArray(::std::vector<::subtypes::param_structure_subtype::"
-                "ParameterizedSubtype>&& parameterizedSubtypeArray_)"));
+            MethodNames<allocator_type>::SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE));
 }
 
 } // namespace param_structure_subtype

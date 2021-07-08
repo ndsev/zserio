@@ -1,4 +1,3 @@
 noExplicitConstructor:*/subtypes/bitmask_subtype/Permission.h
 
 uninitMemberVar:*/subtypes/param_structure_subtype/ParameterizedStruct.cpp
-uninitMemberVar:*/subtypes/param_structure_subtype/ParameterizedStruct.h
