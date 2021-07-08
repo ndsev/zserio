@@ -1,10 +1,13 @@
 #include <cstdio>
 #include <map>
 #include <string>
+#include <memory>
 
 #include "gtest/gtest.h"
 
 #include "sql_types/SqlTypesDb.h"
+
+#include "zserio/SqliteFinalizer.h"
 
 namespace sql_types
 {
@@ -33,32 +36,23 @@ protected:
         std::string sqlQuery = "PRAGMA table_info(" + checkTableName + ")";
 
         // get table info
-        sqlite3_stmt* statement;
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        while ((result = sqlite3_step(statement)) != SQLITE_DONE)
+        int result = SQLITE_OK;
+        while ((result = sqlite3_step(statement.get())) != SQLITE_DONE)
         {
             if (result != SQLITE_ROW)
-            {
-                sqlite3_finalize(statement);
                 return false;
-            }
 
-            const unsigned char* columnName = sqlite3_column_text(statement, 1);
-            const unsigned char* columnType = sqlite3_column_text(statement, 2);
-            if (columnName == NULL || columnType == NULL)
-            {
-                sqlite3_finalize(statement);
+            const unsigned char* columnName = sqlite3_column_text(statement.get(), 1);
+            const unsigned char* columnType = sqlite3_column_text(statement.get(), 2);
+            if (columnName == nullptr || columnType == nullptr)
                 return false;
-            }
 
             sqlColumnTypes[std::string(reinterpret_cast<const char*>(columnName))] =
                     std::string(reinterpret_cast<const char*>(columnType));
         }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
