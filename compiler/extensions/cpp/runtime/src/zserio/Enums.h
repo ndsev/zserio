@@ -5,6 +5,7 @@
 #ifndef ZSERIO_ENUMS_H_INC
 #define ZSERIO_ENUMS_H_INC
 
+#include <cstddef>
 #include <type_traits>
 
 // This should be implemented in runtime library header.
