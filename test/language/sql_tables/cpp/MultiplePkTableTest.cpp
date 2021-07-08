@@ -1,17 +1,25 @@
 #include <cstdio>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "sql_tables/TestDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/SqliteFinalizer.h"
 
 namespace sql_tables
 {
 namespace multiple_pk_table
 {
+
+using allocator_type = TestDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class MultiplePkTableTest : public ::testing::Test
 {
@@ -30,19 +38,19 @@ public:
     }
 
 protected:
-    static void fillMultiplePkTableRow(MultiplePkTable::Row& row, int32_t blobId, const std::string& name)
+    static void fillMultiplePkTableRow(MultiplePkTable::Row& row, int32_t blobId, const string_type& name)
     {
         row.setBlobId(blobId);
         row.setAge(10);
         row.setName(name);
     }
 
-    static void fillMultiplePkTableRows(std::vector<MultiplePkTable::Row>& rows)
+    static void fillMultiplePkTableRows(vector_type<MultiplePkTable::Row>& rows)
     {
         rows.clear();
         for (int32_t blobId = 0; blobId < NUM_MULTIPLE_PK_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(blobId);
+            const string_type name = "Name" + zserio::toString<allocator_type>(blobId);
             MultiplePkTable::Row row;
             fillMultiplePkTableRow(row, blobId, name);
             rows.push_back(row);
@@ -56,8 +64,8 @@ protected:
         ASSERT_EQ(row1.getName(), row2.getName());
     }
 
-    static void checkMultiplePkTableRows(const std::vector<MultiplePkTable::Row>& rows1,
-            const std::vector<MultiplePkTable::Row>& rows2)
+    static void checkMultiplePkTableRows(const vector_type<MultiplePkTable::Row>& rows1,
+            const vector_type<MultiplePkTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -66,29 +74,22 @@ protected:
 
     bool isTableInDb()
     {
-        sqlite3_stmt* statement;
-        std::string checkTableName = "multiplePkTable";
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type checkTableName = "multiplePkTable";
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+            return false;
+
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr ||
+                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
         {
-            sqlite3_finalize(statement);
             return false;
         }
-
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
-            return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
@@ -120,11 +121,11 @@ TEST_F(MultiplePkTableTest, readWithoutCondition)
 {
     MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
-    std::vector<MultiplePkTable::Row> writtenRows;
+    vector_type<MultiplePkTable::Row> writtenRows;
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<MultiplePkTable::Row> readRows;
+    vector_type<MultiplePkTable::Row> readRows;
     MultiplePkTable::Reader reader = testTable.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -136,12 +137,12 @@ TEST_F(MultiplePkTableTest, readWithCondition)
 {
     MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
-    std::vector<MultiplePkTable::Row> writtenRows;
+    vector_type<MultiplePkTable::Row> writtenRows;
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    const std::string condition = "name='Name1'";
-    std::vector<MultiplePkTable::Row> readRows;
+    const string_type condition = "name='Name1'";
+    vector_type<MultiplePkTable::Row> readRows;
     MultiplePkTable::Reader reader = testTable.createReader(condition);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -155,17 +156,17 @@ TEST_F(MultiplePkTableTest, update)
 {
     MultiplePkTable& testTable = m_database->getMultiplePkTable();
 
-    std::vector<MultiplePkTable::Row> writtenRows;
+    vector_type<MultiplePkTable::Row> writtenRows;
     fillMultiplePkTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const int32_t updateRowId = 3;
     MultiplePkTable::Row updateRow;
     fillMultiplePkTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "blobId=" + zserio::toString<allocator_type>(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    std::vector<MultiplePkTable::Row> readRows;
+    vector_type<MultiplePkTable::Row> readRows;
     MultiplePkTable::Reader reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
         readRows.push_back(reader.next());

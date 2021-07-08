@@ -1,19 +1,25 @@
 #include <cstdio>
 #include <vector>
 #include <string>
-
-#include "sqlite3.h"
+#include <memory>
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "sql_tables/TestDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/SqliteFinalizer.h"
 
 namespace sql_tables
 {
 namespace without_pk_table
 {
+
+using allocator_type = TestDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class WithoutPkTableTest : public ::testing::Test
 {
@@ -32,18 +38,18 @@ public:
     }
 
 protected:
-    static void fillWithoutPkTableRow(WithoutPkTable::Row& row, int32_t identifier, const std::string& name)
+    static void fillWithoutPkTableRow(WithoutPkTable::Row& row, int32_t identifier, const string_type& name)
     {
         row.setIdentifier(identifier);
         row.setName(name);
     }
 
-    static void fillWithoutPkTableRows(std::vector<WithoutPkTable::Row>& rows)
+    static void fillWithoutPkTableRows(vector_type<WithoutPkTable::Row>& rows)
     {
         rows.clear();
         for (int32_t identifier = 0; identifier < NUM_WITHOUT_PK_TABLE_ROWS; ++identifier)
         {
-            const std::string name = "Name" + zserio::convertToString(identifier);
+            const string_type name = "Name" + zserio::toString<allocator_type>(identifier);
             WithoutPkTable::Row row;
             fillWithoutPkTableRow(row, identifier, name);
             rows.push_back(row);
@@ -56,8 +62,8 @@ protected:
         ASSERT_EQ(row1.getName(), row2.getName());
     }
 
-    static void checkWithoutPkTableRows(const std::vector<WithoutPkTable::Row>& rows1,
-            const std::vector<WithoutPkTable::Row>& rows2)
+    static void checkWithoutPkTableRows(const vector_type<WithoutPkTable::Row>& rows1,
+            const vector_type<WithoutPkTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -66,29 +72,22 @@ protected:
 
     bool isTableInDb()
     {
-        sqlite3_stmt* statement;
-        std::string checkTableName = "withoutPkTable";
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type checkTableName = "withoutPkTable";
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+            return false;
+
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr ||
+                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
         {
-            sqlite3_finalize(statement);
             return false;
         }
-
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
-            return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
@@ -118,11 +117,11 @@ TEST_F(WithoutPkTableTest, readWithoutCondition)
 {
     WithoutPkTable& testTable = m_database->getWithoutPkTable();
 
-    std::vector<WithoutPkTable::Row> writtenRows;
+    vector_type<WithoutPkTable::Row> writtenRows;
     fillWithoutPkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<WithoutPkTable::Row> readRows;
+    vector_type<WithoutPkTable::Row> readRows;
     auto reader = testTable.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -134,12 +133,12 @@ TEST_F(WithoutPkTableTest, readWithCondition)
 {
     WithoutPkTable& testTable = m_database->getWithoutPkTable();
 
-    std::vector<WithoutPkTable::Row> writtenRows;
+    vector_type<WithoutPkTable::Row> writtenRows;
     fillWithoutPkTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    const std::string condition = "name='Name1'";
-    std::vector<WithoutPkTable::Row> readRows;
+    const string_type condition = "name='Name1'";
+    vector_type<WithoutPkTable::Row> readRows;
     auto reader = testTable.createReader(condition);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -153,17 +152,17 @@ TEST_F(WithoutPkTableTest, update)
 {
     WithoutPkTable& testTable = m_database->getWithoutPkTable();
 
-    std::vector<WithoutPkTable::Row> writtenRows;
+    vector_type<WithoutPkTable::Row> writtenRows;
     fillWithoutPkTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const int32_t updateRowId = 3;
     WithoutPkTable::Row updateRow;
     fillWithoutPkTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "identifier=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "identifier=" + zserio::toString<allocator_type>(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    std::vector<WithoutPkTable::Row> readRows;
+    vector_type<WithoutPkTable::Row> readRows;
     auto reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
         readRows.push_back(reader.next());

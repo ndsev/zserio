@@ -5,14 +5,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "sql_tables/TestDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace sql_tables
 {
 namespace column_param_table
 {
+
+using allocator_type = TestDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class ColumnParamTableTest : public ::testing::Test
 {
@@ -31,7 +37,7 @@ public:
     }
 
 protected:
-    static void fillColumnParamTableRow(ColumnParamTable::Row& row, uint32_t blobId, const std::string& name)
+    static void fillColumnParamTableRow(ColumnParamTable::Row& row, uint32_t blobId, const string_type& name)
     {
         row.setBlobId(blobId);
         row.setName(name);
@@ -41,12 +47,12 @@ protected:
         row.setBlob(parameterizedBlob);
     }
 
-    static void fillColumnParamTableRows(std::vector<ColumnParamTable::Row>& rows)
+    static void fillColumnParamTableRows(vector_type<ColumnParamTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t blobId = 0; blobId < NUM_COLUMN_PARAM_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(blobId);
+            const string_type name = "Name" + zserio::toString<allocator_type>(blobId);
             ColumnParamTable::Row row;
             fillColumnParamTableRow(row, blobId, name);
             rows.push_back(row);
@@ -60,8 +66,8 @@ protected:
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkColumnParamTableRows(const std::vector<ColumnParamTable::Row>& rows1,
-            const std::vector<ColumnParamTable::Row>& rows2)
+    static void checkColumnParamTableRows(const vector_type<ColumnParamTable::Row>& rows1,
+            const vector_type<ColumnParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -70,29 +76,22 @@ protected:
 
     bool isTableInDb()
     {
-        sqlite3_stmt* statement;
-        std::string checkTableName = "columnParamTable";
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type checkTableName = "columnParamTable";
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+            return false;
+
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr ||
+                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
         {
-            sqlite3_finalize(statement);
             return false;
         }
-
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
-            return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
@@ -126,11 +125,11 @@ TEST_F(ColumnParamTableTest, readWithoutCondition)
 {
     ColumnParamTable& testTable = m_database->getColumnParamTable();
 
-    std::vector<ColumnParamTable::Row> writtenRows;
+    vector_type<ColumnParamTable::Row> writtenRows;
     fillColumnParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<ColumnParamTable::Row> readRows;
+    vector_type<ColumnParamTable::Row> readRows;
     auto reader = testTable.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -142,12 +141,12 @@ TEST_F(ColumnParamTableTest, readWithCondition)
 {
     ColumnParamTable& testTable = m_database->getColumnParamTable();
 
-    std::vector<ColumnParamTable::Row> writtenRows;
+    vector_type<ColumnParamTable::Row> writtenRows;
     fillColumnParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    const std::string condition = "name='Name1'";
-    std::vector<ColumnParamTable::Row> readRows;
+    const string_type condition = "name='Name1'";
+    vector_type<ColumnParamTable::Row> readRows;
     auto reader = testTable.createReader(condition);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -161,17 +160,17 @@ TEST_F(ColumnParamTableTest, update)
 {
     ColumnParamTable& testTable = m_database->getColumnParamTable();
 
-    std::vector<ColumnParamTable::Row> writtenRows;
+    vector_type<ColumnParamTable::Row> writtenRows;
     fillColumnParamTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const uint64_t updateRowId = 3;
     ColumnParamTable::Row updateRow;
     fillColumnParamTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "blobId=" + zserio::toString<allocator_type>(updateRowId);
     testTable.update(updateRow, updateCondition);
 
-    std::vector<ColumnParamTable::Row> readRows;
+    vector_type<ColumnParamTable::Row> readRows;
     auto reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
         readRows.push_back(reader.next());

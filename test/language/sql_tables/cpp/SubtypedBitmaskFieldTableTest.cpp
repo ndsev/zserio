@@ -6,10 +6,16 @@
 
 #include "sql_tables/TestDb.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace sql_tables
 {
 namespace subtyped_bitmask_field_table
 {
+
+using allocator_type = TestDb::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class SubtypedBitmaskFieldTableTest : public ::testing::Test
 {
@@ -38,7 +44,7 @@ protected:
                         : TestBitmask::Values::THREE);
     }
 
-    static void fillRows(std::vector<SubtypedBitmaskFieldTable::Row>& rows)
+    static void fillRows(vector_type<SubtypedBitmaskFieldTable::Row>& rows)
     {
         rows.clear();
         for (size_t i = 0; i < NUM_ROWS; ++i)
@@ -55,8 +61,8 @@ protected:
         ASSERT_EQ(row1.getBitmaskField(), row2.getBitmaskField());
     }
 
-    static void checkRows(const std::vector<SubtypedBitmaskFieldTable::Row>& rows1,
-            const std::vector<SubtypedBitmaskFieldTable::Row>& rows2)
+    static void checkRows(const vector_type<SubtypedBitmaskFieldTable::Row>& rows1,
+            const vector_type<SubtypedBitmaskFieldTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -76,11 +82,11 @@ TEST_F(SubtypedBitmaskFieldTableTest, readWithoutCondition)
 {
     SubtypedBitmaskFieldTable& table = m_database->getSubtypedBitmaskFieldTable();
 
-    std::vector<SubtypedBitmaskFieldTable::Row> rows;
+    vector_type<SubtypedBitmaskFieldTable::Row> rows;
     fillRows(rows);
     table.write(rows);
 
-    std::vector<SubtypedBitmaskFieldTable::Row> readRows;
+    vector_type<SubtypedBitmaskFieldTable::Row> readRows;
     auto reader = table.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
