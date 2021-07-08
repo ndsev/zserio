@@ -19,6 +19,8 @@ COMPILED_ZS_SET = set() # contains zs definition tuples: (zsDir, mainZsFile)
 
 def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPackage=None, extraArgs=None):
     """
+    Compiles given zserio source and gets Zserio API.
+
     :param testFile: Current test file (i.e. test case).
     :param mainZsFile: Main zserio source file for the current test suite.
     :param hasPackage: Whether the mainZsFile has a package definition. Default is True.
@@ -27,7 +29,6 @@ def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPac
     :param extraArgs: Extra arguments to zserio compiler.
     :returns: Generated python API if available, None otherwise.
     """
-
     testDir = os.path.dirname(testFile) # current test directory
     zsDir = os.path.join(testDir, "..", "zs") # directory where test zs files are located
     apiDir = getApiDir(testDir)
@@ -35,7 +36,7 @@ def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPac
     zsDef = (zsDir, mainZsFile)
     if zsDef not in COMPILED_ZS_SET:
         COMPILED_ZS_SET.add(zsDef)
-        _compileZserio(zsDef, apiDir, extraArgs)
+        _compileZserio(zsDef, apiDir, _processExtraArgs(extraArgs))
 
     apiModule = "api"
     if hasPackage:
@@ -84,16 +85,33 @@ def getTestSuiteName(testDir):
     return os.path.join(firstDir, secondDir)
 
 def compileErroneousZserio(testFile, mainZsFile, errors, extraArgs=None):
+    """
+    Compiles given zserio source and gets error output.
+
+    :param testFile: Current test file (i.e. test case).
+    :param mainZsFile: Main zserio source file for the current test suite.
+    :param errors: List where to store error output from zserio compiler.
+    :param extraArgs: Extra arguments to zserio compiler.
+    """
+
     testDir = os.path.dirname(testFile) # current test directory
     zsDir = os.path.join(testDir, "..", "zs") # directory where test zs files are located
     zsDef = (zsDir, mainZsFile)
     apiDir = getApiDir(testDir)
     try:
-        _compileZserio(zsDef, apiDir, extraArgs)
+        _compileZserio(zsDef, apiDir, _processExtraArgs(extraArgs))
     except ZserioCompilerError as zserioCompilerError:
         errors[mainZsFile] = zserioCompilerError.stderr
 
 def assertErrorsPresent(test, mainZsFile, expectedErrors):
+    """
+    Checks error output from zserio compiler for the test.
+
+    :param test: Current test.
+    :param mainZsFile: Main zserio source file for the current test suite.
+    :param expectedErrors: List of expected error messages.
+    """
+
     test.assertIn(mainZsFile, test.errors, msg=("No error found for '%s'!" % mainZsFile))
     errors = test.errors[mainZsFile]
     for expectedError in expectedErrors:
@@ -101,7 +119,7 @@ def assertErrorsPresent(test, mainZsFile, expectedErrors):
 
 class ZserioCompilerError(Exception):
     """
-    Zseiro compiler error.
+    Zserio compiler error.
     """
 
     def __init__(self, stderr):
@@ -122,7 +140,21 @@ class ZserioCompilerError(Exception):
 
         return self._stderr
 
-def _compileZserio(zsDef, apiDir, extraArgs=None):
+def _processExtraArgs(extraArgs):
+    """
+    Processes given zserio extra arguments.
+
+    :param extraArgs: Zserio extra arguments given by user or None.
+    :returns: Processed zserio extra arguments.
+    """
+
+    if extraArgs is None:
+        extraArgs = []
+    extraArgs += os.environ["ZSERIO_EXTRA_ARGS"].split(" ")
+
+    return extraArgs
+
+def _compileZserio(zsDef, apiDir, extraArgs):
     """
     Compiles test zserio sources for the current python test file (i.e. test suite) and
     directly imports the generated python sources.
@@ -134,8 +166,6 @@ def _compileZserio(zsDef, apiDir, extraArgs=None):
     :raises Exception: When zserio tool fails.
     """
 
-    if extraArgs is None:
-        extraArgs = []
     zserioLibsDir = os.path.join(TEST_ARGS["release_dir"], "zserio_libs")
     zserioCore = os.path.join(zserioLibsDir, "zserio_core.jar")
     zserioPython = os.path.join(zserioLibsDir, "zserio_python.jar")
