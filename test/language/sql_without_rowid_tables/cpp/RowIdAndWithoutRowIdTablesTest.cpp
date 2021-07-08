@@ -6,10 +6,19 @@
 
 #include "sql_without_rowid_tables/rowid_and_without_rowid_tables/RowIdAndWithoutRowIdDb.h"
 
+#include "zserio/ValidationSqliteUtil.h"
+
+using namespace zserio::literals;
+
 namespace sql_without_rowid_tables
 {
 namespace rowid_and_without_rowid_tables
 {
+
+using allocator_type = RowIdAndWithoutRowIdDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T, typename COMPARE = std::less<T>>
+using set_type = std::set<T, COMPARE, zserio::RebindAlloc<allocator_type, T>>;
 
 class RowIdAndWithoutRowIdTablesTest : public ::testing::Test
 {
@@ -25,14 +34,10 @@ public:
 
 protected:
     bool isColumnInTable(zserio::ISqliteDatabase& database,
-            const std::string& columnName, const std::string& tableName)
+            const string_type& columnName, const string_type& tableName)
     {
-        sqlite3_stmt* statement;
-        const std::string sqlQuery = "SELECT " + columnName + " FROM " + tableName + " LIMIT 0";
-        int result = sqlite3_prepare_v2(database.connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        sqlite3_finalize(statement);
-
-        return (result == SQLITE_OK) ? true : false;
+        return zserio::ValidationSqliteUtil<allocator_type>::isColumnInTable(
+                database.connection(), ""_sv, tableName, columnName, allocator_type());
     }
 
     const char* m_dbFileName;
@@ -60,7 +65,7 @@ TEST_F(RowIdAndWithoutRowIdTablesTest, createOrdinaryRowIdTable)
 TEST_F(RowIdAndWithoutRowIdTablesTest, checkWithoutRowIdTableNamesBlackList)
 {
     RowIdAndWithoutRowIdDb database(m_dbFileName);
-    std::set<std::string> withoutRowIdTableNamesBlackList;
+    set_type<string_type> withoutRowIdTableNamesBlackList;
     withoutRowIdTableNamesBlackList.insert(m_withoutRowIdTableName);
     database.createSchema(withoutRowIdTableNamesBlackList);
     ASSERT_TRUE(isColumnInTable(database, m_rowIdColumnName, m_withoutRowIdTableName));
