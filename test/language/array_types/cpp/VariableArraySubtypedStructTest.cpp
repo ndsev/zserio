@@ -5,6 +5,7 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace array_types
 {
@@ -40,7 +41,7 @@ TEST_F(VariableArraySubtypedStructTest, bitSizeOf)
     for (size_t i = 0; i < numElements; ++i)
     {
         const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + std::to_string(i));
+                string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
@@ -61,7 +62,7 @@ TEST_F(VariableArraySubtypedStructTest, initializeOffsets)
     for (size_t i = 0; i < numElements; ++i)
     {
         const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + std::to_string(i));
+                string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
@@ -100,7 +101,7 @@ TEST_F(VariableArraySubtypedStructTest, write)
     for (size_t i = 0; i < numElements; ++i)
     {
         const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + std::to_string(i));
+                string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;
@@ -129,7 +130,7 @@ TEST_F(VariableArraySubtypedStructTest, writeWrongArray)
     for (size_t i = 0; i < numElements; ++i)
     {
         const ArrayElement arrayElement(static_cast<uint32_t>(i),
-                string_type("Name") + std::to_string(i));
+                string_type("Name") + zserio::toString<allocator_type>(i));
         compoundArray.push_back(arrayElement);
     }
     VariableArray variableArray;

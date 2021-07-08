@@ -18,7 +18,7 @@ TEST(StructFullNameTemplateArgumentTest, readWrite)
     structFullNameTemplateArgument.setStructExternal(
             TemplatedStruct_Storage_C76E422F{import_storage::Storage{42}});
     structFullNameTemplateArgument.setStructInternal(
-            TemplatedStruct_Storage_A3A4B101{Storage{std::string{"string"}}});
+            TemplatedStruct_Storage_A3A4B101{Storage{string_type{"string"}}});
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);
