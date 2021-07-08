@@ -111,7 +111,7 @@ public class CppExtensionParameters
                 "use std::allocator<uint8_t> in generated C++ code (default)");
         allocatorGroup.addOption(option);
         option = new Option(OptionUsePolymorphicAllocator, false,
-                "use zserio::pmr::PropagatingPolymorphicAllocatro<> in generated C++ code");
+                "use zserio::pmr::PropagatingPolymorphicAllocator<> in generated C++ code");
         allocatorGroup.addOption(option);
         allocatorGroup.setRequired(false);
         options.addOptionGroup(allocatorGroup);

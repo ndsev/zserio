@@ -85,7 +85,7 @@ function(compiler_set_warnings_as_errors)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNINGS_SETUP}" PARENT_SCOPE)
 endfunction()
 
-# A function to disable treaging warnings as errors.
+# A function to disable treating warnings as errors.
 function(compiler_reset_warnings_as_errors)
     compiler_get_warnings_as_errors_setup(WARNINGS_SETUP)
     string(REPLACE " ${WARNINGS_SETUP}" "" NEW_CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
