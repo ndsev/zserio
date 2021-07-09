@@ -929,7 +929,7 @@ main()
     local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
     local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test_perf/${SWITCH_TEST_NAME}"
     if [[ ${SWITCH_PURGE} == 1 ]] ; then
-        echo "Purging test directory." # purges all tests in test_zs directory
+        echo "Purging test directory." # purges all tests in test_perf directory
         echo
         rm -rf "${TEST_OUT_DIR}/"
 

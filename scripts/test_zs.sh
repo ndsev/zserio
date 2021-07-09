@@ -211,7 +211,7 @@ include(cmake_utils)
 include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
-compiler_set_warnings()${WERROR_SETUP}${SQLITE_SETUP}
+compiler_set_test_warnings()${WERROR_SETUP}${SQLITE_SETUP}
 
 # add zserio runtime library
 include(zserio_utils)
