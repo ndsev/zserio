@@ -4,19 +4,8 @@ include(compiler_utils)
 function(sqlite_add_library ZSERIO_PROJECT_ROOT)
     set(SQLITE_ROOT ${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/sqlite)
 
-    # remove strict warning
-    compiler_reset_warnings()
-    compiler_reset_warnings_as_errors()
-
     # add sqlite library
-    add_library(SQLite3 ${SQLITE_ROOT}/sqlite3.c)
-
-    # configuration
-    target_compile_definitions(SQLite3 PRIVATE SQLITE_ENABLE_FTS4 SQLITE_ENABLE_FTS5)
-
-    if (UNIX)
-        target_link_libraries(SQLite3 PUBLIC dl)
-    endif ()
+    add_subdirectory(${SQLITE_ROOT} sqlite3)
 
     set(SQLITE_LIBRARY SQLite3 PARENT_SCOPE)
     set(SQLITE_INCDIR ${SQLITE_ROOT} PARENT_SCOPE)
