@@ -16,17 +16,18 @@ protected:
     {
         UnionInt4RangeCheckCompound unionInt4RangeCheckCompound;
         unionInt4RangeCheckCompound.setValue(value);
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         unionInt4RangeCheckCompound.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         const UnionInt4RangeCheckCompound readUnionInt4RangeCheckCompound(reader);
         ASSERT_EQ(unionInt4RangeCheckCompound, readUnionInt4RangeCheckCompound);
     }
 
     static const int8_t INT4_LOWER_BOUND;
     static const int8_t INT4_UPPER_BOUND;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const int8_t UnionInt4RangeCheckTest::INT4_LOWER_BOUND = INT8_C(-8);

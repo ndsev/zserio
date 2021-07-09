@@ -2,7 +2,9 @@
 #define ZSERIO_SQL_CONNECTION_H_INC
 
 #include "sqlite3.h"
+
 #include "zserio/SqliteException.h"
+#include "zserio/String.h"
 
 namespace zserio
 {
@@ -30,7 +32,7 @@ public:
      * \param connection Pointer to the SQLite connection.
      * \param connectionType Type of the connection. Default is INTERNAL_CONNECTION.
      */
-    explicit SqliteConnection(sqlite3* connection = NULL, ConnectionType connectionType = INTERNAL_CONNECTION);
+    explicit SqliteConnection(sqlite3* connection = nullptr, ConnectionType connectionType = INTERNAL_CONNECTION);
 
     /**
      * Destructor.
@@ -54,7 +56,7 @@ public:
      * \param connection New connection to set. Default is NULL - i.e. unset.
      * \param connectionType Type of the new connection.
      */
-    void reset(sqlite3* connection = NULL, ConnectionType connectionType = INTERNAL_CONNECTION);
+    void reset(sqlite3* connection = nullptr, ConnectionType connectionType = INTERNAL_CONNECTION);
 
     /**
      * Gets the current connection type.
@@ -77,7 +79,15 @@ public:
      *
      * \param query The query string.
      */
-    void executeUpdate(const std::string& query);
+    void executeUpdate(const char* query);
+
+    /**
+     * Executes a query which doesn't need to return anything - e.g. DML.
+     *
+     * \param query The query string.
+     */
+    template <typename ALLOC>
+    void executeUpdate(const zserio::string<ALLOC>& query);
 
     /**
      * Prepares the SQLite statement for the given query.
@@ -88,7 +98,19 @@ public:
      *
      * \return Prepared SQLite statement.
      */
-    sqlite3_stmt* prepareStatement(const std::string& query);
+    sqlite3_stmt* prepareStatement(const char* query);
+
+    /**
+     * Prepares the SQLite statement for the given query.
+     *
+     * Note that the user is responsible to proper statement finalization using sqlite3_finalize!
+     *
+     * \param query The query string.
+     *
+     * \return Prepared SQLite statement.
+     */
+    template <typename ALLOC>
+    sqlite3_stmt* prepareStatement(const zserio::string<ALLOC>& query);
 
     /**
      * Starts a new transaction if a transaction is not already started.
@@ -149,19 +171,37 @@ inline sqlite3* SqliteConnection::getConnection()
     return m_connection;
 }
 
-inline void SqliteConnection::executeUpdate(const std::string& sqlQuery)
+template <typename ALLOC>
+inline void SqliteConnection::executeUpdate(const zserio::string<ALLOC>& sqlQuery)
 {
-    const int result = sqlite3_exec(m_connection, sqlQuery.c_str(), NULL, NULL, NULL);
-    if (result != SQLITE_OK)
-        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_exec failed", result);
+    executeUpdate(sqlQuery.c_str());
 }
 
-inline sqlite3_stmt* SqliteConnection::prepareStatement(const std::string& sqlQuery)
+inline void SqliteConnection::executeUpdate(const char* sqlQuery)
 {
-    sqlite3_stmt* statement = NULL;
-    const int result = sqlite3_prepare_v2(m_connection, sqlQuery.c_str(), -1, &statement, NULL);
+    const int result = sqlite3_exec(m_connection, sqlQuery, nullptr, nullptr, nullptr);
     if (result != SQLITE_OK)
-        throw SqliteException("SqliteConnection::prepareStatement(): sqlite3_prepare_v2() failed", result);
+    {
+        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_exec failed: ") +
+                SqliteErrorCode(result);
+    }
+}
+
+template <typename ALLOC>
+inline sqlite3_stmt* SqliteConnection::prepareStatement(const zserio::string<ALLOC>& sqlQuery)
+{
+    return prepareStatement(sqlQuery.c_str());
+}
+
+inline sqlite3_stmt* SqliteConnection::prepareStatement(const char* sqlQuery)
+{
+    sqlite3_stmt* statement = nullptr;
+    const int result = sqlite3_prepare_v2(m_connection, sqlQuery, -1, &statement, nullptr);
+    if (result != SQLITE_OK)
+    {
+        throw SqliteException("SqliteConnection::prepareStatement(): sqlite3_prepare_v2() failed: ") +
+                SqliteErrorCode(result);
+    }
 
     return statement;
 }

@@ -1,19 +1,23 @@
 #include "gtest/gtest.h"
 
+#include "structure_types/one_string_structure/OneStringStructure.h"
+
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-
-#include "structure_types/one_string_structure/OneStringStructure.h"
+#include "zserio/RebindAlloc.h"
 
 namespace structure_types
 {
 namespace one_string_structure
 {
 
+using allocator_type = OneStringStructure::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+
 class OneStringStructureTest : public ::testing::Test
 {
 protected:
-    void writeOneStringStructureToByteArray(zserio::BitStreamWriter& writer, const char* oneString)
+    void writeOneStringStructureToByteArray(zserio::BitStreamWriter& writer, const string_type& oneString)
     {
         writer.writeString(oneString);
     }
@@ -22,6 +26,8 @@ protected:
 
     static const char ONE_STRING[];
     static const size_t ONE_STRING_STRUCTURE_BIT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const char   OneStringStructureTest::ONE_STRING[] = "This is a string!";
@@ -42,7 +48,7 @@ TEST_F(OneStringStructureTest, fieldConstructor)
     }
 
     {
-        std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+        string_type movedString(1000, 'a'); // long enough to prevent small string optimization
         const void* ptr = movedString.data();
         OneStringStructure oneStringStructure(std::move(movedString));
         const void* movedPtr= oneStringStructure.getOneString().data();
@@ -52,11 +58,10 @@ TEST_F(OneStringStructureTest, fieldConstructor)
 
 TEST_F(OneStringStructureTest, bitStreamReaderConstructor)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeOneStringStructureToByteArray(writer, ONE_STRING);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+
     OneStringStructure oneStringStructure(reader);
     ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
 }
@@ -84,25 +89,35 @@ TEST_F(OneStringStructureTest, copyAssignmentOperator)
 
 // we shall test also generated 'default' methods!
 TEST_F(OneStringStructureTest, moveConstructor)
-{;
-    OneStringStructure oneStringStructure(std::string(1000, 'a'));
+{
+    OneStringStructure oneStringStructure(string_type(1000, 'a'));
     const void* ptr = oneStringStructure.getOneString().data();
     OneStringStructure movedOneStringStructure(std::move(oneStringStructure));
     const void* movedPtr = movedOneStringStructure.getOneString().data();
     ASSERT_EQ(ptr, movedPtr);
-    ASSERT_EQ(std::string(1000, 'a'), movedOneStringStructure.getOneString());
+    ASSERT_EQ(string_type(1000, 'a'), movedOneStringStructure.getOneString());
 }
 
 // we shall test also generated 'default' methods!
 TEST_F(OneStringStructureTest, moveAssignmentOperator)
-{;
-    OneStringStructure oneStringStructure(std::string(1000, 'a'));
+{
+    OneStringStructure oneStringStructure(string_type(1000, 'a'));
     const void* ptr = oneStringStructure.getOneString().data();
     OneStringStructure movedOneStringStructure;
     movedOneStringStructure = std::move(oneStringStructure);
     const void* movedPtr = movedOneStringStructure.getOneString().data();
     ASSERT_EQ(ptr, movedPtr);
-    ASSERT_EQ(std::string(1000, 'a'), movedOneStringStructure.getOneString());
+    ASSERT_EQ(string_type(1000, 'a'), movedOneStringStructure.getOneString());
+}
+
+TEST_F(OneStringStructureTest, propagateAllocatorCopyConstructor)
+{
+    const char* str = "test";
+    OneStringStructure oneStringStructure(str);
+    OneStringStructure oneStringStructureCopy(zserio::PropagateAllocator, oneStringStructure,
+            OneStringStructure::allocator_type());
+    ASSERT_EQ(str, oneStringStructure.getOneString());
+    ASSERT_EQ(str, oneStringStructureCopy.getOneString());
 }
 
 TEST_F(OneStringStructureTest, getSetOneString)
@@ -111,13 +126,13 @@ TEST_F(OneStringStructureTest, getSetOneString)
     oneStringStructure.setOneString(ONE_STRING);
     ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
 
-    std::string movedString(1000, 'a'); // long enough to prevent small string optimization
+    string_type movedString(1000, 'a'); // long enough to prevent small string optimization
     const void* ptr = movedString.data();
     oneStringStructure.setOneString(std::move(movedString));
     const void* movedPtr = oneStringStructure.getOneString().data();
     ASSERT_EQ(ptr, movedPtr);
 
-    std::string& value = oneStringStructure.getOneString();
+    string_type& value = oneStringStructure.getOneString();
     value = ONE_STRING;
     ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
 }
@@ -164,30 +179,15 @@ TEST_F(OneStringStructureTest, hashCode)
     ASSERT_EQ(oneStringStructure1.hashCode(), oneStringStructure2.hashCode());
 }
 
-TEST_F(OneStringStructureTest, read)
-{
-    zserio::BitStreamWriter writer;
-    writeOneStringStructureToByteArray(writer, ONE_STRING);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-
-    OneStringStructure oneStringStructure;
-    oneStringStructure.read(reader);
-    ASSERT_EQ(ONE_STRING, oneStringStructure.getOneString());
-}
-
 TEST_F(OneStringStructureTest, write)
 {
     OneStringStructure oneStringStructure;
     oneStringStructure.setOneString(ONE_STRING);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     oneStringStructure.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OneStringStructure readOneStringStructure(reader);
     ASSERT_EQ(ONE_STRING, readOneStringStructure.getOneString());
     ASSERT_TRUE(oneStringStructure == readOneStringStructure);

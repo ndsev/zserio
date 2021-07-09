@@ -18,7 +18,7 @@ TEST(EmptyStructureTest, emptyConstructor)
 
 TEST(EmptyStructureTest, bitStreamReaderConstructor)
 {
-    zserio::BitStreamReader reader(NULL, 0);
+    zserio::BitStreamReader reader(nullptr, 0);
 
     EmptyStructure emptyStructure(reader);
     ASSERT_EQ(0, emptyStructure.bitSizeOf());
@@ -58,6 +58,15 @@ TEST(EmptyStructureTest, moveAssignmentOperator)
     ASSERT_EQ(0, emptyStructureMoved.bitSizeOf());
 }
 
+TEST(EmptyStructureTest, propagateAllocatorCopyConstructor)
+{
+    EmptyStructure emptyStructure;
+    EmptyStructure emptyStructureCopy(zserio::PropagateAllocator, emptyStructure,
+            EmptyStructure::allocator_type());
+    ASSERT_EQ(0, emptyStructure.bitSizeOf());
+    ASSERT_EQ(0, emptyStructureCopy.bitSizeOf());
+}
+
 TEST(EmptyStructureTest, bitSizeOf)
 {
     EmptyStructure emptyStructure;
@@ -86,26 +95,16 @@ TEST(EmptyStructureTest, hashCode)
     ASSERT_EQ(emptyStructure1.hashCode(), emptyStructure2.hashCode());
 }
 
-TEST(EmptyStructureTest, read)
-{
-    zserio::BitStreamReader reader(NULL, 0);
-
-    EmptyStructure emptyStructure;
-    emptyStructure.read(reader);
-    ASSERT_EQ(0, emptyStructure.bitSizeOf());
-}
-
 TEST(EmptyStructureTest, write)
 {
     EmptyStructure emptyStructure;
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     emptyStructure.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    ASSERT_EQ(0, writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    ASSERT_EQ(0, writer.getBitPosition());
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EmptyStructure readEmptyStructure(reader);
     ASSERT_TRUE(emptyStructure == readEmptyStructure);
 }

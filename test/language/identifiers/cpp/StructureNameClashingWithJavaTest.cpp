@@ -43,11 +43,11 @@ TEST_F(StructureNameClashingWithJavaTest, emptyConstructor)
 TEST_F(StructureNameClashingWithJavaTest, bitSizeOf)
 {
     StructureNameClashingWithJava structureNameClashingWithJava{
-        Byte{0},
-        Short{0},
-        Integer{0},
-        Long{0},
-        BigInteger{0},
+        Byte{int8_t(0)},
+        Short{int16_t(0)},
+        Integer{int32_t(0)},
+        Long{int64_t(0)},
+        BigInteger{uint64_t(0)},
         Float{0.0f},
         Double{0.0},
         String{""}

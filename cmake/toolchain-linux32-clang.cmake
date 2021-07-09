@@ -1,0 +1,15 @@
+# set Clang
+set(CMAKE_C_COMPILER "clang$ENV{CLANG_VERSION_SUFFIX}")
+set(CMAKE_CXX_COMPILER "clang++$ENV{CLANG_VERSION_SUFFIX}")
+set(CMAKE_LINKER "clang++$ENV{CLANG_VERSION_SUFFIX}")
+
+# set -m32
+set(COMPILER_M32_FLAG "--target=i386-linux")
+
+# set C flags
+set(CMAKE_C_FLAGS
+    "${CMAKE_C_FLAGS} ${COMPILER_M32_FLAG}" CACHE STRING "C flags")
+
+# set CXX flags
+set(CMAKE_CXX_FLAGS
+    "${CMAKE_CXX_FLAGS} ${COMPILER_M32_FLAG}" CACHE STRING "C++ flags")

@@ -17,7 +17,7 @@ protected:
     {
         autoArrayRecursion.setId(0);
 
-        std::vector<AutoArrayRecursion>& autoArray = autoArrayRecursion.getAutoArrayRecursion();
+        auto& autoArray = autoArrayRecursion.getAutoArrayRecursion();
         for (size_t i = 1; i <= numElements; ++i)
         {
             AutoArrayRecursion element;
@@ -45,7 +45,7 @@ protected:
     void checkAutoArrayRecursion(const AutoArrayRecursion& autoArrayRecursion, size_t numElements)
     {
         ASSERT_EQ(0, autoArrayRecursion.getId());
-        const std::vector<AutoArrayRecursion>& autoArray = autoArrayRecursion.getAutoArrayRecursion();
+        const auto& autoArray = autoArrayRecursion.getAutoArrayRecursion();
         ASSERT_EQ(numElements, autoArray.size());
         for (size_t i = 1; i <= numElements; ++i)
         {
@@ -75,14 +75,12 @@ protected:
         ASSERT_EQ(expectedEndBitPosition, autoArrayRecursion.initializeOffsets(bitPosition));
     }
 
-    void checkRead(size_t numElements)
+    void checkReadConstructor(size_t numElements)
     {
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         writeAutoArrayRecursionToByteArray(writer, numElements);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         AutoArrayRecursion autoArrayRecursion(reader);
         checkAutoArrayRecursion(autoArrayRecursion, numElements);
     }
@@ -92,18 +90,17 @@ protected:
         AutoArrayRecursion autoArrayRecursion;
         fillAutoArrayRecursion(autoArrayRecursion, numElements);
 
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         autoArrayRecursion.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         AutoArrayRecursion readAutoArrayRecursion(reader);
         checkAutoArrayRecursion(readAutoArrayRecursion, numElements);
     }
 
     static const size_t AUTO_ARRAY_LENGTH1;
     static const size_t AUTO_ARRAY_LENGTH2;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const size_t AutoArrayStructRecursionTest::AUTO_ARRAY_LENGTH1 = 5;
@@ -129,14 +126,14 @@ TEST_F(AutoArrayStructRecursionTest, initializeOffsetsLength2)
     checkInitializeOffsets(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(AutoArrayStructRecursionTest, readLength1)
+TEST_F(AutoArrayStructRecursionTest, readConstructorLength1)
 {
-    checkRead(AUTO_ARRAY_LENGTH1);
+    checkReadConstructor(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(AutoArrayStructRecursionTest, readLength2)
+TEST_F(AutoArrayStructRecursionTest, readConstructorLength2)
 {
-    checkRead(AUTO_ARRAY_LENGTH2);
+    checkReadConstructor(AUTO_ARRAY_LENGTH2);
 }
 
 TEST_F(AutoArrayStructRecursionTest, writeLength1)

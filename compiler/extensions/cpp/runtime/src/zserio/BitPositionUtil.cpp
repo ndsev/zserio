@@ -1,5 +1,4 @@
 #include "zserio/CppRuntimeException.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/BitPositionUtil.h"
 
 namespace zserio
@@ -16,9 +15,7 @@ size_t bitsToBytes(size_t numBits)
 {
     const size_t numBytes = numBits / 8;
     if (numBytes * 8 != numBits)
-    {
-        throw CppRuntimeException("bitsToBytes: " + convertToString(numBits) + " is not a multiple of 8");
-    }
+        throw CppRuntimeException("bitsToBytes: ") + numBits + " is not a multiple of 8";
 
     return numBytes;
 }

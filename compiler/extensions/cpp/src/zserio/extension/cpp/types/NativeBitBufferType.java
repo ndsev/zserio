@@ -1,15 +1,21 @@
 package zserio.extension.cpp.types;
 
-import zserio.ast.PackageName;
+import zserio.extension.cpp.TypesContext;
 
 public class NativeBitBufferType extends CppNativeType
 {
-    public NativeBitBufferType()
+    public NativeBitBufferType(TypesContext typesContext, NativeIntegralType uint8Type)
     {
-        super(ZSERIO_PACKAGE_NAME, "BitBuffer");
-        addSystemIncludeFile(BIT_BUFFER_INCLUDE);
+        super(typesContext.getBitBuffer().getPackage(), typesContext.getBitBuffer().getName() +
+                (typesContext.getBitBuffer().isTemplate() ?
+                        "<" + (typesContext.getBitBuffer().needsAllocatorArgument() ?
+                                typesContext.getAllocatorDefinition().getAllocatorType() +
+                                        "<" + uint8Type.getFullName() + ">>" : ">") : "")
+        );
+
+        if (typesContext.getBitBuffer().needsAllocatorArgument())
+            addSystemIncludeFile(typesContext.getAllocatorDefinition().getAllocatorSystemInclude());
+        addSystemIncludeFile(typesContext.getBitBuffer().getSystemInclude());
     }
 
-    private static final PackageName ZSERIO_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();
-    private static final String BIT_BUFFER_INCLUDE = "zserio/BitBuffer.h";
 }

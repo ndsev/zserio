@@ -35,6 +35,11 @@ public class NativeIntegralType extends CppNativeType
         return upperBound;
     }
 
+    public boolean isSigned()
+    {
+        return isSigned;
+    }
+
     public String formatLiteral(BigInteger value) throws ZserioExtensionException
     {
         checkRange(value);

@@ -15,12 +15,12 @@ namespace index_operator
 class IndexOperatorTest : public ::testing::Test
 {
 protected:
-    ElementList createElementList(int length, bool lastWrong = false)
+    ElementList createElementList(size_t length, bool lastWrong = false)
     {
         ElementList list;
-        std::vector<Element>& elements = list.getElements();
+        auto& elements = list.getElements();
         elements.reserve(length);
-        for (int i = 0; i < length; ++i)
+        for (size_t i = 0; i < length; ++i)
         {
             bool isEven = i % 2 + 1 == 2;
             const bool wrong = lastWrong && i + 1 == length;
@@ -28,7 +28,7 @@ protected:
             if (wrong ? !isEven : isEven)
                 element.setField8(static_cast<uint8_t>(ELEMENTS[i]));
             else
-                element.setField16(ELEMENTS[i]);
+                element.setField16(static_cast<int16_t>(ELEMENTS[i]));
             elements.push_back(element);
         }
         list.setLength(static_cast<uint16_t>(elements.size()));
@@ -38,25 +38,24 @@ protected:
 
     ElementList readWrite(ElementList& list)
     {
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         list.write(writer);
-        size_t buffer_size;
-        const uint8_t* buffer = writer.getWriteBuffer(buffer_size);
-        zserio::BitStreamReader reader(buffer, buffer_size);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         ElementList newList(reader);
         return newList;
     }
 
     void checkWriteError(ElementList& list)
     {
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         ASSERT_THROW(list.write(writer), zserio::CppRuntimeException);
     }
 
-    void checkElements(const ElementList& list, int length, bool lastWrong = false)
+    void checkElements(const ElementList& list, size_t length, bool lastWrong = false)
     {
         ASSERT_EQ(length, list.getLength());
-        for (int i = 0; i < length; ++i)
+        for (size_t i = 0; i < length; ++i)
         {
             const bool isEven = i % 2 + 1 == 2;
             const bool wrong = lastWrong && i + 1 == length;
@@ -73,6 +72,8 @@ protected:
     static const size_t LENGTH_SIZE;
     static const size_t FIELD8_SIZE;
     static const size_t FIELD16_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint16_t IndexOperatorTest::ELEMENTS[] =  { 11, 33, 55, 77 };
@@ -90,7 +91,7 @@ TEST_F(IndexOperatorTest, zeroLength)
 
 TEST_F(IndexOperatorTest, oneElement)
 {
-    const int length = 1;
+    const size_t length = 1;
     ElementList list = createElementList(length);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE, list.bitSizeOf());
     checkElements(readWrite(list), length);
@@ -98,7 +99,7 @@ TEST_F(IndexOperatorTest, oneElement)
 
 TEST_F(IndexOperatorTest, oneElementWriteWrongField)
 {
-    const int length = 1;
+    const size_t length = 1;
     ElementList list = createElementList(length, true);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE, list.bitSizeOf());
     checkWriteError(list);
@@ -106,7 +107,7 @@ TEST_F(IndexOperatorTest, oneElementWriteWrongField)
 
 TEST_F(IndexOperatorTest, oneElementReadWrongField)
 {
-    const int length = 1;
+    const size_t length = 1;
     ElementList list = createElementList(length);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE, list.bitSizeOf());
     checkElements(readWrite(list), length, true);
@@ -114,7 +115,7 @@ TEST_F(IndexOperatorTest, oneElementReadWrongField)
 
 TEST_F(IndexOperatorTest, twoElements)
 {
-    const int length = 2;
+    const size_t length = 2;
     ElementList list = createElementList(length);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
     checkElements(readWrite(list), length);
@@ -122,7 +123,7 @@ TEST_F(IndexOperatorTest, twoElements)
 
 TEST_F(IndexOperatorTest, twoElementsWriteWrongField)
 {
-    const int length = 2;
+    const size_t length = 2;
     ElementList list = createElementList(length, true);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
     checkWriteError(list);
@@ -130,7 +131,7 @@ TEST_F(IndexOperatorTest, twoElementsWriteWrongField)
 
 TEST_F(IndexOperatorTest, twoElementsReadWrongField)
 {
-    const int length = 2;
+    const size_t length = 2;
     ElementList list = createElementList(length);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
     checkElements(readWrite(list), length, true);
@@ -138,7 +139,7 @@ TEST_F(IndexOperatorTest, twoElementsReadWrongField)
 
 TEST_F(IndexOperatorTest, threeElements)
 {
-    const int length = 3;
+    const size_t length = 3;
     ElementList list = createElementList(length);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE + FIELD16_SIZE, list.bitSizeOf());
     checkElements(readWrite(list), length);
@@ -146,7 +147,7 @@ TEST_F(IndexOperatorTest, threeElements)
 
 TEST_F(IndexOperatorTest, threeElementsWriteWrongField)
 {
-    const int length = 3;
+    const size_t length = 3;
     ElementList list = createElementList(length, true);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE + FIELD16_SIZE, list.bitSizeOf());
     checkWriteError(list);
@@ -162,7 +163,7 @@ TEST_F(IndexOperatorTest, threeElementsReadWrongField)
 
 TEST_F(IndexOperatorTest, fourElements)
 {
-    const int length = 4;
+    const size_t length = 4;
     ElementList list = createElementList(length);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
     checkElements(readWrite(list), length);
@@ -170,7 +171,7 @@ TEST_F(IndexOperatorTest, fourElements)
 
 TEST_F(IndexOperatorTest, fourElementsWriteWrongField)
 {
-    const int length = 4;
+    const size_t length = 4;
     ElementList list = createElementList(length, true);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
     checkWriteError(list);
@@ -178,7 +179,7 @@ TEST_F(IndexOperatorTest, fourElementsWriteWrongField)
 
 TEST_F(IndexOperatorTest, fourElementsReadWrongField)
 {
-    const int length = 4;
+    const size_t length = 4;
     ElementList list = createElementList(length);
     ASSERT_EQ(LENGTH_SIZE + FIELD16_SIZE + FIELD8_SIZE + FIELD16_SIZE + FIELD8_SIZE, list.bitSizeOf());
     checkElements(readWrite(list), length, true);

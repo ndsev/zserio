@@ -7,15 +7,20 @@
 #include "subtypes/structure_subtype/SubtypeStructure.h"
 #include "subtypes/structure_subtype/Student.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace subtypes
 {
 namespace structure_subtype
 {
 
+using allocator_type = Student::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+
 TEST(StructureSubtypeTest, testSubtype)
 {
     const uint32_t identifier = 0xFFFF;
-    const std::string name = "Name";
+    const string_type name = "Name";
     Student student;
     student.setIdentifier(identifier);
     student.setName(name);

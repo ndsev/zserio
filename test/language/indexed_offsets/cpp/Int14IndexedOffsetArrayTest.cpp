@@ -2,7 +2,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
 
 #include "indexed_offsets/int14_indexed_offset_array/Int14IndexedOffsetArray.h"
 
@@ -40,11 +39,11 @@ protected:
 
     void checkOffsets(const Int14IndexedOffsetArray& int14IndexedOffsetArray, uint16_t offsetShift)
     {
-        const std::vector<uint32_t>& offsets = int14IndexedOffsetArray.getOffsets();
+        const auto& offsets = int14IndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (std::vector<uint32_t>::const_iterator it = offsets.begin(); it != offsets.end(); ++it)
+        for (auto it = offsets.begin(); it != offsets.end(); ++it)
         {
             ASSERT_EQ(expectedOffset, *it);
             expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
@@ -59,7 +58,7 @@ protected:
         const uint8_t expectedSpacer = SPACER_VALUE;
         ASSERT_EQ(expectedSpacer, int14IndexedOffsetArray.getSpacer());
 
-        const std::vector<int16_t>& data = int14IndexedOffsetArray.getData();
+        const auto& data = int14IndexedOffsetArray.getData();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
@@ -68,7 +67,7 @@ protected:
 
     void fillInt14IndexedOffsetArray(Int14IndexedOffsetArray& int14IndexedOffsetArray, bool createWrongOffsets)
     {
-        std::vector<uint32_t>& offsets = int14IndexedOffsetArray.getOffsets();
+        auto& offsets = int14IndexedOffsetArray.getOffsets();
         offsets.reserve(NUM_ELEMENTS);
         const uint32_t wrongOffset = WRONG_OFFSET;
         uint32_t currentOffset = ELEMENT0_OFFSET;
@@ -82,7 +81,7 @@ protected:
         }
         int14IndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        std::vector<int16_t>& data = int14IndexedOffsetArray.getData();
+        auto& data = int14IndexedOffsetArray.getData();
         data.reserve(NUM_ELEMENTS);
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
             data.push_back(i);
@@ -101,17 +100,17 @@ protected:
 
     static const size_t     INT14_INDEXED_OFFSET_ARRAY_BIT_SIZE = ELEMENT0_OFFSET * 8 +
             (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(Int14IndexedOffsetArrayTest, read)
 {
     const bool writeWrongOffsets = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeInt14IndexedOffsetArrayToByteArray(writer, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Int14IndexedOffsetArray int14IndexedOffsetArray(reader);
     checkInt14IndexedOffsetArray(int14IndexedOffsetArray);
 }
@@ -119,12 +118,10 @@ TEST_F(Int14IndexedOffsetArrayTest, read)
 TEST_F(Int14IndexedOffsetArrayTest, readWrongOffsets)
 {
     const bool writeWrongOffsets = true;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeInt14IndexedOffsetArrayToByteArray(writer, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EXPECT_THROW(Int14IndexedOffsetArray int14IndexedOffsetArray(reader), zserio::CppRuntimeException);
 }
 
@@ -181,13 +178,11 @@ TEST_F(Int14IndexedOffsetArrayTest, write)
     Int14IndexedOffsetArray int14IndexedOffsetArray;
     fillInt14IndexedOffsetArray(int14IndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     int14IndexedOffsetArray.write(writer);
     checkInt14IndexedOffsetArray(int14IndexedOffsetArray);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Int14IndexedOffsetArray readInt14IndexedOffsetArray(reader);
     checkInt14IndexedOffsetArray(readInt14IndexedOffsetArray);
     ASSERT_TRUE(int14IndexedOffsetArray == readInt14IndexedOffsetArray);
@@ -199,7 +194,7 @@ TEST_F(Int14IndexedOffsetArrayTest, writeWithPosition)
     Int14IndexedOffsetArray int14IndexedOffsetArray;
     fillInt14IndexedOffsetArray(int14IndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 8;
     writer.writeBits(0, bitPosition);
     int14IndexedOffsetArray.write(writer);
@@ -214,7 +209,7 @@ TEST_F(Int14IndexedOffsetArrayTest, writeWrongOffsets)
     Int14IndexedOffsetArray int14IndexedOffsetArray;
     fillInt14IndexedOffsetArray(int14IndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(int14IndexedOffsetArray.write(writer, zserio::NO_PRE_WRITE_ACTION),
             zserio::CppRuntimeException);
 }

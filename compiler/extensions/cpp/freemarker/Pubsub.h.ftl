@@ -3,26 +3,35 @@
 
 <@include_guard_begin package.path, name/>
 
-#include <string>
-#include <vector>
-#include <map>
-#include <functional>
-#include "zserio/IPubsub.h"
-#include "zserio/PubsubException.h"
+#include <memory>
+#include <zserio/AllocatorHolder.h>
+#include <zserio/IPubsub.h>
+#include <zserio/PubsubException.h>
+<@type_includes types.vector/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-class ${name}
+class ${name} : public zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:
-    explicit ${name}(::zserio::IPubsub& pubsub);
+    explicit ${name}(::zserio::IPubsub& pubsub, const allocator_type& allocator = allocator_type());
     ~${name}() = default;
 
-    ${name}(const ${name}&) = default;
-    ${name}& operator=(const ${name}&) = default;
+    ${name}(const ${name}&) = delete;
+    ${name}& operator=(const ${name}&) = delete;
 
     ${name}(${name}&&) = default;
-    ${name}& operator=(${name}&&) = default;
+    ${name}& operator=(${name}&&) = delete;
+<#if hasSubscribing>
+
+    template <typename ZSERIO_MESSAGE>
+    class ${name}Callback
+    {
+    public:
+        virtual ~${name}Callback() = default;
+        virtual void operator()(::zserio::StringView topic, const ZSERIO_MESSAGE& message) = 0;
+    };
+</#if>
 <#list messageList as message>
     <#if message.isPublished>
 
@@ -31,8 +40,7 @@ public:
     <#if message.isSubscribed>
 
     ::zserio::IPubsub::SubscriptionId subscribe${message.name?cap_first}(
-            const ::std::function<void(const ::std::string& topic,
-                    const ${message.typeFullName}& message)>& callback,
+            const std::shared_ptr<${name}Callback<${message.typeFullName}>>& callback,
             void* context = nullptr);
     </#if>
 </#list>
@@ -42,16 +50,9 @@ public:
 </#if>
 
 private:
-<#if hasSubscribing>
-    template <typename ZSERIO_MESSAGE>
-    void onRaw(
-            const ::std::function<void(const ::std::string&, const ZSERIO_MESSAGE&)>& callback,
-            const ::std::string& topic, const ::std::vector<uint8_t>& data);
-
-</#if>
 <#if hasPublishing>
     template <typename ZSERIO_MESSAGE>
-    void publish(ZSERIO_MESSAGE& message, const ::std::string& topic, void* context);
+    void publish(ZSERIO_MESSAGE& message, ::zserio::StringView topic, void* context);
 
 </#if>
     ::zserio::IPubsub& m_pubsub;

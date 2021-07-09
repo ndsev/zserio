@@ -2,11 +2,9 @@
 #include <fstream>
 
 #include "zserio/CppRuntimeException.h"
-#include "zserio/StringConvertUtil.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/FloatUtil.h"
 #include "zserio/BitStreamWriter.h"
-#include "zserio/VarSizeUtil.h"
 
 namespace zserio
 {
@@ -113,32 +111,19 @@ static const int64_t MAX_I64_VALUES[] =
     0x0fffffffffffffffLL,  0x1fffffffffffffffLL,  0x3fffffffffffffffLL, 0x7fffffffffffffffLL
 };
 
-BitStreamWriter::BitStreamWriter() :
-        m_buffer(NULL),
-        m_bitIndex(0),
-        m_bufferBitSize(0),
-        m_hasInternalBuffer(true),
-        m_internalBuffer()
-{
-}
-
-BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
+BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferBitSize, BitsTag) :
         m_buffer(buffer),
         m_bitIndex(0),
-        m_bufferBitSize(bufferByteSize * 8),
-        m_hasInternalBuffer(false),
-        m_internalBuffer()
-{
-}
+        m_bufferBitSize(bufferBitSize)
+{}
 
-BitStreamWriter::BitStreamWriter(BitBuffer& bitBuffer) :
-        m_buffer(bitBuffer.getBuffer()),
-        m_bitIndex(0),
-        m_bufferBitSize(bitBuffer.getBitSize()),
-        m_hasInternalBuffer(false),
-        m_internalBuffer()
-{
-}
+BitStreamWriter::BitStreamWriter(uint8_t* buffer, size_t bufferByteSize) :
+        BitStreamWriter(buffer, bufferByteSize * 8, BitsTag())
+{}
+
+BitStreamWriter::BitStreamWriter(Span<uint8_t> buffer) :
+        BitStreamWriter(buffer.data(), buffer.size() * 8, BitsTag())
+{}
 
 BitStreamWriter::~BitStreamWriter()
 {
@@ -147,8 +132,10 @@ BitStreamWriter::~BitStreamWriter()
 void BitStreamWriter::writeBits(uint32_t data, uint8_t numBits)
 {
     if (numBits > sizeof(uint32_t) * 8 || data > MAX_U32_VALUES[numBits])
-        throw CppRuntimeException("BitStreamWriter: Writing of " + convertToString(numBits) + "-bits value '" +
-                convertToString(data) + "' failed.");
+    {
+        throw CppRuntimeException("BitStreamWriter: Writing of ") + numBits + "-bits value '" + data +
+                "' failed.";
+    }
 
     writeUnsignedBits(data, numBits);
 }
@@ -156,8 +143,10 @@ void BitStreamWriter::writeBits(uint32_t data, uint8_t numBits)
 void BitStreamWriter::writeBits64(uint64_t data, uint8_t numBits)
 {
     if (numBits > sizeof(uint64_t) * 8 || data > MAX_U64_VALUES[numBits])
-        throw CppRuntimeException("BitStreamWriter: Writing of " + convertToString(numBits) + "-bits value '" +
-                convertToString(data) + "' failed.");
+    {
+        throw CppRuntimeException("BitStreamWriter: Writing of ") + numBits + "-bits value '" + data +
+                "' failed.";
+    }
 
     writeUnsignedBits64(data, numBits);
 }
@@ -165,8 +154,10 @@ void BitStreamWriter::writeBits64(uint64_t data, uint8_t numBits)
 void BitStreamWriter::writeSignedBits(int32_t data, uint8_t numBits)
 {
     if (numBits > sizeof(int32_t) * 8 || data < MIN_I32_VALUES[numBits] || data > MAX_I32_VALUES[numBits])
-        throw CppRuntimeException("BitStreamWriter: Writing of " + convertToString(numBits) + "-bits value '" +
-                convertToString(data) + "' failed.");
+    {
+        throw CppRuntimeException("BitStreamWriter: Writing of ") + numBits + "-bits value '" + data +
+                "' failed.";
+    }
 
     writeUnsignedBits(static_cast<uint32_t>(data) & MAX_U32_VALUES[numBits], numBits);
 }
@@ -174,8 +165,10 @@ void BitStreamWriter::writeSignedBits(int32_t data, uint8_t numBits)
 void BitStreamWriter::writeSignedBits64(int64_t data, uint8_t numBits)
 {
     if (numBits > sizeof(int64_t) * 8 || data < MIN_I64_VALUES[numBits] || data > MAX_I64_VALUES[numBits])
-        throw CppRuntimeException("BitStreamWriter: Writing of " + convertToString(numBits) + "-bits value '" +
-                convertToString(data) + "' failed.");
+    {
+        throw CppRuntimeException("BitStreamWriter: Writing of ") + numBits + "-bits value '" + data +
+                "' failed.";
+    }
 
     writeUnsignedBits64(static_cast<uint64_t>(data) & MAX_U64_VALUES[numBits], numBits);
 }
@@ -246,58 +239,16 @@ void BitStreamWriter::writeFloat64(double data)
     writeUnsignedBits64(doublePrecisionFloat, 64);
 }
 
-void BitStreamWriter::writeString(const std::string& data)
-{
-    const size_t len = data.size();
-    writeVarSize(convertSizeToUInt32(len));
-    for (size_t i = 0; i < len; ++i)
-    {
-        writeBits(static_cast<uint8_t>(data[i]), 8);
-    }
-}
-
 void BitStreamWriter::writeBool(bool data)
 {
     writeBits((data ? 1 : 0), 1);
-}
-
-void BitStreamWriter::writeBitBuffer(const BitBuffer& bitBuffer)
-{
-    const size_t bitSize = bitBuffer.getBitSize();
-    writeVarSize(convertSizeToUInt32(bitSize));
-
-    const uint8_t* buffer = bitBuffer.getBuffer();
-    size_t numBytesToWrite = bitSize / 8;
-    const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToWrite * 8);
-    const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
-    {
-        // we are not aligned to byte
-        while (numBytesToWrite > 0)
-        {
-            writeUnsignedBits(*buffer, 8);
-            buffer++;
-            numBytesToWrite--;
-        }
-    }
-    else
-    {
-        // we are aligned to byte
-        setBitPosition(beginBitPosition + numBytesToWrite * 8);
-        if (hasWriteBuffer())
-            memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
-        buffer += numBytesToWrite;
-    }
-
-    if (numRestBits > 0)
-        writeUnsignedBits(*buffer >> (8 - numRestBits), numRestBits);
 }
 
 void BitStreamWriter::setBitPosition(BitPosType position)
 {
     if (hasWriteBuffer())
     {
-        if (!ensureCapacity(position))
+        if (!checkCapacity(position))
             throw CppRuntimeException("BitStreamWriter: Reached eof(), setting of bit position failed.");
     }
 
@@ -314,25 +265,12 @@ void BitStreamWriter::alignTo(size_t alignment)
     }
 }
 
-const uint8_t* BitStreamWriter::getWriteBuffer(size_t& writeBufferByteSize) const
+const uint8_t* BitStreamWriter::getWriteBuffer() const
 {
-    writeBufferByteSize = (m_bufferBitSize + 7) / 8;
-
     return m_buffer;
 }
 
-void BitStreamWriter::writeBufferToFile(const std::string& filename) const
-{
-    std::ofstream os(filename.c_str(), std::ofstream::binary);
-    if (!os)
-        throw CppRuntimeException("WriteBitStreamToFile: Failed to open '" + filename +"' for writing!");
-
-    os.write(reinterpret_cast<const char*>(m_buffer), (m_bufferBitSize + 7) / 8);
-    if (!os)
-        throw CppRuntimeException("WriteBitStreamToFile: Failed to write '" + filename +"'!");
-}
-
-inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
+void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
 {
     if (!hasWriteBuffer())
     {
@@ -340,7 +278,7 @@ inline void BitStreamWriter::writeUnsignedBits(uint32_t data, uint8_t numBits)
         return;
     }
 
-    if (!ensureCapacity(m_bitIndex + numBits))
+    if (!checkCapacity(m_bitIndex + numBits))
         throw CppRuntimeException("BitStreamWriter: Reached eof(), writing to stream failed.");
 
     uint8_t restNumBits = numBits;
@@ -438,20 +376,10 @@ inline void BitStreamWriter::writeVarNum(uint64_t value, bool isSigned, bool isN
     }
 }
 
-inline bool BitStreamWriter::ensureCapacity(size_t bitSize)
+inline bool BitStreamWriter::checkCapacity(size_t bitSize) const
 {
     if (bitSize > m_bufferBitSize)
-    {
-        if (!m_hasInternalBuffer)
-            return false;
-
-        // we have internal buffer which can be resized
-        const size_t missingBytes = (bitSize - m_bufferBitSize + 7) / 8;
-        m_internalBuffer.resize(m_internalBuffer.size() + missingBytes);
-        m_buffer = &m_internalBuffer[0];
-        m_bufferBitSize = m_internalBuffer.size() * 8;
-    }
-
+        return false;
     return true;
 }
 

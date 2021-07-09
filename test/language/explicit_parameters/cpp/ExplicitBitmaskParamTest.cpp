@@ -4,14 +4,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "explicit_parameters/ExplicitParametersDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace explicit_parameters
 {
 namespace explicit_bitmask_param
 {
+
+using allocator_type = ExplicitParametersDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class ExplicitBitmaskParamTest : public ::testing::Test
 {
@@ -30,43 +36,44 @@ public:
     }
 
 protected:
-    void fillBitmaskParamTableRow(BitmaskParamTable::Row& row, uint32_t id, const std::string& name)
+    void fillBitmaskParamTableRow(BitmaskParamTable::Row& row, uint32_t id, const string_type& name)
     {
         row.setId(id);
         row.setName(name);
 
         TestBlob testBlob1;
-        std::vector<uint8_t>& values1 = testBlob1.getValues();
+        vector_type<uint8_t>& values1 = testBlob1.getValues();
         for (uint32_t i = 0; i < BITMASK_PARAM_TABLE_COUNT1.getValue(); ++i)
             values1.push_back(static_cast<uint8_t>(id));
         row.setBlob1(testBlob1);
 
         TestBlob testBlob2;
-        std::vector<uint8_t>& values2 = testBlob2.getValues();
+        vector_type<uint8_t>& values2 = testBlob2.getValues();
         for (uint32_t i = 0; i < BITMASK_PARAM_TABLE_COUNT2.getValue(); ++i)
             values2.push_back(static_cast<uint8_t>(id + 1));
         row.setBlob2(testBlob2);
 
         TestBlob testBlob3;
-        std::vector<uint8_t>& values3 = testBlob3.getValues();
+        vector_type<uint8_t>& values3 = testBlob3.getValues();
         for (uint32_t i = 0; i < BITMASK_PARAM_TABLE_COUNT1.getValue(); ++i)
             values3.push_back(static_cast<uint8_t>(id + 2));
         row.setBlob3(testBlob3);
     }
 
-    void fillBitmaskParamTableRows(std::vector<BitmaskParamTable::Row>& rows)
+    void fillBitmaskParamTableRows(vector_type<BitmaskParamTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t id = 0; id < NUM_BITMASK_PARAM_TABLE_ROWS; ++id)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const string_type name = "Name" + zserio::toString<allocator_type>(id);
             BitmaskParamTable::Row row;
             fillBitmaskParamTableRow(row, id, name);
             rows.push_back(row);
         }
     }
 
-    static void checkBitmaskParamTableRow(const BitmaskParamTable::Row& row1, const BitmaskParamTable::Row& row2)
+    static void checkBitmaskParamTableRow(const BitmaskParamTable::Row& row1,
+            const BitmaskParamTable::Row& row2)
     {
         ASSERT_EQ(row1.getId(), row2.getId());
         ASSERT_EQ(row1.getName(), row2.getName());
@@ -78,8 +85,8 @@ protected:
         ASSERT_EQ(row2.getBlob1().getCount(), row2.getBlob3().getCount());
     }
 
-    static void checkBitmaskParamTableRows(const std::vector<BitmaskParamTable::Row>& rows1,
-            const std::vector<BitmaskParamTable::Row>& rows2)
+    static void checkBitmaskParamTableRows(const vector_type<BitmaskParamTable::Row>& rows1,
+            const vector_type<BitmaskParamTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -120,13 +127,13 @@ TEST_F(ExplicitBitmaskParamTest, readWithoutCondition)
     BitmaskParamTable& bitmaskParamTable = m_database->getBitmaskParamTable();
 
     BitmaskParamTableParameterProvider parameterProvider;
-    std::vector<BitmaskParamTable::Row> writtenRows;
+    vector_type<BitmaskParamTable::Row> writtenRows;
     fillBitmaskParamTableRows(writtenRows);
     bitmaskParamTable.write(parameterProvider, writtenRows);
 
     BitmaskParamTable::Reader reader = bitmaskParamTable.createReader(parameterProvider);
 
-    std::vector<BitmaskParamTable::Row> readRows;
+    vector_type<BitmaskParamTable::Row> readRows;
     while (reader.hasNext())
         readRows.push_back(reader.next());
     checkBitmaskParamTableRows(writtenRows, readRows);
@@ -137,11 +144,11 @@ TEST_F(ExplicitBitmaskParamTest, readWithCondition)
     BitmaskParamTable& bitmaskParamTable = m_database->getBitmaskParamTable();
 
     BitmaskParamTableParameterProvider parameterProvider;
-    std::vector<BitmaskParamTable::Row> writtenRows;
+    vector_type<BitmaskParamTable::Row> writtenRows;
     fillBitmaskParamTableRows(writtenRows);
     bitmaskParamTable.write(parameterProvider, writtenRows);
 
-    const std::string condition = "name='Name1'";
+    const string_type condition = "name='Name1'";
     BitmaskParamTable::Reader reader = bitmaskParamTable.createReader(parameterProvider, condition);
 
     ASSERT_TRUE(reader.hasNext());
@@ -157,14 +164,14 @@ TEST_F(ExplicitBitmaskParamTest, update)
     BitmaskParamTable& bitmaskParamTable = m_database->getBitmaskParamTable();
 
     BitmaskParamTableParameterProvider parameterProvider;
-    std::vector<BitmaskParamTable::Row> writtenRows;
+    vector_type<BitmaskParamTable::Row> writtenRows;
     fillBitmaskParamTableRows(writtenRows);
     bitmaskParamTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
     BitmaskParamTable::Row updateRow;
     fillBitmaskParamTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "id=" + zserio::toString<allocator_type>(updateRowId);
     bitmaskParamTable.update(parameterProvider, updateRow, updateCondition);
 
     BitmaskParamTable::Reader reader = bitmaskParamTable.createReader(parameterProvider, updateCondition);

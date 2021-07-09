@@ -5,8 +5,19 @@
 #include <zserio/CppRuntimeException.h>
 #include <zserio/SqliteException.h>
 #include <zserio/BitStreamReader.h>
-<#if withWriterCode>
+<#if withWriterCode || withValidationCode>
+    <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
+    <#if hasNonVirtualField>
+#include <zserio/BitFieldUtil.h>
+    </#if>
 #include <zserio/BitStreamWriter.h>
+<@type_includes types.bitBuffer/>
+</#if>
+<#if withValidationCode>
+    <#assign hasValidatableField=sql_table_has_validatable_field(fields)/>
+    <#if hasValidatableField>
+#include <algorithm>
+    </#if>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -16,48 +27,61 @@
 
 <#assign needsParameterProvider=explicitParameters?has_content/>
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
-<#if withWriterCode>
-    <#assign hasNonVirtualField=sql_table_has_non_virtual_field(fields)/>
+<#if withValidationCode>
+    <#assign hasPrimaryKeyField=false/>
+    <#list fields as field>
+        <#if field.isPrimaryKey>
+            <#assign hasPrimaryKeyField=true/>
+            <#break>
+        </#if>
+    </#list>
 </#if>
-${name}::${name}(::zserio::SqliteConnection& db, const ::std::string& tableName,
-        const ::std::string& attachedDbName) :
+${name}::${name}(::zserio::SqliteConnection& db, ::zserio::StringView tableName,
+        ::zserio::StringView attachedDbName, const allocator_type& allocator) :
+        ::zserio::AllocatorHolder<allocator_type>(allocator),
         m_db(db), m_name(tableName), m_attachedDbName(attachedDbName)
+{
+}
+
+${name}::${name}(::zserio::SqliteConnection& db, ::zserio::StringView tableName,
+        const allocator_type& allocator) :
+        ${name}(db, tableName, ::zserio::StringView(), allocator)
 {
 }
 
 <#if withWriterCode>
 void ${name}::createTable()
 {
-    ::std::string sqlQuery;
+    ${types.string.name} sqlQuery(get_allocator_ref());
     appendCreateTableToQuery(sqlQuery);
     <#if hasNonVirtualField && isWithoutRowId>
     sqlQuery += " WITHOUT ROWID";
     </#if>
-    m_db.executeUpdate(sqlQuery.c_str());
+    m_db.executeUpdate(sqlQuery);
 }
 
     <#if hasNonVirtualField && isWithoutRowId>
 void ${name}::createOrdinaryRowIdTable()
 {
-    ::std::string sqlQuery;
+    ${types.string.name} sqlQuery(get_allocator_ref());
     appendCreateTableToQuery(sqlQuery);
-    m_db.executeUpdate(sqlQuery.c_str());
+    m_db.executeUpdate(sqlQuery);
 }
 
     </#if>
 void ${name}::deleteTable()
 {
-    ::std::string sqlQuery = "DROP TABLE ";
+    ${types.string.name} sqlQuery(get_allocator_ref());
+    sqlQuery += "DROP TABLE ";
     appendTableNameToQuery(sqlQuery);
-    m_db.executeUpdate(sqlQuery.c_str());
+    m_db.executeUpdate(sqlQuery);
 }
 
 </#if>
 ${name}::Reader ${name}::createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-        <#lt>const ::std::string& condition) const
+        <#lt>::zserio::StringView condition) const
 {
-    // assemble sql query
-    ::std::string sqlQuery;
+    ${types.string.name} sqlQuery(get_allocator_ref());
     sqlQuery +=
             "SELECT "
 <#list fields as field>
@@ -71,12 +95,13 @@ ${name}::Reader ${name}::createReader(<#if needsParameterProvider>IParameterProv
         sqlQuery += condition;
     }
 
-    return Reader(m_db, <#if needsParameterProvider>parameterProvider, </#if>sqlQuery);
+    return Reader(m_db, <#if needsParameterProvider>parameterProvider, </#if>sqlQuery, get_allocator_ref());
 }
 
 ${name}::Reader::Reader(::zserio::SqliteConnection& db, <#rt>
         <#lt><#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-        <#lt>const ::std::string& sqlQuery) :
+        <#lt>const ${types.string.name}& sqlQuery, const allocator_type& allocator) :
+        ::zserio::AllocatorHolder<allocator_type>(allocator),
         <#if needsParameterProvider>m_parameterProvider(parameterProvider),</#if>
         m_stmt(db.prepareStatement(sqlQuery))
 {
@@ -88,25 +113,28 @@ bool ${name}::Reader::hasNext() const noexcept
     return m_lastResult == SQLITE_ROW;
 }
 
-<#macro read_blob field blob_ctor_variable_name="reader">
+<#macro read_blob field parameterProviderVarName>
         <#list field.typeParameters as parameter>
         <@sql_parameter_variable_type parameter/> _${parameter.definitionName} = <#rt>
             <#if parameter.isExplicit>
-                <#lt>m_parameterProvider.<@sql_parameter_provider_getter_name parameter/>(row);
+                <#lt>${parameterProviderVarName}.<@sql_parameter_provider_getter_name parameter/>(row);
             <#else>
                 <#lt>${parameter.expression};
             </#if>
         </#list>
-        const ${field.cppTypeName} blob(${blob_ctor_variable_name}<#rt>
+        ${field.cppTypeName} blob(reader<#rt>
         <#list field.typeParameters as parameter>
                 , _${parameter.definitionName}<#t>
         </#list>
-        <#lt>);
+        <#lt>, get_allocator_ref());
 </#macro>
 ${name}::Row ${name}::Reader::next()
 {
     if (!hasNext())
-        throw ::zserio::SqliteException("Table::Reader::next: next row is not available", m_lastResult);
+    {
+        throw ::zserio::SqliteException("Table::Reader::next: next row is not available: ") +
+                ::zserio::SqliteErrorCode(m_lastResult);
+    }
 
     Row row;
 <#list fields as field>
@@ -119,7 +147,7 @@ ${name}::Row ${name}::Reader::next()
         const int blobDataLength = sqlite3_column_bytes(m_stmt.get(), ${field?index});
         ::zserio::BitStreamReader reader(reinterpret_cast<const uint8_t*>(blobData),
                 static_cast<size_t>(blobDataLength));
-        <@read_blob field/>
+        <@read_blob field, "m_parameterProvider"/>
         row.${field.setterName}(::std::move(blob));
     <#elseif field.sqlTypeData.isInteger>
         const int64_t intValue = sqlite3_column_int64(m_stmt.get(), ${field?index});
@@ -139,7 +167,8 @@ ${name}::Row ${name}::Reader::next()
         row.${field.setterName}(static_cast<${field.cppTypeName}>(doubleValue));
     <#else>
         const unsigned char* textValue = sqlite3_column_text(m_stmt.get(), ${field?index});
-        row.${field.setterName}(${field.cppTypeName}(reinterpret_cast<const char*>(textValue)));
+        row.${field.setterName}(${field.cppTypeName}(
+                reinterpret_cast<const char*>(textValue), get_allocator_ref()));
     </#if>
     }
 </#list>
@@ -153,15 +182,19 @@ void ${name}::Reader::makeStep()
 {
     m_lastResult = sqlite3_step(m_stmt.get());
     if (m_lastResult != SQLITE_ROW && m_lastResult != SQLITE_DONE)
-        throw ::zserio::SqliteException("${name}::Read: sqlite3_step() failed", m_lastResult);
+    {
+        throw ::zserio::SqliteException("${name}::Read: sqlite3_step() failed: ") +
+                ::zserio::SqliteErrorCode(m_lastResult);
+    }
 }
 <#if withWriterCode>
 
 void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-        <#lt>::std::vector<Row>& rows)
+        <#lt>::zserio::Span<Row> rows)
 {
     // assemble sql query
-    ::std::string sqlQuery("INSERT INTO ");
+    ${types.string.name} sqlQuery(get_allocator_ref());
+    sqlQuery += "INSERT INTO ";
     appendTableNameToQuery(sqlQuery);
     sqlQuery +=
             "("
@@ -178,27 +211,34 @@ void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterPro
     const bool wasTransactionStarted = m_db.startTransaction();
     ::std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
 
-    for (::std::vector<Row>::iterator it = rows.begin(); it != rows.end(); ++it)
+    for (Row& row : rows)
     {
-        writeRow(<#if needsParameterProvider>parameterProvider, </#if>*it, *statement);
+        writeRow(<#if needsParameterProvider>parameterProvider, </#if>row, *statement);
         int result = sqlite3_step(statement.get());
         if (result != SQLITE_DONE)
-            throw ::zserio::SqliteException("Write: sqlite3_step() failed", result);
+        {
+            throw ::zserio::SqliteException("Write: sqlite3_step() failed: ") +
+                    ::zserio::SqliteErrorCode(result);
+        }
 
         sqlite3_clear_bindings(statement.get());
         result = sqlite3_reset(statement.get());
         if (result != SQLITE_OK)
-            throw ::zserio::SqliteException("Write: sqlite3_reset() failed", result);
+        {
+            throw ::zserio::SqliteException("Write: sqlite3_reset() failed: ") +
+                    ::zserio::SqliteErrorCode(result);
+        }
     }
 
     m_db.endTransaction(wasTransactionStarted);
 }
 
 void ${name}::update(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
-        <#lt>Row& row, const ::std::string& whereCondition)
+        <#lt>Row& row, ::zserio::StringView whereCondition)
 {
     // assemble sql query
-    ::std::string sqlQuery("UPDATE ");
+    ${types.string.name} sqlQuery(get_allocator_ref());
+    sqlQuery += "UPDATE ";
     appendTableNameToQuery(sqlQuery);
     sqlQuery +=
             " SET"
@@ -213,8 +253,356 @@ void ${name}::update(<#if needsParameterProvider>IParameterProvider& parameterPr
     writeRow(<#if needsParameterProvider>parameterProvider, </#if>row, *statement);
     const int result = sqlite3_step(statement.get());
     if (result != SQLITE_DONE)
-        throw ::zserio::SqliteException("Update: sqlite3_step() failed", result);
+        throw ::zserio::SqliteException("Update: sqlite3_step() failed: ") + ::zserio::SqliteErrorCode(result);
 }
+<#if withValidationCode>
+
+bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
+        <#lt><#if needsParameterProvider>, IParameterProvider& parameterProvider</#if>, bool& continueValidation)
+{
+    const size_t numberOfRows = <#if hasNonVirtualField>::zserio::ValidationSqliteUtil<${types.allocator.default}>::getNumberOfTableRows(
+            m_db, m_attachedDbName, m_name, get_allocator_ref());<#else>0;</#if>
+    continueValidation = true;
+    if (!validationObserver.beginTable(m_name, numberOfRows))
+        return false;
+
+    size_t numberOfValidatedRows = 0;
+    <#if hasNonVirtualField>
+    if (validateSchema(validationObserver))
+    {
+        ${types.string.name} sqlQuery{get_allocator_ref()};
+        sqlQuery += "SELECT ";
+        <#list fields as field>
+        sqlQuery += "${field.name}<#if field?has_next || !hasPrimaryKeyField>, </#if>";
+        </#list>
+        <#if !hasPrimaryKeyField><#-- use rowid instead of primary key in getRowKeyValuesHolder -->
+        sqlQuery += "rowid";
+        </#if>
+        sqlQuery += " FROM ";
+        appendTableNameToQuery(sqlQuery);
+        std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
+        int result = SQLITE_OK;
+        bool continueTableValidation = true;
+        while ((result = sqlite3_step(statement.get())) == SQLITE_ROW && continueTableValidation)
+        {
+            ++numberOfValidatedRows;
+            Row row;
+        <#list fields as field>
+            <#if field.sqlTypeData.isBlob>
+            if (!validateBlob${field.name?cap_first}(validationObserver, statement.get(), row<#rt>
+                    <#lt><#if field.hasExplicitParameters>, parameterProvider</#if>, continueTableValidation))
+                continue;
+            <#else>
+            if (!validateField${field.name?cap_first}(validationObserver, statement.get(), row, continueTableValidation))
+                continue;
+            </#if>
+        </#list>
+        }
+        if (result != SQLITE_DONE && (continueTableValidation || result != SQLITE_ROW))
+        {
+            throw ::zserio::SqliteException("Validate: sqlite3_step() failed: ") +
+                    ::zserio::SqliteErrorCode(result);
+        }
+    }
+    <#else>
+    <#-- If the table has only virtual fields, skip everything except of schema checking. -->
+    validateSchema(validationObserver);
+    </#if>
+
+    continueValidation = validationObserver.endTable(m_name, numberOfValidatedRows);
+
+    return true;
+}
+
+bool ${name}::validateSchema(::zserio::IValidationObserver& validationObserver)
+{
+    ::zserio::ValidationSqliteUtil<${types.allocator.default}>::TableSchema tableSchema(
+            get_allocator_ref());
+    ::zserio::ValidationSqliteUtil<${types.allocator.default}>::getTableSchema(
+            m_db, m_attachedDbName, m_name, tableSchema, get_allocator_ref());
+
+    bool result = true;
+    bool continueValidation = true;
+    <#list fields as field>
+
+    if (<#if !field?is_first>continueValidation && </#if>!validateColumn${field.name?cap_first}(
+            validationObserver, tableSchema, continueValidation))
+    {
+        result = false;
+    }
+    </#list>
+
+    if (!tableSchema.empty())
+    {
+        for (auto it = tableSchema.begin(); it != tableSchema.end() && continueValidation; ++it)
+        {
+            const auto& columnName = it->first;
+            const auto& columnType = it->second.type;
+            ${types.string.name} errorMessage = ${types.string.name}(
+                    "superfluous column ", get_allocator_ref());
+            errorMessage += m_name;
+            errorMessage += ".";
+            errorMessage += columnName;
+            errorMessage += " of type ";
+            errorMessage += columnType;
+            errorMessage += " encountered";
+            continueValidation = validationObserver.reportError(m_name, columnName,
+                    ::zserio::Span<::zserio::StringView>(),
+                    ::zserio::IValidationObserver::COLUMN_SUPERFLUOUS,
+                    errorMessage);
+        }
+        result = false;
+    }
+
+    return result;
+}
+    <#list fields as field>
+
+bool ${name}::validateColumn${field.name?cap_first}(::zserio::IValidationObserver& validationObserver,
+        ::zserio::ValidationSqliteUtil<${types.allocator.default}>::TableSchema& tableSchema,
+        bool& continueValidation)
+{
+    auto search = tableSchema.find(${types.string.name}("${field.name}", get_allocator_ref()));
+    <#-- if column is virtual, it can be hidden -->
+    if (search == tableSchema.end()<#if field.isVirtual> &&
+            !::zserio::ValidationSqliteUtil<${types.allocator.default}>::isColumnInTable(
+                    m_db, m_attachedDbName, m_name, ::zserio::makeStringView("${field.name}"),
+                    get_allocator_ref())</#if>)
+    {
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                ::zserio::Span<const ::zserio::StringView>(),
+                ::zserio::IValidationObserver::COLUMN_MISSING,
+                ::zserio::makeStringView("column ${name}.${field.name} is missing"));
+        return false;
+    }
+
+        <#-- SQLite does not maintain column properties for virtual tables columns or for virtual columns -->
+        <#if !virtualTableUsing?? && !field.isVirtual>
+    const auto column = search->second;<#-- copy the column since it will be erased from schema -->
+    tableSchema.erase(search);
+
+    if (column.type != "${field.sqlTypeData.name}")
+    {
+        ${types.string.name} errorMessage = ${types.string.name}(
+                "column ${name}.${field.name} has type '", get_allocator_ref());
+        errorMessage += column.type;
+        errorMessage += "' but '${field.sqlTypeData.name}' is expected";
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                ::zserio::Span<const ::zserio::StringView>(),
+                ::zserio::IValidationObserver::INVALID_COLUMN_TYPE, errorMessage);
+        return false;
+    }
+
+    if (<#if field.isNotNull>!</#if>column.isNotNull)
+    {
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                ::zserio::Span<::zserio::StringView>(),
+                ::zserio::IValidationObserver::INVALID_COLUMN_CONSTRAINT,
+                ::zserio::makeStringView(
+                        "column ${name}.${field.name} is <#if !field.isNotNull>NOT </#if>NULL-able, "
+                        "but the column is expected to be <#if field.isNotNull>NOT </#if>NULL-able"));
+        return false;
+    }
+
+    if (<#if field.isPrimaryKey>!</#if>column.isPrimaryKey)
+    {
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                ::zserio::Span<::zserio::StringView>(),
+                ::zserio::IValidationObserver::INVALID_COLUMN_CONSTRAINT,
+                ::zserio::makeStringView(
+                        "column ${name}.${field.name} is <#if field.isPrimaryKey>not </#if>primary key, "
+                        "but the column is expected <#if !field.isPrimaryKey>not </#if>to be primary key"));
+        return false;
+    }
+        <#else>
+    if (search != tableSchema.end())
+        tableSchema.erase(search);
+        </#if>
+
+    return true;
+}
+    </#list>
+    <#if hasNonVirtualField>
+        <#list fields as field>
+
+            <#if field.sqlTypeData.isBlob>
+bool ${name}::validateBlob${field.name?cap_first}(::zserio::IValidationObserver& validationObserver,
+        sqlite3_stmt* statement, Row& row<#rt>
+        <#lt><#if field.hasExplicitParameters>, IParameterProvider& parameterProvider</#if>, bool& continueValidation)
+{
+    const void* blobData = sqlite3_column_blob(statement, ${field?index});
+    if (blobData == nullptr)
+        return true;
+
+    try
+    {
+        const int blobDataLength = sqlite3_column_bytes(statement, ${field?index});
+        ::zserio::BitStreamReader reader(reinterpret_cast<const uint8_t*>(blobData),
+                static_cast<size_t>(blobDataLength));
+        <@read_blob field "parameterProvider"/>
+        ${types.bitBuffer.name} bitBuffer(reader.getBitPosition(), get_allocator_ref());
+        ::zserio::BitStreamWriter writer(bitBuffer);
+        blob.write(writer);
+        if (reader.getBitPosition() != writer.getBitPosition())
+        {
+            const auto rowKeyValuesHolder = getRowKeyValuesHolder(statement);
+            ${types.string.name} errorMessage = ${types.string.name}(
+                    "Blob binary compare failed because of length (", get_allocator_ref());
+            errorMessage += ::zserio::toString(reader.getBitPosition(), get_allocator_ref());
+            errorMessage += " != ";
+            errorMessage += ::zserio::toString(writer.getBitPosition(), get_allocator_ref());
+            errorMessage += ")";
+            continueValidation = validationObserver.reportError(m_name,
+                    ::zserio::makeStringView("${field.name}"), getRowKeyValues(rowKeyValuesHolder),
+                    ::zserio::IValidationObserver::BLOB_COMPARE_FAILED, errorMessage);
+            return false;
+        }
+        row.${field.setterName}(::std::move(blob));
+    }
+    catch (const ::zserio::CppRuntimeException& exception)
+    {
+        const auto rowKeyValuesHolder = getRowKeyValuesHolder(statement);
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                getRowKeyValues(rowKeyValuesHolder),
+                ::zserio::IValidationObserver::BLOB_PARSE_FAILED,
+                exception.what());
+        return false;
+    }
+
+    return true;
+}
+            <#else>
+<#macro range_check_field name field types indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}if (<#if field.sqlRangeCheckData.checkLowerBound>rangeCheckValue < lowerBound || </#if>rangeCheckValue > upperBound)
+${I}{
+${I}    const auto rowKeyValuesHolder = getRowKeyValuesHolder(statement);
+${I}    ${types.string.name} errorMessage = ${types.string.name}("Value ", get_allocator_ref());
+${I}    errorMessage += ::zserio::toString(rangeCheckValue, get_allocator_ref());
+${I}    errorMessage += " of ${name}.${field.name} exceeds the range of ";
+${I}    errorMessage += ::zserio::toString(lowerBound, get_allocator_ref());
+${I}    errorMessage += "..";
+${I}    errorMessage += ::zserio::toString(upperBound, get_allocator_ref());
+${I}    continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+${I}            getRowKeyValues(rowKeyValuesHolder),
+${I}            ::zserio::IValidationObserver::VALUE_OUT_OF_RANGE, errorMessage);
+${I}    return false;
+${I}}
+</#macro>
+bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver&<#rt>
+        <#lt><#if field.sqlRangeCheckData?? || field.enumData??> validationObserver</#if>,
+        sqlite3_stmt* statement, Row& row, bool&<#rt>
+        <#lt><#if field.sqlRangeCheckData?? || field.enumData??> continueValidation</#if>)
+{
+    if (sqlite3_column_type(statement, ${field?index}) == SQLITE_NULL)
+        return true;
+
+                <#if field.sqlTypeData.isInteger>
+    const int64_t intValue = sqlite3_column_int64(statement, ${field?index});
+                    <#if field.sqlRangeCheckData??>
+    // range check
+    const ${field.sqlRangeCheckData.sqlCppTypeName} rangeCheckValue = static_cast<${field.sqlRangeCheckData.sqlCppTypeName}>(intValue);
+                        <#if field.sqlRangeCheckData.bitFieldLength??>
+    try
+    {
+        const size_t bitFieldLength = static_cast<size_t>(${field.sqlRangeCheckData.bitFieldLength});
+        const ${field.sqlRangeCheckData.sqlCppTypeName} lowerBound = static_cast<${field.sqlRangeCheckData.sqlCppTypeName}><#rt>
+            <#lt>(::zserio::getBitFieldLowerBound(bitFieldLength, <#if field.sqlRangeCheckData.isSigned>true<#else>false</#if>));
+        const ${field.sqlRangeCheckData.sqlCppTypeName} upperBound = static_cast<${field.sqlRangeCheckData.sqlCppTypeName}><#rt>
+            <#lt>(::zserio::getBitFieldUpperBound(bitFieldLength, <#if field.sqlRangeCheckData.isSigned>true<#else>false</#if>));
+        <@range_check_field name, field, types, 2/>
+    }
+    catch (const ::zserio::CppRuntimeException& exception)
+    {
+        const auto rowKeyValuesHolder = getRowKeyValuesHolder(statement);
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                getRowKeyValues(rowKeyValuesHolder),
+                ::zserio::IValidationObserver::INVALID_VALUE,
+                exception.what());
+        return false;
+    }
+                        <#else>
+    const ${field.sqlRangeCheckData.sqlCppTypeName} lowerBound = ${field.sqlRangeCheckData.lowerBound};
+    const ${field.sqlRangeCheckData.sqlCppTypeName} upperBound = ${field.sqlRangeCheckData.upperBound};
+    <@range_check_field name, field, types, 1/>
+                        </#if>
+
+                    </#if>
+                    <#if field.enumData??>
+    try
+    {
+        const ${field.cppTypeName} enumValue = ::zserio::valueToEnum<${field.cppTypeName}>(static_cast<${field.enumData.baseCppTypeName}>(intValue));
+        row.${field.setterName}(enumValue);
+    }
+    catch (const ::zserio::CppRuntimeException&)
+    {
+        const auto rowKeyValuesHolder = getRowKeyValuesHolder(statement);
+        ${types.string.name} errorMessage = ${types.string.name}("Enumeration value ", get_allocator_ref());
+        errorMessage += ::zserio::toString(intValue, get_allocator_ref());
+        errorMessage += " of ${name}.${field.name} is not valid!";
+        continueValidation = validationObserver.reportError(m_name, ::zserio::makeStringView("${field.name}"),
+                getRowKeyValues(rowKeyValuesHolder),
+                ::zserio::IValidationObserver::INVALID_VALUE, errorMessage);
+        return false;
+    }
+                    <#elseif field.bitmaskData??>
+    const ${field.cppTypeName} bitmaskValue = ${field.cppTypeName}(static_cast<${field.bitmaskData.baseCppTypeName}>(intValue));
+    row.${field.setterName}(bitmaskValue);
+                    <#elseif field.isBoolean>
+    row.${field.setterName}(intValue != 0);
+                    <#else>
+    row.${field.setterName}(static_cast<${field.cppTypeName}>(intValue));
+                    </#if>
+                <#elseif field.sqlTypeData.isReal>
+    const double doubleValue = sqlite3_column_double(statement, ${field?index});
+    row.${field.setterName}(static_cast<${field.cppTypeName}>(doubleValue));
+                <#else>
+    const unsigned char* textValue = sqlite3_column_text(statement, ${field?index});
+    row.${field.setterName}(${field.cppTypeName}(
+            reinterpret_cast<const char*>(textValue), get_allocator_ref()));
+                </#if>
+
+    return true;
+}
+            </#if>
+        </#list>
+        <#if hasValidatableField>
+
+<@vector_type_name types.string.name/> ${name}::getRowKeyValuesHolder(sqlite3_stmt* statement)
+{
+    <@vector_type_name types.string.name/> rowKeyValuesHolder{get_allocator_ref()};
+
+            <#if hasPrimaryKeyField>
+                <#list fields as field>
+                    <#if field.isPrimaryKey>
+                        <#if field.sqlTypeData.isBlob>
+    rowKeyValuesHolder.emplace_back("BLOB");
+                        <#else>
+    const unsigned char* strValue${field.name?cap_first} = sqlite3_column_text(statement, ${field?index});
+    rowKeyValuesHolder.emplace_back(reinterpret_cast<const char*>(strValue${field.name?cap_first}));
+                        </#if>
+                    </#if>
+                </#list>
+            <#else>
+    const unsigned char* strValueRowId = sqlite3_column_text(statement, ${fields?size});
+    rowKeyValuesHolder.emplace_back(reinterpret_cast<const char*>(strValueRowId));
+            </#if>
+
+    return rowKeyValuesHolder;
+}
+
+<@vector_type_name "::zserio::StringView"/> ${name}::getRowKeyValues(
+            const <@vector_type_name types.string.name/>& rowKeyValuesHolder)
+{
+    <@vector_type_name "::zserio::StringView"/> rowKeyValues{get_allocator_ref()};
+    std::transform(rowKeyValuesHolder.begin(), rowKeyValuesHolder.end(),
+            std::back_inserter(rowKeyValues),
+            [](const ${types.string.name}& message) -> ::zserio::StringView { return message; });
+    return rowKeyValues;
+}
+        </#if>
+    </#if>
+</#if>
 
 void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
         <#lt>Row& row, sqlite3_stmt& statement)
@@ -239,11 +627,11 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     {
         <#if field.sqlTypeData.isBlob>
         ${field.cppTypeName}& blob = row.${field.getterName}();
-        ::zserio::BitStreamWriter writer;
+        ${types.bitBuffer.name} bitBuffer(blob.bitSizeOf(), get_allocator_ref());
+        ::zserio::BitStreamWriter writer(bitBuffer);
         blob.write(writer, ::zserio::NO_PRE_WRITE_ACTION);
-        size_t blobDataLength;
-        const uint8_t* blobData = writer.getWriteBuffer(blobDataLength);
-        result = sqlite3_bind_blob(&statement, ${field?index + 1}, blobData, static_cast<int>(blobDataLength), SQLITE_TRANSIENT);
+        result = sqlite3_bind_blob(&statement, ${field?index + 1}, bitBuffer.getBuffer(),
+                static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
         <#elseif field.sqlTypeData.isInteger>
         const int64_t intValue = static_cast<int64_t>(row.${field.getterName}()<#if field.bitmaskData??>.getValue()</#if>);
         result = sqlite3_bind_int64(&statement, ${field?index + 1}, intValue);
@@ -256,44 +644,55 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
         </#if>
     }
     if (result != SQLITE_OK)
-        throw ::zserio::SqliteException("${name}::WriteRow: sqlite3_bind() for field ${field.name} failed", result);
+    {
+        throw ::zserio::SqliteException("${name}::WriteRow: sqlite3_bind() for field ${field.name} failed: ") +
+                ::zserio::SqliteErrorCode(result);
+    }
         <#if field?has_next>
 
         </#if>
     </#list>
 }
 
-void ${name}::appendCreateTableToQuery(::std::string& sqlQuery)
+void ${name}::appendCreateTableToQuery(${types.string.name}& sqlQuery) const
 {
     sqlQuery += "CREATE <#if virtualTableUsing??>VIRTUAL </#if>TABLE ";
     appendTableNameToQuery(sqlQuery);
-    sqlQuery +=
     <#if virtualTableUsing??>
-            ::std::string(" USING ${virtualTableUsing}")<#if !hasNonVirtualField && !sqlConstraint??>;<#else> +</#if>
+    sqlQuery += " USING ${virtualTableUsing}";
     </#if>
     <#if hasNonVirtualField || sqlConstraint??>
-            "(" +
+    sqlQuery += '(';
+        <#assign firstNonVirtualField=true/>
         <#list fields as field>
             <#if !field.isVirtual>
-            ::std::string("${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>") +<#rt>
-                    <#lt><#if field.sqlConstraint??> " " + ${field.sqlConstraint} +</#if><#rt>
-                    <#lt><#if field?has_next> ", " +</#if>
+    sqlQuery += "<#if !firstNonVirtualField>, </#if>${field.name}<#if needsTypesInSchema> ${field.sqlTypeData.name}</#if>";
+                <#if field.sqlConstraint??>
+    sqlQuery += ' ';
+    sqlQuery += ${field.sqlConstraint};
+                </#if>
+                <#assign firstNonVirtualField=false/>
             </#if>
         </#list>
         <#if hasNonVirtualField && sqlConstraint??>
-            ", " +
+    sqlQuery += ", ";
         </#if>
         <#if sqlConstraint??>
-            ${sqlConstraint} +
+    sqlQuery += ${sqlConstraint};
         </#if>
-            ")";
+    sqlQuery += ')';
     </#if>
 }
 </#if>
 
-void ${name}::appendTableNameToQuery(::std::string& sqlQuery) const
+void ${name}::appendTableNameToQuery(${types.string.name}& sqlQuery) const
 {
-    sqlQuery.append(m_attachedDbName.empty() ? m_name : (m_attachedDbName + "." + m_name));
+    if (!m_attachedDbName.empty())
+    {
+        sqlQuery += m_attachedDbName;
+        sqlQuery += '.';
+    }
+    sqlQuery += m_name;
 }
 <#if hasImplicitParameters>
 

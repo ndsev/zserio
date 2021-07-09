@@ -28,12 +28,11 @@ TEST(BitFieldUIn64LengthTest, readWrite)
     container.setUnsignedBitField(std::numeric_limits<uint32_t>::max() + static_cast<uint64_t>(1));
     container.setSignedBitField(std::numeric_limits<int32_t>::max() + static_cast<int64_t>(1));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     container.write(writer);
-    size_t bufferSize;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const Container readContainer(reader);
 
     ASSERT_TRUE(container == readContainer);

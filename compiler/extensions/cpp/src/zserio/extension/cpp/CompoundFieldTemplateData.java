@@ -20,10 +20,10 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.tools.ZserioToolPrinter;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.NativeIntegralType;
-import zserio.tools.ZserioToolPrinter;
 
 public class CompoundFieldTemplateData
 {
@@ -59,6 +59,8 @@ public class CompoundFieldTemplateData
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
         isSimpleType = fieldNativeType.isSimpleType();
+        needsAllocator = !isSimpleType;
+        holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
         isEnum = fieldBaseType instanceof EnumType;
 
         constraint = createConstraint(field, cppNativeMapper, cppExpressionFormatter, includeCollector);
@@ -69,7 +71,7 @@ public class CompoundFieldTemplateData
                 cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector, withWriterCode);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 cppExpressionFormatter);
-        bitSizeValue = createBitSizeValue(fieldTypeInstantiation, cppExpressionFormatter);
+        bitSize = createBitSize(fieldTypeInstantiation, cppExpressionFormatter);
         this.withWriterCode = withWriterCode;
         this.withRangeCheckCode = withRangeCheckCode;
     }
@@ -139,6 +141,16 @@ public class CompoundFieldTemplateData
         return isSimpleType;
     }
 
+    public boolean getNeedsAllocator()
+    {
+        return needsAllocator;
+    }
+
+    public boolean getHolderNeedsAllocator()
+    {
+        return holderNeedsAllocator;
+    }
+
     public boolean getIsEnum()
     {
         return isEnum;
@@ -164,9 +176,9 @@ public class CompoundFieldTemplateData
         return runtimeFunction;
     }
 
-    public String getBitSizeValue()
+    public BitSize getBitSize()
     {
-        return bitSizeValue;
+        return bitSize;
     }
 
     public boolean getWithWriterCode()
@@ -230,10 +242,9 @@ public class CompoundFieldTemplateData
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
             for (InstantiatedParameter parameter : parameters)
             {
-                instantiatedParameters.add(new InstantiatedParameterData(cppExpressionFormatter,
-                        cppIndirectExpressionFormatter, parameter));
+                instantiatedParameters.add(new InstantiatedParameterData(cppNativeMapper,
+                        cppExpressionFormatter, cppIndirectExpressionFormatter, parameter));
             }
-
 
             needsChildrenInitialization = baseType.needsChildrenInitialization();
         }
@@ -257,13 +268,18 @@ public class CompoundFieldTemplateData
 
         public static class InstantiatedParameterData
         {
-            public InstantiatedParameterData(ExpressionFormatter cppExpressionFormatter,
+            public InstantiatedParameterData(CppNativeMapper cppNativeMapper,
+                    ExpressionFormatter cppExpressionFormatter,
                     ExpressionFormatter cppIndirectExpressionFormatter,
                     InstantiatedParameter instantiatedParameter) throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 expression = cppExpressionFormatter.formatGetter(argumentExpression);
                 indirectExpression = cppIndirectExpressionFormatter.formatGetter(argumentExpression);
+                final CppNativeType cppNativeType = cppNativeMapper.getCppType(
+                        instantiatedParameter.getParameter().getTypeReference());
+                cppTypeName = cppNativeType.getFullName();
+                isSimpleType = cppNativeType.isSimpleType();
             }
 
             public String getExpression()
@@ -276,8 +292,20 @@ public class CompoundFieldTemplateData
                 return indirectExpression;
             }
 
+            public String getCppTypeName()
+            {
+                return cppTypeName;
+            }
+
+            public boolean getIsSimpleType()
+            {
+                return isSimpleType;
+            }
+
             private final String expression;
             private final String indirectExpression;
+            private final String cppTypeName;
+            private final boolean isSimpleType;
         }
 
         private final ArrayList<InstantiatedParameterData> instantiatedParameters;
@@ -361,43 +389,14 @@ public class CompoundFieldTemplateData
 
     public static class IntegerRange
     {
-        public IntegerRange(CppNativeMapper cppNativeMapper, TypeInstantiation typeInstantiation,
-                ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
+        public IntegerRange(boolean checkLowerBound, String lowerBound, String upperBound,
+                String bitFieldLength, boolean isSigned) throws ZserioExtensionException
         {
-            IntegerType typeToCheck = (IntegerType)typeInstantiation.getBaseType();
-            bitFieldLength = getDynamicBitFieldLength(typeInstantiation, cppExpressionFormatter);
-            isSigned = typeToCheck.isSigned();
-
-            final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(typeInstantiation);
-            final BigInteger zserioLowerBound = typeToCheck.getLowerBound(typeInstantiation);
-            final BigInteger nativeLowerBound = nativeType.getLowerBound();
-            checkLowerBound = (bitFieldLength != null && isSigned) ||
-                    nativeLowerBound.compareTo(zserioLowerBound) < 0;
-
-            final BigInteger zserioUpperBound = typeToCheck.getUpperBound(typeInstantiation);
-            final BigInteger nativeUpperBound = nativeType.getUpperBound();
-            final boolean checkUpperBound = nativeUpperBound.compareTo(zserioUpperBound) > 0;
-
-            // fixed Zserio types that have the same bounds as their native type are not checked
-            hasFullRange = (bitFieldLength == null) && !checkLowerBound && !checkUpperBound;
-
-            lowerBound = nativeType.formatLiteral(zserioLowerBound);
-            upperBound = nativeType.formatLiteral(zserioUpperBound);
-        }
-
-        public String getBitFieldLength()
-        {
-            return bitFieldLength;
-        }
-
-        public boolean getIsSigned()
-        {
-            return isSigned;
-        }
-
-        public boolean getHasFullRange()
-        {
-            return hasFullRange;
+            this.checkLowerBound = checkLowerBound;
+            this.lowerBound = lowerBound;
+            this.upperBound = upperBound;
+            this.bitFieldLength = bitFieldLength;
+            this.isSigned = isSigned;
         }
 
         public boolean getCheckLowerBound()
@@ -415,20 +414,18 @@ public class CompoundFieldTemplateData
             return upperBound;
         }
 
-        private static String getDynamicBitFieldLength(TypeInstantiation instantiation,
-                ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
+        public String getBitFieldLength()
         {
-            if (!(instantiation instanceof DynamicBitFieldInstantiation))
-                return null;
+            return bitFieldLength;
+        }
 
-            final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
-                    (DynamicBitFieldInstantiation)instantiation;
-            return cppExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
+        public boolean getIsSigned()
+        {
+            return isSigned;
         }
 
         private final String bitFieldLength;
         private final boolean isSigned;
-        private final boolean hasFullRange;
         private final boolean checkLowerBound;
         private final String lowerBound;
         private final String upperBound;
@@ -456,8 +453,8 @@ public class CompoundFieldTemplateData
             elementCppTypeName = elementNativeType.getFullName();
             includeCollector.addHeaderIncludesForType(elementNativeType);
             requiresElementFactory = nativeType.requiresElementFactory();
-            elementBitSizeValue = nativeType.requiresElementBitSize()
-                    ? createBitSizeValue(elementTypeInstantiation, cppExpressionFormatter)
+            elementBitSize = nativeType.requiresElementBitSize()
+                    ? createBitSize(elementTypeInstantiation, cppExpressionFormatter)
                     : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
                     cppIndirectExpressionFormatter, parentType, elementTypeInstantiation, withWriterCode);
@@ -495,9 +492,9 @@ public class CompoundFieldTemplateData
             return requiresElementFactory;
         }
 
-        public String getElementBitSizeValue()
+        public BitSize getElementBitSize()
         {
-            return elementBitSizeValue;
+            return elementBitSize;
         }
 
         public Compound getElementCompound()
@@ -526,9 +523,31 @@ public class CompoundFieldTemplateData
         private final String length;
         private final String elementCppTypeName;
         private final boolean requiresElementFactory;
-        private final String elementBitSizeValue;
+        private final BitSize elementBitSize;
         private final Compound elementCompound;
         private final IntegerRange elementIntegerRange;
+    }
+
+    public static class BitSize
+    {
+        public BitSize(String value, boolean isDynamicBitField)
+        {
+            this.value = value;
+            this.isDynamicBitField = isDynamicBitField;
+        }
+
+        public String getValue()
+        {
+            return value;
+        }
+
+        public boolean getIsDynamicBitField()
+        {
+            return isDynamicBitField;
+        }
+
+        private final String value;
+        private final boolean isDynamicBitField;
     }
 
     private static Optional createOptional(Field field, ZserioType baseFieldType, CompoundType parentType,
@@ -545,13 +564,49 @@ public class CompoundFieldTemplateData
     }
 
     private static IntegerRange createIntegerRange(CppNativeMapper cppNativeMapper,
-            TypeInstantiation typeInstantiation,
-            ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
+            TypeInstantiation typeInstantiation, ExpressionFormatter cppExpressionFormatter)
+                    throws ZserioExtensionException
     {
         if (!(typeInstantiation.getBaseType() instanceof IntegerType))
             return null;
 
-        return new IntegerRange(cppNativeMapper, typeInstantiation, cppExpressionFormatter);
+        final String bitFieldLength = getDynamicBitFieldLength(typeInstantiation, cppExpressionFormatter);
+        final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(typeInstantiation);
+        final boolean isSigned = nativeType.isSigned();
+        final IntegerType typeToCheck = (IntegerType)typeInstantiation.getBaseType();
+
+        final BigInteger zserioLowerBound = typeToCheck.getLowerBound(typeInstantiation);
+        final BigInteger zserioUpperBound = typeToCheck.getUpperBound(typeInstantiation);
+        boolean checkLowerBound = true;
+        boolean checkUpperBound = true;
+
+        if (bitFieldLength == null)
+        {
+            final BigInteger nativeLowerBound = nativeType.getLowerBound();
+            checkLowerBound = nativeLowerBound.compareTo(zserioLowerBound) < 0;
+
+            final BigInteger nativeUpperBound = nativeType.getUpperBound();
+            checkUpperBound = nativeUpperBound.compareTo(zserioUpperBound) > 0;
+            final boolean hasFullRange = !checkLowerBound && !checkUpperBound;
+            if (hasFullRange)
+                return null;
+        }
+
+        final String lowerBound = nativeType.formatLiteral(zserioLowerBound);
+        final String upperBound = nativeType.formatLiteral(zserioUpperBound);
+
+        return new IntegerRange(checkLowerBound, lowerBound, upperBound, bitFieldLength, isSigned);
+    }
+
+    private static String getDynamicBitFieldLength(TypeInstantiation instantiation,
+            ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
+    {
+        if (!(instantiation instanceof DynamicBitFieldInstantiation))
+            return null;
+
+        final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                (DynamicBitFieldInstantiation)instantiation;
+        return cppExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
     }
 
     private static String createAlignmentValue(Field field, ExpressionFormatter cppExpressionFormatter)
@@ -571,7 +626,14 @@ public class CompoundFieldTemplateData
         if (initializerExpression == null)
             return null;
 
-        return cppExpressionFormatter.formatGetter(initializerExpression);
+        if (initializerExpression.getStringValue() != null)
+        {
+            return CppLiteralFormatter.formatStringLiteral(initializerExpression.getStringValue());
+        }
+        else
+        {
+            return cppExpressionFormatter.formatGetter(initializerExpression);
+        }
     }
 
     private static Constraint createConstraint(Field field, CppNativeMapper cppNativeMapper,
@@ -622,27 +684,29 @@ public class CompoundFieldTemplateData
                 withWriterCode);
     }
 
-    static String createBitSizeValue(TypeInstantiation instantiation,
+    private static BitSize createBitSize(TypeInstantiation instantiation,
             ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
     {
-        String value;
-        if (instantiation.getBaseType() instanceof FixedSizeType)
+        final ZserioType baseInstantiationType = instantiation.getBaseType();
+        BitSize bitSize;
+        if (baseInstantiationType instanceof FixedSizeType)
         {
-            value = CppLiteralFormatter.formatUInt8Literal(
-                    ((FixedSizeType)instantiation.getBaseType()).getBitSize());
+            final String value = CppLiteralFormatter.formatUInt8Literal(
+                    ((FixedSizeType)baseInstantiationType).getBitSize());
+            bitSize = new BitSize(value, false);
         }
         else if (instantiation instanceof DynamicBitFieldInstantiation)
         {
-            final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
-                    (DynamicBitFieldInstantiation)instantiation;
-            value = cppExpressionFormatter.formatGetter(dynamicBitFieldInstantiation.getLengthExpression());
+            final String value = cppExpressionFormatter.formatGetter(
+                    ((DynamicBitFieldInstantiation)instantiation).getLengthExpression());
+            bitSize = new BitSize(value, true);
         }
         else
         {
-            value = null;
+            bitSize = null;
         }
 
-        return value;
+        return bitSize;
     }
 
     private static Compound createCompound(CppNativeMapper cppNativeMapper,
@@ -678,12 +742,14 @@ public class CompoundFieldTemplateData
     private final String initializer;
     private final boolean usesAnyHolder;
     private final boolean isSimpleType;
+    private final boolean needsAllocator;
+    private final boolean holderNeedsAllocator;
     private final boolean isEnum;
     private final Constraint constraint;
     private final Offset offset;
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
-    private final String bitSizeValue;
+    private final BitSize bitSize;
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;
 }

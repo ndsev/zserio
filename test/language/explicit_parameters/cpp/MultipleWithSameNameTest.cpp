@@ -4,14 +4,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "explicit_parameters/ExplicitParametersDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace explicit_parameters
 {
 namespace multiple_with_same_name
 {
+
+using allocator_type = ExplicitParametersDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class MultipleWithSameNameTest : public ::testing::Test
 {
@@ -31,21 +37,21 @@ public:
 
 protected:
     void fillMultipleWithSameNameTableRow(MultipleWithSameNameTable::Row& row, uint32_t id,
-            const std::string& name)
+            const string_type& name)
     {
         row.setId(id);
         row.setName(name);
 
         row.setParameterized1(Parameterized1(id * 10));
-        row.setParameterized2(Parameterized2(id * 1.5f));
+        row.setParameterized2(Parameterized2(static_cast<float>(id) * 1.5f));
     }
 
-    void fillMultipleWithSameNameTableRows(std::vector<MultipleWithSameNameTable::Row>& rows)
+    void fillMultipleWithSameNameTableRows(vector_type<MultipleWithSameNameTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t id = 0; id < NUM_ROWS; ++id)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const string_type name = "Name" + zserio::toString<allocator_type>(id);
             MultipleWithSameNameTable::Row row;
             fillMultipleWithSameNameTableRow(row, id, name);
             rows.push_back(row);
@@ -61,8 +67,8 @@ protected:
         ASSERT_EQ(row1.getParameterized2(), row2.getParameterized2());
     }
 
-    static void checkMultipleWithSameNameTableRows(const std::vector<MultipleWithSameNameTable::Row>& rows1,
-            const std::vector<MultipleWithSameNameTable::Row>& rows2)
+    static void checkMultipleWithSameNameTableRows(const vector_type<MultipleWithSameNameTable::Row>& rows1,
+            const vector_type<MultipleWithSameNameTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -103,13 +109,13 @@ TEST_F(MultipleWithSameNameTest, readWithoutCondition)
     MultipleWithSameNameTable& multipleWithSameNameTable = m_database->getMultipleWithSameNameTable();
 
     MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleWithSameNameTable::Row> writtenRows;
+    vector_type<MultipleWithSameNameTable::Row> writtenRows;
     fillMultipleWithSameNameTableRows(writtenRows);
     multipleWithSameNameTable.write(parameterProvider, writtenRows);
 
     MultipleWithSameNameTable::Reader reader = multipleWithSameNameTable.createReader(parameterProvider);
 
-    std::vector<MultipleWithSameNameTable::Row> readRows;
+    vector_type<MultipleWithSameNameTable::Row> readRows;
     while (reader.hasNext())
         readRows.push_back(reader.next());
     checkMultipleWithSameNameTableRows(writtenRows, readRows);
@@ -120,11 +126,11 @@ TEST_F(MultipleWithSameNameTest, readWithCondition)
     MultipleWithSameNameTable& multipleWithSameNameTable = m_database->getMultipleWithSameNameTable();
 
     MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleWithSameNameTable::Row> writtenRows;
+    vector_type<MultipleWithSameNameTable::Row> writtenRows;
     fillMultipleWithSameNameTableRows(writtenRows);
     multipleWithSameNameTable.write(parameterProvider, writtenRows);
 
-    const std::string condition = "name='Name1'";
+    const string_type condition = "name='Name1'";
     MultipleWithSameNameTable::Reader reader =
             multipleWithSameNameTable.createReader(parameterProvider, condition);
 
@@ -141,14 +147,14 @@ TEST_F(MultipleWithSameNameTest, update)
     MultipleWithSameNameTable& multipleWithSameNameTable = m_database->getMultipleWithSameNameTable();
 
     MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleWithSameNameTable::Row> writtenRows;
+    vector_type<MultipleWithSameNameTable::Row> writtenRows;
     fillMultipleWithSameNameTableRows(writtenRows);
     multipleWithSameNameTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
     MultipleWithSameNameTable::Row updateRow;
     fillMultipleWithSameNameTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "id=" + zserio::toString<allocator_type>(updateRowId);
     multipleWithSameNameTable.update(parameterProvider, updateRow, updateCondition);
 
     MultipleWithSameNameTable::Reader reader =

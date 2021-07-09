@@ -20,7 +20,7 @@ TEST(EmptyChoiceWithDefaultTest, emptyConstructor)
 TEST(EmptyChoiceWithDefaultTest, bitStreamReaderConstructor)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamReader reader(NULL, 0);
+    zserio::BitStreamReader reader(nullptr, 0);
 
     EmptyChoiceWithDefault emptyChoiceWithDefault(reader, selector);
     ASSERT_EQ(selector, emptyChoiceWithDefault.getSelector());
@@ -73,6 +73,18 @@ TEST(EmptyChoiceWithDefaultTest, moveAssignmentOperator)
     emptyChoiceWithDefaultMoved = std::move(emptyChoiceWithDefault);
     ASSERT_EQ(selector, emptyChoiceWithDefaultMoved.getSelector());
     ASSERT_EQ(0, emptyChoiceWithDefaultMoved.bitSizeOf());
+}
+
+TEST(EmptyChoiceWithDefaultTest, propagateAllocatorCopyConstructor)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoiceWithDefault emptyChoiceWithDefault;
+    emptyChoiceWithDefault.initialize(selector);
+    const EmptyChoiceWithDefault emptyChoiceWithDefaultCopy(zserio::PropagateAllocator, emptyChoiceWithDefault,
+            EmptyChoiceWithDefault::allocator_type());
+    ASSERT_EQ(selector, emptyChoiceWithDefaultCopy.getSelector());
+    ASSERT_EQ(0, emptyChoiceWithDefaultCopy.bitSizeOf());
 }
 
 TEST(EmptyChoiceWithDefaultTest, initialize)
@@ -133,28 +145,17 @@ TEST(EmptyChoiceWithDefaultTest, hashCode)
     ASSERT_NE(emptyChoiceWithDefault1.hashCode(), emptyChoiceWithDefault3.hashCode());
 }
 
-TEST(EmptyChoiceWithDefaultTest, read)
-{
-    zserio::BitStreamReader reader(NULL, 0);
-    EmptyChoiceWithDefault emptyChoiceWithDefault;
-    const uint8_t selector = 1;
-    emptyChoiceWithDefault.initialize(selector);
-    emptyChoiceWithDefault.read(reader);
-    ASSERT_EQ(selector, emptyChoiceWithDefault.getSelector());
-    ASSERT_EQ(0, emptyChoiceWithDefault.bitSizeOf());
-}
-
 TEST(EmptyChoiceWithDefaultTest, write)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     EmptyChoiceWithDefault emptyChoiceWithDefault;
     emptyChoiceWithDefault.initialize(selector);
     emptyChoiceWithDefault.write(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    ASSERT_EQ(0, writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    ASSERT_EQ(0, writer.getBitPosition());
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), 0);
     EmptyChoiceWithDefault readEmptyChoiceWithDefault(reader, selector);
     ASSERT_EQ(emptyChoiceWithDefault, readEmptyChoiceWithDefault);
 }

@@ -11,14 +11,13 @@ namespace struct_full_and_short_template_argument
 TEST(StructFullAndShortTemplateArgumentTest, readWriteFull)
 {
     StructFullNameTemplateArgument structFullNameTemplateArgument(
-            templated_struct::TemplatedStruct_Storage("String"));
+            templated_struct::TemplatedStruct_Storage(templated_struct::Storage("String")));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structFullNameTemplateArgument.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     StructFullNameTemplateArgument readStructFullNameTemplateArgument(reader);
 
     ASSERT_TRUE(structFullNameTemplateArgument == readStructFullNameTemplateArgument);
@@ -27,14 +26,13 @@ TEST(StructFullAndShortTemplateArgumentTest, readWriteFull)
 TEST(StructFullAndShortTemplateArgumentTest, readWriteShort)
 {
     templated_struct::StructShortNameTemplateArgument structShortNameTemplateArgument(
-            templated_struct::TemplatedStruct_Storage("String"));
+            templated_struct::TemplatedStruct_Storage(templated_struct::Storage("String")));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structShortNameTemplateArgument.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     templated_struct::StructShortNameTemplateArgument readStructShortNameTemplateArgument(reader);
 
     ASSERT_TRUE(structShortNameTemplateArgument == readStructShortNameTemplateArgument);

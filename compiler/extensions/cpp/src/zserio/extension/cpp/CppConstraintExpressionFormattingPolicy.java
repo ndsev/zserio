@@ -21,12 +21,12 @@ public class CppConstraintExpressionFormattingPolicy extends CppExpressionFormat
     protected void formatFieldGetter(StringBuilder result, Field field)
     {
         if (field == constraintField)
-            result.append(CONSTRAINT_FIELD_VARIABLE);
+            result.append(CONTRAINT_FIELD_VARIABLE);
         else
             super.formatFieldGetter(result, field);
     }
 
-    private static final String CONSTRAINT_FIELD_VARIABLE = "readField";
+    private static final String CONTRAINT_FIELD_VARIABLE = "readField";
 
     private final Field constraintField;
 }

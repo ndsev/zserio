@@ -2,11 +2,14 @@
 #define ZSERIO_BIT_STREAM_WRITER_H_INC
 
 #include <cstddef>
+#include <cstring>
 #include <string>
 #include <vector>
 
 #include "zserio/Types.h"
+#include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
+#include "zserio/VarSizeUtil.h"
 
 namespace zserio
 {
@@ -21,11 +24,12 @@ public:
     typedef size_t BitPosType;
 
     /**
-     * Constructor.
+     * Constructor from externally allocated byte buffer.
      *
-     * Constructs writer with internally allocated buffer.
+     * \param buffer External byte buffer to create from.
+     * \param bufferBitSize Size of the buffer in bits.
      */
-    BitStreamWriter();
+    explicit BitStreamWriter(uint8_t* buffer, size_t bufferBitSize, BitsTag);
 
     /**
      * Constructor from externally allocated byte buffer.
@@ -36,11 +40,22 @@ public:
     explicit BitStreamWriter(uint8_t* buffer, size_t bufferByteSize);
 
     /**
+     * Constructor from externally allocated byte buffer.
+     *
+     * \param buffer External buffer to create from as a Span.
+     */
+    explicit BitStreamWriter(Span<uint8_t> buffer);
+
+    /**
      * Constructor from externally allocated bit buffer.
      *
      * \param bitBuffer External bit buffer to create from.
      */
-    explicit BitStreamWriter(BitBuffer& bitBuffer);
+    template <typename ALLOC>
+    explicit BitStreamWriter(BasicBitBuffer<ALLOC>& bitBuffer) :
+            BitStreamWriter(bitBuffer.getBuffer(), bitBuffer.getBitSize(), BitsTag())
+    {
+    }
 
     /**
      * Destructor.
@@ -181,7 +196,16 @@ public:
      *
      * \param data String to write.
      */
-    void writeString(const std::string& data);
+    template <typename ALLOC>
+    void writeString(const std::basic_string<char, std::char_traits<char>, ALLOC>& data)
+    {
+        const size_t len = data.size();
+        writeVarSize(convertSizeToUInt32(len));
+        for (size_t i = 0; i < len; ++i)
+        {
+            writeBits(static_cast<uint8_t>(data[i]), 8);
+        }
+    }
 
     /**
      * Writes bool as a single bit.
@@ -195,7 +219,38 @@ public:
      *
      * \param bitBuffer Bit buffer to write.
      */
-    void writeBitBuffer(const BitBuffer& bitBuffer);
+    template <typename ALLOC>
+    void writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer)
+    {
+        const size_t bitSize = bitBuffer.getBitSize();
+        writeVarSize(convertSizeToUInt32(bitSize));
+
+        const uint8_t* buffer = bitBuffer.getBuffer();
+        size_t numBytesToWrite = bitSize / 8;
+        const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToWrite * 8);
+        const BitPosType beginBitPosition = getBitPosition();
+        if ((beginBitPosition & 0x07) != 0)
+        {
+            // we are not aligned to byte
+            while (numBytesToWrite > 0)
+            {
+                writeUnsignedBits(*buffer, 8);
+                buffer++;
+                numBytesToWrite--;
+            }
+        }
+        else
+        {
+            // we are aligned to byte
+            setBitPosition(beginBitPosition + numBytesToWrite * 8);
+            if (hasWriteBuffer())
+                memcpy(m_buffer + beginBitPosition / 8, buffer, numBytesToWrite);
+            buffer += numBytesToWrite;
+        }
+
+        if (numRestBits > 0)
+            writeUnsignedBits(*buffer >> (8 - numRestBits), numRestBits);
+    }
 
     /**
      * Gets current bit position.
@@ -223,23 +278,21 @@ public:
      *
      * \return True when a buffer is assigned. False otherwise.
      */
-    bool hasWriteBuffer() const { return m_hasInternalBuffer || m_buffer != NULL; }
+    bool hasWriteBuffer() const { return m_buffer != nullptr; }
 
     /**
      * Gets the write buffer.
      *
-     * \param writeBufferByteSize Output parameter which will be set to the write buffer byte size.
-     *
      * \return Pointer to the beginning of write buffer.
      */
-    const uint8_t* getWriteBuffer(size_t& writeBufferByteSize) const;
+    const uint8_t* getWriteBuffer() const;
 
     /**
-     * Writes the underlying write buffer to file.
+     * Gets size of the underlying buffer in bits.
      *
-     * \param filename Filename of the file to write.
+     * \return Buffer bit size.
      */
-    void writeBufferToFile(const std::string& filename) const;
+    size_t getBufferBitSize() const { return m_bufferBitSize; }
 
 private:
     void writeUnsignedBits(uint32_t data, uint8_t numBits);
@@ -248,13 +301,11 @@ private:
     void writeUnsignedVarNum(uint64_t value, size_t maxVarBytes, size_t numVarBytes);
     void writeVarNum(uint64_t value, bool hasSign, bool isNegative, size_t maxVarBytes, size_t numVarBytes);
 
-    bool ensureCapacity(size_t bitSize);
+    bool checkCapacity(size_t bitSize) const;
 
     uint8_t* m_buffer;
     size_t m_bitIndex;
     size_t m_bufferBitSize;
-    bool m_hasInternalBuffer;
-    std::vector<uint8_t> m_internalBuffer;
 };
 
 } // namespace zserio

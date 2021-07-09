@@ -24,7 +24,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void readWithOptional() throws IOException, ZserioError
     {
-        final short length = NUM_ELEMENTS;
+        final int length = NUM_ELEMENTS;
         final boolean writeWrongOffsets = false;
         final File file = new File("test.bin");
         writeOptionalNestedIndexedOffsetArrayToFile(file, length, writeWrongOffsets);
@@ -38,7 +38,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void readWithoutOptional() throws IOException, ZserioError
     {
-        final short length = 0;
+        final int length = 0;
         final boolean writeWrongOffsets = false;
         final File file = new File("test.bin");
         writeOptionalNestedIndexedOffsetArrayToFile(file, length, writeWrongOffsets);
@@ -52,7 +52,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void bitSizeOfWithOptional()
     {
-        final short length = NUM_ELEMENTS;
+        final int length = NUM_ELEMENTS;
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
@@ -63,7 +63,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void bitSizeOfWithoutOptional()
     {
-        final short length = 0;
+        final int length = 0;
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
@@ -74,7 +74,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void initializeOffsetsWithOptional()
     {
-        final short length = NUM_ELEMENTS;
+        final int length = NUM_ELEMENTS;
         final boolean createWrongOffsets = true;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
@@ -87,7 +87,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void initializeOffsetsWithoutOptional()
     {
-        final short length = 0;
+        final int length = 0;
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
@@ -99,7 +99,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void writeWithOptional() throws IOException, ZserioError
     {
-        final short length = NUM_ELEMENTS;
+        final int length = NUM_ELEMENTS;
         final boolean createWrongOffsets = true;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
@@ -117,7 +117,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     @Test
     public void writeWithoutOptional() throws IOException, ZserioError
     {
-        final short length = 0;
+        final int length = 0;
         final boolean createWrongOffsets = false;
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
                 createOptionalNestedIndexedOffsetArray(length, createWrongOffsets);
@@ -131,17 +131,17 @@ public class OptionalNestedIndexedOffsetArrayTest
         assertTrue(optionalNestedIndexedOffsetArray.equals(readOptionalNestedIndexedOffsetArray));
     }
 
-    private void writeOptionalNestedIndexedOffsetArrayToFile(File file, short length,
+    private void writeOptionalNestedIndexedOffsetArrayToFile(File file, int length,
             boolean writeWrongOffsets) throws IOException
     {
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
 
-        writer.writeShort(length);
+        writer.writeUnsignedShort(length);
 
         if (length > 0)
         {
             long currentOffset = ELEMENT0_OFFSET;
-            for (short i = 0; i < length; ++i)
+            for (int i = 0; i < length; ++i)
             {
                 if ((i + 1) == length && writeWrongOffsets)
                     writer.writeUnsignedInt(WRONG_OFFSET);
@@ -151,7 +151,7 @@ public class OptionalNestedIndexedOffsetArrayTest
             }
 
             // already aligned
-            for (short i = 0; i < length; ++i)
+            for (int i = 0; i < length; ++i)
                 writer.writeString(DATA[i]);
         }
 
@@ -163,11 +163,11 @@ public class OptionalNestedIndexedOffsetArrayTest
     private void checkOffsets(OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray,
             short offsetShift)
     {
-        final short length = optionalNestedIndexedOffsetArray.getHeader().getLength();
+        final int length = optionalNestedIndexedOffsetArray.getHeader().getLength();
         final UnsignedIntArray offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
         assertEquals(length, offsets.length());
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (short i = 0; i < length; ++i)
+        for (int i = 0; i < length; ++i)
         {
             assertEquals(expectedOffset, offsets.elementAt(i));
             expectedOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
@@ -175,7 +175,7 @@ public class OptionalNestedIndexedOffsetArrayTest
     }
 
     private void checkOptionalNestedIndexedOffsetArray(
-            OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray, short length)
+            OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray, int length)
     {
         assertEquals(length, optionalNestedIndexedOffsetArray.getHeader().getLength());
 
@@ -186,14 +186,14 @@ public class OptionalNestedIndexedOffsetArrayTest
         {
             final StringArray data = optionalNestedIndexedOffsetArray.getData();
             assertEquals(length, data.length());
-            for (short i = 0; i < length; ++i)
+            for (int i = 0; i < length; ++i)
                 assertTrue(DATA[i].equals(data.elementAt(i)));
         }
 
         assertEquals(FIELD_VALUE, optionalNestedIndexedOffsetArray.getField());
     }
 
-    private OptionalNestedIndexedOffsetArray createOptionalNestedIndexedOffsetArray(short length,
+    private OptionalNestedIndexedOffsetArray createOptionalNestedIndexedOffsetArray(int length,
             boolean createWrongOffsets)
     {
         final OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray =
@@ -203,7 +203,7 @@ public class OptionalNestedIndexedOffsetArrayTest
 
         final UnsignedIntArray offsets = new UnsignedIntArray(length);
         long currentOffset = ELEMENT0_OFFSET;
-        for (short i = 0; i < length; ++i)
+        for (int i = 0; i < length; ++i)
         {
             if ((i + 1) == length && createWrongOffsets)
                 offsets.setElementAt(WRONG_OFFSET, i);
@@ -220,7 +220,7 @@ public class OptionalNestedIndexedOffsetArrayTest
         if (length > 0)
         {
             final StringArray data = new StringArray(length);
-            for (short i = 0; i < length; ++i)
+            for (int i = 0; i < length; ++i)
                 data.setElementAt(DATA[i], i);
             optionalNestedIndexedOffsetArray.setData(data);
         }
@@ -230,13 +230,13 @@ public class OptionalNestedIndexedOffsetArrayTest
         return optionalNestedIndexedOffsetArray;
     }
 
-    private long getOptionalNestedIndexedOffsetArrayBitSize(short length)
+    private long getOptionalNestedIndexedOffsetArrayBitSize(int length)
     {
         long bitSize = Short.SIZE + length * Integer.SIZE;
         if (length > 0)
         {
             // already aligned
-            for (short i = 0; i < length; ++i)
+            for (int i = 0; i < length; ++i)
                 bitSize += BitSizeOfCalculator.getBitSizeOfString(DATA[i]);
         }
         bitSize += 6;
@@ -244,7 +244,7 @@ public class OptionalNestedIndexedOffsetArrayTest
         return bitSize;
     }
 
-    private static final short NUM_ELEMENTS = (short)5;
+    private static final int NUM_ELEMENTS = (int)5;
 
     private static final long  WRONG_OFFSET = (long)0;
     private static final long  ELEMENT0_OFFSET = (long)(Short.SIZE + NUM_ELEMENTS * Integer.SIZE) / Byte.SIZE;

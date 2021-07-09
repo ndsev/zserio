@@ -1,15 +1,20 @@
 #include <cstdio>
-#include <string>
 #include <fstream>
 
 #include "gtest/gtest.h"
 
 #include "sql_tables/TestDb.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace sql_tables
 {
 namespace blob_field_with_children_initialization_table
 {
+
+using allocator_type = TestDb::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class BlobFieldWithChildrenInitializationTableTest : public ::testing::Test
 {
@@ -32,13 +37,13 @@ protected:
     {
         row.setId(static_cast<uint32_t>(index));
         const uint32_t arrayLength = static_cast<uint32_t>(index);
-        std::vector<uint32_t> array;
+        vector_type<uint32_t> array;
         for (uint32_t i = 0; i < arrayLength; ++i)
             array.push_back(i);
         row.setBlob(BlobWithChildrenInitialization{arrayLength, ParameterizedArray{std::move(array)}});
     }
 
-    static void fillRows(std::vector<BlobFieldWithChildrenInitializationTable::Row>& rows)
+    static void fillRows(vector_type<BlobFieldWithChildrenInitializationTable::Row>& rows)
     {
         rows.clear();
         for (size_t i = 0; i < NUM_ROWS; ++i)
@@ -56,8 +61,8 @@ protected:
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkRows(const std::vector<BlobFieldWithChildrenInitializationTable::Row>& rows1,
-            const std::vector<BlobFieldWithChildrenInitializationTable::Row>& rows2)
+    static void checkRows(const vector_type<BlobFieldWithChildrenInitializationTable::Row>& rows1,
+            const vector_type<BlobFieldWithChildrenInitializationTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -78,11 +83,11 @@ TEST_F(BlobFieldWithChildrenInitializationTableTest, readWithoutCondition)
 {
     BlobFieldWithChildrenInitializationTable& table = m_database->getBlobFieldWithChildrenInitializationTable();
 
-    std::vector<BlobFieldWithChildrenInitializationTable::Row> rows;
+    vector_type<BlobFieldWithChildrenInitializationTable::Row> rows;
     fillRows(rows);
     table.write(rows);
 
-    std::vector<BlobFieldWithChildrenInitializationTable::Row> readRows;
+    vector_type<BlobFieldWithChildrenInitializationTable::Row> readRows;
     auto reader = table.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());

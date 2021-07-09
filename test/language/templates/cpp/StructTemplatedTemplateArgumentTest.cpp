@@ -12,12 +12,11 @@ TEST(StructTemplatedTemplateArgumentTest, readWrite)
     StructTemplatedTemplateArgument structTemplatedTemplateArgument;
     structTemplatedTemplateArgument.setCompoundField(Field_Compound_uint32{Compound_uint32{42}});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structTemplatedTemplateArgument.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     StructTemplatedTemplateArgument readStructTemplatedTemplateArgument(reader);
 
     ASSERT_TRUE(structTemplatedTemplateArgument == readStructTemplatedTemplateArgument);

@@ -23,62 +23,52 @@ protected:
         writer.writeBits(y, 8);
         writer.writeBits(z, 8);
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-TEST_F(StructureBitmaskConstraintsTest, readCorrectConstraints)
+TEST_F(StructureBitmaskConstraintsTest, readConstructorCorrectConstraints)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     Availability availability =
             Availability::Values::COORD_X | Availability::Values::COORD_Y | Availability::Values::COORD_Z;
     writeStructureBitmaskConstraintsToByteArray(writer, availability, 1, 1, 1);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureBitmaskConstraints structureBitmaskConstraints;
-    structureBitmaskConstraints.read(reader);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    StructureBitmaskConstraints structureBitmaskConstraints(reader);
     ASSERT_EQ(1, structureBitmaskConstraints.getCoordX());
     ASSERT_EQ(1, structureBitmaskConstraints.getCoordY());
     ASSERT_EQ(1, structureBitmaskConstraints.getCoordZ());
 }
 
-TEST_F(StructureBitmaskConstraintsTest, readWrongCoordZConstraint)
+TEST_F(StructureBitmaskConstraintsTest, readConstructorWrongCoordZConstraint)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     Availability availability = Availability::Values::COORD_X | Availability::Values::COORD_Y;
     writeStructureBitmaskConstraintsToByteArray(writer, availability, 1, 1, 1);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureBitmaskConstraints structureBitmaskConstraints;
-    ASSERT_THROW(structureBitmaskConstraints.read(reader), zserio::CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(StructureBitmaskConstraints structureBitmaskConstraints(reader), zserio::CppRuntimeException);
 }
 
-TEST_F(StructureBitmaskConstraintsTest, readWrongCoordYConstraint)
+TEST_F(StructureBitmaskConstraintsTest, readConstructorWrongCoordYConstraint)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     Availability availability = Availability::Values::COORD_X | Availability::Values::COORD_Z;
     writeStructureBitmaskConstraintsToByteArray(writer, availability, 1, 1, 1);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureBitmaskConstraints structureBitmaskConstraints;
-    ASSERT_THROW(structureBitmaskConstraints.read(reader), zserio::CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(StructureBitmaskConstraints structureBitmaskConstraints(reader), zserio::CppRuntimeException);
 }
 
-TEST_F(StructureBitmaskConstraintsTest, readWrongCoordXConstraint)
+TEST_F(StructureBitmaskConstraintsTest, readConstructorWrongCoordXConstraint)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     Availability availability = Availability::Values::COORD_Y | Availability::Values::COORD_Z;
     writeStructureBitmaskConstraintsToByteArray(writer, availability, 1, 1, 1);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    StructureBitmaskConstraints structureBitmaskConstraints;
-    ASSERT_THROW(structureBitmaskConstraints.read(reader), zserio::CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(StructureBitmaskConstraints structureBitmaskConstraints(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(StructureBitmaskConstraintsTest, writeCorrectConstraints)
@@ -89,12 +79,10 @@ TEST_F(StructureBitmaskConstraintsTest, writeCorrectConstraints)
     structureBitmaskConstraints.setCoordY(1);
     structureBitmaskConstraints.setCoordZ(0);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     structureBitmaskConstraints.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const StructureBitmaskConstraints readStructureBitmaskConstraints(reader);
     ASSERT_EQ(1, readStructureBitmaskConstraints.getCoordX());
     ASSERT_EQ(1, readStructureBitmaskConstraints.getCoordY());
@@ -110,7 +98,7 @@ TEST_F(StructureBitmaskConstraintsTest, writeWrongCoordZConstraint)
     structureBitmaskConstraints.setCoordY(1);
     structureBitmaskConstraints.setCoordZ(1);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(structureBitmaskConstraints.write(writer), zserio::CppRuntimeException);
 }
 
@@ -122,7 +110,7 @@ TEST_F(StructureBitmaskConstraintsTest, writeWrongCoordYConstraint)
     structureBitmaskConstraints.setCoordY(1);
     structureBitmaskConstraints.setCoordZ(1);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(structureBitmaskConstraints.write(writer), zserio::CppRuntimeException);
 }
 
@@ -134,7 +122,7 @@ TEST_F(StructureBitmaskConstraintsTest, writeWrongCoordXConstraint)
     structureBitmaskConstraints.setCoordY(1);
     structureBitmaskConstraints.setCoordZ(1);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(structureBitmaskConstraints.write(writer), zserio::CppRuntimeException);
 }
 

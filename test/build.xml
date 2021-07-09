@@ -28,6 +28,11 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
     <property name="zserio_java_test.log_file" location="${zserio_java_test.build_dir}/test_log.txt"/>
     <property name="zserio_java_test.filter" value="**"/>
 
+    <property environment="env"/>
+    <condition property="zserio.extra_args" value="${env.ZSERIO_EXTRA_ARGS}" else="">
+        <isset property="env.ZSERIO_EXTRA_ARGS"/>
+    </condition>
+
     <condition property="spotbugs.classpath" value="${spotbugs.home_dir}/lib/spotbugs-ant.jar">
         <isset property="spotbugs.home_dir"/>
     </condition>
@@ -108,7 +113,8 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
         <sequential>
             <record name="${@{testName}.zs.log_file}" action="start" loglevel="warn"/>
 
-            <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}" ignoreError="@{ignoreErrors}">
+            <zserio srcPath="${@{testName}.zs.in_dir}" srcFile="@{zsFile}" ignoreError="@{ignoreErrors}"
+                    extraArgs="${zserio.extra_args}">
                 <classpath>
                     <fileset dir="${zserio.jar_dir}">
                         <include name="*.jar"/>

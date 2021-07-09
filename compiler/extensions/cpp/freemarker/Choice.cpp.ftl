@@ -22,11 +22,15 @@
 
 <@inner_classes_definition fieldList/>
 <#if withWriterCode>
-    <@compound_constructor_definition compoundConstructorsData/>
+<#macro empty_constructor_field_initialization>
+        m_objectChoice(allocator)
+</#macro>
+<#assign emptyConstructorInitMacroName><#if fieldList?has_content>empty_constructor_field_initialization</#if></#assign>
+    <@compound_constructor_definition compoundConstructorsData emptyConstructorInitMacroName/>
 
 </#if>
 <#macro read_constructor_field_initialization>
-        m_objectChoice(readObject(in))
+        m_objectChoice(readObject(in, allocator), allocator)
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
@@ -41,6 +45,8 @@
 <@compound_move_assignment_operator_definition compoundConstructorsData/>
 
 </#if>
+<@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
+
 <#if needs_compound_initialization(compoundConstructorsData)>
 <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
 
@@ -224,9 +230,9 @@ bool ${name}::operator==(const ${name}& other) const
         // empty
     </#if>
 </#macro>
-int ${name}::hashCode() const
+uint32_t ${name}::hashCode() const
 {
-    int result = ::zserio::HASH_SEED;
+    uint32_t result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
     <#if fieldList?has_content>
@@ -234,13 +240,6 @@ int ${name}::hashCode() const
     </#if>
 
     return result;
-}
-
-void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
-{
-<#if fieldList?has_content>
-    m_objectChoice = readObject(in);
-</#if>
 }
 <#if withWriterCode>
 
@@ -276,12 +275,25 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
         <@compound_read_field member.compoundField, name, 2/>
         </#if>
     <#else>
-        return ::zserio::AnyHolder();
+        return ${types.anyHolder.name}(allocator);
     </#if>
 </#macro>
-::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)
+${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in,
+        const allocator_type& allocator)
 {
     <@choice_switch "choice_read_member", false/>
+}
+
+<#macro choice_copy_object member>
+    <#if member.compoundField??>
+        return ::zserio::allocatorPropagatingCopy<${member.compoundField.cppTypeName}>(m_objectChoice, allocator);
+    <#else>
+        return ${types.anyHolder.name}(allocator);
+    </#if>
+</#macro>
+${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const
+{
+    <@choice_switch "choice_copy_object", false/>
 }
 </#if>
 <@namespace_end package.path/>

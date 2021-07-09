@@ -16,7 +16,7 @@ class OptionalExpressionTest : public ::testing::Test
 protected:
     void fillBlackColor(BlackColor& blackColor, uint8_t numBlackTones)
     {
-        std::vector<int32_t>& tones = blackColor.getTones();
+        auto& tones = blackColor.getTones();
         for (uint8_t i = 0; i < numBlackTones; ++i)
             tones.push_back(i + 1);
     }
@@ -39,6 +39,8 @@ protected:
     static const uint8_t NUM_BLACK_TONES;
     static const size_t CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL;
     static const size_t CONTAINER_BIT_SIZE_WITH_OPTIONAL;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t OptionalExpressionTest::NUM_BLACK_TONES = 2;
@@ -180,11 +182,11 @@ TEST_F(OptionalExpressionTest, write)
     Container container;
     container.setBasicColor(BasicColor::WHITE);
 
-    zserio::BitStreamWriter writerWhite;
+    zserio::BitStreamWriter writerWhite(bitBuffer);
     container.write(writerWhite);
-    size_t writerWhiteBufferByteSize;
-    const uint8_t* writerWhiteBuffer = writerWhite.getWriteBuffer(writerWhiteBufferByteSize);
-    zserio::BitStreamReader readerWhite(writerWhiteBuffer, writerWhiteBufferByteSize);
+
+    zserio::BitStreamReader readerWhite(writerWhite.getWriteBuffer(), writerWhite.getBitPosition(),
+            zserio::BitsTag());
     checkContainerInBitStream(readerWhite, BasicColor::WHITE, NUM_BLACK_TONES);
     Container readContainerWhite(readerWhite);
 
@@ -199,11 +201,11 @@ TEST_F(OptionalExpressionTest, write)
     fillBlackColor(blackColor, numBlackTones);
     container.setBlackColor(blackColor);
 
-    zserio::BitStreamWriter writerBlack;
+    zserio::BitStreamWriter writerBlack(bitBuffer);
     container.write(writerBlack);
-    size_t writerBlackBufferByteSize;
-    const uint8_t* writerBlackBuffer = writerBlack.getWriteBuffer(writerBlackBufferByteSize);
-    zserio::BitStreamReader readerBlack(writerBlackBuffer, writerBlackBufferByteSize);
+
+    zserio::BitStreamReader readerBlack(writerBlack.getWriteBuffer(), writerBlack.getBitPosition(),
+            zserio::BitsTag());
     checkContainerInBitStream(readerBlack, BasicColor::BLACK, numBlackTones);
     Container readContainerBlack(readerBlack);
 

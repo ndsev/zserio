@@ -1,15 +1,19 @@
 #include "gtest/gtest.h"
 
+#include "offsets/auto_array_offset/AutoArrayHolder.h"
+
+#include "zserio/RebindAlloc.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
-
-#include "offsets/auto_array_offset/AutoArrayHolder.h"
 
 namespace offsets
 {
 namespace auto_array_offset
 {
+
+using allocator_type = AutoArrayHolder::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class AutoArrayOffsetTest : public ::testing::Test
 {
@@ -36,7 +40,7 @@ protected:
 
         ASSERT_EQ(FORCED_ALIGNMENT_VALUE, autoArrayHolder.getForceAlignment());
 
-        const std::vector<int8_t>& autoArray = autoArrayHolder.getAutoArray();
+        const vector_type<int8_t>& autoArray = autoArrayHolder.getAutoArray();
         ASSERT_EQ(AUTO_ARRAY_LENGTH, autoArray.size());
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
             ASSERT_EQ(i, autoArray[i]);
@@ -51,7 +55,7 @@ protected:
 
         autoArrayHolder.setForceAlignment(FORCED_ALIGNMENT_VALUE);
 
-        std::vector<int8_t> autoArray;
+        vector_type<int8_t> autoArray;
         autoArray.reserve(AUTO_ARRAY_LENGTH);
         for (size_t i = 0; i < AUTO_ARRAY_LENGTH; ++i)
             autoArray.push_back(static_cast<int8_t>(i));
@@ -65,6 +69,8 @@ protected:
     static const uint32_t   AUTO_ARRAY_OFFSET;
 
     static const size_t     AUTO_ARRAY_HOLDER_BIT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const size_t    AutoArrayOffsetTest::AUTO_ARRAY_LENGTH = 5;
@@ -75,28 +81,24 @@ const uint32_t  AutoArrayOffsetTest::AUTO_ARRAY_OFFSET = 5;
 
 const size_t    AutoArrayOffsetTest::AUTO_ARRAY_HOLDER_BIT_SIZE = 32 + 1 + 7 + 8 + AUTO_ARRAY_LENGTH * 7;
 
-TEST_F(AutoArrayOffsetTest, read)
+TEST_F(AutoArrayOffsetTest, readConstructor)
 {
     const bool writeWrongOffset = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeAutoArrayHolderToByteArray(writer, writeWrongOffset);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const AutoArrayHolder autoArrayHolder(reader);
     checkAutoArrayHolder(autoArrayHolder);
 }
 
-TEST_F(AutoArrayOffsetTest, readWrongOffsets)
+TEST_F(AutoArrayOffsetTest, readConstructorWrongOffsets)
 {
     const bool writeWrongOffset = true;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeAutoArrayHolderToByteArray(writer, writeWrongOffset);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EXPECT_THROW(AutoArrayHolder autoArrayHolder(reader), zserio::CppRuntimeException);
 }
 
@@ -146,13 +148,11 @@ TEST_F(AutoArrayOffsetTest, write)
     AutoArrayHolder autoArrayHolder;
     fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     autoArrayHolder.write(writer);
     checkAutoArrayHolder(autoArrayHolder);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const AutoArrayHolder readAutoArrayHolder(reader);
     checkAutoArrayHolder(readAutoArrayHolder);
     ASSERT_TRUE(autoArrayHolder == readAutoArrayHolder);
@@ -164,7 +164,7 @@ TEST_F(AutoArrayOffsetTest, writeWithPosition)
     AutoArrayHolder autoArrayHolder;
     fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
     writer.writeBits(0, bitPosition);
     autoArrayHolder.write(writer);
@@ -178,7 +178,7 @@ TEST_F(AutoArrayOffsetTest, writeWrongOffset)
     AutoArrayHolder autoArrayHolder;
     fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(autoArrayHolder.write(writer, zserio::NO_PRE_WRITE_ACTION),
             zserio::CppRuntimeException);
 }

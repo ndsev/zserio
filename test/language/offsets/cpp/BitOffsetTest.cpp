@@ -168,30 +168,28 @@ protected:
     static const uint8_t  FIELD6_VALUE = 56;
     static const uint8_t  FIELD7_VALUE = 88;
     static const uint8_t  FIELD8_VALUE = 222;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-TEST_F(BitOffsetTest, read)
+TEST_F(BitOffsetTest, readConstructor)
 {
     const bool writeWrongOffsets = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeBitOffsetToByteArray(writer, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     BitOffset bitOffset(reader);
     checkBitOffset(bitOffset);
 }
 
-TEST_F(BitOffsetTest, readWrongOffsets)
+TEST_F(BitOffsetTest, readConstructorWrongOffsets)
 {
     const bool writeWrongOffsets = true;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeBitOffsetToByteArray(writer, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EXPECT_THROW(BitOffset bitOffset(reader), zserio::CppRuntimeException);
 }
 
@@ -248,13 +246,11 @@ TEST_F(BitOffsetTest, write)
     BitOffset bitOffset;
     fillBitOffset(bitOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     bitOffset.write(writer);
     checkBitOffset(bitOffset);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     BitOffset readBitOffset(reader);
     checkBitOffset(readBitOffset);
     ASSERT_TRUE(bitOffset == readBitOffset);
@@ -266,7 +262,7 @@ TEST_F(BitOffsetTest, writeWithPosition)
     BitOffset bitOffset;
     fillBitOffset(bitOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
     writer.writeBits(0, bitPosition);
     bitOffset.write(writer);
@@ -281,7 +277,7 @@ TEST_F(BitOffsetTest, writeWrongOffsets)
     BitOffset bitOffset;
     fillBitOffset(bitOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(bitOffset.write(writer, zserio::NO_PRE_WRITE_ACTION), zserio::CppRuntimeException);
 }
 

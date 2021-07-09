@@ -5,14 +5,8 @@ uninitMemberVar:*/gif_data/BlockTypes.h
 uninitMemberVar:*/gif_data/ExtensionTypes.cpp
 uninitMemberVar:*/gif_data/ExtensionTypes.h
 uninitMemberVar:*/gif_data/GifData.cpp
-uninitMemberVar:*/gif_data/GifData.h
 uninitMemberVar:*/gif_data/ImageBlock.cpp
-uninitMemberVar:*/gif_data/ImageBlock.h
 uninitMemberVar:*/gif_data/ImageDescriptor.cpp
-uninitMemberVar:*/gif_data/ImageDescriptor.h
 uninitMemberVar:*/gif_data/SubBlock.cpp
-uninitMemberVar:*/gif_data/SubBlock.h
 uninitMemberVar:*/gif_data/ZippedSubBlock.cpp
-uninitMemberVar:*/gif_data/ZippedSubBlock.h
 uninitMemberVar:*/screen_descriptor/ScreenDescriptor.cpp
-uninitMemberVar:*/screen_descriptor/ScreenDescriptor.h

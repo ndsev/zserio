@@ -19,12 +19,11 @@ TEST(StructLongTemplateArgumentClashTest, readWrite)
             ThisIsVeryVeryVeryLongNamedStructure_(42));
     StructLongTemplateArgumentClash structLongTemplateArgumentClash(t1, t2);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structLongTemplateArgumentClash.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     StructLongTemplateArgumentClash readStructLongTemplateArgumentClash(reader);
 
     ASSERT_TRUE(structLongTemplateArgumentClash == readStructLongTemplateArgumentClash);

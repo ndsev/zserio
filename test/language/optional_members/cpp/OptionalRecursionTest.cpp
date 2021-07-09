@@ -1,21 +1,26 @@
 #include "gtest/gtest.h"
 
+#include "optional_members/optional_recursion/Block.h"
+
+#include "zserio/RebindAlloc.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#
-#include "optional_members/optional_recursion/Block.h"
 
 namespace optional_members
 {
 namespace optional_recursion
 {
 
+using allocator_type = Block::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
 class OptionalRecursionTest : public ::testing::Test
 {
 protected:
     void fillBlock(Block& block, const uint8_t* blockData, size_t blockDataSize)
     {
-        std::vector<uint8_t> dataBytes;
+        vector_type<uint8_t> dataBytes;
         dataBytes.reserve(blockDataSize);
         for (size_t i = 0; i < blockDataSize; ++i)
             dataBytes.push_back(static_cast<uint8_t>(blockData[i]));
@@ -32,7 +37,7 @@ protected:
         Block block2;
         fillBlock(block2, block2Data, block2DataSize);
 
-        std::vector<uint8_t> dataBytes;
+        vector_type<uint8_t> dataBytes;
         dataBytes.reserve(block1DataSize);
         for (size_t i = 0; i < block1DataSize; ++i)
             dataBytes.push_back(static_cast<uint8_t>(block1Data[i]));
@@ -74,6 +79,8 @@ protected:
 
     static const uint8_t BLOCK1_DATA[];
     static const uint8_t BLOCK2_DATA[];
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t OptionalRecursionTest::BLOCK1_DATA[] = {1, 2, 3, 4, 5, 6};
@@ -158,11 +165,9 @@ TEST_F(OptionalRecursionTest, writeBlock1)
     Block block1;
     fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     block1.write(writer);
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkBlockInBitStream(reader, BLOCK1_DATA, sizeof(BLOCK1_DATA));
     reader.setBitPosition(0);
 
@@ -175,15 +180,14 @@ TEST_F(OptionalRecursionTest, writeBlock12)
     Block block12;
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     block12.write(writer);
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkBlockInBitStream(reader, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
     reader.setBitPosition(0);
 
-    Block readBlock12(reader, sizeof(BLOCK1_DATA));
+    zserio::BitStreamReader reader2(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    Block readBlock12(reader2, sizeof(BLOCK1_DATA));
     ASSERT_EQ(block12, readBlock12);
 }
 

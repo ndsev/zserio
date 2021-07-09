@@ -42,6 +42,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         // TODO[Mi-L@] Similar logic is done in freemarker template function (has_field_with_initialization).
         //             Try to unify the logic!
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
+
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
     }
 

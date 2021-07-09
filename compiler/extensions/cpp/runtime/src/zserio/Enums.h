@@ -5,14 +5,16 @@
 #ifndef ZSERIO_ENUMS_H_INC
 #define ZSERIO_ENUMS_H_INC
 
+#include <cstddef>
 #include <type_traits>
-
-#include "zserio/BitStreamReader.h"
-#include "zserio/BitStreamWriter.h"
 
 // This should be implemented in runtime library header.
 namespace zserio
 {
+
+// forward declarations
+class BitStreamReader;
+class BitStreamWriter;
 
 /**
  * Enum traits for Zserio enums.

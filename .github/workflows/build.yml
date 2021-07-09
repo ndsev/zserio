@@ -32,6 +32,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install virtualenv
+        python -m pip install gcovr
     - name: Workaround for 'Unable to connect to ppa.launchpad.net' failure during installation
       run: sudo apt-get update --option Acquire::Retries=100 --option Acquire::http::Timeout="300"
     - name: Install dependencies
@@ -54,17 +55,23 @@ jobs:
         wget https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.zip -P "${GITHUB_WORKSPACE}"
         unzip "${GITHUB_WORKSPACE}"/spotbugs-3.1.12.zip
     - name: Build Zserio
-      run: scripts/build.sh all-linux64
+      run: scripts/build.sh all-linux64-gcc
+      env:
+        GCOVR_BIN: "" # coverage disabled
+    - name: Build Zserio runtime using clang
+      run: scripts/build.sh cpp_rt-linux64-clang
+      env:
+        SANITIZERS_ENABLED: 1
     - name: Pack Zserio release
       run: scripts/release.sh
     - name: Run Zserio tests
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test.sh all-linux64
+          scripts/test.sh all-linux64-gcc cpp-linux64-clang
     - name: Run Zserio integration tests for repeated generation
       run: |
           unset JAVA_TOOL_OPTIONS # workaround https://github.com/actions/virtual-environments/issues/1437
-          scripts/test_gen.sh all-linux64
+          scripts/test_gen.sh all-linux64-gcc cpp-linux64-clang
     - name: Archive Zserio artifacts
       uses: actions/upload-artifact@v2
       with:

@@ -61,7 +61,7 @@ protected:
     {
         OuterArray outerArray;
         outerArray.setNumElements(NUM_ITEM_ELEMENTS);
-        std::vector<Item>& values = outerArray.getValues();
+        auto& values = outerArray.getValues();
         values.assign(&m_items[0], &m_items[NUM_ITEM_ELEMENTS]);
         inner.setOuterArray(outerArray);
 
@@ -95,23 +95,17 @@ protected:
             ASSERT_EQ(m_items[pos], readElement);
         }
 
-        zserio::BitStreamWriter writtenWriter;
+        zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
         inner.write(writtenWriter);
-        size_t writtenWriterBufferByteSize;
-        const uint8_t* writtenWriterBuffer = writtenWriter.getWriteBuffer(writtenWriterBufferByteSize);
 
-        zserio::BitStreamWriter expectedWriter;
+        zserio::BitBuffer expectedBitBuffer = zserio::BitBuffer(1024 * 8);
+        zserio::BitStreamWriter expectedWriter(expectedBitBuffer);
         writeInnerToByteArray(expectedWriter, pos);
-        size_t expectedWriterBufferByteSize;
-        const uint8_t* expectedWriterBuffer = expectedWriter.getWriteBuffer(expectedWriterBufferByteSize);
 
-        std::vector<uint8_t> writtenWriterVector(writtenWriterBuffer,
-                                                 writtenWriterBuffer + writtenWriterBufferByteSize);
-        std::vector<uint8_t> expectedWriterVector(expectedWriterBuffer,
-                                                  expectedWriterBuffer + expectedWriterBufferByteSize);
-        ASSERT_EQ(expectedWriterVector, writtenWriterVector);
+        ASSERT_EQ(expectedBitBuffer, writtenBitBuffer);
 
-        zserio::BitStreamReader reader(writtenWriterBuffer, writtenWriterBufferByteSize);
+        zserio::BitStreamReader reader(writtenBitBuffer);
         const Inner readInner(reader);
         ASSERT_EQ(inner, readInner);
     }

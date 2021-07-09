@@ -5,7 +5,7 @@
 # This CMake file is designed to be included directly without any further dependencies.
 #
 
-cmake_minimum_required(VERSION 2.8.12.2)
+cmake_minimum_required(VERSION 3.1.0)
 
 project(ZserioCppTest)
 
@@ -13,29 +13,37 @@ enable_testing()
 
 # input parameters
 set(CPPCHECK_HOME "" CACHE PATH "Home directory of cppcheck tool. If empty, cppcheck tool is not called.")
+set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabled.")
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
 set(ZSERIO_TEST_NAME "*" CACHE STRING "Example test name to run. Empty means all example tests.")
 
-# add gtest library
+# cmake helpers
 set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
-include(gtest_utils)
-gtest_add_library(${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/googletest)
 
 # cmake helpers
 include(cmake_utils)
 
 # setup compiler
 include(compiler_utils)
+set(CMAKE_CXX_STANDARD 11)
 compiler_set_pthread()
 compiler_set_static_clibs()
-compiler_set_warnings()
-compiler_set_warnings_as_errors()
+
+if (SANITIZERS_ENABLED)
+    compiler_set_address_sanitizer()
+endif ()
+# add gtest library
+include(gtest_utils)
+gtest_add_library(${ZSERIO_PROJECT_ROOT}/3rdparty/cpp/googletest)
 
 # add SQLite3 for testing
 include(sqlite_utils)
 sqlite_add_library(${ZSERIO_PROJECT_ROOT})
+
+compiler_set_warnings()
+compiler_set_warnings_as_errors()
 
 # add zserio runtime library
 include(zserio_utils)
@@ -43,6 +51,12 @@ set(ZSERIO_JAR_DIR "${ZSERIO_RELEASE_ROOT}/zserio_libs")
 set(ZSERIO_CPP_DISTR_DIR "${ZSERIO_JAR_DIR}")
 set(ZSERIO_RUNTIME_LIBRARY_DIR "${ZSERIO_RELEASE_ROOT}/runtime_libs/cpp")
 zserio_add_runtime_library(RUNTIME_LIBRARY_DIR "${ZSERIO_RUNTIME_LIBRARY_DIR}")
+
+compiler_reset_warnings()
+compiler_set_test_warnings()
+if (SANITIZERS_ENABLED)
+    compiler_set_undefined_sanitizer()
+endif ()
 
 # functions to set globals called by included CMake lists
 set(TEST_SOURCES_LIST "" CACHE INTERNAL "Test sources")
@@ -80,11 +94,12 @@ endif ()
 
 add_executable(${PROJECT_NAME} ${TEST_SOURCES_LIST})
 
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_link_libraries(${PROJECT_NAME} gtest_main ${TEST_DEPENDENCIES_LIST})
 
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${SQLITE_INCDIR})
 target_link_libraries(${PROJECT_NAME} ${SQLITE_LIBRARY})
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/utils/cpp)
 
 # add tests - test are labeled by file names (i.e. grouped)
 gtest_add_tests(${PROJECT_NAME} "--gtest_output=xml" ${TEST_SOURCES_LIST})

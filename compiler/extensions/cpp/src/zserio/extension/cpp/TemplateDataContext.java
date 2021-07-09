@@ -7,9 +7,12 @@ final class TemplateDataContext
 {
     public TemplateDataContext(CppExtensionParameters cppParameters)
     {
-        cppNativeMapper = new CppNativeMapper();
+        typesContext = new TypesContext(cppParameters.getAllocatorDefinition());
+        cppNativeMapper = new CppNativeMapper(typesContext);
+
         withWriterCode = cppParameters.getWithWriterCode();
         withRangeCheckCode = cppParameters.getWithRangeCheckCode();
+        withValidationCode = cppParameters.getWithValidationCode();
 
         generatorDescription =
                 "/**\n" +
@@ -58,14 +61,27 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
+    public boolean getWithValidationCode()
+    {
+        return withValidationCode;
+    }
+
+    public TypesContext getTypesContext()
+    {
+        return typesContext;
+    }
+
     public String getGeneratorDescription()
     {
         return generatorDescription;
     }
 
+    private final TypesContext typesContext;
+
     private final CppNativeMapper cppNativeMapper;
 
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;
+    private final boolean withValidationCode;
     private final String generatorDescription;
 }

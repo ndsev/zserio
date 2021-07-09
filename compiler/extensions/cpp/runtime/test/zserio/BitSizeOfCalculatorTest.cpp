@@ -255,8 +255,8 @@ TEST(BitSizeOfCalculatorTest, bitSizeOfVarSize)
 
 TEST(BitSizeOfCalculatorTest, bitSizeOfString)
 {
-    EXPECT_EQ((1 + 1) * 8, bitSizeOfString("T"));
-    EXPECT_EQ((1 + 4) * 8, bitSizeOfString("Test"));
+    EXPECT_EQ((1 + 1) * 8, bitSizeOfString(std::string("T")));
+    EXPECT_EQ((1 + 4) * 8, bitSizeOfString(std::string("Test")));
 
     const size_t testStringLength = static_cast<size_t>(1) << 7;
     std::string testString(testStringLength, '\xAB');

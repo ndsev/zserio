@@ -1,15 +1,21 @@
 #include <cstdio>
 #include <string>
 #include <fstream>
+#include <memory>
 
 #include "gtest/gtest.h"
 
 #include "sql_tables/TestDb.h"
 
+#include "zserio/SqliteFinalizer.h"
+
 namespace sql_tables
 {
 namespace subtyped_table
 {
+
+using allocator_type = TestDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
 
 class SubtypedTableTest : public ::testing::Test
 {
@@ -30,29 +36,22 @@ public:
 protected:
     bool isTableInDb()
     {
-        sqlite3_stmt* statement;
-        std::string checkTableName = "subtypedTable";
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type checkTableName = "subtypedTable";
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+            return false;
+
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr ||
+                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
         {
-            sqlite3_finalize(statement);
             return false;
         }
-
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
-            return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }

@@ -34,6 +34,8 @@ protected:
 
     static const size_t CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL;
     static const size_t CONTAINER_BIT_SIZE_WITH_OPTIONAL;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const int32_t AutoOptionalTest::NON_OPTIONAL_INT_VALUE = 0x0DEADDED;
@@ -41,6 +43,12 @@ const int32_t AutoOptionalTest::AUTO_OPTIONAL_INT_VALUE = 0x0BEEFBEF;
 
 const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL = 32 + 1;
 const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITH_OPTIONAL = 32 + 1 + 32;
+
+TEST_F(AutoOptionalTest, emptyConstructor)
+{
+    const Container container;
+    ASSERT_FALSE(container.isAutoOptionalIntUsed());
+}
 
 TEST_F(AutoOptionalTest, fieldConstructor)
 {
@@ -126,11 +134,11 @@ TEST_F(AutoOptionalTest, write)
     Container container;
     container.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
 
-    zserio::BitStreamWriter writeNonOptional;
+    zserio::BitStreamWriter writeNonOptional(bitBuffer);
     container.write(writeNonOptional);
-    size_t writeNonOptionalBufferByteSize;
-    const uint8_t* writeNonOptionalBuffer = writeNonOptional.getWriteBuffer(writeNonOptionalBufferByteSize);
-    zserio::BitStreamReader readerNonOptional(writeNonOptionalBuffer, writeNonOptionalBufferByteSize);
+
+    zserio::BitStreamReader readerNonOptional(writeNonOptional.getWriteBuffer(),
+            writeNonOptional.getBitPosition(), zserio::BitsTag());
     checkContainerInBitStream(readerNonOptional, NON_OPTIONAL_INT_VALUE, false, 0);
     Container readContainerNonOptional(readerNonOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerNonOptional.getNonOptionalInt());
@@ -139,11 +147,11 @@ TEST_F(AutoOptionalTest, write)
     const int autoOptionalIntValue = AUTO_OPTIONAL_INT_VALUE;
     container.setAutoOptionalInt(autoOptionalIntValue);
 
-    zserio::BitStreamWriter writeOptional;
+    zserio::BitStreamWriter writeOptional(bitBuffer);
     container.write(writeOptional);
-    size_t writeOptionalBufferByteSize;
-    const uint8_t* writeOptionalBuffer = writeOptional.getWriteBuffer(writeOptionalBufferByteSize);
-    zserio::BitStreamReader readerOptional(writeOptionalBuffer, writeOptionalBufferByteSize);
+
+    zserio::BitStreamReader readerOptional(writeOptional.getWriteBuffer(),
+            writeOptional.getBitPosition(), zserio::BitsTag());
     checkContainerInBitStream(readerOptional, NON_OPTIONAL_INT_VALUE, true, autoOptionalIntValue);
     Container readContainerOptional(readerOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerOptional.getNonOptionalInt());

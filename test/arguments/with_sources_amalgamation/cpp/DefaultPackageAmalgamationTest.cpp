@@ -19,6 +19,8 @@ protected:
 
         return isPresent;
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(DefaultPackageAmalgamationTest, checkDefaultPackage)
@@ -32,12 +34,10 @@ TEST_F(DefaultPackageAmalgamationTest, checkDefaultPackage)
 TEST_F(DefaultPackageAmalgamationTest, readWrite)
 {
     AmalgamationStructure structure{4, 0x0f};
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     structure.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     AmalgamationStructure readStructure(reader);
 
     ASSERT_EQ(structure, readStructure);

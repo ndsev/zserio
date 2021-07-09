@@ -21,7 +21,7 @@ protected:
 
     void checkEmptyIndexedOffsetArray(const EmptyIndexedOffsetArray& emptyIndexedOffsetArray)
     {
-        const std::vector<uint32_t>& offsets = emptyIndexedOffsetArray.getOffsets();
+        const auto& offsets = emptyIndexedOffsetArray.getOffsets();
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
 
@@ -31,7 +31,7 @@ protected:
         const uint8_t expectedField = FIELD_VALUE;
         ASSERT_EQ(expectedField, emptyIndexedOffsetArray.getField());
 
-        const std::vector<uint8_t>& data = emptyIndexedOffsetArray.getData();
+        const auto& data = emptyIndexedOffsetArray.getData();
         ASSERT_EQ(expectedNumElements, data.size());
     }
 
@@ -47,16 +47,16 @@ protected:
     static const uint8_t    FIELD_VALUE = 63;
 
     static const size_t     EMPTY_INDEXED_OFFSET_ARRAY_BIT_SIZE = 1 + 6;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(EmptyIndexedOffsetArrayTest, read)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeEmptyIndexedOffsetArrayToByteArray(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EmptyIndexedOffsetArray emptyIndexedOffsetArray(reader);
     checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
 }
@@ -107,13 +107,11 @@ TEST_F(EmptyIndexedOffsetArrayTest, write)
     EmptyIndexedOffsetArray emptyIndexedOffsetArray;
     fillEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     emptyIndexedOffsetArray.write(writer);
     checkEmptyIndexedOffsetArray(emptyIndexedOffsetArray);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EmptyIndexedOffsetArray readEmptyIndexedOffsetArray(reader);
     checkEmptyIndexedOffsetArray(readEmptyIndexedOffsetArray);
     ASSERT_TRUE(emptyIndexedOffsetArray == readEmptyIndexedOffsetArray);

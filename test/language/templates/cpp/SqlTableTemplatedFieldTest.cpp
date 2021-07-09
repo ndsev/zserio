@@ -4,10 +4,17 @@
 
 #include "templates/sql_table_templated_field/SqlTableTemplatedFieldDb.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace templates
 {
 namespace sql_table_templated_field
 {
+
+using allocator_type = SqlTableTemplatedFieldDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class SqlTableTemplatedFieldTest : public ::testing::Test
 {
@@ -17,11 +24,11 @@ public:
         std::remove(DB_FILE_NAME.c_str());
     }
 
-    static const std::string DB_FILE_NAME;
+    static const string_type DB_FILE_NAME;
 
 protected:
     template <typename T>
-    void assertEqualRows(const std::vector<T>& rows1, const std::vector<T>& rows2)
+    void assertEqualRows(const vector_type<T>& rows1, const vector_type<T>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -38,7 +45,7 @@ protected:
     }
 };
 
-const std::string SqlTableTemplatedFieldTest::DB_FILE_NAME = "sql_table_templated_field_test.sqlite";
+const string_type SqlTableTemplatedFieldTest::DB_FILE_NAME = "sql_table_templated_field_test.sqlite";
 
 TEST_F(SqlTableTemplatedFieldTest, readWrite)
 {
@@ -46,7 +53,7 @@ TEST_F(SqlTableTemplatedFieldTest, readWrite)
     sqlTableTemplatedFieldDb.createSchema();
 
     TemplatedTable_uint32& uint32Table = sqlTableTemplatedFieldDb.getUint32Table();
-    std::vector<TemplatedTable_uint32::Row> uint32TableRows;
+    vector_type<TemplatedTable_uint32::Row> uint32TableRows;
     TemplatedTable_uint32::Row uint32Row1;
     uint32Row1.setId(0);
     uint32Row1.setData(Data_uint32{42});
@@ -54,19 +61,19 @@ TEST_F(SqlTableTemplatedFieldTest, readWrite)
     uint32Table.write(uint32TableRows);
 
     TemplatedTable_Union& unionTable = sqlTableTemplatedFieldDb.getUnionTable();
-    std::vector<TemplatedTable_Union::Row> unionTableRows;
+    vector_type<TemplatedTable_Union::Row> unionTableRows;
     TemplatedTable_Union::Row unionRow1;
     unionRow1.setId(0);
-    unionRow1.setData(Data_Union{Union{std::string{"string"}}});
+    unionRow1.setData(Data_Union{Union{string_type{"string"}}});
     unionTableRows.push_back(unionRow1);
     unionTable.write(unionTableRows);
 
     SqlTableTemplatedFieldDb readSqlTableTemplatedFieldDb(DB_FILE_NAME);
-    std::vector<TemplatedTable_uint32::Row> readUint32TableRows;
+    vector_type<TemplatedTable_uint32::Row> readUint32TableRows;
     auto readerUint32 = readSqlTableTemplatedFieldDb.getUint32Table().createReader();
     while (readerUint32.hasNext())
         readUint32TableRows.push_back(readerUint32.next());
-    std::vector<TemplatedTable_Union::Row> readUnionTableRows;
+    vector_type<TemplatedTable_Union::Row> readUnionTableRows;
     auto readerUnion = readSqlTableTemplatedFieldDb.getUnionTable().createReader();
     while (readerUnion.hasNext())
         readUnionTableRows.push_back(readerUnion.next());

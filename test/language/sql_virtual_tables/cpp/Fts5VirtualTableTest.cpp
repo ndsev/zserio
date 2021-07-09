@@ -1,17 +1,25 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "sql_virtual_tables/fts5_virtual_table/Fts5TestDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/SqliteFinalizer.h"
 
 namespace sql_virtual_tables
 {
 namespace fts5_virtual_table
 {
+
+using allocator_type = Fts5TestDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class Fts5VirtualTableTest : public ::testing::Test
 {
@@ -30,20 +38,20 @@ public:
     }
 
 protected:
-    static void fillFts5VirtualTableRow(Fts5VirtualTable::Row& row, const std::string& title,
-            const std::string& body)
+    static void fillFts5VirtualTableRow(Fts5VirtualTable::Row& row, const string_type& title,
+            const string_type& body)
     {
         row.setTitle(title);
         row.setBody(body);
     }
 
-    static void fillFts5VirtualTableRows(std::vector<Fts5VirtualTable::Row>& rows)
+    static void fillFts5VirtualTableRows(vector_type<Fts5VirtualTable::Row>& rows)
     {
         rows.clear();
         for (int32_t id = 0; id < NUM_VIRTUAL_TABLE_ROWS; ++id)
         {
-            const std::string title = "Title" + zserio::convertToString(id);
-            const std::string body = "Body" + zserio::convertToString(id);
+            const string_type title = "Title" + zserio::toString<allocator_type>(id);
+            const string_type body = "Body" + zserio::toString<allocator_type>(id);
             Fts5VirtualTable::Row row;
             fillFts5VirtualTableRow(row, title, body);
             rows.push_back(row);
@@ -56,8 +64,8 @@ protected:
         ASSERT_EQ(row1.getBody(), row2.getBody());
     }
 
-    static void checkFts5VirtualTableRows(const std::vector<Fts5VirtualTable::Row>& rows1,
-            const std::vector<Fts5VirtualTable::Row>& rows2)
+    static void checkFts5VirtualTableRows(const vector_type<Fts5VirtualTable::Row>& rows1,
+            const vector_type<Fts5VirtualTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -66,29 +74,22 @@ protected:
 
     bool isTableInDb()
     {
-        sqlite3_stmt* statement;
-        std::string checkTableName = "fts5VirtualTable";
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type checkTableName = "fts5VirtualTable";
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+            return false;
+
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr ||
+                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
         {
-            sqlite3_finalize(statement);
             return false;
         }
-
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
-            return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
@@ -119,11 +120,11 @@ TEST_F(Fts5VirtualTableTest, readWithoutCondition)
 {
     Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
-    std::vector<Fts5VirtualTable::Row> writtenRows;
+    vector_type<Fts5VirtualTable::Row> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<Fts5VirtualTable::Row> readRows;
+    vector_type<Fts5VirtualTable::Row> readRows;
     auto reader = testTable.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -134,12 +135,12 @@ TEST_F(Fts5VirtualTableTest, readWithCondition)
 {
     Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
-    std::vector<Fts5VirtualTable::Row> writtenRows;
+    vector_type<Fts5VirtualTable::Row> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    const std::string condition = "body='Body1'";
-    std::vector<Fts5VirtualTable::Row> readRows;
+    const string_type condition = "body='Body1'";
+    vector_type<Fts5VirtualTable::Row> readRows;
     auto reader = testTable.createReader(condition);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -153,17 +154,17 @@ TEST_F(Fts5VirtualTableTest, update)
 {
     Fts5VirtualTable& testTable = m_database->getFts5VirtualTable();
 
-    std::vector<Fts5VirtualTable::Row> writtenRows;
+    vector_type<Fts5VirtualTable::Row> writtenRows;
     fillFts5VirtualTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    const std::string updateTitle = "Title3";
+    const string_type updateTitle = "Title3";
     Fts5VirtualTable::Row updateRow;
     fillFts5VirtualTableRow(updateRow, updateTitle, "UpdatedName");
-    const std::string updateCondition = "title='" + updateTitle + "'";
+    const string_type updateCondition = "title='" + updateTitle + "'";
     testTable.update(updateRow, updateCondition);
 
-    std::vector<Fts5VirtualTable::Row> readRows;
+    vector_type<Fts5VirtualTable::Row> readRows;
     auto reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
         readRows.push_back(reader.next());

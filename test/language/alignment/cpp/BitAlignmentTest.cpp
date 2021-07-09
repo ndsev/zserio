@@ -104,6 +104,8 @@ protected:
     static const uint32_t ALIGNED32_FIELD_VALUE;
     static const uint64_t ALIGNMENT64_BREAK;
     static const uint64_t ALIGNED64_FIELD_VALUE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 // constants definitions
@@ -126,12 +128,10 @@ const uint64_t BitAlignmentTest::ALIGNED64_FIELD_VALUE = UINT64_C(0xcafec0dedead
 
 TEST_F(BitAlignmentTest, read)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeBitAlignmentToByteArray(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     BitAlignment bitAlignment(reader);
     checkBitAlignment(bitAlignment);
 }
@@ -175,12 +175,10 @@ TEST_F(BitAlignmentTest, write)
 {
     BitAlignment bitAlignment;
     fillBitAlignment(bitAlignment);
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     bitAlignment.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     BitAlignment readBitAlignment(reader);
     checkBitAlignment(readBitAlignment);
     ASSERT_TRUE(bitAlignment == readBitAlignment);

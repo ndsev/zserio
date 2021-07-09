@@ -13,12 +13,11 @@ TEST(InstantiateImportedTest, readWrite)
     instantiateImported.setTest32(pkg::U32{13});
     instantiateImported.setTestStr(Test_string{"test"});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     instantiateImported.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     InstantiateImported readInstantiateImported(reader);
 
     ASSERT_TRUE(instantiateImported == readInstantiateImported);

@@ -47,7 +47,8 @@ public class CppRuntimeFunctionDataCreator
     {
         final DynamicBitFieldType type = instantiation.getBaseType();
         final String suffix = getSuffixForIntegralType(instantiation.getMaxBitSize(), type.isSigned());
-        final String arg = cppExpressionFormatter.formatGetter(instantiation.getLengthExpression());
+        final String arg = "static_cast<uint8_t>(" +
+                    cppExpressionFormatter.formatGetter(instantiation.getLengthExpression()) + ")";
         return new RuntimeFunctionTemplateData(suffix, arg);
     }
 

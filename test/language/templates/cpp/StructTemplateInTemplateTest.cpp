@@ -2,23 +2,27 @@
 
 #include "templates/struct_template_in_template/StructTemplateInTemplate.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace templates
 {
 namespace struct_template_in_template
 {
 
+using allocator_type = StructTemplateInTemplate::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+
 TEST(StructTemplateInTemplateTest, readWrite)
 {
     StructTemplateInTemplate structTemplateInTemplate;
     structTemplateInTemplate.setUint32Field(Field_uint32{Compound_uint32{42}});
-    structTemplateInTemplate.setStringField(Field_string{Compound_string{std::string{"string"}}});
+    structTemplateInTemplate.setStringField(Field_string{Compound_string{string_type{"string"}}});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     structTemplateInTemplate.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     StructTemplateInTemplate readStructTemplateInTemplate(reader);
 
     ASSERT_TRUE(structTemplateInTemplate == readStructTemplateInTemplate);

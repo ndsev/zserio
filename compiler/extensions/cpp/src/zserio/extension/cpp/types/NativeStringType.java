@@ -1,14 +1,19 @@
 package zserio.extension.cpp.types;
 
-import zserio.ast.PackageName;
+import zserio.extension.cpp.TypesContext;
 
 public class NativeStringType extends CppNativeType
 {
-    public NativeStringType()
+    public NativeStringType(TypesContext typesContext)
     {
-        super(STD_PACKAGE_NAME, "string");
-        addSystemIncludeFile("string");
-    }
+        super(typesContext.getString().getPackage(), typesContext.getString().getName() +
+                (typesContext.getString().isTemplate() ?
+                        "<" + (typesContext.getString().needsAllocatorArgument() ?
+                                typesContext.getAllocatorDefinition().getAllocatorType() + "<char>>" : ">") : "")
+        );
 
-    private static final PackageName STD_PACKAGE_NAME = new PackageName.Builder().addId("std").get();
+        if (typesContext.getString().needsAllocatorArgument())
+            addSystemIncludeFile(typesContext.getAllocatorDefinition().getAllocatorSystemInclude());
+        addSystemIncludeFile(typesContext.getString().getSystemInclude());
+    }
 }

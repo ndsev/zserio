@@ -6,14 +6,15 @@
 
 <@include_guard_begin package.path, name/>
 
-<#if withWriterCode>
-#include <type_traits>
-
+<#if withWriterCode && fieldList?has_content>
+#include <zserio/Traits.h>
 </#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/AnyHolder.h>
 #include <zserio/PreWriteAction.h>
+#include <zserio/AllocatorPropagatingCopy.h>
+<@type_includes types.anyHolder/>
+<@type_includes types.allocator/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -21,11 +22,26 @@
 class ${name}
 {
 public:
+    using allocator_type = ${types.allocator.default};
+
 <#if withWriterCode>
     <@compound_constructor_declaration compoundConstructorsData/>
     <#if fieldList?has_content>
 
-    <@compound_fields_constructor_template compoundConstructorsData/>
+    <@compound_field_constructor_template_arg_list name, fieldList/>
+    explicit ${name}(
+            <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/>,
+            const allocator_type& allocator = allocator_type()) :
+        <#if needs_compound_initialization(compoundConstructorsData)>
+            m_isInitialized(false),
+        <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
+            m_areChildrenInitialized(false),
+        </#if>
+        <#if fieldList?has_content>
+            m_objectChoice(::std::forward<ZSERIO_T>(value), allocator)
+        </#if>
+    {
+    }
 
     </#if>
 </#if>
@@ -47,6 +63,8 @@ public:
     ${name}(${name}&&) = default;
     ${name}& operator=(${name}&&) = default;
 </#if>
+
+    <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
 
     <#if needs_compound_initialization(compoundConstructorsData)>
@@ -69,10 +87,9 @@ public:
 </#if>
 
     bool operator==(const ${name}& other) const;
-    int hashCode() const;
-
-    void read(::zserio::BitStreamReader& in);
+    uint32_t hashCode() const;
 <#if withWriterCode>
+
     void write(::zserio::BitStreamWriter& out,
             ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
 </#if>
@@ -80,12 +97,16 @@ public:
 private:
     <@inner_classes_declaration fieldList/>
 <#if fieldList?has_content>
-    ::zserio::AnyHolder readObject(::zserio::BitStreamReader& in);
+    ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in,
+            const ${types.allocator.default}& allocator);
+    ${types.anyHolder.name} copyObject(const ${types.allocator.default}& allocator) const;
 
 </#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
-    ::zserio::AnyHolder m_objectChoice;
+<#if fieldList?has_content>
+    ${types.anyHolder.name} m_objectChoice;
+</#if>
 };
 <@namespace_end package.path/>
 

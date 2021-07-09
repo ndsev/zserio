@@ -5,7 +5,9 @@ import java.util.List;
 
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.Field;
+import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.extension.common.ZserioExtensionException;
@@ -44,8 +46,18 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
             getterName = AccessorNameFormatter.getGetterName(field);
-            isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
-                    ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
+
+            if (fieldBaseType instanceof SqlTableType)
+            {
+                SqlTableType tableType = (SqlTableType)fieldBaseType;
+                isWithoutRowIdTable = tableType.isWithoutRowId();
+                hasExplicitParameters = hasTableExplicitParameters(tableType);
+            }
+            else
+            {
+                isWithoutRowIdTable = false;
+                hasExplicitParameters = false;
+            }
         }
 
         public String getName()
@@ -68,10 +80,38 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return isWithoutRowIdTable;
         }
 
+        public boolean getHasExplicitParameters()
+        {
+            return hasExplicitParameters;
+        }
+
+        private static boolean hasTableExplicitParameters(SqlTableType tableType)
+        {
+            for (Field tableField : tableType.getFields())
+            {
+                final TypeInstantiation fieldInstantiation = tableField.getTypeInstantiation();
+                if (fieldInstantiation instanceof ParameterizedTypeInstantiation)
+                {
+                    final ParameterizedTypeInstantiation parameterizedInstantiation =
+                            (ParameterizedTypeInstantiation)fieldInstantiation;
+                    final List<InstantiatedParameter> instantiatedParameters =
+                            parameterizedInstantiation.getInstantiatedParameters();
+                    for (InstantiatedParameter instantiatedParam : instantiatedParameters)
+                    {
+                        if (instantiatedParam.getArgumentExpression().isExplicitVariable())
+                            return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         private final String name;
         private final String cppTypeName;
         private final String getterName;
         private final boolean isWithoutRowIdTable;
+        private final boolean hasExplicitParameters;
     }
 
     private final List<DatabaseField> fields;

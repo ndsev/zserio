@@ -57,3 +57,28 @@
         ${parameter.cppTypeName}&<#t>
     </#if>
 </#macro>
+
+<#macro sql_db_table_parameter_provider_getter field>
+    get${field.name?cap_first}ParameterProvider()<#t>
+</#macro>
+
+<#function sql_db_needs_parameter_provider fields>
+    <#list fields as field>
+        <#if field.hasExplicitParameters>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function sql_table_has_validatable_field fields>
+    <#list fields as field>
+        <#if !field.isVirtual>
+            <#if field.sqlTypeData.isBlob || field.enumData?? || field.bitmaskData?? ||
+                    field.sqlRangeCheckData??>
+                <#return true>
+            </#if>
+        </#if>
+    </#list>
+    <#return false>
+</#function>

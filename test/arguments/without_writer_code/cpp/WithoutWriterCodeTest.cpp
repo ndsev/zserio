@@ -3,14 +3,80 @@
 #include <vector>
 
 #include "gtest/gtest.h"
-#include "sqlite3.h"
 
-#include "zserio/BitStreamWriter.h"
 #include "without_writer_code/Tile.h"
 #include "without_writer_code/WorldDb.h"
 
+#include "zserio/BitStreamWriter.h"
+#include "zserio/RebindAlloc.h"
+#include "zserio/pmr/PolymorphicAllocator.h"
+
 namespace without_writer_code
 {
+
+using allocator_type = zserio::RebindAlloc<Tile::allocator_type, uint8_t>;
+
+template <typename ALLOC>
+struct MethodNames
+{
+    // TODO[Mi-L@]: Since we don't know allocator name provided by user, we use just the fixed substring here
+
+    // VersionAvailability
+    static constexpr const char* TO_STRING_DECLARATION =
+            "toString(const zserio::string<"; // ...>::allocator_type...
+    static constexpr const char* TO_STRING_DEFINITION =
+            "VersionAvailability::toString(const zserio::string<"; // ...>::allocator_type...
+
+    // Tile
+    static constexpr const char* GET_VERSION_STRING_DECLARATION = "& getVersionString(";
+    static constexpr const char* GET_VERSION_STRING_DEFINITION = "& Tile::getVersionString(";
+
+    // WorldDb
+    static constexpr const char* WORLD_DB_CTOR_DECLARATION = "WorldDb(const ::zserio::string<";
+    static constexpr const char* WORLD_DB_CTOR_DEFINITION = "WorldDb::WorldDb(const ::zserio::string<";
+};
+
+template <>
+struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
+{
+    // VersionAvailability
+    static constexpr const char* TO_STRING_DECLARATION =
+            "::zserio::pmr::string toString(const ::zserio::pmr::string::allocator_type& allocator =";
+    static constexpr const char* TO_STRING_DEFINITION =
+            "::zserio::pmr::string VersionAvailability::toString("
+                    "const ::zserio::pmr::string::allocator_type& allocator) const";
+
+    // Tile
+    static constexpr const char* GET_VERSION_STRING_DECLARATION =
+            "const ::zserio::pmr::string& getVersionString(";
+    static constexpr const char* GET_VERSION_STRING_DEFINITION =
+            "const ::zserio::pmr::string& Tile::getVersionString(";
+
+    // WroldDb
+    static constexpr const char* WORLD_DB_CTOR_DECLARATION = "WorldDb(const ::zserio::pmr::string&";
+    static constexpr const char* WORLD_DB_CTOR_DEFINITION = "WorldDb::WorldDb(const ::zserio::pmr::string&";
+};
+
+template <>
+struct MethodNames<std::allocator<uint8_t>>
+{
+    // VersionAvailability
+    static constexpr const char* TO_STRING_DECLARATION =
+            "::zserio::string<> toString(const ::zserio::string<>::allocator_type& allocator =";
+    static constexpr const char* TO_STRING_DEFINITION =
+            "::zserio::string<> VersionAvailability::toString("
+                    "const ::zserio::string<>::allocator_type& allocator) const";
+
+    // Tile
+    static constexpr const char* GET_VERSION_STRING_DECLARATION =
+            "const ::zserio::string<>& getVersionString(";
+    static constexpr const char* GET_VERSION_STRING_DEFINITION =
+            "const ::zserio::string<>& Tile::getVersionString(";
+
+    // WroldDb
+    static constexpr const char* WORLD_DB_CTOR_DECLARATION = "WorldDb(const ::zserio::string<>&";
+    static constexpr const char* WORLD_DB_CTOR_DEFINITION = "WorldDb::WorldDb(const ::zserio::string<>&";
+};
 
 class WithoutWriterCode : public ::testing::Test
 {
@@ -36,12 +102,12 @@ protected:
     void assertMethodNotPresent(const char* typeName, const char* declaration, const char* definition)
     {
         const std::string filePath = std::string(PATH) + typeName;
-        if (declaration != NULL)
+        if (declaration != nullptr)
         {
             ASSERT_FALSE(isStringInFilePresent(filePath + ".h", declaration))
                     << "Method declaration '" << declaration << "' is present in '" << typeName << "'!";
         }
-        if (definition != NULL)
+        if (definition != nullptr)
         {
             ASSERT_FALSE(isStringInFilePresent(filePath + ".cpp", definition))
                     << "Method definition '" << definition << "' is present'" << typeName << "'!";
@@ -51,12 +117,12 @@ protected:
     void assertMethodPresent(const char* typeName, const char* declaration, const char* definition)
     {
         const std::string filePath = std::string(PATH) + typeName;
-        if (declaration != NULL)
+        if (declaration != nullptr)
         {
             ASSERT_TRUE(isStringInFilePresent(filePath + ".h", declaration))
                     << "Method declaration '" << declaration << "' is not present in '" << typeName << "'!";
         }
-        if (definition != NULL)
+        if (definition != nullptr)
         {
             ASSERT_TRUE(isStringInFilePresent(filePath + ".cpp", definition))
                     << "Method definition '" << definition << "' is not present in '" << typeName << "'!";
@@ -65,31 +131,31 @@ protected:
 
     void createWorldDb(zserio::SqliteConnection& db)
     {
-        sqlite3* connection = NULL;
+        sqlite3* connection = nullptr;
         const int result = sqlite3_open_v2(":memory:", &connection, SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
-                NULL);
+                nullptr);
         db.reset(connection);
         ASSERT_EQ(SQLITE_OK, result);
 
         db.executeUpdate("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)");
         db.executeUpdate("CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
 
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         writeTile(writer);
-        size_t size;
-        const uint8_t* buffer = writer.getWriteBuffer(size);
+        const uint8_t* buffer = writer.getWriteBuffer();
+        size_t writtenByteSize = (writer.getBitPosition() + 7) / 8;
 
         sqlite3_stmt* const stmtEurope = db.prepareStatement("INSERT INTO europe VALUES (?, ?)");
-        ASSERT_TRUE(stmtEurope != NULL);
+        ASSERT_TRUE(stmtEurope != nullptr);
         sqlite3_bind_int(stmtEurope, 1, TILE_ID_EUROPE);
-        sqlite3_bind_blob(stmtEurope, 2, buffer, static_cast<int>(size), SQLITE_TRANSIENT);
+        sqlite3_bind_blob(stmtEurope, 2, buffer, static_cast<int>(writtenByteSize), SQLITE_TRANSIENT);
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(stmtEurope));
         ASSERT_EQ(SQLITE_OK, sqlite3_finalize(stmtEurope));
 
         sqlite3_stmt* const stmtAmerica = db.prepareStatement("INSERT INTO america VALUES (?, ?)");
-        ASSERT_TRUE(stmtAmerica != NULL);
+        ASSERT_TRUE(stmtAmerica != nullptr);
         sqlite3_bind_int(stmtAmerica, 1, TILE_ID_AMERICA);
-        sqlite3_bind_blob(stmtAmerica, 2, buffer, static_cast<int>(size), SQLITE_TRANSIENT);
+        sqlite3_bind_blob(stmtAmerica, 2, buffer, static_cast<int>(writtenByteSize), SQLITE_TRANSIENT);
         ASSERT_EQ(SQLITE_DONE, sqlite3_step(stmtAmerica));
         ASSERT_EQ(SQLITE_OK, sqlite3_finalize(stmtAmerica));
     }
@@ -142,7 +208,7 @@ protected:
         ASSERT_EQ(VERSION_AVAILABILITY, tile.getVersionAvailability().getValue());
         ASSERT_EQ(NUM_ELEMENTS, tile.getNumElements());
 
-        const std::vector<ItemChoiceHolder>& data = tile.getData();
+        const auto& data = tile.getData();
         ASSERT_EQ(NUM_ELEMENTS, data.size());
 
         // element 0
@@ -170,6 +236,8 @@ protected:
     static const uint32_t NUM_ELEMENTS;
     static const uint16_t PARAMS[2];
     static const uint32_t EXTRA_PARAM;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const char* WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
@@ -201,21 +269,25 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t VersionAvailability::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void VersionAvailability::write(");
 
-    assertMethodPresent(type, "constexpr VersionAvailability() noexcept", NULL);
-    assertMethodPresent(type, "constexpr VersionAvailability(Values value) noexcept :", NULL);
+    assertMethodPresent(type, "constexpr VersionAvailability() noexcept", nullptr);
     assertMethodPresent(type, "VersionAvailability(::zserio::BitStreamReader&",
             "VersionAvailability::VersionAvailability(::zserio::BitStreamReader&");
+    assertMethodPresent(type, "constexpr VersionAvailability(Values value) noexcept :", nullptr);
     assertMethodPresent(type, "VersionAvailability(underlying_type value)",
             "VersionAvailability::VersionAvailability(underlying_type value)");
-    assertMethodPresent(type, "constexpr explicit operator underlying_type() const", NULL);
-    assertMethodPresent(type, "constexpr underlying_type getValue() const", NULL);
+    assertMethodPresent(type, "~VersionAvailability() = default;", nullptr);
+    assertMethodPresent(type, "VersionAvailability(const VersionAvailability&) = default;", nullptr);
+    assertMethodPresent(type, "VersionAvailability& operator=(const VersionAvailability&) = default;", nullptr);
+    assertMethodPresent(type, "VersionAvailability(VersionAvailability&&) = default;", nullptr);
+    assertMethodPresent(type, "VersionAvailability& operator=(VersionAvailability&&) = default;", nullptr);
+
+    assertMethodPresent(type, "constexpr explicit operator underlying_type() const", nullptr);
+    assertMethodPresent(type, "constexpr underlying_type getValue() const", nullptr);
     assertMethodPresent(type, "size_t bitSizeOf(size_t bitPosition = 0) const",
             "size_t VersionAvailability::bitSizeOf(size_t) const");
-    assertMethodPresent(type, "int hashCode() const", "int VersionAvailability::hashCode() const");
-    assertMethodPresent(type, "void read(::zserio::BitStreamReader& in)",
-            "void VersionAvailability::read(::zserio::BitStreamReader& in)");
-    assertMethodPresent(type, "std::string toString() const",
-            "std::string VersionAvailability::toString() const");
+    assertMethodPresent(type, "uint32_t hashCode() const", "uint32_t VersionAvailability::hashCode() const");
+    assertMethodPresent(type, MethodNames<allocator_type>::TO_STRING_DECLARATION,
+            MethodNames<allocator_type>::TO_STRING_DEFINITION);
 }
 
 TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
@@ -228,12 +300,20 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
 
     assertMethodPresent(type, "ExtraParamUnion(::zserio::BitStreamReader&",
             "ExtraParamUnion::ExtraParamUnion(::zserio::BitStreamReader&");
+    assertMethodPresent(type, "~ExtraParamUnion() = default;", nullptr);
+    assertMethodPresent(type, "ExtraParamUnion(const ExtraParamUnion&) = default;", nullptr);
+    assertMethodPresent(type, "ExtraParamUnion& operator=(const ExtraParamUnion&) = default;", nullptr);
+    assertMethodPresent(type, "ExtraParamUnion(ExtraParamUnion&&) = default;", nullptr);
+    assertMethodPresent(type, "ExtraParamUnion& operator=(ExtraParamUnion&&) = default;", nullptr);
+    assertMethodPresent(type, "ExtraParamUnion(::zserio::PropagateAllocatorT,",
+            "ExtraParamUnion::ExtraParamUnion(::zserio::PropagateAllocatorT,");
+
     assertMethodPresent(type, "ChoiceTag choiceTag(", "ChoiceTag ExtraParamUnion::choiceTag(");
     assertMethodPresent(type, "uint16_t getValue16(", "uint16_t ExtraParamUnion::getValue16(");
     assertMethodPresent(type, "uint32_t getValue32(", "uint32_t ExtraParamUnion::getValue32(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ExtraParamUnion::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool ExtraParamUnion::operator==(");
-    assertMethodPresent(type, "int hashCode(", "int ExtraParamUnion::hashCode(");
+    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ExtraParamUnion::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkItemMethods)
@@ -246,18 +326,23 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodNotPresent(type, "void write(", "void Item::write(");
 
     assertMethodPresent(type, "Item(::zserio::BitStreamReader&", "Item::Item(::zserio::BitStreamReader&");
+    assertMethodPresent(type, "~Item() = default;", nullptr);
     assertMethodPresent(type, "Item(const Item&", "Item::Item(const Item&");
     assertMethodPresent(type, "Item& operator=(const Item&", "Item& Item::operator=(const Item&");
     assertMethodPresent(type, "Item(Item&&", "Item::Item(Item&&");
     assertMethodPresent(type, "Item& operator=(Item&&", "Item& Item::operator=(Item&&");
+    assertMethodPresent(type, "Item(::zserio::PropagateAllocatorT,",
+            "Item::Item(::zserio::PropagateAllocatorT,");
+
     assertMethodPresent(type, "void initialize(", "void Item::initialize(");
     assertMethodPresent(type, "bool isInitialized(", "bool Item::isInitialized(");
+    assertMethodPresent(type, "ItemType getItemType() const", "ItemType Item::getItemType() const");
     assertMethodPresent(type, "uint16_t getParam(", "uint16_t Item::getParam(");
     assertMethodPresent(type, "& getExtraParam(", "& Item::getExtraParam(");
     assertMethodPresent(type, "bool isExtraParamUsed(", "bool Item::isExtraParamUsed(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Item::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool Item::operator==(");
-    assertMethodPresent(type, "int hashCode(", "int Item::hashCode(");
+    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Item::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkItemChoiceMethods)
@@ -270,12 +355,15 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
 
     assertMethodPresent(type, "ItemChoice(::zserio::BitStreamReader&",
             "ItemChoice::ItemChoice(::zserio::BitStreamReader&");
+    assertMethodPresent(type, "~ItemChoice() = default;", nullptr);
     assertMethodPresent(type, "ItemChoice(const ItemChoice&", "ItemChoice::ItemChoice(const ItemChoice&");
     assertMethodPresent(type, "ItemChoice& operator=(const ItemChoice&",
             "ItemChoice& ItemChoice::operator=(const ItemChoice&");
     assertMethodPresent(type, "ItemChoice(ItemChoice&&", "ItemChoice::ItemChoice(ItemChoice&&");
     assertMethodPresent(type, "ItemChoice& operator=(ItemChoice&&",
             "ItemChoice& ItemChoice::operator=(ItemChoice&&");
+    assertMethodPresent(type, "ItemChoice(::zserio::PropagateAllocatorT,",
+            "ItemChoice::ItemChoice(::zserio::PropagateAllocatorT,");
 
     assertMethodPresent(type, "void initialize(", "void ItemChoice::initialize(");
     assertMethodPresent(type, "bool isInitialized(", "bool ItemChoice::isInitialized(");
@@ -285,7 +373,7 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodPresent(type, "uint16_t getParam(", "uint16_t ItemChoice::getParam(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoice::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool ItemChoice::operator==(");
-    assertMethodPresent(type, "int hashCode(", "int ItemChoice::hashCode(");
+    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoice::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
@@ -298,6 +386,7 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
 
     assertMethodPresent(type, "ItemChoiceHolder(::zserio::BitStreamReader&",
             "ItemChoiceHolder::ItemChoiceHolder(::zserio::BitStreamReader&");
+    assertMethodPresent(type, "~ItemChoiceHolder() = default;", nullptr);
     assertMethodPresent(type, "ItemChoiceHolder(const ItemChoiceHolder&",
             "ItemChoiceHolder::ItemChoiceHolder(const ItemChoiceHolder&");
     assertMethodPresent(type, "ItemChoiceHolder& operator=(const ItemChoiceHolder&",
@@ -306,12 +395,15 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
             "ItemChoiceHolder::ItemChoiceHolder(ItemChoiceHolder&&");
     assertMethodPresent(type, "ItemChoiceHolder& operator=(ItemChoiceHolder&&",
             "ItemChoiceHolder& ItemChoiceHolder::operator=(ItemChoiceHolder&&");
+    assertMethodPresent(type, "ItemChoiceHolder(::zserio::PropagateAllocatorT,",
+            "ItemChoiceHolder::ItemChoiceHolder(::zserio::PropagateAllocatorT,");
+
     assertMethodPresent(type, "void initializeChildren(", "void ItemChoiceHolder::initializeChildren(");
     assertMethodPresent(type, "bool getHasItem(", "bool ItemChoiceHolder::getHasItem(");
     assertMethodPresent(type, "ItemChoice& getItemChoice(", "ItemChoice& ItemChoiceHolder::getItemChoice(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoiceHolder::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool ItemChoiceHolder::operator==(");
-    assertMethodPresent(type, "int hashCode(", "int ItemChoiceHolder::hashCode(");
+    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoiceHolder::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkTileMethods)
@@ -325,18 +417,29 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodNotPresent(type, "void write(", "void Tile::write(");
 
     assertMethodPresent(type, "Tile(::zserio::BitStreamReader&", "Tile::Tile(::zserio::BitStreamReader&");
+    assertMethodPresent(type, "~Tile() = default;", nullptr);
+    assertMethodPresent(type, "Tile(const Tile&) = default;", nullptr);
+    assertMethodPresent(type, "Tile& operator=(const Tile&) = default;", nullptr);
+    assertMethodPresent(type, "Tile(Tile&&) = default;", nullptr);
+    assertMethodPresent(type, "Tile& operator=(Tile&&) = default;", nullptr);
+    assertMethodPresent(type, "Tile(::zserio::PropagateAllocatorT,",
+            "Tile::Tile(::zserio::PropagateAllocatorT,");
+
     assertMethodPresent(type, "void initializeChildren(", "void Tile::initializeChildren(");
+    assertMethodPresent(type, "VersionAvailability getVersionAvailability() const",
+            "VersionAvailability Tile::getVersionAvailability() const");
     assertMethodPresent(type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
     assertMethodPresent(type, "bool isVersionUsed(", "bool Tile::isVersionUsed(");
-    assertMethodPresent(type, "const ::std::string& getVersionString(",
-            "const ::std::string& Tile::getVersionString(");
+    assertMethodPresent(type, MethodNames<allocator_type>::GET_VERSION_STRING_DECLARATION,
+            MethodNames<allocator_type>::GET_VERSION_STRING_DEFINITION);
     assertMethodPresent(type, "bool isVersionStringUsed(", "bool Tile::isVersionStringUsed(");
     assertMethodPresent(type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
     assertMethodPresent(type, "uint32_t getNumElements(", "uint32_t Tile::getNumElements(");
-    assertMethodPresent(type, "& getData(", "& Tile::getData(");
+    assertMethodPresent(type, "& getOffsets() const", "& Tile::getOffsets() const");
+    assertMethodPresent(type, "& getData() const", "& Tile::getData() const");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Tile::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool Tile::operator==");
-    assertMethodPresent(type, "int hashCode(", "int Tile::hashCode(");
+    assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Tile::hashCode(");
 }
 
 TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
@@ -355,7 +458,12 @@ TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
 
     assertMethodPresent(type, "GeoMapTable(::zserio::SqliteConnection&",
             "GeoMapTable::GeoMapTable(::zserio::SqliteConnection&");
-    assertMethodPresent(type, "~GeoMapTable() = default", ""); // default, i.e. nothing in cpp
+    assertMethodPresent(type, "~GeoMapTable() = default", nullptr);
+    assertMethodPresent(type, "GeoMapTable(const GeoMapTable&) = delete;", nullptr);
+    assertMethodPresent(type, "GeoMapTable& operator=(const GeoMapTable&) = delete;", nullptr);
+    assertMethodPresent(type, "GeoMapTable(GeoMapTable&&) = delete;", nullptr);
+    assertMethodPresent(type, "GeoMapTable& operator=(GeoMapTable&&) = delete;", nullptr);
+
     assertMethodPresent(type, "Reader createReader(", "Reader GeoMapTable::createReader(");
 }
 
@@ -366,23 +474,32 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
     assertMethodNotPresent(type,"void createSchema(", "void WorldDb::createSchema(");
     assertMethodNotPresent(type, "void deleteSchema(", "void WorldDb::deleteSchema(");
 
-    assertMethodPresent(type, "WorldDb(const ::std::string&", "WorldDb::WorldDb(const ::std::string&");
+    assertMethodPresent(type, MethodNames<allocator_type>::WORLD_DB_CTOR_DECLARATION,
+            MethodNames<allocator_type>::WORLD_DB_CTOR_DEFINITION);
     assertMethodPresent(type, "WorldDb(sqlite3*", "WorldDb::WorldDb(sqlite3*");
     assertMethodPresent(type, "~WorldDb()", "WorldDb::~WorldDb(");
-    assertMethodPresent(type, "sqlite3* connection(", "sqlite3* WorldDb::connection(");
+    assertMethodPresent(type, "WorldDb(const WorldDb&) = delete;", nullptr);
+    assertMethodPresent(type, "WorldDb& operator=(const WorldDb&) = delete;", nullptr);
+    assertMethodPresent(type, "WorldDb(WorldDb&&) = delete;", nullptr);
+    assertMethodPresent(type, "WorldDb& operator=(WorldDb&&) = delete;", nullptr);
+
+    assertMethodPresent(type, "::zserio::SqliteConnection& connection(",
+            "::zserio::SqliteConnection& WorldDb::connection(");
     assertMethodPresent(type, "GeoMapTable& getEurope(", "GeoMapTable& WorldDb::getEurope(");
     assertMethodPresent(type, "GeoMapTable& getAmerica(", "GeoMapTable& WorldDb::getAmerica(");
+    assertMethodPresent(type, "static ::zserio::StringView databaseName() noexcept",
+            "::zserio::StringView WorldDb::databaseName() noexcept");
+    assertMethodPresent(type, "static const ::std::array<::zserio::StringView, 2>& tableNames() noexcept",
+            "const ::std::array<::zserio::StringView, 2>& WorldDb::tableNames() noexcept");
 }
 
 TEST_F(WithoutWriterCode, readConstructor)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
 
     writeTile(writer);
 
-    size_t size;
-    const uint8_t* buffer = writer.getWriteBuffer(size);
-    zserio::BitStreamReader reader(buffer, size);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Tile tile = Tile(reader);
 
     checkTile(tile);

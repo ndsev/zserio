@@ -4,14 +4,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "explicit_parameters/ExplicitParametersDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace explicit_parameters
 {
 namespace multiple_explicit_params
 {
+
+using allocator_type = ExplicitParametersDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class MultipleExplicitParamsTest : public ::testing::Test
 {
@@ -30,15 +36,15 @@ public:
     }
 
 protected:
-    void fillMultipleParamsTableRow(MultipleParamsTable::Row& row, uint32_t id, const std::string& name)
+    void fillMultipleParamsTableRow(MultipleParamsTable::Row& row, uint32_t id, const string_type& name)
     {
         row.setId(id);
         row.setName(name);
 
         TestBlob testBlob1;
         {
-            std::vector<uint8_t>& values8 = testBlob1.getValues8();
-            std::vector<uint16_t>& values16 = testBlob1.getValues16();
+            vector_type<uint8_t>& values8 = testBlob1.getValues8();
+            vector_type<uint16_t>& values16 = testBlob1.getValues16();
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT1; ++i)
                 values8.push_back(static_cast<uint8_t>(id));
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT2; ++i)
@@ -48,8 +54,8 @@ protected:
 
         TestBlob testBlob2;
         {
-            std::vector<uint8_t>& values8 = testBlob2.getValues8();
-            std::vector<uint16_t>& values16 = testBlob2.getValues16();
+            vector_type<uint8_t>& values8 = testBlob2.getValues8();
+            vector_type<uint16_t>& values16 = testBlob2.getValues16();
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT; ++i)
             {
                 values8.push_back(static_cast<uint8_t>(id + 1));
@@ -60,8 +66,8 @@ protected:
 
         TestBlob testBlob3;
         {
-            std::vector<uint8_t>& values8 = testBlob3.getValues8();
-            std::vector<uint16_t>& values16 = testBlob3.getValues16();
+            vector_type<uint8_t>& values8 = testBlob3.getValues8();
+            vector_type<uint16_t>& values16 = testBlob3.getValues16();
             for (uint32_t i = 0; i < MULTIPLE_PARAMS_COUNT1; ++i)
             {
                 values8.push_back(static_cast<uint8_t>(id + 2));
@@ -71,12 +77,12 @@ protected:
         row.setBlob3(testBlob3);
     }
 
-    void fillMultipleParamsTableRows(std::vector<MultipleParamsTable::Row>& rows)
+    void fillMultipleParamsTableRows(vector_type<MultipleParamsTable::Row>& rows)
     {
         rows.clear();
         for (uint32_t id = 0; id < NUM_MULTIPLE_PARAMS_ROWS; ++id)
         {
-            const std::string name = "Name" + zserio::convertToString(id);
+            const string_type name = "Name" + zserio::toString<allocator_type>(id);
             MultipleParamsTable::Row row;
             fillMultipleParamsTableRow(row, id, name);
             rows.push_back(row);
@@ -98,8 +104,8 @@ protected:
         ASSERT_EQ(row2.getBlob2().getCount8(), row2.getBlob2().getCount16());
     }
 
-    static void checkMultipleParamsTableRows(const std::vector<MultipleParamsTable::Row>& rows1,
-            const std::vector<MultipleParamsTable::Row>& rows2)
+    static void checkMultipleParamsTableRows(const vector_type<MultipleParamsTable::Row>& rows1,
+            const vector_type<MultipleParamsTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -147,13 +153,13 @@ TEST_F(MultipleExplicitParamsTest, readWithoutCondition)
     MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
     MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleParamsTable::Row> writtenRows;
+    vector_type<MultipleParamsTable::Row> writtenRows;
     fillMultipleParamsTableRows(writtenRows);
     multipleParamsTable.write(parameterProvider, writtenRows);
 
     MultipleParamsTable::Reader reader = multipleParamsTable.createReader(parameterProvider);
 
-    std::vector<MultipleParamsTable::Row> readRows;
+    vector_type<MultipleParamsTable::Row> readRows;
     while (reader.hasNext())
         readRows.push_back(reader.next());
     checkMultipleParamsTableRows(writtenRows, readRows);
@@ -164,11 +170,11 @@ TEST_F(MultipleExplicitParamsTest, readWithCondition)
     MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
     MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleParamsTable::Row> writtenRows;
+    vector_type<MultipleParamsTable::Row> writtenRows;
     fillMultipleParamsTableRows(writtenRows);
     multipleParamsTable.write(parameterProvider, writtenRows);
 
-    const std::string condition = "name='Name1'";
+    const string_type condition = "name='Name1'";
     MultipleParamsTable::Reader reader = multipleParamsTable.createReader(parameterProvider, condition);
 
     ASSERT_TRUE(reader.hasNext());
@@ -184,14 +190,14 @@ TEST_F(MultipleExplicitParamsTest, update)
     MultipleParamsTable& multipleParamsTable = m_database->getMultipleParamsTable();
 
     MultipleParamsTableParameterProvider parameterProvider;
-    std::vector<MultipleParamsTable::Row> writtenRows;
+    vector_type<MultipleParamsTable::Row> writtenRows;
     fillMultipleParamsTableRows(writtenRows);
     multipleParamsTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
     MultipleParamsTable::Row updateRow;
     fillMultipleParamsTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "id=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "id=" + zserio::toString<allocator_type>(updateRowId);
     multipleParamsTable.update(parameterProvider, updateRow, updateCondition);
 
     MultipleParamsTable::Reader reader = multipleParamsTable.createReader(parameterProvider, updateCondition);

@@ -1,0 +1,17 @@
+constParameter:*/with_validation_code/blob_table_validation/BlobTable.cpp
+constParameter:*/with_validation_code/control_validation/Table1.cpp
+constParameter:*/with_validation_code/control_validation/Table2.cpp
+constParameter:*/with_validation_code/control_validation/Table3.cpp
+constParameter:*/with_validation_code/depend_table_validation/DependTable.cpp
+constParameter:*/with_validation_code/full_range_table_validation/FullRangeTable.cpp
+constParameter:*/with_validation_code/hidden_column_table_validation/HiddenColumnTable.cpp
+constParameter:*/with_validation_code/simple_table_validation/SimpleTable.cpp
+constParameter:*/with_validation_code/virtual_table_validation/VirtualTable.cpp
+
+uninitMemberVar:*/with_validation_code/simple_table_validation/RootStruct.cpp
+uninitMemberVar:*/with_validation_code/depend_table_validation/Blob.cpp
+
+variableScope:*/with_validation_code/depend_table_validation/DependTable.cpp
+variableScope:*/with_validation_code/simple_table_validation/SimpleTable.cpp
+
+noExplicitConstructor:*/with_validation_code/simple_table_validation/TestBitmask.h

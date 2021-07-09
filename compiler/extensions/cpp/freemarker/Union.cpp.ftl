@@ -17,12 +17,16 @@
 <@system_includes cppSystemIncludes/>
 
 <@user_include package.path, "${name}.h"/>
-<@user_includes cppUserIncludes, true/>
+<@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
 <@inner_classes_definition fieldList/>
 <#macro empty_constructor_field_initialization>
-        m_choiceTag(UNDEFINED_CHOICE)
+        m_choiceTag(UNDEFINED_CHOICE)<#rt>
+        <#if fieldList?has_content>
+        <#lt>,
+        m_objectChoice(allocator)
+        </#if>
 </#macro>
 <#if withWriterCode>
     <@compound_constructor_definition compoundConstructorsData, "empty_constructor_field_initialization"/>
@@ -31,16 +35,19 @@
 <#macro read_constructor_field_initialization>
     <#if fieldList?has_content>
         m_choiceTag(readChoiceTag(in)),
-        m_objectChoice(readObject(in))
+        m_objectChoice(readObject(in, allocator))
     <#else>
         m_choiceTag(UNDEFINED_CHOICE)
     </#if>
 </#macro>
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization"/>
 
+<#macro union_copy_constructor_definition compounConstructorsData withAlloc>
+</#macro>
+<#macro union_move_constructor_definition compoundConstructorsData withAlloc>
+</#macro>
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
-${name}::${name}(<#rt>
-    <#lt>const ${name}& other) :
+${name}::${name}(const ${name}& other) :
         m_choiceTag(other.m_choiceTag)<#rt>
     <#if fieldList?has_content>
         <#lt>,
@@ -103,8 +110,27 @@ ${name}& ${name}::operator=(${name}&& other)
 }
 
 </#if>
+${name}::${name}(::zserio::PropagateAllocatorT,
+        const ${name}& other, const allocator_type&<#rt>
+        <#lt><#if fieldList?has_content> allocator</#if>) :
+        m_choiceTag(other.m_choiceTag)<#rt>
+    <#if fieldList?has_content>
+        <#lt>,
+        <#list fieldList as field>
+        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
+            <#if field.usesAnyHolder>
+                <#break>
+            </#if>
+        </#list>
+    <#else>
+
+    </#if>
+{
+    <@compound_copy_initialization compoundConstructorsData/>
+}
+
 <#if needs_compound_initialization(compoundConstructorsData)>
-    <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
+<@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
 
 </#if>
 <#if needsChildrenInitialization>
@@ -243,9 +269,9 @@ bool ${name}::operator==(const ${name}& other) const
 </#if>
 }
 
-int ${name}::hashCode() const
+uint32_t ${name}::hashCode() const
 {
-    int result = ::zserio::HASH_SEED;
+    uint32_t result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
     result = ::zserio::calcHashCode(result, static_cast<uint32_t>(m_choiceTag));
@@ -267,14 +293,6 @@ int ${name}::hashCode() const
 </#if>
 
     return result;
-}
-
-void ${name}::read(::zserio::BitStreamReader&<#if fieldList?has_content> in</#if>)
-{
-<#if fieldList?has_content>
-    m_choiceTag = readChoiceTag(in);
-    m_objectChoice = readObject(in);
-</#if>
 }
 <#if withWriterCode>
 
@@ -309,7 +327,7 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
     return static_cast<${name}::ChoiceTag>(static_cast<int32_t>(in.readVarSize()));
 }
 
-::zserio::AnyHolder ${name}::readObject(::zserio::BitStreamReader& in)
+${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (m_choiceTag)
     {
@@ -325,6 +343,19 @@ ${name}::ChoiceTag ${name}::readChoiceTag(::zserio::BitStreamReader& in)
         </#list>
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
+    }
+}
+
+${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const
+{
+    switch (m_choiceTag)
+    {
+        <#list fieldList as field>
+    case <@choice_tag_name field/>:
+        return ::zserio::allocatorPropagatingCopy<${field.cppTypeName}>(m_objectChoice, allocator);
+        </#list>
+    default:
+        return ${types.anyHolder.name}(allocator);
     }
 }
 </#if>

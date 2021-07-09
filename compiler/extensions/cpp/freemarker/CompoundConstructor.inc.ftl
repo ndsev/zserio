@@ -1,15 +1,17 @@
 <#include "CompoundField.inc.ftl">
 <#include "CompoundParameter.inc.ftl">
 <#macro compound_constructor_declaration compoundConstructorsData>
-    ${compoundConstructorsData.compoundName}() noexcept;
+    explicit ${compoundConstructorsData.compoundName}(const allocator_type& allocator = allocator_type()) noexcept;
 </#macro>
 
 <#macro compound_constructor_definition compoundConstructorsData memberInitializationMacroName="">
     <#local hasInitializers= needs_compound_initialization(compoundConstructorsData) ||
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
-${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}() noexcept<#rt>
-    <#lt><#if hasInitializers> :</#if>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
+        <#lt>const allocator_type&<#rt>
+        <#lt><#if empty_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if>) <#rt>
+        <#lt>noexcept<#if hasInitializers> :</#if>
     <#if needs_compound_initialization(compoundConstructorsData)>
         m_isInitialized(false)<#if memberInitializationMacroName != "">,</#if>
     <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
@@ -29,7 +31,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             <#lt>,
             ${constructorArgumentTypeList}<#t>
     </#if>
-    <#lt>);
+    <#lt>, const allocator_type& allocator = allocator_type());
 </#macro>
 
 <#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName>
@@ -44,6 +46,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         <#lt>,
         ${constructorArgumentTypeList}<#t>
     </#if>
+        , const allocator_type&<#if read_constructor_needs_allocator(compoundConstructorsData.fieldList)> allocator</#if><#t>
     <#if hasInitializers>
         <#lt>) :
     <#else>
@@ -65,28 +68,12 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
-<#macro compound_fields_constructor_template compoundConstructorsData>
-    <@compound_field_constructor_template_arg_list compoundConstructorsData.compoundName,
-            compoundConstructorsData.fieldList/>
-    explicit ${compoundConstructorsData.compoundName}(
-            <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/>) :
-            <#if needs_compound_initialization(compoundConstructorsData)>
-            m_isInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
-            <#elseif has_field_with_initialization(compoundConstructorsData.fieldList)>
-            m_areChildrenInitialized(false)<#if compoundConstructorsData.fieldList?has_content>,</#if>
-            </#if>
-        <#list compoundConstructorsData.fieldList as field>
-            <@compound_field_constructor_initializer_field field, field?has_next, 3/>
-            <#if field.usesAnyHolder>
-                <#break>
-            </#if>
-        </#list>
-    {
-    }
-</#macro>
-
 <#macro compound_copy_constructor_declaration compoundConstructorsData>
     ${compoundConstructorsData.compoundName}(const ${compoundConstructorsData.compoundName}& other);
+</#macro>
+
+<#macro compound_copy_constructor_allocator_declaration compoundConstructorsData>
+    <@compound_copy_constructor_declaration compoundConstructorsData true/>
 </#macro>
 
 <#macro compound_copy_initialization compoundConstructorsData>
@@ -105,7 +92,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 
 <#macro compound_copy_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-    <#lt>const ${compoundConstructorsData.compoundName}& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+        <#lt>const ${compoundConstructorsData.compoundName}& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_copy_constructor_initializer_field field, field?has_next, 2/>
         <#if field.usesAnyHolder>
@@ -115,6 +102,10 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 {
     <@compound_copy_initialization compoundConstructorsData/>
 }
+</#macro>
+
+<#macro compound_copy_constructor_allocator_definition compoundConstructorsData>
+    <@compound_copy_constructor_definition compoundConstructorsData true/>
 </#macro>
 
 <#macro compound_assignment_operator_declaration compoundConstructorsData>
@@ -143,7 +134,7 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
 
 <#macro compound_move_constructor_definition compoundConstructorsData>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-    <#lt>${compoundConstructorsData.compoundName}&& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
+        <#lt>${compoundConstructorsData.compoundName}&& other)<#if compoundConstructorsData.fieldList?has_content> :</#if>
     <#list compoundConstructorsData.fieldList as field>
         <@compound_move_constructor_initializer_field field, field?has_next, 2/>
         <#if field.usesAnyHolder>
@@ -172,6 +163,32 @@ ${compoundConstructorsData.compoundName}& ${compoundConstructorsData.compoundNam
     <@compound_copy_initialization compoundConstructorsData/>
 
     return *this;
+}
+</#macro>
+
+<#macro compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData>
+    ${compoundConstructorsData.compoundName}(::zserio::PropagateAllocatorT,
+            const ${compoundConstructorsData.compoundName}& other, const allocator_type& allocator);
+</#macro>
+
+<#macro compound_allocator_propagating_copy_constructor_definition compoundConstructorsData>
+    <#local initialization><@compound_copy_initialization compoundConstructorsData/></#local>
+${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
+        <#lt>::zserio::PropagateAllocatorT,
+        const ${compoundConstructorsData.compoundName}&<#rt>
+        <#lt><#if compoundConstructorsData.fieldList?has_content || initialization?has_content> other</#if>,<#rt>
+        <#lt> const allocator_type&<#if compoundConstructorsData.fieldList?has_content> allocator</#if>)<#rt>
+        <#lt><#if compoundConstructorsData.fieldList?has_content> :</#if>
+    <#list compoundConstructorsData.fieldList as field>
+        <@compound_allocator_propagating_copy_constructor_initializer_field field, field?has_next, 2/>
+        <#if field.usesAnyHolder>
+            <#break>
+        </#if>
+    </#list>
+{
+    <#if initialization?has_content>
+    ${initialization}<#t>
+    </#if>
 }
 </#macro>
 
@@ -227,6 +244,26 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
     bool m_areChildrenInitialized;
     </#if>
 </#macro>
+
+<#function empty_constructor_needs_allocator fieldList>
+    <#list fieldList as field>
+        <#if field.usesAnyHolder || field.optional??>
+            <#if field.holderNeedsAllocator><#return true></#if>
+        <#else>
+            <#if field.needsAllocator><#return true></#if>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function read_constructor_needs_allocator fieldList>
+    <#list fieldList as field>
+        <#if field.holderNeedsAllocator || field.needsAllocator>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
 
 <#function needs_compound_initialization compoundConstructorsData>
     <#if compoundConstructorsData.compoundParametersData.list?has_content>

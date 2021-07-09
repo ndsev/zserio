@@ -22,6 +22,8 @@ protected:
     }
 
     static const size_t SIMPLE_STRUCTURE_BIT_SIZE = 18;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(SimpleStructureTest, emptyConstructor)
@@ -45,11 +47,10 @@ TEST_F(SimpleStructureTest, bitStreamReaderConstructor)
     const uint8_t numberA = 0x07;
     const uint8_t numberB = 0xFF;
     const uint8_t numberC = 0x7F;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeSimpleStructureToByteArray(writer, numberA, numberB, numberC);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     SimpleStructure simpleStructure(reader);
     ASSERT_EQ(numberA, simpleStructure.getNumberA());
     ASSERT_EQ(numberB, simpleStructure.getNumberB());
@@ -104,6 +105,19 @@ TEST_F(SimpleStructureTest, moveAssignmentOperator)
     ASSERT_EQ(numberA, simpleStructureMoved.getNumberA());
     ASSERT_EQ(numberB, simpleStructureMoved.getNumberB());
     ASSERT_EQ(numberC, simpleStructureMoved.getNumberC());
+}
+
+TEST_F(SimpleStructureTest, propagateAllocatorCopyConstructor)
+{
+    const uint8_t numberA = 0x07;
+    const uint8_t numberB = 0xFF;
+    const uint8_t numberC = 0x7F;
+    SimpleStructure simpleStructure(numberA, numberB, numberC);
+    SimpleStructure simpleStructureCopy(zserio::PropagateAllocator, simpleStructure,
+            SimpleStructure::allocator_type());
+    ASSERT_EQ(numberA, simpleStructureCopy.getNumberA());
+    ASSERT_EQ(numberB, simpleStructureCopy.getNumberB());
+    ASSERT_EQ(numberC, simpleStructureCopy.getNumberC());
 }
 
 TEST_F(SimpleStructureTest, getSetNumberA)
@@ -199,24 +213,6 @@ TEST_F(SimpleStructureTest, hashCode)
     ASSERT_EQ(simpleStructure1.hashCode(), simpleStructure2.hashCode());
 }
 
-TEST_F(SimpleStructureTest, read)
-{
-    const uint8_t numberA = 0x06;
-    const uint8_t numberB = 0x11;
-    const uint8_t numberC = 0x52;
-    zserio::BitStreamWriter writer;
-    writeSimpleStructureToByteArray(writer, numberA, numberB, numberC);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-
-    SimpleStructure simpleStructure;
-    simpleStructure.read(reader);
-    ASSERT_EQ(numberA, simpleStructure.getNumberA());
-    ASSERT_EQ(numberB, simpleStructure.getNumberB());
-    ASSERT_EQ(numberC, simpleStructure.getNumberC());
-}
-
 TEST_F(SimpleStructureTest, write)
 {
     SimpleStructure simpleStructure;
@@ -227,12 +223,10 @@ TEST_F(SimpleStructureTest, write)
     simpleStructure.setNumberB(numberB);
     simpleStructure.setNumberC(numberC);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     simpleStructure.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     SimpleStructure readSimpleStructure(reader);
     ASSERT_EQ(numberA, readSimpleStructure.getNumberA());
     ASSERT_EQ(numberB, readSimpleStructure.getNumberB());

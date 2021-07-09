@@ -98,14 +98,18 @@ function(zserio_add_library)
         endif ()
     endif ()
 
-    # check if the library is header only
+    # check if library is header only
     if ("${VALUE_OUT_FILES}" STREQUAL "EMPTY")
-        SET(VALUE_OUT_FILES "")
+        set(VALUE_OUT_FILES "")
     endif ()
     string(FIND "${VALUE_OUT_FILES}" ".cpp" SOURCE_FILE_POSITION)
 
     # set ${VALUE_OUT_FILES} as GENERATED
     set_source_files_properties(${VALUE_OUT_FILES} PROPERTIES GENERATED TRUE)
+
+    # set zserio extra options given by environment
+    set(ZSERIO_EXTRA_OPTIONS "$ENV{ZSERIO_EXTRA_ARGS}")
+    separate_arguments(ZSERIO_EXTRA_OPTIONS)
 
     # hack to always re-run Zserio compiler (Zserio itself can skip sources generations if it's not needed)
     # - uses ${VALUE_TARGET}_ALWAYS_GENERATE output which will be never generated and thus it will always re-run
@@ -113,7 +117,8 @@ function(zserio_add_library)
         COMMAND ${CMAKE_COMMAND} -DJAVA_BIN=${JAVA_BIN}
             -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DCPP_DIR=${VALUE_ZSERIO_CPP_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
             -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
-            -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
+            -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DEXTRA_OPTIONS="${ZSERIO_EXTRA_OPTIONS}"
+            -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
             -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
         COMMENT "Generating sources with Zserio from ${VALUE_MAIN_SOURCE}")
@@ -130,12 +135,6 @@ function(zserio_add_library)
 
     # delete whole directory even if Zserio generated a file that's not listed in ZSERIO_GENERATED_SOURCES
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${VALUE_OUT_DIR})
-
-    if (MSVC)
-        compiler_reset_warnings_as_errors()
-        # needed to take effect since we are in the function
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" PARENT_SCOPE)
-    endif ()
 
     # add a static library
     if (SOURCE_FILE_POSITION EQUAL -1)
@@ -163,6 +162,8 @@ function(zserio_add_library)
         cppcheck_add_custom_command(TARGET ${VALUE_TARGET}
                                     SOURCE_DIR "${VALUE_OUT_DIR}"
                                     INCLUDE_DIR "${VALUE_OUT_DIR}"
-                                    SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}")
+                                    SUPPRESSION_FILE "${SUPPRESSION_FILE_NAME}"
+                                    # add suppression needed due to generated field constructors
+                                    OPTIONS --suppress=useInitializationList:*gen*/*.h)
     endif ()
 endfunction()

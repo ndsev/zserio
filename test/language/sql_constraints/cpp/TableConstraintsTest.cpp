@@ -3,15 +3,20 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/SqliteException.h"
-
 #include "sql_constraints/TestDb.h"
 #include "sql_constraints/table_constraints/TableConstraintsTable.h"
+
+#include "zserio/SqliteException.h"
+#include "zserio/RebindAlloc.h"
 
 namespace sql_constraints
 {
 namespace table_constraints
 {
+
+using allocator_type = TableConstraintsTable::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class TableConstraintsTest : public ::testing::Test
 {
@@ -45,7 +50,7 @@ TEST_F(TableConstraintsTest, primaryKey)
     row.setPrimaryKey2(1);
     row.resetUniqueValue1();
     row.resetUniqueValue2();
-    std::vector<TableConstraintsTable::Row> rows;
+    vector_type<TableConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_NO_THROW(tableConstraintsTable.write(rows));
 }
@@ -58,7 +63,7 @@ TEST_F(TableConstraintsTest, primaryKeyWrong)
     row.setPrimaryKey2(1);
     row.setUniqueValue1(1);
     row.setUniqueValue2(1);
-    std::vector<TableConstraintsTable::Row> rows;
+    vector_type<TableConstraintsTable::Row> rows;
     rows.push_back(row);
     row.setUniqueValue1(2);
     rows.push_back(row);
@@ -73,7 +78,7 @@ TEST_F(TableConstraintsTest, unique)
     row.setPrimaryKey2(1);
     row.setUniqueValue1(1);
     row.setUniqueValue2(1);
-    std::vector<TableConstraintsTable::Row> rows;
+    vector_type<TableConstraintsTable::Row> rows;
     rows.push_back(row);
     ASSERT_NO_THROW(tableConstraintsTable.write(rows));
 }
@@ -86,7 +91,7 @@ TEST_F(TableConstraintsTest, uniqueWrong)
     row.setPrimaryKey2(1);
     row.setUniqueValue1(1);
     row.setUniqueValue2(1);
-    std::vector<TableConstraintsTable::Row> rows;
+    vector_type<TableConstraintsTable::Row> rows;
     rows.push_back(row);
     row.setPrimaryKey1(2);
     rows.push_back(row);

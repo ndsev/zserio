@@ -31,6 +31,8 @@ protected:
 
     static const uint16_t VALUE16_CORRECT_CONSTRAINT;
     static const uint16_t VALUE16_WRONG_CONSTRAINT;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t UnionConstraintsTest::VALUE8_CORRECT_CONSTRAINT = 1;
@@ -39,46 +41,37 @@ const uint8_t UnionConstraintsTest::VALUE8_WRONG_CONSTRAINT = 0;
 const uint16_t UnionConstraintsTest::VALUE16_CORRECT_CONSTRAINT = 256;
 const uint16_t UnionConstraintsTest::VALUE16_WRONG_CONSTRAINT = 255;
 
-TEST_F(UnionConstraintsTest, readCorrectConstraints)
+TEST_F(UnionConstraintsTest, readConstructorCorrectConstraints)
 {
     const uint8_t value8 = VALUE8_CORRECT_CONSTRAINT;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeUnionConstraintsToByteArray(writer, value8);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    UnionConstraints unionConstraints;
-    unionConstraints.read(reader);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    UnionConstraints unionConstraints(reader);
 
     ASSERT_EQ(UnionConstraints::CHOICE_value8, unionConstraints.choiceTag());
     ASSERT_EQ(value8, unionConstraints.getValue8());
 }
 
-TEST_F(UnionConstraintsTest, readWrongValue8Constraint)
+TEST_F(UnionConstraintsTest, readConstructorWrongValue8Constraint)
 {
     const uint8_t value8 = VALUE8_WRONG_CONSTRAINT;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeUnionConstraintsToByteArray(writer, value8);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    UnionConstraints unionConstraints;
-    ASSERT_THROW(unionConstraints.read(reader), zserio::CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(UnionConstraints unionConstraints(reader), zserio::CppRuntimeException);
 }
 
-TEST_F(UnionConstraintsTest, readWrongValue16Constraint)
+TEST_F(UnionConstraintsTest, readConstructorWrongValue16Constraint)
 {
     const uint16_t value16 = VALUE16_WRONG_CONSTRAINT;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeUnionConstraintsToByteArray(writer, value16);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
-    UnionConstraints unionConstraints;
-    ASSERT_THROW(unionConstraints.read(reader), zserio::CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(UnionConstraints unionConstraints(reader), zserio::CppRuntimeException);
 }
 
 TEST_F(UnionConstraintsTest, writeCorrectConstraints)
@@ -87,12 +80,11 @@ TEST_F(UnionConstraintsTest, writeCorrectConstraints)
     UnionConstraints unionConstraints;
     unionConstraints.setValue16(value16);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     unionConstraints.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const UnionConstraints readUnionConstraints(reader);
     ASSERT_EQ(UnionConstraints::CHOICE_value16, readUnionConstraints.choiceTag());
     ASSERT_EQ(value16, readUnionConstraints.getValue16());
@@ -105,7 +97,7 @@ TEST_F(UnionConstraintsTest, writeWrongValue8Constraint)
     UnionConstraints unionConstraints;
     unionConstraints.setValue8(value8);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(unionConstraints.write(writer), zserio::CppRuntimeException);
 }
 
@@ -115,7 +107,7 @@ TEST_F(UnionConstraintsTest, writeWrongValue16Constraint)
     UnionConstraints unionConstraints;
     unionConstraints.setValue16(value16);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(unionConstraints.write(writer), zserio::CppRuntimeException);
 }
 

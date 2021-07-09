@@ -47,14 +47,15 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
     protected void processHeaderTemplate(String templateName, Object templateData, ZserioType zserioType)
             throws ZserioExtensionException
     {
-        processHeaderTemplate(templateName, templateData, zserioType.getPackage(), zserioType.getName());
+        processHeaderTemplate(templateName, templateData, zserioType.getPackage().getPackageName(),
+                zserioType.getName());
     }
 
-    protected void processHeaderTemplate(String templateName, Object templateData, Package zserioPackage,
-            String outFileName) throws ZserioExtensionException
+    protected void processHeaderTemplate(String templateName, Object templateData,
+            PackageName zserioPackageName, String outFileName) throws ZserioExtensionException
     {
-        processTemplate(templateName, templateData, zserioPackage.getPackageName(), outFileName,
-                CPP_HEADER_EXTENSION, false);
+        processTemplate(templateName, templateData, zserioPackageName, outFileName, CPP_HEADER_EXTENSION,
+                false);
     }
 
     protected TemplateDataContext getTemplateDataContext()
@@ -94,7 +95,7 @@ abstract class CppDefaultEmitter extends DefaultTreeWalker
         if (amalgamate)
         {
             final Boolean fileInfo = outputFileManager.getOutputFileInfo(outputFile);
-            if (fileInfo != null) // already registered
+            if (fileInfo != null)
             {
                 if (fileInfo) // not skipped
                 {

@@ -1,7 +1,6 @@
 # Zserio C++ runtime library.
 #
-# This CMake file defines a static library target named ZserioCppRuntime that contains the zserio C++
-# runtime.
+# This CMake file defines a static library target named ZserioCppRuntime that contains the zserio C++ runtime.
 #
 # This CMake file is designed to be included directly without any further dependencies.
 #
@@ -14,14 +13,15 @@
 # add_executable(ZserioTestApp HelloWorld.cpp)
 # target_link_libraries(ZserioTestApp ZserioCppRuntime)
 
-cmake_minimum_required(VERSION 2.8.12.2)
+cmake_minimum_required(VERSION 3.1.0)
 
 project(ZserioCppRuntime)
 
 set(ZSERIO_CPP_RUNTIME_LIB_SRCS
+    zserio/AllocatorHolder.h
+    zserio/AllocatorPropagatingCopy.h
     zserio/AnyHolder.h
     zserio/Arrays.h
-    zserio/BitBuffer.cpp
     zserio/BitBuffer.h
     zserio/BitFieldUtil.cpp
     zserio/BitFieldUtil.h
@@ -33,9 +33,11 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/BitStreamReader.h
     zserio/BitStreamWriter.cpp
     zserio/BitStreamWriter.h
+    zserio/BlobBuffer.h
     zserio/BuildInOperators.cpp
     zserio/BuildInOperators.h
     zserio/ConstraintException.h
+    zserio/CppRuntimeException.cpp
     zserio/CppRuntimeException.h
     zserio/CppRuntimeVersion.h
     zserio/Enums.h
@@ -46,23 +48,41 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/IService.h
     zserio/ISqliteDatabase.h
     zserio/ISqliteDatabaseReader.h
+    zserio/IValidationObserver.h
     zserio/OptionalHolder.h
     zserio/PreWriteAction.h
     zserio/PubsubException.h
     zserio/ServiceException.h
+    zserio/Span.h
     zserio/SqliteConnection.h
     zserio/SqliteException.h
     zserio/SqliteFinalizer.h
-    zserio/StringConvertUtil.cpp
     zserio/StringConvertUtil.h
+    zserio/StringView.h
     zserio/Types.h
+    zserio/UniquePtr.h
+    zserio/ValidationSqliteUtil.h
     zserio/VarSizeUtil.cpp
     zserio/VarSizeUtil.h
+    zserio/pmr/AnyHolder.h
+    zserio/pmr/BitBuffer.h
+    zserio/pmr/BlobBuffer.h
+    zserio/pmr/HeapOptionalHolder.h
+    zserio/pmr/Map.h
+    zserio/pmr/MemoryResource.cpp
+    zserio/pmr/MemoryResource.h
+    zserio/pmr/NewDeleteResource.cpp
+    zserio/pmr/NewDeleteResource.h
+    zserio/pmr/PolymorphicAllocator.h
+    zserio/pmr/Set.h
+    zserio/pmr/String.h
+    zserio/pmr/UniquePtr.h
+    zserio/pmr/Vector.h
 )
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
-    # allows bit stream reader optimization for 64bit platforms
-    set_property(SOURCE zserio/BitStreamReader.cpp
+    # allows bit stream reader and var size util optimizations for 64bit platforms
+    set_property(SOURCE zserio/BitStreamReader.cpp zserio/VarSizeUtil.cpp
                  APPEND PROPERTY COMPILE_DEFINITIONS ZSERIO_RUNTIME_64BIT)
 endif ()
 

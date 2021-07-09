@@ -4,14 +4,24 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "sql_virtual_columns/hidden_virtual_columns/HiddenVirtualColumnsDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/StringConvertUtil.h"
+#include "zserio/ValidationSqliteUtil.h"
+#include "zserio/SqliteFinalizer.h"
+
+using namespace zserio::literals;
 
 namespace sql_virtual_columns
 {
 namespace hidden_virtual_columns
 {
+
+using allocator_type = HiddenVirtualColumnsDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class HiddenVirtualColumnsTest : public ::testing::Test
 {
@@ -31,7 +41,7 @@ public:
 
 protected:
     static void fillHiddenVirtualColumnsTableRow(HiddenVirtualColumnsTable::Row& row, int64_t docId,
-            const std::string& searchTags)
+            const string_type& searchTags)
     {
         row.setDocId(docId);
         const uint16_t languageCode = 1;
@@ -41,12 +51,12 @@ protected:
         row.setFrequency(frequency);
     }
 
-    static void fillHiddenVirtualColumnsTableRows(std::vector<HiddenVirtualColumnsTable::Row>& rows)
+    static void fillHiddenVirtualColumnsTableRows(vector_type<HiddenVirtualColumnsTable::Row>& rows)
     {
         rows.clear();
         for (int32_t id = 0; id < NUM_TABLE_ROWS; ++id)
         {
-            const std::string searchTags = "Search Tags" + zserio::convertToString(id);
+            const string_type searchTags = "Search Tags" + zserio::toString<allocator_type>(id);
             HiddenVirtualColumnsTable::Row row;
             fillHiddenVirtualColumnsTableRow(row, id, searchTags);
             rows.push_back(row);
@@ -62,8 +72,8 @@ protected:
         ASSERT_EQ(row1.getFrequency(), row2.getFrequency());
     }
 
-    static void checkHiddenVirtualColumnsTableRows(const std::vector<HiddenVirtualColumnsTable::Row>& rows1,
-            const std::vector<HiddenVirtualColumnsTable::Row>& rows2)
+    static void checkHiddenVirtualColumnsTableRows(const vector_type<HiddenVirtualColumnsTable::Row>& rows1,
+            const vector_type<HiddenVirtualColumnsTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -72,46 +82,32 @@ protected:
 
     bool isTableInDb()
     {
-        sqlite3_stmt* statement;
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName +
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + m_tableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
-        {
-            sqlite3_finalize(statement);
             return false;
-        }
 
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || m_tableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr || m_tableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
             return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
 
-    bool isHiddenVirtualColumnInTable(const std::string& columnName)
+    bool isHiddenVirtualColumnInTable(const string_type& columnName)
     {
-        sqlite3_stmt* statement;
-        const std::string sqlQuery = "SELECT " + columnName + " FROM " + m_tableName + " LIMIT 0";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        sqlite3_finalize(statement);
-
-        return (result == SQLITE_OK) ? true : false;
+        return zserio::ValidationSqliteUtil<allocator_type>::isColumnInTable(
+                m_database->connection(), ""_sv, m_tableName, columnName, allocator_type());
     }
 
     static const char DB_FILE_NAME[];
     static const int32_t NUM_TABLE_ROWS;
 
-    std::string m_tableName;
+    string_type m_tableName;
     HiddenVirtualColumnsDb* m_database;
 };
 
@@ -134,11 +130,11 @@ TEST_F(HiddenVirtualColumnsTest, readWithoutCondition)
 {
     HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
-    std::vector<HiddenVirtualColumnsTable::Row> writtenRows;
+    vector_type<HiddenVirtualColumnsTable::Row> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    std::vector<HiddenVirtualColumnsTable::Row> readRows;
+    vector_type<HiddenVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -149,12 +145,12 @@ TEST_F(HiddenVirtualColumnsTest, readWithCondition)
 {
     HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
-    std::vector<HiddenVirtualColumnsTable::Row> writtenRows;
+    vector_type<HiddenVirtualColumnsTable::Row> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
-    const std::string condition = "searchTags='Search Tags1'";
-    std::vector<HiddenVirtualColumnsTable::Row> readRows;
+    const string_type condition = "searchTags='Search Tags1'";
+    vector_type<HiddenVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader(condition);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -168,17 +164,17 @@ TEST_F(HiddenVirtualColumnsTest, update)
 {
     HiddenVirtualColumnsTable& testTable = m_database->getHiddenVirtualColumnsTable();
 
-    std::vector<HiddenVirtualColumnsTable::Row> writtenRows;
+    vector_type<HiddenVirtualColumnsTable::Row> writtenRows;
     fillHiddenVirtualColumnsTableRows(writtenRows);
     testTable.write(writtenRows);
 
     const int64_t updateDocId = 1;
     HiddenVirtualColumnsTable::Row updateRow;
     fillHiddenVirtualColumnsTableRow(updateRow, updateDocId, "Updated Search Tags");
-    const std::string updateCondition = "docId='" + zserio::convertToString(updateDocId) + "'";
+    const string_type updateCondition = "docId='" + zserio::toString<allocator_type>(updateDocId) + "'";
     testTable.update(updateRow, updateCondition);
 
-    std::vector<HiddenVirtualColumnsTable::Row> readRows;
+    vector_type<HiddenVirtualColumnsTable::Row> readRows;
     auto reader = testTable.createReader(updateCondition);
     while (reader.hasNext())
         readRows.push_back(reader.next());

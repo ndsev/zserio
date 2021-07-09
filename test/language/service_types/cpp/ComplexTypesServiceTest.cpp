@@ -6,10 +6,18 @@
 
 #include "service_types/complex_types_service/ComplexTypesService.h"
 
+#include "zserio/RebindAlloc.h"
+
+using namespace zserio::literals;
+
 namespace service_types
 {
 namespace complex_types_service
 {
+
+using allocator_type = ComplexTypesService::Client::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 namespace
 {
@@ -42,11 +50,12 @@ namespace
 class ComplexTypesServiceImpl : public ComplexTypesService::Service
 {
 public:
-    void swapModelsImpl(const Request& request, Response& response, void*) override
+    Response swapModelsImpl(const Request& request, void*) override
     {
         const RequestData& requestData = request.getData();
         const auto& data = requestData.getData();
 
+        Response response{get_allocator_ref()};
         response.setLength(static_cast<uint32_t>(data.size()));
 
         if (requestData.getModel() == ColorModel::RGB)
@@ -55,18 +64,19 @@ public:
             cmykToRgb(data, response);
 
         response.initializeChildren();
+        return response;
     }
 
-    void getLengthImpl(const Request& request, LengthResponse& response, void*) override
+    LengthResponse getLengthImpl(const Request& request, void*) override
     {
         const RequestData& requestData = request.getData();
-        response.setLength(static_cast<uint32_t>(requestData.getData().size()));
+        return LengthResponse(static_cast<uint32_t>(requestData.getData().size()), get_allocator_ref());
     }
 
 private:
-    void rgbToCmyk(const std::vector<ColorModelChoice>& data, Response& response)
+    void rgbToCmyk(const vector_type<ColorModelChoice>& data, Response& response)
     {
-        response.getData().setCmykData(std::vector<CMYKModel>());
+        response.getData().setCmykData(vector_type<CMYKModel>());
         auto& cmykData = response.getData().getCmykData();
         cmykData.resize(response.getLength());
         for (uint32_t i = 0; i < response.getLength(); ++i)
@@ -81,9 +91,9 @@ private:
         }
     }
 
-    void cmykToRgb(const std::vector<ColorModelChoice>& data, Response& response)
+    void cmykToRgb(const vector_type<ColorModelChoice>& data, Response& response)
     {
-        response.getData().setRgbData(std::vector<RGBModel>());
+        response.getData().setRgbData(vector_type<RGBModel>());
         auto& rgbData = response.getData().getRgbData();
         rgbData.resize(response.getLength());
         for (uint32_t i = 0; i < response.getLength(); ++i)
@@ -129,14 +139,14 @@ constexpr uint8_t ComplexTypesServiceTest::rgbValues[3][3];
 
 TEST_F(ComplexTypesServiceTest, serviceFullName)
 {
-    ASSERT_EQ(std::string("service_types.complex_types_service.ComplexTypesService"),
+    ASSERT_EQ("service_types.complex_types_service.ComplexTypesService"_sv,
             ComplexTypesService::Service::serviceFullName());
 }
 
 TEST_F(ComplexTypesServiceTest, methodNames)
 {
-    ASSERT_EQ(std::string("swapModels"), ComplexTypesService::Service::methodNames()[0]);
-    ASSERT_EQ(std::string("getLength"), ComplexTypesService::Service::methodNames()[1]);
+    ASSERT_EQ("swapModels"_sv, ComplexTypesService::Service::methodNames()[0]);
+    ASSERT_EQ("getLength"_sv, ComplexTypesService::Service::methodNames()[1]);
 }
 
 TEST_F(ComplexTypesServiceTest, rgbToCmyk)
@@ -158,12 +168,10 @@ TEST_F(ComplexTypesServiceTest, rgbToCmyk)
     }
     request.initializeChildren();
 
-    LengthResponse lengthResponse;
-    client.getLengthMethod(request, lengthResponse);
+    LengthResponse lengthResponse = client.getLengthMethod(request);
     ASSERT_EQ(length, lengthResponse.getLength());
 
-    Response response;
-    client.swapModelsMethod(request, response);
+    Response response = client.swapModelsMethod(request);
     ASSERT_EQ(length, response.getLength());
 
     const auto& cmykData = response.getData().getCmykData();
@@ -197,12 +205,10 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
     }
     request.initializeChildren();
 
-    LengthResponse lengthResponse;
-    client.getLengthMethod(request, lengthResponse);
+    LengthResponse lengthResponse = client.getLengthMethod(request);
     ASSERT_EQ(length, lengthResponse.getLength());
 
-    Response response;
-    client.swapModelsMethod(request, response);
+    Response response = client.swapModelsMethod(request);
     ASSERT_EQ(length, response.getLength());
 
     const auto& rgbData = response.getData().getRgbData();
@@ -217,8 +223,8 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
 
 TEST_F(ComplexTypesServiceTest, invalidServiceMethod)
 {
-    std::vector<uint8_t> responseData;
-    ASSERT_THROW(service.callMethod("nonexistentMethod", {}, responseData), zserio::ServiceException);
+    zserio::BlobBuffer<allocator_type> responseData;
+    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}, responseData), zserio::ServiceException);
 }
 
 } // namespace complex_types_service

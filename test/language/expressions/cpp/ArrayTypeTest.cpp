@@ -4,16 +4,22 @@
 
 #include "expressions/array_type/ArrayTypeExpression.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace expressions
 {
 namespace array_type
 {
 
+using allocator_type = ArrayTypeExpression::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
 TEST(ArrayTypeTest, bitSizeOfWithOptional)
 {
     ArrayTypeExpression arrayTypeExpression;
     const size_t arrayLength = 2;
-    std::vector<int8_t> array(arrayLength);
+    vector_type<int8_t> array(arrayLength);
     arrayTypeExpression.setArray(array);
     arrayTypeExpression.setIsZerosArrayValid(true);
 
@@ -25,7 +31,7 @@ TEST(ArrayTypeTest, bitSizeOfWithoutOptional)
 {
     ArrayTypeExpression arrayTypeExpression;
     const size_t arrayLength = 2;
-    std::vector<int8_t> array;
+    vector_type<int8_t> array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
         array.push_back(static_cast<int8_t>(i));

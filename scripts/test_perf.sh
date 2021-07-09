@@ -582,20 +582,24 @@ Arguments:
     generator               Specify the generator to test.
 
 Generator can be:
-    cpp-linux32             Generate C++ sources and compile them for linux32 target (GCC).
-    cpp-linux64             Generate C++ sources and compile them for for linux64 target (GCC).
+    cpp-linux32-gcc         Generate C++ sources and compile them for linux32 target (gcc).
+    cpp-linux64-gcc         Generate C++ sources and compile them for for linux64 target (gcc).
+    cpp-linux32-clang       Generate C++ sources and compile them for linux32 target (Clang).
+    cpp-linux64-clang       Generate C++ sources and compile them for for linux64 target (Clang).
     cpp-windows64-mingw     Generate C++ sources and compile them for for windows64 target (MinGW64).
     cpp-windows64-msvc      Generate C++ sources and compile them for for windows64 target (MSVC).
     java                    Generate Java sources and compile them.
     python                  Generate python sources.
-    all-linux32             Test all generators and compile all possible linux32 sources (GCC).
-    all-linux64             Test all generators and compile all possible linux64 sources (GCC).
+    all-linux32-gcc         Test all generators and compile all possible linux32 sources (gcc).
+    all-linux64-gcc         Test all generators and compile all possible linux64 sources (gcc).
+    all-linux32-clang       Test all generators and compile all possible linux32 sources (Clang).
+    all-linux64-clang       Test all generators and compile all possible linux64 sources (Clang).
     all-windows64-mingw     Test all generators and compile all possible windows64 sources (MinGW64).
     all-windows64-msvc      Test all generators and compile all possible windows64 sources (MSVC).
 
 Examples:
-    $0 cpp-linux64 java python -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
-    $0 all-linux64 -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
+    $0 cpp-linux64-gcc java python -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
+    $0 all-linux64-gcc -d /tmp/zs -s test.zs -b test.Blob -f blob.bin
 
 EOF
 }
@@ -760,7 +764,7 @@ parse_arguments()
     local PARAM
     for PARAM in "${PARAM_ARRAY[@]}" ; do
         case "${PARAM}" in
-            "cpp-linux32" | "cpp-linux64" | "cpp-windows64-"*)
+            "cpp-linux32-"* | "cpp-linux64-"* | "cpp-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#cpp-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 ;;
@@ -773,7 +777,7 @@ parse_arguments()
                 eval ${PARAM_PYTHON_OUT}=1
                 ;;
 
-            "all-linux32" | "all-linux64" | "all-windows64-"*)
+            "all-linux32-"* | "all-linux64-"* | "all-windows64-"*)
                 eval ${PARAM_CPP_TARGET_ARRAY_OUT}[${NUM_CPP_TARGETS}]="${PARAM#all-}"
                 NUM_CPP_TARGETS=$((NUM_CPP_TARGETS + 1))
                 eval ${PARAM_JAVA_OUT}=1

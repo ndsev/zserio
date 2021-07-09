@@ -6,10 +6,16 @@
 
 #include "sql_tables/TestDb.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace sql_tables
 {
 namespace dynamic_bit_field_enum_field_table
 {
+
+using allocator_type = TestDb::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class DynamicBitFieldEnumFieldTableTest : public ::testing::Test
 {
@@ -30,7 +36,7 @@ public:
 protected:
     static void fillRow(DynamicBitFieldEnumFieldTable::Row& row, size_t i)
     {
-        row.setId(static_cast<int32_t>(i));
+        row.setId(static_cast<uint32_t>(i));
         row.setEnumField(i % 3 == 0
                 ? TestEnum::ONE
                 : i % 3 == 1
@@ -38,7 +44,7 @@ protected:
                         : TestEnum::THREE);
     }
 
-    static void fillRows(std::vector<DynamicBitFieldEnumFieldTable::Row>& rows)
+    static void fillRows(vector_type<DynamicBitFieldEnumFieldTable::Row>& rows)
     {
         rows.clear();
         for (size_t i = 0; i < NUM_ROWS; ++i)
@@ -56,8 +62,8 @@ protected:
         ASSERT_EQ(row1.getEnumField(), row2.getEnumField());
     }
 
-    static void checkRows(const std::vector<DynamicBitFieldEnumFieldTable::Row>& rows1,
-            const std::vector<DynamicBitFieldEnumFieldTable::Row>& rows2)
+    static void checkRows(const vector_type<DynamicBitFieldEnumFieldTable::Row>& rows1,
+            const vector_type<DynamicBitFieldEnumFieldTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -77,11 +83,11 @@ TEST_F(DynamicBitFieldEnumFieldTableTest, readWithoutCondition)
 {
     DynamicBitFieldEnumFieldTable& table = m_database->getDynamicBitFieldEnumFieldTable();
 
-    std::vector<DynamicBitFieldEnumFieldTable::Row> rows;
+    vector_type<DynamicBitFieldEnumFieldTable::Row> rows;
     fillRows(rows);
     table.write(rows);
 
-    std::vector<DynamicBitFieldEnumFieldTable::Row> readRows;
+    vector_type<DynamicBitFieldEnumFieldTable::Row> readRows;
     auto reader = table.createReader();
     while (reader.hasNext())
         readRows.push_back(reader.next());

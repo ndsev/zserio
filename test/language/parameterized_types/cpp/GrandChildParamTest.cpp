@@ -36,6 +36,8 @@ protected:
         ASSERT_EQ(item.getExtraParam(), reader.readBits(32));
     }
 
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+
 private:
     static const bool     ITEM_CHOICE_HOLDER_HAS_ITEM;
     static const uint16_t ITEM_PARAM;
@@ -51,12 +53,10 @@ TEST_F(ParameterizedTypesGrandChildParamTest, write)
     GrandChildParam grandChildParam;
     fillGrandChildParam(grandChildParam);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     grandChildParam.write(writer);
 
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkGrandChildParamInBitStream(reader, grandChildParam);
     reader.setBitPosition(0);
 

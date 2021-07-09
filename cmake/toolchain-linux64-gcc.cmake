@@ -1,3 +1,7 @@
+# set gcc
+set(CMAKE_C_COMPILER gcc)
+set(CMAKE_CXX_COMPILER g++)
+
 # set -m64
 set(COMPILER_M64_FLAG "-m64")
 

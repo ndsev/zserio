@@ -4,67 +4,61 @@
 <@include_guard_begin package.path, name/>
 
 #include <array>
-#include <string>
-#include <vector>
-#include <map>
-#include <functional>
-#include "zserio/Types.h"
-#include "zserio/IService.h"
-#include "zserio/ServiceException.h"
+#include <zserio/Types.h>
+#include <zserio/IService.h>
+#include <zserio/AllocatorHolder.h>
+#include <zserio/ServiceException.h>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 <@namespace_begin [name]/>
 
-class Service : public ::zserio::IService
+class Service : public ::zserio::IService, public ::zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:
-    Service();
-    virtual ~Service() = default;
+    Service(const allocator_type& allocator = allocator_type());
+    virtual ~Service() override = default;
 
-    Service(const Service&) = default;
-    Service& operator=(const Service&) = default;
+    Service(const Service&) = delete;
+    Service& operator=(const Service&) = delete;
 
     Service(Service&&) = default;
-    Service& operator=(Service&&) = default;
+    Service& operator=(Service&&) = delete;
 
-    virtual void callMethod(const ::std::string& methodName, const ::std::vector<uint8_t>& requestData,
-            ::std::vector<uint8_t>& responseData, void* context = nullptr) override;
+    virtual void callMethod(::zserio::StringView methodName, ::zserio::Span<const uint8_t> requestData,
+            ::zserio::IBlobBuffer& responseData, void* context = nullptr) override;
 
-    static const char* serviceFullName() noexcept;
-    static const ::std::array<const char*, ${methodList?size}>& methodNames() noexcept;
+    static ::zserio::StringView serviceFullName() noexcept;
+    static const ::std::array<::zserio::StringView, ${methodList?size}>& methodNames() noexcept;
 
 private:
 <#if methodList?has_content>
 <#list methodList as method>
-    virtual void ${method.name}Impl(const ${method.requestTypeFullName}& request, <#rt>
-            <#lt>${method.responseTypeFullName}& response, void* context) = 0;
+    virtual ${method.responseTypeFullName} ${method.name}Impl(const ${method.requestTypeFullName}& request<#rt>
+            <#lt>, void* context) = 0;
 </#list>
 
 <#list methodList as method>
-    void ${method.name}Method(const ::std::vector<uint8_t>& requestData, ::std::vector<uint8_t>& responseData,
+    void ${method.name}Method(::zserio::Span<const uint8_t> requestData, ::zserio::IBlobBuffer& responseData,
             void* context);
 </#list>
-
 </#if>
-    using Method = ::std::function<void(const ::std::vector<uint8_t>&, ::std::vector<uint8_t>&, void*)>;
-    ::std::map<::std::string, Method> m_methodMap;
 };
 
-class Client
+class Client : public ::zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:
-    explicit Client(::zserio::IService& service);
+    explicit Client(::zserio::IService& service, const allocator_type& allocator = allocator_type());
     ~Client() = default;
 
-    Client(const Client&) = default;
-    Client& operator=(const Client&) = default;
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
 
     Client(Client&&) = default;
-    Client& operator=(Client&&) = default;
+    Client& operator=(Client&&) = delete;
 <#list methodList as method>
 
-    void ${method.name}Method(${method.requestTypeFullName}& request, <#rt>
-            <#lt>${method.responseTypeFullName}& response, void* context = nullptr);
+    ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName}& request, <#rt>
+            <#lt>void* context = nullptr);
 </#list>
 
 private:

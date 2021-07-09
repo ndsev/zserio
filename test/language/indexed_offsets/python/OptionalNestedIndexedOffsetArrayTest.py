@@ -91,7 +91,7 @@ class OptionalNestedIndexedOffsetArrayTest(unittest.TestCase):
 
     @staticmethod
     def _writeOptionalNestedIndexedOffsetArrayToStream(writer, length, writeWrongOffsets):
-        writer.write_signed_bits(length, 16)
+        writer.write_bits(length, 16)
 
         if length > 0:
             currentOffset = ELEMENT0_OFFSET

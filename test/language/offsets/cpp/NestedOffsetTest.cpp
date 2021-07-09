@@ -2,7 +2,6 @@
 
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/CppRuntimeException.h"
 
 #include "offsets/nested_offset/NestedOffset.h"
 
@@ -21,7 +20,7 @@ protected:
         // union's choice tag
         writer.writeVarSize(static_cast<uint32_t>(NestedOffsetUnion::CHOICE_nestedOffsetArrayStructure));
         writer.writeBits(NUM_ELEMENTS, 8);
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             writer.writeBits((writeWrongOffsets) ? WRONG_DATA_OFFSET : FIRST_DATA_OFFSET + i * 8, 32);
             writer.writeBits(0, (i == 0) ? 7 : 1);
@@ -47,13 +46,13 @@ protected:
                 nestedOffsetUnion.getNestedOffsetArrayStructure();
         ASSERT_EQ(NUM_ELEMENTS, nestedOffsetArrayStructure.getNumElements());
 
-        const std::vector<NestedOffsetStructure>& nestedOffsetStructureList =
+        const auto& nestedOffsetStructureList =
                 nestedOffsetArrayStructure.getNestedOffsetStructureList();
         ASSERT_EQ(NUM_ELEMENTS, nestedOffsetStructureList.size());
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             const NestedOffsetStructure& nestedOffsetStructure = nestedOffsetStructureList[i];
-            ASSERT_EQ(FIRST_DATA_OFFSET + i * 8L, nestedOffsetStructure.getDataOffset());
+            ASSERT_EQ(FIRST_DATA_OFFSET + i * 8, nestedOffsetStructure.getDataOffset());
             ASSERT_EQ(i, nestedOffsetStructure.getData());
         }
 
@@ -76,10 +75,10 @@ protected:
         NestedOffsetUnion nestedOffsetUnion;
         NestedOffsetArrayStructure nestedOffsetArrayStructure;
         nestedOffsetArrayStructure.setNumElements(NUM_ELEMENTS);
-        std::vector<NestedOffsetStructure>& nestedOffsetStructureList =
+        auto& nestedOffsetStructureList =
                 nestedOffsetArrayStructure.getNestedOffsetStructureList();
         nestedOffsetStructureList.reserve(NUM_ELEMENTS);
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        for (uint32_t i = 0; i < NUM_ELEMENTS; ++i)
         {
             const uint32_t dataOffset = (createWrongOffsets) ? WRONG_DATA_OFFSET : FIRST_DATA_OFFSET + i * 8;
             NestedOffsetStructure nestedOffsetStructure;
@@ -103,6 +102,8 @@ protected:
     static const uint8_t  TERMINATOR_VALUE;
 
     static const size_t   NESTED_OFFSET_BIT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const bool     NestedOffsetTest::BOOL_VALUE = true;
@@ -114,32 +115,30 @@ const uint32_t NestedOffsetTest::TERMINATOR_OFFSET = 7 + NUM_ELEMENTS * 8;
 const uint32_t NestedOffsetTest::WRONG_DATA_OFFSET = 0;
 const uint32_t NestedOffsetTest::FIRST_DATA_OFFSET = 7 + 4;
 
-const uint8_t  NestedOffsetTest::TERMINATOR_VALUE = 0x45;
+const uint8_t NestedOffsetTest::TERMINATOR_VALUE = 0x45;
 
-const size_t   NestedOffsetTest::NESTED_OFFSET_BIT_SIZE = TERMINATOR_OFFSET * 8 + 7;
+const size_t NestedOffsetTest::NESTED_OFFSET_BIT_SIZE = TERMINATOR_OFFSET * 8 + 7;
 
-TEST_F(NestedOffsetTest, read)
+TEST_F(NestedOffsetTest, readConstructor)
 {
     const bool writeWrongOffsets = false;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeNestedOffsetToByteArray(writer, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    ASSERT_EQ(NESTED_OFFSET_BIT_SIZE, writer.getBitPosition());
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     NestedOffset nestedOffset(reader);
     checkNestedOffset(nestedOffset);
 }
 
-TEST_F(NestedOffsetTest, readWrongOffsets)
+TEST_F(NestedOffsetTest, readConstructorWrongOffsets)
 {
     const bool writeWrongOffsets = true;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeNestedOffsetToByteArray(writer, writeWrongOffsets);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    ASSERT_EQ(NESTED_OFFSET_BIT_SIZE, writer.getBitPosition());
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     EXPECT_THROW(NestedOffset nestedOffset(reader), zserio::CppRuntimeException);
 }
 
@@ -193,14 +192,12 @@ TEST_F(NestedOffsetTest, write)
     NestedOffset nestedOffset;
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     nestedOffset.write(writer);
     ASSERT_EQ(NESTED_OFFSET_BIT_SIZE, writer.getBitPosition());
     checkNestedOffset(nestedOffset);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     NestedOffset readNestedOffset(reader);
     checkNestedOffset(readNestedOffset);
     ASSERT_TRUE(nestedOffset == readNestedOffset);
@@ -212,7 +209,7 @@ TEST_F(NestedOffsetTest, writeWithPosition)
     NestedOffset nestedOffset;
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
     writer.writeBits(0, bitPosition);
     nestedOffset.write(writer);
@@ -226,7 +223,7 @@ TEST_F(NestedOffsetTest, writeWrongOffsets)
     NestedOffset nestedOffset;
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(nestedOffset.write(writer, zserio::NO_PRE_WRITE_ACTION), zserio::CppRuntimeException);
 }
 

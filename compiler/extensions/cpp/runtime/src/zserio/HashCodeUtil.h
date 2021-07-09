@@ -4,17 +4,17 @@
 #include <type_traits>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "zserio/Types.h"
 #include "zserio/FloatUtil.h"
-#include "zserio/Arrays.h"
 #include "zserio/Enums.h"
 #include "zserio/OptionalHolder.h"
 
 namespace zserio
 {
-    static const int HASH_PRIME_NUMBER = 37; /**< Primer number for hash calculation. */
-    static const int HASH_SEED = 23; /** Initial seed for hash calculation. */
+    static const uint32_t HASH_PRIME_NUMBER = 37; /**< Primer number for hash calculation. */
+    static const uint32_t HASH_SEED = 23; /** Initial seed for hash calculation. */
 
     /**
      * Gets initial hash code calculated from the given seed value.
@@ -23,126 +23,39 @@ namespace zserio
      *
      * \return Hash code.
      */
-    inline int calcHashCodeFirstTerm(int seedValue)
+    inline uint32_t calcHashCodeFirstTerm(uint32_t seedValue)
     {
         return HASH_PRIME_NUMBER * seedValue;
     }
 
     /**
-     * Calculates hash code of the given bool value using the given seed value.
+     * Calculates hash code of the given integral value using the given seed value.
      *
      * \param seedValue Seed value (current hash code).
      * \param value Value for which to calculate the hash code.
      *
      * \return Calculated hash code.
      */
-    inline int calcHashCode(int seedValue, bool value)
+    template<typename T>
+    inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) <= 4), uint32_t>::type
+            calcHashCode(uint32_t seedValue, T value)
     {
-        return calcHashCodeFirstTerm(seedValue) + (value ? 1 : 0);
+        return calcHashCodeFirstTerm(seedValue) + static_cast<uint32_t>(value);
     }
 
     /**
-     * Calculates hash code of the given uint8_t value using the given seed value.
+     * Calculates hash code of the given integral value using the given seed value.
      *
      * \param seedValue Seed value (current hash code).
      * \param value Value for which to calculate the hash code.
      *
      * \return Calculated hash code.
      */
-    inline int calcHashCode(int seedValue, uint8_t value)
+    template<typename T>
+    inline typename std::enable_if<std::is_integral<T>::value && (sizeof(T) > 4), uint32_t>::type
+            calcHashCode(uint32_t seedValue, T value)
     {
-        return calcHashCodeFirstTerm(seedValue) + static_cast<int>(value);
-    }
-
-    /**
-     * Calculates hash code of the given uint16_t value using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, uint16_t value)
-    {
-        return calcHashCodeFirstTerm(seedValue) + static_cast<int>(value);
-    }
-
-    /**
-     * Calculates hash code of the given uint32_t value using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, uint32_t value)
-    {
-        return calcHashCodeFirstTerm(seedValue) + static_cast<int>(value);
-    }
-
-    /**
-     * Calculates hash code of the given uint64_t value using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, uint64_t value)
-    {
-        return calcHashCodeFirstTerm(seedValue) + static_cast<int>(value ^ (value >> 32));
-    }
-
-    /**
-     * Calculates hash code of the given int8_t value using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, int8_t value)
-    {
-        return calcHashCodeFirstTerm(seedValue) + static_cast<int>(value);
-    }
-
-    /**
-     * Calculates hash code of the given int16_t value using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, int16_t value)
-    {
-        return calcHashCodeFirstTerm(seedValue) + static_cast<int>(value);
-    }
-
-    /**
-     * Calculates hash code of the given int32_t value using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, int32_t value)
-    {
-        return calcHashCodeFirstTerm(seedValue) + value;
-    }
-
-    /**
-     * Calculates hash code of the given int64_t value using the given seed value.
-     *
-     * \param seedValue Seed value (current hash code).
-     * \param value Value for which to calculate the hash code.
-     *
-     * \return Calculated hash code.
-     */
-    inline int calcHashCode(int seedValue, int64_t value)
-    {
-        return calcHashCode(seedValue, static_cast<uint64_t>(value));
+        return calcHashCodeFirstTerm(seedValue) + static_cast<uint32_t>(value ^ (value >> 32));
     }
 
     /**
@@ -153,7 +66,7 @@ namespace zserio
      *
      * \return Calculated hash code.
      */
-    inline int calcHashCode(int seedValue, float value)
+    inline uint32_t calcHashCode(uint32_t seedValue, float value)
     {
         return calcHashCode(seedValue, convertFloatToUInt32(value));
     }
@@ -166,7 +79,7 @@ namespace zserio
      *
      * \return Calculated hash code.
      */
-    inline int calcHashCode(int seedValue, double value)
+    inline uint32_t calcHashCode(uint32_t seedValue, double value)
     {
         return calcHashCode(seedValue, convertDoubleToUInt64(value));
     }
@@ -179,10 +92,12 @@ namespace zserio
      *
      * \return Calculated hash code.
      */
-    inline int calcHashCode(int seedValue, const std::string& stringValue)
+    template <typename ALLOC>
+    inline uint32_t calcHashCode(uint32_t seedValue,
+            const std::basic_string<char, std::char_traits<char>, ALLOC>& stringValue)
     {
-        int result = seedValue;
-        for (std::string::value_type element : stringValue)
+        uint32_t result = seedValue;
+        for (typename std::basic_string<char, std::char_traits<char>, ALLOC>::value_type element : stringValue)
             result = calcHashCode(result, element);
 
         return result;
@@ -197,8 +112,8 @@ namespace zserio
      * \return Calculated hash code.
      */
     template <typename ENUM_TYPE>
-    inline typename std::enable_if<std::is_enum<ENUM_TYPE>::value, int>::type calcHashCode(int seedValue,
-            ENUM_TYPE enumValue)
+    inline typename std::enable_if<std::is_enum<ENUM_TYPE>::value, uint32_t>::type calcHashCode(
+            uint32_t seedValue, ENUM_TYPE enumValue)
     {
         return calcHashCode(seedValue, enumToValue(enumValue));
     }
@@ -212,7 +127,8 @@ namespace zserio
      * \return Calculated hash code.
      */
     template <typename OBJECT>
-    inline typename std::enable_if<!std::is_enum<OBJECT>::value, int>::type calcHashCode(int seedValue,
+    inline typename std::enable_if<!std::is_enum<OBJECT>::value && !std::is_integral<OBJECT>::value, uint32_t>::type
+        calcHashCode(uint32_t seedValue,
             const OBJECT& object)
     {
         return calcHashCode(seedValue, object.hashCode());
@@ -226,10 +142,10 @@ namespace zserio
      *
      * \return Calculated hash code.
      */
-    template <typename ARRAY_ELEMENT>
-    inline int calcHashCode(int seedValue, const std::vector<ARRAY_ELEMENT>& array)
+    template <typename ARRAY_ELEMENT, typename ALLOC>
+    inline uint32_t calcHashCode(uint32_t seedValue, const std::vector<ARRAY_ELEMENT, ALLOC>& array)
     {
-        int result = seedValue;
+        uint32_t result = seedValue;
         for (const ARRAY_ELEMENT& element : array)
             result = calcHashCode(result, element);
 
@@ -247,13 +163,31 @@ namespace zserio
      * \return Calculated hash code.
      */
     template <typename FIELD>
-    inline int calcHashCode(int seedValue, const OptionalHolder<FIELD>& optionalHolder)
+    inline uint32_t calcHashCode(uint32_t seedValue, const InplaceOptionalHolder<FIELD>& optionalHolder)
     {
         if (!optionalHolder)
             return calcHashCode(seedValue, 0);
 
         return calcHashCode(seedValue, *optionalHolder);
     }
+
+    /**
+     * Calculates hash code of the given Zserio optional field using the given seed value.
+     *
+     * \param seedValue Seed value (current hash code).
+     * \param optionalHolder Optional field for which to calculate the hash code.
+     *
+     * \return Calculated hash code.
+     */
+    template <typename FIELD, typename ALLOC>
+    inline uint32_t calcHashCode(uint32_t seedValue, const HeapOptionalHolder<FIELD, ALLOC>& optionalHolder)
+    {
+        if (!optionalHolder)
+            return calcHashCode(seedValue, 0);
+
+        return calcHashCode(seedValue, *optionalHolder);
+    }
+
 } // namespace zserio
 
 #endif // ZSERIO_HASH_CODE_UTIL_H_INC

@@ -50,7 +50,7 @@ public class VirtualTableValidationTest
     public void validation() throws SQLException, ZserioError
     {
         final ValidationReport report = database.validate();
-        assertEquals(1, report.getNumberOfValidatedTables());
+        assertEquals(2, report.getNumberOfValidatedTables());
         assertEquals(0, report.getNumberOfValidatedRows());
         assertTrue(report.getTotalParameterProviderTime() <= report.getTotalValidationTime());
         assertTrue(report.getErrors().isEmpty());

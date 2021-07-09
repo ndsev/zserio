@@ -26,6 +26,20 @@ private:
 
 const size_t BitStreamReaderTest::BUFFER_SIZE;
 
+TEST_F(BitStreamReaderTest, spanConstructor)
+{
+    const uint8_t data[] = {0xAE, 0xEA, 0x80};
+    const Span<const uint8_t> span(data);
+    BitStreamReader reader(span);
+
+    ASSERT_EQ(span.size() * 8, reader.getBufferBitSize());
+    ASSERT_EQ(0xAEE, reader.readBits(12));
+    ASSERT_EQ(0xA, reader.readBits(4));
+    ASSERT_EQ(0x80, reader.readBits(8));
+
+    ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+}
+
 TEST_F(BitStreamReaderTest, bitBufferConstructor)
 {
     BitBuffer bitBuffer(17);
@@ -36,10 +50,13 @@ TEST_F(BitStreamReaderTest, bitBufferConstructor)
 
     ASSERT_EQ(bitBuffer.getBitSize(), reader.getBufferBitSize());
     ASSERT_EQ(0xAEE, reader.readBits(12));
-    ASSERT_EQ(0x0A, reader.readBits(4));
-    ASSERT_EQ(0x01, reader.readBits(1));
+    ASSERT_EQ(0xA, reader.readBits(4));
+    ASSERT_EQ(1, reader.readBits(1));
 
     ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+
+    ASSERT_THROW(BitStreamReader(nullptr, std::numeric_limits<size_t>::max() / 8),
+                 CppRuntimeException);
 }
 
 TEST_F(BitStreamReaderTest, bitBufferConstructorOverflow)
@@ -59,25 +76,25 @@ TEST_F(BitStreamReaderTest, readUnalignedData)
     // number expected to read at offset
     const uint8_t testValue = 123;
 
-    for (int offset = 0; offset <= 64; ++offset)
+    for (uint8_t offset = 0; offset <= 64; ++offset)
     {
         BitBuffer buffer(8 + offset);
 
         // write test value at offset to data buffer
-        buffer.getBuffer()[offset / 8] = testValue >> (offset % 8);
+        buffer.getBuffer()[offset / 8] |= testValue >> (offset % 8);
         if (offset % 8 != 0) // don't write behind the buffer
-            buffer.getBuffer()[offset / 8 + 1] = testValue << (8 - (offset % 8));
+            buffer.getBuffer()[offset / 8 + 1] |= static_cast<uint8_t>(testValue << (8 - (offset % 8)));
 
         BitStreamReader reader(buffer);
 
         // read offset bits
-        ASSERT_EQ(0u, reader.readBits64(offset));
+        ASSERT_EQ(0, reader.readBits64(offset));
 
         // read magic number
         ASSERT_EQ(testValue, reader.readBits(8)) << "Offset: " << offset;
 
         // check eof
-        ASSERT_THROW(reader.readBits(1), CppRuntimeException);
+        ASSERT_THROW(reader.readBits(1), CppRuntimeException) << "Offset: " << offset;
     }
 }
 

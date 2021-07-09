@@ -116,7 +116,7 @@ uint16_t convertFloatToUInt16(float float32)
     {
         // normal number
         const int16_t signedExponent16 = static_cast<int16_t>(static_cast<int32_t>(exponent32) -
-                FLOAT32_EXPONENT_BIAS + FLOAT16_EXPONENT_BIAS);
+                static_cast<int32_t>(FLOAT32_EXPONENT_BIAS) + static_cast<int32_t>(FLOAT16_EXPONENT_BIAS));
         if (signedExponent16 > FLOAT16_EXPONENT_INFINITY_NAN)
         {
             // exponent overflow, set infinity or NaN
@@ -156,7 +156,7 @@ uint16_t convertFloatToUInt16(float float32)
     // compose half precision float (float16)
     const uint16_t sign16Shifted = static_cast<uint16_t>(sign32Shifted >> (FLOAT32_SIGN_BIT_POSITION -
             FLOAT16_SIGN_BIT_POSITION));
-    const uint16_t exponent16Shifted = exponent16 << FLOAT16_EXPONENT_BIT_POSITION;
+    const uint16_t exponent16Shifted = static_cast<uint16_t>(exponent16 << FLOAT16_EXPONENT_BIT_POSITION);
     uint16_t float16Value = sign16Shifted | exponent16Shifted | significand16;
 
     // check rounding

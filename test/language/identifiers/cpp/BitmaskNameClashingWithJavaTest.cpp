@@ -33,7 +33,7 @@ TEST_F(BitmaskNameClashingWithJavaTest, bitSizeOf)
 TEST_F(BitmaskNameClashingWithJavaTest, toStringMethod)
 {
     BitmaskNameClashingWithJava bitmaskNameClashingWithJava{String::Values::READ};
-    ASSERT_EQ(std::string{"1[READ]"}, bitmaskNameClashingWithJava.getStringField().toString());
+    ASSERT_EQ(std::string{"1[READ]"}, bitmaskNameClashingWithJava.getStringField().toString().c_str());
 }
 
 } // namespace bitmask_name_clashing_with_java

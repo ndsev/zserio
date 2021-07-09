@@ -20,6 +20,8 @@ protected:
     static const Permission::underlying_type NONE_VALUE;
     static const Permission::underlying_type READ_VALUE;
     static const Permission::underlying_type WRITE_VALUE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const Permission::underlying_type VarUIntBitmaskTest::NONE_VALUE = 0;
@@ -46,12 +48,10 @@ TEST_F(VarUIntBitmaskTest, underlyingTypeConstructor)
 
 TEST_F(VarUIntBitmaskTest, readConstructor)
 {
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeVarUInt(WRITE_VALUE);
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Permission permission(reader);
     ASSERT_EQ(WRITE_VALUE, permission.getValue());
 }
@@ -130,40 +130,25 @@ TEST_F(VarUIntBitmaskTest, hashCode)
     ASSERT_NE(writePermission.hashCode(), Permission(Permission::Values::NONE).hashCode());
 }
 
-TEST_F(VarUIntBitmaskTest, read)
-{
-    zserio::BitStreamWriter writer;
-    writer.writeVarUInt(READ_VALUE);
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
-
-    Permission permission;
-    permission.read(reader);
-    ASSERT_EQ(READ_VALUE, permission.getValue());
-}
-
 TEST_F(VarUIntBitmaskTest, write)
 {
     const Permission permission(Permission::Values::READ);
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     permission.write(writer);
 
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ASSERT_EQ(READ_VALUE, reader.readVarUInt());
 }
 
 TEST_F(VarUIntBitmaskTest, toString)
 {
-    ASSERT_EQ(std::string("0[NONE]"), Permission(Permission::Values::NONE).toString());
-    ASSERT_EQ(std::string("2[READ]"), Permission(Permission::Values::READ).toString());
-    ASSERT_EQ(std::string("4[WRITE]"), Permission(Permission::Values::WRITE).toString());
+    ASSERT_EQ(std::string("0[NONE]"), Permission(Permission::Values::NONE).toString().c_str());
+    ASSERT_EQ(std::string("2[READ]"), Permission(Permission::Values::READ).toString().c_str());
+    ASSERT_EQ(std::string("4[WRITE]"), Permission(Permission::Values::WRITE).toString().c_str());
     ASSERT_EQ(std::string("6[READ | WRITE]"),
-            (Permission::Values::READ | Permission::Values::WRITE).toString());
-    ASSERT_EQ(std::string("7[READ | WRITE]"), Permission(7).toString());
-    ASSERT_EQ(std::string("255[READ | WRITE]"), Permission(255).toString());
+            (Permission::Values::READ | Permission::Values::WRITE).toString().c_str());
+    ASSERT_EQ(std::string("7[READ | WRITE]"), Permission(7).toString().c_str());
+    ASSERT_EQ(std::string("255[READ | WRITE]"), Permission(255).toString().c_str());
 }
 
 TEST_F(VarUIntBitmaskTest, operatorEquality)

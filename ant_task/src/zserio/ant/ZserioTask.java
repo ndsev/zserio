@@ -2,6 +2,7 @@ package zserio.ant;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -26,7 +27,7 @@ import org.apache.tools.ant.types.Path;
  *
  * Supported syntax:
  *
- * <zserio srcPath="src/path" srcFile="zs/all.zs" ignoreError="true">
+ * <zserio srcPath="src/path" srcFile="zs/all.zs" ignoreError="true" extraArgs="-option1 -option2">
  *     <arg name="cmdlineOption" value="value"/>
  *     <arg name="anotherOption"/>
  *     <classpath>
@@ -44,6 +45,9 @@ import org.apache.tools.ant.types.Path;
  *
  * ignoreError="true"
  * Do not report Zserio compilation error to Ant. Default is false.
+ *
+ * extraArgs="-option1 -option2"
+ * Extra zserio options in the same format as given by command line.
  *
  * The options "srcPath" and "srcFile" are required. All the others are optional and can occur in any
  * combination.
@@ -78,6 +82,11 @@ public class ZserioTask extends Task
     public void setIgnoreError(boolean ignoreError)
     {
         this.ignoreError = ignoreError;
+    }
+
+    public void setExtraArgs(String extraArgs)
+    {
+        this.extraArgs = extraArgs;
     }
 
     public void addClasspath(Path classpath)
@@ -129,6 +138,9 @@ public class ZserioTask extends Task
             }
         }
 
+        if (!extraArgs.isEmpty())
+            argsList.addAll(Arrays.asList(extraArgs.split(" ")));
+
         String [] args = new String[argsList.size()];
         argsList.toArray(args);
 
@@ -139,6 +151,7 @@ public class ZserioTask extends Task
     private File    srcPath = null;
 
     private boolean ignoreError = false;
+    private String  extraArgs = null;
 
     private Vector<Path>        classpath = new Vector<Path>();
     private Vector<Argument>    arguments = new Vector<Argument>();

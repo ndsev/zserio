@@ -13,4 +13,11 @@
             <Method name="executeUpdate"/>
         </Or>
     </Match>
+    <Match>
+        <!-- Full range check is useless in validation code -->
+        <Bug code="UC"/>
+        <Or>
+            <Method name="validateFieldFullVarSigned"/>
+        </Or>
+    </Match>
 </FindBugsFilter>

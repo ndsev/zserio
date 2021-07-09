@@ -27,12 +27,11 @@ TEST_F(ReaderTest, readWrite)
         test.getParameterizedArray().emplace_back(i);
     }
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     test.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ::reader::Test readTest(reader);
 
     ASSERT_EQ(ARRAY_SIZE, readTest.getArray().size());

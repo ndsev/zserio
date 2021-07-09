@@ -617,8 +617,11 @@ ${I}                (${parameter.javaTypeFullName})(${parameter.expression})<#rt
                     </#if>
                 </#if>
                 <#if field.enumData??>
-            row.set${field.name?cap_first}(${field.javaTypeFullName}.toEnum(
-                    (${field.enumData.baseJavaTypeFullName})value));
+            row.set${field.name?cap_first}(
+                    ${field.javaTypeFullName}.toEnum((${field.enumData.baseJavaTypeFullName})value));
+                <#elseif field.bitmaskData??>
+            row.set${field.name?cap_first}(
+                    new ${field.javaTypeFullName}((${field.bitmaskData.baseJavaTypeFullName})value));
                 <#elseif field.requiresBigInt>
             row.set${field.name?cap_first}(java.math.BigInteger.valueOf(value));
                 <#elseif field.rangeCheckData.sqlRangeData??>

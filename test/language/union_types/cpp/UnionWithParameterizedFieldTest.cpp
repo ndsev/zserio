@@ -11,7 +11,23 @@ namespace union_types
 namespace union_with_parameterized_field
 {
 
-TEST(UnionWithParameterizedFieldTest, emptyConstructor)
+using allocator_type = TestUnion::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
+class UnionWithParameterizedFieldTest : public ::testing::Test
+{
+protected:
+    static constexpr size_t FIELD_BITSIZE = 8 + 32;
+    static constexpr size_t ARRAY_HOLDER_BITSIZE = 8 + 10 * 32;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+};
+
+constexpr size_t UnionWithParameterizedFieldTest::FIELD_BITSIZE;
+constexpr size_t UnionWithParameterizedFieldTest::ARRAY_HOLDER_BITSIZE;
+
+TEST_F(UnionWithParameterizedFieldTest, emptyConstructor)
 {
     TestUnion testUnion;
     ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
@@ -23,7 +39,7 @@ TEST(UnionWithParameterizedFieldTest, emptyConstructor)
     ASSERT_EQ(10, testUnion.getArrayHolder().getSize());
 }
 
-TEST(UnionWithParameterizedFieldTest, fieldConstructor)
+TEST_F(UnionWithParameterizedFieldTest, fieldConstructor)
 {
     TestUnion testUnion(ArrayHolder{});
     ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
@@ -32,21 +48,19 @@ TEST(UnionWithParameterizedFieldTest, fieldConstructor)
     ASSERT_EQ(10, testUnion.getArrayHolder().getSize());
 }
 
-TEST(UnionWithParameterizedFieldTest, readerConstructor)
+TEST_F(UnionWithParameterizedFieldTest, readerConstructor)
 {
-    TestUnion testUnion(ArrayHolder{std::vector<uint32_t>(10)});
+    TestUnion testUnion(ArrayHolder{vector_type<uint32_t>(10)});
     testUnion.initializeChildren();
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     testUnion.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     TestUnion readTestUnion(reader);
     ASSERT_EQ(10, readTestUnion.getArrayHolder().getSize());
 }
 
-TEST(UnionWithParameterizedFieldTest, copyConstructor)
+TEST_F(UnionWithParameterizedFieldTest, copyConstructor)
 {
     TestUnion testUnion(ArrayHolder{});
     {
@@ -61,7 +75,7 @@ TEST(UnionWithParameterizedFieldTest, copyConstructor)
     }
 }
 
-TEST(UnionWithParameterizedFieldTest, assignmentOperator)
+TEST_F(UnionWithParameterizedFieldTest, assignmentOperator)
 {
     TestUnion testUnion(ArrayHolder{});
     {
@@ -78,7 +92,7 @@ TEST(UnionWithParameterizedFieldTest, assignmentOperator)
     }
 }
 
-TEST(UnionWithParameterizedFieldTest, moveConstructor)
+TEST_F(UnionWithParameterizedFieldTest, moveConstructor)
 {
     {
         TestUnion testUnion(ArrayHolder{});
@@ -94,7 +108,7 @@ TEST(UnionWithParameterizedFieldTest, moveConstructor)
     }
 }
 
-TEST(UnionWithParameterizedFieldTest, moveAssignmentOperator)
+TEST_F(UnionWithParameterizedFieldTest, moveAssignmentOperator)
 {
     {
         TestUnion testUnion(ArrayHolder{});
@@ -109,6 +123,147 @@ TEST(UnionWithParameterizedFieldTest, moveAssignmentOperator)
         TestUnion testUnionMoved;
         testUnionMoved = std::move(testUnion);
         ASSERT_EQ(10, testUnionMoved.getArrayHolder().getSize());
+    }
+}
+
+TEST_F(UnionWithParameterizedFieldTest, propagateAllocatorCopyConstructor)
+{
+    TestUnion testUnion(ArrayHolder{});
+    {
+        TestUnion testUnionCopy(zserio::PropagateAllocator, testUnion, TestUnion::allocator_type());
+        ASSERT_THROW(testUnionCopy.getArrayHolder().getSize(), zserio::CppRuntimeException);
+    }
+
+    testUnion.initializeChildren();
+    {
+        TestUnion testUnionCopy(zserio::PropagateAllocator, testUnion, TestUnion::allocator_type());
+        ASSERT_EQ(10, testUnionCopy.getArrayHolder().getSize());
+    }
+}
+
+TEST_F(UnionWithParameterizedFieldTest, choiceTag)
+{
+    TestUnion testUnion;
+    ASSERT_EQ(TestUnion::UNDEFINED_CHOICE, testUnion.choiceTag());
+
+    testUnion.setField(33);
+    ASSERT_EQ(TestUnion::CHOICE_field, testUnion.choiceTag());
+
+    testUnion.setArrayHolder(ArrayHolder{});
+    ASSERT_EQ(TestUnion::CHOICE_arrayHolder, testUnion.choiceTag());
+}
+
+TEST_F(UnionWithParameterizedFieldTest, field)
+{
+    TestUnion testUnion;
+    testUnion.setField(33);
+    ASSERT_EQ(33, testUnion.getField());
+}
+
+TEST_F(UnionWithParameterizedFieldTest, arrayHolder)
+{
+    TestUnion testUnion;
+    ArrayHolder arrayHolder{vector_type<uint32_t>(10)};
+    arrayHolder.initialize(10);
+    void* ptr = &(arrayHolder.getArray()[0]);
+    testUnion.setArrayHolder(arrayHolder);
+    ASSERT_NE(ptr, &testUnion.getArrayHolder().getArray()[0]);
+    ASSERT_EQ(arrayHolder, testUnion.getArrayHolder());
+
+    testUnion.setArrayHolder(std::move(arrayHolder));
+    ASSERT_EQ(ptr, &testUnion.getArrayHolder().getArray()[0]);
+}
+
+TEST_F(UnionWithParameterizedFieldTest, bitSizeOf)
+{
+    TestUnion testUnion;
+
+    testUnion.setField(33);
+    ASSERT_EQ(FIELD_BITSIZE, testUnion.bitSizeOf());
+
+    testUnion.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+    testUnion.initializeChildren();
+    ASSERT_EQ(ARRAY_HOLDER_BITSIZE, testUnion.bitSizeOf());
+}
+
+TEST_F(UnionWithParameterizedFieldTest, initializeOffsets)
+{
+    const size_t bitPosition = 1;
+    {
+        TestUnion testUnion;
+        testUnion.setField(33);
+        ASSERT_EQ(bitPosition + FIELD_BITSIZE, testUnion.initializeOffsets(bitPosition));
+    }
+
+    {
+        TestUnion testUnion;
+        testUnion.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+        testUnion.initializeChildren();
+        ASSERT_EQ(bitPosition + ARRAY_HOLDER_BITSIZE, testUnion.initializeOffsets(bitPosition));
+    }
+}
+
+TEST_F(UnionWithParameterizedFieldTest, operatorEquality)
+{
+    TestUnion testUnion1;
+    TestUnion testUnion2;
+    ASSERT_TRUE(testUnion1 == testUnion2);
+    testUnion1.setField(33);
+    ASSERT_FALSE(testUnion1 == testUnion2);
+    testUnion2.setField(33);
+    ASSERT_TRUE(testUnion1 == testUnion2);
+    testUnion2.setField(32);
+    ASSERT_FALSE(testUnion1 == testUnion2);
+    testUnion2.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+    testUnion2.initializeChildren();
+    ASSERT_FALSE(testUnion1 == testUnion2);
+    testUnion1.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+    ASSERT_THROW(testUnion1.operator==(testUnion2), zserio::CppRuntimeException);
+    testUnion1.initializeChildren();
+    ASSERT_TRUE(testUnion1 == testUnion2);
+}
+
+TEST_F(UnionWithParameterizedFieldTest, hashCode)
+{
+    TestUnion testUnion1;
+    TestUnion testUnion2;
+    ASSERT_EQ(testUnion1.hashCode(), testUnion2.hashCode());
+    testUnion1.setField(33);
+    ASSERT_NE(testUnion1.hashCode(), testUnion2.hashCode());
+    testUnion2.setField(33);
+    ASSERT_EQ(testUnion1.hashCode(), testUnion2.hashCode());
+    testUnion2.setField(32);
+    ASSERT_NE(testUnion1.hashCode(), testUnion2.hashCode());
+    testUnion2.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+    testUnion2.initializeChildren();
+    ASSERT_NE(testUnion1.hashCode(), testUnion2.hashCode());
+    testUnion1.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+    ASSERT_THROW(testUnion1.hashCode(), zserio::CppRuntimeException);
+    testUnion1.initializeChildren();
+    ASSERT_EQ(testUnion1.hashCode(), testUnion2.hashCode());
+}
+
+TEST_F(UnionWithParameterizedFieldTest, write)
+{
+    {
+        TestUnion testUnion(static_cast<uint32_t>(33));
+        zserio::BitStreamWriter writer(bitBuffer);
+        testUnion.write(writer);
+        ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+        TestUnion readTestUnion(reader);
+        ASSERT_EQ(testUnion, readTestUnion);
+    }
+    {
+        TestUnion testUnion(ArrayHolder{vector_type<uint32_t>(10)});
+        zserio::BitStreamWriter writer(bitBuffer);
+        testUnion.write(writer);
+        ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+        TestUnion readTestUnion(reader);
+        ASSERT_EQ(testUnion, readTestUnion);
     }
 }
 

@@ -41,23 +41,17 @@ TEST_F(FunctionsStructureParamTest, checkMetresConverterCaller)
     const uint16_t expectedCm = CONVERTED_CM_VALUE;
     ASSERT_EQ(expectedCm, metresConverterCaller.getCm());
 
-    zserio::BitStreamWriter writtenWriter;
+    zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writtenWriter(writtenBitBuffer);
     metresConverterCaller.write(writtenWriter);
-    size_t writtenWriterBufferByteSize;
-    const uint8_t* writtenWriterBuffer = writtenWriter.getWriteBuffer(writtenWriterBufferByteSize);
 
-    zserio::BitStreamWriter expectedWriter;
+    zserio::BitBuffer expectedBitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter expectedWriter(expectedBitBuffer);
     writeMetresConverterCallerToByteArray(expectedWriter);
-    size_t expectedWriterBufferByteSize;
-    const uint8_t* expectedWriterBuffer = expectedWriter.getWriteBuffer(expectedWriterBufferByteSize);
 
-    std::vector<uint8_t> writtenWriterVector(writtenWriterBuffer,
-                                             writtenWriterBuffer + writtenWriterBufferByteSize);
-    std::vector<uint8_t> expectedWriterVector(expectedWriterBuffer,
-                                              expectedWriterBuffer + expectedWriterBufferByteSize);
-    ASSERT_EQ(expectedWriterVector, writtenWriterVector);
+    ASSERT_EQ(expectedBitBuffer, writtenBitBuffer);
 
-    zserio::BitStreamReader reader(writtenWriterBuffer, writtenWriterBufferByteSize);
+    zserio::BitStreamReader reader(writtenBitBuffer);
     const MetresConverterCaller readMetresConverterCaller(reader);
     ASSERT_EQ(metresConverterCaller, readMetresConverterCaller);
 }

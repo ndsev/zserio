@@ -11,14 +11,10 @@ function(gtest_add_library GTEST_ROOT)
         set(gtest_disable_pthreads ON CACHE BOOL "disable pthreads in gtest")
     endif ()
 
-    # remove strict warnings
-    compiler_reset_warnings()
-    compiler_reset_warnings_as_errors()
-
     # include google test framework
     option(BUILD_GMOCK "" OFF)
     option(INSTALL_GTEST "" OFF)
-    add_subdirectory(${GTEST_ROOT} googletest)
+    add_subdirectory(${GTEST_ROOT} googletest EXCLUDE_FROM_ALL)
 
     # override googletest hardcoded output bin and lib settings
     set_target_properties(gtest
@@ -55,16 +51,15 @@ function(gtest_add_tests executable extra_args)
 
             # Parameterized tests have a different signature for the filter
             if ("x${test_type}" STREQUAL "xTEST_P")
-                string(REGEX REPLACE ${gtest_case_name_regex}  "*/\\1.\\2/*" test_name ${hit})
+              string(REGEX REPLACE ${gtest_case_name_regex}  "*/\\1.\\2/*" test_name ${hit})
             elseif ("x${test_type}" STREQUAL "xTEST_F" OR "x${test_type}" STREQUAL "xTEST")
-                string(REGEX REPLACE ${gtest_case_name_regex} "\\1.\\2" test_name ${hit})
+              string(REGEX REPLACE ${gtest_case_name_regex} "\\1.\\2" test_name ${hit})
             elseif ("x${test_type}" STREQUAL "xTYPED_TEST")
-                string(REGEX REPLACE ${gtest_case_name_regex} "\\1/*.\\2" test_name ${hit})
+              string(REGEX REPLACE ${gtest_case_name_regex} "\\1/*.\\2" test_name ${hit})
             else ()
-                message(WARNING "Could not parse GTest ${hit} for adding to CTest.")
-                continue()
+              message(WARNING "Could not parse GTest ${hit} for adding to CTest.")
+              continue()
             endif ()
-
             add_test(NAME ${test_name} COMMAND ${executable} --gtest_filter=${test_name} ${extra_args})
 
             # Add labels automatically - relative path from current source dir to the source file

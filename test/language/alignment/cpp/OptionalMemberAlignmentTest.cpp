@@ -42,7 +42,7 @@ protected:
             ASSERT_FALSE(optionalMemberAlignment.isOptionalFieldUsed());
         }
 
-        ASSERT_EQ(field, (int)optionalMemberAlignment.getField());
+        ASSERT_EQ(field, optionalMemberAlignment.getField());
     }
 
     void fillOptionalMemberAlignment(OptionalMemberAlignment& optionalMemberAlignment, bool hasOptional,
@@ -56,6 +56,7 @@ protected:
 
     static const size_t WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
     static const size_t WITHOUT_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const size_t OptionalMemberAlignmentTest::WITH_OPTIONAL_MEMBER_ALIGNMENT_BIT_SIZE = 96;
@@ -66,12 +67,10 @@ TEST_F(OptionalMemberAlignmentTest, readWithOptional)
     const bool hasOptional = true;
     const int32_t optionalField = 0x1234;
     const int32_t field = 0x7654;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeOptionalMemberAlignmentToByteArray(writer, hasOptional, optionalField, field);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberAlignment optionalMemberAlignment(reader);
     checkOptionalMemberAlignment(optionalMemberAlignment, hasOptional, optionalField, field);
 }
@@ -81,12 +80,10 @@ TEST_F(OptionalMemberAlignmentTest, readWithoutOptional)
     const bool hasOptional = false;
     const int32_t optionalField = 0;
     const int32_t field = 0x2222;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeOptionalMemberAlignmentToByteArray(writer, hasOptional, optionalField, field);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberAlignment optionalMemberAlignment(reader);
     checkOptionalMemberAlignment(optionalMemberAlignment, hasOptional, optionalField, field);
 }
@@ -139,12 +136,10 @@ TEST_F(OptionalMemberAlignmentTest, writeWithOptional)
     OptionalMemberAlignment optionalMemberAlignment;
     fillOptionalMemberAlignment(optionalMemberAlignment, hasOptional, optionalField, field);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     optionalMemberAlignment.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberAlignment readOptionalMemberAlignment(reader);
     checkOptionalMemberAlignment(readOptionalMemberAlignment, hasOptional, optionalField, field);
     ASSERT_TRUE(optionalMemberAlignment == readOptionalMemberAlignment);
@@ -158,12 +153,10 @@ TEST_F(OptionalMemberAlignmentTest, writeWithoutOptional)
     OptionalMemberAlignment optionalMemberAlignment;
     fillOptionalMemberAlignment(optionalMemberAlignment, hasOptional, optionalField, field);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     optionalMemberAlignment.write(writer);
 
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OptionalMemberAlignment readOptionalMemberAlignment(reader);
     checkOptionalMemberAlignment(readOptionalMemberAlignment, hasOptional, optionalField, field);
     ASSERT_TRUE(optionalMemberAlignment == readOptionalMemberAlignment);

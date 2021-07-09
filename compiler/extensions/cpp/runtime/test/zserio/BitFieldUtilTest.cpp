@@ -52,7 +52,7 @@ TEST(BitFieldUtilTest, getBitFieldUpperBound)
     EXPECT_EQ(UINT64_C(255), getBitFieldUpperBound(8, false));
     EXPECT_EQ(UINT64_C(65535), getBitFieldUpperBound(16, false));
     EXPECT_EQ(UINT64_C(4294967295), getBitFieldUpperBound(32, false));
-    EXPECT_EQ(UINT64_C(0xFFFFFFFFFFFFFFFF), getBitFieldUpperBound(64, false));
+    EXPECT_EQ(UINT64_C(0xffffffffffffffff), getBitFieldUpperBound(64, false));
 }
 
 } // namespace zserio

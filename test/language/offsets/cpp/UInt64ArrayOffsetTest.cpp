@@ -4,7 +4,6 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/BitSizeOfCalculator.h"
-#include "zserio/CppRuntimeException.h"
 
 #include "offsets/uint64_array_offset/UInt64ArrayOffset.h"
 
@@ -45,6 +44,8 @@ protected:
     static const size_t VALUES_SIZE;
     static const size_t FIRST_OFFSET;
     static const size_t BIT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const size_t UInt64ArrayOffsetTest::ARRAY_SIZE = 13;
@@ -57,52 +58,41 @@ const size_t UInt64ArrayOffsetTest::FIRST_OFFSET =
         bitsToBytes(bitSizeOfVarUInt64(VALUES_SIZE));
 const size_t UInt64ArrayOffsetTest::BIT_SIZE = bytesToBits(FIRST_OFFSET + 4 * VALUES_SIZE);
 
-TEST_F(UInt64ArrayOffsetTest, read)
+TEST_F(UInt64ArrayOffsetTest, readConstructor)
 {
-    BitStreamWriter writer;
+    BitStreamWriter writer(bitBuffer);
     prepare(writer, false);
-    size_t bufferSize;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
-    BitStreamReader reader(buffer, bufferSize);
 
-    UInt64ArrayOffset uint64ArrayOffset;
-    uint64ArrayOffset.read(reader);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    UInt64ArrayOffset uint64ArrayOffset(reader);
     ASSERT_EQ(FIRST_OFFSET, uint64ArrayOffset.getOffsets().at(0));
 }
 
-TEST_F(UInt64ArrayOffsetTest, readWrongOffsets)
+TEST_F(UInt64ArrayOffsetTest, readConstructorWrongOffsets)
 {
-    BitStreamWriter writer;
+    BitStreamWriter writer(bitBuffer);
     prepare(writer, true);
-    size_t bufferSize;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
-    BitStreamReader reader(buffer, bufferSize);
 
-    UInt64ArrayOffset uint64ArrayOffset;
-    ASSERT_THROW(uint64ArrayOffset.read(reader), CppRuntimeException);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+    ASSERT_THROW(UInt64ArrayOffset uint64ArrayOffset(reader), CppRuntimeException);
 }
-
 
 TEST_F(UInt64ArrayOffsetTest, bitSizeOf)
 {
-    BitStreamWriter writer;
+    BitStreamWriter writer(bitBuffer);
     prepare(writer, false);
-    size_t bufferSize;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
-    BitStreamReader reader(buffer, bufferSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     UInt64ArrayOffset uint64ArrayOffset(reader);
     ASSERT_EQ(BIT_SIZE, uint64ArrayOffset.bitSizeOf());
 }
 
 TEST_F(UInt64ArrayOffsetTest, bitSizeOfWithPosition)
 {
-    BitStreamWriter writer;
+    BitStreamWriter writer(bitBuffer);
     prepare(writer, false);
-    size_t bufferSize;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
-    BitStreamReader reader(buffer, bufferSize);
 
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     UInt64ArrayOffset uint64ArrayOffset(reader);
     ASSERT_EQ(BIT_SIZE + 5, uint64ArrayOffset.bitSizeOf(3));
 }
@@ -134,12 +124,10 @@ TEST_F(UInt64ArrayOffsetTest, write)
     uint64ArrayOffset.getOffsets().resize(VALUES_SIZE);
     uint64ArrayOffset.getArray().resize(ARRAY_SIZE);
     uint64ArrayOffset.getValues().resize(VALUES_SIZE);
-    BitStreamWriter writer;
+    BitStreamWriter writer(bitBuffer);
     uint64ArrayOffset.write(writer);
     ASSERT_EQ(FIRST_OFFSET, uint64ArrayOffset.getOffsets().at(0));
-    size_t bufferSize;
-    writer.getWriteBuffer(bufferSize);
-    ASSERT_EQ(bitsToBytes(BIT_SIZE), bufferSize);
+    ASSERT_EQ(BIT_SIZE, writer.getBitPosition());
 }
 
 TEST_F(UInt64ArrayOffsetTest, writeWithPosition)
@@ -148,25 +136,23 @@ TEST_F(UInt64ArrayOffsetTest, writeWithPosition)
     uint64ArrayOffset.getOffsets().resize(VALUES_SIZE);
     uint64ArrayOffset.getArray().resize(ARRAY_SIZE);
     uint64ArrayOffset.getValues().resize(VALUES_SIZE);
-    BitStreamWriter writer;
+    BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, 3);
     uint64ArrayOffset.write(writer);
     ASSERT_EQ(FIRST_OFFSET + 1, uint64ArrayOffset.getOffsets().at(0));
-    size_t bufferSize;
-    writer.getWriteBuffer(bufferSize);
-    ASSERT_EQ(bitsToBytes(BIT_SIZE) + 1, bufferSize);
+    ASSERT_EQ(BIT_SIZE + 8, writer.getBitPosition());
 }
 
 TEST_F(UInt64ArrayOffsetTest, writeWrongOffsets)
 {
     UInt64ArrayOffset uint64ArrayOffset;
-    std::vector<uint64_t>& offsets = uint64ArrayOffset.getOffsets();
+    auto& offsets = uint64ArrayOffset.getOffsets();
     for (size_t i = 0; i < VALUES_SIZE; ++i)
         offsets.push_back(FIRST_OFFSET + i * 4 + (i == VALUES_SIZE - 1 ? 1 : 0));
     uint64ArrayOffset.getArray().resize(ARRAY_SIZE);
     uint64ArrayOffset.getValues().resize(VALUES_SIZE);
 
-    BitStreamWriter writer;
+    BitStreamWriter writer(bitBuffer);
     ASSERT_THROW(uint64ArrayOffset.write(writer, NO_PRE_WRITE_ACTION), CppRuntimeException);
 }
 

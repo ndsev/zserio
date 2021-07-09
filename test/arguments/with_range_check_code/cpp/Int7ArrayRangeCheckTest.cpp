@@ -16,20 +16,21 @@ protected:
         Int7ArrayRangeCheckCompound int7ArrayRangeCheckCompound;
         const uint16_t numElements = 1;
         int7ArrayRangeCheckCompound.setNumElements(numElements);
-        std::vector<int8_t>& array = int7ArrayRangeCheckCompound.getArray();
+        auto& array = int7ArrayRangeCheckCompound.getArray();
         array.push_back(value);
 
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         int7ArrayRangeCheckCompound.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         const Int7ArrayRangeCheckCompound readInt7ArrayRangeCheckCompound(reader);
         ASSERT_EQ(int7ArrayRangeCheckCompound, readInt7ArrayRangeCheckCompound);
     }
 
     static const int8_t INT7_LOWER_BOUND;
     static const int8_t INT7_UPPER_BOUND;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const int8_t Int7ArrayRangeCheckTest::INT7_LOWER_BOUND = INT8_C(-64);

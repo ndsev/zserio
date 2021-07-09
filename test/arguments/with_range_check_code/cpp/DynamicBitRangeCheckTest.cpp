@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
 #include "zserio/CppRuntimeException.h"
-#include "zserio/Types.h"
 
 #include "with_range_check_code/dynamic_bit_range_check/DynamicBitRangeCheckCompound.h"
 
@@ -18,11 +17,10 @@ protected:
         DynamicBitRangeCheckCompound dynamicBitRangeCheckCompound;
         dynamicBitRangeCheckCompound.setNumBits(numBits);
         dynamicBitRangeCheckCompound.setValue(value);
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(bitBuffer);
         dynamicBitRangeCheckCompound.write(writer);
-        size_t writeBufferByteSize;
-        const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-        zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         const DynamicBitRangeCheckCompound readDynamicBitRangeCheckCompound(reader);
         ASSERT_EQ(dynamicBitRangeCheckCompound, readDynamicBitRangeCheckCompound);
     }
@@ -30,6 +28,8 @@ protected:
     static const uint8_t NUM_BITS;
     static const uint64_t DYNAMIC_BIT_LOWER_BOUND;
     static const uint64_t DYNAMIC_BIT_UPPER_BOUND;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const uint8_t DynamicBitRangeCheckTest::NUM_BITS = 10;

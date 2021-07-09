@@ -12,12 +12,11 @@ TEST(InstantiateTypeAsStructFieldTest, readWrite)
     InstantiateTypeAsStructField instantiateTypeAsStructField;
     instantiateTypeAsStructField.setTest(Test32{13});
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     instantiateTypeAsStructField.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     InstantiateTypeAsStructField readInstantiateTypeAsStructField(reader);
 
     ASSERT_TRUE(instantiateTypeAsStructField == readInstantiateTypeAsStructField);

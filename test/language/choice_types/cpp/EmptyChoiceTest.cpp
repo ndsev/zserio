@@ -20,7 +20,7 @@ TEST(EmptyChoiceTest, emptyConstructor)
 TEST(EmptyChoiceTest, bitStreamReaderConstructor)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamReader reader(NULL, 0);
+    zserio::BitStreamReader reader(nullptr, 0);
 
     EmptyChoice emptyChoice(reader, selector);
     ASSERT_EQ(selector, emptyChoice.getSelector());
@@ -73,6 +73,17 @@ TEST(EmptyChoiceTest, moveAssignmentOperator)
     emptyChoiceMove = std::move(emptyChoice);
     ASSERT_EQ(selector, emptyChoiceMove.getSelector());
     ASSERT_EQ(0, emptyChoiceMove.bitSizeOf());
+}
+
+TEST(EmptyChoiceTest, propagateAllocatorCopyConstructor)
+{
+    const uint8_t selector = 1;
+
+    EmptyChoice emptyChoice;
+    emptyChoice.initialize(selector);
+    const EmptyChoice emptyChoiceCopy(zserio::PropagateAllocator, emptyChoice, EmptyChoice::allocator_type());
+    ASSERT_EQ(selector, emptyChoiceCopy.getSelector());
+    ASSERT_EQ(0, emptyChoiceCopy.bitSizeOf());
 }
 
 TEST(EmptyChoiceTest, initialize)
@@ -133,28 +144,17 @@ TEST(EmptyChoiceTest, hashCode)
     ASSERT_NE(emptyChoice1.hashCode(), emptyChoice3.hashCode());
 }
 
-TEST(EmptyChoiceTest, read)
-{
-    const uint8_t selector = 1;
-    EmptyChoice emptyChoice;
-    emptyChoice.initialize(selector);
-    zserio::BitStreamReader reader(NULL, 0);
-    emptyChoice.read(reader);
-    ASSERT_EQ(selector, emptyChoice.getSelector());
-    ASSERT_EQ(0, emptyChoice.bitSizeOf());
-}
-
 TEST(EmptyChoiceTest, write)
 {
     const uint8_t selector = 1;
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     EmptyChoice emptyChoice;
     emptyChoice.initialize(selector);
     emptyChoice.write(writer);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    ASSERT_EQ(0, writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+    ASSERT_EQ(0, writer.getBitPosition());
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), 0);
     EmptyChoice readEmptyChoice(reader, selector);
     ASSERT_EQ(emptyChoice, readEmptyChoice);
 }

@@ -1,5 +1,4 @@
 uninitMemberVar:*/gen_default_package/DefaultPackageStructure.cpp
-uninitMemberVar:*/gen_default_package/DefaultPackageStructure.h
 uninitMemberVar:*/gen_packages/package_import/second/Coordinate.cpp
 uninitMemberVar:*/gen_packages/package_import/second/Coordinate.h
 uninitMemberVar:*/gen_packages/package_import/top/Coordinate.cpp
@@ -7,8 +6,8 @@ uninitMemberVar:*/gen_packages/package_import/top/Coordinate.h
 uninitMemberVar:*/gen_packages/single_import_conflict/imported/SimpleParamStructure.cpp
 uninitMemberVar:*/gen_packages/single_import_conflict/imported/SimpleParamStructure.h
 uninitMemberVar:*/gen_packages/single_import_precedence/top/Parameterized.cpp
-uninitMemberVar:*/gen_packages/single_import_precedence/top/Parameterized.h
 uninitMemberVar:*/gen_reader/reader/ParameterizedElement.cpp
 uninitMemberVar:*/gen_reader/reader/ParameterizedElement.h
 uninitMemberVar:*/gen_index/index_workaround/index/ParameterizedElement.cpp
 uninitMemberVar:*/gen_index/index_workaround/index/ParameterizedElement.h
+

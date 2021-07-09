@@ -15,14 +15,14 @@ TEST(StructTemplateClashAcrossPackagesTest, readWriteInPkg1)
 {
     InstantiationInPkg1 instantiationInPkg1;
     instantiationInPkg1.setTest(
-            ::templates::struct_template_clash_across_packages::test_struct::TestStruct_Test_639610D0(42));
+            ::templates::struct_template_clash_across_packages::test_struct::TestStruct_Test_639610D0(
+                    pkg1::Test(42)));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     instantiationInPkg1.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     InstantiationInPkg1 readInstantiationInPkg1(reader);
 
     ASSERT_TRUE(instantiationInPkg1 == readInstantiationInPkg1);
@@ -38,14 +38,13 @@ TEST(StructTemplateClashAcrossPackagesTest, readWriteInPkg2)
     InstantiationInPkg2 instantiationInPkg2;
     instantiationInPkg2.setTest(
             ::templates::struct_template_clash_across_packages::test_struct::TestStruct_Test_67B82BA5(
-                    "string"));
+                    pkg2::Test("string")));
 
-    zserio::BitStreamWriter writer;
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
+    zserio::BitStreamWriter writer(bitBuffer);
     instantiationInPkg2.write(writer);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = writer.getWriteBuffer(bufferSize);
 
-    zserio::BitStreamReader reader(buffer, bufferSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     InstantiationInPkg2 readInstantiationInPkg2(reader);
 
     ASSERT_TRUE(instantiationInPkg2 == readInstantiationInPkg2);

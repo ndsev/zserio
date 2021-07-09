@@ -1,11 +1,8 @@
 #include <limits>
-#include <cstring>
-#include <fstream>
 
-#include "zserio/CppRuntimeException.h"
-#include "zserio/StringConvertUtil.h"
-#include "zserio/FloatUtil.h"
 #include "zserio/BitStreamReader.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/FloatUtil.h"
 
 namespace zserio
 {
@@ -168,16 +165,20 @@ namespace
     inline void checkNumBits(uint8_t numBits)
     {
         if (numBits > 32)
-            throw CppRuntimeException("BitStreamReader: ReadBits #" + convertToString(numBits) +
-                    " is not valid, reading from stream failed.");
+        {
+            throw CppRuntimeException("BitStreamReader: ReadBits #") + numBits +
+                    " is not valid, reading from stream failed.";
+        }
     }
 
     /** Checks numBits validity for 64-bit reads. */
     inline void checkNumBits64(uint8_t numBits)
     {
         if (numBits > 64)
-            throw CppRuntimeException("BitStreamReader: ReadBits64 #" + convertToString(numBits) +
-                    " is not valid, reading from stream failed.");
+        {
+            throw CppRuntimeException("BitStreamReader: ReadBits64 #") + numBits +
+                    " is not valid, reading from stream failed.";
+        }
     }
 
     /** Loads next 32 bits to 32-bit bit-cache. */
@@ -301,10 +302,9 @@ namespace
 #endif
 } // namespace
 
-BitStreamReader::ReaderContext::ReaderContext(const uint8_t* buffer, size_t bufferBitSize)
-:   buffer(const_cast<uint8_t*>(buffer)),
-    bufferBitSize(bufferBitSize),
-    hasInternalBuffer(false),
+BitStreamReader::ReaderContext::ReaderContext(const uint8_t* constBuffer, size_t constBufferBitSize)
+:   buffer(const_cast<uint8_t*>(constBuffer)),
+    bufferBitSize(constBufferBitSize),
     cacheNumBits(0),
     bitIndex(0)
 {
@@ -312,44 +312,10 @@ BitStreamReader::ReaderContext::ReaderContext(const uint8_t* buffer, size_t buff
 
     const size_t bufferByteSize = (bufferBitSize + 7) / 8;
     if (bufferByteSize > MAX_BUFFER_SIZE)
-        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '" +
-            convertToString(MAX_BUFFER_SIZE) + "' bytes!");
-}
-
-BitStreamReader::ReaderContext::ReaderContext(const std::string& filename)
-:   hasInternalBuffer(true),
-    cacheNumBits(0),
-    bitIndex(0)
-{
-    Init();
-
-    std::ifstream is(filename.c_str(), std::ifstream::binary);
-    if (!is)
-        throw CppRuntimeException("BitStreamReader: Cannot open '" + filename + "' for reading!");
-
-    is.seekg(0, is.end);
-    const std::streampos fileSize = is.tellg();
-    is.seekg(0);
-
-    if (static_cast<uint64_t>(fileSize) > MAX_BUFFER_SIZE)
-        throw CppRuntimeException("BitStreamReader: File size exceeded limit of '" +
-            convertToString(MAX_BUFFER_SIZE) + "' bytes!");
-
-    const size_t bufferByteSize = static_cast<size_t>(fileSize);
-    buffer = new uint8_t[bufferByteSize];
-    bufferBitSize = bufferByteSize * 8;
-    is.read(reinterpret_cast<char*>(&buffer[0]), bufferByteSize);
-    if (!is)
     {
-        delete[] buffer;
-        throw CppRuntimeException("BitStreamReader: Failed to read '" + filename + "'!");
+        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '") + MAX_BUFFER_SIZE +
+                "' bytes!";
     }
-}
-
-BitStreamReader::ReaderContext::~ReaderContext()
-{
-    if (hasInternalBuffer)
-        delete[] buffer;
 }
 
 void BitStreamReader::ReaderContext::Init()
@@ -362,14 +328,15 @@ void BitStreamReader::ReaderContext::Init()
 }
 
 BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferByteSize) :
-        m_context(buffer, bufferByteSize * 8)
+        BitStreamReader(buffer, bufferByteSize * 8, BitsTag())
 {}
 
-BitStreamReader::BitStreamReader(const BitBuffer& bitBuffer) :
-        m_context(bitBuffer.getBuffer(), bitBuffer.getBitSize())
+BitStreamReader::BitStreamReader(Span<const uint8_t> buffer) :
+        BitStreamReader(buffer.data(), buffer.size() * 8, BitsTag())
 {}
 
-BitStreamReader::BitStreamReader(const std::string& filename) : m_context(filename)
+BitStreamReader::BitStreamReader(const uint8_t* buffer, size_t bufferBitSize, BitsTag) :
+        m_context(buffer, bufferBitSize)
 {}
 
 BitStreamReader::~BitStreamReader()
@@ -499,7 +466,7 @@ int16_t BitStreamReader::readVarInt16()
     if (!(byte & VARINT_HAS_NEXT_1))
         return sign ? -result : result;
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
+    result = static_cast<int16_t>(result << 8) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
     return sign ? -result : result;
 }
 
@@ -572,7 +539,7 @@ uint16_t BitStreamReader::readVarUInt16()
     if (!(byte & VARUINT_HAS_NEXT))
         return result;
 
-    result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
+    result = static_cast<uint16_t>(result << 8) | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 2
     return result;
 }
 
@@ -693,8 +660,8 @@ uint32_t BitStreamReader::readVarSize()
 
     result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
     if (result > VARSIZE_MAX_VALUE)
-        throw CppRuntimeException("BitStreamReader: Read value '" + convertToString(result) +
-                "' is out of range for varsize type!");
+        throw CppRuntimeException("BitStreamReader: Read value '") + result +
+                "' is out of range for varsize type!";
 
     return result;
 }
@@ -724,53 +691,9 @@ double BitStreamReader::readFloat64()
     return convertUInt64ToDouble(doublePrecisionFloatValue);
 }
 
-std::string BitStreamReader::readString()
-{
-    std::string value;
-    const size_t len = static_cast<size_t>(readVarSize());
-    value.reserve(len);
-    for (size_t i = 0; i < len; ++i)
-    {
-        value.push_back(static_cast<uint8_t>(readBitsImpl(m_context, 8)));
-    }
-    return value;
-}
-
 bool BitStreamReader::readBool()
 {
     return readBitsImpl(m_context, 1) != 0;
-}
-
-BitBuffer BitStreamReader::readBitBuffer()
-{
-    const size_t bitSize = static_cast<size_t>(readVarSize());
-    size_t numBytesToRead = bitSize / 8;
-    const uint8_t numRestBits = static_cast<uint8_t>(bitSize - numBytesToRead * 8);
-    BitBuffer bitBuffer(bitSize);
-    uint8_t* buffer = bitBuffer.getBuffer();
-    const BitPosType beginBitPosition = getBitPosition();
-    if ((beginBitPosition & 0x07) != 0)
-    {
-        // we are not aligned to byte
-        while (numBytesToRead > 0)
-        {
-            *buffer = static_cast<uint8_t>(readBits(8));
-            buffer++;
-            numBytesToRead--;
-        }
-    }
-    else
-    {
-        // we are aligned to byte
-        setBitPosition(beginBitPosition + numBytesToRead * 8);
-        memcpy(buffer, m_context.buffer + beginBitPosition / 8, numBytesToRead);
-        buffer += numBytesToRead;
-    }
-
-    if (numRestBits > 0)
-        *buffer = static_cast<uint8_t>(readBits(numRestBits) << (8 - numRestBits));
-
-    return bitBuffer;
 }
 
 void BitStreamReader::setBitPosition(BitPosType position)
@@ -793,6 +716,11 @@ void BitStreamReader::alignTo(size_t alignment)
         const uint8_t skip = static_cast<uint8_t>(alignment - offset);
         readBits64(skip);
     }
+}
+
+uint8_t BitStreamReader::readChar()
+{
+    return static_cast<uint8_t>(readBitsImpl(m_context, 8));
 }
 
 } // namespace zserio

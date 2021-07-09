@@ -4,16 +4,22 @@
 
 #include "expressions/parameterized_array_type/ParameterizedArrayTypeExpression.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace expressions
 {
 namespace parameterized_array_type
 {
 
+using allocator_type = ParameterizedArrayTypeExpression::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
 TEST(ParameterizedArrayTypeTest, bitSizeOfWithOptional)
 {
     ParameterizedArrayHolder parameterizedArrayHolder;
     const size_t arrayLength = 2;
-    std::vector<ParameterizedArrayElement> array;
+    vector_type<ParameterizedArrayElement> array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
     {
@@ -29,14 +35,15 @@ TEST(ParameterizedArrayTypeTest, bitSizeOfWithOptional)
     parameterizedArrayTypeExpression.initializeChildren();
 
     const size_t parameterizedArrayTypeExpressionBitSizeWithOptional = 33;
-    ASSERT_EQ(parameterizedArrayTypeExpressionBitSizeWithOptional, parameterizedArrayTypeExpression.bitSizeOf());
+    ASSERT_EQ(parameterizedArrayTypeExpressionBitSizeWithOptional,
+            parameterizedArrayTypeExpression.bitSizeOf());
 }
 
 TEST(ParameterizedArrayTypeTest, bitSizeOfWithoutOptional)
 {
     ParameterizedArrayHolder parameterizedArrayHolder;
     const size_t arrayLength = 2;
-    std::vector<ParameterizedArrayElement> array;
+    vector_type<ParameterizedArrayElement> array;
     array.reserve(arrayLength);
     for (size_t i = 1; i <= arrayLength; ++i)
     {
@@ -52,7 +59,8 @@ TEST(ParameterizedArrayTypeTest, bitSizeOfWithoutOptional)
     parameterizedArrayTypeExpression.initializeChildren();
 
     const size_t parameterizedArrayTypeExpressionBitSizeWithOptional = 32;
-    ASSERT_EQ(parameterizedArrayTypeExpressionBitSizeWithOptional, parameterizedArrayTypeExpression.bitSizeOf());
+    ASSERT_EQ(parameterizedArrayTypeExpressionBitSizeWithOptional,
+            parameterizedArrayTypeExpression.bitSizeOf());
 }
 
 } // namespace parameterized_array_type

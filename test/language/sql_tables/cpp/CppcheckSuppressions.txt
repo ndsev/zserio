@@ -6,15 +6,11 @@ constParameter:*/sql_tables/subtyped_enum_field_table/SubtypedEnumFieldTable.cpp
 noExplicitConstructor:*/sql_tables/subtyped_bitmask_field_table/TestBitmask.h
 
 uninitMemberVar:*/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.cpp
-uninitMemberVar:*/sql_tables/blob_field_with_children_initialization_table/ParameterizedArray.h
 uninitMemberVar:*/sql_tables/blob_offsets_param_table/ParameterizedBlob.cpp
-uninitMemberVar:*/sql_tables/blob_offsets_param_table/ParameterizedBlob.h
 uninitMemberVar:*/sql_tables/blob_param_table/ParameterizedBlob.cpp
-uninitMemberVar:*/sql_tables/blob_param_table/ParameterizedBlob.h
 uninitMemberVar:*/sql_tables/column_param_table/ParameterizedBlob.cpp
 uninitMemberVar:*/sql_tables/column_param_table/ParameterizedBlob.h
 uninitMemberVar:*/sql_tables/complex_table/TestBlob.cpp
-uninitMemberVar:*/sql_tables/complex_table/TestBlob.h
 uninitMemberVar:*/sql_tables/const_param_table/ParameterizedBlob.cpp
 uninitMemberVar:*/sql_tables/const_param_table/ParameterizedBlob.h
 

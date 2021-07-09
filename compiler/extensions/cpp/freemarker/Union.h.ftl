@@ -7,15 +7,17 @@
 
 <@include_guard_begin package.path, name/>
 
-<#if withWriterCode>
-#include <type_traits>
+<#if withWriterCode && fieldList?has_content>
+#include <zserio/Traits.h>
 </#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/AnyHolder.h>
 #include <zserio/CppRuntimeException.h>
 #include <zserio/StringConvertUtil.h>
 #include <zserio/PreWriteAction.h>
+#include <zserio/AllocatorPropagatingCopy.h>
+<@type_includes types.anyHolder/>
+<@type_includes types.allocator/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -23,6 +25,8 @@
 class ${name}
 {
 public:
+    using allocator_type = ${types.allocator.default};
+
     enum ChoiceTag : int32_t
     {
 <#list fieldList as field>
@@ -36,21 +40,16 @@ public:
     <#if fieldList?has_content>
 
     <@compound_field_constructor_template_arg_list name, fieldList/>
-    explicit ${name}(<#rt>
-        <#lt><@compound_field_constructor_type_list fieldList, 0/><#rt>
-        <#lt><#if fieldList?has_content>, ChoiceTag tagHint = UNDEFINED_CHOICE</#if>) :
+    explicit ${name}(
+            <#lt><@compound_field_constructor_type_list fieldList, 3/>,
+            ChoiceTag tagHint = UNDEFINED_CHOICE, const allocator_type& allocator = allocator_type()) :
         <#if needs_compound_initialization(compoundConstructorsData)>
             m_isInitialized(false),
         <#elseif has_field_with_initialization(fieldList)>
             m_areChildrenInitialized(false),
         </#if>
         <#if fieldList?has_content>
-            <#list fieldList as field>
-            <@compound_field_constructor_initializer_field field, field?has_next, 3/>
-                <#if field.usesAnyHolder>
-                    <#break>
-                </#if>
-            </#list>
+            m_objectChoice(::std::forward<ZSERIO_T>(value), allocator)
         <#else>
             m_choiceTag(UNDEFINED_CHOICE)
         </#if>
@@ -63,7 +62,7 @@ public:
                 m_choiceTag = <@choice_tag_name field/>;
             </#list>
         else
-            throw ::zserio::CppRuntimeException("No match in union ${name}!");
+            throw ::zserio::CppRuntimeException("No match in union Union!");
         </#if>
     }
     </#if>
@@ -87,6 +86,8 @@ public:
     ${name}(${name}&&) = default;
     ${name}& operator=(${name}&&) = default;
 </#if>
+
+    <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
 
     <#if needs_compound_initialization(compoundConstructorsData)>
@@ -111,10 +112,9 @@ public:
 </#if>
 
     bool operator==(const ${name}& other) const;
-    int hashCode() const;
-
-    void read(::zserio::BitStreamReader& in);
+    uint32_t hashCode() const;
 <#if withWriterCode>
+
     void write(::zserio::BitStreamWriter& out,
             ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
 </#if>
@@ -123,13 +123,16 @@ private:
     <@inner_classes_declaration fieldList/>
 <#if fieldList?has_content>
     ChoiceTag readChoiceTag(::zserio::BitStreamReader& in);
-    ::zserio::AnyHolder readObject(::zserio::BitStreamReader& in);
+    ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
+    ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 
 </#if>
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
     ChoiceTag m_choiceTag;
-    ::zserio::AnyHolder m_objectChoice;
+<#if fieldList?has_content>
+    ${types.anyHolder.name} m_objectChoice;
+</#if>
 };
 <@namespace_end package.path/>
 

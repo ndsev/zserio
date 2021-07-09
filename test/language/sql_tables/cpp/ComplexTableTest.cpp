@@ -2,17 +2,24 @@
 #include <vector>
 #include <string>
 #include <limits>
+#include <memory>
 
 #include "gtest/gtest.h"
 
-#include "zserio/StringConvertUtil.h"
-
 #include "sql_tables/TestDb.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/SqliteFinalizer.h"
 
 namespace sql_tables
 {
 namespace complex_table
 {
+
+using allocator_type = TestDb::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class ComplexTableTest : public ::testing::Test
 {
@@ -44,7 +51,7 @@ protected:
         row.resetBlob();
     }
 
-    static void fillComplexTableRowsWithNullValues(std::vector<ComplexTable::Row>& rows)
+    static void fillComplexTableRowsWithNullValues(vector_type<ComplexTable::Row>& rows)
     {
         rows.clear();
         for (uint64_t blobId = 0; blobId < NUM_COMPLEX_TABLE_ROWS; ++blobId)
@@ -55,7 +62,7 @@ protected:
         }
     }
 
-    static void fillComplexTableRow(ComplexTable::Row& row, uint64_t blobId, const std::string& name)
+    static void fillComplexTableRow(ComplexTable::Row& row, uint64_t blobId, const string_type& name)
     {
         row.setBlobId(blobId);
         row.setAge(std::numeric_limits<int64_t>::max());
@@ -67,7 +74,7 @@ protected:
         row.setColor(TestEnum::RED);
 
         TestBlob testBlob;
-        std::vector<uint8_t>& values = testBlob.getValues();
+        vector_type<uint8_t>& values = testBlob.getValues();
         for (size_t i = 0; i < COMPLEX_TABLE_COUNT; ++i)
             values.push_back(static_cast<uint8_t>(blobId));
         testBlob.setOffsetEnd(TEST_BLOB_OFFSET_END);
@@ -75,12 +82,12 @@ protected:
         row.setBlob(testBlob);
     }
 
-    static void fillComplexTableRows(std::vector<ComplexTable::Row>& rows)
+    static void fillComplexTableRows(vector_type<ComplexTable::Row>& rows)
     {
         rows.clear();
         for (uint64_t blobId = 0; blobId < NUM_COMPLEX_TABLE_ROWS; ++blobId)
         {
-            const std::string name = "Name" + zserio::convertToString(blobId);
+            const string_type name = "Name" + zserio::toString<allocator_type>(blobId);
             ComplexTable::Row row;
             fillComplexTableRow(row, blobId, name);
             rows.push_back(row);
@@ -101,8 +108,8 @@ protected:
         ASSERT_EQ(row1.getBlob(), row2.getBlob());
     }
 
-    static void checkComplexTableRows(const std::vector<ComplexTable::Row>& rows1,
-            const std::vector<ComplexTable::Row>& rows2)
+    static void checkComplexTableRows(const vector_type<ComplexTable::Row>& rows1,
+            const vector_type<ComplexTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -154,8 +161,8 @@ protected:
             ASSERT_EQ(row1.isBlobUsed(), row2.isBlobUsed());
     }
 
-    static void checkComplexTableRowsWithNullValues(const std::vector<ComplexTable::Row>& rows1,
-            const std::vector<ComplexTable::Row>& rows2)
+    static void checkComplexTableRowsWithNullValues(const vector_type<ComplexTable::Row>& rows1,
+            const vector_type<ComplexTable::Row>& rows2)
     {
         ASSERT_EQ(rows1.size(), rows2.size());
         for (size_t i = 0; i < rows1.size(); ++i)
@@ -164,29 +171,22 @@ protected:
 
     bool isTableInDb()
     {
-        sqlite3_stmt* statement;
-        std::string checkTableName = "complexTable";
-        std::string sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
+        string_type checkTableName = "complexTable";
+        string_type sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + checkTableName +
                 "'";
-        int result = sqlite3_prepare_v2(m_database->connection(), sqlQuery.c_str(), -1, &statement, NULL);
-        if (result != SQLITE_OK)
-            return false;
+        std::unique_ptr<sqlite3_stmt, zserio::SqliteFinalizer> statement(
+                m_database->connection().prepareStatement(sqlQuery));
 
-        result = sqlite3_step(statement);
+        int result = sqlite3_step(statement.get());
         if (result == SQLITE_DONE || result != SQLITE_ROW)
+            return false;
+
+        const unsigned char* readTableName = sqlite3_column_text(statement.get(), 0);
+        if (readTableName == nullptr ||
+                checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
         {
-            sqlite3_finalize(statement);
             return false;
         }
-
-        const unsigned char* readTableName = sqlite3_column_text(statement, 0);
-        if (readTableName == NULL || checkTableName.compare(reinterpret_cast<const char*>(readTableName)) != 0)
-        {
-            sqlite3_finalize(statement);
-            return false;
-        }
-
-        sqlite3_finalize(statement);
 
         return true;
     }
@@ -231,11 +231,11 @@ TEST_F(ComplexTableTest, readWithoutCondition)
     ComplexTable& testTable = m_database->getComplexTable();
     ComplexTableParameterProvider parameterProvider;
 
-    std::vector<ComplexTable::Row> writtenRows;
+    vector_type<ComplexTable::Row> writtenRows;
     fillComplexTableRows(writtenRows);
     testTable.write(parameterProvider, writtenRows);
 
-    std::vector<ComplexTable::Row> readRows;
+    vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -248,11 +248,11 @@ TEST_F(ComplexTableTest, readWithoutConditionWithNullValues)
     ComplexTable& testTable = m_database->getComplexTable();
     ComplexTableParameterProvider parameterProvider;
 
-    std::vector<ComplexTable::Row> writtenRows;
+    vector_type<ComplexTable::Row> writtenRows;
     fillComplexTableRowsWithNullValues(writtenRows);
     testTable.write(parameterProvider, writtenRows);
 
-    std::vector<ComplexTable::Row> readRows;
+    vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -265,12 +265,12 @@ TEST_F(ComplexTableTest, readWithCondition)
     ComplexTable& testTable = m_database->getComplexTable();
     ComplexTableParameterProvider parameterProvider;
 
-    std::vector<ComplexTable::Row> writtenRows;
+    vector_type<ComplexTable::Row> writtenRows;
     fillComplexTableRows(writtenRows);
     testTable.write(parameterProvider, writtenRows);
 
-    const std::string condition = "name='Name1'";
-    std::vector<ComplexTable::Row> readRows;
+    const string_type condition = "name='Name1'";
+    vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider, condition);
     while (reader.hasNext())
         readRows.push_back(reader.next());
@@ -286,17 +286,17 @@ TEST_F(ComplexTableTest, update)
     ComplexTable& testTable = m_database->getComplexTable();
     ComplexTableParameterProvider parameterProvider;
 
-    std::vector<ComplexTable::Row> writtenRows;
+    vector_type<ComplexTable::Row> writtenRows;
     fillComplexTableRows(writtenRows);
     testTable.write(parameterProvider, writtenRows);
 
     const uint64_t updateRowId = 3;
     ComplexTable::Row updateRow;
     fillComplexTableRow(updateRow, updateRowId, "UpdatedName");
-    const std::string updateCondition = "blobId=" + zserio::convertToString(updateRowId);
+    const string_type updateCondition = "blobId=" + zserio::toString<allocator_type>(updateRowId);
     testTable.update(parameterProvider, updateRow, updateCondition);
 
-    std::vector<ComplexTable::Row> readRows;
+    vector_type<ComplexTable::Row> readRows;
     auto reader = testTable.createReader(parameterProvider, updateCondition);
     while (reader.hasNext())
         readRows.push_back(reader.next());

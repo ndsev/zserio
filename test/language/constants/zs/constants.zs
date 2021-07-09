@@ -63,6 +63,7 @@ const bool          BOOL_FALSE_CONSTANT = false;
 
 // string types
 const string        STRING_CONSTANT = "Test \"Quated\" String";
+const string        JOINED_STRING_CONSTANT = "This is: " + STRING_CONSTANT;
 const string        UNICODE_ESC_STRING_CONSTANT = "Test string with unicode escape \u0019";
 const string        HEX_ESC_STRING_CONSTANT = "Test string with hexadecimal escape \x19";
 const string        OCTAL_ESC_STRING_CONSTANT = "Test string with octal escape \031";
@@ -86,9 +87,13 @@ const Colors DEFAULT_PEN_COLOR = Colors.BLACK;
 // builtin type constant defined by enum item using valueof
 const int32 DEFAULT_PEN_COLOR_VALUE = valueof(Colors.BLACK);
 
-// subtype to intfield
+// constant defined by subtyped intfield
 subtype int:25 Int25Subtype;
 const Int25Subtype SUBTYPE_INT25_CONSTANT = 25;
+
+// constant defined by substyped string
+subtype string StringSubtype;
+const StringSubtype SUBTYPE_STRING_CONSTANT = "Subtype string constant";
 
 // constant defined by subtyped enum value
 subtype Colors ColorsSubtype;

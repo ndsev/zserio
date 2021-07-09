@@ -41,6 +41,8 @@ protected:
     static const uint64_t VARIANT_A_SELECTOR = 1;
     static const uint64_t VARIANT_B_SELECTOR = 2;
     static const uint64_t VARIANT_C_SELECTOR = 7;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(UInt64ParamChoiceTest, emptyConstructor)
@@ -53,11 +55,10 @@ TEST_F(UInt64ParamChoiceTest, bitStreamReaderConstructor)
 {
     const uint64_t selector = VARIANT_A_SELECTOR;
     const int8_t value = 99;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeUInt64ParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     UInt64ParamChoice uint64ParamChoice(reader, selector);
     ASSERT_EQ(selector, uint64ParamChoice.getSelector());
     ASSERT_EQ(value, uint64ParamChoice.getA());
@@ -126,6 +127,20 @@ TEST_F(UInt64ParamChoiceTest, moveAssignmentOperator)
     uint64ParamChoiceMoved = std::move(uint64ParamChoice);
     ASSERT_EQ(selector, uint64ParamChoiceMoved.getSelector());
     ASSERT_EQ(value, uint64ParamChoiceMoved.getB());
+}
+
+TEST_F(UInt64ParamChoiceTest, propagateAllocatorCopyConstructor)
+{
+    const uint64_t selector = VARIANT_A_SELECTOR;
+    UInt64ParamChoice uint64ParamChoice;
+    uint64ParamChoice.initialize(selector);
+    const int8_t value = 99;
+    uint64ParamChoice.setA(value);
+
+    const UInt64ParamChoice uint64ParamChoiceCopy(zserio::PropagateAllocator, uint64ParamChoice,
+            UInt64ParamChoice::allocator_type());
+    ASSERT_EQ(selector, uint64ParamChoiceCopy.getSelector());
+    ASSERT_EQ(value, uint64ParamChoiceCopy.getA());
 }
 
 TEST_F(UInt64ParamChoiceTest, initialize)
@@ -234,23 +249,6 @@ TEST_F(UInt64ParamChoiceTest, hashCode)
     ASSERT_NE(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
 }
 
-TEST_F(UInt64ParamChoiceTest, read)
-{
-    const uint64_t selector = VARIANT_A_SELECTOR;
-    zserio::BitStreamWriter writer;
-    const int8_t value = 99;
-    writeUInt64ParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    UInt64ParamChoice uint64ParamChoice;
-    uint64ParamChoice.initialize(selector);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    uint64ParamChoice.read(reader);
-
-    ASSERT_EQ(selector, uint64ParamChoice.getSelector());
-    ASSERT_EQ(value, uint64ParamChoice.getA());
-}
-
 TEST_F(UInt64ParamChoiceTest, write)
 {
     uint64_t selector = VARIANT_A_SELECTOR;
@@ -258,11 +256,10 @@ TEST_F(UInt64ParamChoiceTest, write)
     uint64ParamChoiceB.initialize(selector);
     const int8_t valueB = 99;
     uint64ParamChoiceB.setA(valueB);
-    zserio::BitStreamWriter writerB;
+    zserio::BitStreamWriter writerB(bitBuffer);
     uint64ParamChoiceB.write(writerB);
-    size_t writeBufferByteSizeB;
-    const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
-    zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
+
+    zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     UInt64ParamChoice readUInt64ParamChoiceB(readerB, selector);
     ASSERT_EQ(valueB, readUInt64ParamChoiceB.getA());
 
@@ -271,11 +268,10 @@ TEST_F(UInt64ParamChoiceTest, write)
     uint64ParamChoiceG.initialize(selector);
     const int16_t valueG = 234;
     uint64ParamChoiceG.setB(valueG);
-    zserio::BitStreamWriter writerG;
+    zserio::BitStreamWriter writerG(bitBuffer);
     uint64ParamChoiceG.write(writerG);
-    size_t writeBufferByteSizeG;
-    const uint8_t* writeBufferG = writerG.getWriteBuffer(writeBufferByteSizeG);
-    zserio::BitStreamReader readerG(writeBufferG, writeBufferByteSizeG);
+
+    zserio::BitStreamReader readerG(writerG.getWriteBuffer(), writerG.getBitPosition(), zserio::BitsTag());
     UInt64ParamChoice readUInt64ParamChoiceG(readerG, selector);
     ASSERT_EQ(valueG, readUInt64ParamChoiceG.getB());
 }

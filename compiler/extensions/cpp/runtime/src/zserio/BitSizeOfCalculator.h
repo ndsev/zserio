@@ -6,6 +6,8 @@
 
 #include "zserio/Types.h"
 #include "zserio/BitBuffer.h"
+#include "zserio/BitPositionUtil.h"
+#include "zserio/VarSizeUtil.h"
 
 namespace zserio
 {
@@ -98,7 +100,14 @@ size_t bitSizeOfVarSize(uint32_t value);
  *
  * \return Bit size of the given string.
  */
-size_t bitSizeOfString(const std::string& stringValue);
+template <typename ALLOC>
+size_t bitSizeOfString(const std::basic_string<char, std::char_traits<char>, ALLOC>& stringValue)
+{
+    const size_t stringSize = stringValue.size();
+
+    // the string consists of varsize for size followed by the UTF-8 encoded string
+    return bitSizeOfVarSize(convertSizeToUInt32(stringSize)) + bytesToBits(stringSize);
+}
 
 /**
  * Calculates bit size of the bit buffer.
@@ -107,7 +116,14 @@ size_t bitSizeOfString(const std::string& stringValue);
  *
  * \return Bit size of the given bit buffer.
  */
-size_t bitSizeOfBitBuffer(const BitBuffer& bitBuffer);
+template <typename ALLOC>
+size_t bitSizeOfBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer)
+{
+    const size_t bitBufferSize = bitBuffer.getBitSize();
+
+    // bit buffer consists of varsize for bit size followed by the bits
+    return bitSizeOfVarSize(convertSizeToUInt32(bitBufferSize)) + bitBufferSize;
+}
 
 } // namespace zserio
 

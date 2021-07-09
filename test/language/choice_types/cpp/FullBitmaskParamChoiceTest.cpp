@@ -33,9 +33,10 @@ protected:
 
         default:
             FAIL() << "Bad choice selector";
-            break;
         }
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 TEST_F(FullBitmaskParamChoiceTest, emptyConstructor)
@@ -48,11 +49,10 @@ TEST_F(FullBitmaskParamChoiceTest, bitStreamReaderConstructor)
 {
     const Selector selector = Selector::Values::BLACK;
     const uint8_t value = 99;
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     writeFullBitmaskParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
+
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     FullBitmaskParamChoice fullBitmaskParamChoice(reader, selector);
     ASSERT_EQ(selector, fullBitmaskParamChoice.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoice.getBlack());
@@ -123,6 +123,20 @@ TEST_F(FullBitmaskParamChoiceTest, moveAssignmentOperator)
     fullBitmaskParamChoiceMoved = std::move(fullBitmaskParamChoice);
     ASSERT_EQ(selector, fullBitmaskParamChoiceMoved.getSelector());
     ASSERT_EQ(value, fullBitmaskParamChoiceMoved.getWhite());
+}
+
+TEST_F(FullBitmaskParamChoiceTest, propagateAllocatorCopyConstructor)
+{
+    const Selector selector = Selector::Values::BLACK;
+    FullBitmaskParamChoice fullBitmaskParamChoice;
+    fullBitmaskParamChoice.initialize(selector);
+    const uint8_t value = 99;
+    fullBitmaskParamChoice.setBlack(value);
+
+    const FullBitmaskParamChoice fullBitmaskParamChoiceCopy(zserio::PropagateAllocator, fullBitmaskParamChoice,
+            FullBitmaskParamChoice::allocator_type());
+    ASSERT_EQ(selector, fullBitmaskParamChoiceCopy.getSelector());
+    ASSERT_EQ(value, fullBitmaskParamChoiceCopy.getBlack());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, initialize)
@@ -250,23 +264,6 @@ TEST_F(FullBitmaskParamChoiceTest, hashCode)
     ASSERT_NE(fullBitmaskParamChoice1.hashCode(), fullBitmaskParamChoice2.hashCode());
 }
 
-TEST_F(FullBitmaskParamChoiceTest, read)
-{
-    const Selector selector = Selector::Values::BLACK;
-    zserio::BitStreamWriter writer;
-    const uint8_t value = 99;
-    writeFullBitmaskParamChoiceToByteArray(writer, selector, value);
-    size_t writeBufferByteSize;
-    const uint8_t* writeBuffer = writer.getWriteBuffer(writeBufferByteSize);
-    zserio::BitStreamReader reader(writeBuffer, writeBufferByteSize);
-    FullBitmaskParamChoice fullBitmaskParamChoice;
-    fullBitmaskParamChoice.initialize(selector);
-    fullBitmaskParamChoice.read(reader);
-
-    ASSERT_EQ(selector, fullBitmaskParamChoice.getSelector());
-    ASSERT_EQ(value, fullBitmaskParamChoice.getBlack());
-}
-
 TEST_F(FullBitmaskParamChoiceTest, write)
 {
     const Selector selectorB = Selector::Values::BLACK;
@@ -274,11 +271,10 @@ TEST_F(FullBitmaskParamChoiceTest, write)
     fullBitmaskParamChoiceB.initialize(selectorB);
     const uint8_t valueB = 99;
     fullBitmaskParamChoiceB.setBlack(valueB);
-    zserio::BitStreamWriter writerB;
+    zserio::BitStreamWriter writerB(bitBuffer);
     fullBitmaskParamChoiceB.write(writerB);
-    size_t writeBufferByteSizeB;
-    const uint8_t* writeBufferB = writerB.getWriteBuffer(writeBufferByteSizeB);
-    zserio::BitStreamReader readerB(writeBufferB, writeBufferByteSizeB);
+
+    zserio::BitStreamReader readerB(writerB.getWriteBuffer(), writerB.getBitPosition(), zserio::BitsTag());
     FullBitmaskParamChoice readFullBitmaskParamChoiceB(readerB, selectorB);
     ASSERT_EQ(valueB, readFullBitmaskParamChoiceB.getBlack());
 
@@ -287,11 +283,10 @@ TEST_F(FullBitmaskParamChoiceTest, write)
     fullBitmaskParamChoiceW.initialize(selectorW);
     const uint8_t valueW = 234;
     fullBitmaskParamChoiceW.setWhite(valueW);
-    zserio::BitStreamWriter writerW;
+    zserio::BitStreamWriter writerW(bitBuffer);
     fullBitmaskParamChoiceW.write(writerW);
-    size_t writeBufferByteSizeW;
-    const uint8_t* writeBufferW = writerW.getWriteBuffer(writeBufferByteSizeW);
-    zserio::BitStreamReader readerW(writeBufferW, writeBufferByteSizeW);
+
+    zserio::BitStreamReader readerW(writerW.getWriteBuffer(), writerW.getBitPosition(), zserio::BitsTag());
     FullBitmaskParamChoice readFullBitmaskParamChoiceW(readerW, selectorW);
     ASSERT_EQ(valueW, readFullBitmaskParamChoiceW.getWhite());
 
@@ -300,11 +295,10 @@ TEST_F(FullBitmaskParamChoiceTest, write)
     fullBitmaskParamChoiceBW.initialize(selectorBW);
     const uint16_t valueBW = 65535;
     fullBitmaskParamChoiceBW.setBlackAndWhite(valueBW);
-    zserio::BitStreamWriter writerBW;
+    zserio::BitStreamWriter writerBW(bitBuffer);
     fullBitmaskParamChoiceBW.write(writerBW);
-    size_t writeBufferByteSizeBW;
-    const uint8_t* writeBufferBW = writerBW.getWriteBuffer(writeBufferByteSizeBW);
-    zserio::BitStreamReader readerBW(writeBufferBW, writeBufferByteSizeBW);
+
+    zserio::BitStreamReader readerBW(writerBW.getWriteBuffer(), writerBW.getBitPosition(), zserio::BitsTag());
     FullBitmaskParamChoice readFullBitmaskParamChoiceBW(readerBW, selectorBW);
     ASSERT_EQ(valueBW, readFullBitmaskParamChoiceBW.getBlackAndWhite());
 }

@@ -1,15 +1,20 @@
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
-#
 #include "optional_members/optional_array_recursion/Employee.h"
 #include "optional_members/optional_array_recursion/Title.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/BitStreamWriter.h"
+#include "zserio/BitStreamReader.h"
 
 namespace optional_members
 {
 namespace optional_array_recursion
 {
+
+using allocator_type = Employee::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class OptionalArrayRecursionTest : public ::testing::Test
 {
@@ -25,7 +30,7 @@ protected:
     {
         fillEmployee(teamLead, EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY, Title::TEAM_LEAD);
 
-        std::vector<Employee> teamMembers;
+        vector_type<Employee> teamMembers;
         Employee teamMember1;
         fillEmployee(teamMember1, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
         teamMembers.push_back(teamMember1);
@@ -40,7 +45,7 @@ protected:
     void checkEmployeeInBitStream(zserio::BitStreamReader& reader, const char name[], uint16_t salary,
             Title title)
     {
-        ASSERT_EQ(name, reader.readString());
+        ASSERT_EQ(name, reader.readString<allocator_type>());
         ASSERT_EQ(salary, reader.readBits(16));
         ASSERT_EQ(zserio::enumToValue(title), reader.readBits(8));
     }
@@ -70,6 +75,8 @@ protected:
     static const size_t NUM_DEVELOPERS;
     static const size_t EMPTY_EMPLOYEE_BIT_SIZE;
     static const size_t TEAM_LEAD_BIT_SIZE;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
 const char  OptionalArrayRecursionTest::EMPTY_EMPLOYEE_NAME[] = "";
@@ -155,11 +162,9 @@ TEST_F(OptionalArrayRecursionTest, writeEmployee)
     Employee employee;
     fillEmployee(employee, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     employee.write(writer);
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
     reader.setBitPosition(0);
 
@@ -174,11 +179,9 @@ TEST_F(OptionalArrayRecursionTest, writeTeamLead)
     Employee teamLead;
     fillTeamLead(teamLead);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     teamLead.write(writer);
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkTeamLeadInBitStream(reader);
     reader.setBitPosition(0);
 
@@ -187,7 +190,7 @@ TEST_F(OptionalArrayRecursionTest, writeTeamLead)
     ASSERT_EQ(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
     ASSERT_EQ(Title::TEAM_LEAD, readTeamLead.getTitle());
     ASSERT_TRUE(readTeamLead.isTeamMembersUsed());
-    std::vector<Employee> teamMembers = readTeamLead.getTeamMembers();
+    vector_type<Employee> teamMembers = readTeamLead.getTeamMembers();
     ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
 }
 

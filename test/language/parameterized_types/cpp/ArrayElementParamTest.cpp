@@ -16,7 +16,7 @@ protected:
     void fillDatabase(Database& database)
     {
         database.setNumBlocks(NUM_BLOCKS);
-        std::vector<BlockHeader>& headers = database.getHeaders();
+        auto& headers = database.getHeaders();
         for (uint16_t i = 0; i < NUM_BLOCKS; ++i)
         {
             BlockHeader blockHeader;
@@ -25,11 +25,11 @@ protected:
             headers.push_back(blockHeader);
         }
 
-        std::vector<Block>& blocks = database.getBlocks();
-        for (std::vector<BlockHeader>::iterator it = headers.begin(); it != headers.end(); ++it)
+        auto& blocks = database.getBlocks();
+        for (auto it = headers.begin(); it != headers.end(); ++it)
         {
             Block block;
-            std::vector<int64_t>& items = block.getItems();
+            auto& items = block.getItems();
             const uint16_t numItems = it->getNumItems();
             for (uint16_t j = 0; j < numItems; ++j)
                 items.push_back(j * 2);
@@ -43,7 +43,7 @@ protected:
 
         ASSERT_EQ(numBlocks, reader.readBits(16));
 
-        const std::vector<BlockHeader>& headers = database.getHeaders();
+        const auto& headers = database.getHeaders();
         uint32_t expectedOffset = FIRST_BYTE_OFFSET;
         for (uint16_t i = 0; i < numBlocks; ++i)
         {
@@ -53,15 +53,17 @@ protected:
             expectedOffset += 8 * numItems;
         }
 
-        const std::vector<Block>& blocks = database.getBlocks();
+        const auto& blocks = database.getBlocks();
         for (uint16_t i = 0; i < numBlocks; ++i)
         {
             const uint16_t numItems = headers.at(i).getNumItems();
-            const std::vector<int64_t>& items = blocks.at(i).getItems();
+            const auto& items = blocks.at(i).getItems();
             for (uint16_t j = 0; j < numItems; ++j)
                 ASSERT_EQ(items.at(j), reader.readBits64(64));
         }
     }
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 
 private:
     static const uint16_t NUM_BLOCKS;
@@ -124,12 +126,10 @@ TEST_F(ParameterizedTypesArrayElementParamTest, write)
     Database database;
     fillDatabase(database);
 
-    zserio::BitStreamWriter writer;
+    zserio::BitStreamWriter writer(bitBuffer);
     database.write(writer);
 
-    size_t writerBufferByteSize;
-    const uint8_t* writerBuffer = writer.getWriteBuffer(writerBufferByteSize);
-    zserio::BitStreamReader reader(writerBuffer, writerBufferByteSize);
+    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     checkDatabaseInBitStream(reader, database);
     reader.setBitPosition(0);
 
