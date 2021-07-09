@@ -294,13 +294,30 @@ int main(int argc, char* argv[])
     if (argc > 3)
         numIterations = atoi(argv[3]);
 
-    // prepare buffer
-    zserio::BitStreamReader fileReader(blobPath);
-    ${BLOB_CLASS_FULL_NAME} blobFromFile(fileReader);
-    zserio::BitStreamWriter bufferWriter;
-    blobFromFile.write(bufferWriter);
-    size_t bufferSize = 0;
-    const uint8_t* buffer = bufferWriter.getWriteBuffer(bufferSize);
+    // read file
+    std::ifstream is(blobPath, std::ifstream::binary);
+    if (!is)
+    {
+        std::cerr << std::string("Cannot open '") + blobPath + "' for reading!" << std::endl;
+        return 1;
+    }
+    is.seekg(0, is.end);
+    const size_t blobByteSize = static_cast<size_t>(is.tellg());
+    is.seekg(0);
+    std::vector<uint8_t> blobBuffer(blobByteSize);
+    is.read(reinterpret_cast<char*>(&blobBuffer[0]), blobByteSize);
+    if (!is)
+    {
+        std::cerr << std::string("Failed to read '") + blobPath + "'!" << std::endl;
+        return 1;
+    }
+
+    // prepare test buffer
+    zserio::BitStreamReader blobReader(blobBuffer);
+    ${BLOB_CLASS_FULL_NAME} blobFromFile(blobReader);
+
+    const uint8_t* buffer = &blobBuffer[0];
+    size_t bufferBitSize = blobReader.getBitPosition();
 
     // run the test
     const uint64_t start = PerfTimer::getMicroTime();
@@ -311,22 +328,22 @@ EOF
     case "${TEST_CONFIG}" in
         "READ")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
-        zserio::BitStreamReader reader(buffer, bufferSize);
+        zserio::BitStreamReader reader(buffer, bufferBitSize, zserio::BitsTag());
         ${BLOB_CLASS_FULL_NAME} blob(reader);
 EOF
             ;;
         "READ_WRITE")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
-        zserio::BitStreamReader reader(buffer, bufferSize);
+        zserio::BitStreamReader reader(buffer, bufferBitSize, zserio::BitsTag());
         ${BLOB_CLASS_FULL_NAME} blob(reader);
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(buffer, bufferBitSize, zserio::BitsTag());
         blob.write(writer);
 EOF
             ;;
 
         "WRITE")
             cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
-        zserio::BitStreamWriter writer;
+        zserio::BitStreamWriter writer(buffer, bufferBitSize, zserio::BitsTag());
         blobFromFile.write(writer);
 EOF
             ;;
