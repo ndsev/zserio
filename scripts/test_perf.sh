@@ -305,7 +305,7 @@ int main(int argc, char* argv[])
     const size_t blobByteSize = static_cast<size_t>(is.tellg());
     is.seekg(0);
     std::vector<uint8_t> blobBuffer(blobByteSize);
-    is.read(reinterpret_cast<char*>(&blobBuffer[0]), blobByteSize);
+    is.read(reinterpret_cast<char*>(&blobBuffer[0]), static_cast<std::streamsize>(blobByteSize));
     if (!is)
     {
         std::cerr << std::string("Failed to read '") + blobPath + "'!" << std::endl;
@@ -316,7 +316,7 @@ int main(int argc, char* argv[])
     zserio::BitStreamReader blobReader(blobBuffer);
     ${BLOB_CLASS_FULL_NAME} blobFromFile(blobReader);
 
-    const uint8_t* buffer = &blobBuffer[0];
+    uint8_t* buffer = &blobBuffer[0];
     size_t bufferBitSize = blobReader.getBitPosition();
 
     // run the test
@@ -354,7 +354,7 @@ cat >> "${BUILD_DIR}"/src/PerformanceTest.cpp << EOF
     const uint64_t stop = PerfTimer::getMicroTime();
 
     // process results
-    double totalDuration = (stop - start) / 1000.;
+    double totalDuration = static_cast<double>(stop - start) / 1000.;
     double stepDuration = totalDuration / numIterations;
     std::cout << std::fixed << std::setprecision(3);
     std::cout << "Total Duration: " << totalDuration << "ms" << std::endl;
