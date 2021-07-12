@@ -12,6 +12,7 @@ import sql_tables.subtyped_bitmask_field_table.*;
 import sql_tables.subtyped_bool_field_table.*;
 import sql_tables.subtyped_enum_field_table.*;
 import sql_tables.subtyped_table.*;
+import sql_tables.table_with_implicit_array.*;
 import sql_tables.without_pk_table.*;
 
 sql_database TestDb
@@ -28,5 +29,7 @@ sql_database TestDb
     SubtypedBoolFieldTable                   subtypedBoolFieldTable;
     SubtypedEnumFieldTable                   subtypedEnumFieldTable;
     SubtypedTable                            subtypedTable;
+    // intentionally not last to check that it pass through checks in core
+    TableWithImplicitArray                   tableWithImplicitArray;
     WithoutPkTable                           withoutPkTable;
 };
