@@ -37,7 +37,7 @@ public:
 protected:
     static void fillRow(TableWithImplicitArray::Row& row, size_t i)
     {
-        row.setId(static_cast<int32_t>(i));
+        row.setId(static_cast<uint32_t>(i));
         row.setStructWithImplicit(StructWithImplicit{vector_type<uint32_t>{1, 2, 3, 4, 5}});
         row.setText("test" + zserio::toString<allocator_type>(i));
     }

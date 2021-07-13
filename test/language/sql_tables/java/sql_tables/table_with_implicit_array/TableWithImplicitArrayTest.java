@@ -66,13 +66,13 @@ public class TableWithImplicitArrayTest
 
     private static void fillRows(List<TableWithImplicitArrayRow> rows)
     {
-        for (int i = 0; i < NUM_ROWS; ++i)
+        for (long i = 0; i < NUM_ROWS; ++i)
         {
             rows.add(createRow(i));
         }
     }
 
-    private static TableWithImplicitArrayRow createRow(int i)
+    private static TableWithImplicitArrayRow createRow(long i)
     {
         final TableWithImplicitArrayRow row = new TableWithImplicitArrayRow();
         row.setId(i);
@@ -97,7 +97,7 @@ public class TableWithImplicitArrayTest
         assertEquals(row1.getText(), row2.getText());
     }
 
-    private static final int    NUM_ROWS = 5;
+    private static final long    NUM_ROWS = 5;
     private static final String FILE_NAME = "table_with_implicit_array_test.sqlite";
 
     private final File file = new File(FILE_NAME);
