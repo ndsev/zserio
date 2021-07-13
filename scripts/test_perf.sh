@@ -546,22 +546,24 @@ test_perf()
     # collect results
     echo
     echo "Performance Tests Results - ${SWITCH_TEST_CONFIG}"
-    echo "==============================================================="
-    printf "| %10s | %15s | %10s | %15s |\n" "Generator" "Total Duration" "Iterations" "Step Duration"
-    echo "---------------------------------------------------------------"
+    for i in {1..72} ; do echo -n "=" ; done ; echo
+    printf "| %-20s | %14s | %10s | %15s |\n" "Generator" "Total Duration" "Iterations" "Step Duration"
+    echo -n "|" ; for i in {1..70} ; do echo -n "-" ; done ; echo "|"
     if [[ ${PARAM_JAVA} == 1 ]] ; then
         RESULTS=($(cat ${TEST_OUT_DIR}/java/PerformanceTest.log))
-        printf "| %-10s | %15s | %10s | %15s |\n" Java ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        printf "| %-20s | %14s | %10s | %15s |\n" Java ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
+        for CPP_TARGET in ${CPP_TARGETS[@]} ; do
         RESULTS=($(cat ${TEST_OUT_DIR}/cpp/PerformanceTest.log))
-        printf "| %-10s | %15s | %10s | %15s |\n" C++ ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        printf "| %-20s | %14s | %10s | %15s |\n" "C++ (${CPP_TARGET})" ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        done
     fi
     if [[ ${PARAM_PYTHON} == 1 ]] ; then
         RESULTS=($(cat ${TEST_OUT_DIR}/python/perftest.log))
-        printf "| %-10s | %15s | %10s | %15s |\n" Python ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
+        printf "| %-20s | %14s | %10s | %15s |\n" Python ${RESULTS[0]} ${RESULTS[1]} ${RESULTS[2]}
     fi
-    echo "==============================================================="
+    for i in {1..72} ; do echo -n "=" ; done ; echo
     echo
 }
 
