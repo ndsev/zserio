@@ -1,0 +1,36 @@
+<project name="rules" basedir="." default="run">
+    <testProperties testPath="language/rules" testName="rules"/>
+
+    <target name="prepare">
+        <testPrepare testName="rules"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="rules"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="rules.zs.gen_is_uptodate">
+        <testGenClean testName="rules"/>
+        <testGen testName="rules" zsFile="rules.zs"/>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="rules"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="rules" srcPath="${rules.zs.out_dir}"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="rules" srcPath="${rules.zs.out_dir}"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <!-- nothing to do -->
+    </target>
+
+    <target name="clean">
+        <testClean testName="rules"/>
+    </target>
+</project>
