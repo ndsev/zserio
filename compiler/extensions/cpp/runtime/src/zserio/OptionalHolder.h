@@ -498,7 +498,14 @@ private:
         other.getObject()->~T(); // ensure that destructor of object in original storage is called
     }
 
-    typename std::aligned_storage<sizeof(T), alignof(T)>::type m_inPlace;
+    // Caution!
+    // We use static constants as a WORKAROUND for a GCC 8/9 bug observed when cross-compiling with -m32 flag.
+    // The compilers somehow spoils the aligned storage when alignof(T) is used directly as the template
+    // argument which leads to "*** stack smashing detected ***" error (as observed in some langauge tests).
+    static constexpr size_t SIZEOF_T = sizeof(T);
+    static constexpr size_t ALIGNOF_T = alignof(T);
+    typedef typename std::aligned_storage<SIZEOF_T, ALIGNOF_T>::type AlignedStorage;
+    AlignedStorage m_inPlace;
 };
 
 /**
@@ -561,7 +568,7 @@ public:
      *
      * \param other Other holder to move.
      */
-    inplace_optional_holder(inplace_optional_holder&& other) 
+    inplace_optional_holder(inplace_optional_holder&& other)
             noexcept(std::is_nothrow_move_constructible<in_place_storage<T>>::value)
     {
         if (other.hasValue())
@@ -636,7 +643,6 @@ public:
 
         return *this;
     }
-
 
     /**
      * Assignment operator from value.
