@@ -4,7 +4,7 @@
         <#local rangeData=rangeCheckData.setterRangeData>
         // check range
         <#if rangeData.bitFieldWithExpression??>
-        final int length = ${rangeData.bitFieldWithExpression.lengthExpression};
+        final int length = (int)(${rangeData.bitFieldWithExpression.lengthExpression});
         final long lowerBound = zserio.runtime.Util.getBitFieldLowerBound(
                 length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
         final long upperBound = zserio.runtime.Util.getBitFieldUpperBound(

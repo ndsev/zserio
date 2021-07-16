@@ -1,4 +1,4 @@
 # TODO[Mi-L@]: When setting MYPYPATH correctly, mypy complains that it sees same module multiple times under
-#              different paths. Check once https://github.com/python/mypy/pull/9059 is merged and release or
+#              different paths. Check once https://github.com/python/mypy/pull/9059 is merged and released or
 #              find a better solution.
 --ignore-missing-imports

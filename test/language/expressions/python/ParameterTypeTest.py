@@ -19,7 +19,7 @@ class ParameterTypeTest(unittest.TestCase):
         self.assertEqual(self.PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL,
                          parameterTypeExpression.bitsizeof())
 
-    VALUE = 0x7B
+    VALUE = 0x3F
 
     PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 8
     PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL = 7

@@ -11,6 +11,7 @@
             <Method name="attachDatabase"/>
             <Method name="detachDatabases"/>
             <Method name="isHiddenVirtualColumnInTable"/>
+            <Method name="validate"/>
         </Or>
     </Match>
 </FindBugsFilter>

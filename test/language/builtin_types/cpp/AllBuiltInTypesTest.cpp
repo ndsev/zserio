@@ -206,10 +206,10 @@ TEST_F(AllBuiltInTypesTest, intfield64Type)
 
 TEST_F(AllBuiltInTypesTest, variableIntfieldType)
 {
-    const int16_t maxVariableIntfieldType = std::numeric_limits<int16_t>::max();
-    m_allBuiltInTypes.setVariableIntfieldType(maxVariableIntfieldType);
+    const int16_t variableIntfieldTypeMax = INT16_C((1 << 13) - 1);
+    m_allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
     const int16_t variableIntfieldType = m_allBuiltInTypes.getVariableIntfieldType();
-    ASSERT_EQ(maxVariableIntfieldType, variableIntfieldType);
+    ASSERT_EQ(variableIntfieldTypeMax, variableIntfieldType);
 }
 
 TEST_F(AllBuiltInTypesTest, variableIntfield8Type)
@@ -373,7 +373,8 @@ TEST_F(AllBuiltInTypesTest, bitSizeOf)
     m_allBuiltInTypes.setIntfield16Type(std::numeric_limits<int16_t>::max());
     m_allBuiltInTypes.setIntfield32Type(std::numeric_limits<int32_t>::max());
     m_allBuiltInTypes.setIntfield64Type(std::numeric_limits<int64_t>::max());
-    m_allBuiltInTypes.setVariableIntfieldType(1);
+    const int16_t variableIntfieldTypeMax = INT16_C((1 << 13) - 1);
+    m_allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
     m_allBuiltInTypes.setVariableIntfield8Type(std::numeric_limits<int8_t>::max());
     m_allBuiltInTypes.setFloat16Type(std::numeric_limits<float>::max());
     m_allBuiltInTypes.setFloat32Type(std::numeric_limits<float>::max());
@@ -417,7 +418,8 @@ TEST_F(AllBuiltInTypesTest, readWrite)
     m_allBuiltInTypes.setIntfield16Type(std::numeric_limits<int16_t>::max());
     m_allBuiltInTypes.setIntfield32Type(std::numeric_limits<int32_t>::max());
     m_allBuiltInTypes.setIntfield64Type(std::numeric_limits<int64_t>::max());
-    m_allBuiltInTypes.setVariableIntfieldType(std::numeric_limits<int8_t>::max());
+    const int16_t variableIntfieldTypeMax = INT16_C((1 << 13) - 1);
+    m_allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
     m_allBuiltInTypes.setVariableIntfield8Type(std::numeric_limits<int8_t>::max());
     m_allBuiltInTypes.setFloat16Type(1.0f);
     m_allBuiltInTypes.setFloat32Type(std::numeric_limits<float>::max());

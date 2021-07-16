@@ -28,7 +28,7 @@ public class ParameterTypeTest
                 parameterTypeExpression.bitSizeOf());
     }
 
-    private static final byte PARAMETER_TYPE_EXPRESSION_VALUE = (byte)0x7B;
+    private static final byte PARAMETER_TYPE_EXPRESSION_VALUE = (byte)0x3F;
 
     private static final int PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL = 8;
     private static final int PARAMETER_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL = 7;

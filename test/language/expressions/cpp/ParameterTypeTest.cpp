@@ -13,7 +13,7 @@ TEST(ParameterTypeTest, bitSizeOfWithOptional)
 {
     ParameterTypeExpression parameterTypeExpression;
     parameterTypeExpression.initialize(Color::RED);
-    parameterTypeExpression.setValue(0x7B);
+    parameterTypeExpression.setValue(0x3F);
     parameterTypeExpression.setIsParameterRed(true);
 
     const size_t parameterTypeExpressionBitSizeWithOptional = 8;
@@ -24,7 +24,7 @@ TEST(ParameterTypeTest, bitSizeOfWithoutOptional)
 {
     ParameterTypeExpression parameterTypeExpression;
     parameterTypeExpression.initialize(Color::BLUE);
-    parameterTypeExpression.setValue(0x7A);
+    parameterTypeExpression.setValue(0x3F);
 
     const size_t parameterTypeExpressionBitSizeWithoutOptional = 7;
     ASSERT_EQ(parameterTypeExpressionBitSizeWithoutOptional, parameterTypeExpression.bitSizeOf());

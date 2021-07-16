@@ -239,7 +239,7 @@ ${I}}
 <#macro compound_check_range_value value valueName compoundName cppTypeName integerRange indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if integerRange.bitFieldLength??>
-${I}const size_t bitFieldLength = ${integerRange.bitFieldLength};
+${I}const size_t bitFieldLength = static_cast<size_t>(${integerRange.bitFieldLength});
 ${I}const ${cppTypeName} lowerBound = static_cast<${cppTypeName}><#rt>
         <#lt>(::zserio::getBitFieldLowerBound(bitFieldLength, <#if integerRange.isSigned>true<#else>false</#if>));
 ${I}const ${cppTypeName} upperBound = static_cast<${cppTypeName}><#rt>

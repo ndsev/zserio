@@ -205,9 +205,11 @@ public class AllBuiltInTypesTest
     @Test
     public void variableIntfieldType()
     {
-        allBuiltInTypes.setVariableIntfieldType(Short.MAX_VALUE);
+        allBuiltInTypes.setBitfield7Type((byte)0x7F);
+        final short variableIntfieldTypeMax = (short)((1 << 13) - 1);
+        allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
         final short variableIntfieldType = allBuiltInTypes.getVariableIntfieldType();
-        assertEquals(Short.MAX_VALUE, variableIntfieldType);
+        assertEquals(variableIntfieldTypeMax, variableIntfieldType);
     }
 
     @Test
@@ -384,7 +386,8 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setIntfield16Type(Short.MAX_VALUE);
         allBuiltInTypes.setIntfield32Type(Integer.MAX_VALUE);
         allBuiltInTypes.setIntfield64Type(Long.MAX_VALUE);
-        allBuiltInTypes.setVariableIntfieldType((short)1);
+        final short variableIntfieldTypeMax = (short)((1 << 13) - 1);
+        allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
         allBuiltInTypes.setVariableIntfield8Type(Byte.MAX_VALUE);
         allBuiltInTypes.setFloat16Type(Float.MAX_VALUE);
         allBuiltInTypes.setFloat32Type(Float.MAX_VALUE);
@@ -429,7 +432,8 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setIntfield16Type(Short.MAX_VALUE);
         allBuiltInTypes.setIntfield32Type(Integer.MAX_VALUE);
         allBuiltInTypes.setIntfield64Type(Long.MAX_VALUE);
-        allBuiltInTypes.setVariableIntfieldType((short)Byte.MAX_VALUE);
+        final short variableIntfieldTypeMax = (short)((1 << 13) - 1);
+        allBuiltInTypes.setVariableIntfieldType(variableIntfieldTypeMax);
         allBuiltInTypes.setVariableIntfield8Type(Byte.MAX_VALUE);
         allBuiltInTypes.setFloat16Type(1.0f);
         allBuiltInTypes.setFloat32Type(Float.MAX_VALUE);

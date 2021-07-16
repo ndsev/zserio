@@ -12,6 +12,7 @@
             <Method name="attachDatabase"/>
             <Method name="detachDatabases"/>
             <Method name="isColumnInTable"/>
+            <Method name="validate"/>
         </Or>
     </Match>
 </FindBugsFilter>
