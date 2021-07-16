@@ -85,7 +85,6 @@ public:
         static const DummyBitmask WRITE;
     };
 
-    DummyBitmask() : m_value(0) {}
     explicit DummyBitmask(::zserio::BitStreamReader& in) :
         m_value(readValue(in))
     {}
@@ -93,11 +92,6 @@ public:
     explicit DummyBitmask(underlying_type value) :
         m_value(value)
     {}
-
-    underlying_type getValue() const
-    {
-        return m_value;
-    }
 
     size_t bitSizeOf(size_t = 0) const
     {
@@ -112,11 +106,6 @@ public:
     bool operator==(const DummyBitmask& other) const
     {
         return m_value == other.m_value;
-    }
-
-    void read(::zserio::BitStreamReader& in)
-    {
-        m_value = readValue(in);
     }
 
     void write(::zserio::BitStreamWriter& out,
@@ -165,12 +154,10 @@ public:
         return m_value == other.m_value;
     }
 
-    // GCOV_EXCL_START - the method is here only to simulate real generated object
     uint32_t getValue() const
     {
         return m_value;
     }
-    // GCOV_EXCL_STOP
 
     void write(BitStreamWriter& out, PreWriteAction)
     {

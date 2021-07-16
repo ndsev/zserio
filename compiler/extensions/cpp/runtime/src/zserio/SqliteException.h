@@ -21,16 +21,6 @@ public:
     {}
 
     /**
-     * Gets the error code.
-     *
-     * \return SQLite error code.
-     */
-    int getCode() const
-    {
-        return m_code;
-    }
-
-    /**
      * Gets SQLite error string appropriate to the error code.
      *
      * \return English language text that describes the error code. Memory to hold the error message string is

@@ -330,4 +330,32 @@ TEST(SqliteConnectionTest, prepareStatement)
     ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
 }
 
+TEST(SqliteConnectionTest, startEndTransaction)
+{
+    sqlite3 *internalConnection = nullptr;
+    int result = sqlite3_open(SQLITE3_MEM_DB, &internalConnection);
+    ASSERT_EQ(SQLITE_OK, result);
+
+    SqliteConnection db(internalConnection);
+
+    const bool wasTransactionStarted = db.startTransaction();
+    const std::string query("CREATE TABLE Foo AS SELECT 1"); // check that generic string version works
+    db.executeUpdate(query);
+    db.endTransaction(wasTransactionStarted);
+
+    sqlite3* const dbConnection = db.getConnection();
+    SqliteResultAccumulator resultAcc;
+    sqlite3_exec(dbConnection, "SELECT * FROM Foo", sqliteResultAccumulatorCallback, &resultAcc, nullptr);
+
+    SqliteResultAccumulator::TResult const& accResult = resultAcc.getResult();
+    ASSERT_EQ(1, accResult.size());
+    SqliteResultAccumulator::TRow const& row = accResult.front();
+    ASSERT_EQ(1, row.size());
+    ASSERT_EQ("1", row.front());
+
+    db.reset();
+
+    ASSERT_EQ(SQLITE_OK, sqlite3_shutdown());
+}
+
 } // namespace zserio
