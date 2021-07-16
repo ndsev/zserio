@@ -20,7 +20,7 @@ constArgument:*/test/zserio/InplaceOptionalHolderTest.cpp:189
 constArgument:*/test/zserio/HeapOptionalHolderTest.cpp:388
 constArgument:*/test/zserio/HeapOptionalHolderTest.cpp:389
 
-oppositeExpression:*/test/zserio/MemoryResourceTest.cpp:84
+oppositeExpression:*/test/zserio/MemoryResourceTest.cpp:77
 
 noExplicitConstructor:*/src/zserio/Span.h:113
 noExplicitConstructor:*/src/zserio/Span.h:125

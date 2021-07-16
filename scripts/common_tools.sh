@@ -91,8 +91,19 @@ set_global_cpp_variables()
     # cppcheck home directoty is empty by default
     CPPCHECK_HOME="${CPPCHECK_HOME:-""}"
 
-    # gcovr binary to use for coverage report, by default is empty
+    # gcovr binary to use for coverage report (gcc), by default is empty
     GCOVR_BIN="${GCOVR_BIN:-""}"
+
+    # llvm-profdata binary to use for coverage report (clang), by default is empty
+    LLVM_PROFDATA_BIN="${LLVM_PROFDATA_BIN:-""}"
+
+    # llvm-cov binary to use for coverage report (clang), by default is empty
+    LLVM_COV_BIN="${LLVM_COV_BIN:-""}"
+    if [[ (! -z "${LLVM_PROFDATA_BIN}" && -z "${LLVM_COV_BIN}") ||
+            (-z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}") ]] ; then
+        stderr_echo "Both LLVM_PROFDATA_BIN and LLVM_COV_BIN environment variable must be set!"
+        return 1
+    fi
 
     # Sanitizers configuration - sanitizers disabled by default
     SANITIZERS_ENABLED="${SANITIZERS_ENABLED:-0}"
@@ -374,7 +385,11 @@ Uses the following environment variables for building:
     CPPCHECK_HOME          Home directory of cppcheck tool where cppcheck
                            binary is located. If set, cppcheck will be called.
                            Default is empty string.
-    GCOVR_BIN              Gcovr binary to use for coverage report generation.
+    GCOVR_BIN              Gcovr binary to use for coverage report generation (gcc).
+                           Default is empty string.
+    LLVM_PROFDATA_BIN      llvm-profdata  binary to use for coverage report generation (clang).
+                           Default is empty string.
+    LLVM_COV_BIN           llvm-cov  binary to use for coverage report generation (clang).
                            Default is empty string.
     SANITIZERS_ENABLED     Defines whether to use sanitizers. Default is 0 (disabled).
 

@@ -19,9 +19,7 @@ set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")
 set(CMAKE_MODULE_PATH "${ZSERIO_PROJECT_ROOT}/cmake")
 
 set(ZSERIO_CODE_COVERAGE_ENABLE OFF CACHE BOOL "Enable unit test code coverage calculation.")
-set(ZSERIO_CODE_COVERAGE_FAIL_ON_INCOMPLETE ON CACHE BOOL "Fail build if line coverage is not 100%.")
-set(ZSERIO_CODE_COVERAGE_HTML_REPORT ON CACHE BOOL
-        "Generate detailed html coverage report instead of default text report.")
+set(ZSERIO_CODE_COVERAGE_FAIL_ON_INCOMPLETE ON CACHE BOOL "Fail build if line coverage is not 99%.")
 
 # cmake helpers
 include(cmake_utils)
@@ -59,9 +57,7 @@ if (${ZSERIO_CODE_COVERAGE_ENABLE})
     set(COV_PARAMS)
     if (${ZSERIO_CODE_COVERAGE_FAIL_ON_INCOMPLETE})
         list(APPEND COV_PARAMS "INCOMPLETE_COVERAGE_FAIL")
-    endif ()
-    if (${ZSERIO_CODE_COVERAGE_HTML_REPORT})
-        list(APPEND COV_PARAMS "MAKE_HTML_REPORT")
+        list(APPEND COV_PARAMS "99")
     endif ()
     create_coverage_target(${COV_PARAMS})
 endif ()

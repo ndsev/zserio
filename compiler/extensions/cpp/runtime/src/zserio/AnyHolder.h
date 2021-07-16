@@ -119,13 +119,11 @@ namespace detail
                 AllocTraits::construct(typedAlloc, std::addressof(*ptr), ConstructTag{});
                 return ptr;
             }
-            // GCOV_EXCL_START
             catch (...)
             {
                 AllocTraits::deallocate(typedAlloc, std::addressof(*ptr), 1);
                 throw;
             }
-            // GCOV_EXCL_STOP
         }
 
         virtual IHolder<ALLOC>* clone(const ALLOC& allocator) const override
@@ -136,10 +134,10 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* clone(void*) const override // GCOV_EXCL_START
+        virtual IHolder<ALLOC>* clone(void*) const override
         {
             throw std::logic_error("Unexpected clone call.");
-        } // GCOV_EXCL_STOP
+        }
 
         virtual IHolder<ALLOC>* move(const ALLOC& allocator) override
         {
@@ -149,10 +147,10 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* move(void*) override // GCOV_EXCL_START
+        virtual IHolder<ALLOC>* move(void*) override
         {
             throw std::logic_error("Unexpected clone call.");
-        } // GCOV_EXCL_STOP
+        }
 
         virtual void destroy(const ALLOC& allocator) override
         {
@@ -178,10 +176,10 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* clone(const ALLOC&) const override // GCOV_EXCL_START
+        virtual IHolder<ALLOC>* clone(const ALLOC&) const override
         {
             throw std::logic_error("Unexpected clone call.");
-        } // GCOV_EXCL_STOP
+        }
 
         virtual IHolder<ALLOC>* clone(void* storage) const override
         {
@@ -191,10 +189,10 @@ namespace detail
         }
 
         // due to gcovr bug, exclusion markers must be defined in this way
-        virtual IHolder<ALLOC>* move(const ALLOC&) override // GCOV_EXCL_START
+        virtual IHolder<ALLOC>* move(const ALLOC&) override
         {
             throw std::logic_error("Unexpected clone call.");
-        } // GCOV_EXCL_STOP
+        }
 
         virtual IHolder<ALLOC>* move(void* storage) override
         {

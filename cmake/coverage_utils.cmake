@@ -1,23 +1,24 @@
 # Enable code coverage calculation for the given target by adding necessary parameters to the compiler flags.
 # Note: It is suggested not to use this for optimized builds, the coverage reports may be inaccurate.
 function(enable_coverage_for_target TARGET)
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set_target_properties(${TARGET} PROPERTIES COMPILE_FLAGS "--coverage")
         set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "--coverage")
-    else()
-        message(FATAL_ERROR "Coverage reports are not supported for target compiler.")
-    endif()
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        set_target_properties(${TARGET} PROPERTIES COMPILE_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+        set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+    else ()
+        message(FATAL_ERROR "Coverage reports are not supported for target compiler ${CMAKE_CXX_COMPILER_ID}!")
+    endif ()
 endfunction()
 
 # For current project, adds a target for generating coverage reports.
 # Usage: create_coverage_target
-#    INCOMPLETE_COVERAGE_FAIL - Makes the build fail if line coverage is not 100%.
-#    MAKE_HTML_REPORT - Generate detailed HTML report instead of default text report.
-#    EXCLUDE "pattern" - Exclude source files matching given pattern (regex) from the coverage report.
-#            There may be multiple exclude patterns.
+#    INCOMPLETE_COVERAGE_FAIL "percent" - Makes the build fail if line coverage is less than percent.
+#    TARGET "name" - Specifies the target name. Default is "coverage".
 function(create_coverage_target)
     include(CMakeParseArguments)
-    cmake_parse_arguments(cov "INCOMPLETE_COVERAGE_FAIL;MAKE_HTML_REPORT" "TARGET" "EXCLUDE" ${ARGN})
+    cmake_parse_arguments(cov "" "TARGET;INCOMPLETE_COVERAGE_FAIL" "" ${ARGN})
 
     if (cov_TARGET)
         set(cov_tgt_name "${cov_TARGET}")
@@ -25,36 +26,49 @@ function(create_coverage_target)
         set(cov_tgt_name "coverage")
     endif ()
 
-    set(cov_excludes)
-    foreach (exc ${cov_EXCLUDE})
-        list(APPEND cov_excludes "-e")
-        list(APPEND cov_excludes "${exc}")
-    endforeach ()
+    set(cov_binary_dir "${PROJECT_BINARY_DIR}/${cov_tgt_name}")
 
-    set(cov_fail)
-    if (cov_INCOMPLETE_COVERAGE_FAIL)
-        set(cov_fail "--fail-under-line" "100")
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+        set(cov_fail)
+        if (cov_INCOMPLETE_COVERAGE_FAIL)
+            list(APPEND cov_fail "--fail-under-line")
+            list(APPEND cov_fail "${cov_INCOMPLETE_COVERAGE_FAIL}")
+        endif ()
+
+        add_custom_target(
+            ${cov_tgt_name}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${cov_binary_dir}
+            COMMAND ${GCOVR_BIN}
+                -s
+                --html --html-details -o "${cov_tgt_name}/index.html"
+                -r ${PROJECT_SOURCE_DIR}
+                --object-directory=${PROJECT_BINARY_DIR}
+                ${cov_fail}
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            VERBATIM
+            COMMENT "Generating html code coverage report in ${cov_binary_dir}/index.html")
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+        set(cov_test_exectable "${ZserioCppRuntimeTest_BINARY_DIR}/ZserioCppRuntimeTest")
+        add_custom_target(
+            ${cov_tgt_name}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${cov_binary_dir}
+            # run tests again because ctest runs tests separately (default.profraw contains only the last test)
+            COMMAND ${cov_test_exectable} > /dev/null
+            COMMAND ${LLVM_PROFDATA_BIN} merge --sparse default.profraw -o ${cov_binary_dir}/runtime.profdata
+            COMMAND ${LLVM_COV_BIN} show ${cov_test_exectable}
+                -instr-profile=${cov_binary_dir}/runtime.profdata
+                --format=html --show-instantiations=false -output-dir=${cov_binary_dir}
+            COMMAND ${LLVM_COV_BIN} report ${cov_test_exectable}
+                -instr-profile=${cov_binary_dir}/runtime.profdata
+            COMMAND bash -c "(( \
+                `${LLVM_COV_BIN} report ${cov_test_exectable} \
+                    -instr-profile=${cov_binary_dir}/runtime.profdata | grep TOTAL | tr -s ' ' | \
+                    cut -d' ' -f 10 | cut -d. -f 1` >= ${cov_INCOMPLETE_COVERAGE_FAIL} \
+                ))"
+            WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            VERBATIM
+            COMMENT "Generating html code coverage report in ${cov_binary_dir}/index.html")
+    else ()
+        message(FATAL_ERROR "Coverage reports are not supported for target compiler ${CMAKE_CXX_COMPILER_ID}!")
     endif ()
-
-    set(cov_message "Generating code coverage report.")
-
-    set(cov_html)
-    if (cov_MAKE_HTML_REPORT)
-        set(cov_html "--html" "--html-details" "-o" "${cov_tgt_name}/index.html")
-        set(cov_message "Generating html code coverage report in ${cov_tgt_name}/index.html")
-    endif ()
-
-    add_custom_target(
-        ${cov_tgt_name}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/${cov_tgt_name}
-        COMMAND ${GCOVR_BIN}
-            -s
-            ${cov_html}
-            -r ${PROJECT_SOURCE_DIR}
-            --object-directory=${PROJECT_BINARY_DIR}
-            ${cov_excludes}
-            ${cov_fail}
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
-        VERBATIM
-        COMMENT ${cov_message})
 endfunction()

@@ -60,14 +60,12 @@ struct ValidationSqliteUtil
 
         Statement statement(connection.prepareStatement(sqlQuery));
         const int result = sqlite3_step(statement.get());
-        // GCOV_EXCL_START
         if (result != SQLITE_ROW)
         {
             throw SqliteException(
                     "ValidationSqliteUtils.getNumberOfTableRows: sqlite3_step() failed: ") +
                     SqliteErrorCode(result);
         }
-        // GCOV_EXCL_STOP
 
         return static_cast<size_t>(sqlite3_column_int64(statement.get(), 0));
     }
@@ -113,14 +111,12 @@ struct ValidationSqliteUtil
                     });
         }
 
-        // GCOV_EXCL_START
         if (result != SQLITE_DONE)
         {
             throw SqliteException(
                     "ValidationSqliteUtils.getTableSchema: sqlite3_step() failed: ") +
                     SqliteErrorCode(result);
         }
-        // GCOV_EXCL_STOP
     }
 
     /**

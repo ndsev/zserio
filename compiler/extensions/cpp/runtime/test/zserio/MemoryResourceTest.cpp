@@ -22,11 +22,6 @@ public:
         return m_numDeallocs;
     }
 
-    size_t numIsEquals() const
-    {
-        return m_numIsEquals;
-    }
-
 private:
     virtual void* doAllocate(size_t bytes, size_t) override
     {
@@ -42,14 +37,12 @@ private:
 
     virtual bool doIsEqual(const MemoryResource& other) const noexcept override
     {
-        ++m_numIsEquals;
         auto otherPtr = dynamic_cast<const TestResource*>(&other);
         return otherPtr && m_instanceId == otherPtr->m_instanceId;
     }
 
     size_t m_numAllocs = 0;
     size_t m_numDeallocs = 0;
-    mutable size_t m_numIsEquals = 0;
     size_t m_instanceId;
 };
 
