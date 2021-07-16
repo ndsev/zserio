@@ -455,12 +455,12 @@ ${I}                                        (self.<@field_member_name field/>, l
 <#macro compound_create_packing_context_field field>
     <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
         <#if field.isBuiltinType || field.isExternType>
-        context_builder.add_leaf(zserio.array.${field.arrayTraits.name})
+        context_node.create_child().create_context()
         <#else>
-        ${field.pythonTypeName}.create_packing_context(context_builder)
+        ${field.pythonTypeName}.create_packing_context(context_node.create_child())
         </#if>
     <#else>
-        context_builder.add_dummy_leaf()
+        context_node.create_child()
     </#if>
 </#macro>
 

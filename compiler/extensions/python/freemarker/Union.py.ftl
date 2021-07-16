@@ -166,18 +166,16 @@ class ${name}:
         return self._choice_tag
 
     @staticmethod
-    def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:
+    def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
 <#if fieldList?has_content>
-        context_builder.begin_node()
-        context_builder.add_leaf(${choiceTagArrayTraits})
+        context_node.create_child().create_context()
 
     <#list fieldList as field>
         <@compound_create_packing_context_field field/>
     </#list>
 
-        context_builder.end_node()
 <#else>
-        del context_builder
+        del context_node
 </#if>
 
 <#macro union_init_packing_context field indent packed>

@@ -96,8 +96,8 @@ class ${name}:
         return ${name}.from_value(~self._value & ${upperBound})
 
     @staticmethod
-    def create_packing_context(context_builder: zserio.array.PackingContextBuilder) -> None:
-        context_builder.add_leaf(zserio.array.${arrayTraits.name})
+    def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
+        context_node.create_context()
 
     def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
         context_node.context.init(self._value)

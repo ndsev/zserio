@@ -5,7 +5,7 @@ from zserio.array import (Array, BitFieldArrayTraits, SignedBitFieldArrayTraits,
                           VarSizeArrayTraits, VarInt16ArrayTraits, VarInt32ArrayTraits, VarInt64ArrayTraits,
                           VarIntArrayTraits, Float16ArrayTraits, Float32ArrayTraits, Float64ArrayTraits,
                           StringArrayTraits, BoolArrayTraits, BitBufferArrayTraits, ObjectArrayTraits,
-                          PackingContextBuilder, DeltaContext)
+                          PackingContextNode)
 from zserio.bitposition import alignto
 from zserio.bitbuffer import BitBuffer
 from zserio.bitreader import BitStreamReader
@@ -181,10 +181,8 @@ class ArrayTest(unittest.TestCase):
             return self._value
 
         @staticmethod
-        def create_packing_context(context_builder):
-            context_builder.begin_node()
-            context_builder.add_leaf(BitFieldArrayTraits)
-            context_builder.end_node()
+        def create_packing_context(context_node):
+            context_node.create_child().create_context()
 
         def init_packing_context(self, context_node):
             context = context_node.children[0].context
@@ -348,33 +346,6 @@ class ArrayTest(unittest.TestCase):
         array2_values = [UINT64_MAX, UINT64_MAX // 2, UINT64_MIN]
         self._test_packed_array(array_traits, array1_values, array2_values)
 
-    def test_float16_packed_array(self):
-        class Float16BitsizeCalculator:
-            @staticmethod
-            def calc_max_delta_bits(_array_values):
-                return 0
-
-            @staticmethod
-            def calc_bitsize(_array_traits, array_values, _signed_max_delta_bits):
-                if array_values:
-                    return 1 + len(array_values) * 16
-                else:
-                    return 0
-
-            @staticmethod
-            def calc_aligned_bitsize(_array_traits, bitposition, array_values, _signed_max_delta_bits):
-                if array_values:
-                    end_bitposition = alignto(8, bitposition + 1)
-                    end_bitposition += len(array_values) * 16
-                    return end_bitposition - bitposition
-                else:
-                    return 0
-
-        array_traits = Float16ArrayTraits()
-        array1_values = [-1.0, 1.0]
-        array2_values = []
-        self._test_packed_array(array_traits, array1_values, array2_values, Float16BitsizeCalculator)
-
     def test_object_packed_array(self):
         class DummyObjectBitsizeCalculator:
             @staticmethod
@@ -403,47 +374,9 @@ class ArrayTest(unittest.TestCase):
         array2_values = [ArrayTest.DummyObject(3), ArrayTest.DummyObject(4)]
         self._test_packed_array(array_traits, array1_values, array2_values, DummyObjectBitsizeCalculator)
 
-    def test_packing_context_builder(self):
-        builder = PackingContextBuilder()
-        builder.add_leaf(BitFieldArrayTraits)
-        packing_context_node = builder.build()
-        self.assertTrue(packing_context_node.has_context())
-        self.assertIsInstance(packing_context_node.context, DeltaContext)
-
-        builder = PackingContextBuilder()
-        builder.add_dummy_leaf()
-        packing_context_node = builder.build()
-        self.assertFalse(packing_context_node.has_context())
+    def test_packing_context_node(self):
         with self.assertRaises(PythonRuntimeException):
-            self.assertIsNone(packing_context_node.context)
-        self.assertFalse(packing_context_node.children)
-
-        # only one top level node is allowed
-        builder = PackingContextBuilder()
-        builder.add_dummy_leaf()
-        builder.add_leaf(BitFieldArrayTraits)
-        with self.assertRaises(PythonRuntimeException):
-            packing_context_node = builder.build()
-
-        builder = PackingContextBuilder()
-        builder.begin_node()
-        builder.add_dummy_leaf()
-        builder.add_leaf(BitFieldArrayTraits)
-        builder.end_node()
-        packing_context_node = builder.build()
-        self.assertFalse(packing_context_node.has_context())
-        with self.assertRaises(PythonRuntimeException):
-            self.assertIsNone(packing_context_node.context)
-        self.assertTrue(packing_context_node.children)
-        dummy_leaf = packing_context_node.children[0]
-        self.assertFalse(dummy_leaf.has_context())
-        with self.assertRaises(PythonRuntimeException):
-            self.assertIsNone(dummy_leaf.context)
-        self.assertFalse(dummy_leaf.children)
-        leaf = packing_context_node.children[1]
-        self.assertTrue(leaf.has_context())
-        self.assertFalse(leaf.children)
-        self.assertIsInstance(leaf.context, DeltaContext)
+            self.assertIsNotNone(PackingContextNode().context)
 
     @staticmethod
     def _set_offset_method(_index, _bitoffset):
