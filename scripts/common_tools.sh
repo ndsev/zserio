@@ -670,7 +670,7 @@ compile_cpp_for_target()
             return 1
         fi
 
-        if [[ ! -z "${GCOVR_BIN}" ]] ; then
+        if [[ ! -z "${GCOVR_BIN}" || (! -z "${LLVM_PROFDATA_BIN}" && ! -z "${LLVM_COV_BIN}") ]] ; then
             "${CMAKE}" --build . --target coverage
             local COVERAGE_RESULT=$?
             if [ ${COVERAGE_RESULT} -ne 0 ] ; then
