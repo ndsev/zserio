@@ -16,366 +16,6 @@
 namespace zserio
 {
 
-/**
- * Initializes array elements using the given element initializer.
- *
- * \param array Array to initialize.
- * \param elementInitializer Initializer which knows how to initialize a single array element.
- */
-template <typename T, typename ALLOC, typename ELEMENT_INITIALIZER>
-void initializeElements(std::vector<T, ALLOC>& array, const ELEMENT_INITIALIZER& elementInitializer)
-{
-    size_t index = 0;
-    for (auto&& element : array)
-    {
-        elementInitializer.initialize(element, index);
-        index++;
-    }
-}
-
-/**
- * Calculates bit size of the given array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to calculate bit size of a single element.
- * \param array Array to calculate the bit size for.
- * \param bitPosition Current bit position.
- *
- * \return Bit size of the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, const std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        size_t bitPosition)
-{
-    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
-        return array.empty() ? 0 : arrayTraits.bitSizeOf(bitPosition, array.at(0)) * array.size();
-
-    size_t endBitPosition = bitPosition;
-    for (const typename ARRAY_TRAITS::type& element : array)
-        endBitPosition += arrayTraits.bitSizeOf(endBitPosition, element);
-
-    return endBitPosition - bitPosition;
-}
-
-/**
- * Calculates bit size of the given aligned array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to calculate bit size of a single element.
- * \param array Array to calculate the bit size for.
- * \param bitPosition Current bit position.
- *
- * \return Bit size of the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-size_t bitSizeOfAligned(const ARRAY_TRAITS& arrayTraits,
-        const std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition)
-{
-    size_t endBitPosition = bitPosition;
-    const size_t arraySize = array.size();
-    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && arraySize > 0)
-    {
-        const size_t elementBitSize = arrayTraits.bitSizeOf(bitPosition, array.at(0));
-        endBitPosition = alignTo(8, endBitPosition);
-        endBitPosition += (arraySize - 1) * alignTo(8, elementBitSize) + elementBitSize;
-    }
-    else
-    {
-        for (const typename ARRAY_TRAITS::type& element : array)
-        {
-            endBitPosition = alignTo(8, endBitPosition);
-            endBitPosition += arrayTraits.bitSizeOf(endBitPosition, element);
-        }
-    }
-
-    return endBitPosition - bitPosition;
-}
-
-/**
- * Calculates bit size of the given auto array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to calculate bit size of a single element.
- * \param array Array to calculate the bit size for.
- * \param bitPosition Current bit position.
- *
- * \return Bit size of the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-size_t bitSizeOfAuto(const ARRAY_TRAITS& arrayTraits,
-        const std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition)
-{
-    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size()));
-
-    return lengthBitSizeOf + bitSizeOf(arrayTraits, array, bitPosition + lengthBitSizeOf);
-}
-
-/**
- * Calculates bit size of the given aligned auto array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to calculate bit size of a single element.
- * \param array Array to calculate the bit size for.
- * \param bitPosition Current bit position.
- *
- * \return Bit size of the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-size_t bitSizeOfAlignedAuto(const ARRAY_TRAITS& arrayTraits,
-        const std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition)
-{
-    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size()));
-
-    return lengthBitSizeOf + bitSizeOfAligned(arrayTraits, array, bitPosition + lengthBitSizeOf);
-}
-
-/**
- * Initializes indexed offsets in the given array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to initialize offsets of a single element.
- * \param array Array to initialize offsets for.
- * \param bitPosition Current bit position.
- *
- * \return Updated bit position which points to the first bit after the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-size_t initializeOffsets(const ARRAY_TRAITS& arrayTraits,
-        std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition)
-{
-    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
-    {
-        return bitPosition +
-                (array.empty() ? 0 : array.size() * arrayTraits.bitSizeOf(bitPosition, array.at(0)));
-    }
-
-    size_t endBitPosition = bitPosition;
-    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
-    for (auto&& element : array)
-        endBitPosition = arrayTraits.initializeOffsets(endBitPosition, element);
-
-    return endBitPosition;
-}
-
-/**
- * Initializes indexed offsets in the given aligned array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to initialize offsets of a single element.
- * \param array Array to initialize offsets for.
- * \param bitPosition Current bit position.
- * \param offsetInitializer Initializer which initializes offsets for each element.
- *
- * \return Updated bit position which points to the first bit after the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_INITIALIZER>
-size_t initializeOffsetsAligned(const ARRAY_TRAITS& arrayTraits,
-        std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition,
-        const OFFSET_INITIALIZER& offsetInitializer)
-{
-    size_t endBitPosition = bitPosition;
-    size_t index = 0;
-    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
-    for (auto&& element : array)
-    {
-        endBitPosition = alignTo(8, endBitPosition);
-        offsetInitializer.initializeOffset(index, bitsToBytes(endBitPosition));
-        endBitPosition = arrayTraits.initializeOffsets(endBitPosition, element);
-        index++;
-    }
-
-    return endBitPosition;
-}
-
-/**
- * Initializes indexed offsets in the given auto array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to initialize offsets of a single element.
- * \param array Array to initialize offsets for.
- * \param bitPosition Current bit position.
- *
- * \return Updated bit position which points to the first bit after the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-size_t initializeOffsetsAuto(const ARRAY_TRAITS& arrayTraits,
-        std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition)
-{
-    return initializeOffsets(arrayTraits, array, bitPosition +
-            zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size())));
-}
-
-/**
- * Initializes indexed offsets in the given aligned auto array using the given array traits.
- *
- * \param arrayTraits Array traits which know how to initialize offsets of a single element.
- * \param array Array to initialize offsets for.
- * \param bitPosition Current bit position.
- * \param offsetInitializer Initializer which initializes offsets for each element.
- *
- * \return Updated bit position which points to the first bit after the array.
- */
-template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_INITIALIZER>
-size_t initializeOffsetsAlignedAuto(const ARRAY_TRAITS& arrayTraits,
-        std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition,
-        const OFFSET_INITIALIZER& offsetInitializer)
-{
-    return initializeOffsetsAligned(arrayTraits, array, bitPosition +
-            zserio::bitSizeOfVarSize(convertSizeToUInt32(array.size())), offsetInitializer);
-}
-
-/**
- * Reads the array from the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to read a single element.
- * \param array Array to read to.
- * \param in Bit stream reader.
- * \param size Size of the array to read.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-void read(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamReader& in, size_t size)
-{
-    array.clear();
-    array.reserve(size);
-    for (size_t index = 0; index < size; ++index)
-        arrayTraits.read(array, in, index);
-}
-
-/**
- * Reads the aligned array from the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to read a single element.
- * \param array Array to read to.
- * \param in Bit stream reader.
- * \param size Size of the array to read.
- * \param offsetChecker Offset checker used to check offsets before reading.
- */
-template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_CHECKER>
-void readAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamReader& in, size_t size, const OFFSET_CHECKER& offsetChecker)
-{
-    array.clear();
-    array.reserve(size);
-    for (size_t index = 0; index < size; ++index)
-    {
-        in.alignTo(8);
-        offsetChecker.checkOffset(index, bitsToBytes(in.getBitPosition()));
-        arrayTraits.read(array, in, index);
-    }
-}
-
-/**
- * Reads the auto array from the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to read a single element.
- * \param array Array to read to.
- * \param in Bit stream reader.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-void readAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamReader& in)
-{
-    const uint32_t arraySize = in.readVarSize();
-    read(arrayTraits, array, in, static_cast<size_t>(arraySize));
-}
-
-/**
- * Reads the aligned auto array from the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to read a single element.
- * \param array Array to read to.
- * \param in Bit stream reader.
- * \param offsetChecker Offset checker used to check offsets before reading.
- */
-template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_CHECKER>
-void readAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamReader& in, const OFFSET_CHECKER& offsetChecker)
-{
-    const uint32_t arraySize = in.readVarSize();
-    readAligned(arrayTraits, array, in, static_cast<size_t>(arraySize), offsetChecker);
-}
-
-/**
- * Reads the implicit-length array from the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to read a single element.
- * \param array Array to read to.
- * \param in Bit stream reader.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-void readImplicit(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamReader& in)
-{
-    static_assert(ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, "Implicit array elements must have constant bit size!");
-    const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
-    const size_t arraySize = remainingBits / arrayTraits.bitSizeOf();
-    read(arrayTraits, array, in, arraySize);
-}
-
-/**
- * Writes the array to the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to write a single element.
- * \param array Array to write.
- * \param out Bit stream writer to use.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-void write(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamWriter& out)
-{
-    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
-    for (auto&& element : array)
-        arrayTraits.write(out, element);
-}
-
-/**
- * Writes the aligned array to the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to write a single element.
- * \param array Array to write.
- * \param out Bit stream writer to use.
- * \param offsetChecker Offset checker used to check offsets before writing.
- */
-template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_CHECKER>
-void writeAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
-{
-    size_t index = 0;
-    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
-    for (auto&& element : array)
-    {
-        out.alignTo(8);
-        offsetChecker.checkOffset(index, bitsToBytes(out.getBitPosition()));
-        arrayTraits.write(out, element);
-        index++;
-    }
-}
-
-/**
- * Writes the auto array to the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to write a single element.
- * \param array Array to write.
- * \param out Bit stream writer to use.
- */
-template <typename ARRAY_TRAITS, typename ALLOC>
-void writeAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamWriter& out)
-{
-    out.writeVarSize(convertSizeToUInt32(array.size()));
-    write(arrayTraits, array, out);
-}
-
-/**
- * Writes the aligned auto array to the bit stream using the given array traits.
- *
- * \param arrayTraits Array traits which know how to write a single element.
- * \param array Array to write.
- * \param out Bit stream writer to use.
- * \param offsetChecker Offset checker used to check offsets before writing.
- */
-template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_CHECKER>
-void writeAlignedAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
-        BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
-{
-    out.writeVarSize(convertSizeToUInt32(array.size()));
-    writeAligned(arrayTraits, array, out, offsetChecker);
-}
-
 namespace detail
 {
 
@@ -1714,9 +1354,9 @@ struct BitmaskArrayTraits
 };
 
 /**
- * Array traits of Zserio structure, choice and union types.
+ * Array traits for Zserio structure, choice and union types.
  */
-template <typename T, typename ELEMENT_FACTORY = void>
+template <typename T, typename ELEMENT_FACTORY>
 class ObjectArrayTraits
 {
 public:
@@ -1729,33 +1369,6 @@ public:
     {
     }
 
-    /** Type of the single array element. */
-    typedef T type;
-
-    /**
-     * Reads the single array element.
-     *
-     * \param array Array to read the element to.
-     * \param in Bit stream reader.
-     * \param index Index need in case of parameterized type which depends on the current index.
-     */
-    template <typename ALLOC>
-    void read(std::vector<type, ALLOC>& array, BitStreamReader& in, size_t index) const
-    {
-        m_elementFactory.create(array, in, index);
-    }
-
-private:
-    const ELEMENT_FACTORY& m_elementFactory;
-};
-
-/**
- * Array traits for Zserio structure, choice and union types.
- */
-template <typename T>
-class ObjectArrayTraits<T>
-{
-public:
     /** Type of the single array element. */
     typedef T type;
 
@@ -1786,6 +1399,19 @@ public:
     }
 
     /**
+     * Reads the single array element.
+     *
+     * \param array Array to read the element to.
+     * \param in Bit stream reader.
+     * \param index Index need in case of parameterized type which depends on the current index.
+     */
+    template <typename ALLOC>
+    void read(std::vector<type, ALLOC>& array, BitStreamReader& in, size_t index) const
+    {
+        m_elementFactory.create(array, in, index);
+    }
+
+    /**
      * Writes the single array element.
      *
      * \param out Bit stream writer to use.
@@ -1798,7 +1424,476 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+
+private:
+    ELEMENT_FACTORY m_elementFactory;
 };
+
+/**
+ * Helper function to make ObjectArrayTraits (with template arguments deduction).
+ *
+ * \return Object array traits.
+ */
+template <typename T, typename ELEMENT_FACTORY>
+ObjectArrayTraits<T, ELEMENT_FACTORY> makeObjectArrayTraits(const ELEMENT_FACTORY& elementFactory)
+{
+    return ObjectArrayTraits<T, ELEMENT_FACTORY>(elementFactory);
+}
+
+namespace detail
+{
+
+// dummy offset initializer used for arrays which don't need to initialize offsets
+struct DummyOffsetInitializer
+{
+    void initializeOffset(size_t, size_t) const {}
+};
+
+
+// dummy offset checker used for arrays which don't need to check offsets.
+struct DummyOffsetChecker
+{
+    void checkOffset(size_t, size_t) const {}
+};
+
+template <typename ARRAY_TRAITS, typename ALLOC>
+size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits,
+        const std::vector<typename ARRAY_TRAITS::type, ALLOC>& rawArray, size_t bitPosition)
+{
+    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
+        return rawArray.empty() ? 0 : arrayTraits.bitSizeOf(bitPosition, rawArray.at(0)) * rawArray.size();
+
+    size_t endBitPosition = bitPosition;
+    for (const typename ARRAY_TRAITS::type& element : rawArray)
+        endBitPosition += arrayTraits.bitSizeOf(endBitPosition, element);
+
+    return endBitPosition - bitPosition;
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC>
+size_t bitSizeOfAligned(const ARRAY_TRAITS& arrayTraits,
+        const std::vector<typename ARRAY_TRAITS::type, ALLOC>& rawArray, size_t bitPosition)
+{
+    size_t endBitPosition = bitPosition;
+    const size_t arraySize = rawArray.size();
+    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && arraySize > 0)
+    {
+        const size_t elementBitSize = arrayTraits.bitSizeOf(bitPosition, rawArray.at(0));
+        endBitPosition = alignTo(8, endBitPosition);
+        endBitPosition += (arraySize - 1) * alignTo(8, elementBitSize) + elementBitSize;
+    }
+    else
+    {
+        for (const typename ARRAY_TRAITS::type& element : rawArray)
+        {
+            endBitPosition = alignTo(8, endBitPosition);
+            endBitPosition += arrayTraits.bitSizeOf(endBitPosition, element);
+        }
+    }
+
+    return endBitPosition - bitPosition;
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC>
+size_t initializeOffsets(const ARRAY_TRAITS& arrayTraits,
+        std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition)
+{
+    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
+    {
+        return bitPosition +
+                (array.empty() ? 0 : array.size() * arrayTraits.bitSizeOf(bitPosition, array.at(0)));
+    }
+
+    size_t endBitPosition = bitPosition;
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
+    for (auto&& element : array)
+        endBitPosition = arrayTraits.initializeOffsets(endBitPosition, element);
+
+    return endBitPosition;
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_INITIALIZER>
+size_t initializeOffsetsAligned(const ARRAY_TRAITS& arrayTraits,
+        std::vector<typename ARRAY_TRAITS::type, ALLOC>& array, size_t bitPosition,
+        const OFFSET_INITIALIZER& offsetInitializer)
+{
+    size_t endBitPosition = bitPosition;
+    size_t index = 0;
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
+    for (auto&& element : array)
+    {
+        endBitPosition = alignTo(8, endBitPosition);
+        offsetInitializer.initializeOffset(index, bitsToBytes(endBitPosition));
+        endBitPosition = arrayTraits.initializeOffsets(endBitPosition, element);
+        index++;
+    }
+
+    return endBitPosition;
+}
+
+// helper to generate valid code in read switch
+template <typename ARRAY_TRAITS>
+typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, size_t>::type implicitArrayLength(
+        const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
+{
+    const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
+    return remainingBits / arrayTraits.bitSizeOf();
+}
+
+template <typename ARRAY_TRAITS>
+typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, size_t>::type implicitArrayLength(
+        const ARRAY_TRAITS&, BitStreamReader&)
+{
+    return 0; // this will be NEVER used
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC>
+void read(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& rawArray,
+        BitStreamReader& in, size_t size)
+{
+    rawArray.clear();
+    rawArray.reserve(size);
+    for (size_t index = 0; index < size; ++index)
+        arrayTraits.read(rawArray, in, index);
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_CHECKER>
+void readAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& rawArray,
+        BitStreamReader& in, size_t size, const OFFSET_CHECKER& offsetChecker)
+{
+    rawArray.clear();
+    rawArray.reserve(size);
+    for (size_t index = 0; index < size; ++index)
+    {
+        in.alignTo(8);
+        offsetChecker.checkOffset(index, bitsToBytes(in.getBitPosition()));
+        arrayTraits.read(rawArray, in, index);
+    }
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC>
+void write(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
+        BitStreamWriter& out)
+{
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
+    for (auto&& element : array)
+        arrayTraits.write(out, element);
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC, typename OFFSET_CHECKER>
+void writeAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC>& array,
+        BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
+{
+    size_t index = 0;
+    // can't use 'typename ARRAY_TRAITS::type&' because std::vector<bool, ALLOC> returns rvalue
+    for (auto&& element : array)
+    {
+        out.alignTo(8);
+        offsetChecker.checkOffset(index, bitsToBytes(out.getBitPosition()));
+        arrayTraits.write(out, element);
+        index++;
+    }
+}
+
+} // namespace detail
+
+enum ArrayType
+{
+    NORMAL,
+    IMPLICIT,
+    ALIGNED,
+    AUTO,
+    ALIGNED_AUTO
+};
+
+template <ArrayType ARRAY_TYPE, typename ARRAY_TRAITS, typename ALLOC,
+        typename OFFSET_INITIALIZER = detail::DummyOffsetInitializer,
+        typename OFFSET_CHECKER = detail::DummyOffsetChecker>
+class Array
+{
+public:
+    Array(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC> rawArray,
+            const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker) :
+            m_arrayTraits(arrayTraits), m_rawArray(std::move(rawArray)),
+            m_offsetInitializer(offsetInitializer), m_offsetChecker(offsetChecker)
+    {}
+
+    explicit Array(const ARRAY_TRAITS& arrayTraits,
+            const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker,
+            const ALLOC& allocator) :
+            m_arrayTraits(arrayTraits), m_rawArray(allocator),
+            m_offsetInitializer(offsetInitializer), m_offsetChecker(offsetChecker)
+    {}
+
+    Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t arraySizeArg,
+            const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker,
+            const ALLOC& allocator) :
+            m_arrayTraits(arrayTraits), m_rawArray(allocator),
+            m_offsetInitializer(offsetInitializer), m_offsetChecker(offsetChecker)
+    {
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT || ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT,
+                "Implicit array elements must have constant bit size!");
+
+        switch (ARRAY_TYPE)
+        {
+            case ArrayType::NORMAL:
+                detail::read(m_arrayTraits, m_rawArray, in, arraySizeArg);
+                break;
+            case ArrayType::IMPLICIT:
+                {
+                    const size_t arraySize = detail::implicitArrayLength(m_arrayTraits, in);
+                    detail::read(m_arrayTraits, m_rawArray, in, arraySize);
+                }
+                break;
+            case ArrayType::ALIGNED:
+                detail::readAligned(m_arrayTraits, m_rawArray, in, arraySizeArg, m_offsetChecker);
+                break;
+            case ArrayType::AUTO:
+                {
+                    const uint32_t arraySize = in.readVarSize();
+                    detail::read(m_arrayTraits, m_rawArray, in, arraySize);
+                }
+                break;
+            case ArrayType::ALIGNED_AUTO:
+                {
+                    const uint32_t arraySize = in.readVarSize();
+                    detail::readAligned(m_arrayTraits, m_rawArray, in, arraySize, m_offsetChecker);
+                }
+                break;
+        }
+    }
+
+    /**
+    * Initializes array elements using the given element initializer.
+    *
+    * \param elementInitializer Initializer which knows how to initialize a single array element.
+    */
+    template <typename ELEMENT_INITIALIZER>
+    void initializeElements(const ELEMENT_INITIALIZER& elementInitializer)
+    {
+        size_t index = 0;
+        for (auto&& element : m_rawArray)
+        {
+            elementInitializer.initialize(element, index);
+            index++;
+        }
+    }
+
+    /**
+     * Gets raw array.
+     *
+     * \return Constant reference to the raw array.
+     */
+    const std::vector<typename ARRAY_TRAITS::type, ALLOC>& getRawArray() const
+    {
+        return m_rawArray;
+    }
+
+    /**
+     * Gets raw array.
+     *
+     * \return Reference to the raw array.
+     */
+    std::vector<typename ARRAY_TRAITS::type, ALLOC>& getRawArray()
+    {
+        return m_rawArray;
+    }
+
+    bool operator==(const Array& other) const
+    {
+        return m_rawArray == other.m_rawArray;
+    }
+
+    uint32_t hashCode() const
+    {
+        return calcHashCode(HASH_SEED, m_rawArray);
+    }
+
+    /**
+    * Calculates bit size of this array.
+    *
+    * \param bitPosition Current bit position.
+    *
+    * \return Bit size of the array.
+    */
+    size_t bitSizeOf(size_t bitPosition = 0) const
+    {
+        switch (ARRAY_TYPE)
+        {
+            case ArrayType::NORMAL:
+            case ArrayType::IMPLICIT:
+                return detail::bitSizeOf(m_arrayTraits, m_rawArray, bitPosition);
+            case ArrayType::ALIGNED:
+                return detail::bitSizeOfAligned(m_arrayTraits, m_rawArray, bitPosition);
+            case ArrayType::AUTO:
+            {
+                const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(m_rawArray.size()));
+                return lengthBitSizeOf + detail::bitSizeOf(
+                        m_arrayTraits, m_rawArray, lengthBitSizeOf + bitPosition);
+            }
+            case ArrayType::ALIGNED_AUTO:
+            {
+                const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(m_rawArray.size()));
+                return lengthBitSizeOf + detail::bitSizeOfAligned(
+                        m_arrayTraits, m_rawArray, lengthBitSizeOf + bitPosition);
+            }
+        }
+    }
+
+    size_t initializeOffsets(size_t bitPosition)
+    {
+        switch(ARRAY_TYPE)
+        {
+            case ArrayType::NORMAL:
+            case ArrayType::IMPLICIT:
+                return detail::initializeOffsets(m_arrayTraits, m_rawArray, bitPosition);
+            case ArrayType::ALIGNED:
+                return detail::initializeOffsetsAligned(
+                        m_arrayTraits, m_rawArray, bitPosition, m_offsetInitializer);
+            case ArrayType::AUTO:
+                {
+                    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(
+                            convertSizeToUInt32(m_rawArray.size()));
+                    return detail::initializeOffsets( m_arrayTraits, m_rawArray, bitPosition + lengthBitSizeOf);
+                }
+            case ArrayType::ALIGNED_AUTO:
+                {
+                    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(
+                            convertSizeToUInt32(m_rawArray.size()));
+                    return detail::initializeOffsetsAligned(
+                            m_arrayTraits, m_rawArray, bitPosition + lengthBitSizeOf, m_offsetInitializer);
+                }
+        }
+    }
+
+    void write(BitStreamWriter& out)
+    {
+        switch (ARRAY_TYPE)
+        {
+            case ArrayType::NORMAL:
+            case ArrayType::IMPLICIT:
+                detail::write(m_arrayTraits, m_rawArray, out);
+                break;
+            case ArrayType::ALIGNED:
+                detail::writeAligned(m_arrayTraits, m_rawArray, out, m_offsetChecker);
+                break;
+            case ArrayType::AUTO:
+                out.writeVarSize(convertSizeToUInt32(m_rawArray.size()));
+                detail::write(m_arrayTraits, m_rawArray, out);
+                break;
+            case ArrayType::ALIGNED_AUTO:
+                out.writeVarSize(convertSizeToUInt32(m_rawArray.size()));
+                detail::writeAligned(m_arrayTraits, m_rawArray, out, m_offsetChecker);
+                break;
+        }
+    }
+
+private:
+    ARRAY_TRAITS m_arrayTraits;
+    std::vector<typename ARRAY_TRAITS::type, ALLOC> m_rawArray;
+    OFFSET_INITIALIZER m_offsetInitializer;
+    OFFSET_CHECKER m_offsetChecker;
+};
+
+// NORMAL array
+
+template <typename ARRAY_TRAITS, typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::NORMAL, ARRAY_TRAITS, ALLOC> makeArray(
+        const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC> rawArray)
+{
+    return Array<ArrayType::NORMAL, ARRAY_TRAITS, ALLOC>(arrayTraits, std::move(rawArray),
+            detail::DummyOffsetInitializer(), detail::DummyOffsetChecker());
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::NORMAL, ARRAY_TRAITS, ALLOC> readArray(
+    const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t arraySize, const ALLOC& allocator = ALLOC())
+{
+    return Array<ArrayType::NORMAL, ARRAY_TRAITS, ALLOC>(arrayTraits, in, arraySize,
+            detail::DummyOffsetInitializer(), detail::DummyOffsetChecker(), allocator);
+}
+
+// IMPLICIT array
+
+template <typename ARRAY_TRAITS, typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::IMPLICIT, ARRAY_TRAITS, ALLOC> makeImplicitArray(
+        const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC> rawArray)
+{
+    return Array<ArrayType::IMPLICIT, ARRAY_TRAITS, ALLOC>(arrayTraits, std::move(rawArray),
+            detail::DummyOffsetInitializer(), detail::DummyOffsetChecker());
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::IMPLICIT, ARRAY_TRAITS, ALLOC> readImplicitArray(
+        const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, const ALLOC& allocator = ALLOC())
+{
+    return Array<ArrayType::IMPLICIT, ARRAY_TRAITS, ALLOC>(arrayTraits, in, 0,
+            detail::DummyOffsetInitializer(), detail::DummyOffsetChecker(), allocator);
+}
+
+// ALIGNED array
+
+template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER, typename OFFSET_CHECKER,
+        typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::ALIGNED, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER> makeAlignedArray(
+        const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC> rawArray,
+        const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker)
+{
+    return Array<ArrayType::ALIGNED, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER>(
+            arrayTraits, std::move(rawArray), offsetInitializer, offsetChecker);
+}
+
+template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER, typename OFFSET_CHECKER,
+        typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::ALIGNED, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER> readAlignedArray(
+        const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t arraySize,
+        const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker,
+        const ALLOC& allocator = ALLOC())
+{
+    return Array<ArrayType::ALIGNED, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER>(
+            arrayTraits, in, arraySize, offsetInitializer, offsetChecker, allocator);
+}
+
+// AUTO array
+
+template <typename ARRAY_TRAITS, typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::AUTO, ARRAY_TRAITS, ALLOC> makeAutoArray(
+        const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC> rawArray)
+{
+    return Array<ArrayType::AUTO, ARRAY_TRAITS, ALLOC>(arrayTraits, std::move(rawArray),
+            detail::DummyOffsetInitializer(), detail::DummyOffsetChecker());
+}
+
+template <typename ARRAY_TRAITS, typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::AUTO, ARRAY_TRAITS, ALLOC> readAutoArray(
+        const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, const ALLOC& allocator = ALLOC())
+{
+    return Array<ArrayType::AUTO, ARRAY_TRAITS, ALLOC>(arrayTraits, in, 0,
+            detail::DummyOffsetInitializer(), detail::DummyOffsetChecker(), allocator);
+}
+
+// ALIGNED_AUTO array
+
+template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER, typename OFFSET_CHECKER,
+        typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::ALIGNED_AUTO, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER> makeAlignedAutoArray(
+        const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type, ALLOC> rawArray,
+        const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker)
+{
+    return Array<ArrayType::ALIGNED_AUTO, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER>(
+            arrayTraits, std::move(rawArray), offsetInitializer, offsetChecker);
+}
+
+template <typename ARRAY_TRAITS, typename OFFSET_INITIALIZER, typename OFFSET_CHECKER,
+        typename ALLOC = std::allocator<typename ARRAY_TRAITS::type>>
+Array<ArrayType::ALIGNED_AUTO, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER> readAlignedAutoArray(
+        const ARRAY_TRAITS& arrayTraits, BitStreamReader& in,
+        const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker,
+        const ALLOC& allocator = ALLOC())
+{
+    return Array<ArrayType::ALIGNED_AUTO, ARRAY_TRAITS, ALLOC, OFFSET_INITIALIZER, OFFSET_CHECKER>(
+            arrayTraits, in, 0, offsetInitializer, offsetChecker, allocator);
+}
 
 } // namespace zserio
 
