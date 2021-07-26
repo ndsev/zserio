@@ -21,7 +21,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/AllocatorHolder.h
     zserio/AllocatorPropagatingCopy.h
     zserio/AnyHolder.h
-    zserio/Arrays.h
+    zserio/Array.h
     zserio/BitBuffer.h
     zserio/BitFieldUtil.cpp
     zserio/BitFieldUtil.h

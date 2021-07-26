@@ -1,7 +1,8 @@
 #include <string>
 #include <vector>
 
-#include "zserio/Arrays.h"
+#include "zserio/Array.h"
+#include "zserio/ArrayTraits.h"
 #include "zserio/Enums.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/BitBuffer.h"
@@ -144,7 +145,7 @@ public:
         return sizeof(uint32_t) * 8 - 1; // to make an unaligned type
     }
 
-    size_t initializeOffsets(size_t bitPosition) const
+    size_t initializeOffsets(size_t bitPosition)
     {
         return bitPosition + bitSizeOf(bitPosition);
     }
@@ -194,76 +195,87 @@ public:
     }
 };
 
-class ArraysTest : public ::testing::Test
+class ArrayTest : public ::testing::Test
 {
 public:
-    ArraysTest()
+    ArrayTest()
     {
         memset(m_byteBuffer, 0, sizeof(m_byteBuffer) / sizeof(m_byteBuffer[0]));
     }
 
 protected:
-    template <typename ARRAY_TRAITS>
-    void testArray(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray,
-            size_t elementBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t elementBitSize)
     {
         const size_t arraySize = rawArray.size();
         const size_t unalignedBitSize = elementBitSize * arraySize;
         const size_t alignedBitSize = (arraySize > 0) ? elementBitSize +
                 alignTo(8, elementBitSize) * (arraySize - 1) : 0;
-        testArray(arrayTraits, rawArray, unalignedBitSize, alignedBitSize);
+        testArray(rawArray, arrayTraits, unalignedBitSize, alignedBitSize);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testArray(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray,
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
             size_t unalignedBitSize, size_t alignedBitSize)
     {
-        testBitSizeOf(arrayTraits, rawArray, unalignedBitSize);
-        testBitSizeOfAuto(arrayTraits, rawArray, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
-        testBitSizeOfAligned(arrayTraits, rawArray, alignedBitSize);
-        testBitSizeOfAlignedAuto(arrayTraits, rawArray, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
-        testInitializeOffsets(arrayTraits, rawArray, unalignedBitSize);
-        testInitializeOffsetsAuto(arrayTraits, rawArray, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
-        testInitializeOffsetsAligned(arrayTraits, rawArray, alignedBitSize);
-        testInitializeOffsetsAlignedAuto(arrayTraits, rawArray, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
-        testRead(arrayTraits, rawArray);
-        testReadAuto(arrayTraits, rawArray);
-        testReadAligned(arrayTraits, rawArray);
-        testReadAlignedAuto(arrayTraits, rawArray);
-        testReadImplicit(arrayTraits, rawArray);
-        testWrite(arrayTraits, rawArray, unalignedBitSize);
-        testWriteAuto(arrayTraits, rawArray, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
-        testWriteAligned(arrayTraits, rawArray, alignedBitSize);
-        testWriteAlignedAuto(arrayTraits, rawArray, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
+        testBitSizeOf(rawArray, arrayTraits, unalignedBitSize);
+        testBitSizeOfAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
+        testBitSizeOfAligned(rawArray, arrayTraits, alignedBitSize);
+        testBitSizeOfAlignedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
+        testInitializeOffsets(rawArray, arrayTraits, unalignedBitSize);
+        testInitializeOffsetsAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
+        testInitializeOffsetsAligned(rawArray, arrayTraits, alignedBitSize);
+        testInitializeOffsetsAlignedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
+        testRead(rawArray, arrayTraits);
+        testReadAuto(rawArray, arrayTraits);
+        testReadAligned(rawArray, arrayTraits);
+        testReadAlignedAuto(rawArray, arrayTraits);
+        testReadImplicit(rawArray, arrayTraits);
+        testWrite(rawArray, arrayTraits, unalignedBitSize);
+        testWriteAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
+        testWriteAligned(rawArray, arrayTraits, alignedBitSize);
+        testWriteAlignedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testArrayInitializeElements(const ARRAY_TRAITS& arrayTraits,
-            std::vector<typename ARRAY_TRAITS::type>& rawArray)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testArrayInitializeElements(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
-        auto array = zserio::makeArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{arrayTraits};
+        array = rawArray;
         array.initializeElements(ArrayTestDummyObjectElementInitializer());
         const uint32_t expectedValue = ArrayTestDummyObjectElementInitializer::ELEMENT_VALUE;
-        for (const typename ARRAY_TRAITS::type& element : array.getRawArray())
+        for (const auto& element : array.getRawArray())
             EXPECT_EQ(expectedValue, element.getValue());
     }
 
 private:
-    template <typename ARRAY_TRAITS>
-    void testBitSizeOf(const ARRAY_TRAITS& arrayTraits,
-            const std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t unalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testBitSizeOf(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t unalignedBitSize)
     {
-        auto array = zserio::makeArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{arrayTraits};
+        array = rawArray;
         EXPECT_EQ(unalignedBitSize, array.bitSizeOf(0));
         EXPECT_EQ(unalignedBitSize, array.bitSizeOf(7));
     }
 
-    template <typename ARRAY_TRAITS>
-    void testBitSizeOfAligned(const ARRAY_TRAITS& arrayTraits,
-            const std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t alignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testBitSizeOfAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t autoUnalignedBitSize)
     {
-        auto array = zserio::makeAlignedArray(arrayTraits, rawArray,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{arrayTraits};
+        array = rawArray;
+        EXPECT_EQ(autoUnalignedBitSize, array.bitSizeOf(0));
+        EXPECT_EQ(autoUnalignedBitSize, array.bitSizeOf(7));
+    }
+
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testBitSizeOfAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t alignedBitSize)
+    {
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
         EXPECT_EQ(0 + alignedBitSize, array.bitSizeOf(0));
         EXPECT_EQ(7 + alignedBitSize, array.bitSizeOf(1));
         EXPECT_EQ(5 + alignedBitSize, array.bitSizeOf(3));
@@ -271,49 +283,46 @@ private:
         EXPECT_EQ(1 + alignedBitSize, array.bitSizeOf(7));
     }
 
-    template <typename ARRAY_TRAITS>
-    void testBitSizeOfAuto(const ARRAY_TRAITS& arrayTraits,
-            const std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t autoUnalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testBitSizeOfAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t alignedAutoBitSize)
     {
-        auto array = zserio::makeAutoArray(arrayTraits, rawArray);
-        EXPECT_EQ(autoUnalignedBitSize, array.bitSizeOf(0));
-        EXPECT_EQ(autoUnalignedBitSize, array.bitSizeOf(7));
-    }
-
-    template <typename ARRAY_TRAITS>
-    void testBitSizeOfAlignedAuto(const ARRAY_TRAITS& arrayTraits,
-            const std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t alignedAutoBitSize)
-    {
-        auto array = zserio::makeAlignedAutoArray(arrayTraits, rawArray,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
         EXPECT_EQ(alignedAutoBitSize, array.bitSizeOf(0));
         EXPECT_EQ(alignedAutoBitSize + 1, array.bitSizeOf(7));
     }
 
-    template <typename ARRAY_TRAITS>
-    void testInitializeOffsets(const ARRAY_TRAITS& arrayTraits,
-            std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t unalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testInitializeOffsets(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t unalignedBitSize)
     {
-        auto array = zserio::makeArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{arrayTraits};
+        array = rawArray;
         EXPECT_EQ(0 + unalignedBitSize, array.initializeOffsets(0));
         EXPECT_EQ(7 + unalignedBitSize, array.initializeOffsets(7));
     }
 
-    template <typename ARRAY_TRAITS>
-    void testInitializeOffsetsAuto(const ARRAY_TRAITS& arrayTraits,
-            std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t autoUnalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testInitializeOffsetsAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t autoUnalignedBitSize)
     {
-        auto array = zserio::makeAutoArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{arrayTraits};
+        array = rawArray;
         EXPECT_EQ(0 + autoUnalignedBitSize, array.initializeOffsets(0));
         EXPECT_EQ(7 + autoUnalignedBitSize, array.initializeOffsets(7));
     }
 
-    template <typename ARRAY_TRAITS>
-    void testInitializeOffsetsAligned(const ARRAY_TRAITS& arrayTraits,
-            std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t alignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testInitializeOffsetsAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t alignedBitSize)
     {
-        auto array = zserio::makeAlignedArray(arrayTraits, rawArray,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
 
         const size_t alignedBitPosition0 = array.initializeOffsets(0);
         EXPECT_EQ(0 + alignedBitSize, alignedBitPosition0);
@@ -331,12 +340,14 @@ private:
         EXPECT_EQ(7 + 1 + alignedBitSize, alignedBitPosition7);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testInitializeOffsetsAlignedAuto(const ARRAY_TRAITS& arrayTraits,
-            std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t alignedAutoBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testInitializeOffsetsAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t alignedAutoBitSize)
     {
-        auto array = zserio::makeAlignedAutoArray(arrayTraits, rawArray,
-                        ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
 
         const size_t alignedAutoBitPosition0 = array.initializeOffsets(0);
         EXPECT_EQ(0 + alignedAutoBitSize, alignedAutoBitPosition0);
@@ -345,120 +356,132 @@ private:
         EXPECT_EQ(7 + alignedAutoBitSize + 1, alignedAutoBitPosition7);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testRead(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testRead(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
-        auto array = zserio::makeArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{arrayTraits};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        auto readArray = zserio::readArray(arrayTraits, reader, rawArray.size());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits, reader, rawArray.size()};
         EXPECT_EQ(array, readArray);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testReadAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testReadAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
-        auto array = zserio::makeAutoArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{arrayTraits};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        auto readArray = zserio::readAutoArray(arrayTraits, reader);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits, reader};
         EXPECT_EQ(array, readArray);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testReadAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testReadAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
-        auto array = zserio::makeAlignedArray(arrayTraits, rawArray,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        auto readArray = zserio::readAlignedArray(arrayTraits, reader, rawArray.size(),
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> readArray{
+                        arrayTraits, reader, rawArray.size(),
+                                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
         EXPECT_EQ(array, readArray);
     }
 
-    template <typename ARRAY_TRAITS>
-    void testReadAlignedAuto(const ARRAY_TRAITS& arrayTraits,
-            std::vector<typename ARRAY_TRAITS::type>& rawArray)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testReadAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
-        auto array = zserio::makeAlignedAutoArray(arrayTraits, rawArray,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        auto readArray = zserio::readAlignedAutoArray(arrayTraits, reader,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> readArray{
+                        arrayTraits, reader, 0, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
         EXPECT_EQ(array, readArray);
     }
 
-    template <typename ARRAY_TRAITS,
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS,
             typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    void testReadImplicit(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray)
+    void testReadImplicit(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
-        if (arrayTraits.bitSizeOf() % 8 != 0)
+        if (arrayTraits.bitSizeOf(rawArray, 0, 0) % 8 != 0)
             return; // implicit array allowed for types with constant bitsize rounded to bytes
 
-        auto array = zserio::makeImplicitArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> array{arrayTraits};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        auto readArray = zserio::readImplicitArray(arrayTraits, reader);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> readArray{arrayTraits, reader, 0};
         EXPECT_EQ(array, readArray);
     }
 
-    template <typename ARRAY_TRAITS,
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS,
             typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    void testReadImplicit(const ARRAY_TRAITS&, std::vector<typename ARRAY_TRAITS::type>&)
+    void testReadImplicit(const RAW_ARRAY&, const ARRAY_TRAITS&)
     {
         // implicit array not allowed for types with non-constant bitsize, so skip the test
     }
 
-    template <typename ARRAY_TRAITS>
-    void testWrite(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray,
-            size_t unalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testWrite(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t unalignedBitSize)
     {
-        auto array = zserio::makeArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{arrayTraits};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
         EXPECT_EQ(unalignedBitSize, writer.getBitPosition());
     }
 
-    template <typename ARRAY_TRAITS>
-    void testWriteAuto(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray,
-            size_t autoUnalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testWriteAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t autoUnalignedBitSize)
     {
-        auto array = zserio::makeAutoArray(arrayTraits, rawArray);
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{arrayTraits};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
         EXPECT_EQ(autoUnalignedBitSize, writer.getBitPosition());
     }
 
-    template <typename ARRAY_TRAITS>
-    void testWriteAligned(const ARRAY_TRAITS& arrayTraits, std::vector<typename ARRAY_TRAITS::type>& rawArray,
-            size_t alignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testWriteAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t alignedBitSize)
     {
-        auto array = zserio::makeAlignedArray(arrayTraits, rawArray,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         writer.writeBool(false);
         array.write(writer);
         EXPECT_EQ(1 + 7 + alignedBitSize, writer.getBitPosition());
     }
 
-    template <typename ARRAY_TRAITS>
-    void testWriteAlignedAuto(const ARRAY_TRAITS& arrayTraits,
-            std::vector<typename ARRAY_TRAITS::type>& rawArray, size_t alignedAutoBitSize)
+    template <typename RAW_ARRAY,typename ARRAY_TRAITS>
+    void testWriteAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t alignedAutoBitSize)
     {
-        auto array = zserio::makeAlignedAutoArray(arrayTraits, rawArray,
-                ArrayTestOffsetInitializer(), ArrayTestOffsetChecker());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                ArrayTestOffsetInitializer, ArrayTestOffsetChecker> array{
+                        arrayTraits, ArrayTestOffsetInitializer(), ArrayTestOffsetChecker()};
+        array = rawArray;
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer);
         EXPECT_EQ(alignedAutoBitSize, writer.getBitPosition());
@@ -470,125 +493,125 @@ private:
     uint8_t m_byteBuffer[BUFFER_SIZE];
 };
 
-TEST_F(ArraysTest, intField4Array)
+TEST_F(ArrayTest, intField4Array)
 {
     const size_t numBits = 4;
     std::vector<int8_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
-    testArray(BitFieldArrayTraits<int8_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<int8_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, intField12Array)
+TEST_F(ArrayTest, intField12Array)
 {
     const size_t numBits = 12;
     std::vector<int16_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
-    testArray(BitFieldArrayTraits<int16_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<int16_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, intField20Array)
+TEST_F(ArrayTest, intField20Array)
 {
     const size_t numBits = 20;
     std::vector<int32_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
-    testArray(BitFieldArrayTraits<int32_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<int32_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, intField36Array)
+TEST_F(ArrayTest, intField36Array)
 {
     const size_t numBits = 36;
     std::vector<int64_t> rawArray = {-(INT64_C(1) << (numBits - 1)), 7, (INT64_C(1) << (numBits - 1)) - 1};
-    testArray(BitFieldArrayTraits<int64_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<int64_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, bitField4Array)
+TEST_F(ArrayTest, bitField4Array)
 {
     const size_t numBits = 4;
     std::vector<uint8_t> rawArray = {0, 7, (1 << numBits) - 1};
-    testArray(BitFieldArrayTraits<uint8_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<uint8_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, bitField12Array)
+TEST_F(ArrayTest, bitField12Array)
 {
     const size_t numBits = 12;
     std::vector<uint16_t> rawArray = {0, 7, (1 << numBits) - 1};
-    testArray(BitFieldArrayTraits<uint16_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<uint16_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, bitField20Array)
+TEST_F(ArrayTest, bitField20Array)
 {
     const size_t numBits = 20;
     std::vector<uint32_t> rawArray = {0, 7, (1 << numBits) - 1};
-    testArray(BitFieldArrayTraits<uint32_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<uint32_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, bitField36Array)
+TEST_F(ArrayTest, bitField36Array)
 {
     const size_t numBits = 36;
     std::vector<uint64_t> rawArray = {0, 7, (UINT64_C(1) << numBits) - 1};
-    testArray(BitFieldArrayTraits<uint64_t>(numBits), rawArray, numBits);
+    testArray(rawArray, BitFieldArrayTraits<uint64_t>(numBits), numBits);
 }
 
-TEST_F(ArraysTest, stdInt8Array)
+TEST_F(ArrayTest, stdInt8Array)
 {
     std::vector<int8_t> rawArray = {INT8_MIN, 7, INT8_MAX};
-    testArray(StdIntArrayTraits<int8_t>(), rawArray, 8);
+    testArray(rawArray, StdIntArrayTraits<int8_t>(), 8);
 }
 
-TEST_F(ArraysTest, stdInt16Array)
+TEST_F(ArrayTest, stdInt16Array)
 {
     std::vector<int16_t> rawArray = {INT16_MIN, 7, INT16_MAX};
-    testArray(StdIntArrayTraits<int16_t>(), rawArray, 16);
+    testArray(rawArray, StdIntArrayTraits<int16_t>(), 16);
 }
 
-TEST_F(ArraysTest, stdInt32Array)
+TEST_F(ArrayTest, stdInt32Array)
 {
     std::vector<int32_t> rawArray = {INT32_MIN, 7, INT32_MAX};
-    testArray(StdIntArrayTraits<int32_t>(), rawArray, 32);
+    testArray(rawArray, StdIntArrayTraits<int32_t>(), 32);
 }
 
-TEST_F(ArraysTest, stdInt64Array)
+TEST_F(ArrayTest, stdInt64Array)
 {
     std::vector<int64_t> rawArray = {INT64_MIN, 7, INT64_MAX};
-    testArray(StdIntArrayTraits<int64_t>(), rawArray, 64);
+    testArray(rawArray, StdIntArrayTraits<int64_t>(), 64);
 }
 
-TEST_F(ArraysTest, stdUInt8Array)
+TEST_F(ArrayTest, stdUInt8Array)
 {
     std::vector<uint8_t> rawArray = {0, 7, UINT8_MAX};
-    testArray(StdIntArrayTraits<uint8_t>(), rawArray, 8);
+    testArray(rawArray, StdIntArrayTraits<uint8_t>(), 8);
 }
 
-TEST_F(ArraysTest, stdUInt16Array)
+TEST_F(ArrayTest, stdUInt16Array)
 {
     std::vector<uint16_t> rawArray = {0, 7, UINT16_MAX};
-    testArray(StdIntArrayTraits<uint16_t>(), rawArray, 16);
+    testArray(rawArray, StdIntArrayTraits<uint16_t>(), 16);
 }
 
-TEST_F(ArraysTest, stdUInt32Array)
+TEST_F(ArrayTest, stdUInt32Array)
 {
     std::vector<uint32_t> rawArray = {0, 7, UINT32_MAX};
-    testArray(StdIntArrayTraits<uint32_t>(), rawArray, 32);
+    testArray(rawArray, StdIntArrayTraits<uint32_t>(), 32);
 }
 
-TEST_F(ArraysTest, stdUInt64Array)
+TEST_F(ArrayTest, stdUInt64Array)
 {
     std::vector<uint64_t> rawArray = {0, 7, UINT64_MAX};
-    testArray(StdIntArrayTraits<uint64_t>(), rawArray, 64);
+    testArray(rawArray, StdIntArrayTraits<uint64_t>(), 64);
 }
 
-TEST_F(ArraysTest, varInt16Array)
+TEST_F(ArrayTest, varInt16Array)
 {
     std::vector<int16_t> rawArray = {1 << 5, 1 << (5 + 8)};
     const size_t bitSize = 8 * (1 + 2);
-    testArray(VarIntNNArrayTraits<int16_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntNNArrayTraits<int16_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varInt32Array)
+TEST_F(ArrayTest, varInt32Array)
 {
     std::vector<int32_t> rawArray = {1 << 5, 1 << (5 + 7), 1 << (5 + 7 + 7), 1 << (5 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
-    testArray(VarIntNNArrayTraits<int32_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntNNArrayTraits<int32_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varInt64Array)
+TEST_F(ArrayTest, varInt64Array)
 {
     std::vector<int64_t> rawArray = {
             INT64_C(1) << 5,
@@ -600,24 +623,24 @@ TEST_F(ArraysTest, varInt64Array)
             INT64_C(1) << (5 + 7 + 7 + 7 + 7 + 7 + 7),
             INT64_C(1) << (5 + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
-    testArray(VarIntNNArrayTraits<int64_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntNNArrayTraits<int64_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varUInt16Array)
+TEST_F(ArrayTest, varUInt16Array)
 {
     std::vector<uint16_t> rawArray = {1 << 6, 1 << (6 + 8)};
     const size_t bitSize = 8 * (1 + 2);
-    testArray(VarIntNNArrayTraits<uint16_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntNNArrayTraits<uint16_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varUInt32Array)
+TEST_F(ArrayTest, varUInt32Array)
 {
     std::vector<uint32_t> rawArray = {1 << 6, 1 << (6 + 7), 1 << (6 + 7 + 7), 1 << (6 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4);
-    testArray(VarIntNNArrayTraits<uint32_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntNNArrayTraits<uint32_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varUInt64Array)
+TEST_F(ArrayTest, varUInt64Array)
 {
     std::vector<uint64_t> rawArray = {
             UINT64_C(1) << 6,
@@ -629,10 +652,10 @@ TEST_F(ArraysTest, varUInt64Array)
             UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8);
-    testArray(VarIntNNArrayTraits<uint64_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntNNArrayTraits<uint64_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varIntArray)
+TEST_F(ArrayTest, varIntArray)
 {
     std::vector<int64_t> rawArray;
     // 1 byte
@@ -668,10 +691,10 @@ TEST_F(ArraysTest, varIntArray)
     // 1 byte - special case, INT64_MIN stored as -0
     rawArray.push_back(INT64_MIN);
     const size_t bitSize = 8 * (3 + 2 * (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9) + 1);
-    testArray(VarIntArrayTraits<int64_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntArrayTraits<int64_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varUIntArray)
+TEST_F(ArrayTest, varUIntArray)
 {
     std::vector<uint64_t> rawArray;
     // 1 byte
@@ -695,10 +718,10 @@ TEST_F(ArraysTest, varUIntArray)
     // 9 bytes
     rawArray.push_back(UINT64_MAX);
     const size_t bitSize = 8 * (2 + (1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9));
-    testArray(VarIntArrayTraits<uint64_t>(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarIntArrayTraits<uint64_t>(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, varSizeArray)
+TEST_F(ArrayTest, varSizeArray)
 {
     std::vector<uint32_t> rawArray = {
             UINT32_C(1) << 6,
@@ -707,76 +730,76 @@ TEST_F(ArraysTest, varSizeArray)
             UINT32_C(1) << (6 + 7 + 7 + 7),
             UINT32_C(1) << (1 + 7 + 7 + 7 + 8)};
     const size_t bitSize = 8 * (1 + 2 + 3 + 4 + 5);
-    testArray(VarSizeArrayTraits(), rawArray, bitSize, bitSize);
+    testArray(rawArray, VarSizeArrayTraits(), bitSize, bitSize);
 }
 
-TEST_F(ArraysTest, float16Array)
+TEST_F(ArrayTest, float16Array)
 {
     const size_t elementBitSize = 16;
     std::vector<float> rawArray = {-9.0, 0.0,  10.0};
-    testArray(Float16ArrayTraits(), rawArray, elementBitSize);
+    testArray(rawArray, Float16ArrayTraits(), elementBitSize);
 }
 
-TEST_F(ArraysTest, float32Array)
+TEST_F(ArrayTest, float32Array)
 {
     const size_t elementBitSize = 32;
     std::vector<float> rawArray = {-9.0, 0.0,  10.0};
-    testArray(Float32ArrayTraits(), rawArray, elementBitSize);
+    testArray(rawArray, Float32ArrayTraits(), elementBitSize);
 }
 
-TEST_F(ArraysTest, float64Array)
+TEST_F(ArrayTest, float64Array)
 {
     const size_t elementBitSize = 64;
     std::vector<double> rawArray = {-9.0, 0.0, 10.0};
-    testArray(Float64ArrayTraits(), rawArray, elementBitSize);
+    testArray(rawArray, Float64ArrayTraits(), elementBitSize);
 }
 
-TEST_F(ArraysTest, boolArray)
+TEST_F(ArrayTest, boolArray)
 {
     const size_t elementBitSize = 1;
     std::vector<bool> rawArray = {false, true};
-    testArray(BoolArrayTraits(), rawArray, elementBitSize);
+    testArray(rawArray, BoolArrayTraits(), elementBitSize);
 }
 
-TEST_F(ArraysTest, stringArray)
+TEST_F(ArrayTest, stringArray)
 {
     const size_t stringLengthBitSize = 8;
     const size_t stringBitSize = (sizeof("StringX") - 1) * 8; // without terminating character
     const size_t elementBitSize = stringLengthBitSize + stringBitSize;
     std::vector<std::string> rawArray = {"String0", "String1", "String2"};
-    testArray(StringArrayTraits<>(), rawArray, elementBitSize);
+    testArray(rawArray, StringArrayTraits(), elementBitSize);
 }
 
-TEST_F(ArraysTest, bitBufferArray)
+TEST_F(ArrayTest, bitBufferArray)
 {
     const size_t bitBufferLengthBitSize = 8;
     const size_t bitBufferBitSize = 10;
     const size_t elementBitSize = bitBufferLengthBitSize + bitBufferBitSize;
     std::vector<BitBuffer> rawArray = {BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize),
             BitBuffer(bitBufferBitSize)};
-    testArray(BitBufferArrayTraits<>(), rawArray, elementBitSize);
+    testArray(rawArray, BitBufferArrayTraits(), elementBitSize);
 }
 
-TEST_F(ArraysTest, enumArray)
+TEST_F(ArrayTest, enumArray)
 {
     std::vector<DummyEnum> rawArray = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};
     const size_t elementBitSize = 8;
-    testArray(EnumArrayTraits<DummyEnum>(), rawArray, elementBitSize);
+    testArray(rawArray, EnumArrayTraits<DummyEnum>(), elementBitSize);
 
     std::vector<DummyEnum> invalidRawArray = {static_cast<DummyEnum>(10)};
-    ASSERT_THROW(testArray(EnumArrayTraits<DummyEnum>(), invalidRawArray, elementBitSize),
+    ASSERT_THROW(testArray(invalidRawArray, EnumArrayTraits<DummyEnum>(), elementBitSize),
             zserio::CppRuntimeException);
 }
 
-TEST_F(ArraysTest, bitmaskArray)
+TEST_F(ArrayTest, bitmaskArray)
 {
     std::vector<DummyBitmask> rawArray = {DummyBitmask::Values::READ, DummyBitmask::Values::WRITE,
             DummyBitmask::Values::CREATE};
     const size_t elementBitSize = 8;
-    testArray(BitmaskArrayTraits<DummyBitmask>(), rawArray, elementBitSize);
+    testArray(rawArray, BitmaskArrayTraits<DummyBitmask>(), elementBitSize);
 }
 
-TEST_F(ArraysTest, objectArray)
+TEST_F(ArrayTest, objectArray)
 {
     std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
     size_t unalignedBitSize = 0;
@@ -787,10 +810,10 @@ TEST_F(ArraysTest, objectArray)
         unalignedBitSize += bitSize;
         alignedBitSize += (i == 0) ? bitSize : alignTo(8, bitSize);
     }
-    testArrayInitializeElements(makeObjectArrayTraits<DummyObject>(ArrayTestDummyObjectElementFactory()),
-            rawArray);
-    testArray(makeObjectArrayTraits<DummyObject>(ArrayTestDummyObjectElementFactory()),
-            rawArray, unalignedBitSize, alignedBitSize);
+    testArrayInitializeElements(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(
+            ArrayTestDummyObjectElementFactory()));
+    testArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(
+            ArrayTestDummyObjectElementFactory()), unalignedBitSize, alignedBitSize);
 }
 
 } // namespace zserio
