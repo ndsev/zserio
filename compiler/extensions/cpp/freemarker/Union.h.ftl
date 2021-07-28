@@ -57,7 +57,7 @@ public:
         <#if fieldList?has_content>
             <#list fieldList as field>
         <#if !field?is_first>else </#if>if (<#rt>
-                <#lt>m_objectChoice.isType<${field.cppTypeName}>() && <#rt>
+                <#lt>m_objectChoice.isType<<@field_cpp_type_name field/>>() && <#rt>
                 <#lt>(tagHint == UNDEFINED_CHOICE || tagHint == <@choice_tag_name field/>))
                 m_choiceTag = <@choice_tag_name field/>;
             </#list>

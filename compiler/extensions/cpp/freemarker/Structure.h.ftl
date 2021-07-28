@@ -113,7 +113,7 @@ public:
 private:
     <@inner_classes_declaration fieldList/>
 <#list fieldList as field>
-    <@field_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
+    <@field_member_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>
             <#lt>,
             const allocator_type& allocator<#rt>
@@ -126,7 +126,7 @@ private:
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#list fieldList as field>
-    <@field_type_name field/> <@field_member_name field/>;
+    <@field_member_type_name field/> <@field_member_name field/>;
 </#list>
 };
 <@namespace_end package.path/>

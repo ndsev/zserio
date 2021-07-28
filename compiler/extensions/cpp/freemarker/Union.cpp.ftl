@@ -160,19 +160,19 @@ ${name}::ChoiceTag ${name}::choiceTag() const
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
     <#if needs_field_getter(field)>
-${field.cppTypeName}& ${name}::${field.getterName}()
+<@field_raw_cpp_type_name field/>& ${name}::${field.getterName}()
 {
-    return m_objectChoice.get<${field.cppTypeName}>();
+    return m_objectChoice.get<<@field_cpp_type_name field/>>()<#if field.array??>.getRawArray()</#if>;
 }
 
     </#if>
-${field.cppArgumentTypeName} ${name}::${field.getterName}() const
+<@field_raw_cpp_argument_type_name field/> ${name}::${field.getterName}() const
 {
-    return m_objectChoice.get<${field.cppTypeName}>();
+    return m_objectChoice.get<<@field_cpp_type_name field/>>()<#if field.array??>.getRawArray()</#if>;
 }
 
     <#if needs_field_setter(field)>
-void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field/>)
+void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>)
 {
     m_choiceTag = <@choice_tag_name field/>;
     m_objectChoice = <@field_argument_name field/>;
@@ -180,7 +180,7 @@ void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_
 
     </#if>
     <#if needs_field_rvalue_setter(field)>
-void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field/>)
+void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>)
 {
     m_choiceTag = <@choice_tag_name field/>;
     m_objectChoice = ::std::move(<@field_argument_name field/>);
@@ -259,7 +259,7 @@ bool ${name}::operator==(const ${name}& other) const
     {
     <#list fieldList as field>
     case <@choice_tag_name field/>:
-        return m_objectChoice.get<${field.cppTypeName}>() == other.m_objectChoice.get<${field.cppTypeName}>();
+        return m_objectChoice.get<<@field_cpp_type_name field/>>() == other.m_objectChoice.get<<@field_cpp_type_name field/>>();
     </#list>
     default:
         return true; // UNDEFINED_CHOICE
@@ -282,7 +282,7 @@ uint32_t ${name}::hashCode() const
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
-            result = ::zserio::calcHashCode(result, m_objectChoice.get<${field.cppTypeName}>());
+            result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_type_name field/>>());
             break;
         </#list>
         default:
@@ -352,7 +352,7 @@ ${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) con
     {
         <#list fieldList as field>
     case <@choice_tag_name field/>:
-        return ::zserio::allocatorPropagatingCopy<${field.cppTypeName}>(m_objectChoice, allocator);
+        return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name field/>>(m_objectChoice, allocator);
         </#list>
     default:
         return ${types.anyHolder.name}(allocator);

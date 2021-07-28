@@ -64,7 +64,6 @@ public class CompoundFieldTemplateData
         isEnum = fieldBaseType instanceof EnumType;
 
         constraint = createConstraint(field, cppNativeMapper, cppExpressionFormatter, includeCollector);
-
         offset = createOffset(field, cppNativeMapper, cppExpressionFormatter,
                 cppIndirectExpressionFormatter);
         array = createArray(fieldNativeType, fieldTypeInstantiation, parentType, cppNativeMapper,

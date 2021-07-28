@@ -12,6 +12,8 @@ public class TypesContext
         {
             vector = new NativeTypeDefinition(STD_PACKAGE_NAME, "vector",
                     true, false, "vector");
+            array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "Array",
+                    true, false, "zserio/Array.h");
             string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string",
                     true, false, "zserio/String.h");
             map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map",
@@ -33,6 +35,8 @@ public class TypesContext
         {
             vector = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "vector",
                     true, false, "zserio/pmr/Vector.h");
+            array = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "Array",
+                    true, false, "zserio/pmr/Array.h");
             string = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "string",
                     false, false, "zserio/pmr/String.h");
             map = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "map",
@@ -54,6 +58,8 @@ public class TypesContext
         {
             vector = new NativeTypeDefinition(STD_PACKAGE_NAME, "vector",
                     true, true, "vector");
+            array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicArray",
+                    true, true, "zserio/Array.h");
             string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string",
                     true, true, "zserio/String.h");
             map = new NativeTypeDefinition(STD_PACKAGE_NAME, "map",
@@ -116,6 +122,11 @@ public class TypesContext
     public NativeTypeDefinition getVector()
     {
         return vector;
+    }
+
+    public NativeTypeDefinition getArray()
+    {
+        return array;
     }
 
     public NativeTypeDefinition getString()
@@ -204,6 +215,7 @@ public class TypesContext
 
     private final AllocatorDefinition allocator;
     private final NativeTypeDefinition vector;
+    private final NativeTypeDefinition array;
     private final NativeTypeDefinition string;
     private final NativeTypeDefinition map;
     private final NativeTypeDefinition set;

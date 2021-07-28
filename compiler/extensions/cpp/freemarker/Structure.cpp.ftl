@@ -35,7 +35,11 @@
             <#if field.optional??>
                 ::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if><#t>
             <#else>
+                <#if field.array??>
+                <@array_traits field/>, allocator<#t>
+                <#else>
                 <#if field.needsAllocator>allocator<#elseif field.isSimpleType>${field.cppTypeName}()</#if><#t>
+                </#if>
             </#if>
         </#if>
         <#lt>)<#if field?has_next>,</#if>
@@ -87,26 +91,26 @@ void ${name}::initializeChildren()
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
     <#if needs_field_getter(field)>
-${field.cppTypeName}& ${name}::${field.getterName}()
+<@field_raw_cpp_type_name field/>& ${name}::${field.getterName}()
 {
-    return <@compound_get_field field/>;
+    return <@compound_get_field field/><#if field.array??>.getRawArray()</#if>;
 }
 
     </#if>
-${field.cppArgumentTypeName} ${name}::${field.getterName}() const
+<@field_raw_cpp_argument_type_name field/> ${name}::${field.getterName}() const
 {
-    return <@compound_get_field field/>;
+    return <@compound_get_field field/><#if field.array??>.getRawArray()</#if>;
 }
 
     <#if needs_field_setter(field)>
-void ${name}::${field.setterName}(${field.cppArgumentTypeName} <@field_argument_name field/>)
+void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>)
 {
     <@field_member_name field/> = <@field_argument_name field/>;
 }
 
     </#if>
     <#if needs_field_rvalue_setter(field)>
-void ${name}::${field.setterName}(${field.cppTypeName}&& <@field_argument_name field/>)
+void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>)
 {
     <@field_member_name field/> = ::std::move(<@field_argument_name field/>);
 }
@@ -274,7 +278,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 </#if>
 <#list fieldList as field>
 
-<@field_type_name field/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
+<@field_member_type_name field/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>
         <#lt>,
         const allocator_type& allocator<#rt>

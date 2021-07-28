@@ -2,23 +2,19 @@ package zserio.extension.cpp.types;
 
 import zserio.ast.PackageName;
 import zserio.extension.cpp.CppFullNameFormatter;
-import zserio.extension.cpp.TypesContext;
 
 public class NativeArrayType extends CppNativeType
 {
     public NativeArrayType(CppNativeType elementType, String arrayTraitsName, boolean hasTemplatedTraits,
-            TypesContext typesContext, NativeVectorType nativeVectorType)
+            NativeVectorType nativeVectorType)
     {
-        super(nativeVectorType.getPackageName(), nativeVectorType.getName() + "<" +
-                elementType.getFullName() +
-                (nativeVectorType.needsAllocatorArgument() ?
-                        ", " + typesContext.getAllocatorDefinition().getAllocatorType() +
-                                "<" + elementType.getFullName() + ">" : "") + ">");
+        super(ZSERIO_PACKAGE_NAME, "Array");
+
         this.arrayTraitsName = CppFullNameFormatter.getFullName(ZSERIO_PACKAGE_NAME, arrayTraitsName);
         this.hasTemplatedTraits = hasTemplatedTraits;
 
         addIncludeFiles(nativeVectorType);
-        addSystemIncludeFile(ARRAY_TRAITS_INCLUDE);
+        addSystemIncludeFile(ARRAY_INCLUDE);
         addIncludeFiles(elementType);
     }
 
@@ -43,7 +39,7 @@ public class NativeArrayType extends CppNativeType
     }
 
     private static final PackageName ZSERIO_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();
-    private static final String ARRAY_TRAITS_INCLUDE = "zserio/Arrays.h";
+    private static final String ARRAY_INCLUDE = "zserio/Array.h";
 
     private final String arrayTraitsName;
     private final boolean hasTemplatedTraits;
