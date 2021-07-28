@@ -3,7 +3,7 @@ package zserio.runtime.array;
 import zserio.runtime.ZserioError;
 
 /**
- * Interface used to check array indexed offsets during reading/writing from/to bit stream.
+ * Interface used to check array indexed offsets during reading/writing of arrays from/to bit stream.
  */
 public interface OffsetChecker
 {

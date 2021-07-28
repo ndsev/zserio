@@ -8,7 +8,10 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import zserio.runtime.array.UnsignedByteArray;
+import zserio.runtime.array.Array;
+import zserio.runtime.array.RawArrayHolder;
+import zserio.runtime.array.ArrayTraits;
+import zserio.runtime.array.ArrayType;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class ValidationBitStreamReaderTest
@@ -189,17 +192,20 @@ public class ValidationBitStreamReaderTest
     public void validationWithImplicitArray() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        short[] arrayData = new short[]{0xAB, 0xCD};
-        final UnsignedByteArray writtenArray = new UnsignedByteArray(arrayData, 0, arrayData.length);
-        final int numBits = 8;
-        writtenArray.write(writer, numBits);
+        writer.writeBits(0xAB, 8);
+        writer.writeBits(0xCD, 8);
 
         final byte[] originalStream = writer.toByteArray();
 
         final ValidationBitStreamReader reader = new ValidationBitStreamReader(originalStream);
-        final UnsignedByteArray readArray = new UnsignedByteArray(reader, -1, numBits);
-        assertEquals(0xAB, readArray.elementAt(0));
-        assertEquals(0xCD, readArray.elementAt(1));
+        final short[] arrayData = new short[]{0xAB, 0xCD};
+        final RawArrayHolder rawArrayHolder = new RawArrayHolder.ShortArray(arrayData);
+        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldShortArray(8);
+        final Array readArray = new Array(rawArrayHolder, arrayTraits, ArrayType.IMPLICIT);
+        readArray.read(reader);
+        final short[] readRawArray = readArray.getRawArray();
+        assertEquals(0xAB, readRawArray[0]);
+        assertEquals(0xCD, readRawArray[1]);
 
         final byte[] maskedStream = reader.toMaskedByteArray();
         assertTrue(Arrays.equals(originalStream, maskedStream));

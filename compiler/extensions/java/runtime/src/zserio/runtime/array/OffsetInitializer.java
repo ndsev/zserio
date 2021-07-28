@@ -3,7 +3,7 @@ package zserio.runtime.array;
 /**
  * Interface used to set array indexed offsets during offset initialization.
  */
-public interface OffsetSetter
+public interface OffsetInitializer
 {
     /**
      * Sets the bit stream offset to indexed offset.
