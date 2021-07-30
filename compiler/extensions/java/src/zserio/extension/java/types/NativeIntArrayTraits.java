@@ -1,10 +1,10 @@
 package zserio.extension.java.types;
 
-public class NativeBigIntegerArrayType extends NativeArrayType
+public class NativeIntArrayTraits extends NativeArrayTraits
 {
-    public NativeBigIntegerArrayType()
+    public NativeIntArrayTraits(String name)
     {
-        super("BigIntegerArray");
+        super(name);
     }
 
     @Override

@@ -72,7 +72,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
             bitSize = ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize();
         }
 
-        return (bitSize != null) ? JavaLiteralFormatter.formatDecimalLiteral(bitSize) : null;
+        return (bitSize != null) ? JavaLiteralFormatter.formatIntLiteral(bitSize) : null;
     }
 
     public static class EnumItemData

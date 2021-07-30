@@ -6,9 +6,10 @@ import zserio.ast.PackageName;
 
 public class NativeByteType extends NativeIntegralType
 {
-    public NativeByteType(boolean nullable)
+    public NativeByteType(boolean nullable, NativeArrayTraits arrayTraits)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Byte" : "byte");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Byte" : "byte", arrayTraits);
+
         this.nullable = nullable;
     }
 

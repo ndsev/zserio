@@ -6,9 +6,10 @@ import zserio.ast.PackageName;
 
 public class NativeShortType extends NativeIntegralType
 {
-    public NativeShortType(boolean nullable)
+    public NativeShortType(boolean nullable, NativeArrayTraits arrayTraits)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Short" : "short");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Short" : "short", arrayTraits);
+
         this.nullable = nullable;
     }
 

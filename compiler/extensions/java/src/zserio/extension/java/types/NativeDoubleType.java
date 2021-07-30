@@ -2,11 +2,13 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
-public class NativeDoubleType extends JavaNativeType
+public class NativeDoubleType extends NativeArrayableType
 {
     public NativeDoubleType(boolean nullable)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Double" : "double");
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Double" : "double",
+                new NativeIntArrayTraits("DoubleArray"));
+
         this.nullable = nullable;
     }
 

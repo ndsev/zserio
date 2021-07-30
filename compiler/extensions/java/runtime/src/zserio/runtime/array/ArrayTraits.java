@@ -492,6 +492,48 @@ public interface ArrayTraits
     }
 
     /**
+     * Array traits for zserio uint64 and bit:64 arrays which are mapped to ArrayList of BigIntegers.
+     */
+    public static class BitFieldBigIntegerArray implements ArrayTraits
+    {
+        @Override
+        public boolean isBitSizeOfConstant()
+        {
+            return true;
+        }
+
+        @Override
+        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        {
+            return NUM_BITS;
+        }
+
+        @Override
+        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        {
+            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+        }
+
+        @Override
+        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
+                throws IOException, ZserioError
+        {
+            final List<BigInteger> rawArray = rawArrayHolder.getRawArray();
+            rawArray.add(reader.readBigInteger(NUM_BITS));
+        }
+
+        @Override
+        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
+                throws IOException, ZserioError
+        {
+            final List<BigInteger> rawArray = rawArrayHolder.getRawArray();
+            writer.writeBigInteger(rawArray.get(index), NUM_BITS);
+        }
+
+        private static final int NUM_BITS = 64;
+    }
+
+    /**
      * Array traits for zserio varint16 arrays which are mapped to Java short[] array.
      */
     public static class VarInt16Array implements ArrayTraits

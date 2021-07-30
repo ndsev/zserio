@@ -18,6 +18,7 @@ import zserio.ast.UnionType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
+import zserio.extension.java.types.NativeArrayTraits;
 import zserio.extension.java.types.NativeArrayType;
 import zserio.extension.java.types.NativeBooleanType;
 import zserio.extension.java.types.NativeDoubleType;
@@ -25,7 +26,6 @@ import zserio.extension.java.types.NativeEnumType;
 import zserio.extension.java.types.NativeFloatType;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
-import zserio.extension.java.types.NativeObjectArrayType;
 import zserio.tools.ZserioToolPrinter;
 
 public final class CompoundFieldTemplateData
@@ -42,12 +42,12 @@ public final class CompoundFieldTemplateData
         optional = createOptional(field, javaExpressionFormatter);
 
         final boolean isTypeNullable = (optional != null);
-        final JavaNativeType nativeType = (isTypeNullable)
-                ? javaNativeMapper.getNullableJavaType(fieldTypeInstantiation)
-                : javaNativeMapper.getJavaType(fieldTypeInstantiation);
+        final JavaNativeType nullableNativeType = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
+        final JavaNativeType nativeType = (isTypeNullable) ? nullableNativeType :
+                javaNativeMapper.getJavaType(fieldTypeInstantiation);
 
         javaTypeName = nativeType.getFullName();
-        javaNullableTypeName = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation).getFullName();
+        javaNullableTypeName = nullableNativeType.getFullName();
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
@@ -66,7 +66,6 @@ public final class CompoundFieldTemplateData
         isDouble = nativeType instanceof NativeDoubleType;
         isEnum = nativeType instanceof NativeEnumType;
         isSimpleType = nativeType.isSimple();
-        isObjectArray = nativeType instanceof NativeObjectArrayType;
 
         constraint = createConstraint(field, javaExpressionFormatter);
 
@@ -160,11 +159,6 @@ public final class CompoundFieldTemplateData
         return isSimpleType;
     }
 
-    public boolean getIsObjectArray()
-    {
-        return isObjectArray;
-    }
-
     public String getConstraint()
     {
         return constraint;
@@ -246,7 +240,7 @@ public final class CompoundFieldTemplateData
             String value = null;
             if (typeInstantiation.getBaseType() instanceof FixedSizeType)
             {
-                value = JavaLiteralFormatter.formatDecimalLiteral(
+                value = JavaLiteralFormatter.formatIntLiteral(
                         ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
             }
             else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
@@ -326,11 +320,17 @@ public final class CompoundFieldTemplateData
                         "Unimplemented packed array field reached!");
             }
             length = createLength(arrayInstantiation, javaExpressionFormatter);
+
+            wrapperJavaTypeName = nativeType.getArrayWrapper().getFullName();
+            rawHolderJavaTypeName = nativeType.getRawArrayHolder().getFullName();
+            final NativeArrayTraits nativeArrayTraits = nativeType.getArrayTraits();
+            traitsJavaTypeName = nativeArrayTraits.getFullName();
+
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementJavaTypeName = elementNativeType.getFullName();
 
-            requiresElementBitSize = nativeType.requiresElementBitSize();
-            requiresElementFactory = nativeType.requiresElementFactory();
+            requiresElementBitSize = nativeArrayTraits.requiresElementBitSize();
+            requiresElementFactory = nativeArrayTraits.requiresElementFactory();
             requiresParentContext = createRequiresParentContext(elementTypeInstantiation);
 
             elementBitSize = new BitSize(elementTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
@@ -347,6 +347,21 @@ public final class CompoundFieldTemplateData
         public String getLength()
         {
             return length;
+        }
+
+        public String getWrapperJavaTypeName()
+        {
+            return wrapperJavaTypeName;
+        }
+
+        public String getRawHolderJavaTypeName()
+        {
+            return rawHolderJavaTypeName;
+        }
+
+        public String getTraitsJavaTypeName()
+        {
+            return traitsJavaTypeName;
         }
 
         public String getElementJavaTypeName()
@@ -416,15 +431,18 @@ public final class CompoundFieldTemplateData
             return false;
         }
 
-        private final boolean       isImplicit;
-        private final String        length;
-        private final String        elementJavaTypeName;
-        private final boolean       requiresElementBitSize;
-        private final boolean       requiresElementFactory;
-        private final boolean       requiresParentContext;
-        private final BitSize       elementBitSize;
-        private final boolean       isElementEnum;
-        private final Compound      elementCompound;
+        private final boolean   isImplicit;
+        private final String    length;
+        private final String    wrapperJavaTypeName;
+        private final String    rawHolderJavaTypeName;
+        private final String    traitsJavaTypeName;
+        private final String    elementJavaTypeName;
+        private final boolean   requiresElementBitSize;
+        private final boolean   requiresElementFactory;
+        private final boolean   requiresParentContext;
+        private final BitSize   elementBitSize;
+        private final boolean   isElementEnum;
+        private final Compound  elementCompound;
     }
 
     public static class Compound
@@ -596,7 +614,6 @@ public final class CompoundFieldTemplateData
     private final boolean                       isDouble;
     private final boolean                       isEnum;
     private final boolean                       isSimpleType;
-    private final boolean                       isObjectArray;
     private final String                        constraint;
 
     private final BitSize                       bitSize;

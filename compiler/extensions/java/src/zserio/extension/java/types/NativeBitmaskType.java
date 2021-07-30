@@ -2,11 +2,14 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
-public class NativeBitmaskType extends JavaNativeType
+public class NativeBitmaskType extends NativeArrayableType
 {
-    public NativeBitmaskType(PackageName packageName, String name, NativeIntegralType nativeBaseType)
+    public NativeBitmaskType(PackageName packageName, String name, NativeIntegralType nativeBaseType,
+            boolean withWriterCode)
     {
-        super(packageName, name);
+        super(packageName, name,
+                new NativeArrayTraits(withWriterCode ? "WriteObjectArray<" : "ObjectArray<"+ name + ">"));
+
         this.nativeBaseType = nativeBaseType;
     }
 

@@ -111,7 +111,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
             bitSize = ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize();
         }
 
-        return (bitSize != null) ? JavaLiteralFormatter.formatDecimalLiteral(bitSize) : null;
+        return (bitSize != null) ? JavaLiteralFormatter.formatIntLiteral(bitSize) : null;
     }
 
     private static BigInteger getUpperBound(TypeInstantiation typeInstantiation) throws ZserioExtensionException

@@ -2,11 +2,11 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
-public class NativeBitBufferType extends JavaNativeType
+public class NativeBitBufferType extends NativeArrayableType
 {
     public NativeBitBufferType()
     {
-        super(RUNTIME_IO_PACKAGE, "BitBuffer");
+        super(RUNTIME_IO_PACKAGE, "BitBuffer", new NativeArrayTraits("BitBufferArray") );
     }
 
     @Override

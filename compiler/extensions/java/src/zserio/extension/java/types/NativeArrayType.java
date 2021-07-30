@@ -4,9 +4,13 @@ import zserio.ast.PackageName;
 
 public class NativeArrayType extends JavaNativeType
 {
-    public NativeArrayType(String name)
+    public NativeArrayType(NativeArrayableType elementType)
     {
-        super(RUNTIME_ARRAY_PACKAGE, name);
+        super(getPackageName(elementType), getRawArrayName(elementType));
+
+        arrayWrapper = new NativeArrayWrapper();
+        rawArrayHolder = new NativeRawArrayHolder(elementType);
+        arrayTraits = elementType.getArrayTraits();
     }
 
     @Override
@@ -15,16 +19,35 @@ public class NativeArrayType extends JavaNativeType
         return false;
     }
 
-    public boolean requiresElementBitSize()
+    public NativeArrayWrapper getArrayWrapper()
     {
-        return false;
+        return arrayWrapper;
     }
 
-    public boolean requiresElementFactory()
+    public NativeRawArrayHolder getRawArrayHolder()
     {
-        return false;
+        return rawArrayHolder;
     }
 
-    private static final PackageName RUNTIME_ARRAY_PACKAGE =
-            new PackageName.Builder().addId("zserio").addId("runtime").addId("array").get();
+    public NativeArrayTraits getArrayTraits()
+    {
+        return arrayTraits;
+    }
+
+    private static PackageName getPackageName(JavaNativeType elementType)
+    {
+        return elementType.isSimple() ? PackageName.EMPTY : JAVA_UTIL_PACKAGE;
+    }
+
+    private static String getRawArrayName(JavaNativeType elementType)
+    {
+        return elementType.isSimple() ? elementType.getName() + "[]" : "List<" + elementType.getName() + ">";
+    }
+
+    private static final PackageName JAVA_UTIL_PACKAGE =
+            new PackageName.Builder().addId("java").addId("util").get();
+
+    private final NativeArrayWrapper arrayWrapper;
+    private final NativeRawArrayHolder rawArrayHolder;
+    private final NativeArrayTraits arrayTraits;
 }

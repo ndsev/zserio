@@ -152,7 +152,7 @@ public class JavaRuntimeFunctionDataCreator
                     try
                     {
                         final String suffix = "SignedBits";
-                        final String arg = JavaLiteralFormatter.formatDecimalLiteral(bitSize);
+                        final String arg = JavaLiteralFormatter.formatIntLiteral(bitSize);
                         templateData = new RuntimeFunctionTemplateData(
                                 suffix, arg, javaNativeMapper.getJavaType(type).getFullName());
                     }
@@ -183,7 +183,7 @@ public class JavaRuntimeFunctionDataCreator
                     try
                     {
                         templateData = new RuntimeFunctionTemplateData("BigInteger",
-                                JavaLiteralFormatter.formatDecimalLiteral(bitSize));
+                                JavaLiteralFormatter.formatIntLiteral(bitSize));
                     }
                     catch (ZserioExtensionException exception)
                     {
@@ -195,7 +195,7 @@ public class JavaRuntimeFunctionDataCreator
                     try
                     {
                         final String suffix = "Bits";
-                        final String arg = JavaLiteralFormatter.formatDecimalLiteral(bitSize);
+                        final String arg = JavaLiteralFormatter.formatIntLiteral(bitSize);
                         templateData = new RuntimeFunctionTemplateData(
                                 suffix, arg, javaNativeMapper.getJavaType(type).getFullName());
                     }

@@ -15,9 +15,9 @@ import zserio.ast.PackageName;
  */
 public class NativeBigIntegerType extends NativeIntegralType
 {
-    public NativeBigIntegerType()
+    public NativeBigIntegerType(NativeArrayTraits arrayTraits)
     {
-        super(BIG_INTEGER_PACKAGE, "BigInteger");
+        super(BIG_INTEGER_PACKAGE, "BigInteger", arrayTraits);
     }
 
     @Override
