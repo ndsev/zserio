@@ -24,6 +24,7 @@
 
 class ${name}
 {
+<@top_private_section_declarations name, fieldList/>
 public:
     using allocator_type = ${types.allocator.default};
 
@@ -37,35 +38,6 @@ public:
 
 <#if withWriterCode>
     <@compound_constructor_declaration compoundConstructorsData/>
-    <#if fieldList?has_content>
-
-    <@compound_field_constructor_template_arg_list name, fieldList/>
-    explicit ${name}(
-            <#lt><@compound_field_constructor_type_list fieldList, 3/>,
-            ChoiceTag tagHint = UNDEFINED_CHOICE, const allocator_type& allocator = allocator_type()) :
-        <#if needs_compound_initialization(compoundConstructorsData)>
-            m_isInitialized(false),
-        <#elseif has_field_with_initialization(fieldList)>
-            m_areChildrenInitialized(false),
-        </#if>
-        <#if fieldList?has_content>
-            m_objectChoice(::std::forward<ZSERIO_T>(value), allocator)
-        <#else>
-            m_choiceTag(UNDEFINED_CHOICE)
-        </#if>
-    {
-        <#if fieldList?has_content>
-            <#list fieldList as field>
-        <#if !field?is_first>else </#if>if (<#rt>
-                <#lt>m_objectChoice.isType<<@field_cpp_type_name field/>>() && <#rt>
-                <#lt>(tagHint == UNDEFINED_CHOICE || tagHint == <@choice_tag_name field/>))
-                m_choiceTag = <@choice_tag_name field/>;
-            </#list>
-        else
-            throw ::zserio::CppRuntimeException("No match in union Union!");
-        </#if>
-    }
-    </#if>
 
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
@@ -120,7 +92,6 @@ public:
 </#if>
 
 private:
-    <@inner_classes_declaration fieldList/>
 <#if fieldList?has_content>
     ChoiceTag readChoiceTag(::zserio::BitStreamReader& in);
     ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);

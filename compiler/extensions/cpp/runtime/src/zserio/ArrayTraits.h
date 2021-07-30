@@ -166,6 +166,7 @@ public:
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -177,6 +178,7 @@ public:
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of the element to write.
      */
@@ -226,6 +228,7 @@ struct StdIntArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -237,6 +240,7 @@ struct StdIntArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -268,6 +272,7 @@ struct VarIntNNArrayTraits<int16_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -281,6 +286,7 @@ struct VarIntNNArrayTraits<int16_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -295,6 +301,7 @@ struct VarIntNNArrayTraits<int16_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -306,6 +313,7 @@ struct VarIntNNArrayTraits<int16_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -328,6 +336,7 @@ struct VarIntNNArrayTraits<int32_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -341,6 +350,7 @@ struct VarIntNNArrayTraits<int32_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -355,6 +365,7 @@ struct VarIntNNArrayTraits<int32_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -366,6 +377,7 @@ struct VarIntNNArrayTraits<int32_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -388,6 +400,7 @@ struct VarIntNNArrayTraits<int64_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -401,6 +414,7 @@ struct VarIntNNArrayTraits<int64_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -415,6 +429,7 @@ struct VarIntNNArrayTraits<int64_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -426,6 +441,7 @@ struct VarIntNNArrayTraits<int64_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -448,6 +464,7 @@ struct VarIntNNArrayTraits<uint16_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -461,6 +478,7 @@ struct VarIntNNArrayTraits<uint16_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -475,6 +493,7 @@ struct VarIntNNArrayTraits<uint16_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -486,6 +505,7 @@ struct VarIntNNArrayTraits<uint16_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -508,6 +528,7 @@ struct VarIntNNArrayTraits<uint32_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -521,6 +542,7 @@ struct VarIntNNArrayTraits<uint32_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -535,6 +557,7 @@ struct VarIntNNArrayTraits<uint32_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -546,6 +569,7 @@ struct VarIntNNArrayTraits<uint32_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -568,6 +592,7 @@ struct VarIntNNArrayTraits<uint64_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -581,6 +606,7 @@ struct VarIntNNArrayTraits<uint64_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -595,6 +621,7 @@ struct VarIntNNArrayTraits<uint64_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -606,6 +633,7 @@ struct VarIntNNArrayTraits<uint64_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -634,6 +662,7 @@ struct VarIntArrayTraits<int64_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -647,6 +676,7 @@ struct VarIntArrayTraits<int64_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -661,6 +691,7 @@ struct VarIntArrayTraits<int64_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -672,6 +703,7 @@ struct VarIntArrayTraits<int64_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -694,6 +726,7 @@ struct VarIntArrayTraits<uint64_t>
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -707,6 +740,7 @@ struct VarIntArrayTraits<uint64_t>
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -721,6 +755,7 @@ struct VarIntArrayTraits<uint64_t>
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -732,6 +767,7 @@ struct VarIntArrayTraits<uint64_t>
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -753,6 +789,7 @@ struct VarSizeArrayTraits
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -766,6 +803,7 @@ struct VarSizeArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -780,6 +818,7 @@ struct VarSizeArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -791,6 +830,7 @@ struct VarSizeArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write
      */
@@ -823,6 +863,7 @@ struct Float16ArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -837,6 +878,7 @@ struct Float16ArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -848,6 +890,7 @@ struct Float16ArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -880,6 +923,7 @@ struct Float32ArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -894,6 +938,7 @@ struct Float32ArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -905,6 +950,7 @@ struct Float32ArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -937,6 +983,7 @@ struct Float64ArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -951,6 +998,7 @@ struct Float64ArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -962,6 +1010,7 @@ struct Float64ArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -994,6 +1043,7 @@ struct BoolArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -1008,6 +1058,7 @@ struct BoolArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -1019,6 +1070,7 @@ struct BoolArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -1041,6 +1093,7 @@ public:
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -1054,6 +1107,7 @@ public:
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -1068,6 +1122,7 @@ public:
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -1080,6 +1135,7 @@ public:
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -1101,6 +1157,7 @@ struct BitBufferArrayTraits
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -1114,6 +1171,7 @@ struct BitBufferArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -1128,6 +1186,7 @@ struct BitBufferArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -1140,6 +1199,7 @@ struct BitBufferArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -1162,6 +1222,7 @@ struct EnumArrayTraits
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -1175,6 +1236,7 @@ struct EnumArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -1189,6 +1251,7 @@ struct EnumArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -1200,6 +1263,7 @@ struct EnumArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -1223,6 +1287,7 @@ struct BitmaskArrayTraits
     /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param index Index of element to use.
      *
      * \return Bit size of the array element.
@@ -1236,6 +1301,7 @@ struct BitmaskArrayTraits
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -1250,6 +1316,7 @@ struct BitmaskArrayTraits
     /**
      * Reads the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
     template <typename RAW_ARRAY>
@@ -1261,6 +1328,7 @@ struct BitmaskArrayTraits
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -1283,17 +1351,9 @@ class ObjectArrayTraits
 {
 public:
     /**
-     * Constructor.
-     *
-     * \param elementFactory Factory which knows how to create a single array element.
-     */
-    explicit ObjectArrayTraits(const ELEMENT_FACTORY& elementFactory) :
-            m_elementFactory(elementFactory)
-    {}
-
-    /**
      * Calculates bit size of the array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -1308,6 +1368,7 @@ public:
     /**
      * Initializes indexed offsets of the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
      * \param index Index of element to use.
      *
@@ -1322,18 +1383,22 @@ public:
     /**
      * Reads the single array element.
      *
+     * \param elementFactory Factory which knows how to create a single array element.
+     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      * \param index Index need in case of parameterized type which depends on the current index.
      */
     template <typename RAW_ARRAY>
-    void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t index) const
+    static void read(const ELEMENT_FACTORY& elementFactory, RAW_ARRAY& rawArray,
+            BitStreamReader& in, size_t index)
     {
-        m_elementFactory.create(rawArray, in, index);
+        elementFactory.create(rawArray, in, index);
     }
 
     /**
      * Writes the single array element.
      *
+     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
@@ -1345,9 +1410,6 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
-
-private:
-    ELEMENT_FACTORY m_elementFactory;
 };
 
 } // namespace zserio

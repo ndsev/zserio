@@ -20,7 +20,7 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<@inner_classes_definition fieldList/>
+<@inner_classes_definition name, fieldList/>
 <#macro empty_constructor_field_initialization>
     <#list fieldList as field>
         <@field_member_name field/>(<#rt>
@@ -105,14 +105,14 @@ void ${name}::initializeChildren()
     <#if needs_field_setter(field)>
 void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>)
 {
-    <@field_member_name field/> = <@field_argument_name field/>;
+    <@field_member_name field/> = <@compound_setter_field_value field/>;
 }
 
     </#if>
     <#if needs_field_rvalue_setter(field)>
 void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>)
 {
-    <@field_member_name field/> = ::std::move(<@field_argument_name field/>);
+    <@field_member_name field/> = <@compound_setter_field_rvalue field/>;
 }
 
     </#if>
@@ -278,7 +278,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 </#if>
 <#list fieldList as field>
 
-<@field_member_type_name field/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
+<@field_member_type_name field, name/> ${name}::${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>
         <#lt>,
         const allocator_type& allocator<#rt>

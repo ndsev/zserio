@@ -29,6 +29,7 @@
 
 class ${name}
 {
+<@top_private_section_declarations name, fieldList/>
 public:
     using allocator_type = ${types.allocator.default};
 
@@ -43,17 +44,17 @@ public:
             const allocator_type& allocator = allocator_type()) :
             ${compoundConstructorsData.compoundName}(allocator)
     {
-    <#list compoundConstructorsData.fieldList as field>
+        <#list compoundConstructorsData.fieldList as field>
         <@field_member_name field/> = <#rt>
-        <#if !field.isSimpleType || field.optional??>
-                <#lt>std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>);
-        <#else>
-                <#lt><@field_argument_name field/>;
-        </#if>
-    </#list>
+            <#if !field.isSimpleType || field.optional??>
+                <#lt><@compound_setter_field_forward_value field/>;
+            <#else>
+                <#lt><@compound_setter_field_value field/>;
+            </#if>
+        </#list>
     }
-
     </#if>
+
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
 
@@ -111,7 +112,6 @@ public:
 </#if>
 
 private:
-    <@inner_classes_declaration fieldList/>
 <#list fieldList as field>
     <@field_member_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>

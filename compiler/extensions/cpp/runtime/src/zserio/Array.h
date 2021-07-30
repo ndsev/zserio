@@ -14,12 +14,32 @@
 #include "zserio/PreWriteAction.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
+#include "zserio/OptionalHolder.h"
 
 namespace zserio
 {
 
 namespace detail
 {
+
+// dummy element factory used for arrays which traits don't need element factory
+struct DummyElementFactory
+{};
+
+template <typename ARRAY_TRAITS>
+struct ElementFactoryTraits
+{
+    using type = DummyElementFactory;
+};
+
+template <typename T, typename ELEMENT_FACTORY>
+struct ElementFactoryTraits<ObjectArrayTraits<T, ELEMENT_FACTORY>>
+{
+    using type = ELEMENT_FACTORY;
+};
+
+template <typename ARRAY_TRAITS>
+using ElementFactory = typename ElementFactoryTraits<ARRAY_TRAITS>::type;
 
 // dummy offset initializer used for arrays which don't need to initialize offsets
 struct DummyOffsetInitializer
@@ -105,18 +125,33 @@ size_t initializeOffsetsAligned(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTr
     return endBitPosition;
 }
 
-template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-void read(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t size)
+template <typename ARRAY_TRAITS, typename ELEMENT_FACTORY, typename RAW_ARRAY>
+void arrayTraitsRead(const ARRAY_TRAITS& arrayTraits, const ELEMENT_FACTORY& elementFactory,
+        RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
+{
+    arrayTraits.read(elementFactory, rawArray, in, index);
+}
+
+template <typename ARRAY_TRAITS, typename RAW_ARRAY>
+void arrayTraitsRead(const ARRAY_TRAITS& arrayTraits, const detail::DummyElementFactory&,
+        RAW_ARRAY& rawArray, BitStreamReader& in, size_t index)
+{
+    arrayTraits.read(rawArray, in, index);
+}
+
+template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+void read(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t size,
+        const ELEMENT_FACTORY& elementFactory)
 {
     rawArray.clear();
     rawArray.reserve(size);
     for (size_t index = 0; index < size; ++index)
-        arrayTraits.read(rawArray, in, index);
+        arrayTraitsRead(arrayTraits, elementFactory, rawArray, in, index);
 }
 
-template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename OFFSET_CHECKER>
+template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY, typename OFFSET_CHECKER>
 void readAligned(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t size,
-        const OFFSET_CHECKER& offsetChecker)
+        const ELEMENT_FACTORY& elementFactory, const OFFSET_CHECKER& offsetChecker)
 {
     rawArray.clear();
     rawArray.reserve(size);
@@ -124,7 +159,7 @@ void readAligned(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, BitStream
     {
         in.alignTo(8);
         offsetChecker.checkOffset(index, bitsToBytes(in.getBitPosition()));
-        arrayTraits.read(rawArray, in, index);
+        arrayTraitsRead(arrayTraits, elementFactory, rawArray, in, index);
     }
 }
 
@@ -159,8 +194,8 @@ enum ArrayType
 };
 
 template <typename RAW_ARRAY, typename ARRAY_TRAITS, ArrayType ARRAY_TYPE,
-        typename OFFSET_INITIALIZER = detail::DummyOffsetInitializer,
-        typename OFFSET_CHECKER = detail::DummyOffsetChecker>
+        typename OFFSET_CHECKER = detail::DummyOffsetChecker,
+        typename OFFSET_INITIALIZER = detail::DummyOffsetInitializer>
 class Array
 {
 public:
@@ -168,31 +203,60 @@ public:
     using allocator_type = typename RawArray::allocator_type;
 
     explicit Array(const ARRAY_TRAITS& arrayTraits, const allocator_type& allocator = allocator_type()) :
-            Array(arrayTraits, OFFSET_INITIALIZER(), OFFSET_CHECKER(), allocator)
+            m_rawArray(allocator), m_arrayTraits(arrayTraits)
     {}
 
-    Array(const ARRAY_TRAITS& arrayTraits,
-            const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker,
-            const allocator_type& allocator = allocator_type()) :
-            m_rawArray(allocator), m_arrayTraits(arrayTraits),
-            m_offsetInitializer(offsetInitializer), m_offsetChecker(offsetChecker)
+    Array(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits) :
+            m_rawArray(rawArray), m_arrayTraits(arrayTraits)
+    {}
+
+    Array(RAW_ARRAY&& rawArray, const ARRAY_TRAITS& arrayTraits) :
+            m_rawArray(std::move(rawArray)), m_arrayTraits(arrayTraits)
     {}
 
     Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in,
             const allocator_type& allocator = allocator_type()) :
-            Array(arrayTraits, in, 0, allocator)
+            Array(arrayTraits, in, detail::DummyElementFactory(), allocator)
+    {}
+
+    Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in,
+            const OFFSET_CHECKER& offsetChecker, const allocator_type& allocator = allocator_type()) :
+            Array(arrayTraits, in, 0, detail::DummyElementFactory(), offsetChecker, allocator)
+    {}
+
+    Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in,
+            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
+            const allocator_type& allocator = allocator_type()) :
+            Array(arrayTraits, in, 0, elementFactory, detail::DummyOffsetChecker(), allocator)
+    {}
+
+    Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in,
+            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
+            const OFFSET_CHECKER& offsetChecker, const allocator_type& allocator = allocator_type()) :
+            Array(arrayTraits, in, 0, elementFactory, offsetChecker, allocator)
     {}
 
     Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t arrayLengthArg,
             const allocator_type& allocator = allocator_type()) :
-            Array(arrayTraits, in, arrayLengthArg, OFFSET_INITIALIZER(), OFFSET_CHECKER(), allocator)
+            Array(arrayTraits, in, arrayLengthArg, detail::DummyElementFactory(), allocator)
     {}
 
     Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t arrayLengthArg,
-            const OFFSET_INITIALIZER& offsetInitializer, const OFFSET_CHECKER& offsetChecker,
+            const OFFSET_CHECKER& offsetChecker, const allocator_type& allocator = allocator_type()) :
+            Array(arrayTraits, in, arrayLengthArg, detail::DummyElementFactory(), offsetChecker,
+                    allocator)
+    {}
+
+    Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t arrayLengthArg,
+            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
             const allocator_type& allocator = allocator_type()) :
-            m_rawArray(allocator), m_arrayTraits(arrayTraits),
-            m_offsetInitializer(offsetInitializer), m_offsetChecker(offsetChecker)
+            Array(arrayTraits, in, arrayLengthArg, elementFactory, detail::DummyOffsetChecker(), allocator)
+    {}
+
+    Array(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t arrayLengthArg,
+            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
+            const OFFSET_CHECKER& offsetChecker, const allocator_type& allocator = allocator_type()) :
+            m_rawArray(allocator), m_arrayTraits(arrayTraits)
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT || ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT,
                 "Implicit array elements must have constant bit size!");
@@ -200,28 +264,30 @@ public:
         switch (ARRAY_TYPE)
         {
             case ArrayType::NORMAL:
-                detail::read(m_rawArray, m_arrayTraits, in, arrayLengthArg);
+                detail::read(m_rawArray, m_arrayTraits, in, arrayLengthArg, elementFactory);
                 break;
             case ArrayType::IMPLICIT:
                 {
                     const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
                     const size_t arrayLength = remainingBits / arrayTraits.bitSizeOf(m_rawArray, 0, 0);
-                    detail::read(m_rawArray, m_arrayTraits, in, arrayLength);
+                    detail::read(m_rawArray, m_arrayTraits, in, arrayLength, elementFactory);
                 }
                 break;
             case ArrayType::ALIGNED:
-                detail::readAligned(m_rawArray, m_arrayTraits, in, arrayLengthArg, m_offsetChecker);
+                detail::readAligned(m_rawArray, m_arrayTraits, in, arrayLengthArg,
+                        elementFactory, offsetChecker);
                 break;
             case ArrayType::AUTO:
                 {
                     const uint32_t arrayLength = in.readVarSize();
-                    detail::read(m_rawArray, m_arrayTraits, in, arrayLength);
+                    detail::read(m_rawArray, m_arrayTraits, in, arrayLength, elementFactory);
                 }
                 break;
             case ArrayType::ALIGNED_AUTO:
                 {
                     const uint32_t arrayLength = in.readVarSize();
-                    detail::readAligned(m_rawArray, m_arrayTraits, in, arrayLength, m_offsetChecker);
+                    detail::readAligned(m_rawArray, m_arrayTraits, in, arrayLength,
+                            elementFactory, offsetChecker);
                 }
                 break;
         }
@@ -238,23 +304,8 @@ public:
     Array(::zserio::PropagateAllocatorT,
             const Array& other, const allocator_type& allocator) :
             m_rawArray(::zserio::allocatorPropagatingCopy(other.m_rawArray, allocator)),
-            m_arrayTraits(other.m_arrayTraits),
-            m_offsetInitializer(other.m_offsetInitializer),
-            m_offsetChecker(other.m_offsetChecker)
-    {
-    }
-
-    Array& operator=(const RawArray& rawArray)
-    {
-        m_rawArray = rawArray;
-        return *this;
-    }
-
-    Array& operator=(RawArray&& rawArray)
-    {
-        m_rawArray = std::move(rawArray);
-        return *this;
-    }
+            m_arrayTraits(other.m_arrayTraits)
+    {}
 
     /**
      * Gets raw array.
@@ -319,6 +370,11 @@ public:
 
     size_t initializeOffsets(size_t bitPosition)
     {
+        return initializeOffsets(bitPosition, detail::DummyOffsetInitializer());
+    }
+
+    size_t initializeOffsets(size_t bitPosition, const OFFSET_INITIALIZER& offsetInitializer)
+    {
         switch(ARRAY_TYPE)
         {
             case ArrayType::NORMAL:
@@ -326,7 +382,7 @@ public:
                 return detail::initializeOffsets(m_rawArray, m_arrayTraits, bitPosition);
             case ArrayType::ALIGNED:
                 return detail::initializeOffsetsAligned(
-                        m_rawArray, m_arrayTraits, bitPosition, m_offsetInitializer);
+                        m_rawArray, m_arrayTraits, bitPosition, offsetInitializer);
             case ArrayType::AUTO:
                 {
                     const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(
@@ -338,12 +394,17 @@ public:
                     const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(
                             convertSizeToUInt32(m_rawArray.size()));
                     return detail::initializeOffsetsAligned(
-                            m_rawArray, m_arrayTraits, bitPosition + lengthBitSizeOf, m_offsetInitializer);
+                            m_rawArray, m_arrayTraits, bitPosition + lengthBitSizeOf, offsetInitializer);
                 }
         }
     }
 
     void write(BitStreamWriter& out)
+    {
+        write(out, detail::DummyOffsetChecker());
+    }
+
+    void write(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
     {
         switch (ARRAY_TYPE)
         {
@@ -352,7 +413,7 @@ public:
                 detail::write(m_rawArray, m_arrayTraits, out);
                 break;
             case ArrayType::ALIGNED:
-                detail::writeAligned(m_rawArray, m_arrayTraits, out, m_offsetChecker);
+                detail::writeAligned(m_rawArray, m_arrayTraits, out, offsetChecker);
                 break;
             case ArrayType::AUTO:
                 out.writeVarSize(convertSizeToUInt32(getRawArray().size()));
@@ -360,7 +421,7 @@ public:
                 break;
             case ArrayType::ALIGNED_AUTO:
                 out.writeVarSize(convertSizeToUInt32(getRawArray().size()));
-                detail::writeAligned(m_rawArray, m_arrayTraits, out, m_offsetChecker);
+                detail::writeAligned(m_rawArray, m_arrayTraits, out, offsetChecker);
                 break;
         }
     }
@@ -384,9 +445,26 @@ public:
 private:
     RawArray m_rawArray;
     ARRAY_TRAITS m_arrayTraits;
-    OFFSET_INITIALIZER m_offsetInitializer;
-    OFFSET_CHECKER m_offsetChecker;
 };
+
+/**
+ * Helper for creating an optional array within templated field constructor, where the raw array can be
+ * actually the NullOpt.
+ */
+template <typename ARRAY, typename RAW_ARRAY, typename ARRAY_TRAITS>
+ARRAY createOptionalArray(RAW_ARRAY&& rawArray, const ARRAY_TRAITS& arrayTraits)
+{
+    return ARRAY(std::forward<RAW_ARRAY>(rawArray), arrayTraits);
+}
+
+/**
+ * Specialization for NullOpt.
+ */
+template <typename ARRAY, typename ARRAY_TRAITS>
+NullOptType createOptionalArray(NullOptType, const ARRAY_TRAITS&)
+{
+    return NullOpt;
+}
 
 } // namespace zserio
 

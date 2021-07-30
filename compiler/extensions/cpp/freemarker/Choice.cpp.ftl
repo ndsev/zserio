@@ -20,7 +20,7 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
 
-<@inner_classes_definition fieldList/>
+<@inner_classes_definition name, fieldList/>
 <#if withWriterCode>
 <#macro empty_constructor_field_initialization>
         m_objectChoice(allocator)
@@ -144,14 +144,14 @@ void ${name}::initializeChildren()
     <#if needs_field_setter(field)>
 void ${name}::${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>)
 {
-    m_objectChoice = <@field_argument_name field/>;
+    m_objectChoice = <@compound_setter_field_value field/>;
 }
 
     </#if>
     <#if needs_field_rvalue_setter(field)>
 void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>)
 {
-    m_objectChoice = ::std::move(<@field_argument_name field/>);
+    m_objectChoice = <@compound_setter_field_rvalue field/>;
 }
 
     </#if>

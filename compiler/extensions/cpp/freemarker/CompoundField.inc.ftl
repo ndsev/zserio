@@ -8,7 +8,7 @@
 
 <#macro field_cpp_type_name field>
     <#if field.array??>
-        <@array_type_name field/><#t>
+        <@array_typedef_name field/><#t>
     <#else>
         ${field.cppTypeName}<#t>
     </#if>
@@ -30,8 +30,10 @@
     </#if>
 </#macro>
 
-<#macro field_member_type_name field>
-    <#local fieldCppTypeName><@field_cpp_type_name field/></#local>
+<#macro field_member_type_name field arrayClassPrefix="">
+    <#local fieldCppTypeName>
+        <#if field.array?? && arrayClassPrefix?has_content>${arrayClassPrefix}::</#if><@field_cpp_type_name field/><#t>
+    </#local>
     <#if field.optional??>
         <#if field.optional.isRecursive>
             <@heap_optional_type_name fieldCppTypeName/><#t>
@@ -66,12 +68,11 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
     <@compound_read_field_prolog field, compoundName, indent/>
     <#if field.array??>
         <#local readCommand>
-            <@array_type_name field/>(<@array_traits field/>, in, <#t>
-                    <#if field.array.length??>static_cast<size_t>(${field.array.length}), </#if><#t>
-                <#if field.offset?? && field.offset.containsIndex>
-                    <@offset_initializer_name field.name/>(*this), <@offset_checker_name field.name/>(*this), <#t>
-                </#if>
-                    allocator)<#t>
+            <@array_typedef_name field/>(<@array_traits field/>, in<#t>
+                    <#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if><#t>
+                    <#if field.array.requiresElementFactory>, <@element_factory_name field.name/>(*this)</#if><#t>
+                    <#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#t>
+                    , allocator)<#t>
         </#local>
     <#elseif field.runtimeFunction??>
         <#local readCommandArgs>
@@ -98,7 +99,7 @@ ${I}<@field_cpp_type_name field/> readField = ${readCommand};
 
 ${I}return <@compound_read_field_retval field, "readField", true/>;
     <#else>
-${I}return <@compound_read_field_retval field, readCommand, field.array??/>;
+${I}return <@compound_read_field_retval field, readCommand, false/>;
     </#if>
 </#macro>
 
@@ -108,10 +109,10 @@ ${I}return <@compound_read_field_retval field, readCommand, field.array??/>;
     <#elseif field.optional??>
         <#local fieldCppTypeName><@field_cpp_type_name field/></#local>
         <#if field.optional.isRecursive>
-            <@heap_optional_type_name fieldCppTypeName/>(<#rt>
+            <@heap_optional_type_name fieldCppTypeName/>(<#t>
                     <#lt><#if needsMove>::std::move(</#if>${readCommand}<#if needsMove>)</#if>, allocator)<#t>
         <#else>
-            ${types.inplaceOptionalHolder.name}<${fieldCppTypeName}>(<#rt>
+            ${types.inplaceOptionalHolder.name}<${fieldCppTypeName}>(<#t>
                     <#lt><#if needsMove>::std::move(</#if>${readCommand}<#if needsMove>)</#if>)<#t>
         </#if>
     <#else>
@@ -193,8 +194,11 @@ ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if fi
         <#lt> ${field.runtimeFunction.arg}</#if>);
     <#elseif field.isEnum>
 ${I}::zserio::write(out, <@compound_get_field field/>);
+    <#elseif field.array??>
+${I}<@compound_get_field field/>.write(out<#rt>
+        <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if>);
     <#else>
-${I}<@compound_get_field field/>.write(out<#if !field.array??>, ::zserio::NO_PRE_WRITE_ACTION</#if>);
+${I}<@compound_get_field field/>.write(out, ::zserio::NO_PRE_WRITE_ACTION);
     </#if>
 </#macro>
 
@@ -226,10 +230,10 @@ ${I}    throw ::zserio::ConstraintException("${actionName}: Constraint violated 
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array?? && field.array.length??>
 ${I}// check array length
-${I}if (<@compound_get_field field/>.size() != static_cast<size_t>(${field.array.length}))
+${I}if (<@compound_get_field field/>.getRawArray().size() != static_cast<size_t>(${field.array.length}))
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: ") +
-${I}            <@compound_get_field field/>.size() + " != " +
+${I}            <@compound_get_field field/>.getRawArray().size() + " != " +
 ${I}            static_cast<size_t>(${field.array.length}) + "!";
 ${I}}
     </#if>
@@ -247,8 +251,8 @@ ${I}{
 ${I}}
         <#elseif field.array?? && field.array.elementIntegerRange??>
 ${I}// check ranges
-${I}for (auto it = <@compound_get_field field/>.begin(); <#rt>
-            <#lt>it != <@compound_get_field field/>.end(); ++it)
+${I}for (auto it = <@compound_get_field field/>.getRawArray().begin(); <#rt>
+            <#lt>it != <@compound_get_field field/>.getRawArray().end(); ++it)
 ${I}{
         <@compound_check_range_value "*it", field.name, compoundName, field.array.elementCppTypeName,
                 field.array.elementIntegerRange, indent + 1/>
@@ -275,12 +279,17 @@ ${I}            " of ${compoundName}.${valueName} exceeds the range of <" +
 ${I}            lowerBound + ".." + upperBound + ">!";
 </#macro>
 
+<#macro array_typedef_name field>
+    ArrayType_${field.name}<#t>
+</#macro>
+
 <#macro array_type_name field>
     ${field.cppTypeName}<<#t>
             <@vector_type_name field.array.elementCppTypeName/>, <@array_traits_type_name field/>, <#t>
             <@array_type_enum field/><#t>
     <#if field.offset?? && field.offset.containsIndex>
-            , <@offset_initializer_name field.name/>, <@offset_checker_name field.name/><#t>
+            , <@offset_checker_name field.name/><#t>
+            <#if field.withWriterCode>, <@offset_initializer_name field.name/></#if><#t>
     </#if>
     ><#t>
 </#macro>
@@ -288,8 +297,8 @@ ${I}            lowerBound + ".." + upperBound + ">!";
 <#macro array_traits_type_name field>
     ${field.array.traitsName}<#t>
     <#if field.array.hasTemplatedTraits>
-        <${field.array.elementCppTypeName}<#if field.array.requiresElementFactory>, <#t>
-                <@element_factory_name field.name/></#if>><#t>
+        <${field.array.elementCppTypeName}<#t>
+        <#if field.array.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
     </#if>
 </#macro>
 
@@ -302,9 +311,6 @@ ${I}            lowerBound + ".." + upperBound + ">!";
         <#else>
             ${field.array.elementBitSize.value}<#t>
         </#if>
-    </#if>
-    <#if field.array.requiresElementFactory>
-        <@element_factory_name field.name/>(*this)<#t>
     </#if>
         )<#t>
 </#macro>
@@ -328,193 +334,247 @@ ${I}            lowerBound + ".." + upperBound + ">!";
     ${arrayType}<#t>
 </#macro>
 
-<#--TODO[Mi-L@]: delete! -->
-<#macro array_runtime_function_suffix field isInRead=false>
-    <#if field.offset?? && field.offset.containsIndex>
-        Aligned<#t>
+<#function needs_field_offset_checker field>
+    <#if field.array?? && field.offset?? && field.offset.containsIndex>
+        <#return true>
     </#if>
-    <#if !field.array.length??>
-        <#if field.array.isImplicit>
-            <#if isInRead>
-            Implicit<#t>
-            </#if>
-        <#else>
-            Auto<#t>
-        </#if>
-    </#if>
-</#macro>
+    <#return false>
+</#function>
 
 <#macro offset_checker_name fieldName>
     OffsetChecker_${fieldName}<#t>
 </#macro>
 
-<#macro define_offset_checker compoundName field>
-class ${compoundName}::<@offset_checker_name field.name/>
-{
-public:
-    explicit <@offset_checker_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
-
-    void checkOffset(size_t index, size_t byteOffset) const
+<#macro declare_offset_checker compoundName field>
+    class <@offset_checker_name field.name/>
     {
-        if (byteOffset != ${field.offset.indirectGetter})
-        {
-            throw ::zserio::CppRuntimeException("Wrong offset for field ${compoundName}.${field.name}: ") +
-                    byteOffset + " != " + ${field.offset.indirectGetter} + "!";
-        }
-    }
+    public:
+        explicit <@offset_checker_name field.name/>(${compoundName}& owner);
 
-private:
-    ${compoundName}& m_owner;
-};
+        void checkOffset(size_t index, size_t byteOffset) const;
+
+    private:
+        ${compoundName}& m_owner;
+    };
 </#macro>
+
+<#macro define_offset_checker_methods compoundName field>
+${compoundName}::<@offset_checker_name field.name/>::<@offset_checker_name field.name/>(${compoundName}& owner) :
+        m_owner(owner)
+{}
+
+void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t index, size_t byteOffset) const
+{
+    if (byteOffset != ${field.offset.indirectGetter})
+    {
+        throw ::zserio::CppRuntimeException("Wrong offset for field ${compoundName}.${field.name}: ") +
+                byteOffset + " != " + ${field.offset.indirectGetter} + "!";
+    }
+}
+</#macro>
+
+<#function needs_offset_initializer field>
+    <#return field.array?? && field.offset?? && field.offset.containsIndex>
+</#function>
 
 <#macro offset_initializer_name fieldName>
     OffsetInitializer_${fieldName}<#t>
 </#macro>
 
-<#macro define_offset_initializer compoundName field>
-class ${compoundName}::<@offset_initializer_name field.name/>
-{
-public:
-    explicit <@offset_initializer_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
-
-    void initializeOffset(size_t index, size_t byteOffset) const
+<#macro declare_offset_initializer compoundName field>
+    class <@offset_initializer_name field.name/>
     {
-        const ${field.offset.typeName} value = static_cast<${field.offset.typeName}>(byteOffset);
-        ${field.offset.indirectSetter};
-    }
+    public:
+        explicit <@offset_initializer_name field.name/>(${compoundName}& owner);
 
-private:
-    ${compoundName}& m_owner;
-};
+        void initializeOffset(size_t index, size_t byteOffset) const;
+
+    private:
+        ${compoundName}& m_owner;
+    };
 </#macro>
+
+<#macro define_offset_initializer_methods compoundName field>
+${compoundName}::<@offset_initializer_name field.name/>::<@offset_initializer_name field.name/>(<#rt>
+        <#lt>${compoundName}& owner) :
+        m_owner(owner)
+{}
+
+void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(size_t index, size_t byteOffset) const
+{
+    const ${field.offset.typeName} value = static_cast<${field.offset.typeName}>(byteOffset);
+    ${field.offset.indirectSetter};
+}
+</#macro>
+
+<#function needs_field_element_factory field>
+    <#return field.array?? && field.array.requiresElementFactory>
+</#function>
 
 <#macro element_factory_name fieldName>
     ElementFactory_${fieldName}<#t>
 </#macro>
 
-<#macro define_element_factory compoundName field>
+<#macro declare_element_factory compoundName field>
+    class <@element_factory_name field.name/>
+    {
+    public:
+        explicit <@element_factory_name field.name/>(${compoundName}& owner);
+
+        void create(<@vector_type_name field.array.elementCppTypeName/>& array, <#rt>
+                <#lt>::zserio::BitStreamReader& in, size_t index) const;
+
+    private:
+        ${compoundName}& m_owner;
+    };
+</#macro>
+
+<#macro define_element_factory_methods compoundName field>
     <#local extraConstructorArguments>
         <#if field.array.elementCompound??>
             <@compound_field_compound_ctor_params field.array.elementCompound, true/><#t>
         </#if>
     </#local>
-class ${compoundName}::<@element_factory_name field.name/>
+${compoundName}::<@element_factory_name field.name/>::<@element_factory_name field.name/>(${compoundName}& owner) :
+        m_owner(owner)
+{}
+
+void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
+        <#lt><@vector_type_name field.array.elementCppTypeName/>& array, <#rt>
+        <#lt>::zserio::BitStreamReader& in, size_t index) const
 {
-public:
-    explicit <@element_factory_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
-
-    void create(<@vector_type_name field.array.elementCppTypeName/>& array, ::zserio::BitStreamReader& in, size_t index) const
-    {
-        (void)index;
-        array.getRawArray().emplace_back(in<#rt>
+    (void)index;
+    array.emplace_back(in<#rt>
     <#if extraConstructorArguments?has_content>
-                <#lt>, ${extraConstructorArguments}
+            , ${extraConstructorArguments}<#t>
     </#if>
-                <#lt>, array.get_allocator());
-    }
-
-private:
-    ${compoundName}& m_owner;
-};
+            <#lt>, array.get_allocator());
+}
 </#macro>
 
 <#macro element_initializer_name fieldName>
     ElementInitializer_${fieldName}<#t>
 </#macro>
 
-<#macro define_element_initializer compoundName field>
-class ${compoundName}::<@element_initializer_name field.name/>
-{
-public:
-    explicit <@element_initializer_name field.name/>(${compoundName}& owner) : m_owner(owner) {}
-
-    void initialize(${field.array.elementCppTypeName}& element, size_t index) const
+<#macro declare_element_initializer compoundName field>
+    class <@element_initializer_name field.name/>
     {
-        (void)index;
-        element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
-    }
+    public:
+        explicit <@element_initializer_name field.name/>(${compoundName}& owner);
 
-private:
-    ${compoundName}& m_owner;
-};
+    void initialize(${field.array.elementCppTypeName}& element, size_t index) const;
+
+    private:
+        ${compoundName}& m_owner;
+    };
+</#macro>
+
+<#macro define_element_initializer_methods compoundName field>
+${compoundName}::<@element_initializer_name field.name/>::<@element_initializer_name field.name/>(<#rt>
+        <#lt>${compoundName}& owner) :
+        m_owner(owner)
+{}
+
+void ${compoundName}::<@element_initializer_name field.name/>::initialize(<#rt>
+        <#lt>${field.array.elementCppTypeName}& element, size_t index) const
+{
+    (void)index;
+    element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
+}
 </#macro>
 
 <#macro element_children_initializer_name fieldName>
     ElementChildrenInitializer_${fieldName}<#t>
 </#macro>
 
-<#macro define_element_children_initializer compoundName field>
-class ${compoundName}::<@element_children_initializer_name field.name/>
-{
-public:
-    <@element_children_initializer_name field.name/>() {}
-
-    void initialize(${field.array.elementCppTypeName}& element, size_t) const
+<#macro declare_element_children_initializer field>
+    class <@element_children_initializer_name field.name/>
     {
-        element.initializeChildren();
-    }
-};
+    public:
+        void initialize(${field.array.elementCppTypeName}& element, size_t) const;
+    };
 </#macro>
 
-<#macro inner_classes_declaration fieldList>
-    <#local hasAny=false/>
+<#macro define_element_children_initializer_methods compoundName field>
+void ${compoundName}::<@element_children_initializer_name field.name/>::initialize(<#rt>
+        <#lt>${field.array.elementCppTypeName}& element, size_t) const
+{
+    element.initializeChildren();
+}
+</#macro>
+
+<#macro inner_classes_declaration compoundName fieldList>
     <#list fieldList as field>
-        <#if field.array??>
-            <#if field.offset?? && field.offset.containsIndex>
-                <#local hasAny=true/>
-    class <@offset_checker_name field.name/>;
-                <#if field.withWriterCode>
-                    <#local hasAny=true/>
-    class <@offset_initializer_name field.name/>;
-                </#if>
+        <#if needs_field_offset_checker(field)>
+    <@declare_offset_checker compoundName, field/>
+
+            <#if field.withWriterCode>
+    <@declare_offset_initializer compoundName, field/>
+
             </#if>
-            <#if field.array.requiresElementFactory>
-                <#local hasAny=true/>
-    class <@element_factory_name field.name/>;
-                <#if field.array.elementCompound??>
-                    <#if needs_field_initialization(field.array.elementCompound)>
-                        <#local hasAny=true/>
-    class <@element_initializer_name field.name/>;
-                    <#elseif field.array.elementCompound.needsChildrenInitialization>
-                        <#local hasAny=true/>
-    class <@element_children_initializer_name field.name/>;
-                    </#if>
+        </#if>
+        <#if needs_field_element_factory(field)>
+    <@declare_element_factory compoundName, field/>
+            <#if field.array.elementCompound??>
+                <#if needs_field_initialization(field.array.elementCompound)>
+    <@declare_element_initializer compoundName, field/>
+
+                <#elseif field.array.elementCompound.needsChildrenInitialization>
+    <@declare_element_children_initializer field/>
+
                 </#if>
             </#if>
         </#if>
     </#list>
-    <#if hasAny>
+</#macro>
 
+<#macro inner_classes_definition compoundName fieldList>
+    <#list fieldList as field>
+        <#if needs_field_offset_checker(field)>
+<@define_offset_checker_methods compoundName, field/>
+
+            <#if field.withWriterCode>
+<@define_offset_initializer_methods compoundName, field/>
+
+            </#if>
+        </#if>
+        <#if needs_field_element_factory(field)>
+<@define_element_factory_methods compoundName, field/>
+
+            <#if field.array.elementCompound??>
+                <#if needs_field_initialization(field.array.elementCompound)>
+<@define_element_initializer_methods compoundName, field/>
+
+                <#elseif field.array.elementCompound.needsChildrenInitialization>
+<@define_element_children_initializer_methods compoundName, field/>
+
+                </#if>
+            </#if>
+        </#if>
+    </#list>
+</#macro>
+
+<#macro arrays_typedefs fieldList>
+    <#list fieldList as field>
+        <#if field.array??>
+    using <@array_typedef_name field/> = <@array_type_name field/>;
+        </#if>
+    </#list>
+</#macro>
+
+<#macro top_private_section_declarations compoundName fieldList>
+    <#local innerClasses><@inner_classes_declaration compoundName, fieldList/></#local>
+    <#local arraysTypedefs><@arrays_typedefs fieldList/></#local>
+    <#if innerClasses?has_content || arraysTypedefs?has_content>
+private:
+        <#if innerClasses?has_content>
+    ${innerClasses}<#t>
+        </#if>
+        <#if arraysTypedefs?has_content>
+    ${arraysTypedefs}<#t>
+
+        </#if>
     </#if>
-</#macro>
-
-<#macro inner_classes_definition fieldList>
-    <#list fieldList as field>
-        <#if field.array??>
-            <#if field.offset?? && field.offset.containsIndex>
-<@define_offset_checker name, field/>
-
-                <#if field.withWriterCode>
-<@define_offset_initializer name, field/>
-
-                </#if>
-            </#if>
-            <#if field.array.requiresElementFactory>
-<@define_element_factory name, field/>
-
-                <#if field.array.elementCompound??>
-                    <#if needs_field_initialization(field.array.elementCompound)>
-<@define_element_initializer name, field/>
-
-                    <#elseif field.array.elementCompound.needsChildrenInitialization>
-<@define_element_children_initializer name, field/>
-
-                    </#if>
-                </#if>
-            </#if>
-        </#if>
-    </#list>
 </#macro>
 
 <#macro compound_bitsizeof_field field indent>
@@ -529,6 +589,8 @@ ${I}endBitPosition += ${field.bitSize.value};
         </#if>
     <#elseif field.runtimeFunction??>
 ${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
+    <#elseif field.array??>
+${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
@@ -546,6 +608,9 @@ ${I}endBitPosition += ${field.bitSize.value};
         </#if>
     <#elseif field.runtimeFunction??>
 ${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
+    <#elseif field.array??>
+${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition<#rt>
+        <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_initializer_name field.name/>(*this)</#if>);
     <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition);
     </#if>
@@ -571,6 +636,38 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
         <@field_member_name field/>.value()<#t>
     <#else>
         <@field_member_name field/><#t>
+    </#if>
+</#macro>
+
+<#macro compound_setter_field_forward_value field>
+    <#if field.array??>
+        <#if field.optional??>
+            ::zserio::createOptionalArray<<@array_typedef_name field/>><#t>
+        <#else>
+            <@array_typedef_name field/>
+        </#if>
+                    (std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>), <#t>
+                    <@array_traits field/>)<#t>
+    <#else>
+        std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>)<#t>
+    </#if>
+</#macro>
+
+<#macro compound_setter_field_value field>
+    <#if field.array??>
+        <@array_typedef_name field/>(<@field_argument_name field/>, <#t>
+                <@array_traits field/>)<#t>
+    <#else>
+        <@field_argument_name field/><#t>
+    </#if>
+</#macro>
+
+<#macro compound_setter_field_rvalue field>
+    <#if field.array??>
+        <@array_typedef_name field/>(std::move(<@field_argument_name field/>), <#t>
+                <@array_traits field/>)<#t>
+    <#else>
+        std::move(<@field_argument_name field/>)<#t>
     </#if>
 </#macro>
 
@@ -634,15 +731,13 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
             <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
         </#if>
     <#elseif field.array?? && field.array.elementCompound??>
-        <#if needs_field_initialization(field.array.elementCompound)>
-            <#local initializeCommand>::zserio::initializeElements(<#rt>
-                    <#lt><@compound_get_field field/>, <#rt>
-                    <#lt><@element_initializer_name field.name/>(*this));</#local>
-        <#elseif field.array.elementCompound.needsChildrenInitialization>
-            <#local initializeCommand>::zserio::initializeElements(<#rt>
-                    <#lt><@compound_get_field field/>, <#rt>
-                    <#lt><@element_children_initializer_name field.name/>());</#local>
-        </#if>
+        <#local initializeCommand>
+            <#if needs_field_initialization(field.array.elementCompound)>
+                <@compound_get_field field/>.initializeElements(<@element_initializer_name field.name/>(*this));<#t>
+            <#elseif field.array.elementCompound.needsChildrenInitialization>
+                <@compound_get_field field/>.initializeElements(<@element_children_initializer_name field.name/>());<#t>
+            </#if>
+        </#local>
     </#if>
     <#if initializeCommand??>
         <#if field.optional??>
@@ -665,24 +760,17 @@ ${I};
     <#local firstTemplateArgName=""/>
     <#local templateArgList>
         <#list fieldList as field>
-            <#if field.usesAnyHolder>
-            typename ZSERIO_T<#t>
-                <#local numTemplateArgs=1/>
-                <#local firstTemplateArgName="ZSERIO_T"/>
-                <#break/>
-            <#else>
-                <#if !field.isSimpleType || field.optional??>
-                    <#if numTemplateArgs != 0>
+            <#if !field.isSimpleType || field.optional??>
+                <#if numTemplateArgs != 0>
             <#lt>,
             typename ZSERIO_T_${field.name}<#rt>
-                    <#else>
+                <#else>
             typename ZSERIO_T_${field.name}<#t>
-                    </#if>
-                    <#if numTemplateArgs == 0 && field?is_first>
-                        <#local firstTemplateArgName="ZSERIO_T_${field.name}"/>
-                    </#if>
-                    <#local numTemplateArgs=numTemplateArgs+1/>
                 </#if>
+                <#if numTemplateArgs == 0 && field?is_first>
+                    <#local firstTemplateArgName="ZSERIO_T_${field.name}"/>
+                </#if>
+                <#local numTemplateArgs=numTemplateArgs+1/>
             </#if>
         </#list>
     </#local>
@@ -699,19 +787,14 @@ ${I};
 <#macro compound_field_constructor_type_list fieldList indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list fieldList as field>
-        <#if field.usesAnyHolder>
-${I}ZSERIO_T&& value<#t>
-            <#break/>
-        <#else>
-            <#if !field.isSimpleType || field.optional??>
+        <#if !field.isSimpleType || field.optional??>
 ${I}ZSERIO_T_${field.name}&&<#t>
-            <#else>
-${I}${field.cppArgumentTypeName}<#t>
-            </#if>
-            <#lt> <@field_argument_name field/><#rt>
-            <#if field?has_next>
-                <#lt>,
-            </#if>
+        <#else>
+${I}${field.cppArgumentTypeName} <#t>
+        </#if>
+        <@field_argument_name field/><#t>
+        <#if field?has_next>
+        <#lt>,
         </#if>
     </#list>
 </#macro>
