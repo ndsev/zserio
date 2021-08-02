@@ -75,17 +75,6 @@ TEST_F(UInt16ParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, uint16ParamChoice.getA());
 }
 
-TEST_F(UInt16ParamChoiceTest, fieldConstructor)
-{
-    const uint16_t selector = VARIANT_A_SELECTOR;
-    const int8_t value = 99;
-
-    UInt16ParamChoice uint16ParamChoice(value);
-    uint16ParamChoice.initialize(selector);
-    ASSERT_EQ(selector, uint16ParamChoice.getSelector());
-    ASSERT_EQ(value, uint16ParamChoice.getA());
-}
-
 TEST_F(UInt16ParamChoiceTest, copyConstructor)
 {
     const uint16_t selector = VARIANT_A_SELECTOR;

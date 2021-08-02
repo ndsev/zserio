@@ -17,8 +17,16 @@ TEST(ChoiceTemplatedEnumSelectorTest, readWrite)
     ChoiceTemplatedEnumSelector choiceTemplatedEnumSelector;
     choiceTemplatedEnumSelector.setSelectorFromZero(EnumFromZero::ONE);
     choiceTemplatedEnumSelector.setSelectorFromOne(EnumFromOne::THREE);
-    choiceTemplatedEnumSelector.setFromZeroChoice(TemplatedChoice_EnumFromZero{static_cast<uint16_t>(42)});
-    choiceTemplatedEnumSelector.setFromOneChoice(TemplatedChoice_EnumFromOne{string_type{"string"}});
+    {
+        TemplatedChoice_EnumFromZero fromZeroChoice;
+        fromZeroChoice.setUint16Field(42);
+        choiceTemplatedEnumSelector.setFromZeroChoice(std::move(fromZeroChoice));
+    }
+    {
+        TemplatedChoice_EnumFromOne fromOneChoice;
+        fromOneChoice.setStringField("string");
+        choiceTemplatedEnumSelector.setFromOneChoice(fromOneChoice); // copy
+    }
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

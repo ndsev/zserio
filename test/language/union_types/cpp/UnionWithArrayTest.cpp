@@ -113,41 +113,6 @@ TEST_F(UnionWithArrayTest, bitStreamReaderConstructor)
     }
 }
 
-TEST_F(UnionWithArrayTest, fieldConstructor)
-{
-    {
-        vector_type<Data8> array8 = createArray8();
-        TestUnion testUnion(array8);
-        ASSERT_EQ(TestUnion::CHOICE_array8, testUnion.choiceTag());
-        ASSERT_THROW(testUnion.getArray16(), zserio::CppRuntimeException);
-        ASSERT_EQ(array8, testUnion.getArray8());
-        checkArray(ARRAY8, testUnion.getArray8());
-    }
-    {
-        vector_type<int16_t> array16(ARRAY16, ARRAY16 + ARRAY16_SIZE);
-        TestUnion testUnion(array16);
-        ASSERT_EQ(TestUnion::CHOICE_array16, testUnion.choiceTag());
-        ASSERT_THROW(testUnion.getArray8(), zserio::CppRuntimeException);
-        ASSERT_EQ(array16, testUnion.getArray16());
-        checkArray(ARRAY16, testUnion.getArray16());
-    }
-
-    {
-        vector_type<Data8> array8 = createArray8();
-        TestUnion testUnion(std::move(array8));
-        ASSERT_EQ(TestUnion::CHOICE_array8, testUnion.choiceTag());
-        ASSERT_THROW(testUnion.getArray16(), zserio::CppRuntimeException);
-        checkArray(ARRAY8, testUnion.getArray8());
-    }
-    {
-        vector_type<int16_t> array16(ARRAY16, ARRAY16 + ARRAY16_SIZE);
-        TestUnion testUnion(std::move(array16));
-        ASSERT_EQ(TestUnion::CHOICE_array16, testUnion.choiceTag());
-        ASSERT_THROW(testUnion.getArray8(), zserio::CppRuntimeException);
-        checkArray(ARRAY16, testUnion.getArray16());
-    }
-}
-
 TEST_F(UnionWithArrayTest, copyConstructor)
 {
     TestUnion testUnion;
@@ -342,7 +307,8 @@ TEST_F(UnionWithArrayTest, hashCode)
 TEST_F(UnionWithArrayTest, write)
 {
     {
-        TestUnion testUnion(createArray8());
+        TestUnion testUnion;
+        testUnion.setArray8(createArray8());
         zserio::BitStreamWriter writer(bitBuffer);
         testUnion.write(writer);
         ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());
@@ -353,7 +319,8 @@ TEST_F(UnionWithArrayTest, write)
         checkArray(ARRAY8, readTestUnion.getArray8());
     }
     {
-        TestUnion testUnion(createArray16());
+        TestUnion testUnion;
+        testUnion.setArray16(createArray16());
         zserio::BitStreamWriter writer(bitBuffer);
         testUnion.write(writer);
         ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());

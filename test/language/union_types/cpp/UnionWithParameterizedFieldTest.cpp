@@ -39,18 +39,10 @@ TEST_F(UnionWithParameterizedFieldTest, emptyConstructor)
     ASSERT_EQ(10, testUnion.getArrayHolder().getSize());
 }
 
-TEST_F(UnionWithParameterizedFieldTest, fieldConstructor)
-{
-    TestUnion testUnion(ArrayHolder{});
-    ASSERT_THROW(testUnion.getArrayHolder().getSize(), zserio::CppRuntimeException);
-
-    testUnion.initializeChildren();
-    ASSERT_EQ(10, testUnion.getArrayHolder().getSize());
-}
-
 TEST_F(UnionWithParameterizedFieldTest, readerConstructor)
 {
-    TestUnion testUnion(ArrayHolder{vector_type<uint32_t>(10)});
+    TestUnion testUnion;
+    testUnion.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
     testUnion.initializeChildren();
     zserio::BitStreamWriter writer(bitBuffer);
     testUnion.write(writer);
@@ -62,7 +54,8 @@ TEST_F(UnionWithParameterizedFieldTest, readerConstructor)
 
 TEST_F(UnionWithParameterizedFieldTest, copyConstructor)
 {
-    TestUnion testUnion(ArrayHolder{});
+    TestUnion testUnion;
+    testUnion.setArrayHolder(ArrayHolder{});
     {
         TestUnion testUnionCopy(testUnion);
         ASSERT_THROW(testUnionCopy.getArrayHolder().getSize(), zserio::CppRuntimeException);
@@ -77,7 +70,8 @@ TEST_F(UnionWithParameterizedFieldTest, copyConstructor)
 
 TEST_F(UnionWithParameterizedFieldTest, assignmentOperator)
 {
-    TestUnion testUnion(ArrayHolder{});
+    TestUnion testUnion;
+    testUnion.setArrayHolder(ArrayHolder{});
     {
         TestUnion testUnionCopy;
         testUnionCopy = testUnion;
@@ -95,13 +89,15 @@ TEST_F(UnionWithParameterizedFieldTest, assignmentOperator)
 TEST_F(UnionWithParameterizedFieldTest, moveConstructor)
 {
     {
-        TestUnion testUnion(ArrayHolder{});
+        TestUnion testUnion;
+        testUnion.setArrayHolder(ArrayHolder{});
         TestUnion testUnionMoved(std::move(testUnion));
         ASSERT_THROW(testUnionMoved.getArrayHolder().getSize(), zserio::CppRuntimeException);
     }
 
     {
-        TestUnion testUnion(ArrayHolder{});
+        TestUnion testUnion;
+        testUnion.setArrayHolder(ArrayHolder{});
         testUnion.initializeChildren();
         TestUnion testUnionMoved(std::move(testUnion));
         ASSERT_EQ(10, testUnionMoved.getArrayHolder().getSize());
@@ -111,14 +107,16 @@ TEST_F(UnionWithParameterizedFieldTest, moveConstructor)
 TEST_F(UnionWithParameterizedFieldTest, moveAssignmentOperator)
 {
     {
-        TestUnion testUnion(ArrayHolder{});
+        TestUnion testUnion;
+        testUnion.setArrayHolder(ArrayHolder{});
         TestUnion testUnionMoved;
         testUnionMoved = std::move(testUnion);
         ASSERT_THROW(testUnionMoved.getArrayHolder().getSize(), zserio::CppRuntimeException);
     }
 
     {
-        TestUnion testUnion(ArrayHolder{});
+        TestUnion testUnion;
+        testUnion.setArrayHolder(ArrayHolder{});
         testUnion.initializeChildren();
         TestUnion testUnionMoved;
         testUnionMoved = std::move(testUnion);
@@ -128,7 +126,8 @@ TEST_F(UnionWithParameterizedFieldTest, moveAssignmentOperator)
 
 TEST_F(UnionWithParameterizedFieldTest, propagateAllocatorCopyConstructor)
 {
-    TestUnion testUnion(ArrayHolder{});
+    TestUnion testUnion;
+    testUnion.setArrayHolder(ArrayHolder{});
     {
         TestUnion testUnionCopy(zserio::PropagateAllocator, testUnion, TestUnion::allocator_type());
         ASSERT_THROW(testUnionCopy.getArrayHolder().getSize(), zserio::CppRuntimeException);
@@ -246,7 +245,8 @@ TEST_F(UnionWithParameterizedFieldTest, hashCode)
 TEST_F(UnionWithParameterizedFieldTest, write)
 {
     {
-        TestUnion testUnion(static_cast<uint32_t>(33));
+        TestUnion testUnion;
+        testUnion.setField(33);
         zserio::BitStreamWriter writer(bitBuffer);
         testUnion.write(writer);
         ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());
@@ -256,7 +256,8 @@ TEST_F(UnionWithParameterizedFieldTest, write)
         ASSERT_EQ(testUnion, readTestUnion);
     }
     {
-        TestUnion testUnion(ArrayHolder{vector_type<uint32_t>(10)});
+        TestUnion testUnion;
+        testUnion.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
         zserio::BitStreamWriter writer(bitBuffer);
         testUnion.write(writer);
         ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());

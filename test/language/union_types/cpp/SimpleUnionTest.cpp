@@ -112,44 +112,10 @@ TEST_F(SimpleUnionTest, bitStreamReaderConstructor)
     }
 }
 
-TEST_F(SimpleUnionTest, fieldConstructor)
-{
-    {
-        SimpleUnion simpleUnion(CASE1_FIELD);
-        ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
-    }
-    {
-        SimpleUnion simpleUnion(CASE1_FIELD, SimpleUnion::CHOICE_case1Field);
-        ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
-    }
-    {
-        SimpleUnion simpleUnion(CASE2_FIELD);
-        ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
-    }
-    {
-        SimpleUnion simpleUnion(CASE3_FIELD);
-        ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
-    }
-    {
-        string_type movedString(1000, 'a'); // long enough to prevent small string optimization
-        const void* ptr = movedString.data();
-        SimpleUnion simpleUnion(std::move(movedString));
-        const void* movedPtr = simpleUnion.getCase3Field().data();
-        ASSERT_EQ(ptr, movedPtr);
-    }
-    {
-        SimpleUnion simpleUnion(CASE4_FIELD, SimpleUnion::CHOICE_case4Field);
-        ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
-    }
-    {
-        ASSERT_THROW(SimpleUnion(CASE1_FIELD, SimpleUnion::CHOICE_case2Field), zserio::CppRuntimeException);
-        ASSERT_THROW(SimpleUnion(CASE1_FIELD, SimpleUnion::CHOICE_case3Field), zserio::CppRuntimeException);
-    }
-}
-
 TEST_F(SimpleUnionTest, copyConstructor)
 {
-    SimpleUnion simpleUnion(CASE1_FIELD);
+    SimpleUnion simpleUnion;
+    simpleUnion.setCase1Field(CASE1_FIELD);
     ASSERT_EQ(CASE1_FIELD, simpleUnion.getCase1Field());
 
     SimpleUnion simpleUnionCopy(simpleUnion);
@@ -158,7 +124,8 @@ TEST_F(SimpleUnionTest, copyConstructor)
 
 TEST_F(SimpleUnionTest, assignmentOperator)
 {
-    SimpleUnion simpleUnion(CASE2_FIELD);
+    SimpleUnion simpleUnion;
+    simpleUnion.setCase2Field(CASE2_FIELD);
     ASSERT_EQ(CASE2_FIELD, simpleUnion.getCase2Field());
 
     SimpleUnion simpleUnionCopy;
@@ -168,7 +135,8 @@ TEST_F(SimpleUnionTest, assignmentOperator)
 
 TEST_F(SimpleUnionTest, moveConstructor)
 {
-    SimpleUnion simpleUnion(CASE3_FIELD);
+    SimpleUnion simpleUnion;
+    simpleUnion.setCase3Field(CASE3_FIELD);
     ASSERT_EQ(CASE3_FIELD, simpleUnion.getCase3Field());
 
     SimpleUnion simpleUnionMoved(std::move(simpleUnion));
@@ -177,7 +145,8 @@ TEST_F(SimpleUnionTest, moveConstructor)
 
 TEST_F(SimpleUnionTest, moveAssignmentOperator)
 {
-    SimpleUnion simpleUnion(CASE4_FIELD, SimpleUnion::CHOICE_case4Field);
+    SimpleUnion simpleUnion;
+    simpleUnion.setCase4Field(CASE4_FIELD);
     ASSERT_EQ(CASE4_FIELD, simpleUnion.getCase4Field());
 
     SimpleUnion simpleUnionMoved;

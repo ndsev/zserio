@@ -11,8 +11,16 @@ TEST(ChoiceTemplatedFieldTest, readWrite)
 {
     ChoiceTemplatedField choiceTemplatedField;
     choiceTemplatedField.setSelector(0);
-    choiceTemplatedField.setChoice1(TemplatedChoice_uint32_uint16{static_cast<uint32_t>(42)});
-    choiceTemplatedField.setChoice2(TemplatedChoice_Compound_uint32_uint16{Compound_uint32{42}});
+    {
+        TemplatedChoice_uint32_uint16 choice1;
+        choice1.setTemplatedField1(42);
+        choiceTemplatedField.setChoice1(std::move(choice1));
+    }
+    {
+        TemplatedChoice_Compound_uint32_uint16 choice2;
+        choice2.setTemplatedField1(Compound_uint32{42});
+        choiceTemplatedField.setChoice2(choice2); // copy
+    }
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

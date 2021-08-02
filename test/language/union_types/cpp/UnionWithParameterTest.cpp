@@ -32,17 +32,6 @@ TEST(UnionWithParameterTest, bitStreamReaderConstructor)
     ASSERT_EQ(testUnion.getCase3Field(), readTestUnion.getCase3Field());
 }
 
-TEST(UnionWithParameterTest, fieldConstructor)
-{
-    int32_t test1 = 13;
-    TestUnion testUnion(test1);
-    ASSERT_THROW(testUnion.getCase1Allowed(), zserio::CppRuntimeException);
-    testUnion.initialize(true);
-
-    ASSERT_EQ(true, testUnion.getCase1Allowed());
-    ASSERT_EQ(test1, testUnion.getCase1Field());
-}
-
 TEST(UnionWithParameter, copyConstructor)
 {
     TestUnion testUnion;
