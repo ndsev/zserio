@@ -90,118 +90,6 @@ void checkOffset(const OFFSET_CHECKER& offsetChecker, size_t index, size_t byteO
 inline void checkOffset(const DummyOffsetChecker&, size_t, size_t)
 {}
 
-template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-size_t bitSizeOf(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t bitPosition)
-{
-    const size_t arrayLength = rawArray.size();
-    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
-        return arrayLength == 0 ? 0 : arrayLength * arrayTraits.bitSizeOf(rawArray, bitPosition, 0);
-
-    size_t endBitPosition = bitPosition;
-    for (size_t index = 0; index < arrayLength; ++index)
-        endBitPosition += arrayTraits.bitSizeOf(rawArray, endBitPosition, index);
-
-    return endBitPosition - bitPosition;
-}
-
-template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-size_t bitSizeOfAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t bitPosition)
-{
-    size_t endBitPosition = bitPosition;
-    const size_t arrayLength = rawArray.size();
-    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && arrayLength > 0)
-    {
-        const size_t elementBitSize = arrayTraits.bitSizeOf(rawArray, bitPosition, 0);
-        endBitPosition = alignTo(8, endBitPosition);
-        endBitPosition += (arrayLength - 1) * alignTo(8, elementBitSize) + elementBitSize;
-    }
-    else
-    {
-        for (size_t index = 0; index < arrayLength; ++index)
-        {
-            endBitPosition = alignTo(8, endBitPosition);
-            endBitPosition += arrayTraits.bitSizeOf(rawArray, endBitPosition, index);
-        }
-    }
-
-    return endBitPosition - bitPosition;
-}
-
-template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-size_t initializeOffsets(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t bitPosition)
-{
-    const size_t arrayLength = rawArray.size();
-    if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT)
-    {
-        return bitPosition +
-                (arrayLength == 0 ? 0 : arrayLength * arrayTraits.bitSizeOf(rawArray, bitPosition, 0));
-    }
-
-    size_t endBitPosition = bitPosition;
-    for (size_t index = 0; index < arrayLength; ++index)
-        endBitPosition = arrayTraits.initializeOffsets(rawArray, endBitPosition, index);
-
-    return endBitPosition;
-}
-
-template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename OFFSET_INITIALIZER>
-size_t initializeOffsetsAligned(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t bitPosition,
-        const OFFSET_INITIALIZER& offsetInitializer)
-{
-    size_t endBitPosition = bitPosition;
-    for (size_t index = 0; index < rawArray.size(); ++index)
-    {
-        endBitPosition = alignTo(8, endBitPosition);
-        initializeOffset(offsetInitializer, index, bitsToBytes(endBitPosition));
-        endBitPosition = arrayTraits.initializeOffsets(rawArray, endBitPosition, index);
-    }
-
-    return endBitPosition;
-}
-
-template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-void read(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t size,
-        const ELEMENT_FACTORY& elementFactory)
-{
-    rawArray.clear();
-    rawArray.reserve(size);
-    for (size_t index = 0; index < size; ++index)
-        arrayTraitsRead(arrayTraits, elementFactory, rawArray, in, index);
-}
-
-template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY, typename OFFSET_CHECKER>
-void readAligned(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, BitStreamReader& in, size_t size,
-        const ELEMENT_FACTORY& elementFactory, const OFFSET_CHECKER& offsetChecker)
-{
-    rawArray.clear();
-    rawArray.reserve(size);
-    for (size_t index = 0; index < size; ++index)
-    {
-        in.alignTo(8);
-        checkOffset(offsetChecker, index, bitsToBytes(in.getBitPosition()));
-        arrayTraitsRead(arrayTraits, elementFactory, rawArray, in, index);
-    }
-}
-
-template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-void write(RAW_ARRAY& rawArray, ARRAY_TRAITS& arrayTraits, BitStreamWriter& out)
-{
-    for (size_t index = 0; index < rawArray.size(); ++index)
-        arrayTraits.write(rawArray, out, index);
-}
-
-template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename OFFSET_CHECKER>
-void writeAligned(RAW_ARRAY& rawArray,
-        ARRAY_TRAITS& arrayTraits, BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
-{
-    for (size_t index = 0; index < rawArray.size(); ++index)
-    {
-        out.alignTo(8);
-        checkOffset(offsetChecker, index, bitsToBytes(out.getBitPosition()));
-        arrayTraits.write(rawArray, out, index);
-    }
-}
-
 } // namespace detail
 
 /**
@@ -398,35 +286,27 @@ public:
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT || ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT,
                 "Implicit array elements must have constant bit size!");
 
-        switch (ARRAY_TYPE)
+        size_t readSize = arrayLengthArg;
+        if (ARRAY_TYPE == ArrayType::IMPLICIT)
         {
-            case ArrayType::NORMAL:
-                detail::read(m_rawArray, m_arrayTraits, in, arrayLengthArg, elementFactory);
-                break;
-            case ArrayType::IMPLICIT:
-                {
-                    const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
-                    const size_t arrayLength = remainingBits / arrayTraits.bitSizeOf(m_rawArray, 0, 0);
-                    detail::read(m_rawArray, m_arrayTraits, in, arrayLength, elementFactory);
-                }
-                break;
-            case ArrayType::ALIGNED:
-                detail::readAligned(m_rawArray, m_arrayTraits, in, arrayLengthArg,
-                        elementFactory, offsetChecker);
-                break;
-            case ArrayType::AUTO:
-                {
-                    const uint32_t arrayLength = in.readVarSize();
-                    detail::read(m_rawArray, m_arrayTraits, in, arrayLength, elementFactory);
-                }
-                break;
-            case ArrayType::ALIGNED_AUTO:
-                {
-                    const uint32_t arrayLength = in.readVarSize();
-                    detail::readAligned(m_rawArray, m_arrayTraits, in, arrayLength,
-                            elementFactory, offsetChecker);
-                }
-                break;
+            const size_t remainingBits = in.getBufferBitSize() - in.getBitPosition();
+            readSize = remainingBits / arrayTraits.bitSizeOf(m_rawArray, 0, 0);
+        }
+        else if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+        {
+            readSize = in.readVarSize();
+        }
+
+        m_rawArray.clear();
+        m_rawArray.reserve(readSize);
+        for (size_t index = 0; index < readSize; ++index)
+        {
+            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+            {
+                in.alignTo(8);
+                detail::checkOffset(offsetChecker, index, bitsToBytes(in.getBitPosition()));
+            }
+            detail::arrayTraitsRead(arrayTraits, elementFactory, m_rawArray, in, index);
         }
     }
 
@@ -503,26 +383,35 @@ public:
     */
     size_t bitSizeOf(size_t bitPosition = 0) const
     {
-        switch (ARRAY_TYPE)
+        size_t endBitPosition = bitPosition;
+        const size_t size = m_rawArray.size();
+        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+            endBitPosition += zserio::bitSizeOfVarSize(convertSizeToUInt32(size));
+
+        if (ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT && size > 0)
         {
-            case ArrayType::NORMAL:
-            case ArrayType::IMPLICIT:
-                return detail::bitSizeOf(m_rawArray, m_arrayTraits, bitPosition);
-            case ArrayType::ALIGNED:
-                return detail::bitSizeOfAligned(m_rawArray, m_arrayTraits, bitPosition);
-            case ArrayType::AUTO:
+            const size_t elementBitSize = m_arrayTraits.bitSizeOf(m_rawArray, bitPosition, 0);
+            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             {
-                const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(m_rawArray.size()));
-                return lengthBitSizeOf + detail::bitSizeOf(
-                        m_rawArray, m_arrayTraits, lengthBitSizeOf + bitPosition);
+                endBitPosition = alignTo(8, endBitPosition);
+                endBitPosition += elementBitSize + (size - 1) * alignTo(8, elementBitSize);
             }
-            case ArrayType::ALIGNED_AUTO:
+            else
             {
-                const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(convertSizeToUInt32(m_rawArray.size()));
-                return lengthBitSizeOf + detail::bitSizeOfAligned(
-                        m_rawArray, m_arrayTraits, lengthBitSizeOf + bitPosition);
+                endBitPosition += size * elementBitSize;
             }
         }
+        else
+        {
+            for (size_t index = 0; index < size; ++index)
+            {
+                if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+                    endBitPosition = alignTo(8, endBitPosition);
+                endBitPosition += m_arrayTraits.bitSizeOf(m_rawArray, endBitPosition, index);
+            }
+        }
+
+        return endBitPosition - bitPosition;
     }
 
     /**
@@ -547,28 +436,22 @@ public:
      */
     size_t initializeOffsets(size_t bitPosition, const OFFSET_INITIALIZER& offsetInitializer)
     {
-        switch(ARRAY_TYPE)
+        size_t endBitPosition = bitPosition;
+        const size_t size = m_rawArray.size();
+        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+            endBitPosition += zserio::bitSizeOfVarSize(convertSizeToUInt32(size));
+
+        for (size_t index = 0; index < size; ++index)
         {
-            case ArrayType::NORMAL:
-            case ArrayType::IMPLICIT:
-                return detail::initializeOffsets(m_rawArray, m_arrayTraits, bitPosition);
-            case ArrayType::ALIGNED:
-                return detail::initializeOffsetsAligned(
-                        m_rawArray, m_arrayTraits, bitPosition, offsetInitializer);
-            case ArrayType::AUTO:
-                {
-                    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(
-                            convertSizeToUInt32(m_rawArray.size()));
-                    return detail::initializeOffsets(m_rawArray, m_arrayTraits, bitPosition + lengthBitSizeOf);
-                }
-            case ArrayType::ALIGNED_AUTO:
-                {
-                    const size_t lengthBitSizeOf = zserio::bitSizeOfVarSize(
-                            convertSizeToUInt32(m_rawArray.size()));
-                    return detail::initializeOffsetsAligned(
-                            m_rawArray, m_arrayTraits, bitPosition + lengthBitSizeOf, offsetInitializer);
-                }
+            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+            {
+                endBitPosition = alignTo(8, endBitPosition);
+                detail::initializeOffset(offsetInitializer, index, bitsToBytes(endBitPosition));
+            }
+            endBitPosition = m_arrayTraits.initializeOffsets(m_rawArray, endBitPosition, index);
         }
+
+        return endBitPosition;
     }
 
     /**
@@ -591,23 +474,18 @@ public:
      */
     void write(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
     {
-        switch (ARRAY_TYPE)
+        const size_t size = m_rawArray.size();
+        if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+            out.writeVarSize(convertSizeToUInt32(size));
+
+        for (size_t index = 0; index < size; ++index)
         {
-            case ArrayType::NORMAL:
-            case ArrayType::IMPLICIT:
-                detail::write(m_rawArray, m_arrayTraits, out);
-                break;
-            case ArrayType::ALIGNED:
-                detail::writeAligned(m_rawArray, m_arrayTraits, out, offsetChecker);
-                break;
-            case ArrayType::AUTO:
-                out.writeVarSize(convertSizeToUInt32(getRawArray().size()));
-                detail::write(m_rawArray, m_arrayTraits, out);
-                break;
-            case ArrayType::ALIGNED_AUTO:
-                out.writeVarSize(convertSizeToUInt32(getRawArray().size()));
-                detail::writeAligned(m_rawArray, m_arrayTraits, out, offsetChecker);
-                break;
+            if (ARRAY_TYPE == ArrayType::ALIGNED || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
+            {
+                out.alignTo(8);
+                detail::checkOffset(offsetChecker, index, bitsToBytes(out.getBitPosition()));
+            }
+            m_arrayTraits.write(m_rawArray, out, index);
         }
     }
 
