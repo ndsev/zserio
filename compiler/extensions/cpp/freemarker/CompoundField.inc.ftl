@@ -788,7 +788,7 @@ ${I};
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list fieldList as field>
         <#if !field.isSimpleType || field.optional??>
-${I}ZSERIO_T_${field.name}&&<#t>
+${I}ZSERIO_T_${field.name}&& <#t>
         <#else>
 ${I}${field.cppArgumentTypeName} <#t>
         </#if>
