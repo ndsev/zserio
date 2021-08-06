@@ -90,7 +90,7 @@ class Array:
         """
         Constructs packed array and reads elements from the given bit stream reader.
 
-        :param packed_array_traits: Packed array traits which specify the array type.
+        :param array_traits: Array traits which specify the array type.
         :param reader: Bit stream from which to read.
         :param size: Number of elements to read or None in case of implicit or auto arrays.
         :param raw_array: Native python list which will be hold by this abstraction.

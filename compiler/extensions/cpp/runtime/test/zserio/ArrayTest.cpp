@@ -248,6 +248,14 @@ protected:
             EXPECT_EQ(expectedValue, element.getValue());
     }
 
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testPackedArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t elementBitSize)
+    {
+        const size_t arraySize = rawArray.size();
+        const size_t unalignedBitSize = elementBitSize * arraySize;
+        testWritePackedAuto(rawArray, arrayTraits, unalignedBitSize);
+    }
+
 private:
     template <typename RAW_ARRAY, typename ARRAY_TRAITS>
     void testBitSizeOf(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
@@ -353,8 +361,8 @@ private:
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{
-                arrayTraits, reader, rawArray.size(), elementFactory};
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
+        readArray.read(reader, rawArray.size(), elementFactory);
         EXPECT_EQ(array, readArray);
     }
 
@@ -367,7 +375,8 @@ private:
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits, reader, elementFactory};
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
+        readArray.read(reader, elementFactory);
         EXPECT_EQ(array, readArray);
     }
 
@@ -382,8 +391,8 @@ private:
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{
-                        arrayTraits, reader, rawArray.size(), elementFactory, ArrayTestOffsetChecker()};
+                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
+        readArray.read(reader, rawArray.size(), elementFactory, ArrayTestOffsetChecker());
         EXPECT_EQ(array, readArray);
     }
 
@@ -398,8 +407,8 @@ private:
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{
-                        arrayTraits, reader, elementFactory, ArrayTestOffsetChecker()};
+                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
+        readArray.read(reader, elementFactory, ArrayTestOffsetChecker());
         EXPECT_EQ(array, readArray);
     }
 
@@ -407,7 +416,7 @@ private:
             typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
     void testReadImplicit(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
-        if (arrayTraits.bitSizeOf(rawArray, 0, 0) % 8 != 0)
+        if (arrayTraits.bitSizeOf() % 8 != 0)
             return; // implicit array allowed for types with constant bitsize rounded to bytes
 
         Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> array{rawArray, arrayTraits};
@@ -415,7 +424,8 @@ private:
         array.write(writer);
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> readArray{arrayTraits, reader, 0};
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> readArray{arrayTraits};
+        readArray.read(reader);
         EXPECT_EQ(array, readArray);
     }
 
@@ -464,6 +474,28 @@ private:
         BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
         array.write(writer, ArrayTestOffsetChecker());
         EXPECT_EQ(alignedAutoBitSize, writer.getBitPosition());
+    }
+
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    void testWritePackedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t unpackedBitSize)
+    {
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
+
+        const size_t bitSizeOfResult = array.bitSizeOfPacked(0);
+        const size_t initializeOffsetsResult = array.initializeOffsetsPacked(0);
+        ASSERT_EQ(bitSizeOfResult, initializeOffsetsResult);
+
+        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+        array.writePacked(writer);
+        ASSERT_GT(unpackedBitSize, writer.getBitPosition());
+        ASSERT_EQ(initializeOffsetsResult, writer.getBitPosition());
+
+        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
+        readArray.readPacked(reader);
+
+        ASSERT_EQ(array, readArray);
     }
 
     static const size_t AUTO_LENGTH_BIT_SIZE = 8;
@@ -746,7 +778,7 @@ TEST_F(ArrayTest, stringArray)
     const size_t stringBitSize = (sizeof("StringX") - 1) * 8; // without terminating character
     const size_t elementBitSize = stringLengthBitSize + stringBitSize;
     std::vector<std::string> rawArray = {"String0", "String1", "String2"};
-    testArray(rawArray, StringArrayTraits(), elementBitSize);
+    testArray(rawArray, StringArrayTraits<>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, bitBufferArray)
@@ -756,7 +788,7 @@ TEST_F(ArrayTest, bitBufferArray)
     const size_t elementBitSize = bitBufferLengthBitSize + bitBufferBitSize;
     std::vector<BitBuffer> rawArray = {BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize),
             BitBuffer(bitBufferBitSize)};
-    testArray(rawArray, BitBufferArrayTraits(), elementBitSize);
+    testArray(rawArray, BitBufferArrayTraits<>(), elementBitSize);
 }
 
 TEST_F(ArrayTest, enumArray)
@@ -792,6 +824,12 @@ TEST_F(ArrayTest, objectArray)
     testArrayInitializeElements(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>());
     testArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(),
             unalignedBitSize, alignedBitSize, ArrayTestDummyObjectElementFactory());
+}
+
+TEST_F(ArrayTest, stdInt8PackedArray)
+{
+    std::vector<uint8_t> rawArray = { 0, 2, 4, 6, 8, 10, 10, 11 };
+    testPackedArray(rawArray, StdIntArrayTraits<int8_t>(), 8);
 }
 
 } // namespace zserio

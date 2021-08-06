@@ -66,15 +66,7 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
 <#macro compound_read_field_inner field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_read_field_prolog field, compoundName, indent/>
-    <#if field.array??>
-        <#local readCommand>
-            <@array_typedef_name field/>(<@array_traits field/>, in<#t>
-                    <#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if><#t>
-                    <#if field.array.requiresElementFactory>, <@element_factory_name field.name/>(*this)</#if><#t>
-                    <#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#t>
-                    , allocator)<#t>
-        </#local>
-    <#elseif field.runtimeFunction??>
+    <#if field.runtimeFunction??>
         <#local readCommandArgs>
             ${field.runtimeFunction.arg!}<#if field.needsAllocator><#if field.runtimeFunction.arg??>, </#if>allocator</#if><#t>
         </#local>
@@ -89,11 +81,21 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
             in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>, allocator<#t>
         </#local>
         <#local readCommand><@field_cpp_type_name field/>(${constructorArguments})</#local>
-    <#else>
+    <#elseif !field.array??>
         <#-- bitmask -->
         <#local readCommand><@field_cpp_type_name field/>(in)</#local>
     </#if>
-    <#if field.constraint??>
+    <#if field.array??>
+${I}<@array_typedef_name field/> readField(<@array_traits field/>, allocator);
+${I}readField.read(in<#rt>
+        <#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if><#t>
+        <#if field.array.requiresElementFactory>, <@element_factory_name field.name/>(*this)</#if><#t>
+        <#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#t>
+        <#lt>);
+    <@compound_check_constraint_field field, name, "Read", indent/>
+
+${I}return <@compound_read_field_retval field, "readField", true/>;
+    <#elseif field.constraint??>
 ${I}<@field_cpp_type_name field/> readField = ${readCommand};
     <@compound_check_constraint_field field, name, "Read", indent/>
 

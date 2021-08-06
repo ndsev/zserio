@@ -123,6 +123,62 @@ inline void write_bits<uint64_t>(BitStreamWriter& out, uint64_t value, uint8_t n
 
 } // namespace detail
 
+template <typename ARRAY_TRAITS>
+class PackedArrayTraits
+{
+public:
+    /** Element type. */
+    using ElementType = typename ARRAY_TRAITS::ElementType;
+
+    explicit PackedArrayTraits(const ARRAY_TRAITS& arrayTraits)
+    :   m_arrayTraits(arrayTraits)
+    {}
+
+    template <typename PACKING_CONTEXT_NODE>
+    void createContext(PACKING_CONTEXT_NODE& contextNode) const
+    {
+        contextNode.createContext();
+    }
+
+    template <typename PACKING_CONTEXT_NODE>
+    void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        context.init(element);
+    }
+
+    template <typename PACKING_CONTEXT_NODE>
+    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        return context.bitSizeOf(m_arrayTraits, bitPosition, element);
+    }
+
+    template <typename PACKING_CONTEXT_NODE>
+    size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        return bitPosition + context.bitSizeOf(m_arrayTraits, bitPosition, element);
+    }
+
+    template <typename PACKING_CONTEXT_NODE>
+    void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        context.write(m_arrayTraits, out, element);
+    }
+
+    template <typename PACKING_CONTEXT_NODE>
+    ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t index) const
+    {
+        auto& context = contextNode.getContext();
+        return context.read(m_arrayTraits, in, index);
+    }
+
+private:
+    ARRAY_TRAITS m_arrayTraits;
+};
+
 /**
  * Array traits for bit field Zserio types (int:5, bit:5, etc...).
  */
@@ -130,6 +186,9 @@ template <typename T>
 class BitFieldArrayTraits
 {
 public:
+    /** Element type. */
+    using ElementType = T;
+
     /**
      * Constructor.
      *
@@ -144,8 +203,12 @@ public:
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    size_t bitSizeOf(const RAW_ARRAY&, size_t, size_t) const
+    size_t bitSizeOf() const
+    {
+        return m_numBits;
+    }
+
+    size_t bitSizeOf(size_t, ElementType) const
     {
         return m_numBits;
     }
@@ -157,8 +220,7 @@ public:
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    size_t initializeOffsets(const RAW_ARRAY&, size_t bitPosition, size_t) const
+    size_t initializeOffsets(size_t bitPosition, ElementType) const
     {
         return bitPosition + m_numBits;
     }
@@ -166,26 +228,24 @@ public:
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t) const
+    ElementType read(BitStreamReader& in, size_t) const
     {
-        rawArray.push_back(detail::read_bits<T>(in, m_numBits));
+        return detail::read_bits<T>(in, m_numBits);
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of the element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index) const
+    void write(BitStreamWriter& out, ElementType element) const
     {
-        detail::write_bits(out, rawArray.at(index), m_numBits);
+        detail::write_bits(out, element, m_numBits);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -201,15 +261,22 @@ private:
 template <typename T>
 struct StdIntArrayTraits
 {
+    /** Element type. */
+    using ElementType = T;
+
     /**
      * Calculates bit size of the array element.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY&, size_t, size_t)
+    static size_t bitSizeOf()
     {
         return NUM_BITS;
+    }
+
+    static size_t bitSizeOf(size_t, ElementType)
+    {
+        return bitSizeOf();
     }
 
     /**
@@ -219,8 +286,7 @@ struct StdIntArrayTraits
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY&, size_t bitPosition, size_t)
+    static size_t initializeOffsets(size_t bitPosition, ElementType)
     {
         return bitPosition + NUM_BITS;
     }
@@ -228,26 +294,24 @@ struct StdIntArrayTraits
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(detail::read_bits<T>(in, NUM_BITS));
+        return detail::read_bits<T>(in, NUM_BITS);
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        detail::write_bits(out, rawArray.at(index), NUM_BITS);
+        detail::write_bits(out, element, NUM_BITS);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -269,58 +333,55 @@ struct VarIntNNArrayTraits;
 template <>
 struct VarIntNNArrayTraits<int16_t>
 {
+    /** Element type. */
+    using ElementType = int16_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarInt16(rawArray.at(index));
+        return zserio::bitSizeOfVarInt16(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarInt16());
+        return in.readVarInt16();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarInt16(rawArray.at(index));
+        out.writeVarInt16(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -333,58 +394,55 @@ struct VarIntNNArrayTraits<int16_t>
 template <>
 struct VarIntNNArrayTraits<int32_t>
 {
+    /** Element type. */
+    using ElementType = int32_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarInt32(rawArray.at(index));
+        return zserio::bitSizeOfVarInt32(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarInt32());
+        return in.readVarInt32();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarInt32(rawArray.at(index));
+        out.writeVarInt32(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -397,58 +455,55 @@ struct VarIntNNArrayTraits<int32_t>
 template <>
 struct VarIntNNArrayTraits<int64_t>
 {
+    /** Element type. */
+    using ElementType = int64_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarInt64(rawArray.at(index));
+        return zserio::bitSizeOfVarInt64(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarInt64());
+        return in.readVarInt64();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarInt64(rawArray.at(index));
+        out.writeVarInt64(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -461,58 +516,55 @@ struct VarIntNNArrayTraits<int64_t>
 template <>
 struct VarIntNNArrayTraits<uint16_t>
 {
+    /** Element type. */
+    using ElementType = uint16_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarUInt16(rawArray.at(index));
+        return zserio::bitSizeOfVarUInt16(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarUInt16());
+        return in.readVarUInt16();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarUInt16(rawArray.at(index));
+        out.writeVarUInt16(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -525,58 +577,55 @@ struct VarIntNNArrayTraits<uint16_t>
 template <>
 struct VarIntNNArrayTraits<uint32_t>
 {
+    /** Element type. */
+    using ElementType = uint32_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarUInt32(rawArray.at(index));
+        return zserio::bitSizeOfVarUInt32(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarUInt32());
+        return in.readVarUInt32();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarUInt32(rawArray.at(index));
+        out.writeVarUInt32(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -589,58 +638,55 @@ struct VarIntNNArrayTraits<uint32_t>
 template <>
 struct VarIntNNArrayTraits<uint64_t>
 {
+    /** Element type. */
+    using ElementType = uint64_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarUInt64(rawArray.at(index));
+        return zserio::bitSizeOfVarUInt64(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarUInt64());
+        return in.readVarUInt64();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarUInt64(rawArray.at(index));
+        out.writeVarUInt64(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -659,58 +705,55 @@ struct VarIntArrayTraits;
 template <>
 struct VarIntArrayTraits<int64_t>
 {
+    /** Element type. */
+    using ElementType = int64_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarInt(rawArray.at(index));
+        return zserio::bitSizeOfVarInt(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarInt());
+        return in.readVarInt();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarInt(rawArray.at(index));
+        out.writeVarInt(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -723,58 +766,55 @@ struct VarIntArrayTraits<int64_t>
 template <>
 struct VarIntArrayTraits<uint64_t>
 {
+    /** Element type. */
+    using ElementType = uint64_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t , size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarUInt(rawArray.at(index));
+        return zserio::bitSizeOfVarUInt(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarUInt());
+        return in.readVarUInt();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeVarUInt(rawArray.at(index));
+        out.writeVarUInt(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -786,58 +826,55 @@ struct VarIntArrayTraits<uint64_t>
  */
 struct VarSizeArrayTraits
 {
+    /** Element type. */
+    using ElementType = uint32_t;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfVarSize(rawArray.at(index));
+        return zserio::bitSizeOfVarSize(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readVarSize());
+        return in.readVarSize();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write
+     * \param element Element to write
      */
-    template <typename RAW_ARRAY>
-    void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index) const
+    void write(BitStreamWriter& out, ElementType element) const
     {
-        out.writeVarSize(rawArray.at(index));
+        out.writeVarSize(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -849,55 +886,58 @@ struct VarSizeArrayTraits
  */
 struct Float16ArrayTraits
 {
+    /** Element type. */
+    using ElementType = float;
+
     /**
      * Calculates bit size of the array element.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY&, size_t, size_t)
+    static size_t bitSizeOf()
     {
         return 16;
+    }
+
+    static size_t bitSizeOf(size_t, size_t)
+    {
+        return bitSizeOf();
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readFloat16());
+        return in.readFloat16();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeFloat16(rawArray.at(index));
+        out.writeFloat16(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -909,55 +949,58 @@ struct Float16ArrayTraits
  */
 struct Float32ArrayTraits
 {
+    /** Element type. */
+    using ElementType = float;
+
     /**
      * Calculates bit size of the array element.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY&, size_t, size_t)
+    static size_t bitSizeOf()
     {
         return 32;
+    }
+
+    static size_t bitSizeOf(size_t, size_t)
+    {
+        return bitSizeOf();
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readFloat32());
+        return in.readFloat32();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeFloat32(rawArray.at(index));
+        out.writeFloat32(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -969,55 +1012,58 @@ struct Float32ArrayTraits
  */
 struct Float64ArrayTraits
 {
+    /** Element type. */
+    using ElementType = double;
+
     /**
      * Calculates bit size of the array element.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY&, size_t, size_t)
+    static size_t bitSizeOf()
     {
         return 64;
+    }
+
+    static size_t bitSizeOf(size_t, size_t)
+    {
+        return bitSizeOf();
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readFloat64());
+        return in.readFloat64();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
      * \param index Index of element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeFloat64(rawArray.at(index));
+        out.writeFloat64(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -1029,55 +1075,58 @@ struct Float64ArrayTraits
  */
 struct BoolArrayTraits
 {
+    /** Element type. */
+    using ElementType = bool;
+
     /**
      * Calculates bit size of the array element.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY&, size_t, size_t)
+    static size_t bitSizeOf()
     {
         return 1;
+    }
+
+    static size_t bitSizeOf(size_t, size_t)
+    {
+        return bitSizeOf();
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(in.readBool());
+        return in.readBool();
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeBool(rawArray.at(index));
+        out.writeBool(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -1087,62 +1136,62 @@ struct BoolArrayTraits
 /**
  * Array traits for Zserio string type.
  */
-class StringArrayTraits
+template <template <typename> class ALLOC = std::allocator>
+struct StringArrayTraits
 {
-public:
+    /** Element type. */
+    using ElementType = ::zserio::string<ALLOC<char>>;
+
+    /** Allocator type. */
+    using allocator_type = typename ElementType::allocator_type;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfString(rawArray.at(index));
+        return zserio::bitSizeOfString(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    template <typename ALLOCATOR>
+    static ElementType read(BitStreamReader& in, size_t, const ALLOCATOR& allocator)
     {
-        rawArray.push_back(in.readString<RebindAlloc<typename RAW_ARRAY::allocator_type, char>>(
-                rawArray.get_allocator()));
+        return in.readString<allocator_type>(allocator);
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeString(rawArray.at(index));
+        out.writeString(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -1152,61 +1201,60 @@ public:
 /**
  * Array traits for Zserio extern bit buffer type.
  */
+template <template <typename> class ALLOC = std::allocator>
 struct BitBufferArrayTraits
 {
+    /** Element type. */
+    using ElementType = BasicBitBuffer<ALLOC<uint8_t>>;
+
+    /** Allocator type. */
+    using allocator_type = typename ElementType::allocator_type;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOfBitBuffer(rawArray.at(index));
+        return zserio::bitSizeOfBitBuffer(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return bitPosition + bitSizeOf(rawArray, bitPosition, index);
+        return bitPosition + bitSizeOf(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    template <typename ALLOCATOR>
+    static ElementType read(BitStreamReader& in, size_t, const ALLOCATOR& allocator)
     {
-        rawArray.push_back(in.readBitBuffer<RebindAlloc<typename RAW_ARRAY::allocator_type, uint8_t>>(
-                rawArray.get_allocator()));
+        return in.readBitBuffer<allocator_type>(allocator);
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        out.writeBitBuffer(rawArray.at(index));
+        out.writeBitBuffer(element);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -1219,58 +1267,55 @@ struct BitBufferArrayTraits
 template <typename T>
 struct EnumArrayTraits
 {
+    /** Element type. */
+    using ElementType = T;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return zserio::bitSizeOf(rawArray.at(index));
+        return zserio::bitSizeOf(element);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return zserio::initializeOffsets(bitPosition, rawArray.at(index));
+        return zserio::initializeOffsets(bitPosition, element);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.push_back(zserio::read<T>(in));
+        return zserio::read<ElementType>(in);
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        zserio::write(out, rawArray.at(index));
+        zserio::write(out, element);
     }
 
     // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
@@ -1284,58 +1329,55 @@ struct EnumArrayTraits
 template <typename T>
 struct BitmaskArrayTraits
 {
+    /** Element type. */
+    using ElementType = T;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t, size_t index)
+    static size_t bitSizeOf(size_t, ElementType element)
     {
-        return rawArray.at(index).bitSizeOf();
+        return element.bitSizeOf();
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType element)
     {
-        return rawArray.at(index).initializeOffsets(bitPosition);
+        return element.initializeOffsets(bitPosition);
     }
 
     /**
      * Reads the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param in Bit stream reader.
+     *
+     * \return Read element.
      */
-    template <typename RAW_ARRAY>
-    static void read(RAW_ARRAY& rawArray, BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in, size_t)
     {
-        rawArray.emplace_back(in);
+        return ElementType(in);
     }
 
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(const RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType element)
     {
-        rawArray.at(index).write(out, NO_PRE_WRITE_ACTION);
+        element.write(out, NO_PRE_WRITE_ACTION);
     }
 
     // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
@@ -1350,34 +1392,35 @@ template <typename T, typename ELEMENT_FACTORY>
 class ObjectArrayTraits
 {
 public:
+    /** Element type. */
+    using ElementType = T;
+    /** Element factory. */
+    using ElementFactory = ELEMENT_FACTORY;
+
     /**
      * Calculates bit size of the array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use for calculation.
      *
      * \return Bit size of the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t bitSizeOf(const RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t bitSizeOf(size_t bitPosition, const ElementType& element)
     {
-        return rawArray.at(index).bitSizeOf(bitPosition);
+        return element.bitSizeOf(bitPosition);
     }
 
     /**
      * Initializes indexed offsets of the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param bitPosition Current bit position.
-     * \param index Index of element to use.
+     * \param element Element to use.
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    template <typename RAW_ARRAY>
-    static size_t initializeOffsets(RAW_ARRAY& rawArray, size_t bitPosition, size_t index)
+    static size_t initializeOffsets(size_t bitPosition, ElementType& element)
     {
-        return rawArray.at(index).initializeOffsets(bitPosition);
+        return element.initializeOffsets(bitPosition);
     }
 
     /**
@@ -1398,14 +1441,12 @@ public:
     /**
      * Writes the single array element.
      *
-     * \param rawArray Raw array to use.
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
-    template <typename RAW_ARRAY>
-    static void write(RAW_ARRAY& rawArray, BitStreamWriter& out, size_t index)
+    static void write(BitStreamWriter& out, ElementType& element)
     {
-        rawArray.at(index).write(out, NO_PRE_WRITE_ACTION);
+        element.write(out, NO_PRE_WRITE_ACTION);
     }
 
     /** Determines whether the bit size of the single element is constant. */
