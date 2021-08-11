@@ -1,14 +1,13 @@
 package zserio.extension.cpp.types;
 
 import java.math.BigInteger;
-import zserio.ast.PackageName;
 import zserio.extension.common.ZserioExtensionException;
 
-public class NativeIntegralType extends CppNativeType
+public class NativeIntegralType extends NativeBuiltinType
 {
-    public NativeIntegralType(int numBits, boolean isSigned)
+    public NativeIntegralType(int numBits, boolean isSigned, NativeArrayTraits arrayTraits)
     {
-        super(PackageName.EMPTY, getCppTypeName(numBits, isSigned));
+        super(getCppTypeName(numBits, isSigned), arrayTraits);
         addSystemIncludeFile(STDINT_INCLUDE);
 
         this.numBits = numBits;

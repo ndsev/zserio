@@ -22,6 +22,7 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.tools.ZserioToolPrinter;
 import zserio.extension.cpp.types.CppNativeType;
+import zserio.extension.cpp.types.NativeArrayTraits;
 import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.NativeIntegralType;
 
@@ -439,8 +440,9 @@ public class CompoundFieldTemplateData
         {
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
-            traitsName = nativeType.getArrayTraitsName();
-            hasTemplatedTraits = nativeType.hasTemplatedTraits();
+            final NativeArrayTraits arrayTraits = nativeType.getArrayTraits();
+            traitsName = arrayTraits.getName();
+            hasTemplatedTraits = arrayTraits.isTemplated();
             isImplicit = arrayInstantiation.isImplicit();
             if (arrayInstantiation.isPacked())
             {
@@ -451,8 +453,8 @@ public class CompoundFieldTemplateData
             final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
             elementCppTypeName = elementNativeType.getFullName();
             includeCollector.addHeaderIncludesForType(elementNativeType);
-            requiresElementFactory = nativeType.requiresElementFactory();
-            elementBitSize = nativeType.requiresElementBitSize()
+            requiresElementFactory = nativeType.getArrayTraits().requiresElementFactory();
+            elementBitSize = nativeType.getArrayTraits().requiresElementBitSize()
                     ? createBitSize(elementTypeInstantiation, cppExpressionFormatter)
                     : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
