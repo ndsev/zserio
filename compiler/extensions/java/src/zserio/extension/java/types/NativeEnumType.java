@@ -7,8 +7,7 @@ public class NativeEnumType extends NativeArrayableType
     public NativeEnumType(PackageName packageName, String name, NativeIntegralType nativeBaseType,
             boolean withWriterCode)
     {
-        super(packageName, name,
-                new NativeArrayTraits(withWriterCode ? "WriteObjectArray<" : "ObjectArray<"+ name + ">"));
+        super(packageName, name, new NativeObjectArrayTraits(packageName, name, withWriterCode));
 
         this.nativeBaseType = nativeBaseType;
     }

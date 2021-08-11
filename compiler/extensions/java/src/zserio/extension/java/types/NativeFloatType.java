@@ -4,10 +4,9 @@ import zserio.ast.PackageName;
 
 public class NativeFloatType extends NativeArrayableType
 {
-    public NativeFloatType(boolean nullable)
+    public NativeFloatType(boolean nullable, NativeArrayTraits arrayTraits)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Float" : "float",
-                new NativeIntArrayTraits("FloatArray"));
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Float" : "float", arrayTraits);
 
         this.nullable = nullable;
     }

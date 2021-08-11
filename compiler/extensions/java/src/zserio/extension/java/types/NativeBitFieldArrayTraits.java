@@ -1,8 +1,8 @@
 package zserio.extension.java.types;
 
-public class NativeIntArrayTraits extends NativeArrayTraits
+public class NativeBitFieldArrayTraits extends NativeArrayTraits
 {
-    public NativeIntArrayTraits(String name)
+    public NativeBitFieldArrayTraits(String name)
     {
         super(name);
     }
