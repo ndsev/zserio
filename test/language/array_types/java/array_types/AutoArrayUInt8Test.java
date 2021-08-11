@@ -8,7 +8,6 @@ import java.io.File;
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -68,9 +67,9 @@ public class AutoArrayUInt8Test
 
     private void checkBitSizeOf(short numElements) throws IOException, ZserioError
     {
-        final UnsignedByteArray uint8Array = new UnsignedByteArray(numElements);
+        final short[] uint8Array = new short[numElements];
         for (short i = 0; i < numElements; ++i)
-            uint8Array.setElementAt(i, i);
+            uint8Array[i] = i;
 
         final AutoArray autoArray = new AutoArray(uint8Array);
         final int bitPosition = 2;
@@ -80,9 +79,9 @@ public class AutoArrayUInt8Test
 
     private void checkInitializeOffsets(short numElements) throws IOException, ZserioError
     {
-        final UnsignedByteArray uint8Array = new UnsignedByteArray(numElements);
+        final short[] uint8Array = new short[numElements];
         for (short i = 0; i < numElements; ++i)
-            uint8Array.setElementAt(i, i);
+            uint8Array[i] = i;
 
         final AutoArray autoArray = new AutoArray(uint8Array);
         final int bitPosition = 2;
@@ -98,17 +97,17 @@ public class AutoArrayUInt8Test
         final AutoArray autoArray = new AutoArray(stream);
         stream.close();
 
-        final UnsignedByteArray uint8Array = autoArray.getUint8Array();
-        assertEquals(numElements, uint8Array.length());
+        final short[] uint8Array = autoArray.getUint8Array();
+        assertEquals(numElements, uint8Array.length);
         for (short i = 0; i < numElements; ++i)
-            assertEquals(i, uint8Array.elementAt(i));
+            assertEquals(i, uint8Array[i]);
     }
 
     private void checkWrite(short numElements) throws IOException, ZserioError
     {
-        final UnsignedByteArray uint8Array = new UnsignedByteArray(numElements);
+        final short[] uint8Array = new short[numElements];
         for (short i = 0; i < numElements; ++i)
-            uint8Array.setElementAt(i, i);
+            uint8Array[i] = i;
 
         final AutoArray autoArray = new AutoArray(uint8Array);
         final File file = new File("test.bin");
@@ -117,10 +116,10 @@ public class AutoArrayUInt8Test
         writer.close();
 
         final AutoArray readAutoArray = new AutoArray(file);
-        final UnsignedByteArray readUint8Array = readAutoArray.getUint8Array();
-        assertEquals(numElements, readUint8Array.length());
+        final short[] readUint8Array = readAutoArray.getUint8Array();
+        assertEquals(numElements, readUint8Array.length);
         for (short i = 0; i < numElements; ++i)
-            assertEquals(i, readUint8Array.elementAt(i));
+            assertEquals(i, readUint8Array[i]);
     }
 
     private void writeAutoArrayToFile(File file, short numElements) throws IOException

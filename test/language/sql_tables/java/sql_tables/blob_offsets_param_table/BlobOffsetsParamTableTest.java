@@ -23,7 +23,6 @@ import test_utils.JdbcUtil;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedIntArray;
 
 public class BlobOffsetsParamTableTest
 {
@@ -132,13 +131,13 @@ public class BlobOffsetsParamTableTest
         row.setName(name);
 
         final OffsetsHolder offsetsHolder = new OffsetsHolder();
-        final UnsignedIntArray offsets = new UnsignedIntArray(ARRAY_SIZE);
+        final long[] offsets = new long[ARRAY_SIZE];
         offsetsHolder.setOffsets(offsets);
         row.setOffsetsHolder(offsetsHolder);
 
-        final UnsignedIntArray array = new UnsignedIntArray(ARRAY_SIZE);
+        final long[] array = new long[ARRAY_SIZE];
         for (int i = 0; i < ARRAY_SIZE; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
         final ParameterizedBlob parameterizedBlob = new ParameterizedBlob(offsetsHolder, array);
         row.setBlob(parameterizedBlob);
 

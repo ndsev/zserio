@@ -19,8 +19,6 @@ import test_utils.JdbcUtil;
 
 import sql_tables.TestDb;
 
-import zserio.runtime.array.ObjectArray;
-
 public class SubtypedTableTest
 {
     @BeforeClass

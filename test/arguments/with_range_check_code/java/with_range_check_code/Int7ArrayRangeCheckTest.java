@@ -9,7 +9,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ByteArray;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -44,8 +43,8 @@ public class Int7ArrayRangeCheckTest
         Int7ArrayRangeCheckCompound int7ArrayRangeCheckCompound = new Int7ArrayRangeCheckCompound();
         final int numElements = 1;
         int7ArrayRangeCheckCompound.setNumElements(numElements);
-        final byte[] values = new byte[]{value};
-        int7ArrayRangeCheckCompound.setArray(new ByteArray(values, 0, numElements));
+        final byte[] values = new byte[] {value};
+        int7ArrayRangeCheckCompound.setArray(values);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         int7ArrayRangeCheckCompound.write(writer);
         final byte[] writtenByteArray = writer.toByteArray();

@@ -28,7 +28,6 @@ import with_validation_code.simple_table_validation.TestEnum;
 import with_validation_code.simple_table_validation.TestBitmask;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
 import zserio.runtime.io.ZserioIO;
 import zserio.runtime.validation.ValidationError;
 import zserio.runtime.validation.ValidationReport;
@@ -447,10 +446,10 @@ public class SimpleTableValidationTest
     private static RootStruct createTestRootStruct(int count, byte id)
     {
         final RootStruct struct = new RootStruct(count);
-        UnsignedByteArray filler = new UnsignedByteArray((int)struct.getCount());
+        final short[] filler = new short[(int)struct.getCount()];
 
-        for (int idx = 0; idx < filler.length(); idx++)
-            filler.setElementAt(id, idx);
+        for (int idx = 0; idx < filler.length; idx++)
+            filler[idx] = id;
 
         struct.setFiller(filler);
 

@@ -12,8 +12,6 @@ import indexed_offsets.optional_nested_indexed_offset_array.Header;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.StringArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -164,12 +162,12 @@ public class OptionalNestedIndexedOffsetArrayTest
             short offsetShift)
     {
         final int length = optionalNestedIndexedOffsetArray.getHeader().getLength();
-        final UnsignedIntArray offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
-        assertEquals(length, offsets.length());
+        final long[] offsets = optionalNestedIndexedOffsetArray.getHeader().getOffsets();
+        assertEquals(length, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (int i = 0; i < length; ++i)
         {
-            assertEquals(expectedOffset, offsets.elementAt(i));
+            assertEquals(expectedOffset, offsets[i]);
             expectedOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
         }
     }
@@ -184,10 +182,10 @@ public class OptionalNestedIndexedOffsetArrayTest
 
         if (length > 0)
         {
-            final StringArray data = optionalNestedIndexedOffsetArray.getData();
-            assertEquals(length, data.length());
+            final String[] data = optionalNestedIndexedOffsetArray.getData();
+            assertEquals(length, data.length);
             for (int i = 0; i < length; ++i)
-                assertTrue(DATA[i].equals(data.elementAt(i)));
+                assertTrue(DATA[i].equals(data[i]));
         }
 
         assertEquals(FIELD_VALUE, optionalNestedIndexedOffsetArray.getField());
@@ -201,14 +199,14 @@ public class OptionalNestedIndexedOffsetArrayTest
 
         final Header header = new Header();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(length);
+        final long[] offsets = new long[length];
         long currentOffset = ELEMENT0_OFFSET;
         for (int i = 0; i < length; ++i)
         {
             if ((i + 1) == length && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
         }
 
@@ -219,9 +217,9 @@ public class OptionalNestedIndexedOffsetArrayTest
 
         if (length > 0)
         {
-            final StringArray data = new StringArray(length);
+            final String[] data = new String[length];
             for (int i = 0; i < length; ++i)
-                data.setElementAt(DATA[i], i);
+                data[i] = DATA[i];
             optionalNestedIndexedOffsetArray.setData(data);
         }
 

@@ -20,8 +20,6 @@ import test_utils.JdbcUtil;
 import explicit_parameters.ExplicitParametersDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedShortArray;
 
 public class MultipleWithSameNameTest
 {

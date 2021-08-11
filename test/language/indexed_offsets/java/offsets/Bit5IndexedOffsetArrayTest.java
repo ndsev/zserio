@@ -10,8 +10,6 @@ import org.junit.Test;
 import indexed_offsets.bit5_indexed_offset_array.Bit5IndexedOffsetArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -155,8 +153,8 @@ public class Bit5IndexedOffsetArrayTest
 
     private void checkOffsets(Bit5IndexedOffsetArray bit5IndexedOffsetArray, short offsetShift)
     {
-        final UnsignedIntArray offsets = bit5IndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = bit5IndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (long offset : offsets)
         {
@@ -172,32 +170,32 @@ public class Bit5IndexedOffsetArrayTest
 
         assertEquals(SPACER_VALUE, bit5IndexedOffsetArray.getSpacer());
 
-        final UnsignedByteArray data = bit5IndexedOffsetArray.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final byte[] data = bit5IndexedOffsetArray.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            assertEquals(i % 64, data.elementAt(i));
+            assertEquals(i % 64, data[i]);
     }
 
     private Bit5IndexedOffsetArray createBit5IndexedOffsetArray(boolean createWrongOffsets)
     {
         final Bit5IndexedOffsetArray bit5IndexedOffsetArray = new Bit5IndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
         bit5IndexedOffsetArray.setOffsets(offsets);
         bit5IndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        final UnsignedByteArray data = new UnsignedByteArray(NUM_ELEMENTS);
+        final byte[] data = new byte[NUM_ELEMENTS];
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            data.setElementAt((short)(i % 64), i);
+            data[i] = (byte)(i % 64);
         bit5IndexedOffsetArray.setData(data);
 
         return bit5IndexedOffsetArray;

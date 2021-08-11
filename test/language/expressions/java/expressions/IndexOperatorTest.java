@@ -10,7 +10,6 @@ import java.io.IOException;
 
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.array.ObjectArray;
 
 import expressions.index_operator.*;
 
@@ -64,7 +63,7 @@ public class IndexOperatorTest
 
     private static ElementList createElementList(int length)
     {
-        final ObjectArray<Element> elements = new ObjectArray<Element>(length);
+        final Element[] elements = new Element[length];
         for (int i = 0; i < length; ++i)
         {
             final boolean isEven = i % 2 + 1 == 2;
@@ -74,11 +73,11 @@ public class IndexOperatorTest
             else
                 element.setField16((short)ELEMENTS[i]);
 
-            elements.setElementAt(element, i);
+            elements[i] = element;
         }
 
         final ElementList list = new ElementList();
-        list.setLength(elements.length());
+        list.setLength(elements.length);
         list.setElements(elements);
 
         return list;
@@ -104,7 +103,7 @@ public class IndexOperatorTest
         for (int i = 0; i < length; ++i)
         {
             final boolean isEven = i % 2 + 1 == 2;
-            final Element element = list.getElements().elementAt(i);
+            final Element element = list.getElements()[i];
             assertEquals(ELEMENTS[i], isEven ? element.getField8() : element.getField16());
         }
     }

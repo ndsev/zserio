@@ -4,15 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.imageio.stream.FileImageInputStream;
 
 import org.junit.Test;
-
-import zserio.runtime.array.LongArray;
-import zserio.runtime.array.ObjectArray;
 
 public class ArrayElementParamTest
 {
@@ -29,22 +24,21 @@ public class ArrayElementParamTest
 
     private Database createDatabase()
     {
-        final List<BlockHeader> blockHeaderList = new ArrayList<BlockHeader>();
-        final List<Block> blockList = new ArrayList<Block>();
+        final BlockHeader[] blockHeaders = new BlockHeader[NUM_BLOCKS];
+        final Block[] blocks = new Block[NUM_BLOCKS];
         for (int i = 0; i < NUM_BLOCKS; ++i)
         {
             final int numItems = i + 1;
             final BlockHeader blockHeader = new BlockHeader(numItems, 0);
-            blockHeaderList.add(blockHeader);
-            final long[] itemList = new long[numItems];
+            blockHeaders[i] = blockHeader;
+            final long[] items = new long[numItems];
             for (int j = 0; j < numItems; ++j)
-                itemList[j] = j * 2;
+                items[j] = j * 2;
 
-            blockList.add(new Block(blockHeader, new LongArray(itemList, 0, itemList.length)));
+            blocks[i] = new Block(blockHeader, items);
         }
 
-        return new Database(NUM_BLOCKS, new ObjectArray<BlockHeader>(blockHeaderList),
-                new ObjectArray<Block>(blockList));
+        return new Database(NUM_BLOCKS, blockHeaders, blocks);
     }
 
     private void checkDatabaseInFile(File file, Database database) throws IOException
@@ -53,23 +47,23 @@ public class ArrayElementParamTest
         final int numBlocks = database.getNumBlocks();
         assertEquals(numBlocks, stream.readUnsignedShort());
 
-        final ObjectArray<BlockHeader> headers = database.getHeaders();
+        final BlockHeader[] headers = database.getHeaders();
         long expectedOffset = FIRST_BYTE_OFFSET;
         for (int i = 0; i < numBlocks; ++i)
         {
             final int numItems = stream.readUnsignedShort();
-            assertEquals(headers.elementAt(i).getNumItems(), numItems);
+            assertEquals(headers[i].getNumItems(), numItems);
             assertEquals(expectedOffset, stream.readUnsignedInt());
             expectedOffset += 8L * numItems;
         }
 
-        final ObjectArray<Block> blocks = database.getBlocks();
+        final Block[] blocks = database.getBlocks();
         for (int i = 0; i < numBlocks; ++i)
         {
-            final int numItems = headers.elementAt(i).getNumItems();
-            final LongArray items = blocks.elementAt(i).getItems();
+            final int numItems = headers[i].getNumItems();
+            final long[] items = blocks[i].getItems();
             for (int j = 0; j < numItems; ++j)
-                assertEquals(items.elementAt(j), stream.readLong());
+                assertEquals(items[j], stream.readLong());
         }
 
         stream.close();

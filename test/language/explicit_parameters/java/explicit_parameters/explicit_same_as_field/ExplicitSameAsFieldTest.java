@@ -20,8 +20,6 @@ import test_utils.JdbcUtil;
 import explicit_parameters.ExplicitParametersDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedShortArray;
 
 public class ExplicitSameAsFieldTest
 {
@@ -136,16 +134,16 @@ public class ExplicitSameAsFieldTest
         row.setName(name);
         row.setCount(SAME_AS_FIELD_TABLE_COUNT);
 
-        final UnsignedByteArray values = new UnsignedByteArray(SAME_AS_FIELD_TABLE_COUNT);
-        for (int i = 0; i < values.length(); ++i)
-            values.setElementAt((short)id, i);
-        final TestBlob testBlob = new TestBlob(values.length(), values);
+        final byte[] values = new byte[SAME_AS_FIELD_TABLE_COUNT];
+        for (int i = 0; i < values.length; ++i)
+            values[i] = (byte)id;
+        final TestBlob testBlob = new TestBlob(values.length, values);
         row.setBlob(testBlob);
 
-        final UnsignedByteArray valuesExplicit = new UnsignedByteArray(SAME_AS_FIELD_TABLE_COUNT_EXPLICIT);
-        for (int i = 0; i < valuesExplicit.length(); ++i)
-            valuesExplicit.setElementAt((short)(id + 1), i);
-        final TestBlob testBlobExplicit = new TestBlob(valuesExplicit.length(), valuesExplicit);
+        final byte[] valuesExplicit = new byte[SAME_AS_FIELD_TABLE_COUNT_EXPLICIT];
+        for (int i = 0; i < valuesExplicit.length; ++i)
+            valuesExplicit[i] = (byte)(id + 1);
+        final TestBlob testBlobExplicit = new TestBlob(valuesExplicit.length, valuesExplicit);
         row.setBlobExplicit(testBlobExplicit);
 
         return row;

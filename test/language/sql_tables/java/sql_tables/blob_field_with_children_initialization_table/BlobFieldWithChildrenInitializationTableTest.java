@@ -23,7 +23,6 @@ import test_utils.JdbcUtil;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedIntArray;
 
 public class BlobFieldWithChildrenInitializationTableTest
 {
@@ -81,9 +80,9 @@ public class BlobFieldWithChildrenInitializationTableTest
         row.setId(index);
         final int arrayLength = index;
 
-        final UnsignedIntArray array = new UnsignedIntArray(arrayLength);
+        final long[] array = new long[arrayLength];
         for (int i = 0; i < arrayLength; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
         ParameterizedArray parameterizedArray = new ParameterizedArray(arrayLength, array);
         BlobWithChildrenInitialization blob =
                 new BlobWithChildrenInitialization(arrayLength, parameterizedArray);

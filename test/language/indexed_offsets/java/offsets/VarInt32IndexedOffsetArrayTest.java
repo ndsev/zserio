@@ -11,8 +11,6 @@ import indexed_offsets.varint32_indexed_offset_array.VarInt32IndexedOffsetArray;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedIntArray;
-import zserio.runtime.array.VarInt32Array;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -160,12 +158,12 @@ public class VarInt32IndexedOffsetArrayTest
 
     private void checkOffsets(VarInt32IndexedOffsetArray varint32IndexedOffsetArray, short offsetShift)
     {
-        final UnsignedIntArray offsets = varint32IndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = varint32IndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (int i = 0; i < offsets.length(); ++i)
+        for (int i = 0; i < offsets.length; ++i)
         {
-            assertEquals(expectedOffset, offsets.elementAt(i));
+            assertEquals(expectedOffset, offsets[i]);
             expectedOffset += BitSizeOfCalculator.getBitSizeOfVarInt32(i) / Byte.SIZE;
         }
     }
@@ -177,32 +175,32 @@ public class VarInt32IndexedOffsetArrayTest
 
         assertEquals(SPACER_VALUE, varint32IndexedOffsetArray.getSpacer());
 
-        final VarInt32Array data = varint32IndexedOffsetArray.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final int[] data = varint32IndexedOffsetArray.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            assertEquals(i, data.elementAt(i));
+            assertEquals(i, data[i]);
     }
 
     private VarInt32IndexedOffsetArray createVarInt32IndexedOffsetArray(boolean createWrongOffsets)
     {
         final VarInt32IndexedOffsetArray varint32IndexedOffsetArray = new VarInt32IndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += BitSizeOfCalculator.getBitSizeOfVarInt32(i);
         }
         varint32IndexedOffsetArray.setOffsets(offsets);
         varint32IndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        final VarInt32Array data = new VarInt32Array(NUM_ELEMENTS);
+        final int[] data = new int[NUM_ELEMENTS];
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            data.setElementAt(i, i);
+            data[i] = i;
         varint32IndexedOffsetArray.setData(data);
 
         return varint32IndexedOffsetArray;

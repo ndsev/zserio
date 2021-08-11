@@ -5,7 +5,6 @@ struct Data8
     int8 data;
 };
 
-// test optional arrays setters and getters especially for ObjectArray<?>
 struct TestStruct
 {
     bool            hasData8;

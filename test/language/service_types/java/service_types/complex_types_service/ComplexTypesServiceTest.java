@@ -5,8 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import zserio.runtime.array.ObjectArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.service.ServiceException;
 
 public class ComplexTypesServiceTest
@@ -16,7 +14,7 @@ public class ComplexTypesServiceTest
     {
         cmykValues = new short[3][4];
 
-        Cmyk cmyk = new Cmyk();
+        final Cmyk cmyk = new Cmyk();
         for (int i = 0; i < 3; ++i)
         {
             convertRgbToCmyk(rgbValues[i][0], rgbValues[i][1], rgbValues[i][2], cmyk);
@@ -46,14 +44,14 @@ public class ComplexTypesServiceTest
     {
         final int length = 10000;
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(length);
-        final ObjectArray<ColorModelChoice> data = new ObjectArray<ColorModelChoice>(length);
+        final long[] offsets = new long[length];
+        final ColorModelChoice[] data = new ColorModelChoice[length];
 
         for (int i = 0; i < length; ++i)
         {
-            ColorModelChoice choice = new ColorModelChoice(ColorModel.RGB);
+            final ColorModelChoice choice = new ColorModelChoice(ColorModel.RGB);
             choice.setRgb(new RGBModel(rgbValues[i % 3][0], rgbValues[i % 3][1], rgbValues[i % 3][2]));
-            data.setElementAt(choice, i);
+            data[i] = choice;
         }
 
         final RequestData requestData = new RequestData(ColorModel.RGB, offsets, data);
@@ -64,10 +62,10 @@ public class ComplexTypesServiceTest
         final Response response = client.swapModelsMethod(request);
         assertEquals(length, response.getLength());
 
-        final ObjectArray<CMYKModel> cmykData = response.getData().getCmykData();
+        final CMYKModel[] cmykData = response.getData().getCmykData();
         for (int i = 0; i < length; ++i)
         {
-            CMYKModel cmyk = cmykData.elementAt(i);
+            final CMYKModel cmyk = cmykData[i];
             assertEquals(cmykValues[i % 3][0], cmyk.getCyan());
             assertEquals(cmykValues[i % 3][1], cmyk.getMagenta());
             assertEquals(cmykValues[i % 3][2], cmyk.getYellow());
@@ -80,15 +78,15 @@ public class ComplexTypesServiceTest
     {
         final int length = 10000;
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(length);
-        final ObjectArray<ColorModelChoice> data = new ObjectArray<ColorModelChoice>(length);
+        final long[] offsets = new long[length];
+        final ColorModelChoice[] data = new ColorModelChoice[length];
 
         for (int i = 0; i < length; ++i)
         {
             final ColorModelChoice choice = new ColorModelChoice(ColorModel.CMYK);
             choice.setCmyk(new CMYKModel(cmykValues[i % 3][0], cmykValues[i % 3][1], cmykValues[i % 3][2],
                     cmykValues[i % 3][3]));
-            data.setElementAt(choice, i);
+            data[i] = choice;
         }
 
         final RequestData requestData = new RequestData(ColorModel.CMYK, offsets, data);
@@ -99,10 +97,10 @@ public class ComplexTypesServiceTest
         final Response response = client.swapModelsMethod(request);
         assertEquals(length, response.getLength());
 
-        final ObjectArray<RGBModel> rgbData = response.getData().getRgbData();
+        final RGBModel[] rgbData = response.getData().getRgbData();
         for (int i = 0; i < length; ++i)
         {
-            final RGBModel rgb = rgbData.elementAt(i);
+            final RGBModel rgb = rgbData[i];
             assertEquals(rgbValues[i % 3][0], rgb.getRed());
             assertEquals(rgbValues[i % 3][1], rgb.getGreen());
             assertEquals(rgbValues[i % 3][2], rgb.getBlue());
@@ -158,10 +156,10 @@ public class ComplexTypesServiceTest
         @Override
         public Response swapModelsImpl(Request request, Object context)
         {
-            RequestData requestData = request.getData();
-            ObjectArray<ColorModelChoice> data = requestData.getData();
+            final RequestData requestData = request.getData();
+            final ColorModelChoice[] data = requestData.getData();
 
-            Response response = new Response(data.length(), new ResponseData(data.length()));
+            final Response response = new Response(data.length, new ResponseData(data.length));
 
             if (requestData.getModel() == ColorModel.RGB)
                 rgbToCmyk(data, response);
@@ -174,38 +172,38 @@ public class ComplexTypesServiceTest
         @Override
         public LengthResponse getLengthImpl(Request request, Object context)
         {
-            RequestData requestData = request.getData();
-            LengthResponse lengthResponse = new LengthResponse(requestData.getData().length());
+            final RequestData requestData = request.getData();
+            final LengthResponse lengthResponse = new LengthResponse(requestData.getData().length);
 
             return lengthResponse;
         }
 
-        private static void rgbToCmyk(ObjectArray<ColorModelChoice> data, Response response)
+        private static void rgbToCmyk(ColorModelChoice[] data, Response response)
         {
-            ObjectArray<CMYKModel> cmykData = new ObjectArray<CMYKModel>(data.length());
+            final CMYKModel[] cmykData = new CMYKModel[data.length];
             response.getData().setCmykData(cmykData);
-            Cmyk cmyk = new Cmyk();
-            for (int i = 0; i < data.length(); ++i)
+            final Cmyk cmyk = new Cmyk();
+            for (int i = 0; i < data.length; ++i)
             {
-                RGBModel rgbModel = data.elementAt(i).getRgb();
+                final RGBModel rgbModel = data[i].getRgb();
                 convertRgbToCmyk(rgbModel.getRed(), rgbModel.getGreen(), rgbModel.getBlue(), cmyk);
-                CMYKModel cmykModel = new CMYKModel(cmyk.c, cmyk.m, cmyk.y, cmyk.k);
-                cmykData.setElementAt(cmykModel, i);
+                final CMYKModel cmykModel = new CMYKModel(cmyk.c, cmyk.m, cmyk.y, cmyk.k);
+                cmykData[i] = cmykModel;
             }
         }
 
-        private static void cmykToRgb(ObjectArray<ColorModelChoice> data, Response response)
+        private static void cmykToRgb(ColorModelChoice[] data, Response response)
         {
-            ObjectArray<RGBModel> rgbData = new ObjectArray<RGBModel>(data.length());
+            final RGBModel[] rgbData = new RGBModel[data.length];
             response.getData().setRgbData(rgbData);
-            Rgb rgb = new Rgb();
-            for (int i = 0; i < data.length(); ++i)
+            final Rgb rgb = new Rgb();
+            for (int i = 0; i < data.length; ++i)
             {
-                CMYKModel cmykModel = data.elementAt(i).getCmyk();
+                final CMYKModel cmykModel = data[i].getCmyk();
                 convertCmykToRgb(cmykModel.getCyan(), cmykModel.getMagenta(), cmykModel.getYellow(),
                         cmykModel.getKey(), rgb);
-                RGBModel rgbModel = new RGBModel(rgb.r, rgb.g, rgb.b);
-                rgbData.setElementAt(rgbModel, i);
+                final RGBModel rgbModel = new RGBModel(rgb.r, rgb.g, rgb.b);
+                rgbData[i] = rgbModel;
             }
         }
     }

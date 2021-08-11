@@ -20,8 +20,6 @@ import test_utils.JdbcUtil;
 import explicit_parameters.ExplicitParametersDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedShortArray;
 
 public class ExplicitBlobParamTest
 {
@@ -139,22 +137,22 @@ public class ExplicitBlobParamTest
 
         final Header header = new Header(BLOB_PARAM_TABLE_HEADER_COUNT);
 
-        final UnsignedByteArray values1 = new UnsignedByteArray(BLOB_PARAM_TABLE_HEADER_COUNT);
-        for (int i = 0; i < values1.length(); ++i)
-            values1.setElementAt((short)id, i);
+        final byte[] values1 = new byte[BLOB_PARAM_TABLE_HEADER_COUNT];
+        for (int i = 0; i < values1.length; ++i)
+            values1[i] = (byte)id;
         final TestBlob testBlob1 = new TestBlob(header, values1);
         row.setBlob1(testBlob1);
 
         final Header blob = new Header(BLOB_PARAM_TABLE_BLOB_COUNT);
-        final UnsignedByteArray values2 = new UnsignedByteArray(BLOB_PARAM_TABLE_BLOB_COUNT);
-        for (int i = 0; i < values2.length(); ++i)
-            values2.setElementAt((short)(id + 1), i);
+        final byte[] values2 = new byte[BLOB_PARAM_TABLE_BLOB_COUNT];
+        for (int i = 0; i < values2.length; ++i)
+            values2[i] = (byte)(id + 1);
         final TestBlob testBlob2 = new TestBlob(blob, values2);
         row.setBlob2(testBlob2);
 
-        final UnsignedByteArray values3 = new UnsignedByteArray(BLOB_PARAM_TABLE_HEADER_COUNT);
-        for (int i = 0; i < values3.length(); ++i)
-            values3.setElementAt((short)(id + 2), i);
+        final byte[] values3 = new byte[BLOB_PARAM_TABLE_HEADER_COUNT];
+        for (int i = 0; i < values3.length; ++i)
+            values3[i] = (byte)(id + 2);
         final TestBlob testBlob3 = new TestBlob(header, values3);
         row.setBlob3(testBlob3);
 

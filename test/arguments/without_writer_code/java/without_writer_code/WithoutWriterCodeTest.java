@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.SqlDatabase;
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -419,12 +418,12 @@ public class WithoutWriterCodeTest
         assertEquals(VERSION_AVAILABILITY, tile.getVersionAvailability().getValue());
         assertEquals(NUM_ELEMENTS, tile.getNumElements());
 
-        ObjectArray<ItemChoiceHolder> data = tile.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final ItemChoiceHolder[] data = tile.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
 
         // element 0
-        assertTrue(data.elementAt(0).getHasItem());
-        ItemChoice itemChoice0 = data.elementAt(0).getItemChoice();
+        assertTrue(data[0].getHasItem());
+        ItemChoice itemChoice0 = data[0].getItemChoice();
         assertTrue(itemChoice0.getHasItem());
         Item item0 = itemChoice0.getItem();
         assertEquals(PARAMS[0], item0.getParam());
@@ -433,8 +432,8 @@ public class WithoutWriterCodeTest
         assertEquals(EXTRA_PARAM, item0.getExtraParam().getValue32());
 
         // element 1
-        assertFalse(data.elementAt(1).getHasItem());
-        ItemChoice itemChoice1 = data.elementAt(1).getItemChoice();
+        assertFalse(data[1].getHasItem());
+        ItemChoice itemChoice1 = data[1].getItemChoice();
         assertFalse(itemChoice1.getHasItem());
         assertEquals(PARAMS[1], itemChoice1.getParam());
     }

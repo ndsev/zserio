@@ -11,8 +11,6 @@ import indexed_offsets.optional_indexed_offset_array.OptionalIndexedOffsetArray;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.StringArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -155,12 +153,12 @@ public class OptionalIndexedOffsetArrayTest
 
     private void checkOffsets(OptionalIndexedOffsetArray optionalIndexedOffsetArray, short offsetShift)
     {
-        final UnsignedIntArray offsets = optionalIndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = optionalIndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
-            assertEquals(expectedOffset, offsets.elementAt(i));
+            assertEquals(expectedOffset, offsets[i]);
             expectedOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
         }
     }
@@ -175,10 +173,10 @@ public class OptionalIndexedOffsetArrayTest
 
         if (hasOptional)
         {
-            final StringArray data = optionalIndexedOffsetArray.getData();
-            assertEquals(NUM_ELEMENTS, data.length());
+            final String[] data = optionalIndexedOffsetArray.getData();
+            assertEquals(NUM_ELEMENTS, data.length);
             for (short i = 0; i < NUM_ELEMENTS; ++i)
-                assertTrue(DATA[i].equals(data.elementAt(i)));
+                assertTrue(DATA[i].equals(data[i]));
         }
 
         assertEquals(FIELD_VALUE, optionalIndexedOffsetArray.getField());
@@ -189,14 +187,14 @@ public class OptionalIndexedOffsetArrayTest
     {
         final OptionalIndexedOffsetArray optionalIndexedOffsetArray = new OptionalIndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += BitSizeOfCalculator.getBitSizeOfString(DATA[i]) / Byte.SIZE;
         }
         optionalIndexedOffsetArray.setOffsets(offsets);
@@ -204,9 +202,9 @@ public class OptionalIndexedOffsetArrayTest
 
         if (hasOptional)
         {
-            final StringArray data = new StringArray(NUM_ELEMENTS);
+            final String[] data = new String[NUM_ELEMENTS];
             for (short i = 0; i < NUM_ELEMENTS; ++i)
-                data.setElementAt(DATA[i], i);
+                data[i] = DATA[i];
             optionalIndexedOffsetArray.setData(data);
         }
 

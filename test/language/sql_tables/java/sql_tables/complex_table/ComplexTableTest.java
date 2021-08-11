@@ -24,7 +24,6 @@ import test_utils.JdbcUtil;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
 
 public class ComplexTableTest
 {
@@ -162,10 +161,10 @@ public class ComplexTableTest
         row.setValue((byte)0x34);
         row.setColor(TestEnum.RED);
 
-        final UnsignedByteArray values = new UnsignedByteArray(COMPLEX_TABLE_COUNT);
-        for (int i = 0; i < values.length(); ++i)
-            values.setElementAt((short)blobId, i);
-        final TestBlob testBlob = new TestBlob(values.length(), 0, values, true);
+        final byte[] values = new byte[COMPLEX_TABLE_COUNT];
+        for (int i = 0; i < values.length; ++i)
+            values[i] = (byte)blobId;
+        final TestBlob testBlob = new TestBlob(values.length, 0, values, true);
         row.setBlob(testBlob);
 
         return row;

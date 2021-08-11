@@ -23,7 +23,6 @@ import test_utils.JdbcUtil;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedIntArray;
 
 public class TableWithImplicitArrayTest
 {
@@ -77,7 +76,7 @@ public class TableWithImplicitArrayTest
         final TableWithImplicitArrayRow row = new TableWithImplicitArrayRow();
         row.setId(i);
         final long array[] = {1, 2, 3, 4, 5};
-        row.setStructWithImplicit(new StructWithImplicit(new UnsignedIntArray(array, 0, 5)));
+        row.setStructWithImplicit(new StructWithImplicit(array));
         row.setText("test" + i);
 
         return row;
@@ -97,7 +96,7 @@ public class TableWithImplicitArrayTest
         assertEquals(row1.getText(), row2.getText());
     }
 
-    private static final long    NUM_ROWS = 5;
+    private static final long NUM_ROWS = 5;
     private static final String FILE_NAME = "table_with_implicit_array_test.sqlite";
 
     private final File file = new File(FILE_NAME);

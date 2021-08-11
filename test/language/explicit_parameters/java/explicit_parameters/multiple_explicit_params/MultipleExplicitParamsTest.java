@@ -20,8 +20,6 @@ import test_utils.JdbcUtil;
 import explicit_parameters.ExplicitParametersDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedShortArray;
 
 public class MultipleExplicitParamsTest
 {
@@ -145,37 +143,37 @@ public class MultipleExplicitParamsTest
         row.setName(name);
 
         {
-            final UnsignedByteArray values8 = new UnsignedByteArray(MULTIPLE_PARAMS_TABLE_COUNT1);
-            final UnsignedShortArray values16 = new UnsignedShortArray(MULTIPLE_PARAMS_TABLE_COUNT2);
-            for (int i = 0; i < values8.length(); ++i)
-                values8.setElementAt((short)id, i);
-            for (int i = 0; i < values16.length(); ++i)
-                values16.setElementAt((int)id, i);
-            final TestBlob testBlob1 = new TestBlob(values8.length(), values16.length(), values8, values16);
+            final short[] values8 = new short[MULTIPLE_PARAMS_TABLE_COUNT1];
+            final int[] values16 = new int[MULTIPLE_PARAMS_TABLE_COUNT2];
+            for (int i = 0; i < values8.length; ++i)
+                values8[i] = (short)id;
+            for (int i = 0; i < values16.length; ++i)
+                values16[i] = (int)id;
+            final TestBlob testBlob1 = new TestBlob(values8.length, values16.length, values8, values16);
             row.setBlob1(testBlob1);
         }
 
         {
-            final UnsignedByteArray values8 = new UnsignedByteArray(MULTIPLE_PARAMS_TABLE_COUNT);
-            final UnsignedShortArray values16 = new UnsignedShortArray(MULTIPLE_PARAMS_TABLE_COUNT);
+            final short[] values8 = new short[MULTIPLE_PARAMS_TABLE_COUNT];
+            final int[] values16 = new int[MULTIPLE_PARAMS_TABLE_COUNT];
             for (int i = 0; i < MULTIPLE_PARAMS_TABLE_COUNT; ++i)
             {
-                values8.setElementAt((short)(id + 1), i);
-                values16.setElementAt((int)(id + 1), i);
+                values8[i] = (short)(id + 1);
+                values16[i] = (int)(id + 1);
             }
-            final TestBlob testBlob2 = new TestBlob(values8.length(), values16.length(), values8, values16);
+            final TestBlob testBlob2 = new TestBlob(values8.length, values16.length, values8, values16);
             row.setBlob2(testBlob2);
         }
 
         {
-            final UnsignedByteArray values8 = new UnsignedByteArray(MULTIPLE_PARAMS_TABLE_COUNT1);
-            final UnsignedShortArray values16 = new UnsignedShortArray(MULTIPLE_PARAMS_TABLE_COUNT1);
+            final short[] values8 = new short[MULTIPLE_PARAMS_TABLE_COUNT1];
+            final int[] values16 = new int[MULTIPLE_PARAMS_TABLE_COUNT1];
             for (int i = 0; i < MULTIPLE_PARAMS_TABLE_COUNT1; ++i)
             {
-                values8.setElementAt((short)(id + 2), i);
-                values16.setElementAt((int)(id + 2), i);
+                values8[i] = (short)(id + 2);
+                values16[i] = (int)(id + 2);
             }
-            final TestBlob testBlob3 = new TestBlob(values8.length(), values16.length(), values8, values16);
+            final TestBlob testBlob3 = new TestBlob(values8.length, values16.length, values8, values16);
             row.setBlob3(testBlob3);
         }
 

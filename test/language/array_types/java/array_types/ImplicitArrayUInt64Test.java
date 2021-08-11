@@ -11,7 +11,6 @@ import org.junit.Test;
 import array_types.implicit_array_uint64.ImplicitArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.BigIntegerArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -23,9 +22,9 @@ public class ImplicitArrayUInt64Test
     public void bitSizeOf() throws IOException, ZserioError
     {
         final int numElements = 44;
-        BigIntegerArray array = new BigIntegerArray(numElements);
+        final BigInteger[] array = new BigInteger[numElements];
         for (int i = 0; i < numElements; ++i)
-            array.setElementAt(BigInteger.valueOf(i), i);
+            array[i] = BigInteger.valueOf(i);
 
         final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
@@ -37,9 +36,9 @@ public class ImplicitArrayUInt64Test
     public void initializeOffsets() throws IOException, ZserioError
     {
         final int numElements = 66;
-        BigIntegerArray array = new BigIntegerArray(numElements);
+        final BigInteger[] array = new BigInteger[numElements];
         for (int i = 0; i < numElements; ++i)
-            array.setElementAt(BigInteger.valueOf(i), i);
+            array[i] = BigInteger.valueOf(i);
 
         final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
@@ -57,19 +56,19 @@ public class ImplicitArrayUInt64Test
         final ImplicitArray implicitArray = new ImplicitArray(stream);
         stream.close();
 
-        final BigIntegerArray array = implicitArray.getArray();
-        assertEquals(numElements, array.length());
+        final BigInteger[] array = implicitArray.getArray();
+        assertEquals(numElements, array.length);
         for (int i = 0; i < numElements; ++i)
-            assertEquals(BigInteger.valueOf(i), array.elementAt(i));
+            assertEquals(BigInteger.valueOf(i), array[i]);
     }
 
     @Test
     public void write() throws IOException, ZserioError
     {
         final int numElements = 55;
-        BigIntegerArray array = new BigIntegerArray(numElements);
+        final BigInteger[] array = new BigInteger[numElements];
         for (int i = 0; i < numElements; ++i)
-            array.setElementAt(BigInteger.valueOf(i), i);
+            array[i] = BigInteger.valueOf(i);
 
         ImplicitArray implicitArray = new ImplicitArray(array);
         final File file = new File("test.bin");
@@ -78,10 +77,10 @@ public class ImplicitArrayUInt64Test
         writer.close();
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
-        final BigIntegerArray readArray = readImplicitArray.getArray();
-        assertEquals(numElements, readArray.length());
+        final BigInteger[] readArray = readImplicitArray.getArray();
+        assertEquals(numElements, readArray.length);
         for (int i = 0; i < numElements; ++i)
-            assertEquals(BigInteger.valueOf(i), readArray.elementAt(i));
+            assertEquals(BigInteger.valueOf(i), readArray[i]);
     }
 
     private void writeImplicitArrayToFile(File file, int numElements) throws IOException

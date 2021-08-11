@@ -10,7 +10,6 @@ import org.junit.Test;
 import array_types.implicit_array_float16.ImplicitArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.Float16Array;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -22,9 +21,9 @@ public class ImplicitArrayFloat16Test
     public void bitSizeOf() throws IOException, ZserioError
     {
         final int numElements = 44;
-        Float16Array array = new Float16Array(numElements);
+        final float[] array = new float[numElements];
         for (short i = 0; i < numElements; ++i)
-            array.setElementAt((float)i, i);
+            array[i] = i;
 
         final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
@@ -36,9 +35,9 @@ public class ImplicitArrayFloat16Test
     public void initializeOffsets() throws IOException, ZserioError
     {
         final int numElements = 66;
-        Float16Array array = new Float16Array(numElements);
+        final float[] array = new float[numElements];
         for (short i = 0; i < numElements; ++i)
-            array.setElementAt((float)i, i);
+            array[i] = i;
 
         final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
@@ -56,19 +55,19 @@ public class ImplicitArrayFloat16Test
         final ImplicitArray implicitArray = new ImplicitArray(stream);
         stream.close();
 
-        final Float16Array array = implicitArray.getArray();
-        assertEquals(numElements, array.length());
+        final float[] array = implicitArray.getArray();
+        assertEquals(numElements, array.length);
         for (short i = 0; i < numElements; ++i)
-            assertEquals((float)i, array.elementAt(i), 0.001f);
+            assertEquals((float)i, array[i], 0.001f);
     }
 
     @Test
     public void write() throws IOException, ZserioError
     {
         final int numElements = 55;
-        Float16Array array = new Float16Array(numElements);
+        final float[] array = new float[numElements];
         for (short i = 0; i < numElements; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
 
         ImplicitArray implicitArray = new ImplicitArray(array);
         final File file = new File("test.bin");
@@ -77,10 +76,10 @@ public class ImplicitArrayFloat16Test
         writer.close();
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
-        final Float16Array readArray = readImplicitArray.getArray();
-        assertEquals(numElements, readArray.length());
+        final float[] readArray = readImplicitArray.getArray();
+        assertEquals(numElements, readArray.length);
         for (short i = 0; i < numElements; ++i)
-            assertEquals((float)i, readArray.elementAt(i), 0.001f);
+            assertEquals((float)i, readArray[i], 0.001f);
     }
 
     private void writeImplicitArrayToFile(File file, int numElements) throws IOException

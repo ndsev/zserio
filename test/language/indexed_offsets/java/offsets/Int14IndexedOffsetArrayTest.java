@@ -10,8 +10,6 @@ import org.junit.Test;
 import indexed_offsets.int14_indexed_offset_array.Int14IndexedOffsetArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ShortArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -162,8 +160,8 @@ public class Int14IndexedOffsetArrayTest
 
     private void checkOffsets(Int14IndexedOffsetArray int14IndexedOffsetArray, short offsetShift)
     {
-        final UnsignedIntArray offsets = int14IndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = int14IndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (long offset : offsets)
         {
@@ -179,32 +177,32 @@ public class Int14IndexedOffsetArrayTest
 
         assertEquals(SPACER_VALUE, int14IndexedOffsetArray.getSpacer());
 
-        final ShortArray data = int14IndexedOffsetArray.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final short[] data = int14IndexedOffsetArray.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            assertEquals(i, data.elementAt(i));
+            assertEquals(i, data[i]);
     }
 
     private Int14IndexedOffsetArray createInt14IndexedOffsetArray(boolean createWrongOffsets)
     {
         final Int14IndexedOffsetArray int14IndexedOffsetArray = new Int14IndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
         int14IndexedOffsetArray.setOffsets(offsets);
         int14IndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        final ShortArray data = new ShortArray(NUM_ELEMENTS);
+        final short[] data = new short[NUM_ELEMENTS];
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            data.setElementAt(i, i);
+            data[i] = i;
         int14IndexedOffsetArray.setData(data);
 
         return int14IndexedOffsetArray;

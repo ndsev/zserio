@@ -6,11 +6,9 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -55,18 +53,17 @@ public class StructureArrayParamTest
         final ParentStructure parentStructure = new ParentStructure();
 
         parentStructure.setNumChildren(NUM_CHILDREN);
-        parentStructure.setChildren(new ObjectArray<ChildStructure>(CHILDREN));
+        parentStructure.setChildren(CHILDREN);
 
         return parentStructure;
     }
 
     private static final short CHILD_BIT_SIZE = 19;
 
-    private static final List<ChildStructure> CHILDREN = Arrays.asList
-    (
-        new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xAABB)),
-        new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xCCDD))
-    );
+    private static final ChildStructure[] CHILDREN = new ChildStructure[] {
+            new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xAABB)),
+            new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xCCDD))
+    };
 
-    private static final short NUM_CHILDREN = (short)CHILDREN.size();
+    private static final short NUM_CHILDREN = (short)CHILDREN.length;
 }

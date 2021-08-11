@@ -107,7 +107,7 @@ struct ArraysMapping
 
     function uint8 getNumBitsForByte()
     {
-        // upper bound is 7
+        // upper bound is 8
         return numbits(uint8Value);
     }
 };

@@ -2,38 +2,16 @@ package array_types;
 
 import static org.junit.Assert.*;
 
+import java.math.BigInteger;
+
 import org.junit.Test;
+
+import zserio.runtime.io.BitBuffer;
 
 import array_types.arrays_mapping.ArraysMapping;
 import array_types.arrays_mapping.TestStructure;
 import array_types.arrays_mapping.TestEnum;
 import array_types.arrays_mapping.TestBitmask;
-
-import zserio.runtime.array.BigIntegerArray;
-import zserio.runtime.array.BitBufferArray;
-import zserio.runtime.array.BoolArray;
-import zserio.runtime.array.ByteArray;
-import zserio.runtime.array.Float16Array;
-import zserio.runtime.array.Float32Array;
-import zserio.runtime.array.Float64Array;
-import zserio.runtime.array.IntArray;
-import zserio.runtime.array.LongArray;
-import zserio.runtime.array.ObjectArray;
-import zserio.runtime.array.ShortArray;
-import zserio.runtime.array.StringArray;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedIntArray;
-import zserio.runtime.array.UnsignedLongArray;
-import zserio.runtime.array.UnsignedShortArray;
-import zserio.runtime.array.VarInt16Array;
-import zserio.runtime.array.VarInt32Array;
-import zserio.runtime.array.VarInt64Array;
-import zserio.runtime.array.VarUInt16Array;
-import zserio.runtime.array.VarUInt32Array;
-import zserio.runtime.array.VarUInt64Array;
-import zserio.runtime.array.VarIntArray;
-import zserio.runtime.array.VarUIntArray;
-import zserio.runtime.array.VarSizeArray;
 
 public class ArraysMappingTest
 {
@@ -42,14 +20,14 @@ public class ArraysMappingTest
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        arraysMapping.setUint8Array(new UnsignedByteArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setUint16Array(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setUint32Array(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setUint8Array(new short[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setUint16Array(new int[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setUint32Array(new long[FIXED_ARRAY_LENGTH]);
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final BigIntegerArray bigIntegerArray = new BigIntegerArray(FIXED_ARRAY_LENGTH);
+        final BigInteger[] bigIntegerArray = new BigInteger[FIXED_ARRAY_LENGTH];
         arraysMapping.setUint64Array(bigIntegerArray);
-        assertEquals(bigIntegerArray, arraysMapping.getUint64Array());
+        assertTrue(bigIntegerArray.equals(arraysMapping.getUint64Array()));
     }
 
     @Test
@@ -57,14 +35,14 @@ public class ArraysMappingTest
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        arraysMapping.setInt8Array(new ByteArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setInt16Array(new ShortArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setInt32Array(new IntArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setInt8Array(new byte[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setInt16Array(new short[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setInt32Array(new int[FIXED_ARRAY_LENGTH]);
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final LongArray longArray = new LongArray(FIXED_ARRAY_LENGTH);
+        final long[] longArray = new long[FIXED_ARRAY_LENGTH];
         arraysMapping.setInt64Array(longArray);
-        assertEquals(longArray, arraysMapping.getInt64Array());
+        assertTrue(longArray.equals(arraysMapping.getInt64Array()));
     }
 
     @Test
@@ -72,19 +50,19 @@ public class ArraysMappingTest
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        arraysMapping.setBitfield8Array(new UnsignedByteArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setBitfield16Array(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setBitfield32Array(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setBitfield63Array(new UnsignedLongArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setBitfield8Array(new short[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setBitfield16Array(new int[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setBitfield32Array(new long[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setBitfield63Array(new long[FIXED_ARRAY_LENGTH]);
         arraysMapping.setUint8Value((short)8);
-        arraysMapping.setVariableBitfieldLongArray(new BigIntegerArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVariableBitfieldIntArray(new UnsignedIntArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVariableBitfieldShortArray(new UnsignedShortArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVariableBitfieldLongArray(new BigInteger[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVariableBitfieldIntArray(new int[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVariableBitfieldShortArray(new int[FIXED_ARRAY_LENGTH]);
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final UnsignedByteArray unsignedByteArray = new UnsignedByteArray(FIXED_ARRAY_LENGTH);
+        final short[] unsignedByteArray = new short[FIXED_ARRAY_LENGTH];
         arraysMapping.setVariableBitfieldByteArray(unsignedByteArray);
-        assertEquals(unsignedByteArray, arraysMapping.getVariableBitfieldByteArray());
+        assertTrue(unsignedByteArray.equals(arraysMapping.getVariableBitfieldByteArray()));
     }
 
     @Test
@@ -92,19 +70,19 @@ public class ArraysMappingTest
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        arraysMapping.setIntfield8Array(new ByteArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setIntfield16Array(new ShortArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setIntfield32Array(new IntArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setIntfield64Array(new LongArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setIntfield8Array(new byte[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setIntfield16Array(new short[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setIntfield32Array(new int[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setIntfield64Array(new long[FIXED_ARRAY_LENGTH]);
         arraysMapping.setUint8Value((short)8);
-        arraysMapping.setVariableIntfieldLongArray(new LongArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVariableIntfieldIntArray(new IntArray(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVariableIntfieldShortArray(new ShortArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVariableIntfieldLongArray(new long[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVariableIntfieldIntArray(new int[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVariableIntfieldShortArray(new short[FIXED_ARRAY_LENGTH]);
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final ByteArray byteArray = new ByteArray(FIXED_ARRAY_LENGTH);
+        final byte[] byteArray = new byte[FIXED_ARRAY_LENGTH];
         arraysMapping.setVariableIntfieldByteArray(byteArray);
-        assertEquals(byteArray, arraysMapping.getVariableIntfieldByteArray());
+        assertTrue(byteArray.equals(arraysMapping.getVariableIntfieldByteArray()));
     }
 
     @Test
@@ -112,13 +90,13 @@ public class ArraysMappingTest
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        arraysMapping.setFloat16Array(new Float16Array(FIXED_ARRAY_LENGTH));
-        arraysMapping.setFloat32Array(new Float32Array(FIXED_ARRAY_LENGTH));
+        arraysMapping.setFloat16Array(new float[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setFloat32Array(new float[FIXED_ARRAY_LENGTH]);
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final Float64Array float64Array = new Float64Array(FIXED_ARRAY_LENGTH);
+        final double[] float64Array = new double[FIXED_ARRAY_LENGTH];
         arraysMapping.setFloat64Array(float64Array);
-        assertEquals(float64Array, arraysMapping.getFloat64Array());
+        assertTrue(float64Array.equals(arraysMapping.getFloat64Array()));
     }
 
     @Test
@@ -126,15 +104,15 @@ public class ArraysMappingTest
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        arraysMapping.setVaruint16Array(new VarUInt16Array(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVaruint32Array(new VarUInt32Array(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVaruint64Array(new VarUInt64Array(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVaruintArray(new VarUIntArray(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVaruint16Array(new short[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVaruint32Array(new int[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVaruint64Array(new long[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVaruintArray(new BigInteger[FIXED_ARRAY_LENGTH]);
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final VarSizeArray varSizeArray = new VarSizeArray(FIXED_ARRAY_LENGTH);
+        final int[] varSizeArray = new int[FIXED_ARRAY_LENGTH];
         arraysMapping.setVarsizeArray(varSizeArray);
-        assertEquals(varSizeArray, arraysMapping.getVarsizeArray());
+        assertTrue(varSizeArray.equals(arraysMapping.getVarsizeArray()));
     }
 
     @Test
@@ -142,14 +120,14 @@ public class ArraysMappingTest
     {
         ArraysMapping arraysMapping = new ArraysMapping();
 
-        arraysMapping.setVarint16Array(new VarInt16Array(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVarint32Array(new VarInt32Array(FIXED_ARRAY_LENGTH));
-        arraysMapping.setVarint64Array(new VarInt64Array(FIXED_ARRAY_LENGTH));
+        arraysMapping.setVarint16Array(new short[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVarint32Array(new int[FIXED_ARRAY_LENGTH]);
+        arraysMapping.setVarint64Array(new long[FIXED_ARRAY_LENGTH]);
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final VarIntArray varIntArray = new VarIntArray(FIXED_ARRAY_LENGTH);
+        final long[] varIntArray = new long[FIXED_ARRAY_LENGTH];
         arraysMapping.setVarintArray(varIntArray);
-        assertEquals(varIntArray, arraysMapping.getVarintArray());
+        assertTrue(varIntArray.equals(arraysMapping.getVarintArray()));
     }
 
     @Test
@@ -158,27 +136,27 @@ public class ArraysMappingTest
         ArraysMapping arraysMapping = new ArraysMapping();
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final BoolArray boolArray = new BoolArray(FIXED_ARRAY_LENGTH);
+        final boolean[] boolArray = new boolean[FIXED_ARRAY_LENGTH];
         arraysMapping.setBoolArray(boolArray);
-        assertEquals(boolArray, arraysMapping.getBoolArray());
+        assertTrue(boolArray.equals(arraysMapping.getBoolArray()));
     }
 
     @Test
     public void stringArrays()
     {
         ArraysMapping arraysMapping = new ArraysMapping();
-        final StringArray stringArray = new StringArray(FIXED_ARRAY_LENGTH);
+        final String[] stringArray = new String[FIXED_ARRAY_LENGTH];
         arraysMapping.setStringArray(stringArray);
-        assertEquals(FIXED_ARRAY_LENGTH, arraysMapping.getStringArray().length());
+        assertTrue(stringArray.equals(arraysMapping.getStringArray()));
     }
 
     @Test
     public void externArrays()
     {
         ArraysMapping arraysMapping = new ArraysMapping();
-        final BitBufferArray externArray = new BitBufferArray(FIXED_ARRAY_LENGTH);
+        final BitBuffer[] externArray = new BitBuffer[FIXED_ARRAY_LENGTH];
         arraysMapping.setExternArray(externArray);
-        assertEquals(FIXED_ARRAY_LENGTH, arraysMapping.getExternArray().length());
+        assertTrue(externArray.equals(arraysMapping.getExternArray()));
     }
 
     @Test
@@ -187,9 +165,9 @@ public class ArraysMappingTest
         ArraysMapping arraysMapping = new ArraysMapping();
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final ObjectArray<TestStructure> objectArray = new ObjectArray<TestStructure>(FIXED_ARRAY_LENGTH);
+        final TestStructure[] objectArray = new TestStructure[FIXED_ARRAY_LENGTH];
         arraysMapping.setCompoundArray(objectArray);
-        assertEquals(objectArray, arraysMapping.getCompoundArray());
+        assertTrue(objectArray.equals(arraysMapping.getCompoundArray()));
     }
 
     @Test
@@ -198,9 +176,9 @@ public class ArraysMappingTest
         ArraysMapping arraysMapping = new ArraysMapping();
 
         // just do something with arraysMapping not to have SpotBugs warning
-        final ObjectArray<TestEnum> objectArray = new ObjectArray<TestEnum>(FIXED_ARRAY_LENGTH);
-        arraysMapping.setEnumArray(objectArray);
-        assertEquals(objectArray, arraysMapping.getEnumArray());
+        final TestEnum[] enumArray = new TestEnum[FIXED_ARRAY_LENGTH];
+        arraysMapping.setEnumArray(enumArray);
+        assertTrue(enumArray.equals(arraysMapping.getEnumArray()));
     }
 
     @Test
@@ -209,9 +187,9 @@ public class ArraysMappingTest
         ArraysMapping arraysMapping = new ArraysMapping();
 
         // just do something with arraysMapping not to have FindBugs warning
-        final ObjectArray<TestBitmask> objectArray = new ObjectArray<TestBitmask>(FIXED_ARRAY_LENGTH);
-        arraysMapping.setBitmaskArray(objectArray);
-        assertEquals(objectArray, arraysMapping.getBitmaskArray());
+        final TestBitmask[] bitmaskArray = new TestBitmask[FIXED_ARRAY_LENGTH];
+        arraysMapping.setBitmaskArray(bitmaskArray);
+        assertTrue(bitmaskArray.equals(arraysMapping.getBitmaskArray()));
     }
 
     private static final int FIXED_ARRAY_LENGTH = 5;

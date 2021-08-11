@@ -10,8 +10,6 @@ import org.junit.Test;
 import indexed_offsets.bool_indexed_offset_array.BoolIndexedOffsetArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.BoolArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -155,8 +153,8 @@ public class BoolIndexedOffsetArrayTest
 
     private void checkOffsets(BoolIndexedOffsetArray boolIndexedOffsetArray, short offsetShift)
     {
-        final UnsignedIntArray offsets = boolIndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = boolIndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (long offset : offsets)
         {
@@ -172,32 +170,32 @@ public class BoolIndexedOffsetArrayTest
 
         assertEquals(SPACER_VALUE, boolIndexedOffsetArray.getSpacer());
 
-        final BoolArray data = boolIndexedOffsetArray.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final boolean[] data = boolIndexedOffsetArray.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            assertEquals(((i & 0x01) != 0) ? true : false, data.elementAt(i));
+            assertEquals(((i & 0x01) != 0) ? true : false, data[i]);
     }
 
     private BoolIndexedOffsetArray createBoolIndexedOffsetArray(boolean createWrongOffsets)
     {
         final BoolIndexedOffsetArray boolIndexedOffsetArray = new BoolIndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
         boolIndexedOffsetArray.setOffsets(offsets);
         boolIndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        final BoolArray data = new BoolArray(NUM_ELEMENTS);
+        final boolean[] data = new boolean[NUM_ELEMENTS];
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            data.setElementAt(((i & 0x01) != 0) ? true : false, i);
+            data[i] = ((i & 0x01) != 0) ? true : false;
         boolIndexedOffsetArray.setData(data);
 
         return boolIndexedOffsetArray;
