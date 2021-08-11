@@ -133,7 +133,24 @@ class DummyObject
 public:
     DummyObject() : m_value(0) {}
     explicit DummyObject(uint32_t value) : m_value(value) {}
-    explicit DummyObject(BitStreamReader& in) { read(in); }
+    explicit DummyObject(BitStreamReader& in) : m_value(in.readBits(31)) {}
+    DummyObject(PackingContextNode<>& contextNode, BitStreamReader& in)
+    {
+        auto& context = contextNode.getChildren().at(0).getContext();
+        m_value = context.read(BitFieldArrayTraits<uint32_t>(31), in);
+    }
+
+    static void createPackingContext(PackingContextNode<>& contextNode)
+    {
+        auto& child = contextNode.createChild();
+        child.createContext();
+    }
+
+    void initPackingContext(PackingContextNode<>& contextNode) const
+    {
+        auto& context = contextNode.getChildren().at(0).getContext();
+        context.init(m_value);
+    }
 
     void initialize(uint32_t value)
     {
@@ -142,12 +159,32 @@ public:
 
     size_t bitSizeOf(size_t = 0) const
     {
-        return sizeof(uint32_t) * 8 - 1; // to make an unaligned type
+        return 31; // to make an unaligned type
+    }
+
+    size_t bitSizeOfPacked(PackingContextNode<>& contextNode, size_t bitPosition = 0) const
+    {
+        size_t endBitPosition = bitPosition;
+
+        auto& context = contextNode.getChildren().at(0).getContext();
+        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31), endBitPosition, m_value);
+
+        return endBitPosition - bitPosition;
     }
 
     size_t initializeOffsets(size_t bitPosition)
     {
         return bitPosition + bitSizeOf(bitPosition);
+    }
+
+    size_t initializeOffsetsPacked(PackingContextNode<>& contextNode, size_t bitPosition = 0)
+    {
+        size_t endBitPosition = bitPosition;
+
+        auto& context = contextNode.getChildren().at(0).getContext();
+        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31), endBitPosition, m_value);
+
+        return endBitPosition;
     }
 
     bool operator==(const DummyObject& other) const
@@ -165,9 +202,10 @@ public:
         out.writeBits(m_value, static_cast<uint8_t>(bitSizeOf()));
     }
 
-    void read(BitStreamReader& in)
+    void writePacked(PackingContextNode<>& contextNode, BitStreamWriter& out)
     {
-        m_value = in.readBits(static_cast<uint8_t>(bitSizeOf()));
+        auto& context = contextNode.getChildren().at(0).getContext();
+        context.write(BitFieldArrayTraits<uint32_t>(31), out, m_value);
     }
 
 private:
@@ -192,6 +230,12 @@ public:
     static void create(std::vector<DummyObject>& array, BitStreamReader& in, size_t)
     {
         array.emplace_back(in);
+    }
+
+    static void createPacked(PackingContextNode<>& contextNode,
+            std::vector<DummyObject>& array, BitStreamReader& in, size_t)
+    {
+        array.emplace_back(contextNode, in);
     }
 };
 
@@ -248,12 +292,13 @@ protected:
             EXPECT_EQ(expectedValue, element.getValue());
     }
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testPackedArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t elementBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY = detail::DummyElementFactory>
+    void testPackedArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t elementBitSize,
+            const ELEMENT_FACTORY& elementFactory = ELEMENT_FACTORY())
     {
         const size_t arraySize = rawArray.size();
         const size_t unalignedBitSize = elementBitSize * arraySize;
-        testWritePackedAuto(rawArray, arrayTraits, unalignedBitSize);
+        testWritePackedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize, elementFactory);
     }
 
 private:
@@ -476,9 +521,9 @@ private:
         EXPECT_EQ(alignedAutoBitSize, writer.getBitPosition());
     }
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
     void testWritePackedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t unpackedBitSize)
+            size_t unpackedBitSize, const ELEMENT_FACTORY& elementFactory)
     {
         Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
 
@@ -493,7 +538,7 @@ private:
 
         BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
         Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
-        readArray.readPacked(reader);
+        readArray.readPacked(reader, elementFactory);
 
         ASSERT_EQ(array, readArray);
     }
@@ -830,6 +875,13 @@ TEST_F(ArrayTest, stdInt8PackedArray)
 {
     std::vector<uint8_t> rawArray = { 0, 2, 4, 6, 8, 10, 10, 11 };
     testPackedArray(rawArray, StdIntArrayTraits<int8_t>(), 8);
+}
+
+TEST_F(ArrayTest, objectPackedArray)
+{
+    std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
+    testPackedArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(), 31,
+            ArrayTestDummyObjectElementFactory());
 }
 
 } // namespace zserio

@@ -75,9 +75,15 @@ public class CppNativeMapper
         bitBufferType = new NativeBitBufferType(typesContext, uint8Type);
         blobBufferType = new NativeBlobBufferType(typesContext, uint8Type);
 
-        bitBufferArrayType = new NativeArrayType(bitBufferType, "BitBufferArrayTraits", false, vectorType);
+        final String allocatorBasedTraitsTemplateArguments = "<" +
+                (typesContext.getAllocatorDefinition() == TypesContext.STD_ALLOCATOR ?
+                        "" : typesContext.getAllocatorDefinition().getAllocatorType()) + ">";
+
+        bitBufferArrayType = new NativeArrayType(bitBufferType,
+                "BitBufferArrayTraits" + allocatorBasedTraitsTemplateArguments, false, vectorType);
+        stringArrayType = new NativeArrayType(stringType,
+                "StringArrayTraits" + allocatorBasedTraitsTemplateArguments, false, vectorType);
         booleanArrayType = new NativeArrayType(booleanType, "BoolArrayTraits", false, vectorType);
-        stringArrayType = new NativeArrayType(stringType, "StringArrayTraits", false, vectorType);
 
         float16ArrayType = new NativeArrayType(floatType, "Float16ArrayTraits", false, vectorType);
         float32ArrayType = new NativeArrayType(floatType, "Float32ArrayTraits", false, vectorType);
@@ -901,8 +907,8 @@ public class CppNativeMapper
     private final static NativeIntegralType int64Type = new NativeIntegralType(64, true);
 
     private final NativeArrayType bitBufferArrayType;
-    private final NativeArrayType booleanArrayType;
     private final NativeArrayType stringArrayType;
+    private final NativeArrayType booleanArrayType;
 
     private final NativeArrayType float16ArrayType;
     private final NativeArrayType float32ArrayType;

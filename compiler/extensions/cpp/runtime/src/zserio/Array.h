@@ -16,6 +16,7 @@
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
 #include "zserio/OptionalHolder.h"
+#include "zserio/UniquePtr.h"
 
 namespace zserio
 {
@@ -45,6 +46,7 @@ struct ElementFactoryTraits<ObjectArrayTraits<T, ELEMENT_FACTORY>>
 template <typename ARRAY_TRAITS>
 using ElementFactory = typename ElementFactoryTraits<ARRAY_TRAITS>::type;
 
+// helper function to hide noncompilable code in a "dead" branch
 template <typename ARRAY_TRAITS, typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
 size_t arrayTraitsConstBitSizeOf(const ARRAY_TRAITS& arrayTraits)
 {
@@ -68,36 +70,36 @@ void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
 // overload for DummyElementFactory which is used for array traits which don't need element factory
 template <typename RAW_ARRAY, typename ARRAY_TRAITS>
 void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, const detail::DummyElementFactory&,
-        BitStreamReader& in, size_t index)
+        BitStreamReader& in, size_t)
 {
-    rawArray.push_back(arrayTraits.read(in, index));
+    rawArray.push_back(arrayTraits.read(in));
 }
 
 // overload for array traits which are based on allocator
 template <typename RAW_ARRAY, template <template <typename> class> class ARRAY_TRAITS,
         template <typename> class ALLOC>
 void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS<ALLOC>& arrayTraits,
-        const detail::DummyElementFactory&, BitStreamReader& in, size_t index)
+        const detail::DummyElementFactory&, BitStreamReader& in, size_t)
 {
-    rawArray.push_back(arrayTraits.read(in, index, rawArray.get_allocator()));
+    rawArray.push_back(arrayTraits.read(in, rawArray.get_allocator()));
 }
 
-// helper function to call read on packed array traits which need element factory (PackedObjectArrayTraits)
+// helper function to call read on packed array traits which need element factory (i.e. objects)
 template <typename RAW_ARRAY, typename PACKED_ARRAY_TRAITS, typename ELEMENT_FACTORY,
         typename PACKED_CONTEXT_NODE>
 void packedArrayTraitsRead(RAW_ARRAY& rawArray, const PACKED_ARRAY_TRAITS& packedArrayTraits,
         const ELEMENT_FACTORY& elementFactory, PACKED_CONTEXT_NODE& contextNode,
         BitStreamReader& in, size_t index)
 {
-    // TODO[Mi-L@]: Not yet implemented!!!
+    packedArrayTraits.read(contextNode, elementFactory, rawArray, in, index);
 }
 
 // overload for DummyElementFactory which is used for array traits which don't need element factory
 template <typename RAW_ARRAY, typename PACKED_ARRAY_TRAITS, typename PACKED_CONTEXT_NODE>
 void packedArrayTraitsRead(RAW_ARRAY& rawArray, const PACKED_ARRAY_TRAITS& packedArrayTraits,
-        const detail::DummyElementFactory&, PACKED_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t index)
+        const detail::DummyElementFactory&, PACKED_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t)
 {
-    rawArray.push_back(packedArrayTraits.read(contextNode, in, index));
+    rawArray.push_back(packedArrayTraits.read(contextNode, in));
 }
 
 // dummy offset initializer used for arrays which don't need to initialize offsets
@@ -130,6 +132,7 @@ void checkOffset(const OFFSET_CHECKER& offsetChecker, size_t index, size_t byteO
 inline void checkOffset(const DummyOffsetChecker&, size_t, size_t)
 {}
 
+// calculates bit length of delta calculated in DeltaContext, emulates python bit_length to keep the same logic
 inline uint8_t deltaBitLength(int64_t delta)
 {
     uint64_t abs_delta = std::abs(delta);
@@ -146,9 +149,26 @@ inline uint8_t deltaBitLength(int64_t delta)
 
 } // namespace detail
 
+/**
+ * Context for delta packing created for each packable field.
+ *
+ * Contexts are always newly crated for each array operation (bitSizeOfPacked, initializeOffsetsPacked,
+ * readPacked, writePacked). They must be initialized at first via calling the init method for each packable
+ * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
+ * can be repeatedly called for exactly the same sequence of packable elements.
+ *
+ * Note that *Desriptor methods doesn't change context's internal state and can be called as needed. They are
+ * designed to be called once for each context before the actual operation.
+ */
 class DeltaContext
 {
 public:
+    /**
+     * Resets the context to it's initial state.
+     *
+     * Reset it needed to allow to reuse the whole context tree and thus prevent memory fragmentation
+     * mainly during reading.
+     */
     void reset()
     {
         m_isPacked = false;
@@ -157,6 +177,11 @@ public:
         m_processingStarted = false;
     }
 
+    /**
+     * Calls the initialization step for a single element.
+     *
+     * \param element Current element.
+     */
     template <typename ELEMENT_TYPE>
     void init(ELEMENT_TYPE element)
     {
@@ -180,6 +205,11 @@ public:
         }
     }
 
+    /**
+     * Gets bit size of the current delta context.
+     *
+     * \return Bit size of this context.
+     */
     size_t bitSizeOfDescriptor()
     {
         if (m_isPacked)
@@ -188,6 +218,15 @@ public:
             return 1;
     }
 
+    /**
+     * Returns length of the packed element stored in the bit stream in bits.
+     *
+     * \param arrayTraits Standard array traits.
+     * \param bitPostion Curent bit stream position.
+     * \param element Value of the current element.
+     *
+     * \return Length of the packed element stored in the bit stream in bits.
+     */
     template <typename ARRAY_TRAITS>
     size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, size_t bitPosition,
             typename ARRAY_TRAITS::ElementType element)
@@ -203,6 +242,11 @@ public:
         }
     }
 
+    /**
+     * Reads the context from the bit stream.
+     *
+     * \param in Bit stream reader.
+     */
     void readDescriptor(BitStreamReader& in)
     {
         m_isPacked = in.readBool();
@@ -210,14 +254,21 @@ public:
             m_maxBitNumber = in.readSignedBits(MAX_BIT_NUMBER_BITS);
     }
 
+    /**
+     * Reads a packed element from the bit stream.
+     *
+     * \param arrayTraits Standard array traits.
+     * \param in Bit stream reader.
+     *
+     * \return Value of the packed element.
+     */
     template <typename ARRAY_TRAITS>
-    typename ARRAY_TRAITS::ElementType read(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in,
-            size_t index)
+    typename ARRAY_TRAITS::ElementType read(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
     {
         if (!m_processingStarted || !m_isPacked)
         {
             m_processingStarted = true;
-            const auto element = arrayTraits.read(in, index);
+            const auto element = arrayTraits.read(in);
             m_previousElement = static_cast<uint64_t>(element);
             return element;
         }
@@ -240,6 +291,11 @@ public:
         }
     }
 
+    /**
+     * Writes the context to the bit stream.
+     *
+     * \param out Bit stream writer.
+     */
     void writeDescriptor(BitStreamWriter& out)
     {
         out.writeBool(m_isPacked);
@@ -247,6 +303,13 @@ public:
             out.writeSignedBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
     }
 
+    /**
+     * Writes the packed element to the bit stream.
+     *
+     * \param arrayTraits Standard array traits.
+     * \param out Bit stream writer.
+     * \param element Value of the current element.
+     */
     template <typename ARRAY_TRAITS>
     void write(const ARRAY_TRAITS& arrayTraits, BitStreamWriter& out,
             typename ARRAY_TRAITS::ElementType element)
@@ -263,10 +326,10 @@ public:
             {
                 const auto previousElement =
                         static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value());
-                const int64_t delta = element - previousElement; // TODO[Mi-L@]: overflow???
+                const int64_t delta = element - previousElement;
                 out.writeSignedBits64(delta, m_maxBitNumber + 1);
+                m_previousElement = element;
             }
-            m_previousElement = element;
         }
     }
 
@@ -280,38 +343,80 @@ private:
     bool m_processingStarted = false;
 };
 
-template <typename ALLOC>
+/**
+ * Packing context node.
+ *
+ * This class is used to handle a tree of contexts created by appropriate PackedArrayTraits.
+ * For built-in packable types only a single context are kept. However for Zserio objects, a tree
+ * of all packable fields is created recursively.
+ *
+ * When the context node has no children and no context, then it's so called dummy context which is used
+ * for unpackable fields or nested arrays.
+ */
+template <typename ALLOC = std::allocator<uint8_t>>
 class PackingContextNode
 {
 public:
+    /** Allocator type. */
     using allocator_type = RebindAlloc<ALLOC, PackingContextNode>;
+    /** Typedef for vector of children. */
     using Children = std::vector<PackingContextNode, allocator_type>;
 
+    /**
+     * Constructor.
+     *
+     * \param allocator Allocator to use for allocation of the vector of children.
+     */
     explicit PackingContextNode(const ALLOC& allocator)
     :   m_children(allocator)
     {}
 
+    /**
+     * Creates a new child.
+     *
+     * \return The child which was just created.
+     */
     PackingContextNode& createChild()
     {
         m_children.emplace_back(m_children.get_allocator());
         return m_children.back();
     }
 
+    /**
+     * Gets list of children of the current node.
+     *
+     * \return List of children.
+     */
     Children& getChildren()
     {
         return m_children;
     }
 
+    /**
+     * Creates a new packing context within the current node.
+     */
     void createContext()
     {
         m_context = DeltaContext();
     }
 
+    /**
+     * Gets whether the current node has a packing context.
+     *
+     * \return True when the current node has assigned a context, false otherwise.
+     */
     bool hasContext() const
     {
         return m_context.hasValue();
     }
 
+    /**
+     * Gets packing context assigned to this node.
+     *
+     * Can be called only when the context exists!
+     *
+     * \return Packing context.
+     */
     DeltaContext& getContext()
     {
         return m_context.value();
@@ -361,8 +466,7 @@ public:
      * \param allocator Allocator to use for the raw array.
      */
     explicit Array(const ARRAY_TRAITS& arrayTraits, const allocator_type& allocator = allocator_type()) :
-            m_rawArray(allocator), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits),
-            m_packingContextNode(allocator)
+            m_rawArray(allocator), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits)
     {}
 
     /**
@@ -372,8 +476,7 @@ public:
      * \param arrayTraits Array traits.
      */
     Array(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits) :
-            m_rawArray(rawArray), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits),
-            m_packingContextNode(rawArray.get_allocator())
+            m_rawArray(rawArray), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits)
     {}
 
     /**
@@ -383,18 +486,46 @@ public:
      * \param arrayTraits Array traits.
      */
     Array(RAW_ARRAY&& rawArray, const ARRAY_TRAITS& arrayTraits) :
-            m_rawArray(std::move(rawArray)), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits),
-            m_packingContextNode(rawArray.get_allocator())
+            m_rawArray(std::move(rawArray)), m_arrayTraits(arrayTraits), m_packedArrayTraits(m_arrayTraits)
     {}
+
+    /**
+     * Copy constructor.
+     *
+     * Note that packing context node is not copied since it will be lazy initialized once it's needed.
+     * Moreover this approach makes it easier to implement allocator propagating copy constructor.
+     *
+     * \param other Source array to copy.
+     */
+    Array(const Array& other)
+    :   m_rawArray(other.m_rawArray), m_arrayTraits(other.m_arrayTraits),
+        m_packedArrayTraits(other.m_packedArrayTraits)
+    {}
+
+    /**
+     * Copy assignment operator.
+     *
+     * Note that packing context node is not copied since it will be lazy initialized once it's needed.
+     * Moreover this approach makes it easier to implement allocator propagating copy constructor.
+     *
+     * \param other Source array to copy.
+     *
+     * \return Reference to this array.
+     */
+    Array& operator=(const Array& other)
+    {
+        m_rawArray = other.m_rawArray;
+        m_arrayTraits = other.m_arrayTraits;
+        m_packedArrayTraits = other.m_packedArrayTraits;
+
+        return  *this;
+    }
 
     /**
      * Method generated by default.
      * \{
      */
     ~Array() = default;
-
-    Array(const Array& other) = default;
-    Array& operator=(const Array& other) = default;
 
     Array(Array&& other) = default;
     Array& operator=(Array&& other) = default;
@@ -404,12 +535,17 @@ public:
 
     /**
      * Copy constructor which forces allocator propagating while copying the raw array.
+     *
+     * Note that packing context node is not copied since it will be lazy initialized once it's needed.
+     * Moreover this approach makes it easier to implement allocator propagating copy constructor.
+     *
+     * \param other Source array to copy.
+     * \param allocator Allocator to propagate during copying.
      */
     Array(::zserio::PropagateAllocatorT,
             const Array& other, const allocator_type& allocator) :
             m_rawArray(::zserio::allocatorPropagatingCopy(other.m_rawArray, allocator)),
-            m_arrayTraits(other.m_arrayTraits), m_packedArrayTraits(other.m_packedArrayTraits),
-            m_packingContextNode(other.m_packingContextNode) // TODO[Mi-L@]: Propagate any holder value???
+            m_arrayTraits(other.m_arrayTraits), m_packedArrayTraits(other.m_packedArrayTraits)
     {}
 
     /**
@@ -509,6 +645,13 @@ public:
         return endBitPosition - bitPosition;
     }
 
+    /**
+     * Returns length of the packed array stored in the bit stream in bits.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Length of the array stored in the bit stream in bits.
+     */
     size_t bitSizeOfPacked(size_t bitPosition)
     {
         size_t endBitPosition = bitPosition;
@@ -565,6 +708,13 @@ public:
         return endBitPosition;
     }
 
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
     size_t initializeOffsetsPacked(size_t bitPosition, const OFFSET_INITIALIZER& offsetInitializer)
     {
         size_t endBitPosition = bitPosition;
@@ -602,7 +752,7 @@ public:
      *
      * \param in Bit stream reader to use for reading.
      * \param arrayLength Array length. Empty for auto / implicit arrays.
-     * \param elementFactory Element factory.
+     * \param elementFactory Factory which knows how to create a single array element.
      * \param offsetChecker Offset checker.
      */
     void read(BitStreamReader& in, size_t arrayLength,
@@ -635,6 +785,16 @@ public:
         }
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * This method has all possible arguments and from generated code is used for aligned object arrays.
+     *
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     * \param elementFactory Factory which knows how to create a single array element.
+     * \param offsetChecker Offset checker used to check offsets before writing.
+     */
     void readPacked(BitStreamReader& in, size_t arrayLength,
             const detail::ElementFactory<ARRAY_TRAITS>& elementFactory, const OFFSET_CHECKER& offsetChecker)
     {
@@ -689,6 +849,12 @@ public:
         }
     }
 
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * \param out Bit stream where to write.
+     * \param offsetChecker Offset checker used to check offsets before writing.
+     */
     void writePacked(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
     {
         const size_t size = m_rawArray.size();
@@ -714,6 +880,8 @@ public:
         }
     }
 
+    // public methods overloads follow
+
     /**
      * Initializes indexed offsets.
      *
@@ -726,6 +894,15 @@ public:
         return initializeOffsets(bitPosition, detail::DummyOffsetInitializer());
     }
 
+    /**
+     * Initializes indexed offsets for the packed array.
+     *
+     * Overloaded method used for unaligned arrays.
+     *
+     * \param bitPosition Current bit stream position.
+     *
+     * \return Updated bit stream position which points to the first bit after the array.
+     */
     size_t initializeOffsetsPacked(size_t bitPosition)
     {
         return initializeOffsetsPacked(bitPosition, detail::DummyOffsetInitializer());
@@ -766,7 +943,7 @@ public:
      * Overloaded method used for unaligned auto object arrays.
      *
      * \param in Bit stream reader to use for reading.
-     * \param elementFactory Element factory.
+     * \param elementFactory Factory which knows how to create a single array element.
      */
     void read(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
     {
@@ -781,7 +958,7 @@ public:
      * Overloaded method used for aligned auto object arrays.
      *
      * \param in Bit stream reader to use for reading.
-     * \param elementFactory Element factory.
+     * \param elementFactory Factory which knows how to create a single array element.
      * \param offsetChecker Offset checker.
      */
     void read(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
@@ -826,7 +1003,7 @@ public:
      *
      * \param in Bit stream reader to use for reading.
      * \param arrayLength Array length. Empty for auto / implicit arrays.
-     * \param elementFactory Element factory.
+     * \param elementFactory Factory which knows how to create a single array element.
      * \param allocator Allocator to use for raw array.
      */
     void read(BitStreamReader& in, size_t arrayLength,
@@ -835,6 +1012,13 @@ public:
         read(in, arrayLength, elementFactory, detail::DummyOffsetChecker());
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Overloaded method used for unaligned auto non-object arrays.
+     *
+     * \param in Bit stream from which to read.
+     */
     void readPacked(BitStreamReader& in)
     {
         static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO,
@@ -842,6 +1026,14 @@ public:
         readPacked(in, 0, detail::DummyElementFactory(), detail::DummyOffsetChecker());
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Overloaded method used for aligned auto non-object arrays.
+     *
+     * \param in Bit stream from which to read.
+     * \param offsetChecker Offset checker used to check offsets before writing.
+     */
     void readPacked(BitStreamReader& in, const OFFSET_CHECKER& offsetChecker)
     {
         static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO,
@@ -849,6 +1041,14 @@ public:
         readPacked(in, 0, detail::DummyElementFactory(), offsetChecker);
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Overloaded method used for unaligned auto object arrays.
+     *
+     * \param in Bit stream from which to read.
+     * \param elementFactory Factory which knows how to create a single array element.
+     */
     void readPacked(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
     {
         static_assert(ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO,
@@ -856,6 +1056,15 @@ public:
         readPacked(in, 0, elementFactory, detail::DummyOffsetChecker());
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Overloaded method used for aligned auto object arrays.
+     *
+     * \param in Bit stream from which to read.
+     * \param elementFactory Factory which knows how to create a single array element.
+     * \param offsetChecker Offset checker used to check offsets before writing.
+     */
     void readPacked(BitStreamReader& in, const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
             const OFFSET_CHECKER& offsetChecker)
     {
@@ -864,16 +1073,42 @@ public:
         readPacked(in, 0, elementFactory, offsetChecker);
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Overloaded method used for unaligned non-object arrays.
+     *
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     */
     void readPacked(BitStreamReader& in, size_t arrayLength)
     {
         readPacked(in, arrayLength, detail::DummyElementFactory(), detail::DummyOffsetChecker());
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Overloaded method used for aligned non-object arrays.
+     *
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     * \param offsetChecker Offset checker used to check offsets before writing.
+     */
     void readPacked(BitStreamReader& in, size_t arrayLength, const OFFSET_CHECKER& offsetChecker)
     {
         readPacked(in, arrayLength, detail::DummyElementFactory(), offsetChecker);
     }
 
+    /**
+     * Reads packed array from the bit stream.
+     *
+     * Overloaded method used for unaligned object arrays.
+     *
+     * \param in Bit stream from which to read.
+     * \param arrayLength Number of elements to read or 0 in case of auto arrays.
+     * \param elementFactory Factory which knows how to create a single array element.
+     */
     void readPacked(BitStreamReader& in, size_t arrayLength,
             const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
     {
@@ -892,6 +1127,14 @@ public:
         write(out, detail::DummyOffsetChecker());
     }
 
+    /**
+     * Writes packed array to the bit stream.
+     *
+     * Overloaded method used for unaligned arrays.
+     *
+     * \param out Bit stream where to write.
+     * \param offsetChecker Offset checker used to check offsets before writing.
+     */
     void writePacked(BitStreamWriter& out)
     {
         writePacked(out, detail::DummyOffsetChecker());
@@ -903,12 +1146,16 @@ private:
 
     PackingContextNodeType& getPackingContextNode()
     {
-        if (!m_packingContextNode.hasContext() && m_packingContextNode.getChildren().empty())
-            m_packedArrayTraits.createContext(m_packingContextNode); // lazy init
+        if (!m_packingContextNode)
+        {
+            m_packingContextNode = allocate_unique<PackingContextNodeType>(
+                    m_rawArray.get_allocator(), m_rawArray.get_allocator());
+            m_packedArrayTraits.createContext(*m_packingContextNode); // lazy init
+        }
         else
-            resetContext(m_packingContextNode);
+            resetContext(*m_packingContextNode);
 
-        return m_packingContextNode;
+        return *m_packingContextNode;
     }
 
     void resetContext(PackingContextNodeType& contextNode)
@@ -970,7 +1217,7 @@ private:
     RawArray m_rawArray;
     ARRAY_TRAITS m_arrayTraits;
     PackedArrayTraits<ARRAY_TRAITS> m_packedArrayTraits;
-    PackingContextNodeType m_packingContextNode; // TODO[Mi-L@]: heap optional holder??? / unique pointer
+    unique_ptr<PackingContextNodeType> m_packingContextNode;
 };
 
 /**

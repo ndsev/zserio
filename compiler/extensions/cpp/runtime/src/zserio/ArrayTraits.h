@@ -123,62 +123,6 @@ inline void write_bits<uint64_t>(BitStreamWriter& out, uint64_t value, uint8_t n
 
 } // namespace detail
 
-template <typename ARRAY_TRAITS>
-class PackedArrayTraits
-{
-public:
-    /** Element type. */
-    using ElementType = typename ARRAY_TRAITS::ElementType;
-
-    explicit PackedArrayTraits(const ARRAY_TRAITS& arrayTraits)
-    :   m_arrayTraits(arrayTraits)
-    {}
-
-    template <typename PACKING_CONTEXT_NODE>
-    void createContext(PACKING_CONTEXT_NODE& contextNode) const
-    {
-        contextNode.createContext();
-    }
-
-    template <typename PACKING_CONTEXT_NODE>
-    void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element) const
-    {
-        auto& context = contextNode.getContext();
-        context.init(element);
-    }
-
-    template <typename PACKING_CONTEXT_NODE>
-    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
-    {
-        auto& context = contextNode.getContext();
-        return context.bitSizeOf(m_arrayTraits, bitPosition, element);
-    }
-
-    template <typename PACKING_CONTEXT_NODE>
-    size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
-    {
-        auto& context = contextNode.getContext();
-        return bitPosition + context.bitSizeOf(m_arrayTraits, bitPosition, element);
-    }
-
-    template <typename PACKING_CONTEXT_NODE>
-    void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element) const
-    {
-        auto& context = contextNode.getContext();
-        context.write(m_arrayTraits, out, element);
-    }
-
-    template <typename PACKING_CONTEXT_NODE>
-    ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in, size_t index) const
-    {
-        auto& context = contextNode.getContext();
-        return context.read(m_arrayTraits, in, index);
-    }
-
-private:
-    ARRAY_TRAITS m_arrayTraits;
-};
-
 /**
  * Array traits for bit field Zserio types (int:5, bit:5, etc...).
  */
@@ -232,7 +176,7 @@ public:
      *
      * \return Read element.
      */
-    ElementType read(BitStreamReader& in, size_t) const
+    ElementType read(BitStreamReader& in) const
     {
         return detail::read_bits<T>(in, m_numBits);
     }
@@ -298,7 +242,7 @@ struct StdIntArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return detail::read_bits<T>(in, NUM_BITS);
     }
@@ -368,7 +312,7 @@ struct VarIntNNArrayTraits<int16_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarInt16();
     }
@@ -429,7 +373,7 @@ struct VarIntNNArrayTraits<int32_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarInt32();
     }
@@ -490,7 +434,7 @@ struct VarIntNNArrayTraits<int64_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarInt64();
     }
@@ -551,7 +495,7 @@ struct VarIntNNArrayTraits<uint16_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarUInt16();
     }
@@ -612,7 +556,7 @@ struct VarIntNNArrayTraits<uint32_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarUInt32();
     }
@@ -673,7 +617,7 @@ struct VarIntNNArrayTraits<uint64_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarUInt64();
     }
@@ -740,7 +684,7 @@ struct VarIntArrayTraits<int64_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarInt();
     }
@@ -801,7 +745,7 @@ struct VarIntArrayTraits<uint64_t>
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarUInt();
     }
@@ -861,7 +805,7 @@ struct VarSizeArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readVarSize();
     }
@@ -924,7 +868,7 @@ struct Float16ArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readFloat16();
     }
@@ -987,7 +931,7 @@ struct Float32ArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readFloat32();
     }
@@ -1050,7 +994,7 @@ struct Float64ArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readFloat64();
     }
@@ -1113,7 +1057,7 @@ struct BoolArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return in.readBool();
     }
@@ -1178,7 +1122,7 @@ struct StringArrayTraits
      * \return Read element.
      */
     template <typename ALLOCATOR>
-    static ElementType read(BitStreamReader& in, size_t, const ALLOCATOR& allocator)
+    static ElementType read(BitStreamReader& in, const ALLOCATOR& allocator)
     {
         return in.readString<allocator_type>(allocator);
     }
@@ -1241,7 +1185,7 @@ struct BitBufferArrayTraits
      * \param in Bit stream reader.
      */
     template <typename ALLOCATOR>
-    static ElementType read(BitStreamReader& in, size_t, const ALLOCATOR& allocator)
+    static ElementType read(BitStreamReader& in, const ALLOCATOR& allocator)
     {
         return in.readBitBuffer<allocator_type>(allocator);
     }
@@ -1302,7 +1246,7 @@ struct EnumArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return zserio::read<ElementType>(in);
     }
@@ -1364,7 +1308,7 @@ struct BitmaskArrayTraits
      *
      * \return Read element.
      */
-    static ElementType read(BitStreamReader& in, size_t)
+    static ElementType read(BitStreamReader& in)
     {
         return ElementType(in);
     }
@@ -1394,8 +1338,6 @@ class ObjectArrayTraits
 public:
     /** Element type. */
     using ElementType = T;
-    /** Element factory. */
-    using ElementFactory = ELEMENT_FACTORY;
 
     /**
      * Calculates bit size of the array element.
@@ -1451,6 +1393,222 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+};
+
+/**
+ * Packed array traits.
+ *
+ * Packed array traits are used for all packable built-in types. Works with a single DeltaContext.
+ */
+template <typename ARRAY_TRAITS>
+class PackedArrayTraits
+{
+public:
+    /** Element type. */
+    using ElementType = typename ARRAY_TRAITS::ElementType;
+
+    /**
+     * Constructor.
+     *
+     * \param arrayTraits Standard array traits.
+     */
+    explicit PackedArrayTraits(const ARRAY_TRAITS& arrayTraits)
+    :   m_arrayTraits(arrayTraits)
+    {}
+
+    /**
+     * Creates packing context.
+     *
+     * \param contextNode Packing context node where the context is created.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    void createContext(PACKING_CONTEXT_NODE& contextNode) const
+    {
+        contextNode.createContext();
+    }
+
+    /**
+     * Calls context initialization step for the current element.
+     *
+     * \param contextNode Packing context node which keeps the context.
+     * \param element Current element.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        context.init(element);
+    }
+
+    /**
+     * Returns length of the array element stored in the bit stream in bits.
+     *
+     * \param contextNode Packing context node.
+     * \param bitPosition Current bit stream position.
+     * \param elemnet Current element.
+     *
+     * \return Length of the array element stored in the bit stream in bits.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        return context.bitSizeOf(m_arrayTraits, bitPosition, element);
+    }
+
+    /**
+     * Calls indexed offsets initialization for the current element.
+     *
+     * \param contextNode Packing context node.
+     * \param bitPosition: Current bit stream position.
+     * \param element Current element.
+     *
+     * \return Updated bit stream position which points to the first bit after this element.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        return bitPosition + context.bitSizeOf(m_arrayTraits, bitPosition, element);
+    }
+
+    /**
+     * Read an element from the bit stream.
+     *
+     * \param contextNode Packing context node.
+     * \param in Bit stream reader.
+     *
+     * \return Read element value.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in) const
+    {
+        auto& context = contextNode.getContext();
+        return context.read(m_arrayTraits, in);
+    }
+
+    /**
+     * Writes the element to the bit stream.
+     *
+     * \param contextNode Packing context node.
+     * \param out Bit stream writer.
+     * \param element Element to write.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element) const
+    {
+        auto& context = contextNode.getContext();
+        context.write(m_arrayTraits, out, element);
+    }
+
+private:
+    ARRAY_TRAITS m_arrayTraits;
+};
+
+/**
+ * Specialization of packed array traits for Zserio objects.
+ *
+ * This traits are used for Zserio objects which must implement special *Packed methods
+ * to alllow itself to be used in a packed array.
+ */
+template <typename T, typename ELEMENT_FACTORY>
+class PackedArrayTraits<ObjectArrayTraits<T, ELEMENT_FACTORY>>
+{
+public:
+    /** Element type. */
+    using ElementType = T;
+
+    /**
+     * Constructor.
+     *
+     * Takes object array traits just to be consistent with generic PackedArrayTraits
+     * and also to allow template argument deduction.
+     */
+    explicit PackedArrayTraits(const ObjectArrayTraits<T, ELEMENT_FACTORY>&)
+    {}
+
+    /**
+     * Creates packing context.
+     *
+     * \param contextNode Packing context node where the appropriate subtree of contexts will be created.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    static void createContext(PACKING_CONTEXT_NODE& contextNode)
+    {
+        ElementType::createPackingContext(contextNode);
+    }
+
+    /**
+     * Calls context initialization step for the current element.
+     *
+     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    static void initContext(PACKING_CONTEXT_NODE& contextNode, const ElementType& element)
+    {
+        element.initPackingContext(contextNode);
+    }
+
+    /**
+     * Returns length of the array element stored in the bit stream in bits.
+     *
+     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param bitPosition Current bit stream position.
+     * \param element Current element.
+     *
+     * \return Length of the array element stored in the bit stream in bits.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    static size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,
+            const ElementType& element)
+    {
+        return element.bitSizeOfPacked(contextNode, bitPosition);
+    }
+
+    /**
+     * Calls indexed offsets initialization for the current element.
+     *
+     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param bitPosition Current bit stream position.
+     * \param element Current element.
+     *
+     * \returns Updated bit stream position which points to the first bit after this element.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    static size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,
+            ElementType& element)
+    {
+        return element.initializeOffsetsPacked(contextNode, bitPosition);
+    }
+
+    /**
+     * Read an element from the bit stream.
+     *
+     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param elementFactory Factory which knows how to create a single array element from packed bit stream.
+     * \param rawArray Raw array where to create the read element.
+     * \param in Bit stream reader.
+     * \param index Index of the current element.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    static void read(PACKING_CONTEXT_NODE& contextNode, const ELEMENT_FACTORY& elementFactory,
+            std::vector<ElementType>& rawArray, BitStreamReader& in, size_t index)
+    {
+        elementFactory.createPacked(contextNode, rawArray, in, index);
+    }
+
+    /**
+     * Writes the element to the bit stream.
+     *
+     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param out Bit stream writer.
+     * \param element Element to write.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType& element)
+    {
+        element.writePacked(contextNode, out);
+    }
 };
 
 } // namespace zserio

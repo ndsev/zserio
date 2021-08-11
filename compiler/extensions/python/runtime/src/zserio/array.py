@@ -858,7 +858,6 @@ class ObjectPackedArrayTraits:
         :param context_node: Packing context node.
         :param writer: Bit stream writer.
         :param element: Element to write.
-        :param is_first: Denotes whether this element is the first element of the array.
         """
 
         element.write_packed(context_node, writer)
