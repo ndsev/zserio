@@ -1,19 +1,16 @@
 package zserio.extension.java;
 
 import zserio.ast.CompoundType;
-import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
 public final class CompoundConstructorTemplateData
 {
-    public CompoundConstructorTemplateData(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-            boolean withWriterCode, CompoundType compoundType, ExpressionFormatter javaExpressionFormatter)
-                    throws ZserioExtensionException
+    public CompoundConstructorTemplateData(boolean withWriterCode, CompoundType compoundType,
+            CompoundParameterTemplateData compoundParametersData) throws ZserioExtensionException
     {
         compoundName = compoundType.getName();
         this.withWriterCode = withWriterCode;
-        compoundParametersData = new CompoundParameterTemplateData(javaNativeMapper, withRangeCheckCode,
-                withWriterCode, compoundType, javaExpressionFormatter);
+        this.compoundParametersData = compoundParametersData;
     }
 
     public String getCompoundName()

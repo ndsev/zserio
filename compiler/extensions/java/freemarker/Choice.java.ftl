@@ -115,17 +115,25 @@ ${I}}
 
 <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
-    <#if field.isObjectArray>@java.lang.SuppressWarnings("unchecked")</#if>
     public ${field.javaTypeName} ${field.getterName}()
     {
-        return (${field.javaNullableTypeName}) this.objectChoice;
+    <#if field.array??>
+        return ((${field.array.wrapperJavaTypeName})objectChoice).getRawArray();
+    <#else>
+        return (${field.javaNullableTypeName})objectChoice;
+    </#if>
     }
 
     <#if withWriterCode>
     public void ${field.setterName}(${field.javaTypeName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
-        this.objectChoice = <@field_argument_name field/>;
+        <#if field.array??>
+        <#assign rawArray><@field_argument_name field/></#assign>
+        objectChoice = <@array_wrapper_raw_constructor field, withWriterCode, rawArray, 4/>;
+        <#else>
+        objectChoice = <@field_argument_name field/>;
+        </#if>
     }
 
     </#if>
@@ -143,8 +151,8 @@ ${I}}
                     <@compound_compare_parameter parameter/> &&
 </#list>
                     (
-                        (this.objectChoice == null && that.objectChoice == null) ||
-                        (this.objectChoice != null && this.objectChoice.equals(that.objectChoice))
+                        (objectChoice == null && that.objectChoice == null) ||
+                        (objectChoice != null && objectChoice.equals(that.objectChoice))
                     );
         }
 
@@ -160,7 +168,7 @@ ${I}}
         <@compound_hashcode_parameter parameter/>
 </#list>
         result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                ((this.objectChoice == null) ? 0 : this.objectChoice.hashCode());
+                ((objectChoice == null) ? 0 : objectChoice.hashCode());
 
         return result;
     }

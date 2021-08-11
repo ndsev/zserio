@@ -1,6 +1,5 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
-<#include "CompoundField.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#if withValidationCode>
     <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
@@ -95,7 +94,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
 
     public ${field.javaTypeName} ${field.getterName}()
     {
-        return this.<@field_member_name field/>;
+        return this.<@sql_field_member_name field/>;
     }
 </#list>
 <#if withWriterCode>
@@ -106,7 +105,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         final boolean wasTransactionStarted = startTransaction();
 
         <#list fields as field>
-        this.<@field_member_name field/>.createTable();
+        this.<@sql_field_member_name field/>.createTable();
         </#list>
 
         endTransaction(wasTransactionStarted);
@@ -129,11 +128,11 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         <#list fields as field>
             <#if field.isWithoutRowIdTable>
         if (withoutRowIdTableNamesBlackList.contains(${field.name}_TABLE_NAME))
-            this.<@field_member_name field/>.createOrdinaryRowIdTable();
+            this.<@sql_field_member_name field/>.createOrdinaryRowIdTable();
         else
-            this.<@field_member_name field/>.createTable();
+            this.<@sql_field_member_name field/>.createTable();
             <#else>
-        this.<@field_member_name field/>.createTable();
+        this.<@sql_field_member_name field/>.createTable();
             </#if>
         </#list>
 
@@ -149,7 +148,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         final boolean wasTransactionStarted = startTransaction();
 
     <#list fields as field>
-        this.<@field_member_name field/>.deleteTable();
+        this.<@sql_field_member_name field/>.deleteTable();
     </#list>
 
         endTransaction(wasTransactionStarted);
@@ -163,7 +162,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
         final zserio.runtime.validation.ValidationReport report =
                 new zserio.runtime.validation.ValidationReport();
     <#list fields as field>
-        report.add(this.<@field_member_name field/>.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
+        report.add(this.<@sql_field_member_name field/>.validate(<#if field.hasExplicitParameters>parameterProvider.get${field.name?cap_first}ParameterProvider()</#if>));
     </#list>
 
         return report;
@@ -188,7 +187,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     private void initTables(java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap)
     {
 <#list fields as field>
-        this.<@field_member_name field/> = new ${field.javaTypeName}(connection,
+        this.<@sql_field_member_name field/> = new ${field.javaTypeName}(connection,
                 tableToAttachedDbNameRelocationMap.get(${field.name}_TABLE_NAME),
                 ${field.name}_TABLE_NAME);
 </#list>
@@ -261,6 +260,6 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     private final java.util.List<java.lang.String> attachedDbList;
 
 <#list fields as field>
-    private ${field.javaTypeName} <@field_member_name field/>;
+    private ${field.javaTypeName} <@sql_field_member_name field/>;
 </#list>
 }

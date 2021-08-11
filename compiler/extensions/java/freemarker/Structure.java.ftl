@@ -20,11 +20,12 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#assign constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#assign>
     public ${name}(<#if constructorArgumentTypeList?has_content>${constructorArgumentTypeList},</#if>
     <#list fieldList as field>
-        ${field.javaTypeName} <@field_argument_name field/><#if field_has_next>,<#else>)</#if>
+            ${field.javaTypeName} <@field_argument_name field/><#if field_has_next>,<#else>)</#if>
     </#list>
     {
     <#if constructorArgumentTypeList?has_content>
         this(<@compound_constructor_argument_list compoundConstructorsData/>);
+
     </#if>
     <#list fieldList as field>
         ${field.setterName}(<@field_argument_name field/>);
@@ -82,14 +83,38 @@ ${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE,
 <#list fieldList as field>
     public ${field.javaTypeName} ${field.getterName}()
     {
-        return this.<@field_member_name field/>;
+    <#if field.array??>
+        <#if field.optional??>
+        return (<@field_member_name field/> == null) ? null : <@field_member_name field/>.getRawArray();
+        <#else>
+        return <@field_member_name field/>.getRawArray();
+        </#if>
+    <#else>
+        return <@field_member_name field/>;
+    </#if>
     }
 
     <#if withWriterCode>
     public void ${field.setterName}(${field.javaTypeName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
+        <#if field.array??>
+            <#assign rawArray><@field_argument_name field/></#assign>
+            <#if field.optional??>
+        if (<@field_argument_name field/> == null)
+        {
+            this.<@field_member_name field/> = null;
+        }
+        else
+        {
+            this.<@field_member_name field/> = <@array_wrapper_raw_constructor field, withWriterCode, rawArray, 5/>;
+        }
+            <#else>
+        this.<@field_member_name field/> = <@array_wrapper_raw_constructor field, withWriterCode, rawArray, 4/>;
+            </#if>
+        <#else>
         this.<@field_member_name field/> = <@field_argument_name field/>;
+        </#if>
     }
 
     </#if>
@@ -266,7 +291,18 @@ ${I}}
 
 </#if>
 <@compound_parameter_members compoundParametersData/>
+<#macro field_java_type_member_name field>
+    <#if field.array??>
+        ${field.array.wrapperJavaTypeName}<#t>
+    <#else>
+        ${field.javaTypeName}<#t>
+    </#if>
+</#macro>
 <#list fieldList as field>
-    private ${field.javaTypeName} <@field_member_name field/><#if field.initializer??> = ${field.initializer}</#if>;
+    private <@field_java_type_member_name field/> <@field_member_name field/><#rt>
+    <#if field.initializer??>
+        <#lt> = ${field.initializer}<#rt>
+    </#if>
+    <#lt>;
 </#list>
 }

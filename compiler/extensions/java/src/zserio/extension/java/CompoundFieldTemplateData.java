@@ -26,6 +26,7 @@ import zserio.extension.java.types.NativeEnumType;
 import zserio.extension.java.types.NativeFloatType;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
+import zserio.extension.java.types.NativeRawArrayHolder;
 import zserio.tools.ZserioToolPrinter;
 
 public final class CompoundFieldTemplateData
@@ -322,13 +323,15 @@ public final class CompoundFieldTemplateData
             length = createLength(arrayInstantiation, javaExpressionFormatter);
 
             wrapperJavaTypeName = nativeType.getArrayWrapper().getFullName();
-            rawHolderJavaTypeName = nativeType.getRawArrayHolder().getFullName();
+            final NativeRawArrayHolder nativeRawArrayHolder = nativeType.getRawArrayHolder();
+            rawHolderJavaTypeName = nativeRawArrayHolder.getFullName();
             final NativeArrayTraits nativeArrayTraits = nativeType.getArrayTraits();
             traitsJavaTypeName = nativeArrayTraits.getFullName();
 
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementJavaTypeName = elementNativeType.getFullName();
 
+            requiresElementClass = nativeRawArrayHolder.requiresElementClass();
             requiresElementBitSize = nativeArrayTraits.requiresElementBitSize();
             requiresElementFactory = nativeArrayTraits.requiresElementFactory();
             requiresParentContext = createRequiresParentContext(elementTypeInstantiation);
@@ -367,6 +370,11 @@ public final class CompoundFieldTemplateData
         public String getElementJavaTypeName()
         {
             return elementJavaTypeName;
+        }
+
+        public boolean getRequiresElementClass()
+        {
+            return requiresElementClass;
         }
 
         public boolean getRequiresElementBitSize()
@@ -437,6 +445,7 @@ public final class CompoundFieldTemplateData
         private final String    rawHolderJavaTypeName;
         private final String    traitsJavaTypeName;
         private final String    elementJavaTypeName;
+        private final boolean   requiresElementClass;
         private final boolean   requiresElementBitSize;
         private final boolean   requiresElementFactory;
         private final boolean   requiresParentContext;
