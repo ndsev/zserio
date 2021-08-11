@@ -26,17 +26,6 @@ public class Array
      *
      * @param rawArrayHolder Raw array holder to construct from.
      * @param arrayTraits    Array traits to construct from.
-     */
-    public Array(RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits)
-    {
-        this(rawArrayHolder, arrayTraits, ArrayType.NORMAL, null, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param rawArrayHolder Raw array holder to construct from.
-     * @param arrayTraits    Array traits to construct from.
      * @param arrayType      Array type to construct from.
      */
     public Array(RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits, ArrayType arrayType)
@@ -47,20 +36,163 @@ public class Array
     /**
      * Constructor.
      *
+     * @param rawArrayHolder Raw array holder to construct from.
+     * @param arrayTraits    Array traits to construct from.
+     * @param arrayType      Array type to construct from.
+     * @param offsetChecker  Offset checker to construct from.
+     */
+    public Array(RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits, ArrayType arrayType,
+            OffsetChecker offsetChecker)
+    {
+        this(rawArrayHolder, arrayTraits, arrayType, offsetChecker, null);
+    }
+
+    /**
+     * Constructor.
+     *
      * @param rawArrayHolder    Raw array holder to construct from.
      * @param arrayTraits       Array traits to construct from.
      * @param arrayType         Array type to construct from.
-     * @param offsetInitializer Offset initializer to construct from.
      * @param offsetChecker     Offset checker to construct from.
+     * @param offsetInitializer Offset initializer to construct from.
      */
     public Array(RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits, ArrayType arrayType,
-            OffsetInitializer offsetInitializer, OffsetChecker offsetChecker)
+            OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
     {
         this.rawArrayHolder = rawArrayHolder;
         this.arrayTraits = arrayTraits;
         this.arrayType = arrayType;
-        this.offsetInitializer = offsetInitializer;
         this.offsetChecker = offsetChecker;
+        this.offsetInitializer = offsetInitializer;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param reader         Bit stream reader to read from.
+     * @param rawArrayHolder Raw array holder to construct from.
+     * @param arrayTraits    Array traits to construct from.
+     * @param arrayType      Array type to construct from.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     * @throws ZserioError Failure during offset checking.
+     */
+    public Array(BitStreamReader reader, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+            ArrayType arrayType) throws IOException, ZserioError
+    {
+        this(reader, rawArrayHolder, arrayTraits, arrayType, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param reader         Bit stream reader to read from.
+     * @param rawArrayHolder Raw array holder to construct from.
+     * @param arrayTraits    Array traits to construct from.
+     * @param arrayType      Array type to construct from.
+     * @param offsetChecker  Offset checker to construct from.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     * @throws ZserioError Failure during offset checking.
+     */
+    public Array(BitStreamReader reader, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+            ArrayType arrayType, OffsetChecker offsetChecker) throws IOException, ZserioError
+    {
+        this(reader, rawArrayHolder, arrayTraits, arrayType, offsetChecker, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param reader            Bit stream reader to read from.
+     * @param rawArrayHolder    Raw array holder to construct from.
+     * @param arrayTraits       Array traits to construct from.
+     * @param arrayType         Array type to construct from.
+     * @param offsetChecker     Offset checker to construct from.
+     * @param offsetInitializer Offset initializer to construct from.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     * @throws ZserioError Failure during offset checking.
+     */
+    public Array(BitStreamReader reader, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+            ArrayType arrayType, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
+                    throws IOException, ZserioError
+    {
+        this(rawArrayHolder, arrayTraits, arrayType, offsetChecker, offsetInitializer);
+
+        read(reader);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param reader         Bit stream reader to read from.
+     * @param size           Number of elements stored in the array which shall be read.
+     * @param rawArrayHolder Raw array holder to construct from.
+     * @param arrayTraits    Array traits to construct from.
+     * @param arrayType      Array type to construct from.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     * @throws ZserioError Failure during offset checking.
+     */
+    public Array(BitStreamReader reader, int size, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+            ArrayType arrayType) throws IOException, ZserioError
+    {
+        this(reader, size, rawArrayHolder, arrayTraits, arrayType, null, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param reader         Bit stream reader to read from.
+     * @param size           Number of elements stored in the array which shall be read.
+     * @param rawArrayHolder Raw array holder to construct from.
+     * @param arrayTraits    Array traits to construct from.
+     * @param arrayType      Array type to construct from.
+     * @param offsetChecker  Offset checker to construct from.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     * @throws ZserioError Failure during offset checking.
+     */
+    public Array(BitStreamReader reader, int size, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+            ArrayType arrayType, OffsetChecker offsetChecker) throws IOException, ZserioError
+    {
+        this(reader, size, rawArrayHolder, arrayTraits, arrayType, offsetChecker, null);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param reader            Bit stream reader to read from.
+     * @param size              Number of elements stored in the array which shall be read.
+     * @param rawArrayHolder    Raw array holder to construct from.
+     * @param arrayTraits       Array traits to construct from.
+     * @param arrayType         Array type to construct from.
+     * @param offsetChecker     Offset checker to construct from.
+     * @param offsetInitializer Offset initializer to construct from.
+     *
+     * @throws IOException Failure during bit stream manipulation.
+     * @throws ZserioError Failure during offset checking.
+     */
+    public Array(BitStreamReader reader, int size, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+            ArrayType arrayType, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
+                    throws IOException, ZserioError
+    {
+        this(rawArrayHolder, arrayTraits, arrayType, offsetChecker, offsetInitializer);
+
+        read(reader, size);
+    }
+
+    @Override
+    public boolean equals(java.lang.Object obj)
+    {
+        return (obj instanceof Array) ? rawArrayHolder.equals(((Array)obj).rawArrayHolder) : false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return rawArrayHolder.hashCode();
     }
 
     /**
@@ -71,6 +203,16 @@ public class Array
     public <T> T getRawArray()
     {
         return rawArrayHolder.getRawArray();
+    }
+
+    /**
+     * Gets the underlying raw array size.
+     *
+     * @return The number of elements stored in the underlying raw array.
+     */
+    public int size()
+    {
+        return rawArrayHolder.size();
     }
 
     /**
@@ -90,7 +232,7 @@ public class Array
         if (arrayTraits.isBitSizeOfConstant() && size > 0)
         {
             final int elementSize = arrayTraits.bitSizeOf(rawArrayHolder, endBitPosition, 0);
-            if (offsetInitializer != null)
+            if (offsetInitializer == null)
             {
                 endBitPosition += size * elementSize;
             }
@@ -141,7 +283,6 @@ public class Array
 
         return endBitPosition;
     }
-
 
     /**
      * Reads the array from the bit stream.
@@ -225,6 +366,6 @@ public class Array
     private final RawArrayHolder rawArrayHolder;
     private final ArrayTraits arrayTraits;
     private final ArrayType arrayType;
-    private final OffsetInitializer offsetInitializer;
     private final OffsetChecker offsetChecker;
+    private final OffsetInitializer offsetInitializer;
 }

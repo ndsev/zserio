@@ -198,8 +198,7 @@ public class ValidationBitStreamReaderTest
         final byte[] originalStream = writer.toByteArray();
 
         final ValidationBitStreamReader reader = new ValidationBitStreamReader(originalStream);
-        final short[] arrayData = new short[]{0xAB, 0xCD};
-        final RawArrayHolder rawArrayHolder = new RawArrayHolder.ShortArray(arrayData);
+        final RawArrayHolder rawArrayHolder = new RawArrayHolder.ShortArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BitFieldShortArray(8);
         final Array readArray = new Array(rawArrayHolder, arrayTraits, ArrayType.IMPLICIT);
         readArray.read(reader);

@@ -2,7 +2,6 @@ package zserio.runtime.array;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.List;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.SizeOf;
@@ -518,16 +517,16 @@ public interface ArrayTraits
         public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
                 throws IOException, ZserioError
         {
-            final List<BigInteger> rawArray = rawArrayHolder.getRawArray();
-            rawArray.add(reader.readBigInteger(NUM_BITS));
+            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
+            rawArray[index] = reader.readBigInteger(NUM_BITS);
         }
 
         @Override
         public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
                 throws IOException, ZserioError
         {
-            final List<BigInteger> rawArray = rawArrayHolder.getRawArray();
-            writer.writeBigInteger(rawArray.get(index), NUM_BITS);
+            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
+            writer.writeBigInteger(rawArray[index], NUM_BITS);
         }
 
         private static final int NUM_BITS = 64;
@@ -841,9 +840,9 @@ public interface ArrayTraits
         @Override
         public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
         {
-            final List<BigInteger> rawArray = rawArrayHolder.getRawArray();
+            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
 
-            return BitSizeOfCalculator.getBitSizeOfVarUInt(rawArray.get(index));
+            return BitSizeOfCalculator.getBitSizeOfVarUInt(rawArray[index]);
         }
 
         @Override
@@ -856,16 +855,16 @@ public interface ArrayTraits
         public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
                 throws IOException, ZserioError
         {
-            final List<BigInteger> rawArray = rawArrayHolder.getRawArray();
-            rawArray.add(reader.readVarUInt());
+            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
+            rawArray[index] = reader.readVarUInt();
         }
 
         @Override
         public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
                 throws IOException, ZserioError
         {
-            final List<BigInteger> rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarUInt(rawArray.get(index));
+            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
+            writer.writeVarUInt(rawArray[index]);
         }
     }
 
@@ -1042,9 +1041,9 @@ public interface ArrayTraits
         @Override
         public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
         {
-            final List<String> rawArray = rawArrayHolder.getRawArray();
+            final String[] rawArray = rawArrayHolder.getRawArray();
 
-            return BitSizeOfCalculator.getBitSizeOfString(rawArray.get(index));
+            return BitSizeOfCalculator.getBitSizeOfString(rawArray[index]);
         }
 
         @Override
@@ -1057,16 +1056,16 @@ public interface ArrayTraits
         public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
                 throws IOException, ZserioError
         {
-            final List<String> rawArray = rawArrayHolder.getRawArray();
-            rawArray.add(reader.readString());
+            final String[] rawArray = rawArrayHolder.getRawArray();
+            rawArray[index] = reader.readString();
         }
 
         @Override
         public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
                 throws IOException, ZserioError
         {
-            final List<String> rawArray = rawArrayHolder.getRawArray();
-            writer.writeString(rawArray.get(index));
+            final String[] rawArray = rawArrayHolder.getRawArray();
+            writer.writeString(rawArray[index]);
         }
     }
 
@@ -1124,9 +1123,9 @@ public interface ArrayTraits
         @Override
         public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
         {
-            final List<BitBuffer> rawArray = rawArrayHolder.getRawArray();
+            final BitBuffer[] rawArray = rawArrayHolder.getRawArray();
 
-            return BitSizeOfCalculator.getBitSizeOfBitBuffer(rawArray.get(index));
+            return BitSizeOfCalculator.getBitSizeOfBitBuffer(rawArray[index]);
         }
 
         @Override
@@ -1139,16 +1138,16 @@ public interface ArrayTraits
         public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
                 throws IOException, ZserioError
         {
-            final List<BitBuffer> rawArray = rawArrayHolder.getRawArray();
-            rawArray.add(reader.readBitBuffer());
+            final BitBuffer[] rawArray = rawArrayHolder.getRawArray();
+            rawArray[index] = reader.readBitBuffer();
         }
 
         @Override
         public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
                 throws IOException, ZserioError
         {
-            final List<BitBuffer> rawArray = rawArrayHolder.getRawArray();
-            writer.writeBitBuffer(rawArray.get(index));
+            final BitBuffer[] rawArray = rawArrayHolder.getRawArray();
+            writer.writeBitBuffer(rawArray[index]);
         }
     }
 
@@ -1158,25 +1157,6 @@ public interface ArrayTraits
      */
     public static class ObjectArray<E extends SizeOf> implements ArrayTraits
     {
-        /**
-         * Interface used to construct elements from the bit stream.
-         */
-        public static interface ElementFactory<E>
-        {
-           /**
-             * Creates array elements from the bit stream.
-             *
-             * @param reader Bit stream to read from.
-             * @param index  Index of element to create.
-             *
-             * @return Created element.
-             *
-             * @throws IOException Failure during bit stream manipulation.
-             * @throws ZserioError Failure during element creation.
-             */
-            E create(BitStreamReader reader, int index) throws IOException, ZserioError;
-        }
-
         /**
          * Constructor from element factory.
          *
@@ -1196,8 +1176,8 @@ public interface ArrayTraits
         @Override
         public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
         {
-            final List<E> rawArray = rawArrayHolder.getRawArray();
-            return rawArray.get(index).bitSizeOf(bitPosition);
+            final E[] rawArray = rawArrayHolder.getRawArray();
+            return rawArray[index].bitSizeOf(bitPosition);
         }
 
         @Override
@@ -1211,8 +1191,8 @@ public interface ArrayTraits
         public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
                 throws IOException, ZserioError
         {
-            final List<E> rawArray = rawArrayHolder.getRawArray();
-            rawArray.add(elementFactory.create(reader, index));
+            final E[] rawArray = rawArrayHolder.getRawArray();
+            rawArray[index] = elementFactory.create(reader, index);
         }
 
         @Override
@@ -1244,16 +1224,16 @@ public interface ArrayTraits
         @Override
         public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
         {
-            final List<E> rawArray = rawArrayHolder.getRawArray();
-            return rawArray.get(index).initializeOffsets(bitPosition);
+            final E[] rawArray = rawArrayHolder.getRawArray();
+            return rawArray[index].initializeOffsets(bitPosition);
         }
 
         @Override
         public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
                 throws IOException, ZserioError
         {
-            final List<E> rawArray = rawArrayHolder.getRawArray();
-            rawArray.get(index).write(writer);
+            final E[] rawArray = rawArrayHolder.getRawArray();
+            rawArray[index].write(writer);
         }
     }
 }

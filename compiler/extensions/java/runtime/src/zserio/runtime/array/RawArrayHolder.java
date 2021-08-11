@@ -1,6 +1,6 @@
 package zserio.runtime.array;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Interface for classes which holds raw array.
@@ -42,13 +42,12 @@ public interface RawArrayHolder
          */
         public ByteArray()
         {
-            reset(0);
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray Java native array of bytes to construct from.
+         * @param rawArray Raw array to construct from.
          */
         public ByteArray(byte[] rawArray)
         {
@@ -56,9 +55,21 @@ public interface RawArrayHolder
         }
 
         @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof ByteArray) ? Arrays.equals(rawArray, ((ByteArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
         public int size()
         {
-            return rawArray.length;
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
         @Override
@@ -87,13 +98,12 @@ public interface RawArrayHolder
          */
         public ShortArray()
         {
-            reset(0);
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray Java native array of shorts to construct from.
+         * @param rawArray Raw array to construct from.
          */
         public ShortArray(short[] rawArray)
         {
@@ -101,9 +111,21 @@ public interface RawArrayHolder
         }
 
         @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof ShortArray) ? Arrays.equals(rawArray, ((ShortArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
         public int size()
         {
-            return rawArray.length;
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
         @Override
@@ -132,13 +154,12 @@ public interface RawArrayHolder
          */
         public IntArray()
         {
-            reset(0);
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray Java native array of ints to construct from.
+         * @param rawArray Raw array to construct from.
          */
         public IntArray(int[] rawArray)
         {
@@ -146,9 +167,21 @@ public interface RawArrayHolder
         }
 
         @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof IntArray) ? Arrays.equals(rawArray, ((IntArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
         public int size()
         {
-            return rawArray.length;
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
         @Override
@@ -177,13 +210,12 @@ public interface RawArrayHolder
          */
         public LongArray()
         {
-            reset(0);
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray Java native array of longs to construct from.
+         * @param rawArray Raw array to construct from.
          */
         public LongArray(long[] rawArray)
         {
@@ -191,9 +223,21 @@ public interface RawArrayHolder
         }
 
         @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof LongArray) ? Arrays.equals(rawArray, ((LongArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
         public int size()
         {
-            return rawArray.length;
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
         @Override
@@ -222,13 +266,12 @@ public interface RawArrayHolder
          */
         public FloatArray()
         {
-            reset(0);
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray Java native array of floats to construct from.
+         * @param rawArray Raw array to construct from.
          */
         public FloatArray(float[] rawArray)
         {
@@ -236,9 +279,21 @@ public interface RawArrayHolder
         }
 
         @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof FloatArray) ? Arrays.equals(rawArray, ((FloatArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
         public int size()
         {
-            return rawArray.length;
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
         @Override
@@ -267,13 +322,12 @@ public interface RawArrayHolder
          */
         public DoubleArray()
         {
-            reset(0);
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray Java native array of doubles to construct from.
+         * @param rawArray Raw array to construct from.
          */
         public DoubleArray(double[] rawArray)
         {
@@ -281,9 +335,21 @@ public interface RawArrayHolder
         }
 
         @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof DoubleArray) ? Arrays.equals(rawArray, ((DoubleArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
         public int size()
         {
-            return rawArray.length;
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
         @Override
@@ -312,13 +378,12 @@ public interface RawArrayHolder
          */
         public BooleanArray()
         {
-            reset(0);
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray Java native array of booleans to construct from.
+         * @param rawArray Raw array to construct from.
          */
         public BooleanArray(boolean[] rawArray)
         {
@@ -326,9 +391,22 @@ public interface RawArrayHolder
         }
 
         @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof BooleanArray) ? Arrays.equals(rawArray, ((BooleanArray)obj).rawArray) :
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
         public int size()
         {
-            return rawArray.length;
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
         @Override
@@ -353,33 +431,52 @@ public interface RawArrayHolder
     public static class ObjectArray<E> implements RawArrayHolder
     {
         /**
-         * Empty constructor.
+         * Constructor from element class object.
+         *
+         * @param clazz Element class object.
          */
-        public ObjectArray()
+        public ObjectArray(Class<E> clazz)
         {
-            rawArray = new ArrayList<E>();
+            this.clazz = clazz;
         }
 
         /**
-         * Constructor from the raw array.
+         * Constructor from raw array.
          *
-         * @param rawArray ArrayList of objects to construct from.
+         * @param clazz    Element class object.
+         * @param rawArray Raw array to construct from.
          */
-        public ObjectArray(ArrayList<E> rawArray)
+        public ObjectArray(Class<E> clazz, E[] rawArray)
         {
+            this.clazz = clazz;
             this.rawArray = rawArray;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof ObjectArray) ? Arrays.equals(rawArray, ((ObjectArray<E>)obj).rawArray) :
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
         }
 
         @Override
         public int size()
         {
-            return rawArray.size();
+            return (rawArray == null) ? 0 : rawArray.length;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void reset(int capacity)
         {
-            rawArray.ensureCapacity(capacity);
+            rawArray = (E[])java.lang.reflect.Array.newInstance(clazz, capacity);
         }
 
         @SuppressWarnings("unchecked")
@@ -389,6 +486,7 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
-        private final ArrayList<E> rawArray;
+        private final Class<E> clazz;
+        private E[] rawArray;
     }
 }
