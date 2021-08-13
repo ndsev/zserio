@@ -13,4 +13,11 @@
             <Method name="validate"/>
         </Or>
     </Match>
+
+    <Match>
+        <!-- Condition has no effect due to the variable type. -->
+        <Bug code="UC"/>
+        <Class name="sql_types.SqlTypesTable"/>
+        <Method name="validateFieldVarintType"/>
+    </Match>
 </FindBugsFilter>
