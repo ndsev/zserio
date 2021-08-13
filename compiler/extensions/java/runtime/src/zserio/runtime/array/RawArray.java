@@ -28,6 +28,8 @@ public interface RawArray
     /**
      * Gets the underlying raw array.
      *
+     * @param <T> Java array type to be returned.
+     *
      * @return The underlying raw array.
      */
     public <T> T getRawArray();

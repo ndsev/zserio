@@ -196,6 +196,8 @@ public class Array
     /**
      * Gets the underlying raw array.
      *
+     * @param <T> Java array type to be returned.
+     *
      * @return Underlying raw array.
      */
     public <T> T getRawArray()
