@@ -3,6 +3,7 @@ package array_types;
 import static org.junit.Assert.*;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -27,7 +28,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final BigInteger[] bigIntegerArray = new BigInteger[FIXED_ARRAY_LENGTH];
         arraysMapping.setUint64Array(bigIntegerArray);
-        assertTrue(bigIntegerArray.equals(arraysMapping.getUint64Array()));
+        assertTrue(Arrays.equals(bigIntegerArray, arraysMapping.getUint64Array()));
     }
 
     @Test
@@ -42,7 +43,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final long[] longArray = new long[FIXED_ARRAY_LENGTH];
         arraysMapping.setInt64Array(longArray);
-        assertTrue(longArray.equals(arraysMapping.getInt64Array()));
+        assertTrue(Arrays.equals(longArray, arraysMapping.getInt64Array()));
     }
 
     @Test
@@ -62,7 +63,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final short[] unsignedByteArray = new short[FIXED_ARRAY_LENGTH];
         arraysMapping.setVariableBitfieldByteArray(unsignedByteArray);
-        assertTrue(unsignedByteArray.equals(arraysMapping.getVariableBitfieldByteArray()));
+        assertTrue(Arrays.equals(unsignedByteArray, arraysMapping.getVariableBitfieldByteArray()));
     }
 
     @Test
@@ -82,7 +83,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final byte[] byteArray = new byte[FIXED_ARRAY_LENGTH];
         arraysMapping.setVariableIntfieldByteArray(byteArray);
-        assertTrue(byteArray.equals(arraysMapping.getVariableIntfieldByteArray()));
+        assertTrue(Arrays.equals(byteArray, arraysMapping.getVariableIntfieldByteArray()));
     }
 
     @Test
@@ -96,7 +97,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final double[] float64Array = new double[FIXED_ARRAY_LENGTH];
         arraysMapping.setFloat64Array(float64Array);
-        assertTrue(float64Array.equals(arraysMapping.getFloat64Array()));
+        assertTrue(Arrays.equals(float64Array, arraysMapping.getFloat64Array()));
     }
 
     @Test
@@ -112,7 +113,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final int[] varSizeArray = new int[FIXED_ARRAY_LENGTH];
         arraysMapping.setVarsizeArray(varSizeArray);
-        assertTrue(varSizeArray.equals(arraysMapping.getVarsizeArray()));
+        assertTrue(Arrays.equals(varSizeArray, arraysMapping.getVarsizeArray()));
     }
 
     @Test
@@ -127,7 +128,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final long[] varIntArray = new long[FIXED_ARRAY_LENGTH];
         arraysMapping.setVarintArray(varIntArray);
-        assertTrue(varIntArray.equals(arraysMapping.getVarintArray()));
+        assertTrue(Arrays.equals(varIntArray, arraysMapping.getVarintArray()));
     }
 
     @Test
@@ -138,7 +139,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final boolean[] boolArray = new boolean[FIXED_ARRAY_LENGTH];
         arraysMapping.setBoolArray(boolArray);
-        assertTrue(boolArray.equals(arraysMapping.getBoolArray()));
+        assertTrue(Arrays.equals(boolArray, arraysMapping.getBoolArray()));
     }
 
     @Test
@@ -147,7 +148,7 @@ public class ArraysMappingTest
         ArraysMapping arraysMapping = new ArraysMapping();
         final String[] stringArray = new String[FIXED_ARRAY_LENGTH];
         arraysMapping.setStringArray(stringArray);
-        assertTrue(stringArray.equals(arraysMapping.getStringArray()));
+        assertTrue(Arrays.equals(stringArray, arraysMapping.getStringArray()));
     }
 
     @Test
@@ -156,7 +157,7 @@ public class ArraysMappingTest
         ArraysMapping arraysMapping = new ArraysMapping();
         final BitBuffer[] externArray = new BitBuffer[FIXED_ARRAY_LENGTH];
         arraysMapping.setExternArray(externArray);
-        assertTrue(externArray.equals(arraysMapping.getExternArray()));
+        assertTrue(Arrays.equals(externArray, arraysMapping.getExternArray()));
     }
 
     @Test
@@ -167,7 +168,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final TestStructure[] objectArray = new TestStructure[FIXED_ARRAY_LENGTH];
         arraysMapping.setCompoundArray(objectArray);
-        assertTrue(objectArray.equals(arraysMapping.getCompoundArray()));
+        assertTrue(Arrays.equals(objectArray, arraysMapping.getCompoundArray()));
     }
 
     @Test
@@ -178,7 +179,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have SpotBugs warning
         final TestEnum[] enumArray = new TestEnum[FIXED_ARRAY_LENGTH];
         arraysMapping.setEnumArray(enumArray);
-        assertTrue(enumArray.equals(arraysMapping.getEnumArray()));
+        assertTrue(Arrays.equals(enumArray, arraysMapping.getEnumArray()));
     }
 
     @Test
@@ -189,7 +190,7 @@ public class ArraysMappingTest
         // just do something with arraysMapping not to have FindBugs warning
         final TestBitmask[] bitmaskArray = new TestBitmask[FIXED_ARRAY_LENGTH];
         arraysMapping.setBitmaskArray(bitmaskArray);
-        assertTrue(bitmaskArray.equals(arraysMapping.getBitmaskArray()));
+        assertTrue(Arrays.equals(bitmaskArray, arraysMapping.getBitmaskArray()));
     }
 
     private static final int FIXED_ARRAY_LENGTH = 5;

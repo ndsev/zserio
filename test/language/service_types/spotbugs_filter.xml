@@ -1,10 +1,11 @@
 <FindBugsFilter>
     <Match>
-        <!-- Anonymous inner class could be refactored into a named __static__ inner class. -->
+        <!-- Method uses the same code for two switch clauses. -->
+        <Bug code="DB"/>
+        <Class name="service_types.complex_types_service.ResponseData"/>
         <Or>
-            <Class name="~.*SimpleServiceClient.*"/>
-            <Class name="~.*UserDBClient.*"/>
+            <Method name="bitSizeOf"/>
+            <Method name="initializeOffsets"/>
         </Or>
-        <Bug code="SIC"/>
     </Match>
 </FindBugsFilter>

@@ -13,12 +13,4 @@
             <Method name="validate"/>
         </Or>
     </Match>
-
-        <Match>
-        <!-- Full range check is useless in validation code -->
-        <Bug code="UC"/>
-        <Or>
-            <Method name="validateFieldVarintType"/>
-        </Or>
-    </Match>
 </FindBugsFilter>

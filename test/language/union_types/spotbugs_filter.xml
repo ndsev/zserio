@@ -1,22 +1,25 @@
 <FindBugsFilter>
     <Match>
         <!-- Same code in different switch clauses. -->
+        <Bug code="DB"/>
         <Or>
-            <Class name="~.*SimpleUnion.*"/>
+            <Class name="union_types.simple_union.SimpleUnion"/>
+            <Class name="union_types.union_with_array.TestUnion"/>
         </Or>
         <Or>
             <Method name="bitSizeOf"/>
             <Method name="initializeOffsets"/>
             <Method name="read"/>
+            <Method name="write"/>
         </Or>
-        <Bug code="DB"/>
     </Match>
     <Match>
         <!-- This field is never written. -->
         <Bug code="UwF"/>
-        <And>
-            <Class name="~.*\.EmptyUnion.*"/>
-            <Field name="objectChoice"/>
-        </And>
+        <Or>
+            <Class name="union_types.empty_union_with_parameter.EmptyUnionWithParameter"/>
+            <Class name="union_types.empty_union.EmptyUnion"/>
+        </Or>
+        <Field name="objectChoice"/>
     </Match>
 </FindBugsFilter>
