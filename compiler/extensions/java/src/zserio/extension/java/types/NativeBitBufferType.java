@@ -6,7 +6,7 @@ public class NativeBitBufferType extends NativeArrayableType
 {
     public NativeBitBufferType()
     {
-        super(RUNTIME_IO_PACKAGE, "BitBuffer", new NativeArrayTraits("BitBufferArray") );
+        super(RUNTIME_IO_PACKAGE, "BitBuffer", new NativeArrayTraits("BitBufferArrayTraits") );
     }
 
     @Override

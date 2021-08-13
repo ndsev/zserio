@@ -6,10 +6,10 @@ import java.util.Arrays;
  * Interface for classes which holds raw array.
  *
  * This interface gives the same abstraction for Java native arrays of primitive types like int[] and for
- * ArrayList of objects. Using the Java native arrays for primitive types is preferred because
+ * Java native arrays of objects. Using the Java native arrays for primitive types is preferred because
  * ArrayList of primitive types wrapper like Integer brings performance penalty during boxing/unboxing.
  */
-public interface RawArrayHolder
+public interface RawArray
 {
     /**
      * Gets the raw array size.
@@ -33,14 +33,31 @@ public interface RawArrayHolder
     public <T> T getRawArray();
 
     /**
-     * Raw array holder for Java native array of bytes.
+     * Sets the raw array element.
+     *
+     * @param element Raw array element to set.
+     * @param index Index of element to set.
      */
-    public static class ByteArray implements RawArrayHolder
+    public void setElement(ArrayElement element, int index);
+
+    /**
+     * Gets the raw array element.
+     *
+     * @param index Index of element.
+     *
+     * @return The raw array element.
+     */
+    public ArrayElement getElement(int index);
+
+    /**
+     * Raw array for Java native array of bytes.
+     */
+    public static class ByteRawArray implements RawArray
     {
         /**
          * Empty constructor.
          */
-        public ByteArray()
+        public ByteRawArray()
         {
         }
 
@@ -49,7 +66,7 @@ public interface RawArrayHolder
          *
          * @param rawArray Raw array to construct from.
          */
-        public ByteArray(byte[] rawArray)
+        public ByteRawArray(byte[] rawArray)
         {
             this.rawArray = rawArray;
         }
@@ -57,7 +74,8 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof ByteArray) ? Arrays.equals(rawArray, ((ByteArray)obj).rawArray) : false;
+            return (obj instanceof ByteRawArray) ? Arrays.equals(rawArray, ((ByteRawArray)obj).rawArray) :
+                false;
         }
 
         @Override
@@ -85,18 +103,33 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.ByteArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.ByteArrayElement element = new ArrayElement.ByteArrayElement();
         private byte[] rawArray;
     }
 
     /**
-     * Raw array holder for Java native array of shorts.
+     * Raw array for Java native array of shorts.
      */
-    public static class ShortArray implements RawArrayHolder
+    public static class ShortRawArray implements RawArray
     {
         /**
          * Empty constructor.
          */
-        public ShortArray()
+        public ShortRawArray()
         {
         }
 
@@ -105,7 +138,7 @@ public interface RawArrayHolder
          *
          * @param rawArray Raw array to construct from.
          */
-        public ShortArray(short[] rawArray)
+        public ShortRawArray(short[] rawArray)
         {
             this.rawArray = rawArray;
         }
@@ -113,7 +146,8 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof ShortArray) ? Arrays.equals(rawArray, ((ShortArray)obj).rawArray) : false;
+            return (obj instanceof ShortRawArray) ? Arrays.equals(rawArray, ((ShortRawArray)obj).rawArray) :
+                false;
         }
 
         @Override
@@ -141,18 +175,33 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.ShortArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
         private short[] rawArray;
     }
 
     /**
-     * Raw array holder for Java native array of ints.
+     * Raw array for Java native array of ints.
      */
-    public static class IntArray implements RawArrayHolder
+    public static class IntRawArray implements RawArray
     {
         /**
          * Empty constructor.
          */
-        public IntArray()
+        public IntRawArray()
         {
         }
 
@@ -161,7 +210,7 @@ public interface RawArrayHolder
          *
          * @param rawArray Raw array to construct from.
          */
-        public IntArray(int[] rawArray)
+        public IntRawArray(int[] rawArray)
         {
             this.rawArray = rawArray;
         }
@@ -169,7 +218,7 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof IntArray) ? Arrays.equals(rawArray, ((IntArray)obj).rawArray) : false;
+            return (obj instanceof IntRawArray) ? Arrays.equals(rawArray, ((IntRawArray)obj).rawArray) : false;
         }
 
         @Override
@@ -197,18 +246,33 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.IntArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
         private int[] rawArray;
     }
 
     /**
-     * Raw array holder for Java native array of longs.
+     * Raw array for Java native array of longs.
      */
-    public static class LongArray implements RawArrayHolder
+    public static class LongRawArray implements RawArray
     {
         /**
          * Empty constructor.
          */
-        public LongArray()
+        public LongRawArray()
         {
         }
 
@@ -217,7 +281,7 @@ public interface RawArrayHolder
          *
          * @param rawArray Raw array to construct from.
          */
-        public LongArray(long[] rawArray)
+        public LongRawArray(long[] rawArray)
         {
             this.rawArray = rawArray;
         }
@@ -225,7 +289,8 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof LongArray) ? Arrays.equals(rawArray, ((LongArray)obj).rawArray) : false;
+            return (obj instanceof LongRawArray) ? Arrays.equals(rawArray, ((LongRawArray)obj).rawArray) :
+                false;
         }
 
         @Override
@@ -253,18 +318,33 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.LongArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
         private long[] rawArray;
     }
 
     /**
-     * Raw array holder for Java native array of floats.
+     * Raw array for Java native array of floats.
      */
-    public static class FloatArray implements RawArrayHolder
+    public static class FloatRawArray implements RawArray
     {
         /**
          * Empty constructor.
          */
-        public FloatArray()
+        public FloatRawArray()
         {
         }
 
@@ -273,7 +353,7 @@ public interface RawArrayHolder
          *
          * @param rawArray Raw array to construct from.
          */
-        public FloatArray(float[] rawArray)
+        public FloatRawArray(float[] rawArray)
         {
             this.rawArray = rawArray;
         }
@@ -281,7 +361,8 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof FloatArray) ? Arrays.equals(rawArray, ((FloatArray)obj).rawArray) : false;
+            return (obj instanceof FloatRawArray) ? Arrays.equals(rawArray, ((FloatRawArray)obj).rawArray) :
+                false;
         }
 
         @Override
@@ -309,18 +390,33 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.FloatArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.FloatArrayElement element = new ArrayElement.FloatArrayElement();
         private float[] rawArray;
     }
 
     /**
-     * Raw array holder for Java native array of doubles.
+     * Raw array for Java native array of doubles.
      */
-    public static class DoubleArray implements RawArrayHolder
+    public static class DoubleRawArray implements RawArray
     {
         /**
          * Empty constructor.
          */
-        public DoubleArray()
+        public DoubleRawArray()
         {
         }
 
@@ -329,7 +425,7 @@ public interface RawArrayHolder
          *
          * @param rawArray Raw array to construct from.
          */
-        public DoubleArray(double[] rawArray)
+        public DoubleRawArray(double[] rawArray)
         {
             this.rawArray = rawArray;
         }
@@ -337,7 +433,8 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof DoubleArray) ? Arrays.equals(rawArray, ((DoubleArray)obj).rawArray) : false;
+            return (obj instanceof DoubleRawArray) ? Arrays.equals(rawArray, ((DoubleRawArray)obj).rawArray) :
+                false;
         }
 
         @Override
@@ -365,18 +462,33 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.DoubleArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.DoubleArrayElement element = new ArrayElement.DoubleArrayElement();
         private double[] rawArray;
     }
 
     /**
-     * Raw array holder for Java native array of booleans.
+     * Raw array for Java native array of booleans.
      */
-    public static class BooleanArray implements RawArrayHolder
+    public static class BooleanRawArray implements RawArray
     {
         /**
          * Empty constructor.
          */
-        public BooleanArray()
+        public BooleanRawArray()
         {
         }
 
@@ -385,7 +497,7 @@ public interface RawArrayHolder
          *
          * @param rawArray Raw array to construct from.
          */
-        public BooleanArray(boolean[] rawArray)
+        public BooleanRawArray(boolean[] rawArray)
         {
             this.rawArray = rawArray;
         }
@@ -393,7 +505,7 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof BooleanArray) ? Arrays.equals(rawArray, ((BooleanArray)obj).rawArray) :
+            return (obj instanceof BooleanRawArray) ? Arrays.equals(rawArray, ((BooleanRawArray)obj).rawArray) :
                 false;
         }
 
@@ -422,33 +534,48 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.BooleanArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.BooleanArrayElement element = new ArrayElement.BooleanArrayElement();
         private boolean[] rawArray;
     }
 
     /**
-     * Raw array holder for ArrayList of objects.
+     * Raw array for Java native array of objects.
      */
-    public static class ObjectArray<E> implements RawArrayHolder
+    public static class ObjectRawArray<E> implements RawArray
     {
         /**
          * Constructor from element class object.
          *
-         * @param clazz Element class object.
+         * @param elementClass Element class object.
          */
-        public ObjectArray(Class<E> clazz)
+        public ObjectRawArray(Class<E> elementClass)
         {
-            this.clazz = clazz;
+            this.elementClass = elementClass;
         }
 
         /**
          * Constructor from raw array.
          *
-         * @param clazz    Element class object.
-         * @param rawArray Raw array to construct from.
+         * @param elementClass Element class object.
+         * @param rawArray     Raw array to construct from.
          */
-        public ObjectArray(Class<E> clazz, E[] rawArray)
+        public ObjectRawArray(Class<E> elementClass, E[] rawArray)
         {
-            this.clazz = clazz;
+            this.elementClass = elementClass;
             this.rawArray = rawArray;
         }
 
@@ -456,8 +583,8 @@ public interface RawArrayHolder
         @Override
         public boolean equals(java.lang.Object obj)
         {
-            return (obj instanceof ObjectArray) ? Arrays.equals(rawArray, ((ObjectArray<E>)obj).rawArray) :
-                false;
+            return (obj instanceof ObjectRawArray) ?
+                    Arrays.equals(rawArray, ((ObjectRawArray<E>)obj).rawArray) : false;
         }
 
         @Override
@@ -476,7 +603,7 @@ public interface RawArrayHolder
         @Override
         public void reset(int capacity)
         {
-            rawArray = (E[])java.lang.reflect.Array.newInstance(clazz, capacity);
+            rawArray = (E[])java.lang.reflect.Array.newInstance(elementClass, capacity);
         }
 
         @SuppressWarnings("unchecked")
@@ -486,7 +613,23 @@ public interface RawArrayHolder
             return (T)rawArray;
         }
 
-        private final Class<E> clazz;
+        @SuppressWarnings("unchecked")
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.ObjectArrayElement<E>)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.ObjectArrayElement<E> element = new ArrayElement.ObjectArrayElement<E>();
+        private final Class<E> elementClass;
         private E[] rawArray;
     }
 }

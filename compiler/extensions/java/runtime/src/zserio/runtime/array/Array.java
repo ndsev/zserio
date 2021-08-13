@@ -13,7 +13,7 @@ import zserio.runtime.io.BitStreamWriter;
  * Array wrapper which is used for mapping of all zserio arrays.
  *
  * Array wrapper is defined by:
- * - raw array holder which contains raw array
+ * - raw array
  * - array traits which define zserio methods for array elements of corresponding Java native types
  * - array type (normal, auto, implicit)
  * - offset initializer to set offsets for indexed offsets arrays
@@ -24,42 +24,41 @@ public class Array
     /**
      * Constructor.
      *
-     * @param rawArrayHolder Raw array holder to construct from.
-     * @param arrayTraits    Array traits to construct from.
-     * @param arrayType      Array type to construct from.
+     * @param rawArray    Raw array to construct from.
+     * @param arrayTraits Array traits to construct from.
+     * @param arrayType   Array type to construct from.
      */
-    public Array(RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits, ArrayType arrayType)
+    public Array(RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType)
     {
-        this(rawArrayHolder, arrayTraits, arrayType, null, null);
+        this(rawArray, arrayTraits, arrayType, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param rawArrayHolder Raw array holder to construct from.
-     * @param arrayTraits    Array traits to construct from.
-     * @param arrayType      Array type to construct from.
-     * @param offsetChecker  Offset checker to construct from.
+     * @param rawArray      Raw array to construct from.
+     * @param arrayTraits   Array traits to construct from.
+     * @param arrayType     Array type to construct from.
+     * @param offsetChecker Offset checker to construct from.
      */
-    public Array(RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits, ArrayType arrayType,
-            OffsetChecker offsetChecker)
+    public Array(RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType, OffsetChecker offsetChecker)
     {
-        this(rawArrayHolder, arrayTraits, arrayType, offsetChecker, null);
+        this(rawArray, arrayTraits, arrayType, offsetChecker, null);
     }
 
     /**
      * Constructor.
      *
-     * @param rawArrayHolder    Raw array holder to construct from.
+     * @param rawArray          Raw array to construct from.
      * @param arrayTraits       Array traits to construct from.
      * @param arrayType         Array type to construct from.
      * @param offsetChecker     Offset checker to construct from.
      * @param offsetInitializer Offset initializer to construct from.
      */
-    public Array(RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits, ArrayType arrayType,
-            OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
+    public Array(RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType, OffsetChecker offsetChecker,
+            OffsetInitializer offsetInitializer)
     {
-        this.rawArrayHolder = rawArrayHolder;
+        this.rawArray = rawArray;
         this.arrayTraits = arrayTraits;
         this.arrayType = arrayType;
         this.offsetChecker = offsetChecker;
@@ -69,43 +68,43 @@ public class Array
     /**
      * Constructor.
      *
-     * @param reader         Bit stream reader to read from.
-     * @param rawArrayHolder Raw array holder to construct from.
-     * @param arrayTraits    Array traits to construct from.
-     * @param arrayType      Array type to construct from.
+     * @param reader      Bit stream reader to read from.
+     * @param rawArray    Raw array to construct from.
+     * @param arrayTraits Array traits to construct from.
+     * @param arrayType   Array type to construct from.
      *
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public Array(BitStreamReader reader, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
-            ArrayType arrayType) throws IOException, ZserioError
+    public Array(BitStreamReader reader, RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType)
+            throws IOException, ZserioError
     {
-        this(reader, rawArrayHolder, arrayTraits, arrayType, null, null);
+        this(reader, rawArray, arrayTraits, arrayType, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param reader         Bit stream reader to read from.
-     * @param rawArrayHolder Raw array holder to construct from.
-     * @param arrayTraits    Array traits to construct from.
-     * @param arrayType      Array type to construct from.
-     * @param offsetChecker  Offset checker to construct from.
+     * @param reader        Bit stream reader to read from.
+     * @param rawArray      Raw array to construct from.
+     * @param arrayTraits   Array traits to construct from.
+     * @param arrayType     Array type to construct from.
+     * @param offsetChecker Offset checker to construct from.
      *
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public Array(BitStreamReader reader, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
-            ArrayType arrayType, OffsetChecker offsetChecker) throws IOException, ZserioError
+    public Array(BitStreamReader reader, RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType,
+            OffsetChecker offsetChecker) throws IOException, ZserioError
     {
-        this(reader, rawArrayHolder, arrayTraits, arrayType, offsetChecker, null);
+        this(reader, rawArray, arrayTraits, arrayType, offsetChecker, null);
     }
 
     /**
      * Constructor.
      *
      * @param reader            Bit stream reader to read from.
-     * @param rawArrayHolder    Raw array holder to construct from.
+     * @param rawArray          Raw array to construct from.
      * @param arrayTraits       Array traits to construct from.
      * @param arrayType         Array type to construct from.
      * @param offsetChecker     Offset checker to construct from.
@@ -114,11 +113,10 @@ public class Array
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public Array(BitStreamReader reader, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
-            ArrayType arrayType, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
-                    throws IOException, ZserioError
+    public Array(BitStreamReader reader, RawArray rawArray, ArrayTraits arrayTraits, ArrayType arrayType,
+            OffsetChecker offsetChecker, OffsetInitializer offsetInitializer) throws IOException, ZserioError
     {
-        this(rawArrayHolder, arrayTraits, arrayType, offsetChecker, offsetInitializer);
+        this(rawArray, arrayTraits, arrayType, offsetChecker, offsetInitializer);
 
         read(reader);
     }
@@ -126,38 +124,38 @@ public class Array
     /**
      * Constructor.
      *
-     * @param reader         Bit stream reader to read from.
-     * @param size           Number of elements stored in the array which shall be read.
-     * @param rawArrayHolder Raw array holder to construct from.
-     * @param arrayTraits    Array traits to construct from.
-     * @param arrayType      Array type to construct from.
+     * @param reader      Bit stream reader to read from.
+     * @param size        Number of elements stored in the array which shall be read.
+     * @param rawArray    Raw array to construct from.
+     * @param arrayTraits Array traits to construct from.
+     * @param arrayType   Array type to construct from.
      *
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public Array(BitStreamReader reader, int size, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+    public Array(BitStreamReader reader, int size, RawArray rawArray, ArrayTraits arrayTraits,
             ArrayType arrayType) throws IOException, ZserioError
     {
-        this(reader, size, rawArrayHolder, arrayTraits, arrayType, null, null);
+        this(reader, size, rawArray, arrayTraits, arrayType, null, null);
     }
 
     /**
      * Constructor.
      *
-     * @param reader         Bit stream reader to read from.
-     * @param size           Number of elements stored in the array which shall be read.
-     * @param rawArrayHolder Raw array holder to construct from.
-     * @param arrayTraits    Array traits to construct from.
-     * @param arrayType      Array type to construct from.
-     * @param offsetChecker  Offset checker to construct from.
+     * @param reader        Bit stream reader to read from.
+     * @param size          Number of elements stored in the array which shall be read.
+     * @param rawArray      Raw array to construct from.
+     * @param arrayTraits   Array traits to construct from.
+     * @param arrayType     Array type to construct from.
+     * @param offsetChecker Offset checker to construct from.
      *
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public Array(BitStreamReader reader, int size, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+    public Array(BitStreamReader reader, int size, RawArray rawArray, ArrayTraits arrayTraits,
             ArrayType arrayType, OffsetChecker offsetChecker) throws IOException, ZserioError
     {
-        this(reader, size, rawArrayHolder, arrayTraits, arrayType, offsetChecker, null);
+        this(reader, size, rawArray, arrayTraits, arrayType, offsetChecker, null);
     }
 
     /**
@@ -165,7 +163,7 @@ public class Array
      *
      * @param reader            Bit stream reader to read from.
      * @param size              Number of elements stored in the array which shall be read.
-     * @param rawArrayHolder    Raw array holder to construct from.
+     * @param rawArray          Raw array to construct from.
      * @param arrayTraits       Array traits to construct from.
      * @param arrayType         Array type to construct from.
      * @param offsetChecker     Offset checker to construct from.
@@ -174,11 +172,11 @@ public class Array
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public Array(BitStreamReader reader, int size, RawArrayHolder rawArrayHolder, ArrayTraits arrayTraits,
+    public Array(BitStreamReader reader, int size, RawArray rawArray, ArrayTraits arrayTraits,
             ArrayType arrayType, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
                     throws IOException, ZserioError
     {
-        this(rawArrayHolder, arrayTraits, arrayType, offsetChecker, offsetInitializer);
+        this(rawArray, arrayTraits, arrayType, offsetChecker, offsetInitializer);
 
         read(reader, size);
     }
@@ -186,13 +184,13 @@ public class Array
     @Override
     public boolean equals(java.lang.Object obj)
     {
-        return (obj instanceof Array) ? rawArrayHolder.equals(((Array)obj).rawArrayHolder) : false;
+        return (obj instanceof Array) ? rawArray.equals(((Array)obj).rawArray) : false;
     }
 
     @Override
     public int hashCode()
     {
-        return rawArrayHolder.hashCode();
+        return rawArray.hashCode();
     }
 
     /**
@@ -202,17 +200,17 @@ public class Array
      */
     public <T> T getRawArray()
     {
-        return rawArrayHolder.getRawArray();
+        return rawArray.getRawArray();
     }
 
     /**
-     * Gets the underlying raw array size.
+     * Gets the underlying raw array size. !@# why TODO[mikir]
      *
      * @return The number of elements stored in the underlying raw array.
      */
     public int size()
     {
-        return rawArrayHolder.size();
+        return rawArray.size();
     }
 
     /**
@@ -225,13 +223,13 @@ public class Array
     public int bitSizeOf(long bitPosition)
     {
         long endBitPosition = bitPosition;
-        final int size = rawArrayHolder.size();
+        final int size = rawArray.size();
         if (arrayType == ArrayType.AUTO)
             endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);
 
         if (arrayTraits.isBitSizeOfConstant() && size > 0)
         {
-            final int elementSize = arrayTraits.bitSizeOf(rawArrayHolder, endBitPosition, 0);
+            final int elementSize = arrayTraits.bitSizeOf(endBitPosition, ArrayElement.Dummy);
             if (offsetInitializer == null)
             {
                 endBitPosition += size * elementSize;
@@ -250,7 +248,7 @@ public class Array
                 {
                     endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
                 }
-                endBitPosition += arrayTraits.bitSizeOf(rawArrayHolder, endBitPosition, index);
+                endBitPosition += arrayTraits.bitSizeOf(endBitPosition, rawArray.getElement(index));
             }
         }
 
@@ -267,7 +265,7 @@ public class Array
     public long initializeOffsets(long bitPosition)
     {
         long endBitPosition = bitPosition;
-        final int size = rawArrayHolder.size();
+        final int size = rawArray.size();
         if (arrayType == ArrayType.AUTO)
             endBitPosition += BitSizeOfCalculator.getBitSizeOfVarSize(size);
 
@@ -278,7 +276,7 @@ public class Array
                 endBitPosition = BitPositionUtil.alignTo(Byte.SIZE, endBitPosition);
                 offsetInitializer.setOffset(index, BitPositionUtil.bitsToBytes(endBitPosition));
             }
-            endBitPosition = arrayTraits.initializeOffsets(rawArrayHolder, endBitPosition, index);
+            endBitPosition = arrayTraits.initializeOffsets(endBitPosition, rawArray.getElement(index));
         }
 
         return endBitPosition;
@@ -316,7 +314,7 @@ public class Array
                         "Array: Implicit array elements must have constant bit size!");
 
             final long readerBitPosition = reader.getBitPosition();
-            final int elementSize = arrayTraits.bitSizeOf(rawArrayHolder, readerBitPosition, 0);
+            final int elementSize = arrayTraits.bitSizeOf(readerBitPosition, ArrayElement.Dummy);
             final long remainingBits = reader.getBufferBitSize() - readerBitPosition;
             readSize = (int)(remainingBits / elementSize);
         }
@@ -325,7 +323,7 @@ public class Array
             readSize = reader.readVarSize();
         }
 
-        rawArrayHolder.reset(readSize);
+        rawArray.reset(readSize);
 
         for (int index = 0; index < readSize; ++index)
         {
@@ -334,7 +332,8 @@ public class Array
                 reader.alignTo(Byte.SIZE);
                 offsetChecker.checkOffset(index, reader.getBytePosition());
             }
-            arrayTraits.read(rawArrayHolder, reader, index);
+            final ArrayElement element = arrayTraits.read(reader, index);
+            rawArray.setElement(element, index);
         }
     }
 
@@ -348,7 +347,7 @@ public class Array
      */
     public void write(BitStreamWriter writer) throws IOException, ZserioError
     {
-        final int size = rawArrayHolder.size();
+        final int size = rawArray.size();
         if (arrayType == ArrayType.AUTO)
             writer.writeVarSize(size);
 
@@ -359,11 +358,11 @@ public class Array
                 writer.alignTo(Byte.SIZE);
                 offsetChecker.checkOffset(index, writer.getBytePosition());
             }
-            arrayTraits.write(rawArrayHolder, writer, index);
+            arrayTraits.write(writer, rawArray.getElement(index));
         }
     }
 
-    private final RawArrayHolder rawArrayHolder;
+    private final RawArray rawArray;
     private final ArrayTraits arrayTraits;
     private final ArrayType arrayType;
     private final OffsetChecker offsetChecker;

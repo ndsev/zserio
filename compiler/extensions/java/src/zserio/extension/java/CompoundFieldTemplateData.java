@@ -26,7 +26,7 @@ import zserio.extension.java.types.NativeEnumType;
 import zserio.extension.java.types.NativeFloatType;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
-import zserio.extension.java.types.NativeRawArrayHolder;
+import zserio.extension.java.types.NativeRawArray;
 import zserio.tools.ZserioToolPrinter;
 
 public final class CompoundFieldTemplateData
@@ -323,15 +323,15 @@ public final class CompoundFieldTemplateData
             length = createLength(arrayInstantiation, javaExpressionFormatter);
 
             wrapperJavaTypeName = nativeType.getArrayWrapper().getFullName();
-            final NativeRawArrayHolder nativeRawArrayHolder = nativeType.getRawArrayHolder();
-            rawHolderJavaTypeName = nativeRawArrayHolder.getFullName();
+            final NativeRawArray nativeRawArray = nativeType.getRawArray();
+            rawHolderJavaTypeName = nativeRawArray.getFullName();
             final NativeArrayTraits nativeArrayTraits = nativeType.getArrayTraits();
             traitsJavaTypeName = nativeArrayTraits.getFullName();
 
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementJavaTypeName = elementNativeType.getFullName();
 
-            requiresElementClass = nativeRawArrayHolder.requiresElementClass();
+            requiresElementClass = nativeRawArray.requiresElementClass();
             requiresElementBitSize = nativeArrayTraits.requiresElementBitSize();
             requiresElementFactory = nativeArrayTraits.requiresElementFactory();
             requiresParentContext = createRequiresParentContext(elementTypeInstantiation);

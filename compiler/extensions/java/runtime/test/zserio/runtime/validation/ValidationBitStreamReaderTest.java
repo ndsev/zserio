@@ -9,7 +9,7 @@ import java.util.Arrays;
 import org.junit.Test;
 
 import zserio.runtime.array.Array;
-import zserio.runtime.array.RawArrayHolder;
+import zserio.runtime.array.RawArray;
 import zserio.runtime.array.ArrayTraits;
 import zserio.runtime.array.ArrayType;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -198,9 +198,9 @@ public class ValidationBitStreamReaderTest
         final byte[] originalStream = writer.toByteArray();
 
         final ValidationBitStreamReader reader = new ValidationBitStreamReader(originalStream);
-        final RawArrayHolder rawArrayHolder = new RawArrayHolder.ShortArray();
-        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldShortArray(8);
-        final Array readArray = new Array(rawArrayHolder, arrayTraits, ArrayType.IMPLICIT);
+        final RawArray rawArray = new RawArray.ShortRawArray();
+        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldShortArrayTraits(8);
+        final Array readArray = new Array(rawArray, arrayTraits, ArrayType.IMPLICIT);
         readArray.read(reader);
         final short[] readRawArray = readArray.getRawArray();
         assertEquals(0xAB, readRawArray[0]);

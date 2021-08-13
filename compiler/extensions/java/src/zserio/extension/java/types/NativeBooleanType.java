@@ -10,7 +10,7 @@ public class NativeBooleanType extends NativeIntegralType
     public NativeBooleanType(boolean nullable)
     {
         super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Boolean" : "boolean",
-                new NativeArrayTraits("BoolArray"));
+                new NativeArrayTraits("BoolArrayTraits"));
 
         this.nullable = nullable;
     }

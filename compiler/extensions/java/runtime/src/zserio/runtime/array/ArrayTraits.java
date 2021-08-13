@@ -14,8 +14,7 @@ import zserio.runtime.io.InitializeOffsetsWriter;
 /**
  * Interface for array traits.
  *
- * Array traits provides an implementation of zserio functions for one element given by index and raw array
- * holder.
+ * Array traits provides an implementation of zserio functions for one element given by index and raw array.
  */
 public interface ArrayTraits
 {
@@ -29,62 +28,58 @@ public interface ArrayTraits
     /**
      * Gets the bit size of the array element if it is stored in the bit stream.
      *
-     * @param rawArrayHolder Raw array holder.
-     * @param bitPosition    Current bit position in the bit stream.
-     * @param index          Index of element stored in the raw array holder.
+     * @param bitPosition Current bit position in the bit stream.
+     * @param element     Array element.
      *
      * @return Bit size of the given array element if it is stored in the bit stream.
      */
-    public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index);
+    public int bitSizeOf(long bitPosition, ArrayElement element);
 
     /**
      * Initializes indexed offsets for the array element.
      *
-     * @param rawArrayHolder Raw array holder.
-     * @param bitPosition    Current bit position in the bit stream.
-     * @param index          Index of element stored in the raw array holder.
+     * @param bitPosition Current bit position in the bit stream.
+     * @param element     Array element.
      *
      * @return Updated bit stream position which points to the first bit after the array element.
      */
-    public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index);
+    public long initializeOffsets(long bitPosition, ArrayElement element);
 
     /**
      * Reads the array element from the bit stream.
      *
-     * @param rawArrayHolder Raw array holder.
-     * @param reader         Bit stream reader to read from.
-     * @param index          Index of element stored in the raw array holder.
+     * @param reader Bit stream reader to read from.
+     * @param index  Index of the array element to read.
+     *
+     * @return Array element filled by read element.
      *
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-            throws IOException, ZserioError;
+    public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError;
 
     /**
      * Writes the array element to the bit stream.
      *
-     * @param rawArrayHolder Raw array holder.
-     * @param writer         Bit stream write to write to.
-     * @param index          Index of element stored in the raw array holder.
+     * @param writer  Bit stream write to write to.
+     * @param element Array element.
      *
      * @throws IOException Failure during bit stream manipulation.
      * @throws ZserioError Failure during offset checking.
      */
-    public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-            throws IOException, ZserioError;
+    public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError;
 
     /**
      * Array traits for zserio int8 and int:1...int:8 arrays which are mapped to Java byte[] array.
      */
-    public static class SignedBitFieldByteArray implements ArrayTraits
+    public static class SignedBitFieldByteArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public SignedBitFieldByteArray(int numBits)
+        public SignedBitFieldByteArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -96,47 +91,46 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final byte[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = (byte)reader.readSignedBits(numBits);
+            element.set((byte)reader.readSignedBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final byte[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeSignedBits(rawArray[index], numBits);
+            writer.writeSignedBits(((ArrayElement.ByteArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.ByteArrayElement element = new ArrayElement.ByteArrayElement();
     }
 
     /**
      * Array traits for zserio int16 and int:9...int:16 arrays which are mapped to Java short[] array.
      */
-    public static class SignedBitFieldShortArray implements ArrayTraits
+    public static class SignedBitFieldShortArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public SignedBitFieldShortArray(int numBits)
+        public SignedBitFieldShortArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -148,47 +142,46 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = (short)reader.readSignedBits(numBits);
+            element.set((short)reader.readSignedBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeSignedBits(rawArray[index], numBits);
+            writer.writeSignedBits(((ArrayElement.ShortArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
      * Array traits for zserio int32 and int:17...int:32 arrays which are mapped to Java int[] array.
      */
-    public static class SignedBitFieldIntArray implements ArrayTraits
+    public static class SignedBitFieldIntArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public SignedBitFieldIntArray(int numBits)
+        public SignedBitFieldIntArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -200,47 +193,46 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = (int)reader.readSignedBits(numBits);
+            element.set((int)reader.readSignedBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeSignedBits(rawArray[index], numBits);
+            writer.writeSignedBits(((ArrayElement.IntArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
-     * Array traits for zserio int64 and int:33...int:64 arrays which are mapped to Java int[] array.
+     * Array traits for zserio int64 and int:33...int:64 arrays which are mapped to Java long[] array.
      */
-    public static class SignedBitFieldLongArray implements ArrayTraits
+    public static class SignedBitFieldLongArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public SignedBitFieldLongArray(int numBits)
+        public SignedBitFieldLongArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -252,47 +244,46 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readSignedBits(numBits);
+            element.set(reader.readSignedBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeSignedBits(rawArray[index], numBits);
+            writer.writeSignedBits(((ArrayElement.LongArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
      * Array traits for zserio bit:1...bit:7 arrays which are mapped to Java byte[] array.
      */
-    public static class BitFieldByteArray implements ArrayTraits
+    public static class BitFieldByteArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public BitFieldByteArray(int numBits)
+        public BitFieldByteArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -304,47 +295,46 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final byte[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = (byte)reader.readBits(numBits);
+            element.set((byte)reader.readBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final byte[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeBits(rawArray[index], numBits);
+            writer.writeBits(((ArrayElement.ByteArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.ByteArrayElement element = new ArrayElement.ByteArrayElement();
     }
 
     /**
      * Array traits for zserio uint8 and bit:8...bit:15 arrays which are mapped to Java short[] array.
      */
-    public static class BitFieldShortArray implements ArrayTraits
+    public static class BitFieldShortArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public BitFieldShortArray(int numBits)
+        public BitFieldShortArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -356,47 +346,46 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = (short)reader.readBits(numBits);
+            element.set((short)reader.readBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeBits(rawArray[index], numBits);
+            writer.writeBits(((ArrayElement.ShortArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
      * Array traits for zserio uint16 and bit:16...bit:31 arrays which are mapped to Java int[] array.
      */
-    public static class BitFieldIntArray implements ArrayTraits
+    public static class BitFieldIntArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public BitFieldIntArray(int numBits)
+        public BitFieldIntArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -408,47 +397,46 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = (int)reader.readBits(numBits);
+            element.set((int)reader.readBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeBits(rawArray[index], numBits);
+            writer.writeBits(((ArrayElement.IntArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
      * Array traits for zserio uint32 and bit:32...bit:63 arrays which are mapped to Java long[] array.
      */
-    public static class BitFieldLongArray implements ArrayTraits
+    public static class BitFieldLongArrayTraits implements ArrayTraits
     {
         /**
          * Constructor from number of bits of zserio type.
          *
          * @param numBits Number of bits of zserio type.
          */
-        public BitFieldLongArray(int numBits)
+        public BitFieldLongArrayTraits(int numBits)
         {
             this.numBits = numBits;
         }
@@ -460,40 +448,39 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return numBits;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readBits(numBits);
+            element.set(reader.readBits(numBits));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeBits(rawArray[index], numBits);
+            writer.writeBits(((ArrayElement.LongArrayElement)element).get(), numBits);
         }
 
         private final int numBits;
+        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
-     * Array traits for zserio uint64 and bit:64 arrays which are mapped to ArrayList of BigIntegers.
+     * Array traits for zserio uint64 and bit:64 arrays which are mapped to Java BigInteger[] array.
      */
-    public static class BitFieldBigIntegerArray implements ArrayTraits
+    public static class BitFieldBigIntegerArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -502,40 +489,42 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return NUM_BITS;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readBigInteger(NUM_BITS);
+            element.set(reader.readBigInteger(NUM_BITS));
+
+            return element;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeBigInteger(rawArray[index], NUM_BITS);
+            writer.writeBigInteger(((ArrayElement.ObjectArrayElement<BigInteger>)element).get(), NUM_BITS);
         }
 
         private static final int NUM_BITS = 64;
+
+        private final ArrayElement.ObjectArrayElement<BigInteger> element =
+                new ArrayElement.ObjectArrayElement<>();
     }
 
     /**
      * Array traits for zserio varint16 arrays which are mapped to Java short[] array.
      */
-    public static class VarInt16Array implements ArrayTraits
+    public static class VarInt16ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -544,40 +533,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarInt16(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarInt16(((ArrayElement.ShortArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarInt16();
+            element.set(reader.readVarInt16());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarInt16(rawArray[index]);
+            writer.writeVarInt16(((ArrayElement.ShortArrayElement)element).get());
         }
+
+        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
      * Array traits for zserio varint32 arrays which are mapped to Java int[] array.
      */
-    public static class VarInt32Array implements ArrayTraits
+    public static class VarInt32ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -586,40 +573,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarInt32(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarInt32(((ArrayElement.IntArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarInt32();
+            element.set(reader.readVarInt32());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarInt32(rawArray[index]);
+            writer.writeVarInt32(((ArrayElement.IntArrayElement)element).get());
         }
+
+        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
      * Array traits for zserio varint64 arrays which are mapped to Java long[] array.
      */
-    public static class VarInt64Array implements ArrayTraits
+    public static class VarInt64ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -628,40 +613,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarInt64(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarInt64(((ArrayElement.LongArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarInt64();
+            element.set(reader.readVarInt64());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarInt64(rawArray[index]);
+            writer.writeVarInt64(((ArrayElement.LongArrayElement)element).get());
         }
+
+        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
      * Array traits for zserio varint arrays which are mapped to Java long[] array.
      */
-    public static class VarIntArray implements ArrayTraits
+    public static class VarIntArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -670,40 +653,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarInt(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarInt(((ArrayElement.LongArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarInt();
+            element.set(reader.readVarInt());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarInt(rawArray[index]);
+            writer.writeVarInt(((ArrayElement.LongArrayElement)element).get());
         }
+
+    private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
      * Array traits for zserio varuint16 arrays which are mapped to Java short[] array.
      */
-    public static class VarUInt16Array implements ArrayTraits
+    public static class VarUInt16ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -712,40 +693,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarUInt16(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarUInt16(((ArrayElement.ShortArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarUInt16();
+            element.set(reader.readVarUInt16());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final short[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarUInt16(rawArray[index]);
+            writer.writeVarUInt16(((ArrayElement.ShortArrayElement)element).get());
         }
+
+        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
      * Array traits for zserio varuint32 arrays which are mapped to Java int[] array.
      */
-    public static class VarUInt32Array implements ArrayTraits
+    public static class VarUInt32ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -754,40 +733,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarUInt32(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarUInt32(((ArrayElement.IntArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarUInt32();
+            element.set(reader.readVarUInt32());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarUInt32(rawArray[index]);
+            writer.writeVarUInt32(((ArrayElement.IntArrayElement)element).get());
         }
+
+        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
      * Array traits for zserio varuint64 arrays which are mapped to Java long[] array.
      */
-    public static class VarUInt64Array implements ArrayTraits
+    public static class VarUInt64ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -796,40 +773,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarUInt64(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarUInt64(((ArrayElement.LongArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarUInt64();
+            element.set(reader.readVarUInt64());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final long[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarUInt64(rawArray[index]);
+            writer.writeVarUInt64(((ArrayElement.LongArrayElement)element).get());
         }
+
+        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
-     * Array traits for zserio varuint arrays which are mapped to ArrayList of BigIntegers.
+     * Array traits for zserio varuint arrays which are mapped to Java BigInteger[] array.
      */
-    public static class VarUIntArray implements ArrayTraits
+    public static class VarUIntArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -837,38 +812,43 @@ public interface ArrayTraits
             return false;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarUInt(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarUInt(
+                    ((ArrayElement.ObjectArrayElement<BigInteger>)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarUInt();
+            element.set(reader.readVarUInt());
+
+            return element;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final BigInteger[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarUInt(rawArray[index]);
+            writer.writeVarUInt(((ArrayElement.ObjectArrayElement<BigInteger>)element).get());
         }
+
+        private final ArrayElement.ObjectArrayElement<BigInteger> element =
+                new ArrayElement.ObjectArrayElement<>();
     }
 
-    public static class VarSizeArray implements ArrayTraits
+    /**
+     * Array traits for zserio varsize arrays which are mapped to Java int[] array.
+     */
+    public static class VarSizeArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -877,40 +857,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfVarSize(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfVarSize(((ArrayElement.IntArrayElement)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readVarSize();
+            element.set(reader.readVarSize());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final int[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeVarSize(rawArray[index]);
+            writer.writeVarSize(((ArrayElement.IntArrayElement)element).get());
         }
+
+        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
      * Array traits for zserio float16 arrays which are mapped to Java float[] array.
      */
-    public static class Float16Array implements ArrayTraits
+    public static class Float16ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -919,38 +897,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return 16;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final float[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readFloat16();
+            element.set(reader.readFloat16());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final float[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeFloat16(rawArray[index]);
+            writer.writeFloat16(((ArrayElement.FloatArrayElement)element).get());
         }
+
+        private final ArrayElement.FloatArrayElement element = new ArrayElement.FloatArrayElement();
     }
 
     /**
      * Array traits for zserio float32 arrays which are mapped to Java float[] array.
      */
-    public static class Float32Array implements ArrayTraits
+    public static class Float32ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -959,38 +937,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return 32;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final float[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readFloat32();
+            element.set(reader.readFloat32());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final float[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeFloat32(rawArray[index]);
+            writer.writeFloat32(((ArrayElement.FloatArrayElement)element).get());
         }
+
+        private final ArrayElement.FloatArrayElement element = new ArrayElement.FloatArrayElement();
     }
 
     /**
      * Array traits for zserio float64 arrays which are mapped to Java double[] array.
      */
-    public static class Float64Array implements ArrayTraits
+    public static class Float64ArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -999,38 +977,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return 64;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final double[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readFloat64();
+            element.set(reader.readFloat64());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final double[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeFloat64(rawArray[index]);
+            writer.writeFloat64(((ArrayElement.DoubleArrayElement)element).get());
         }
+
+        private final ArrayElement.DoubleArrayElement element = new ArrayElement.DoubleArrayElement();
     }
 
     /**
-     * Array traits for zserio string arrays which are mapped to ArrayList of Strings.
+     * Array traits for zserio string arrays which are mapped to Java String[] array.
      */
-    public static class StringArray implements ArrayTraits
+    public static class StringArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -1038,41 +1016,42 @@ public interface ArrayTraits
             return false;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final String[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfString(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfString(
+                    ((ArrayElement.ObjectArrayElement<String>)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final String[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readString();
+            element.set(reader.readString());
+
+            return element;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final String[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeString(rawArray[index]);
+            writer.writeString(((ArrayElement.ObjectArrayElement<String>)element).get());
         }
+
+        private final ArrayElement.ObjectArrayElement<String> element = new ArrayElement.ObjectArrayElement<>();
     }
 
     /**
      * Array traits for zserio bool arrays which are mapped to Java boolean[] array.
      */
-    public static class BoolArray implements ArrayTraits
+    public static class BoolArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -1081,38 +1060,38 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return 1;
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final boolean[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readBool();
+            element.set(reader.readBool());
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final boolean[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeBool(rawArray[index]);
+            writer.writeBool(((ArrayElement.BooleanArrayElement)element).get());
         }
+
+        private final ArrayElement.BooleanArrayElement element = new ArrayElement.BooleanArrayElement();
     }
 
     /**
-     * Array traits for zserio extern bit buffer arrays which are mapped to ArrayList of BitBuffers.
+     * Array traits for zserio extern bit buffer arrays which are mapped to Java BitBuffer[] array.
      */
-    public static class BitBufferArray implements ArrayTraits
+    public static class BitBufferArrayTraits implements ArrayTraits
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -1120,49 +1099,50 @@ public interface ArrayTraits
             return false;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final BitBuffer[] rawArray = rawArrayHolder.getRawArray();
-
-            return BitSizeOfCalculator.getBitSizeOfBitBuffer(rawArray[index]);
+            return BitSizeOfCalculator.getBitSizeOfBitBuffer(
+                    ((ArrayElement.ObjectArrayElement<BitBuffer>)element).get());
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            return bitPosition + bitSizeOf(rawArrayHolder, bitPosition, index);
+            return bitPosition + bitSizeOf(bitPosition, element);
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final BitBuffer[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = reader.readBitBuffer();
+            element.set(reader.readBitBuffer());
+
+            return element;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final BitBuffer[] rawArray = rawArrayHolder.getRawArray();
-            writer.writeBitBuffer(rawArray[index]);
+            writer.writeBitBuffer(((ArrayElement.ObjectArrayElement<BitBuffer>)element).get());
         }
+
+        private final ArrayElement.ObjectArrayElement<BitBuffer> element =
+                new ArrayElement.ObjectArrayElement<>();
     }
 
     /**
-     * Array traits for zserio object arrays (without writer part) which are mapped to ArrayList of zserio
-     * objects.
+     * Array traits for zserio object arrays (without writer part) which are mapped to Java zserio object array.
      */
-    public static class ObjectArray<E extends SizeOf> implements ArrayTraits
+    public static class ObjectArrayTraits<E extends SizeOf> implements ArrayTraits
     {
         /**
          * Constructor from element factory.
          *
          * @param elementFactory Element factory to construct from.
          */
-        public ObjectArray(ElementFactory<E> elementFactory)
+        public ObjectArrayTraits(ElementFactory<E> elementFactory)
         {
             this.elementFactory = elementFactory;
         }
@@ -1173,67 +1153,67 @@ public interface ArrayTraits
             return false;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public int bitSizeOf(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            final E[] rawArray = rawArrayHolder.getRawArray();
-            return rawArray[index].bitSizeOf(bitPosition);
+            return ((ArrayElement.ObjectArrayElement<E>)element).get().bitSizeOf(bitPosition);
         }
 
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
             throw new UnsupportedOperationException(
                     "Array: initializeOffsets is not implemented for read only ObjectArrayTraits!");
         }
 
         @Override
-        public void read(RawArrayHolder rawArrayHolder, BitStreamReader reader, int index)
-                throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
         {
-            final E[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index] = elementFactory.create(reader, index);
+            element.set(elementFactory.create(reader, index));
+
+            return element;
         }
 
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
             throw new UnsupportedOperationException(
                     "Array: write is not implemented for read only ObjectArrayTraits!");
         }
 
         private final ElementFactory<E> elementFactory;
+        private final ArrayElement.ObjectArrayElement<E> element = new ArrayElement.ObjectArrayElement<>();
     }
 
     /**
-     * Array traits for zserio object arrays (with writer part) which are mapped to ArrayList of zserio objects.
+     * Array traits for zserio object arrays (with writer part) which are mapped to Java zserio object array.
      */
-    public static class WriteObjectArray<E extends InitializeOffsetsWriter & SizeOf> extends ObjectArray<E>
+    public static class WriteObjectArrayTraits<E extends InitializeOffsetsWriter & SizeOf>
+            extends ObjectArrayTraits<E>
     {
         /**
          * Constructor from element factory.
          *
          * @param elementFactory Element factory to construct from.
          */
-        public WriteObjectArray(ElementFactory<E> elementFactory)
+        public WriteObjectArrayTraits(ElementFactory<E> elementFactory)
         {
             super(elementFactory);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public long initializeOffsets(RawArrayHolder rawArrayHolder, long bitPosition, int index)
+        public long initializeOffsets(long bitPosition, ArrayElement element)
         {
-            final E[] rawArray = rawArrayHolder.getRawArray();
-            return rawArray[index].initializeOffsets(bitPosition);
+            return ((ArrayElement.ObjectArrayElement<E>)element).get().initializeOffsets(bitPosition);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public void write(RawArrayHolder rawArrayHolder, BitStreamWriter writer, int index)
-                throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
         {
-            final E[] rawArray = rawArrayHolder.getRawArray();
-            rawArray[index].write(writer);
+            ((ArrayElement.ObjectArrayElement<E>)element).get().write(writer);
         }
     }
 }

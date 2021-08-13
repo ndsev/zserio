@@ -4,11 +4,11 @@ import java.util.Locale;
 
 import zserio.ast.PackageName;
 
-public class NativeRawArrayHolder extends JavaNativeType
+public class NativeRawArray extends JavaNativeType
 {
-    public NativeRawArrayHolder(JavaNativeType elementType)
+    public NativeRawArray(JavaNativeType elementType)
     {
-        super(RUNTIME_ARRAY_PACKAGE, getHolderName(elementType));
+        super(RUNTIME_ARRAY_PACKAGE, getRawArrayName(elementType));
 
         requiresElementClass = !elementType.isSimple();
     }
@@ -24,12 +24,12 @@ public class NativeRawArrayHolder extends JavaNativeType
         return requiresElementClass;
     }
 
-    private static String getHolderName(JavaNativeType elementType)
+    private static String getRawArrayName(JavaNativeType elementType)
     {
-        final String holderSubName = elementType.isSimple() ?
-                getCapitalizeName(elementType.getName()) + "Array" : "ObjectArray<>";
+        final String rawArraySubName = elementType.isSimple() ?
+                getCapitalizeName(elementType.getName()) + "RawArray" : "ObjectRawArray<>";
 
-        return RAW_ARRAY_HOLDER_NAME + "." + holderSubName;
+        return RAW_ARRAY_NAME + "." + rawArraySubName;
     }
 
     private static String getCapitalizeName(String name)
@@ -39,7 +39,7 @@ public class NativeRawArrayHolder extends JavaNativeType
 
     private static final PackageName RUNTIME_ARRAY_PACKAGE =
             new PackageName.Builder().addId("zserio").addId("runtime").addId("array").get();
-    private static final String RAW_ARRAY_HOLDER_NAME = "RawArrayHolder";
+    private static final String RAW_ARRAY_NAME = "RawArray";
 
     private final boolean requiresElementClass;
 }

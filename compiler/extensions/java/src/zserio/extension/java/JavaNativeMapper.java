@@ -589,11 +589,11 @@ final class JavaNativeMapper
 
     private final static NativeStringType stringType = new NativeStringType();
 
-    private final static NativeArrayTraits float16ArrayTraits = new NativeArrayTraits("Float16Array");
+    private final static NativeArrayTraits float16ArrayTraits = new NativeArrayTraits("Float16ArrayTraits");
     private final static NativeFloatType float16Type = new NativeFloatType(false, float16ArrayTraits);
     private final static NativeFloatType float16NullableType = new NativeFloatType(true, float16ArrayTraits);
 
-    private final static NativeArrayTraits float32ArrayTraits = new NativeArrayTraits("Float32Array");
+    private final static NativeArrayTraits float32ArrayTraits = new NativeArrayTraits("Float32ArrayTraits");
     private final static NativeFloatType float32Type = new NativeFloatType(false, float32ArrayTraits);
     private final static NativeFloatType float32NullableType = new NativeFloatType(true, float32ArrayTraits);
 
@@ -604,36 +604,36 @@ final class JavaNativeMapper
 
     // integral array traits
     private final static NativeBitFieldArrayTraits signedBitFieldByteArrayTraits =
-            new NativeBitFieldArrayTraits("SignedBitFieldByteArray");
+            new NativeBitFieldArrayTraits("SignedBitFieldByteArrayTraits");
     private final static NativeBitFieldArrayTraits signedBitFieldShortArrayTraits =
-            new NativeBitFieldArrayTraits("SignedBitFieldShortArray");
+            new NativeBitFieldArrayTraits("SignedBitFieldShortArrayTraits");
     private final static NativeBitFieldArrayTraits signedBitFieldIntArrayTraits =
-            new NativeBitFieldArrayTraits("SignedBitFieldIntArray");
+            new NativeBitFieldArrayTraits("SignedBitFieldIntArrayTraits");
     private final static NativeBitFieldArrayTraits signedBitFieldLongArrayTraits =
-            new NativeBitFieldArrayTraits("SignedBitFieldLongArray");
+            new NativeBitFieldArrayTraits("SignedBitFieldLongArrayTraits");
 
     private final static NativeBitFieldArrayTraits bitFieldByteArrayTraits =
-            new NativeBitFieldArrayTraits("BitFieldByteArray");
+            new NativeBitFieldArrayTraits("BitFieldByteArrayTraits");
     private final static NativeBitFieldArrayTraits bitFieldShortArrayTraits =
-            new NativeBitFieldArrayTraits("BitFieldShortArray");
+            new NativeBitFieldArrayTraits("BitFieldShortArrayTraits");
     private final static NativeBitFieldArrayTraits bitFieldIntArrayTraits =
-            new NativeBitFieldArrayTraits("BitFieldIntArray");
+            new NativeBitFieldArrayTraits("BitFieldIntArrayTraits");
     private final static NativeBitFieldArrayTraits bitFieldLongArrayTraits =
-            new NativeBitFieldArrayTraits("BitFieldLongArray");
+            new NativeBitFieldArrayTraits("BitFieldLongArrayTraits");
     private final static NativeArrayTraits bitFieldBigIntegerArrayTraits =
-            new NativeArrayTraits("BitFieldBigIntegerArray");
+            new NativeArrayTraits("BitFieldBigIntegerArrayTraits");
 
-    private final static NativeArrayTraits varInt16ArrayTraits = new NativeArrayTraits("VarInt16Array");
-    private final static NativeArrayTraits varInt32ArrayTraits = new NativeArrayTraits("VarInt32Array");
-    private final static NativeArrayTraits varInt64ArrayTraits = new NativeArrayTraits("VarInt64Array");
-    private final static NativeArrayTraits varIntArrayTraits = new NativeArrayTraits("VarIntArray");
+    private final static NativeArrayTraits varInt16ArrayTraits = new NativeArrayTraits("VarInt16ArrayTraits");
+    private final static NativeArrayTraits varInt32ArrayTraits = new NativeArrayTraits("VarInt32ArrayTraits");
+    private final static NativeArrayTraits varInt64ArrayTraits = new NativeArrayTraits("VarInt64ArrayTraits");
+    private final static NativeArrayTraits varIntArrayTraits = new NativeArrayTraits("VarIntArrayTraits");
 
-    private final static NativeArrayTraits varUInt16ArrayTraits = new NativeArrayTraits("VarUInt16Array");
-    private final static NativeArrayTraits varUInt32ArrayTraits = new NativeArrayTraits("VarUInt32Array");
-    private final static NativeArrayTraits varUInt64ArrayTraits = new NativeArrayTraits("VarUInt64Array");
-    private final static NativeArrayTraits varUIntArrayTraits = new NativeArrayTraits("VarUIntArray");
+    private final static NativeArrayTraits varUInt16ArrayTraits = new NativeArrayTraits("VarUInt16ArrayTraits");
+    private final static NativeArrayTraits varUInt32ArrayTraits = new NativeArrayTraits("VarUInt32ArrayTraits");
+    private final static NativeArrayTraits varUInt64ArrayTraits = new NativeArrayTraits("VarUInt64ArrayTraits");
+    private final static NativeArrayTraits varUIntArrayTraits = new NativeArrayTraits("VarUIntArrayTraits");
 
-    private final static NativeArrayTraits varSizeArrayTraits = new NativeArrayTraits("VarSizeArray");
+    private final static NativeArrayTraits varSizeArrayTraits = new NativeArrayTraits("VarSizeArrayTraits");
 
     private final boolean withWriterCode;
 }

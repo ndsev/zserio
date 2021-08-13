@@ -4,7 +4,7 @@ public class NativeStringType extends NativeArrayableType
 {
     public NativeStringType()
     {
-        super(JAVA_LANG_PACKAGE, "String", new NativeArrayTraits("StringArray"));
+        super(JAVA_LANG_PACKAGE, "String", new NativeArrayTraits("StringArrayTraits"));
     }
 
     @Override

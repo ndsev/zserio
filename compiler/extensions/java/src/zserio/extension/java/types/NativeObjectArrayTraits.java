@@ -7,7 +7,7 @@ public class NativeObjectArrayTraits extends NativeArrayTraits
 {
     public NativeObjectArrayTraits(PackageName packageName, String name, boolean withWriterCode)
     {
-        super((withWriterCode ? "WriteObjectArray<" : "ObjectArray<") +
+        super((withWriterCode ? "WriteObjectArrayTraits<" : "ObjectArrayTraits<") +
                 JavaFullNameFormatter.getFullName(packageName, name) + ">");
     }
 
