@@ -49,6 +49,8 @@ import zserio.extension.java.types.NativeLongType;
 import zserio.extension.java.types.NativePubsubType;
 import zserio.extension.java.types.NativeServiceType;
 import zserio.extension.java.types.NativeShortType;
+import zserio.extension.java.types.NativeSqlDatabaseType;
+import zserio.extension.java.types.NativeSqlTableType;
 import zserio.extension.java.types.NativeStringType;
 
 final class JavaNativeMapper
@@ -291,50 +293,50 @@ final class JavaNativeMapper
         {
             if (numBits <= Byte.SIZE)
             {
-                javaType = new NativeByteType(false, signedBitFieldByteArrayTraits);
-                javaNullableType = new NativeByteType(true, signedBitFieldByteArrayTraits);
+                javaType = signedBitFieldByteType;
+                javaNullableType = signedBitFieldByteNullableType;
             }
             else if (numBits <= Short.SIZE)
             {
-                javaType = new NativeShortType(false, signedBitFieldShortArrayTraits);
-                javaNullableType = new NativeShortType(true, signedBitFieldShortArrayTraits);
+                javaType = signedBitFieldShortType;
+                javaNullableType = signedBitFieldShortNullableType;
             }
             else if (numBits <= Integer.SIZE)
             {
-                javaType = new NativeIntType(false, signedBitFieldIntArrayTraits);
-                javaNullableType = new NativeIntType(true, signedBitFieldIntArrayTraits);
+                javaType = signedBitFieldIntType;
+                javaNullableType = signedBitFieldIntNullableType;
             }
             else if (numBits <= Long.SIZE)
             {
-                javaType = new NativeLongType(false, signedBitFieldLongArrayTraits);
-                javaNullableType = new NativeLongType(true, signedBitFieldLongArrayTraits);
+                javaType = signedBitFieldLongType;
+                javaNullableType = signedBitFieldLongNullableType;
             }
         }
         else
         {
             if (numBits < Byte.SIZE)
             {
-                javaType = new NativeByteType(false, bitFieldByteArrayTraits);
-                javaNullableType = new NativeByteType(true, bitFieldByteArrayTraits);
+                javaType = bitFieldByteType;
+                javaNullableType = bitFieldByteNullableType;
             }
             else if (numBits < Short.SIZE)
             {
-                javaType = new NativeShortType(false, bitFieldShortArrayTraits);
-                javaNullableType = new NativeShortType(true, bitFieldShortArrayTraits);
+                javaType = bitFieldShortType;
+                javaNullableType = bitFieldShortNullableType;
             }
             else if (numBits < Integer.SIZE)
             {
-                javaType = new NativeIntType(false, bitFieldIntArrayTraits);
-                javaNullableType = new NativeIntType(true, bitFieldIntArrayTraits);
+                javaType = bitFieldIntType;
+                javaNullableType = bitFieldIntNullableType;
             }
             else if (numBits < Long.SIZE)
             {
-                javaType = new NativeLongType(false, bitFieldLongArrayTraits);
-                javaNullableType = new NativeLongType(true, bitFieldLongArrayTraits);
+                javaType = bitFieldLongType;
+                javaNullableType = bitFieldLongNullableType;
             }
             else if (numBits == Long.SIZE)
             {
-                javaType = new NativeBigIntegerType(bitFieldBigIntegerArrayTraits);
+                javaType = bitFieldBigIntegerType;
                 javaNullableType = javaType;
             }
         }
@@ -411,13 +413,19 @@ final class JavaNativeMapper
         @Override
         public void visitSqlTableType(SqlTableType type)
         {
-            javaTypes = mapCompoundType(type);
+            final PackageName packageName = type.getPackage().getPackageName();
+            final String name = type.getName();
+            final JavaNativeType javaType = new NativeSqlTableType(packageName, name);
+            javaTypes = new JavaNativeTypes(javaType);
         }
 
         @Override
         public void visitSqlDatabaseType(SqlDatabaseType type)
         {
-            javaTypes = mapCompoundType(type);
+            final PackageName packageName = type.getPackage().getPackageName();
+            final String name = type.getName();
+            final JavaNativeType javaType = new NativeSqlDatabaseType(packageName, name);
+            javaTypes = new JavaNativeTypes(javaType);
         }
 
         @Override
@@ -511,23 +519,23 @@ final class JavaNativeMapper
                 switch (numBits)
                 {
                 case 16:
-                    javaType = new NativeShortType(false, varInt16ArrayTraits);
-                    javaNullableType = new NativeShortType(true, varInt16ArrayTraits);
+                    javaType = varInt16Type;
+                    javaNullableType = varInt16NullableType;
                     break;
 
                 case 32:
-                    javaType = new NativeIntType(false, varInt32ArrayTraits);
-                    javaNullableType = new NativeIntType(true, varInt32ArrayTraits);
+                    javaType = varInt32Type;
+                    javaNullableType = varInt32NullableType;
                     break;
 
                 case 64:
-                    javaType = new NativeLongType(false, varInt64ArrayTraits);
-                    javaNullableType = new NativeLongType(true, varInt64ArrayTraits);
+                    javaType = varInt64Type;
+                    javaNullableType = varInt64NullableType;
                     break;
 
                 case 72:
-                    javaType = new NativeLongType(false, varIntArrayTraits);
-                    javaNullableType = new NativeLongType(true, varIntArrayTraits);
+                    javaType = varIntType;
+                    javaNullableType = varIntNullableType;
                     break;
 
                 default:
@@ -539,27 +547,27 @@ final class JavaNativeMapper
                 switch (numBits)
                 {
                 case 16:
-                    javaType = new NativeShortType(false, varUInt16ArrayTraits);
-                    javaNullableType = new NativeShortType(true, varUInt16ArrayTraits);
+                    javaType = varUInt16Type;
+                    javaNullableType = varUInt16NullableType;
                     break;
 
                 case 32:
-                    javaType = new NativeIntType(false, varUInt32ArrayTraits);
-                    javaNullableType = new NativeIntType(true, varUInt32ArrayTraits);
+                    javaType = varUInt32Type;
+                    javaNullableType = varUInt32NullableType;
                     break;
 
                 case 40:
-                    javaType = new NativeIntType(false, varSizeArrayTraits);
-                    javaNullableType = new NativeIntType(true, varSizeArrayTraits);
+                    javaType = varSizeType;
+                    javaNullableType = varSizeNullableType;
                     break;
 
                 case 64:
-                    javaType = new NativeLongType(false, varUInt64ArrayTraits);
-                    javaNullableType = new NativeLongType(true, varUInt64ArrayTraits);
+                    javaType = varUInt64Type;
+                    javaNullableType = varUInt64NullableType;
                     break;
 
                 case 72:
-                    javaType = new NativeBigIntegerType(varUIntArrayTraits);
+                    javaType = varUIntType;
                     javaNullableType = javaType;
                     break;
 
@@ -602,38 +610,103 @@ final class JavaNativeMapper
 
     private final static NativeBitBufferType bitBufferType = new NativeBitBufferType();
 
-    // integral array traits
+    // integral arrays
     private final static NativeBitFieldArrayTraits signedBitFieldByteArrayTraits =
             new NativeBitFieldArrayTraits("SignedBitFieldByteArrayTraits");
+    private final static NativeByteType signedBitFieldByteType =
+            new NativeByteType(false, signedBitFieldByteArrayTraits);
+    private final static NativeByteType signedBitFieldByteNullableType =
+            new NativeByteType(true, signedBitFieldByteArrayTraits);
+
     private final static NativeBitFieldArrayTraits signedBitFieldShortArrayTraits =
             new NativeBitFieldArrayTraits("SignedBitFieldShortArrayTraits");
+    private final static NativeShortType signedBitFieldShortType =
+            new NativeShortType(false, signedBitFieldShortArrayTraits);
+    private final static NativeShortType signedBitFieldShortNullableType =
+            new NativeShortType(true, signedBitFieldShortArrayTraits);
+
     private final static NativeBitFieldArrayTraits signedBitFieldIntArrayTraits =
             new NativeBitFieldArrayTraits("SignedBitFieldIntArrayTraits");
+    private final static NativeIntType signedBitFieldIntType =
+            new NativeIntType(false, signedBitFieldIntArrayTraits);
+    private final static NativeIntType signedBitFieldIntNullableType =
+            new NativeIntType(true, signedBitFieldIntArrayTraits);
+
     private final static NativeBitFieldArrayTraits signedBitFieldLongArrayTraits =
             new NativeBitFieldArrayTraits("SignedBitFieldLongArrayTraits");
+    private final static NativeLongType signedBitFieldLongType =
+            new NativeLongType(false, signedBitFieldLongArrayTraits);
+    private final static NativeLongType signedBitFieldLongNullableType =
+            new NativeLongType(true, signedBitFieldLongArrayTraits);
 
     private final static NativeBitFieldArrayTraits bitFieldByteArrayTraits =
             new NativeBitFieldArrayTraits("BitFieldByteArrayTraits");
+    private final static NativeByteType bitFieldByteType =
+            new NativeByteType(false, bitFieldByteArrayTraits);
+    private final static NativeByteType bitFieldByteNullableType =
+            new NativeByteType(true, bitFieldByteArrayTraits);
+
     private final static NativeBitFieldArrayTraits bitFieldShortArrayTraits =
             new NativeBitFieldArrayTraits("BitFieldShortArrayTraits");
+    private final static NativeShortType bitFieldShortType =
+            new NativeShortType(false, bitFieldShortArrayTraits);
+    private final static NativeShortType bitFieldShortNullableType =
+            new NativeShortType(true, bitFieldShortArrayTraits);
+
     private final static NativeBitFieldArrayTraits bitFieldIntArrayTraits =
             new NativeBitFieldArrayTraits("BitFieldIntArrayTraits");
+    private final static NativeIntType bitFieldIntType =
+            new NativeIntType(false, bitFieldIntArrayTraits);
+    private final static NativeIntType bitFieldIntNullableType =
+            new NativeIntType(true, bitFieldIntArrayTraits);
+
     private final static NativeBitFieldArrayTraits bitFieldLongArrayTraits =
             new NativeBitFieldArrayTraits("BitFieldLongArrayTraits");
+    private final static NativeLongType bitFieldLongType =
+            new NativeLongType(false, bitFieldLongArrayTraits);
+    private final static NativeLongType bitFieldLongNullableType =
+            new NativeLongType(true, bitFieldLongArrayTraits);
+
     private final static NativeArrayTraits bitFieldBigIntegerArrayTraits =
             new NativeArrayTraits("BitFieldBigIntegerArrayTraits");
+    private final static NativeBigIntegerType bitFieldBigIntegerType =
+            new NativeBigIntegerType(bitFieldBigIntegerArrayTraits);
 
     private final static NativeArrayTraits varInt16ArrayTraits = new NativeArrayTraits("VarInt16ArrayTraits");
+    private final static NativeShortType varInt16Type = new NativeShortType(false, varInt16ArrayTraits);
+    private final static NativeShortType varInt16NullableType = new NativeShortType(true, varInt16ArrayTraits);
+
     private final static NativeArrayTraits varInt32ArrayTraits = new NativeArrayTraits("VarInt32ArrayTraits");
+    private final static NativeIntType varInt32Type = new NativeIntType(false, varInt32ArrayTraits);
+    private final static NativeIntType varInt32NullableType = new NativeIntType(true, varInt32ArrayTraits);
+
     private final static NativeArrayTraits varInt64ArrayTraits = new NativeArrayTraits("VarInt64ArrayTraits");
+    private final static NativeLongType varInt64Type = new NativeLongType(false, varInt64ArrayTraits);
+    private final static NativeLongType varInt64NullableType = new NativeLongType(true, varInt64ArrayTraits);
+
     private final static NativeArrayTraits varIntArrayTraits = new NativeArrayTraits("VarIntArrayTraits");
+    private final static NativeLongType varIntType = new NativeLongType(false, varIntArrayTraits);
+    private final static NativeLongType varIntNullableType = new NativeLongType(true, varIntArrayTraits);
 
     private final static NativeArrayTraits varUInt16ArrayTraits = new NativeArrayTraits("VarUInt16ArrayTraits");
+    private final static NativeShortType varUInt16Type = new NativeShortType(false, varUInt16ArrayTraits);
+    private final static NativeShortType varUInt16NullableType =
+            new NativeShortType(true, varUInt16ArrayTraits);
+
     private final static NativeArrayTraits varUInt32ArrayTraits = new NativeArrayTraits("VarUInt32ArrayTraits");
+    private final static NativeIntType varUInt32Type = new NativeIntType(false, varUInt32ArrayTraits);
+    private final static NativeIntType varUInt32NullableType = new NativeIntType(true, varUInt32ArrayTraits);
+
     private final static NativeArrayTraits varUInt64ArrayTraits = new NativeArrayTraits("VarUInt64ArrayTraits");
+    private final static NativeLongType varUInt64Type = new NativeLongType(false, varUInt64ArrayTraits);
+    private final static NativeLongType varUInt64NullableType = new NativeLongType(true, varUInt64ArrayTraits);
+
     private final static NativeArrayTraits varUIntArrayTraits = new NativeArrayTraits("VarUIntArrayTraits");
+    private final static NativeBigIntegerType varUIntType = new NativeBigIntegerType(varUIntArrayTraits);
 
     private final static NativeArrayTraits varSizeArrayTraits = new NativeArrayTraits("VarSizeArrayTraits");
+    private final static NativeIntType varSizeType = new NativeIntType(false, varSizeArrayTraits);
+    private final static NativeIntType varSizeNullableType = new NativeIntType(true, varSizeArrayTraits);
 
     private final boolean withWriterCode;
 }
