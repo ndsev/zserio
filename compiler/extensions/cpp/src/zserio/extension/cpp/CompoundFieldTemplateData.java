@@ -62,7 +62,8 @@ public class CompoundFieldTemplateData
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
         isSimpleType = fieldNativeType.isSimpleType();
-        isBuiltinType = fieldNativeType instanceof NativeBuiltinType;
+        isBuiltinType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
+                (cppNativeMapper.getCppType(fieldBaseType) instanceof NativeBuiltinType);
         needsAllocator = !isSimpleType;
         holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
         isEnum = fieldBaseType instanceof EnumType;

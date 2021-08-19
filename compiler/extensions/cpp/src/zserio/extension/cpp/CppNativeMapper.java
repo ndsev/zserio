@@ -489,8 +489,17 @@ public class CppNativeMapper
                 final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
                 final String includeFileName = getIncludePath(packageName, name);
-                cppType = new NativeUserType(packageName, name, includeFileName,
-                        nativeTargetType.isSimpleType());
+                if (nativeTargetType instanceof NativeArrayableType)
+                {
+                    cppType = new NativeUserArrayableType(packageName, name, includeFileName,
+                            nativeTargetType.isSimpleType(),
+                            ((NativeArrayableType)nativeTargetType).getArrayTraits());
+                }
+                else
+                {
+                    cppType = new NativeUserType(packageName, name, includeFileName,
+                            nativeTargetType.isSimpleType());
+                }
             }
             catch (ZserioExtensionException exception)
             {
