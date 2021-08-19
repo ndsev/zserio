@@ -823,7 +823,7 @@ TEST_F(ArrayTest, stringArray)
     const size_t stringBitSize = (sizeof("StringX") - 1) * 8; // without terminating character
     const size_t elementBitSize = stringLengthBitSize + stringBitSize;
     std::vector<std::string> rawArray = {"String0", "String1", "String2"};
-    testArray(rawArray, StringArrayTraits<>(), elementBitSize);
+    testArray(rawArray, StringArrayTraits(), elementBitSize);
 }
 
 TEST_F(ArrayTest, bitBufferArray)
@@ -833,7 +833,7 @@ TEST_F(ArrayTest, bitBufferArray)
     const size_t elementBitSize = bitBufferLengthBitSize + bitBufferBitSize;
     std::vector<BitBuffer> rawArray = {BitBuffer(bitBufferBitSize), BitBuffer(bitBufferBitSize),
             BitBuffer(bitBufferBitSize)};
-    testArray(rawArray, BitBufferArrayTraits<>(), elementBitSize);
+    testArray(rawArray, BitBufferArrayTraits(), elementBitSize);
 }
 
 TEST_F(ArrayTest, enumArray)

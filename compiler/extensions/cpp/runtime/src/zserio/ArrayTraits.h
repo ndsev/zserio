@@ -1081,7 +1081,7 @@ struct BoolArrayTraits
  * Array traits for Zserio string type.
  */
 template <template <typename> class ALLOC = std::allocator>
-struct StringArrayTraits
+struct BasicStringArrayTraits
 {
     /** Element type. */
     using ElementType = ::zserio::string<ALLOC<char>>;
@@ -1142,11 +1142,13 @@ struct StringArrayTraits
     static const bool IS_BITSIZEOF_CONSTANT = false;
 };
 
+using StringArrayTraits = BasicStringArrayTraits<>;
+
 /**
  * Array traits for Zserio extern bit buffer type.
  */
 template <template <typename> class ALLOC = std::allocator>
-struct BitBufferArrayTraits
+struct BasicBitBufferArrayTraits
 {
     /** Element type. */
     using ElementType = BasicBitBuffer<ALLOC<uint8_t>>;
@@ -1204,6 +1206,8 @@ struct BitBufferArrayTraits
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
 };
+
+using BitBufferArrayTraits = BasicBitBufferArrayTraits<>;
 
 /**
  * Array traits for Zserio enumeration type.

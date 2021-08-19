@@ -67,6 +67,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/VarSizeUtil.cpp
     zserio/VarSizeUtil.h
     zserio/pmr/AnyHolder.h
+    zserio/pmr/ArrayTraits.h
     zserio/pmr/BitBuffer.h
     zserio/pmr/BlobBuffer.h
     zserio/pmr/HeapOptionalHolder.h

@@ -1,6 +1,7 @@
 package zserio.extension.cpp.types;
 
 import zserio.extension.cpp.TypesContext;
+import zserio.extension.cpp.TypesContext.NativeTypeDefinition;
 
 public class NativeStringType extends NativeArrayableType
 {
@@ -12,14 +13,27 @@ public class NativeStringType extends NativeArrayableType
                                 ? typesContext.getAllocatorDefinition().getAllocatorType() + "<char>>"
                                 : ">")
                         : ""),
-                new NativeArrayTraits("StringArrayTraits<" +
-                        (typesContext.getAllocatorDefinition() == TypesContext.STD_ALLOCATOR
-                                ? "" : typesContext.getAllocatorDefinition().getAllocatorType()) +
-                        ">")
+                createStringArrayTraits(typesContext)
         );
 
         if (typesContext.getString().needsAllocatorArgument())
             addSystemIncludeFile(typesContext.getAllocatorDefinition().getAllocatorSystemInclude());
         addSystemIncludeFile(typesContext.getString().getSystemInclude());
+    }
+
+    private static NativeArrayTraits createStringArrayTraits(TypesContext typesContext)
+    {
+        final NativeTypeDefinition stringArrayTraits = typesContext.getStringArrayTraits();
+        return new NativeArrayTraits(stringArrayTraits.getPackage(), stringArrayTraits.getName() +
+                (stringArrayTraits.isTemplate()
+                        ? "<" + (stringArrayTraits.needsAllocatorArgument()
+                                ? typesContext.getAllocatorDefinition().getAllocatorType() + ">"
+                                : ">")
+                        : ""),
+                stringArrayTraits.getSystemInclude(),
+                false, // isTemplated
+                false, // requiresElementBitSize
+                false // requiresElementFactory
+        );
     }
 }

@@ -537,13 +537,13 @@ public class CppNativeMapper
         private ZserioExtensionException thrownException = null;
     }
 
+    private final static String INCLUDE_DIR_SEPARATOR = "/";
+    private final static String HEADER_SUFFIX = ".h";
+
     private final NativeAnyHolderType anyHolderType;
     private final NativeUniquePtrType uniquePtrType;
     private final NativeHeapOptionalHolderType heapOptionalHolderType;
     private final NativeInplaceOptionalHolderType inplaceOptionalHolderType;
-
-    private final static String INCLUDE_DIR_SEPARATOR = "/";
-    private final static String HEADER_SUFFIX = ".h";
 
     private final NativeStringType stringType;
     private final NativeStringViewType stringViewType;

@@ -17,12 +17,19 @@ public class NativeArrayTraits extends CppNativeType
     public NativeArrayTraits(String name, boolean isTemplated, boolean requiresElementBitSize,
             boolean requiresElementFactory)
     {
-        super(ZSERIO_PACKAGE_NAME, name);
+        this(ZSERIO_PACKAGE_NAME, name, ARRAY_TRAITS_INCLUDE, isTemplated,
+                requiresElementBitSize, requiresElementFactory);
+    }
+
+    public NativeArrayTraits(PackageName packageName, String name, String includePath, boolean isTemplated,
+            boolean requiresElementBitSize, boolean requiresElementFactory)
+    {
+        super(packageName, name);
         this.isTemplated = isTemplated;
         this.requiresElementBitSize = requiresElementBitSize;
         this.requiresElementFactory = requiresElementFactory;
 
-        addSystemIncludeFile(ARRAY_TRAITS_INCLUDE);
+        addSystemIncludeFile(includePath);
     }
 
     public boolean isTemplated()

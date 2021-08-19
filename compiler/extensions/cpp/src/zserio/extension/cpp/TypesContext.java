@@ -32,6 +32,10 @@ public class TypesContext
                     true, false, "zserio/BlobBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "PackingContextNode",
                     false, false, "zserio/PackingContext.h");
+            stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "StringArrayTraits",
+                    false, false, "zserio/ArrayTraits.h");
+            bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBufferArrayTraits",
+                    false, false, "zserio/ArrayTraits.h");
         }
         else if (allocator.equals(PROPAGATING_POLYMORPHIC_ALLOCATOR))
         {
@@ -57,6 +61,10 @@ public class TypesContext
                     false, false, "zserio/pmr/BlobBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "PackingContextNode",
                     false, false, "zserio/pmr/PackingContext.h");
+            stringArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "StringArrayTraits",
+                    false, false, "zserio/pmr/ArrayTraits.h");
+            bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBufferArrayTraits",
+                    false, false, "zserio/pmr/ArrayTraits.h");
         }
         else
         {
@@ -82,6 +90,10 @@ public class TypesContext
                     true, true, "zserio/BlobBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicPackingContextNode",
                     true, true, "zserio/Array.h");
+            stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicStringArrayTraits",
+                    true, true, "zserio/ArrayTraits.h");
+            bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBufferArrayTraits",
+                    true, true, "zserio/ArrayTraits.h");
         }
     }
 
@@ -180,6 +192,16 @@ public class TypesContext
         return packingContextNode;
     }
 
+    public NativeTypeDefinition getStringArrayTraits()
+    {
+        return stringArrayTraits;
+    }
+
+    public NativeTypeDefinition getBitBufferArrayTraits()
+    {
+        return bitBufferArrayTraits;
+    }
+
     public static class NativeTypeDefinition
     {
         public NativeTypeDefinition(PackageName pkg, String name, boolean isTemplate,
@@ -236,6 +258,8 @@ public class TypesContext
     private final NativeTypeDefinition bitBuffer;
     private final NativeTypeDefinition blobBuffer;
     private final NativeTypeDefinition packingContextNode;
+    private final NativeTypeDefinition stringArrayTraits;
+    private final NativeTypeDefinition bitBufferArrayTraits;
 
     public static final AllocatorDefinition PROPAGATING_POLYMORPHIC_ALLOCATOR = new AllocatorDefinition(
             "::zserio::pmr::PropagatingPolymorphicAllocator", "zserio/pmr/PolymorphicAllocator.h", "");
