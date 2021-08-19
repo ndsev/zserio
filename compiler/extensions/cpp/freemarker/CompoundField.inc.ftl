@@ -962,8 +962,10 @@ ${I}${field.cppArgumentTypeName} <#t>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isPackable && !field.array??>
         <#if field.optional??>
-${I}if self.${field.optional.indicatorName}():
+${I}if (<@field_optional_condition field/>)
+${I}{
         <@compound_init_packing_context_field_inner field, index, indent+1/>
+${I}}
         <#else>
     <@compound_init_packing_context_field_inner field, index, indent/>
         </#if>
