@@ -51,6 +51,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/ISqliteDatabaseReader.h
     zserio/IValidationObserver.h
     zserio/OptionalHolder.h
+    zserio/PackingContext.h
     zserio/PreWriteAction.h
     zserio/PubsubException.h
     zserio/ServiceException.h
@@ -74,6 +75,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/MemoryResource.h
     zserio/pmr/NewDeleteResource.cpp
     zserio/pmr/NewDeleteResource.h
+    zserio/pmr/PackingContext.h
     zserio/pmr/PolymorphicAllocator.h
     zserio/pmr/Set.h
     zserio/pmr/String.h

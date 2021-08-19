@@ -69,7 +69,7 @@ constexpr typename std::underlying_type<T>::type enumToValue(T value)
 template <typename T>
 const char* enumToString(T value)
 {
-    return zserio::EnumTraits<T>::names[enumToOrdinal(value)];
+    return EnumTraits<T>::names[enumToOrdinal(value)];
 }
 
 /**
@@ -83,6 +83,9 @@ const char* enumToString(T value)
  */
 template <typename T>
 size_t bitSizeOf(T value);
+
+template <typename PACKING_CONTEXT_NODE, typename T>
+size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, T value);
 
 /**
  * Initializes offsets for the enum item.
@@ -98,6 +101,9 @@ size_t bitSizeOf(T value);
 template <typename T>
 size_t initializeOffsets(size_t bitPosition, T value);
 
+template <typename PACKING_CONTEXT_NODE, typename T>
+size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, T value);
+
 /**
  * Reads an enum item.
  *
@@ -106,7 +112,10 @@ size_t initializeOffsets(size_t bitPosition, T value);
  * \return Enum item read from the bit stream.
  */
 template <typename T>
-T read(zserio::BitStreamReader& in);
+T read(BitStreamReader& in);
+
+template <typename T, typename PACKING_CONTEXT_NODE>
+T read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in);
 
 /**
  * Writes the enum item to the given bit stream.
@@ -116,6 +125,9 @@ T read(zserio::BitStreamReader& in);
  */
 template <typename T>
 void write(BitStreamWriter& out, T value);
+
+template <typename PACKING_CONTEXT_NODE, typename T>
+void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, T value);
 
 } // namespace zserio
 

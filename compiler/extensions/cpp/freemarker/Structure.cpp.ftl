@@ -50,9 +50,9 @@
     <@compound_constructor_definition compoundConstructorsData, emptyConstructorInitMacroName/>
 
 </#if>
-<#macro read_constructor_field_initialization>
+<#macro read_constructor_field_initialization packed>
     <#list fieldList as field>
-        <@field_member_name field/>(${field.readerName}(in<#rt>
+        <@field_member_name field/>(${field.readerName}(<#if packed && field.isPackable>contextNode, </#if>in<#rt>
         <#if field.needsAllocator || field.holderNeedsAllocator>
                 , allocator<#t>
         </#if>
@@ -61,6 +61,8 @@
 </#macro>
 <#assign readConstructorInitMacroName><#if fieldList?has_content>read_constructor_field_initialization</#if></#assign>
 <@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName/>
+
+<@compound_read_constructor_definition compoundConstructorsData, readConstructorInitMacroName, true/>
 
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 <@compound_copy_constructor_definition compoundConstructorsData/>
@@ -132,37 +134,43 @@ bool ${name}::${field.optional.indicatorName}() const
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
-<#macro structure_align_field field indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.alignmentValue??>
-${I}endBitPosition = ::zserio::alignTo(${field.alignmentValue}, endBitPosition);
-    </#if>
-    <#if field.offset?? && !field.offset.containsIndex>
-${I}endBitPosition = ::zserio::alignTo(8, endBitPosition);
-    </#if>
-</#macro>
-<#macro structure_bitsizeof_field field indent>
-    <@structure_align_field field, indent/>
-    <@compound_bitsizeof_field field, indent/>
-</#macro>
+void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode)
+{
+<#list fieldList as field>
+    <@compound_create_packing_context_field field/>
+</#list>
+}
+
+void ${name}::initPackingContext(${types.packingContextNode.name}& contextNode) const
+{
+<#list fieldList as field>
+    <@compound_init_packing_context_field field, field?index, 1/>
+</#list>
+}
+
 size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const
 {
 <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
     <#list fieldList as field>
-        <#if field.optional??>
-            <#if !field.optional.clause??>
-                <#-- auto optional field -->
-    endBitPosition += 1;
-            </#if>
-    if (<@field_optional_condition field/>)
-    {
-        <@structure_bitsizeof_field field, 2/>
-    }
-        <#else>
-    <@structure_bitsizeof_field field, 1/>
-        </#if>
+    <@compound_bitsizeof_field field, 1/>
+    </#list>
+
+    return endBitPosition - bitPosition;
+<#else>
+    return 0;
+</#if>
+}
+
+size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
+        <#lt>size_t<#if fieldList?has_content> bitPosition</#if>) const
+{
+<#if fieldList?has_content>
+    size_t endBitPosition = bitPosition;
+
+    <#list fieldList as field>
+    <@compound_bitsizeof_field field, 1, true, field?index/>
     </#list>
 
     return endBitPosition - bitPosition;
@@ -172,36 +180,28 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
 }
 <#if withWriterCode>
 
-<#macro structure_initialize_offsets_field field indent>
-    <@structure_align_field field, indent/>
-    <#if field.offset?? && !field.offset.containsIndex>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-${I}{
-${I}    const ${field.offset.typeName} value =
-${I}            static_cast<${field.offset.typeName}>(::zserio::bitsToBytes(endBitPosition));
-${I}    ${field.offset.setter};
-${I}}
-    </#if>
-    <@compound_initialize_offsets_field field, indent/>
-</#macro>
 size_t ${name}::initializeOffsets(size_t bitPosition)
 {
     <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
         <#list fieldList as field>
-            <#if field.optional??>
-                <#if !field.optional.clause??>
-                    <#-- auto optional field -->
-    endBitPosition += 1;
-                </#if>
-    if (<@field_optional_condition field/>)
-    {
-        <@structure_initialize_offsets_field field, 2/>
-    }
-            <#else>
-    <@structure_initialize_offsets_field field, 1/>
-            </#if>
+    <@compound_initialize_offsets_field field, 1/>
+        </#list>
+
+    return endBitPosition;
+    <#else>
+    return bitPosition;
+    </#if>
+}
+
+size_t ${name}::initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition)
+{
+    <#if fieldList?has_content>
+    size_t endBitPosition = bitPosition;
+
+        <#list fieldList as field>
+    <@compound_initialize_offsets_field field, 1, true, field?index/>
         </#list>
 
     return endBitPosition;
@@ -275,6 +275,19 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
         </#list>
     </#if>
 }
+
+void ${name}::write(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
+        <#lt>::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>)
+{
+    <#if fieldList?has_content>
+        <#list fieldList as field>
+    <@compound_write_field field, name, 1, true, field?index/>
+            <#if field?has_next && needsWriteNewLines>
+
+            </#if>
+        </#list>
+    </#if>
+}
 </#if>
 <#list fieldList as field>
 
@@ -287,5 +300,17 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 {
     <@compound_read_field field, name, 1/>
 }
+    <#if field.isPackable>
+
+<@field_member_type_name field, name/> ${name}::${field.readerName}(${types.packingContextNode.name}& contextNode,
+        ::zserio::BitStreamReader& in<#rt>
+        <#if field.needsAllocator || field.holderNeedsAllocator>
+        , const allocator_type& allocator<#t>
+        </#if>
+        <#lt>)
+{
+    <@compound_read_field field, name, 1, true, field?index/>
+}
+    </#if>
 </#list>
 <@namespace_end package.path/>

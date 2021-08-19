@@ -12,6 +12,8 @@ public abstract class NativeArrayableType extends CppNativeType
         super(packageName, name);
 
         this.arrayTraits = arrayTraits;
+
+        addIncludeFiles(arrayTraits);
     }
 
     public NativeArrayableType(PackageName packageName, String name, boolean isSimpleType,
@@ -20,6 +22,8 @@ public abstract class NativeArrayableType extends CppNativeType
         super(packageName, name, isSimpleType);
 
         this.arrayTraits = arrayTraits;
+
+        addIncludeFiles(arrayTraits);
     }
 
     public NativeArrayTraits getArrayTraits()

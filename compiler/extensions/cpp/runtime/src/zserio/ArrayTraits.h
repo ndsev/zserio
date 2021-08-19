@@ -1562,7 +1562,7 @@ public:
     static size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,
             const ElementType& element)
     {
-        return element.bitSizeOfPacked(contextNode, bitPosition);
+        return element.bitSizeOf(contextNode, bitPosition);
     }
 
     /**
@@ -1578,7 +1578,7 @@ public:
     static size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,
             ElementType& element)
     {
-        return element.initializeOffsetsPacked(contextNode, bitPosition);
+        return element.initializeOffsets(contextNode, bitPosition);
     }
 
     /**
@@ -1590,11 +1590,11 @@ public:
      * \param in Bit stream reader.
      * \param index Index of the current element.
      */
-    template <typename PACKING_CONTEXT_NODE>
+    template <typename PACKING_CONTEXT_NODE, typename ALLOC>
     static void read(PACKING_CONTEXT_NODE& contextNode, const ELEMENT_FACTORY& elementFactory,
-            std::vector<ElementType>& rawArray, BitStreamReader& in, size_t index)
+            std::vector<ElementType, ALLOC>& rawArray, BitStreamReader& in, size_t index)
     {
-        elementFactory.createPacked(contextNode, rawArray, in, index);
+        elementFactory.create(contextNode, rawArray, in, index);
     }
 
     /**
@@ -1607,7 +1607,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType& element)
     {
-        element.writePacked(contextNode, out);
+        element.write(contextNode, out);
     }
 };
 

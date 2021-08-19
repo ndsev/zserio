@@ -15,8 +15,8 @@
 #include "zserio/PreWriteAction.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
-#include "zserio/OptionalHolder.h"
 #include "zserio/UniquePtr.h"
+#include "zserio/PackingContext.h"
 
 namespace zserio
 {
@@ -132,300 +132,7 @@ void checkOffset(const OFFSET_CHECKER& offsetChecker, size_t index, size_t byteO
 inline void checkOffset(const DummyOffsetChecker&, size_t, size_t)
 {}
 
-// calculates bit length of delta calculated in DeltaContext, emulates python bit_length to keep the same logic
-inline uint8_t deltaBitLength(int64_t delta)
-{
-    uint64_t abs_delta = std::abs(delta);
-
-    uint8_t result = 0;
-    while (abs_delta > 0)
-    {
-        result++;
-        abs_delta >>= 1;
-    }
-
-    return result;
-}
-
 } // namespace detail
-
-/**
- * Context for delta packing created for each packable field.
- *
- * Contexts are always newly crated for each array operation (bitSizeOfPacked, initializeOffsetsPacked,
- * readPacked, writePacked). They must be initialized at first via calling the init method for each packable
- * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
- * can be repeatedly called for exactly the same sequence of packable elements.
- *
- * Note that *Desriptor methods doesn't change context's internal state and can be called as needed. They are
- * designed to be called once for each context before the actual operation.
- */
-class DeltaContext
-{
-public:
-    /**
-     * Resets the context to it's initial state.
-     *
-     * Reset it needed to allow to reuse the whole context tree and thus prevent memory fragmentation
-     * mainly during reading.
-     */
-    void reset()
-    {
-        m_isPacked = false;
-        m_maxBitNumber = 0;
-        m_previousElement.reset();
-        m_processingStarted = false;
-    }
-
-    /**
-     * Calls the initialization step for a single element.
-     *
-     * \param element Current element.
-     */
-    template <typename ELEMENT_TYPE>
-    void init(ELEMENT_TYPE element)
-    {
-        if (!m_previousElement.hasValue())
-        {
-            m_previousElement = static_cast<uint64_t>(element);
-        }
-        else
-        {
-            if (m_maxBitNumber <= MAX_BIT_NUMBER_LIMIT)
-                m_isPacked = true;
-            const int64_t delta = element - static_cast<ELEMENT_TYPE>(m_previousElement.value()); // TODO[Mi-L@]: overflow???
-            const uint8_t maxBitNumber = detail::deltaBitLength(delta);
-            if (maxBitNumber > m_maxBitNumber)
-            {
-                m_maxBitNumber = maxBitNumber;
-                if (m_maxBitNumber > MAX_BIT_NUMBER_LIMIT)
-                    m_isPacked = false;
-            }
-            m_previousElement = static_cast<uint64_t>(element);
-        }
-    }
-
-    /**
-     * Gets bit size of the current delta context.
-     *
-     * \return Bit size of this context.
-     */
-    size_t bitSizeOfDescriptor()
-    {
-        if (m_isPacked)
-            return 1 + MAX_BIT_NUMBER_BITS;
-        else
-            return 1;
-    }
-
-    /**
-     * Returns length of the packed element stored in the bit stream in bits.
-     *
-     * \param arrayTraits Standard array traits.
-     * \param bitPostion Curent bit stream position.
-     * \param element Value of the current element.
-     *
-     * \return Length of the packed element stored in the bit stream in bits.
-     */
-    template <typename ARRAY_TRAITS>
-    size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, size_t bitPosition,
-            typename ARRAY_TRAITS::ElementType element)
-    {
-        if (!m_processingStarted || !m_isPacked)
-        {
-            m_processingStarted = true;
-            return arrayTraits.bitSizeOf(bitPosition, element);
-        }
-        else
-        {
-            return m_maxBitNumber + (m_maxBitNumber > 0 ? 1 : 0);
-        }
-    }
-
-    /**
-     * Reads the context from the bit stream.
-     *
-     * \param in Bit stream reader.
-     */
-    void readDescriptor(BitStreamReader& in)
-    {
-        m_isPacked = in.readBool();
-        if (m_isPacked)
-            m_maxBitNumber = in.readSignedBits(MAX_BIT_NUMBER_BITS);
-    }
-
-    /**
-     * Reads a packed element from the bit stream.
-     *
-     * \param arrayTraits Standard array traits.
-     * \param in Bit stream reader.
-     *
-     * \return Value of the packed element.
-     */
-    template <typename ARRAY_TRAITS>
-    typename ARRAY_TRAITS::ElementType read(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
-    {
-        if (!m_processingStarted || !m_isPacked)
-        {
-            m_processingStarted = true;
-            const auto element = arrayTraits.read(in);
-            m_previousElement = static_cast<uint64_t>(element);
-            return element;
-        }
-        else
-        {
-            const auto previousElement =
-                    static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value());
-
-            if (m_maxBitNumber > 0)
-            {
-                const int64_t delta = in.readSignedBits64(m_maxBitNumber + 1);
-                const typename ARRAY_TRAITS::ElementType element = previousElement + delta;
-                m_previousElement = static_cast<uint64_t>(element);
-                return element;
-            }
-            else
-            {
-                return previousElement;
-            }
-        }
-    }
-
-    /**
-     * Writes the context to the bit stream.
-     *
-     * \param out Bit stream writer.
-     */
-    void writeDescriptor(BitStreamWriter& out)
-    {
-        out.writeBool(m_isPacked);
-        if (m_isPacked)
-            out.writeSignedBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
-    }
-
-    /**
-     * Writes the packed element to the bit stream.
-     *
-     * \param arrayTraits Standard array traits.
-     * \param out Bit stream writer.
-     * \param element Value of the current element.
-     */
-    template <typename ARRAY_TRAITS>
-    void write(const ARRAY_TRAITS& arrayTraits, BitStreamWriter& out,
-            typename ARRAY_TRAITS::ElementType element)
-    {
-        if (!m_processingStarted || !m_isPacked)
-        {
-            m_processingStarted = true;
-            m_previousElement = static_cast<uint64_t>(element);
-            arrayTraits.write(out, element);
-        }
-        else
-        {
-            if (m_maxBitNumber > 0)
-            {
-                const auto previousElement =
-                        static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value());
-                const int64_t delta = element - previousElement;
-                out.writeSignedBits64(delta, m_maxBitNumber + 1);
-                m_previousElement = element;
-            }
-        }
-    }
-
-private:
-    static const uint8_t MAX_BIT_NUMBER_BITS = 6;
-    static const uint8_t MAX_BIT_NUMBER_LIMIT = 63;
-
-    bool m_isPacked = false;
-    uint8_t m_maxBitNumber = 0;
-    InplaceOptionalHolder<uint64_t> m_previousElement;
-    bool m_processingStarted = false;
-};
-
-/**
- * Packing context node.
- *
- * This class is used to handle a tree of contexts created by appropriate PackedArrayTraits.
- * For built-in packable types only a single context are kept. However for Zserio objects, a tree
- * of all packable fields is created recursively.
- *
- * When the context node has no children and no context, then it's so called dummy context which is used
- * for unpackable fields or nested arrays.
- */
-template <typename ALLOC = std::allocator<uint8_t>>
-class PackingContextNode
-{
-public:
-    /** Allocator type. */
-    using allocator_type = RebindAlloc<ALLOC, PackingContextNode>;
-    /** Typedef for vector of children. */
-    using Children = std::vector<PackingContextNode, allocator_type>;
-
-    /**
-     * Constructor.
-     *
-     * \param allocator Allocator to use for allocation of the vector of children.
-     */
-    explicit PackingContextNode(const ALLOC& allocator)
-    :   m_children(allocator)
-    {}
-
-    /**
-     * Creates a new child.
-     *
-     * \return The child which was just created.
-     */
-    PackingContextNode& createChild()
-    {
-        m_children.emplace_back(m_children.get_allocator());
-        return m_children.back();
-    }
-
-    /**
-     * Gets list of children of the current node.
-     *
-     * \return List of children.
-     */
-    Children& getChildren()
-    {
-        return m_children;
-    }
-
-    /**
-     * Creates a new packing context within the current node.
-     */
-    void createContext()
-    {
-        m_context = DeltaContext();
-    }
-
-    /**
-     * Gets whether the current node has a packing context.
-     *
-     * \return True when the current node has assigned a context, false otherwise.
-     */
-    bool hasContext() const
-    {
-        return m_context.hasValue();
-    }
-
-    /**
-     * Gets packing context assigned to this node.
-     *
-     * Can be called only when the context exists!
-     *
-     * \return Packing context.
-     */
-    DeltaContext& getContext()
-    {
-        return m_context.value();
-    }
-
-private:
-    Children m_children;
-    InplaceOptionalHolder<DeltaContext> m_context;
-};
 
 /**
  * Array type enum which defined type of the underlying array.
@@ -652,7 +359,7 @@ public:
      *
      * \return Length of the array stored in the bit stream in bits.
      */
-    size_t bitSizeOfPacked(size_t bitPosition)
+    size_t bitSizeOfPacked(size_t bitPosition) const
     {
         size_t endBitPosition = bitPosition;
 
@@ -1142,15 +849,15 @@ public:
 
 private:
     // RebindAlloc is used here to prevent multiple instantiations of the PackingContextNode template
-    using PackingContextNodeType = PackingContextNode<RebindAlloc<allocator_type, uint8_t>>;
+    using PackingContextNodeType = BasicPackingContextNode<RebindAlloc<allocator_type, uint8_t>>;
 
-    PackingContextNodeType& getPackingContextNode()
+    PackingContextNodeType& getPackingContextNode() const
     {
-        if (!m_packingContextNode)
+        if (!m_packingContextNode) // lazy init
         {
             m_packingContextNode = allocate_unique<PackingContextNodeType>(
                     m_rawArray.get_allocator(), m_rawArray.get_allocator());
-            m_packedArrayTraits.createContext(*m_packingContextNode); // lazy init
+            m_packedArrayTraits.createContext(*m_packingContextNode);
         }
         else
             resetContext(*m_packingContextNode);
@@ -1158,7 +865,7 @@ private:
         return *m_packingContextNode;
     }
 
-    void resetContext(PackingContextNodeType& contextNode)
+    static void resetContext(PackingContextNodeType& contextNode)
     {
         if (contextNode.hasContext())
         {
@@ -1171,7 +878,7 @@ private:
         }
     }
 
-    size_t bitSizeOfDescriptor(PackingContextNodeType& contextNode, size_t bitPosition)
+    static size_t bitSizeOfDescriptor(PackingContextNodeType& contextNode, size_t bitPosition)
     {
         size_t endBitPosition = bitPosition;
 
@@ -1188,7 +895,7 @@ private:
         return endBitPosition - bitPosition;
     }
 
-    void readDescriptor(PackingContextNodeType& contextNode, BitStreamReader& in)
+    static void readDescriptor(PackingContextNodeType& contextNode, BitStreamReader& in)
     {
         if (contextNode.hasContext())
         {
@@ -1201,7 +908,7 @@ private:
         }
     }
 
-    void writeDescriptor(PackingContextNodeType& contextNode, BitStreamWriter& out)
+    static void writeDescriptor(PackingContextNodeType& contextNode, BitStreamWriter& out)
     {
         if (contextNode.hasContext())
         {
@@ -1217,7 +924,9 @@ private:
     RawArray m_rawArray;
     ARRAY_TRAITS m_arrayTraits;
     PackedArrayTraits<ARRAY_TRAITS> m_packedArrayTraits;
-    unique_ptr<PackingContextNodeType> m_packingContextNode;
+    // TODO[Mi-L@]: Mutable context should be ok since it's just a cache?
+    mutable unique_ptr<PackingContextNodeType,
+            RebindAlloc<allocator_type, PackingContextNodeType>> m_packingContextNode;
 };
 
 /**

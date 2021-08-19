@@ -15,6 +15,7 @@
 #include <zserio/AllocatorPropagatingCopy.h>
 <@type_includes types.anyHolder/>
 <@type_includes types.allocator/>
+<@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -30,6 +31,7 @@ public:
 
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
+    <@compound_read_constructor_declaration compoundConstructorsData, true/>
 
     ~${name}() = default;
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
@@ -65,9 +67,15 @@ public:
 
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
+    static void createPackingContext(${types.packingContextNode.name}& contextNode);
+    void initPackingContext(${types.packingContextNode.name}& contextNode) const;
+
     size_t bitSizeOf(size_t bitPosition = 0) const;
+    size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 <#if withWriterCode>
+
     size_t initializeOffsets(size_t bitPosition);
+    size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition);
 </#if>
 
     bool operator==(const ${name}& other) const;
@@ -76,13 +84,15 @@ public:
 
     void write(::zserio::BitStreamWriter& out,
             ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
+    void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out);
 </#if>
 
 private:
 <#if fieldList?has_content>
-    ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in,
-            const ${types.allocator.default}& allocator);
-    ${types.anyHolder.name} copyObject(const ${types.allocator.default}& allocator) const;
+    ${types.anyHolder.name} readObject(::zserio::BitStreamReader& in, const allocator_type& allocator);
+    ${types.anyHolder.name} readObject(${types.packingContextNode.name}& contextNode,
+            ::zserio::BitStreamReader& in, const allocator_type& allocator);
+    ${types.anyHolder.name} copyObject(const allocator_type& allocator) const;
 
 </#if>
     <@compound_parameter_members compoundParametersData/>

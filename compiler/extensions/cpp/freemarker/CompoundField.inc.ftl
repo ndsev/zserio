@@ -45,7 +45,7 @@
     </#if>
 </#macro>
 
-<#macro compound_read_field field compoundName indent>
+<#macro compound_read_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
@@ -54,19 +54,36 @@ ${I}if (${field.optional.clause})
 ${I}if (in.readBool())
         </#if>
 ${I}{
-        <@compound_read_field_inner field, compoundName, indent + 1/>
+        <@compound_read_field_inner field, compoundName, indent + 1, packed, index/>
 ${I}}
 
 ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if>);
     <#else>
-    <@compound_read_field_inner field, compoundName, indent/>
+    <@compound_read_field_inner field, compoundName, indent, packed, index/>
     </#if>
 </#macro>
 
-<#macro compound_read_field_inner field compoundName indent>
+<#macro compound_read_field_inner field compoundName indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_read_field_prolog field, compoundName, indent/>
-    <#if field.runtimeFunction??>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isBuiltinType>
+            <#local readCommand>contextNode.getChildren().at(${index}).getContext().read(<@array_traits field/>, in)</#local>
+        <#elseif field.isEnum>
+            <#local readCommand>::zserio::read<<@field_cpp_type_name field/>>(contextNode.getChildren().at(${index}), in)</#local>
+        <#else>
+            <#local compoundParamsArguments>
+                <#if field.compound??>
+                    <@compound_field_compound_ctor_params field.compound, false/>
+                </#if>
+            </#local>
+            <#local constructorArguments>
+                in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if><#t>
+                <#if field.compound??>, allocator</#if><#t>
+            </#local>
+            <#local readCommand><@field_cpp_type_name field/>(contextNode.getChildren().at(${index}), ${constructorArguments})</#local>
+        </#if>
+    <#elseif field.runtimeFunction??>
         <#local readCommandArgs>
             ${field.runtimeFunction.arg!}<#if field.needsAllocator><#if field.runtimeFunction.arg??>, </#if>allocator</#if><#t>
         </#local>
@@ -87,9 +104,9 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
     </#if>
     <#if field.array??>
 ${I}<@array_typedef_name field/> readField(<@array_traits field/>, allocator);
-${I}readField.read(in<#rt>
+${I}readField.read<@array_field_packed_suffix field, packed/>(in<#rt>
         <#if field.array.length??>, static_cast<size_t>(${field.array.length})</#if><#t>
-        <#if field.array.requiresElementFactory>, <@element_factory_name field.name/>(*this)</#if><#t>
+        <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/>(*this)</#if><#t>
         <#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if><#t>
         <#lt>);
     <@compound_check_constraint_field field, name, "Read", indent/>
@@ -167,7 +184,7 @@ ${I}}
     <#if field.optional.clause??>${field.optional.clause}<#else><@field_member_name field/>.hasValue()</#if><#t>
 </#macro>
 
-<#macro compound_write_field field compoundName indent>
+<#macro compound_write_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
@@ -175,7 +192,7 @@ ${I}{
         <#if !field.optional.clause??>
 ${I}    out.writeBool(true);
         </#if>
-        <@compound_write_field_inner field, compoundName, indent + 1/>
+        <@compound_write_field_inner field, compoundName, indent + 1, packed, index/>
 ${I}}
         <#if !field.optional.clause??>
 ${I}else
@@ -184,20 +201,29 @@ ${I}    out.writeBool(false);
 ${I}}
         </#if>
     <#else>
-    <@compound_write_field_inner field, compoundName, indent/>
+    <@compound_write_field_inner field, compoundName, indent, packed, index/>
     </#if>
 </#macro>
 
-<#macro compound_write_field_inner field compoundName indent>
+<#macro compound_write_field_inner field compoundName indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_write_field_prolog field, compoundName, indent/>
-    <#if field.runtimeFunction??>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isBuiltinType>
+${I}contextNode.getChildren().at(${index}).getContext().write(
+${I}        <@array_traits field/>, out, <@compound_get_field field/>);
+        <#elseif field.isEnum>
+${I}::zserio::write(contextNode.getChildren().at(${index}), out, <@compound_get_field field/>);
+        <#else>
+${I}<@compound_get_field field/>.write(contextNode.getChildren().at(${index}), out);
+        </#if>
+    <#elseif field.runtimeFunction??>
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>,<#rt>
         <#lt> ${field.runtimeFunction.arg}</#if>);
     <#elseif field.isEnum>
 ${I}::zserio::write(out, <@compound_get_field field/>);
     <#elseif field.array??>
-${I}<@compound_get_field field/>.write(out<#rt>
+${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/>(out<#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if>);
     <#else>
 ${I}<@compound_get_field field/>.write(out, ::zserio::NO_PRE_WRITE_ACTION);
@@ -281,6 +307,12 @@ ${I}            " of ${compoundName}.${valueName} exceeds the range of <" +
 ${I}            lowerBound + ".." + upperBound + ">!";
 </#macro>
 
+<#macro array_field_packed_suffix field packed>
+    <#if field.isPackable && (packed || field.array.isPacked)>
+        Packed<#t>
+    </#if>
+</#macro>
+
 <#macro array_typedef_name field>
     ArrayType_${field.name}<#t>
 </#macro>
@@ -297,24 +329,42 @@ ${I}            lowerBound + ".." + upperBound + ">!";
 </#macro>
 
 <#macro array_traits_type_name field>
-    ${field.array.traitsName}<#t>
-    <#if field.array.hasTemplatedTraits>
-        <${field.array.elementCppTypeName}<#t>
-        <#if field.array.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
+    <#if field.array??>
+        ${field.array.traits.name}<#t>
+        <#if field.array.traits.isTemplated>
+                <${field.array.elementCppTypeName}<#t>
+                <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
+        </#if>
+    <#else>
+        ${field.arrayTraits.name}<#t>
+        <#if field.arrayTraits.isTemplated>
+                <${field.cppTypeName}<#t>
+                <#if field.arrayTraits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
+        </#if>
     </#if>
 </#macro>
 
 <#macro array_traits field>
     <@array_traits_type_name field/>
-        (<#t>
-    <#if field.array.elementBitSize??>
-        <#if field.array.elementBitSize.isDynamicBitField>
-            static_cast<uint8_t>(${field.array.elementBitSize.value})<#t>
-        <#else>
-            ${field.array.elementBitSize.value}<#t>
+            (<#t>
+    <#if field.array??>
+        <#if field.array.elementBitSize??>
+            <#if field.array.elementBitSize.isDynamicBitField>
+                static_cast<uint8_t>(${field.array.elementBitSize.value})<#t>
+            <#else>
+                ${field.array.elementBitSize.value}<#t>
+            </#if>
+        </#if>
+    <#else>
+        <#if field.arrayTraits.requiresElementBitSize>
+            <#if field.bitSize.isDynamicBitField>
+                static_cast<uint8_t>(${field.bitSize.value})<#t>
+            <#else>
+                ${field.bitSize.value}<#t>
+            </#if>
         </#if>
     </#if>
-        )<#t>
+            )<#t>
 </#macro>
 
 <#macro array_type_enum field>
@@ -410,7 +460,7 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
 </#macro>
 
 <#function needs_field_element_factory field>
-    <#return field.array?? && field.array.requiresElementFactory>
+    <#return field.array?? && field.array.traits.requiresElementFactory>
 </#function>
 
 <#macro element_factory_name fieldName>
@@ -423,8 +473,12 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
     public:
         explicit <@element_factory_name field.name/>(${compoundName}& owner);
 
-        void create(<@vector_type_name field.array.elementCppTypeName/>& array, <#rt>
-                <#lt>::zserio::BitStreamReader& in, size_t index) const;
+        void create(<@vector_type_name field.array.elementCppTypeName/>& array,
+                ::zserio::BitStreamReader& in, size_t index) const;
+
+        void create(${types.packingContextNode.name}& contextNode,
+                <@vector_type_name field.array.elementCppTypeName/>& array,
+                ::zserio::BitStreamReader& in, size_t index) const;
 
     private:
         ${compoundName}& m_owner;
@@ -442,11 +496,24 @@ ${compoundName}::<@element_factory_name field.name/>::<@element_factory_name fie
 {}
 
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
-        <#lt><@vector_type_name field.array.elementCppTypeName/>& array, <#rt>
-        <#lt>::zserio::BitStreamReader& in, size_t index) const
+        <#lt><@vector_type_name field.array.elementCppTypeName/>& array,
+        ::zserio::BitStreamReader& in, size_t index) const
 {
     (void)index;
     array.emplace_back(in<#rt>
+    <#if extraConstructorArguments?has_content>
+            , ${extraConstructorArguments}<#t>
+    </#if>
+            <#lt>, array.get_allocator());
+}
+
+void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
+        <#lt>${types.packingContextNode.name}& contextNode,
+        <@vector_type_name field.array.elementCppTypeName/>& array, <#rt>
+        <#lt>::zserio::BitStreamReader& in, size_t index) const
+{
+    (void)index;
+    array.emplace_back(contextNode, in<#rt>
     <#if extraConstructorArguments?has_content>
             , ${extraConstructorArguments}<#t>
     </#if>
@@ -579,9 +646,47 @@ private:
     </#if>
 </#macro>
 
-<#macro compound_bitsizeof_field field indent>
+<#macro compound_align_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isEnum>
+    <#if field.alignmentValue??>
+${I}endBitPosition = ::zserio::alignTo(${field.alignmentValue}, endBitPosition);
+    </#if>
+    <#if field.offset?? && !field.offset.containsIndex>
+${I}endBitPosition = ::zserio::alignTo(8, endBitPosition);
+    </#if>
+</#macro>
+
+<#macro compound_bitsizeof_field field indent packed=false index=0>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+        <#if !field.optional.clause??>
+            <#-- auto optional field -->
+${I}endBitPosition += 1;
+        </#if>
+${I}if (<@field_optional_condition field/>)
+${I}{
+        <@compound_bitsizeof_field_inner field, indent+1, packed, index/>
+${I}}
+        <#else>
+    <@compound_bitsizeof_field_inner field, indent, packed, index/>
+        </#if>
+</#macro>
+
+<#macro compound_bitsizeof_field_inner field indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <@compound_align_field field, indent/>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isBuiltinType>
+${I}endBitPosition += contextNode.getChildren().at(${index}).getContext().bitSizeOf(
+${I}        <@array_traits field/>, endBitPosition, <@compound_get_field field/>);
+        <#elseif field.isEnum>
+${I}endBitPosition += ::zserio::bitSizeOf(
+${I}        contextNode.getChildren().at(${index}), endBitPosition, <@compound_get_field field/>);
+        <#else>
+${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(
+${I}        contextNode.getChildren().at(${index}), endBitPosition);
+        </#if>
+    <#elseif field.isEnum>
 ${I}endBitPosition += ::zserio::bitSizeOf(<@compound_get_field field/>);
     <#elseif field.bitSize??>
         <#if field.bitSize.isDynamicBitField>
@@ -592,15 +697,51 @@ ${I}endBitPosition += ${field.bitSize.value};
     <#elseif field.runtimeFunction??>
 ${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#elseif field.array??>
-${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
+${I}endBitPosition += <@compound_get_field field/>.bitSizeOf<@array_field_packed_suffix field, packed/>(endBitPosition);
     <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
 </#macro>
 
-<#macro compound_initialize_offsets_field field indent>
+<#macro compound_initialize_offsets_field field indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isEnum>
+    <#if field.optional??>
+        <#if !field.optional.clause??>
+            <#-- auto optional field -->
+${I}endBitPosition += 1;
+                </#if>
+${I}if (<@field_optional_condition field/>)
+${I}{
+        <@compound_initialize_offsets_field_inner field, indent+1, packed, index/>
+${I}}
+    <#else>
+    <@compound_initialize_offsets_field_inner field, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_initialize_offsets_field_inner field indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <@compound_align_field field, indent/>
+    <#if field.offset?? && !field.offset.containsIndex>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}{
+${I}    const ${field.offset.typeName} value =
+${I}            static_cast<${field.offset.typeName}>(::zserio::bitsToBytes(endBitPosition));
+${I}    ${field.offset.setter};
+${I}}
+    </#if>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isBuiltinType>
+${I}endBitPosition += contextNode.getChildren().at(${index}).getContext().bitSizeOf(
+${I}        <@array_traits field/>, endBitPosition, <@compound_get_field field/>);
+        <#elseif field.isEnum>
+${I}endBitPosition = ::zserio::initializeOffsets(
+${I}        contextNode.getChildren().at(${index}), endBitPosition, <@compound_get_field field/>);
+        <#else>
+${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(
+${I}        contextNode.getChildren().at(${index}), endBitPosition);
+        </#if>
+    <#elseif field.isEnum>
 ${I}endBitPosition = ::zserio::initializeOffsets(endBitPosition, <@compound_get_field field/>);
     <#elseif field.bitSize??>
         <#if field.bitSize.isDynamicBitField>
@@ -611,8 +752,12 @@ ${I}endBitPosition += ${field.bitSize.value};
     <#elseif field.runtimeFunction??>
 ${I}endBitPosition += ::zserio::bitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#elseif field.array??>
-${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition<#rt>
-        <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_initializer_name field.name/>(*this)</#if>);
+${I}endBitPosition = <@compound_get_field field/>.initializeOffsets<@array_field_packed_suffix field, packed/>(
+${I}        endBitPosition<#rt>
+        <#if field.offset?? && field.offset.containsIndex>
+            , <@offset_initializer_name field.name/>(*this)<#t>
+        </#if>
+            <#lt>);
     <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition);
     </#if>
@@ -799,6 +944,43 @@ ${I}${field.cppArgumentTypeName} <#t>
         <#lt>,
         </#if>
     </#list>
+</#macro>
+
+<#macro compound_create_packing_context_field field>
+    <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
+        <#if field.isBuiltinType || field.isEnum>
+    contextNode.createChild().createContext();
+        <#else>
+    ${field.cppTypeName}::createPackingContext(contextNode.createChild());
+        </#if>
+    <#else>
+    contextNode.createChild();
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field field index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isPackable && !field.array??>
+        <#if field.optional??>
+${I}if self.${field.optional.indicatorName}():
+        <@compound_init_packing_context_field_inner field, index, indent+1/>
+        <#else>
+    <@compound_init_packing_context_field_inner field, index, indent/>
+        </#if>
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field_inner field index indent>
+    <#-- arrays are solved in compound_init_packing_context_field -->
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isBuiltinType>
+${I}contextNode.getChildren().at(${index}).getContext().init(<@compound_get_field field/>);
+    <#elseif field.isEnum>
+${I}contextNode.getChildren().at(${index}).getContext().init(
+${I}        ::zserio::enumToValue(<@compound_get_field field/>));
+    <#else>
+${I}<@compound_get_field field/>.initPackingContext(contextNode.getChildren().at(${index}));
+    </#if>
 </#macro>
 
 <#function has_optional_field fieldList>

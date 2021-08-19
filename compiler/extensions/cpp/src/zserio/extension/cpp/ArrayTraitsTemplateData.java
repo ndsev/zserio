@@ -1,6 +1,6 @@
-package zserio.extension.python;
+package zserio.extension.cpp;
 
-import zserio.extension.python.types.NativeArrayTraits;
+import zserio.extension.cpp.types.NativeArrayTraits;
 
 /**
  * FreeMarker template data for array traits.
@@ -14,17 +14,22 @@ public class ArrayTraitsTemplateData
 
     public String getName()
     {
-        return nativeTraits.getName();
+        return nativeTraits.getFullName();
+    }
+
+    public boolean getIsTemplated()
+    {
+        return nativeTraits.isTemplated();
     }
 
     public boolean getRequiresElementBitSize()
     {
-        return nativeTraits.getRequiresElementBitSize();
+        return nativeTraits.requiresElementBitSize();
     }
 
-    public boolean getRequiresElementCreator()
+    public boolean getRequiresElementFactory()
     {
-        return nativeTraits.getRequiresElementCreator();
+        return nativeTraits.requiresElementFactory();
     }
 
     private final NativeArrayTraits nativeTraits;

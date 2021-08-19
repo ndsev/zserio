@@ -30,6 +30,8 @@ public class TypesContext
                     false, false, "zserio/BitBuffer.h");
             blobBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BlobBuffer",
                     true, false, "zserio/BlobBuffer.h");
+            packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "PackingContextNode",
+                    false, false, "zserio/PackingContext.h");
         }
         else if (allocator.equals(PROPAGATING_POLYMORPHIC_ALLOCATOR))
         {
@@ -53,6 +55,8 @@ public class TypesContext
                     false, false, "zserio/pmr/BitBuffer.h");
             blobBuffer = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BlobBuffer",
                     false, false, "zserio/pmr/BlobBuffer.h");
+            packingContextNode = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "PackingContextNode",
+                    false, false, "zserio/pmr/PackingContext.h");
         }
         else
         {
@@ -76,6 +80,8 @@ public class TypesContext
                     true, true, "zserio/BitBuffer.h");
             blobBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BlobBuffer",
                     true, true, "zserio/BlobBuffer.h");
+            packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicPackingContextNode",
+                    true, true, "zserio/Array.h");
         }
     }
 
@@ -169,6 +175,11 @@ public class TypesContext
         return blobBuffer;
     }
 
+    public NativeTypeDefinition getPackingContextNode()
+    {
+        return packingContextNode;
+    }
+
     public static class NativeTypeDefinition
     {
         public NativeTypeDefinition(PackageName pkg, String name, boolean isTemplate,
@@ -224,6 +235,7 @@ public class TypesContext
     private final NativeTypeDefinition uniquePtr;
     private final NativeTypeDefinition bitBuffer;
     private final NativeTypeDefinition blobBuffer;
+    private final NativeTypeDefinition packingContextNode;
 
     public static final AllocatorDefinition PROPAGATING_POLYMORPHIC_ALLOCATOR = new AllocatorDefinition(
             "::zserio::pmr::PropagatingPolymorphicAllocator", "zserio/pmr/PolymorphicAllocator.h", "");

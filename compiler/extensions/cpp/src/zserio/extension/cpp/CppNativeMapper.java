@@ -45,6 +45,7 @@ import zserio.extension.cpp.types.NativeHeapOptionalHolderType;
 import zserio.extension.cpp.types.NativeInplaceOptionalHolderType;
 import zserio.extension.cpp.types.NativeIntegralType;
 import zserio.extension.cpp.types.NativeMapType;
+import zserio.extension.cpp.types.NativePackingContextNodeType;
 import zserio.extension.cpp.types.NativeSetType;
 import zserio.extension.cpp.types.NativeStringType;
 import zserio.extension.cpp.types.NativeStringViewType;
@@ -74,6 +75,7 @@ public class CppNativeMapper
         setType = new NativeSetType(typesContext);
         bitBufferType = new NativeBitBufferType(typesContext, stdUInt8Type);
         blobBufferType = new NativeBlobBufferType(typesContext, stdUInt8Type);
+        packingContextNodeType = new NativePackingContextNodeType(typesContext, stdUInt8Type);
     }
 
     /**
@@ -245,6 +247,11 @@ public class CppNativeMapper
     public NativeBlobBufferType getBlobBufferType()
     {
         return blobBufferType;
+    }
+
+    public NativePackingContextNodeType getPackingContextNodeType()
+    {
+        return packingContextNodeType;
     }
 
     public NativeIntegralType getUInt64Type()
@@ -545,6 +552,7 @@ public class CppNativeMapper
     private final NativeSetType setType;
     private final NativeBitBufferType bitBufferType;
     private final NativeBlobBufferType blobBufferType;
+    private final NativePackingContextNodeType packingContextNodeType;
 
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));
@@ -554,6 +562,15 @@ public class CppNativeMapper
             new NativeBuiltinType("float", new NativeArrayTraits("Float32ArrayTraits"));
     private final static NativeBuiltinType float64Type =
             new NativeBuiltinType("double", new NativeArrayTraits("Float64ArrayTraits"));
+
+    private final static NativeIntegralType stdInt8Type =
+            new NativeIntegralType(8, true, new NativeArrayTraits("StdIntArrayTraits", true));
+    private final static NativeIntegralType stdInt16Type =
+            new NativeIntegralType(16, true, new NativeArrayTraits("StdIntArrayTraits", true));
+    private final static NativeIntegralType stdInt32Type =
+            new NativeIntegralType(32, true, new NativeArrayTraits("StdIntArrayTraits", true));
+    private final static NativeIntegralType stdInt64Type =
+            new NativeIntegralType(64, true, new NativeArrayTraits("StdIntArrayTraits", true));
 
     private final static NativeIntegralType stdUInt8Type =
             new NativeIntegralType(8, false, new NativeArrayTraits("StdIntArrayTraits", true));
@@ -581,15 +598,6 @@ public class CppNativeMapper
             new NativeIntegralType(32, false, new NativeBitFieldArrayTraits());
     private final static NativeIntegralType bit64Type =
             new NativeIntegralType(64, false, new NativeBitFieldArrayTraits());
-
-    private final static NativeIntegralType stdInt8Type =
-            new NativeIntegralType(8, true, new NativeArrayTraits("StdIntArrayTraits", true));
-    private final static NativeIntegralType stdInt16Type =
-            new NativeIntegralType(16, true, new NativeArrayTraits("StdIntArrayTraits", true));
-    private final static NativeIntegralType stdInt32Type =
-            new NativeIntegralType(32, true, new NativeArrayTraits("StdIntArrayTraits", true));
-    private final static NativeIntegralType stdInt64Type =
-            new NativeIntegralType(64, true, new NativeArrayTraits("StdIntArrayTraits", true));
 
     private final static NativeIntegralType varUInt16Type =
             new NativeIntegralType(16, false, new NativeArrayTraits("VarIntNNArrayTraits", true));

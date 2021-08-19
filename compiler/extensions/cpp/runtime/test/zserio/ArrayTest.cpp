@@ -134,19 +134,19 @@ public:
     DummyObject() : m_value(0) {}
     explicit DummyObject(uint32_t value) : m_value(value) {}
     explicit DummyObject(BitStreamReader& in) : m_value(in.readBits(31)) {}
-    DummyObject(PackingContextNode<>& contextNode, BitStreamReader& in)
+    DummyObject(PackingContextNode& contextNode, BitStreamReader& in)
     {
         auto& context = contextNode.getChildren().at(0).getContext();
         m_value = context.read(BitFieldArrayTraits<uint32_t>(31), in);
     }
 
-    static void createPackingContext(PackingContextNode<>& contextNode)
+    static void createPackingContext(PackingContextNode& contextNode)
     {
         auto& child = contextNode.createChild();
         child.createContext();
     }
 
-    void initPackingContext(PackingContextNode<>& contextNode) const
+    void initPackingContext(PackingContextNode& contextNode) const
     {
         auto& context = contextNode.getChildren().at(0).getContext();
         context.init(m_value);
@@ -162,7 +162,7 @@ public:
         return 31; // to make an unaligned type
     }
 
-    size_t bitSizeOfPacked(PackingContextNode<>& contextNode, size_t bitPosition = 0) const
+    size_t bitSizeOf(PackingContextNode& contextNode, size_t bitPosition = 0) const
     {
         size_t endBitPosition = bitPosition;
 
@@ -177,7 +177,7 @@ public:
         return bitPosition + bitSizeOf(bitPosition);
     }
 
-    size_t initializeOffsetsPacked(PackingContextNode<>& contextNode, size_t bitPosition = 0)
+    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition = 0)
     {
         size_t endBitPosition = bitPosition;
 
@@ -202,7 +202,7 @@ public:
         out.writeBits(m_value, static_cast<uint8_t>(bitSizeOf()));
     }
 
-    void writePacked(PackingContextNode<>& contextNode, BitStreamWriter& out)
+    void write(PackingContextNode& contextNode, BitStreamWriter& out)
     {
         auto& context = contextNode.getChildren().at(0).getContext();
         context.write(BitFieldArrayTraits<uint32_t>(31), out, m_value);
@@ -232,7 +232,7 @@ public:
         array.emplace_back(in);
     }
 
-    static void createPacked(PackingContextNode<>& contextNode,
+    static void create(PackingContextNode& contextNode,
             std::vector<DummyObject>& array, BitStreamReader& in, size_t)
     {
         array.emplace_back(contextNode, in);
