@@ -1440,8 +1440,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element) const
     {
-        auto& context = contextNode.getContext();
-        context.init(element);
+        contextNode.getContext().init(element);
     }
 
     /**
@@ -1456,8 +1455,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
     {
-        auto& context = contextNode.getContext();
-        return context.bitSizeOf(m_arrayTraits, bitPosition, element);
+        return contextNode.getContext().bitSizeOf(m_arrayTraits, bitPosition, element);
     }
 
     /**
@@ -1472,12 +1470,11 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
     {
-        auto& context = contextNode.getContext();
-        return bitPosition + context.bitSizeOf(m_arrayTraits, bitPosition, element);
+        return bitPosition + contextNode.getContext().bitSizeOf(m_arrayTraits, bitPosition, element);
     }
 
     /**
-     * Read an element from the bit stream.
+     * Reads an element from the bit stream.
      *
      * \param contextNode Packing context node.
      * \param in Bit stream reader.
@@ -1487,8 +1484,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in) const
     {
-        auto& context = contextNode.getContext();
-        return context.read(m_arrayTraits, in);
+        return contextNode.getContext().read(m_arrayTraits, in);
     }
 
     /**
@@ -1501,8 +1497,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element) const
     {
-        auto& context = contextNode.getContext();
-        context.write(m_arrayTraits, out, element);
+        contextNode.getContext().write(m_arrayTraits, out, element);
     }
 
 private:
@@ -1510,13 +1505,10 @@ private:
 };
 
 /**
- * Specialization of packed array traits for Zserio objects.
- *
- * This traits are used for Zserio objects which must implement special *Packed methods
- * to alllow itself to be used in a packed array.
+ * Specialization of packed array traits for Zserio enums.
  */
-template <typename T, typename ELEMENT_FACTORY>
-class PackedArrayTraits<ObjectArrayTraits<T, ELEMENT_FACTORY>>
+template <typename T>
+class PackedArrayTraits<EnumArrayTraits<T>>
 {
 public:
     /** Element type. */
@@ -1525,11 +1517,103 @@ public:
     /**
      * Constructor.
      *
-     * Takes object array traits just to be consistent with generic PackedArrayTraits
+     * Takes enum array traits just to be consistent with generic PackedArrayTraits
      * and also to allow template argument deduction.
      */
-    explicit PackedArrayTraits(const ObjectArrayTraits<T, ELEMENT_FACTORY>&)
+    explicit PackedArrayTraits(const EnumArrayTraits<T>&)
     {}
+
+    /**
+     * Creates packing context.
+     *
+     * \param contextNode Packing context node where the context is created.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    void createContext(PACKING_CONTEXT_NODE& contextNode) const
+    {
+        contextNode.createContext();
+    }
+
+    /**
+     * Calls context initialization step for the current element.
+     *
+     * \param contextNode Packing context node which keeps the context.
+     * \param element Current element.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element) const
+    {
+        contextNode.getContext().init(enumToValue(element));
+    }
+
+    /**
+     * Returns length of the array element stored in the bit stream in bits.
+     *
+     * \param contextNode Packing context node.
+     * \param bitPosition Current bit stream position.
+     * \param elemnet Current element.
+     *
+     * \return Length of the array element stored in the bit stream in bits.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    {
+        return zserio::bitSizeOf(contextNode, bitPosition, element);
+    }
+
+    /**
+     * Calls indexed offsets initialization for the current element.
+     *
+     * \param contextNode Packing context node.
+     * \param bitPosition: Current bit stream position.
+     * \param element Current element.
+     *
+     * \return Updated bit stream position which points to the first bit after this element.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    {
+
+        return zserio::initializeOffsets(contextNode, bitPosition, element);
+    }
+
+    /**
+     * Reads an element from the bit stream.
+     *
+     * \param contextNode Packing context node.
+     * \param in Bit stream reader.
+     *
+     * \return Read element value.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in) const
+    {
+        return zserio::read<ElementType>(contextNode, in);
+    }
+
+    /**
+     * Writes the element to the bit stream.
+     *
+     * \param contextNode Packing context node.
+     * \param out Bit stream writer.
+     * \param element Element to write.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType element) const
+    {
+        zserio::write(contextNode, out, element);
+    }
+};
+
+namespace detail
+{
+
+/** Object packed array tratis. */
+template <typename T>
+class ObjectPackedArrayTraits
+{
+public:
+    using ElementType = T;
 
     /**
      * Creates packing context.
@@ -1586,7 +1670,77 @@ public:
     }
 
     /**
-     * Read an element from the bit stream.
+     * Writes the element to the bit stream.
+     *
+     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param out Bit stream writer.
+     * \param element Element to write.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType& element)
+    {
+        element.write(contextNode, out);
+    }
+};
+
+} // namespace detail
+
+/**
+ * Specialization of packed array traits for Zserio bitmasks.
+ */
+template <typename T>
+class PackedArrayTraits<BitmaskArrayTraits<T>> : public detail::ObjectPackedArrayTraits<T>
+{
+public:
+    /** Element type. */
+    using ElementType = T;
+
+    /**
+     * Constructor.
+     *
+     * Takes bitmask array traits just to be consistent with generic PackedArrayTraits
+     * and also to allow template argument deduction.
+     */
+    explicit PackedArrayTraits(const BitmaskArrayTraits<T>&)
+    {}
+
+    /**
+     * Reads an element from the bit stream.
+     *
+     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
+     * \param elementFactory Factory which knows how to create a single array element from packed bit stream.
+     * \param rawArray Raw array where to create the read element.
+     * \param in Bit stream reader.
+     * \param index Index of the current element.
+     */
+    template <typename PACKING_CONTEXT_NODE>
+    ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in) const
+    {
+        return ElementType(contextNode, in);
+    }
+};
+
+/**
+ * Specialization of packed array traits for Zserio objects.
+ */
+template <typename T, typename ELEMENT_FACTORY>
+class PackedArrayTraits<ObjectArrayTraits<T, ELEMENT_FACTORY>> : public detail::ObjectPackedArrayTraits<T>
+{
+public:
+    /** Element type. */
+    using ElementType = T;
+
+    /**
+     * Constructor.
+     *
+     * Takes object array traits just to be consistent with generic PackedArrayTraits
+     * and also to allow template argument deduction.
+     */
+    explicit PackedArrayTraits(const ObjectArrayTraits<T, ELEMENT_FACTORY>&)
+    {}
+
+    /**
+     * Reads an element from the bit stream.
      *
      * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
      * \param elementFactory Factory which knows how to create a single array element from packed bit stream.
@@ -1599,19 +1753,6 @@ public:
             std::vector<ElementType, ALLOC>& rawArray, BitStreamReader& in, size_t index)
     {
         elementFactory.create(contextNode, rawArray, in, index);
-    }
-
-    /**
-     * Writes the element to the bit stream.
-     *
-     * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
-     * \param out Bit stream writer.
-     * \param element Element to write.
-     */
-    template <typename PACKING_CONTEXT_NODE>
-    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType& element)
-    {
-        element.write(contextNode, out);
     }
 };
 
