@@ -24,6 +24,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/ItemChoiceHolder.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/ItemChoiceHolder.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Block.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Block.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/BlockHeader.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/BlockHeader.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.h
 
@@ -42,13 +49,13 @@ zserio_add_library(TARGET parameterized_types_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    IGNORE_WARNINGS ON # TODO[mikir]: Remove it once packed arrays are implemented in C++!
 )
 
 add_test_sources(
     cpp/ArrayElementParamTest.cpp
     cpp/CompoundAndFieldWithSameParamTest.cpp
     cpp/GrandChildParamTest.cpp
+    cpp/PackedArrayElementParamTest.cpp
     cpp/SimpleParamTest.cpp
     cpp/SubtypedBitfieldParamTest.cpp
 )

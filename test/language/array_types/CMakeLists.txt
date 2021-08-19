@@ -37,6 +37,53 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.h
 
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestStructure.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/PackedArraysMapping.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestBitmask.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestEnum.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestBitmask.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/PackedArraysMapping.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestEnum.h
+
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.h
+
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_uint8/PackedAutoArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_uint8/PackedAutoArray.h
+
+    ${ZSERIO_GEN_DIR}/array_types/packed_fixed_array_uint8/PackedFixedArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_fixed_array_uint8/PackedFixedArray.cpp
+
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestPackedArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/PackedVariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Value32.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/PackedVariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestChoice.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestStructure.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnion.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Bit15.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/BITS_PER_BYTE.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Value32.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestBitmask.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestEnum.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestBitmask.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestChoice.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestEnum.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnpackedArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestPackedArray.cpp
+
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct_recursion/PackedVariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct_recursion/PackedVariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct_recursion/Block.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct_recursion/Block.cpp
+
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_uint8/PackedVariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_uint8/PackedVariableArray.cpp
+
     ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/VariableArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/VariableArray.h
     ${ZSERIO_GEN_DIR}/array_types/variable_array_struct_cast_int8/TestStructure.cpp
@@ -62,7 +109,6 @@ zserio_add_library(TARGET array_types_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    IGNORE_WARNINGS ON # TODO[mikir]: Remove it once packed arrays are implemented in C++!
 )
 
 add_test_sources(
@@ -76,6 +122,13 @@ add_test_sources(
     cpp/ImplicitArrayFloat16Test.cpp
     cpp/ImplicitArrayUInt8Test.cpp
     cpp/ImplicitArrayUInt64Test.cpp
+    cpp/PackedArraysMappingTest.cpp
+    cpp/PackedAutoArrayStructRecursionTest.cpp
+    cpp/PackedAutoArrayUInt8Test.cpp
+    cpp/PackedFixedArrayUInt8Test.cpp
+    cpp/PackedVariableArrayStructRecursionTest.cpp
+    cpp/PackedVariableArrayStructTest.cpp
+    cpp/PackedVariableArrayUInt8Test.cpp
     cpp/VariableArrayStructCastInt8Test.cpp
     cpp/VariableArrayStructCastVarUIntTest.cpp
     cpp/VariableArraySubtypedStructTest.cpp

@@ -45,6 +45,14 @@
     </#if>
 </#macro>
 
+<#macro compound_field_packing_context_node field index>
+    <#if field.optional?? && field.optional.isRecursive>
+        contextNode<#t>
+    <#else>
+        contextNode.getChildren().at(${index})<#t>
+    </#if>
+</#macro>
+
 <#macro compound_read_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
@@ -68,9 +76,9 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
     <@compound_read_field_prolog field, compoundName, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType>
-            <#local readCommand>contextNode.getChildren().at(${index}).getContext().read(<@array_traits field/>, in)</#local>
+            <#local readCommand><@compound_field_packing_context_node field, index/>.getContext().read(<@array_traits field/>, in)</#local>
         <#elseif field.isEnum>
-            <#local readCommand>::zserio::read<<@field_cpp_type_name field/>>(contextNode.getChildren().at(${index}), in)</#local>
+            <#local readCommand>::zserio::read<<@field_cpp_type_name field/>>(<@compound_field_packing_context_node field, index/>, in)</#local>
         <#else>
             <#local compoundParamsArguments>
                 <#if field.compound??>
@@ -81,7 +89,7 @@ ${I}return <@field_member_type_name field/>(::zserio::NullOpt<#if field.holderNe
                 in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if><#t>
                 <#if field.compound??>, allocator</#if><#t>
             </#local>
-            <#local readCommand><@field_cpp_type_name field/>(contextNode.getChildren().at(${index}), ${constructorArguments})</#local>
+            <#local readCommand><@field_cpp_type_name field/>(<@compound_field_packing_context_node field, index/>, ${constructorArguments})</#local>
         </#if>
     <#elseif field.runtimeFunction??>
         <#local readCommandArgs>
@@ -210,12 +218,12 @@ ${I}}
     <@compound_write_field_prolog field, compoundName, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType>
-${I}contextNode.getChildren().at(${index}).getContext().write(
+${I}<@compound_field_packing_context_node field, index/>.getContext().write(
 ${I}        <@array_traits field/>, out, <@compound_get_field field/>);
         <#elseif field.isEnum>
-${I}::zserio::write(contextNode.getChildren().at(${index}), out, <@compound_get_field field/>);
+${I}::zserio::write(<@compound_field_packing_context_node field, index/>, out, <@compound_get_field field/>);
         <#else>
-${I}<@compound_get_field field/>.write(contextNode.getChildren().at(${index}), out);
+${I}<@compound_get_field field/>.write(<@compound_field_packing_context_node field, index/>, out);
         </#if>
     <#elseif field.runtimeFunction??>
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>,<#rt>
@@ -677,14 +685,14 @@ ${I}}
     <@compound_align_field field, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType>
-${I}endBitPosition += contextNode.getChildren().at(${index}).getContext().bitSizeOf(
+${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
 ${I}        <@array_traits field/>, endBitPosition, <@compound_get_field field/>);
         <#elseif field.isEnum>
 ${I}endBitPosition += ::zserio::bitSizeOf(
-${I}        contextNode.getChildren().at(${index}), endBitPosition, <@compound_get_field field/>);
+${I}        <@compound_field_packing_context_node field, index/>, endBitPosition, <@compound_get_field field/>);
         <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(
-${I}        contextNode.getChildren().at(${index}), endBitPosition);
+${I}        <@compound_field_packing_context_node field, index/>, endBitPosition);
         </#if>
     <#elseif field.isEnum>
 ${I}endBitPosition += ::zserio::bitSizeOf(<@compound_get_field field/>);
@@ -732,14 +740,14 @@ ${I}}
     </#if>
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType>
-${I}endBitPosition += contextNode.getChildren().at(${index}).getContext().bitSizeOf(
+${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
 ${I}        <@array_traits field/>, endBitPosition, <@compound_get_field field/>);
         <#elseif field.isEnum>
 ${I}endBitPosition = ::zserio::initializeOffsets(
-${I}        contextNode.getChildren().at(${index}), endBitPosition, <@compound_get_field field/>);
+${I}        <@compound_field_packing_context_node field, index/>, endBitPosition, <@compound_get_field field/>);
         <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(
-${I}        contextNode.getChildren().at(${index}), endBitPosition);
+${I}        <@compound_field_packing_context_node field, index/>, endBitPosition);
         </#if>
     <#elseif field.isEnum>
 ${I}endBitPosition = ::zserio::initializeOffsets(endBitPosition, <@compound_get_field field/>);
@@ -976,12 +984,12 @@ ${I}}
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isBuiltinType>
-${I}contextNode.getChildren().at(${index}).getContext().init(<@compound_get_field field/>);
+${I}<@compound_field_packing_context_node field, index/>.getContext().init(<@compound_get_field field/>);
     <#elseif field.isEnum>
-${I}contextNode.getChildren().at(${index}).getContext().init(
+${I}<@compound_field_packing_context_node field, index/>.getContext().init(
 ${I}        ::zserio::enumToValue(<@compound_get_field field/>));
     <#else>
-${I}<@compound_get_field field/>.initPackingContext(contextNode.getChildren().at(${index}));
+${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_context_node field, index/>);
     </#if>
 </#macro>
 
