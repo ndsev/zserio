@@ -126,7 +126,7 @@ public:
      * Returns length of the packed element stored in the bit stream in bits.
      *
      * \param arrayTraits Standard array traits.
-     * \param bitPostion Curent bit stream position.
+     * \param bitPosition Curent bit stream position.
      * \param element Value of the current element.
      *
      * \return Length of the packed element stored in the bit stream in bits.
@@ -155,7 +155,7 @@ public:
     {
         m_isPacked = in.readBool();
         if (m_isPacked)
-            m_maxBitNumber = in.readSignedBits(MAX_BIT_NUMBER_BITS);
+            m_maxBitNumber = static_cast<uint8_t>(in.readBits(MAX_BIT_NUMBER_BITS));
     }
 
     /**
@@ -184,7 +184,8 @@ public:
             if (m_maxBitNumber > 0)
             {
                 const int64_t delta = in.readSignedBits64(m_maxBitNumber + 1);
-                const typename ARRAY_TRAITS::ElementType element = previousElement + delta;
+                const typename ARRAY_TRAITS::ElementType element =
+                        static_cast<typename ARRAY_TRAITS::ElementType>(previousElement + delta);
                 m_previousElement = static_cast<uint64_t>(element);
                 return element;
             }
@@ -228,10 +229,11 @@ public:
         {
             if (m_maxBitNumber > 0)
             {
-                // it's already checked in init phase that the delta will fit into int64_t
-                const int64_t delta = static_cast<uint64_t>(element) - m_previousElement.value();
+                // it's already checked in the init phase that the delta will fit into int64_t
+                const int64_t delta = static_cast<int64_t>(
+                        static_cast<uint64_t>(element) - m_previousElement.value());
                 out.writeSignedBits64(delta, m_maxBitNumber + 1);
-                m_previousElement = element;
+                m_previousElement = static_cast<uint64_t>(element);
             }
         }
     }

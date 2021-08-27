@@ -873,7 +873,7 @@ TEST_F(ArrayTest, objectArray)
 
 TEST_F(ArrayTest, stdInt8PackedArray)
 {
-    std::vector<uint8_t> rawArray = { 0, 2, 4, 6, 8, 10, 10, 11 };
+    std::vector<int8_t> rawArray = { 0, 2, 4, 6, 8, 10, 10, 11 };
     testPackedArray(rawArray, StdIntArrayTraits<int8_t>(), 8);
 }
 

@@ -152,6 +152,11 @@ public:
         return m_numBits;
     }
 
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
     size_t bitSizeOf(size_t, ElementType) const
     {
         return m_numBits;
@@ -218,6 +223,11 @@ struct StdIntArrayTraits
         return NUM_BITS;
     }
 
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
     static size_t bitSizeOf(size_t, ElementType)
     {
         return bitSizeOf();
@@ -754,7 +764,7 @@ struct VarIntArrayTraits<uint64_t>
      * Writes the single array element.
      *
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
     static void write(BitStreamWriter& out, ElementType element)
     {
@@ -843,7 +853,12 @@ struct Float16ArrayTraits
         return 16;
     }
 
-    static size_t bitSizeOf(size_t, size_t)
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType)
     {
         return bitSizeOf();
     }
@@ -877,7 +892,7 @@ struct Float16ArrayTraits
      * Writes the single array element.
      *
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
     static void write(BitStreamWriter& out, ElementType element)
     {
@@ -906,7 +921,12 @@ struct Float32ArrayTraits
         return 32;
     }
 
-    static size_t bitSizeOf(size_t, size_t)
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType)
     {
         return bitSizeOf();
     }
@@ -940,7 +960,7 @@ struct Float32ArrayTraits
      * Writes the single array element.
      *
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
     static void write(BitStreamWriter& out, ElementType element)
     {
@@ -969,7 +989,12 @@ struct Float64ArrayTraits
         return 64;
     }
 
-    static size_t bitSizeOf(size_t, size_t)
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType)
     {
         return bitSizeOf();
     }
@@ -1003,7 +1028,7 @@ struct Float64ArrayTraits
      * Writes the single array element.
      *
      * \param out Bit stream writer to use.
-     * \param index Index of element to write.
+     * \param element Element to write.
      */
     static void write(BitStreamWriter& out, ElementType element)
     {
@@ -1032,7 +1057,12 @@ struct BoolArrayTraits
         return 1;
     }
 
-    static size_t bitSizeOf(size_t, size_t)
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType)
     {
         return bitSizeOf();
     }
@@ -1448,7 +1478,7 @@ public:
      *
      * \param contextNode Packing context node.
      * \param bitPosition Current bit stream position.
-     * \param elemnet Current element.
+     * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
@@ -1462,7 +1492,7 @@ public:
      * Calls indexed offsets initialization for the current element.
      *
      * \param contextNode Packing context node.
-     * \param bitPosition: Current bit stream position.
+     * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Updated bit stream position which points to the first bit after this element.
@@ -1551,7 +1581,7 @@ public:
      *
      * \param contextNode Packing context node.
      * \param bitPosition Current bit stream position.
-     * \param elemnet Current element.
+     * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
      */
@@ -1565,7 +1595,7 @@ public:
      * Calls indexed offsets initialization for the current element.
      *
      * \param contextNode Packing context node.
-     * \param bitPosition: Current bit stream position.
+     * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Updated bit stream position which points to the first bit after this element.
@@ -1708,10 +1738,9 @@ public:
      * Reads an element from the bit stream.
      *
      * \param contextNode Packing context node which keeps the appropriate subtree of contexts.
-     * \param elementFactory Factory which knows how to create a single array element from packed bit stream.
-     * \param rawArray Raw array where to create the read element.
      * \param in Bit stream reader.
-     * \param index Index of the current element.
+     *
+     * \return Read element.
      */
     template <typename PACKING_CONTEXT_NODE>
     ElementType read(PACKING_CONTEXT_NODE& contextNode, BitStreamReader& in) const

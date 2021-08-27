@@ -711,7 +711,6 @@ public:
      * \param in Bit stream reader to use for reading.
      * \param arrayLength Array length. Empty for auto / implicit arrays.
      * \param elementFactory Factory which knows how to create a single array element.
-     * \param allocator Allocator to use for raw array.
      */
     void read(BitStreamReader& in, size_t arrayLength,
             const detail::ElementFactory<ARRAY_TRAITS>& elementFactory)
@@ -840,7 +839,6 @@ public:
      * Overloaded method used for unaligned arrays.
      *
      * \param out Bit stream where to write.
-     * \param offsetChecker Offset checker used to check offsets before writing.
      */
     void writePacked(BitStreamWriter& out)
     {
