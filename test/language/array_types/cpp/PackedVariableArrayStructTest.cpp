@@ -18,7 +18,7 @@ using bit_buffer_type = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_typ
 class PackedVariableArrayStructTest : public ::testing::Test
 {
 protected:
-    void fillPackedVariableArray(PackedVariableArray& packedVariableArray, size_t numElements)
+    void fillPackedVariableArray(PackedVariableArray& packedVariableArray, uint32_t numElements)
     {
         vector_type<TestStructure> testStructureArray;
         fillTestStructureArray(testStructureArray, numElements);
@@ -28,14 +28,14 @@ protected:
         packedVariableArray.setTestPackedArray(TestPackedArray{testStructureArray});
     }
 
-    void fillTestStructureArray(vector_type<TestStructure>& testStructureArray, size_t numElements)
+    void fillTestStructureArray(vector_type<TestStructure>& testStructureArray, uint32_t numElements)
     {
         testStructureArray.reserve(numElements);
-        for (size_t i = 0; i < numElements; ++i)
+        for (uint32_t i = 0; i < numElements; ++i)
             testStructureArray.push_back(createTestStructure(i));
     }
 
-    TestStructure createTestStructure(size_t index)
+    TestStructure createTestStructure(uint32_t index)
     {
         TestStructure testStructure;
         testStructure.setId(index);
@@ -58,7 +58,7 @@ protected:
         return testStructure;
     }
 
-    TestChoice createTestChoice(size_t index)
+    TestChoice createTestChoice(uint32_t index)
     {
         TestChoice testChoice;
         if (index == 0 || index == 2 || index == 4)
@@ -71,7 +71,7 @@ protected:
         return testChoice;
     }
 
-    TestUnion createTestUnion(size_t index)
+    TestUnion createTestUnion(uint32_t index)
     {
         TestUnion testUnion;
         if (index % 2 == 0)
@@ -116,17 +116,17 @@ protected:
         ASSERT_EQ(packedVariableArray, readPackedVariableArray);
     }
 
-    static const size_t VARIABLE_ARRAY_LENGTH1;
-    static const size_t VARIABLE_ARRAY_LENGTH2;
-    static const size_t VARIABLE_ARRAY_LENGTH3;
-    static const size_t VARIABLE_ARRAY_LENGTH4;
+    static const uint32_t VARIABLE_ARRAY_LENGTH1;
+    static const uint32_t VARIABLE_ARRAY_LENGTH2;
+    static const uint32_t VARIABLE_ARRAY_LENGTH3;
+    static const uint32_t VARIABLE_ARRAY_LENGTH4;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(70 * 1024 * 8);
 };
 
-const size_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH1 = 25;
-const size_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH2 = 50;
-const size_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH3 = 100;
-const size_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH4 = 1000;
+const uint32_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH1 = 25;
+const uint32_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH2 = 50;
+const uint32_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH3 = 100;
+const uint32_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH4 = 1000;
 
 TEST_F(PackedVariableArrayStructTest, bitSizeOfLength1)
 {

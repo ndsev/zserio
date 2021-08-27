@@ -163,7 +163,7 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
-void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode)
+void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>)
 {
 <#list fieldList as field>
     <@compound_create_packing_context_field field/>
@@ -177,7 +177,8 @@ void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode
         // empty
     </#if>
 </#macro>
-void ${name}::initPackingContext(${types.packingContextNode.name}& contextNode) const
+void ${name}::initPackingContext(${types.packingContextNode.name}&<#rt>
+        <#lt><#if needs_packing_context_node(fieldList)> contextNode</#if>) const
 {
     <@choice_switch "init_packing_context_member", true, true/>
 }
@@ -202,7 +203,8 @@ size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) c
 </#if>
 }
 
-size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
+size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#rt>
+        <#if needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
         <#lt>size_t<#if fieldList?has_content> bitPosition</#if>) const
 {
 <#if fieldList?has_content>
@@ -237,7 +239,8 @@ size_t ${name}::initializeOffsets(size_t bitPosition)
     </#if>
 }
 
-size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
+size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#rt>
+        <#if needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
         <#lt>size_t bitPosition)
 {
     <#if fieldList?has_content>
@@ -316,7 +319,8 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
     </#if>
 }
 
-void ${name}::write(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
+void ${name}::write(${types.packingContextNode.name}&<#rt>
+        <#if needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
         ::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>)<#t>
 {
     <#if fieldList?has_content>
@@ -344,7 +348,8 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
     <@choice_switch "choice_read_member", false/>
 }
 
-${types.anyHolder.name} ${name}::readObject(${types.packingContextNode.name}& contextNode,
+${types.anyHolder.name} ${name}::readObject(${types.packingContextNode.name}&<#rt>
+        <#if needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     <@choice_switch "choice_read_member", false, true/>

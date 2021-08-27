@@ -449,7 +449,8 @@ ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const
     }
 }
 
-${types.anyHolder.name} ${name}::readObject(${types.packingContextNode.name}& contextNode,
+${types.anyHolder.name} ${name}::readObject(${types.packingContextNode.name}&<#rt>
+        <#lt><#if needs_packing_context_node(fieldList)> contextNode</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
     switch (m_choiceTag)

@@ -46,7 +46,9 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#if packed>${types.packingContextNode.name}& contextNode, </#if><#t>
+    <#if packed>
+        ${types.packingContextNode.name}&<#if read_constructor_needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
+    </#if>
         ::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#t>
     <#if constructorArgumentTypeList?has_content>
         <#lt>,
@@ -265,6 +267,15 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
 <#function read_constructor_needs_allocator fieldList>
     <#list fieldList as field>
         <#if field.holderNeedsAllocator || field.needsAllocator>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function read_constructor_needs_packing_context_node fieldList>
+    <#list fieldList as field>
+        <#if field.isPackable>
             <#return true>
         </#if>
     </#list>
