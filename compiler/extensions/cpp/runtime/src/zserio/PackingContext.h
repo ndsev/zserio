@@ -13,7 +13,7 @@ namespace zserio
 namespace detail
 {
 
-// calculates bit length of delta calculated in DeltaContext, emulates python bit_length to keep the same logic
+// calculates bit length on delta provided as an absolute number
 inline uint8_t absDeltaBitLength(uint64_t absDelta)
 {
     uint8_t result = 0;
@@ -26,28 +26,23 @@ inline uint8_t absDeltaBitLength(uint64_t absDelta)
     return result;
 }
 
-// calculates delta, returns delta bit length
-// returns UINT8_MAX when delta doesn't fit to 63bits, otherwise returns bit length and sets calculated delta
-// TODO[Mi-L@]: Will this work on all platforms?
+// calculates bit length, emulates Python bit_length to keep same logic
 template <typename T>
-inline uint8_t calcDelta(T lhs, T rhs, int64_t& delta)
+uint8_t calcBitLength(T lhs, T rhs)
 {
-    if (lhs > rhs)
-    {
-        const uint64_t absDelta =  static_cast<uint64_t>(lhs) - static_cast<uint64_t>(rhs);
-        if (absDelta > INT64_MAX)
-            return UINT8_MAX; // too big delta
-        delta = static_cast<int64_t>(absDelta);
-        return absDeltaBitLength(absDelta);
-    }
-    else
-    {
-        const uint64_t absDelta = static_cast<uint64_t>(rhs) - static_cast<uint64_t>(lhs);
-        if (absDelta > INT64_MAX)
-            return UINT8_MAX; // too big delta
-        delta = -static_cast<int64_t>(absDelta);
-        return absDeltaBitLength(absDelta);
-    }
+    const uint64_t absDelta = lhs > rhs
+            ? static_cast<uint64_t>(lhs) - static_cast<uint64_t>(rhs)
+            : static_cast<uint64_t>(rhs) - static_cast<uint64_t>(lhs);
+
+    return absDeltaBitLength(absDelta);
+}
+
+// calculates delta, doesn't check for possible int64_t overflow since it's used only in cases where it's
+// already known that overflow cannot occur
+template <typename T>
+int64_t calcUncheckedDelta(T lhs, uint64_t rhs)
+{
+    return static_cast<int64_t>(static_cast<uint64_t>(lhs) - rhs);
 }
 
 } // namespace detail
@@ -96,9 +91,8 @@ public:
         {
             if (m_maxBitNumber <= MAX_BIT_NUMBER_LIMIT)
                 m_isPacked = true;
-            int64_t delta;
-            const uint8_t maxBitNumber =
-                    detail::calcDelta(element, static_cast<ELEMENT_TYPE>(m_previousElement.value()), delta);
+            const auto previousElement = static_cast<ELEMENT_TYPE>(m_previousElement.value());
+            const uint8_t maxBitNumber = detail::calcBitLength(element, previousElement);
             if (maxBitNumber > m_maxBitNumber)
             {
                 m_maxBitNumber = maxBitNumber;
@@ -178,21 +172,15 @@ public:
         }
         else
         {
-            const auto previousElement =
-                    static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value());
-
             if (m_maxBitNumber > 0)
             {
                 const int64_t delta = in.readSignedBits64(m_maxBitNumber + 1);
                 const typename ARRAY_TRAITS::ElementType element =
-                        static_cast<typename ARRAY_TRAITS::ElementType>(previousElement + delta);
+                        static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value() + delta);
                 m_previousElement = static_cast<uint64_t>(element);
-                return element;
             }
-            else
-            {
-                return previousElement;
-            }
+
+            return static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value());
         }
     }
 
@@ -230,8 +218,7 @@ public:
             if (m_maxBitNumber > 0)
             {
                 // it's already checked in the init phase that the delta will fit into int64_t
-                const int64_t delta = static_cast<int64_t>(
-                        static_cast<uint64_t>(element) - m_previousElement.value());
+                const int64_t delta = detail::calcUncheckedDelta(element, m_previousElement.value());
                 out.writeSignedBits64(delta, m_maxBitNumber + 1);
                 m_previousElement = static_cast<uint64_t>(element);
             }

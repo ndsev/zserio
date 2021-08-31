@@ -922,7 +922,7 @@ private:
     RawArray m_rawArray;
     ARRAY_TRAITS m_arrayTraits;
     PackedArrayTraits<ARRAY_TRAITS> m_packedArrayTraits;
-    // TODO[Mi-L@]: Mutable context should be ok since it's just a cache?
+    // mutable context is ok since it's just a cache and we need to keep bitSizeOfPacked method const
     mutable unique_ptr<PackingContextNodeType,
             RebindAlloc<allocator_type, PackingContextNodeType>> m_packingContextNode;
 };

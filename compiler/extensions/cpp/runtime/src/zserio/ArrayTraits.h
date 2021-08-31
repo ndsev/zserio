@@ -1151,10 +1151,9 @@ struct BasicStringArrayTraits
      *
      * \return Read element.
      */
-    template <typename ALLOCATOR>
-    static ElementType read(BitStreamReader& in, const ALLOCATOR& allocator)
+    static ElementType read(BitStreamReader& in, const allocator_type& allocator)
     {
-        return in.readString<allocator_type>(allocator);
+        return in.readString(allocator);
     }
 
     /**
@@ -1216,10 +1215,9 @@ struct BasicBitBufferArrayTraits
      *
      * \param in Bit stream reader.
      */
-    template <typename ALLOCATOR>
-    static ElementType read(BitStreamReader& in, const ALLOCATOR& allocator)
+    static ElementType read(BitStreamReader& in, const allocator_type& allocator)
     {
-        return in.readBitBuffer<allocator_type>(allocator);
+        return in.readBitBuffer(allocator);
     }
 
     /**
@@ -1603,7 +1601,6 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
     {
-
         return zserio::initializeOffsets(contextNode, bitPosition, element);
     }
 
