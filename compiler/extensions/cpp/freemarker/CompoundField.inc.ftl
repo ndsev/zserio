@@ -886,13 +886,13 @@ ${I}<@field_member_name field/>(::zserio::allocatorPropagatingCopy(<#rt>
             <#local initializeCommand><@compound_get_field field/>.initializeChildren();</#local>
         </#if>
     <#elseif field.array?? && field.array.elementCompound??>
-        <#local initializeCommand>
-            <#if needs_field_initialization(field.array.elementCompound)>
-                <@compound_get_field field/>.initializeElements(<@element_initializer_name field.name/>(*this));<#t>
-            <#elseif field.array.elementCompound.needsChildrenInitialization>
-                <@compound_get_field field/>.initializeElements(<@element_children_initializer_name field.name/>());<#t>
-            </#if>
-        </#local>
+        <#if needs_field_initialization(field.array.elementCompound)>
+            <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
+                    <#lt><@element_initializer_name field.name/>(*this));</#local>
+        <#elseif field.array.elementCompound.needsChildrenInitialization>
+            <#local initializeCommand><@compound_get_field field/>.initializeElements(<#rt>
+                    <#lt><@element_children_initializer_name field.name/>());</#local>
+        </#if>
     </#if>
     <#if initializeCommand??>
         <#if field.optional??>
