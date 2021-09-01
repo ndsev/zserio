@@ -191,7 +191,7 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
-void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode)
+void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>)
 {
 <#if fieldList?has_content>
     contextNode.createChild().createContext();<#-- choice tag -->
