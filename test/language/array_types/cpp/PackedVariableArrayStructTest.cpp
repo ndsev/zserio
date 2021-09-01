@@ -39,7 +39,7 @@ protected:
     {
         TestStructure testStructure;
         testStructure.setId(index);
-        testStructure.setName("name" + std::to_string(index));
+        testStructure.setName("name" + zserio::toString<allocator_type>(index));
         testStructure.setData(bit_buffer_type{vector_type<uint8_t>{0xCD, 0xC0}, 10});
         testStructure.setTestChoice(createTestChoice(index));
         testStructure.setTestUnion(createTestUnion(index));

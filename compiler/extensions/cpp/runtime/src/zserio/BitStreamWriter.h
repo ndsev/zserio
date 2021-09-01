@@ -10,6 +10,7 @@
 #include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/VarSizeUtil.h"
+ #include "zserio/String.h"
 
 namespace zserio
 {
@@ -197,7 +198,7 @@ public:
      * \param data String to write.
      */
     template <typename ALLOC>
-    void writeString(const std::basic_string<char, std::char_traits<char>, ALLOC>& data)
+    void writeString(const string<ALLOC>& data)
     {
         const size_t len = data.size();
         writeVarSize(convertSizeToUInt32(len));

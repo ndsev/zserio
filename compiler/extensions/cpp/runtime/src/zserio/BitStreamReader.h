@@ -9,6 +9,7 @@
 #include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/String.h"
 
 namespace zserio
 {
@@ -231,10 +232,10 @@ public:
      * \return Read string.
      */
     template <typename ALLOC = std::allocator<char>>
-    std::basic_string<char, std::char_traits<char>, zserio::RebindAlloc<ALLOC, char>> readString(
+    string<RebindAlloc<ALLOC, char>> readString(
             const ALLOC& alloc = ALLOC())
     {
-        std::basic_string<char, std::char_traits<char>, zserio::RebindAlloc<ALLOC, char>> value{alloc};
+        string<RebindAlloc<ALLOC, char>> value{alloc};
         const size_t len = static_cast<size_t>(readVarSize());
         value.reserve(len);
         for (size_t i = 0; i < len; ++i)
