@@ -1126,7 +1126,7 @@ struct BasicStringArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(size_t, const ElementType& element)
     {
         return zserio::bitSizeOfString(element);
     }
@@ -1139,7 +1139,7 @@ struct BasicStringArrayTraits
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    static size_t initializeOffsets(size_t bitPosition, ElementType element)
+    static size_t initializeOffsets(size_t bitPosition, const ElementType& element)
     {
         return bitPosition + bitSizeOf(bitPosition, element);
     }
@@ -1162,7 +1162,7 @@ struct BasicStringArrayTraits
      * \param out Bit stream writer to use.
      * \param element Element to write.
      */
-    static void write(BitStreamWriter& out, ElementType element)
+    static void write(BitStreamWriter& out, const ElementType& element)
     {
         out.writeString(element);
     }
@@ -1192,7 +1192,7 @@ struct BasicBitBufferArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(size_t, const ElementType& element)
     {
         return zserio::bitSizeOfBitBuffer(element);
     }
@@ -1205,7 +1205,7 @@ struct BasicBitBufferArrayTraits
      *
      * \return Updated bit position which points to the first bit after the array element.
      */
-    static size_t initializeOffsets(size_t bitPosition, ElementType element)
+    static size_t initializeOffsets(size_t bitPosition, const ElementType& element)
     {
         return bitPosition + bitSizeOf(bitPosition, element);
     }
@@ -1226,7 +1226,7 @@ struct BasicBitBufferArrayTraits
      * \param out Bit stream writer to use.
      * \param element Element to write.
      */
-    static void write(BitStreamWriter& out, ElementType element)
+    static void write(BitStreamWriter& out, const ElementType& element)
     {
         out.writeBitBuffer(element);
     }
