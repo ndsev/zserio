@@ -36,7 +36,7 @@ enum class DummyEnum : uint8_t
 };
 
 template <>
-DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
+inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
 {
     switch (rawValue)
     {
@@ -56,9 +56,24 @@ inline size_t bitSizeOf<DummyEnum>(DummyEnum)
 }
 
 template <>
+inline size_t bitSizeOf<::zserio::PackingContextNode, DummyEnum>(::zserio::PackingContextNode& contextNode,
+        size_t bitPosition, DummyEnum value)
+{
+    return contextNode.getContext().bitSizeOf(
+            StdIntArrayTraits<uint8_t>(), bitPosition, enumToValue(value));
+}
+
+template <>
 inline size_t initializeOffsets<DummyEnum>(size_t bitPosition, DummyEnum value)
 {
     return bitPosition + bitSizeOf(value);
+}
+
+template <>
+inline size_t initializeOffsets<::zserio::PackingContextNode, DummyEnum>(
+        ::zserio::PackingContextNode& contextNode, size_t bitPosition, DummyEnum value)
+{
+    return bitPosition + bitSizeOf(contextNode, bitPosition, value);
 }
 
 template <>
@@ -69,9 +84,21 @@ inline DummyEnum read<DummyEnum>(zserio::BitStreamReader& in)
 }
 
 template <>
+inline DummyEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+{
+    return valueToEnum<DummyEnum>(contextNode.getContext().read(::zserio::StdIntArrayTraits<uint8_t>(), in));
+}
+
+template <>
 inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
 {
     out.writeBits(enumToValue(value), UINT8_C(8));
+}
+
+template <>
+inline void write(::zserio::PackingContextNode& contextNode, BitStreamWriter& out, DummyEnum value)
+{
+    contextNode.getContext().write(::zserio::StdIntArrayTraits<uint8_t>(), out, enumToValue(value));
 }
 
 class DummyBitmask
@@ -94,14 +121,39 @@ public:
         m_value(value)
     {}
 
+    DummyBitmask(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in) :
+        m_value(readValue(contextNode, in))
+    {}
+
+    static void createPackingContext(::zserio::PackingContextNode& contextNode)
+    {
+        contextNode.createContext();
+    }
+
+    void initPackingContext(::zserio::PackingContextNode& contextNode) const
+    {
+        contextNode.getContext().init(m_value);
+    }
+
     size_t bitSizeOf(size_t = 0) const
     {
         return UINT8_C(8);
     }
 
+    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+    {
+        return contextNode.getContext().bitSizeOf(::zserio::StdIntArrayTraits<underlying_type>(),
+                bitPosition, m_value);
+    }
+
     size_t initializeOffsets(size_t bitPosition) const
     {
         return bitPosition + bitSizeOf(bitPosition);
+    }
+
+    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+    {
+        return bitPosition + bitSizeOf(contextNode, bitPosition);
     }
 
     bool operator==(const DummyBitmask& other) const
@@ -115,10 +167,21 @@ public:
         out.writeBits(m_value, UINT8_C(8));
     }
 
+    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+    {
+        contextNode.getContext().write(::zserio::StdIntArrayTraits<underlying_type>(), out, m_value);
+    }
+
 private:
     static underlying_type readValue(::zserio::BitStreamReader& in)
     {
         return static_cast<underlying_type>(in.readBits(UINT8_C(8)));
+    }
+
+    static underlying_type readValue(::zserio::PackingContextNode& contextNode,
+            ::zserio::BitStreamReader& in)
+    {
+        return contextNode.getContext().read(::zserio::StdIntArrayTraits<underlying_type>(), in);
     }
 
     underlying_type m_value;
@@ -248,14 +311,16 @@ public:
     }
 
 protected:
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t elementBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY = detail::DummyElementFactory>
+    void testArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t elementBitSize,
+            const ELEMENT_FACTORY& elementFactory = ELEMENT_FACTORY())
     {
         const size_t arraySize = rawArray.size();
         const size_t unalignedBitSize = elementBitSize * arraySize;
-        const size_t alignedBitSize = (arraySize > 0) ? elementBitSize +
-                alignTo(8, elementBitSize) * (arraySize - 1) : 0;
-        testArray(rawArray, arrayTraits, unalignedBitSize, alignedBitSize);
+        const size_t alignedBitSize = (arraySize > 0)
+                ? alignTo(8, elementBitSize) * (arraySize - 1) + elementBitSize
+                : 0;
+        testArray(rawArray, arrayTraits, unalignedBitSize, alignedBitSize, elementFactory);
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY = detail::DummyElementFactory>
@@ -263,23 +328,11 @@ protected:
             size_t unalignedBitSize, size_t alignedBitSize,
             const ELEMENT_FACTORY& elementFactory = ELEMENT_FACTORY())
     {
-        testBitSizeOf(rawArray, arrayTraits, unalignedBitSize);
-        testBitSizeOfAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
-        testBitSizeOfAligned(rawArray, arrayTraits, alignedBitSize);
-        testBitSizeOfAlignedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
-        testInitializeOffsets(rawArray, arrayTraits, unalignedBitSize);
-        testInitializeOffsetsAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
-        testInitializeOffsetsAligned(rawArray, arrayTraits, alignedBitSize);
-        testInitializeOffsetsAlignedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
-        testRead(rawArray, arrayTraits, elementFactory);
-        testReadAuto(rawArray, arrayTraits, elementFactory);
-        testReadAligned(rawArray, arrayTraits, elementFactory);
-        testReadAlignedAuto(rawArray, arrayTraits, elementFactory);
-        testReadImplicit(rawArray, arrayTraits);
-        testWrite(rawArray, arrayTraits, unalignedBitSize);
-        testWriteAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize);
-        testWriteAligned(rawArray, arrayTraits, alignedBitSize);
-        testWriteAlignedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + alignedBitSize);
+        testArrayNormal(rawArray, arrayTraits, unalignedBitSize, elementFactory);
+        testArrayAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize, elementFactory);
+        testArrayAligned(rawArray, arrayTraits, alignedBitSize, elementFactory);
+        testArrayAlignedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + alignedBitSize, elementFactory);
+        testArrayImplicit(rawArray, arrayTraits, unalignedBitSize);
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS>
@@ -289,258 +342,248 @@ protected:
         array.initializeElements(ArrayTestDummyObjectElementInitializer());
         const uint32_t expectedValue = ArrayTestDummyObjectElementInitializer::ELEMENT_VALUE;
         for (const auto& element : array.getRawArray())
-            EXPECT_EQ(expectedValue, element.getValue());
+            ASSERT_EQ(expectedValue, element.getValue());
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY = detail::DummyElementFactory>
-    void testPackedArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t elementBitSize,
+    void testPackedArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
             const ELEMENT_FACTORY& elementFactory = ELEMENT_FACTORY())
     {
-        const size_t arraySize = rawArray.size();
-        const size_t unalignedBitSize = elementBitSize * arraySize;
-        testWritePackedAuto(rawArray, arrayTraits, AUTO_LENGTH_BIT_SIZE + unalignedBitSize, elementFactory);
+        testPackedArrayNormal(rawArray, arrayTraits, elementFactory);
+        testPackedArrayAuto(rawArray, arrayTraits, elementFactory);
+        testPackedArrayAligned(rawArray, arrayTraits, elementFactory);
+        testPackedArrayAlignedAuto(rawArray, arrayTraits, elementFactory);
     }
 
 private:
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testBitSizeOf(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t unalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+    void testArrayNormal(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t expectedBitSize,
+            const ELEMENT_FACTORY& elementFactory)
     {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
-        EXPECT_EQ(unalignedBitSize, array.bitSizeOf(0));
-        EXPECT_EQ(unalignedBitSize, array.bitSizeOf(7));
-    }
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testBitSizeOfAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t autoUnalignedBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
-        EXPECT_EQ(autoUnalignedBitSize, array.bitSizeOf(0));
-        EXPECT_EQ(autoUnalignedBitSize, array.bitSizeOf(7));
-    }
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.write(writer);
+            ASSERT_EQ(i + expectedBitSize, writer.getBitPosition());
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testBitSizeOfAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t alignedBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-        EXPECT_EQ(0 + alignedBitSize, array.bitSizeOf(0));
-        EXPECT_EQ(7 + alignedBitSize, array.bitSizeOf(1));
-        EXPECT_EQ(5 + alignedBitSize, array.bitSizeOf(3));
-        EXPECT_EQ(3 + alignedBitSize, array.bitSizeOf(5));
-        EXPECT_EQ(1 + alignedBitSize, array.bitSizeOf(7));
-    }
+            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsets(i), writer.getBitPosition());
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testBitSizeOfAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t alignedAutoBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-        EXPECT_EQ(alignedAutoBitSize, array.bitSizeOf(0));
-        EXPECT_EQ(alignedAutoBitSize + 1, array.bitSizeOf(7));
-    }
-
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testInitializeOffsets(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t unalignedBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
-        EXPECT_EQ(0 + unalignedBitSize, array.initializeOffsets(0));
-        EXPECT_EQ(7 + unalignedBitSize, array.initializeOffsets(7));
-    }
-
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testInitializeOffsetsAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t autoUnalignedBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
-        EXPECT_EQ(0 + autoUnalignedBitSize, array.initializeOffsets(0));
-        EXPECT_EQ(7 + autoUnalignedBitSize, array.initializeOffsets(7));
-    }
-
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testInitializeOffsetsAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t alignedBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-
-        const size_t alignedBitPosition0 = array.initializeOffsets(0, ArrayTestOffsetInitializer());
-        EXPECT_EQ(0 + alignedBitSize, alignedBitPosition0);
-
-        const size_t alignedBitPosition1 = array.initializeOffsets(1, ArrayTestOffsetInitializer());
-        EXPECT_EQ(1 + 7 + alignedBitSize, alignedBitPosition1);
-
-        const size_t alignedBitPosition3 = array.initializeOffsets(3, ArrayTestOffsetInitializer());
-        EXPECT_EQ(3 + 5 + alignedBitSize, alignedBitPosition3);
-
-        const size_t alignedBitPosition5 = array.initializeOffsets(5, ArrayTestOffsetInitializer());
-        EXPECT_EQ(5 + 3 + alignedBitSize, alignedBitPosition5);
-
-        const size_t alignedBitPosition7 = array.initializeOffsets(7, ArrayTestOffsetInitializer());
-        EXPECT_EQ(7 + 1 + alignedBitSize, alignedBitPosition7);
-    }
-
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testInitializeOffsetsAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t alignedAutoBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-
-        const size_t alignedAutoBitPosition0 = array.initializeOffsets(0, ArrayTestOffsetInitializer());
-        EXPECT_EQ(0 + alignedAutoBitSize, alignedAutoBitPosition0);
-
-        const size_t alignedAutoBitPosition7 = array.initializeOffsets(7, ArrayTestOffsetInitializer());
-        EXPECT_EQ(7 + alignedAutoBitSize + 1, alignedAutoBitPosition7);
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
+            readArray.read(reader, rawArray.size(), elementFactory);
+            ASSERT_EQ(array, readArray);
+        }
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-    void testRead(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+    void testArrayAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t expectedBitSize,
             const ELEMENT_FACTORY& elementFactory)
     {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer);
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
 
-        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
-        readArray.read(reader, rawArray.size(), elementFactory);
-        EXPECT_EQ(array, readArray);
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.write(writer);
+            ASSERT_EQ(i + expectedBitSize, writer.getBitPosition());
+
+            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsets(i), writer.getBitPosition());
+
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
+            readArray.read(reader, elementFactory);
+            ASSERT_EQ(array, readArray);
+        }
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-    void testReadAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+    void testArrayAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t expectedBitSize,
             const ELEMENT_FACTORY& elementFactory)
     {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer);
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
-        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
-        readArray.read(reader, elementFactory);
-        EXPECT_EQ(array, readArray);
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.write(writer, ArrayTestOffsetChecker());
+            ASSERT_EQ(alignTo(8, i) + expectedBitSize, writer.getBitPosition());
+
+            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsets(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
+
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
+            readArray.read(reader, rawArray.size(), elementFactory, ArrayTestOffsetChecker());
+            ASSERT_EQ(array, readArray);
+        }
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-    void testReadAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+    void testArrayAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t expectedBitSize,
             const ELEMENT_FACTORY& elementFactory)
     {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer, ArrayTestOffsetChecker());
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
-        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
-        readArray.read(reader, rawArray.size(), elementFactory, ArrayTestOffsetChecker());
-        EXPECT_EQ(array, readArray);
-    }
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.write(writer, ArrayTestOffsetChecker());
+            ASSERT_EQ(alignTo(8, i) + expectedBitSize, writer.getBitPosition());
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-    void testReadAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            const ELEMENT_FACTORY& elementFactory)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer, ArrayTestOffsetChecker());
+            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsets(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
 
-        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
-        readArray.read(reader, elementFactory, ArrayTestOffsetChecker());
-        EXPECT_EQ(array, readArray);
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
+            readArray.read(reader, elementFactory, ArrayTestOffsetChecker());
+            ASSERT_EQ(array, readArray);
+        }
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS,
             typename std::enable_if<ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    void testReadImplicit(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
+    void testArrayImplicit(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t expectedBitSize)
     {
         if (arrayTraits.bitSizeOf() % 8 != 0)
             return; // implicit array allowed for types with constant bitsize rounded to bytes
 
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer);
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> array{rawArray, arrayTraits};
 
-        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> readArray{arrayTraits};
-        readArray.read(reader);
-        EXPECT_EQ(array, readArray);
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.write(writer);
+            ASSERT_EQ(i + expectedBitSize, writer.getBitPosition());
+
+            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsets(i), writer.getBitPosition());
+
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> readArray{arrayTraits};
+            readArray.read(reader);
+            ASSERT_EQ(array, readArray);
+        }
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS,
             typename std::enable_if<!ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT, int>::type = 0>
-    void testReadImplicit(const RAW_ARRAY&, const ARRAY_TRAITS&)
+    void testArrayImplicit(const RAW_ARRAY&, const ARRAY_TRAITS&, size_t)
     {
         // implicit array not allowed for types with non-constant bitsize, so skip the test
     }
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testWrite(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t unalignedBitSize)
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+    void testPackedArrayNormal(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            const ELEMENT_FACTORY& elementFactory)
     {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer);
-        EXPECT_EQ(unalignedBitSize, writer.getBitPosition());
-    }
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testWriteAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t autoUnalignedBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer);
-        EXPECT_EQ(autoUnalignedBitSize, writer.getBitPosition());
-    }
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.writePacked(writer);
 
-    template <typename RAW_ARRAY, typename ARRAY_TRAITS>
-    void testWriteAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t alignedBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        writer.writeBool(false);
-        array.write(writer, ArrayTestOffsetChecker());
-        EXPECT_EQ(1 + 7 + alignedBitSize, writer.getBitPosition());
-    }
+            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsetsPacked(i), writer.getBitPosition());
 
-    template <typename RAW_ARRAY,typename ARRAY_TRAITS>
-    void testWriteAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t alignedAutoBitSize)
-    {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
-                ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.write(writer, ArrayTestOffsetChecker());
-        EXPECT_EQ(alignedAutoBitSize, writer.getBitPosition());
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> readArray{arrayTraits};
+            readArray.readPacked(reader, rawArray.size(), elementFactory);
+            ASSERT_EQ(array, readArray);
+        }
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-    void testWritePackedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            size_t unpackedBitSize, const ELEMENT_FACTORY& elementFactory)
+    void testPackedArrayAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            const ELEMENT_FACTORY& elementFactory)
     {
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
 
-        const size_t bitSizeOfResult = array.bitSizeOfPacked(0);
-        const size_t initializeOffsetsResult = array.initializeOffsetsPacked(0);
-        ASSERT_EQ(bitSizeOfResult, initializeOffsetsResult);
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.writePacked(writer);
 
-        BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
-        array.writePacked(writer);
-        ASSERT_GT(unpackedBitSize, writer.getBitPosition());
-        ASSERT_EQ(initializeOffsetsResult, writer.getBitPosition());
+            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsetsPacked(i), writer.getBitPosition());
 
-        BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
-        Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
-        readArray.readPacked(reader, elementFactory);
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> readArray{arrayTraits};
+            readArray.readPacked(reader, elementFactory);
+            ASSERT_EQ(array, readArray);
+        }
+    }
 
-        ASSERT_EQ(array, readArray);
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+    void testPackedArrayAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            const ELEMENT_FACTORY& elementFactory)
+    {
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
+
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.writePacked(writer, ArrayTestOffsetChecker());
+
+            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
+
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
+            readArray.readPacked(reader, rawArray.size(), elementFactory, ArrayTestOffsetChecker());
+            ASSERT_EQ(array, readArray);
+        }
+    }
+
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
+    void testPackedArrayAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            const ELEMENT_FACTORY& elementFactory)
+    {
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
+
+            BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
+            writer.writeBits(0, i);
+            array.writePacked(writer, ArrayTestOffsetChecker());
+
+            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
+            ASSERT_EQ(array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
+
+            BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
+            ASSERT_EQ(0, reader.readBits(i));
+            Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
+                    ArrayTestOffsetChecker, ArrayTestOffsetInitializer> readArray{arrayTraits};
+            readArray.readPacked(reader, elementFactory, ArrayTestOffsetChecker());
+            ASSERT_EQ(array, readArray);
+        }
     }
 
     static const size_t AUTO_LENGTH_BIT_SIZE = 8;
@@ -858,29 +901,62 @@ TEST_F(ArrayTest, bitmaskArray)
 TEST_F(ArrayTest, objectArray)
 {
     std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
-    size_t unalignedBitSize = 0;
-    size_t alignedBitSize = 0;
-    for (size_t i = 0; i < rawArray.size(); ++i)
-    {
-        const size_t bitSize = rawArray[i].bitSizeOf();
-        unalignedBitSize += bitSize;
-        alignedBitSize += (i == 0) ? bitSize : alignTo(8, bitSize);
-    }
     testArrayInitializeElements(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>());
-    testArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(),
-            unalignedBitSize, alignedBitSize, ArrayTestDummyObjectElementFactory());
+    testArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(), 31,
+            ArrayTestDummyObjectElementFactory());
 }
 
 TEST_F(ArrayTest, stdInt8PackedArray)
 {
-    std::vector<int8_t> rawArray = { 0, 2, 4, 6, 8, 10, 10, 11 };
-    testPackedArray(rawArray, StdIntArrayTraits<int8_t>(), 8);
+    std::vector<int8_t> rawArray = { -4, -3, -1, 0, 2, 4, 6, 8, 10, 10, 11 };
+    testPackedArray(rawArray, StdIntArrayTraits<int8_t>());
+}
+
+TEST_F(ArrayTest, stdInt64PackedArray)
+{
+    // will not be packed
+    std::vector<int64_t> rawArray = { INT64_MIN, 1, -1, INT64_MAX };
+    testPackedArray(rawArray, StdIntArrayTraits<int64_t>());
+}
+
+TEST_F(ArrayTest, stdUInt64PackedArray)
+{
+    // will have maxBitNumber 62 bits
+    std::vector<uint64_t> rawArray = { 0, INT64_MAX / 2, 100, 200, 300, 400, 500, 600, 700 };
+    testPackedArray(rawArray, StdIntArrayTraits<uint64_t>());
+}
+
+TEST_F(ArrayTest, varUInt64PackedArray)
+{
+    std::vector<uint64_t> rawArray = {
+            UINT64_C(1) << 6,
+            UINT64_C(1) << (6 + 7),
+            UINT64_C(1) << (6 + 7 + 7),
+            UINT64_C(1) << (6 + 7 + 7 + 7),
+            UINT64_C(1) << (6 + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7),
+            UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
+    testPackedArray(rawArray, VarIntNNArrayTraits<uint64_t>());
+}
+
+TEST_F(ArrayTest, enumPackedArray)
+{
+    std::vector<DummyEnum> rawArray = {DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3};
+    testPackedArray(rawArray, EnumArrayTraits<DummyEnum>());
+}
+
+TEST_F(ArrayTest, bitmaskPackedArray)
+{
+    std::vector<DummyBitmask> rawArray = {DummyBitmask::Values::READ, DummyBitmask::Values::WRITE,
+            DummyBitmask::Values::CREATE};
+    testPackedArray(rawArray, BitmaskArrayTraits<DummyBitmask>());
 }
 
 TEST_F(ArrayTest, objectPackedArray)
 {
     std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
-    testPackedArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(), 31,
+    testPackedArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(),
             ArrayTestDummyObjectElementFactory());
 }
 

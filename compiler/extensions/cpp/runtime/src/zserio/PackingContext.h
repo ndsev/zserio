@@ -176,7 +176,8 @@ public:
             {
                 const int64_t delta = in.readSignedBits64(m_maxBitNumber + 1);
                 const typename ARRAY_TRAITS::ElementType element =
-                        static_cast<typename ARRAY_TRAITS::ElementType>(m_previousElement.value() + delta);
+                        static_cast<typename ARRAY_TRAITS::ElementType>(
+                                m_previousElement.value() + static_cast<uint64_t>(delta));
                 m_previousElement = static_cast<uint64_t>(element);
             }
 
@@ -193,7 +194,7 @@ public:
     {
         out.writeBool(m_isPacked);
         if (m_isPacked)
-            out.writeSignedBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
+            out.writeBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
     }
 
     /**
@@ -227,7 +228,7 @@ public:
 
 private:
     static const uint8_t MAX_BIT_NUMBER_BITS = 6;
-    static const uint8_t MAX_BIT_NUMBER_LIMIT = 63;
+    static const uint8_t MAX_BIT_NUMBER_LIMIT = 62;
 
     bool m_isPacked = false;
     uint8_t m_maxBitNumber = 0;
