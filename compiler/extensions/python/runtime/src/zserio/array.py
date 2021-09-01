@@ -502,7 +502,7 @@ class DeltaContext:
 
         writer.write_bool(self._is_packed)
         if self._is_packed:
-            writer.write_signed_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
+            writer.write_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
 
     def write(self, array_traits: typing.Any, writer: BitStreamWriter, element: int) -> None:
         """
@@ -525,7 +525,7 @@ class DeltaContext:
                 self._previous_element = element
 
     _MAX_BIT_NUMBER_BITS = 6
-    _MAX_BIT_NUMBER_LIMIT = 63
+    _MAX_BIT_NUMBER_LIMIT = 62
 
 class PackingContextNode:
     """
