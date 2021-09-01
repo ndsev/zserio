@@ -17,7 +17,7 @@ protected:
     {
         const uint8_t byteCount = 1;
         packedVariableArray.setByteCount(byteCount);
-        packedVariableArray.setNumElements(numElements);
+        packedVariableArray.setNumElements(static_cast<uint32_t>(numElements));
         auto& blocks = packedVariableArray.getPackedBlocks();
         blocks.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
@@ -76,14 +76,14 @@ protected:
         fillPackedVariableArray(packedVariableArray, numElements);
         packedVariableArray.initializeChildren();
 
-        const size_t unpackedBitSize = getUnpackedVariableArrayBitSize(numElements);
-        const size_t packedBitSize = packedVariableArray.bitSizeOf();
+        const double unpackedBitSize = static_cast<double>(getUnpackedVariableArrayBitSize(numElements));
+        const double packedBitSize = static_cast<double>(packedVariableArray.bitSizeOf());
         const double minCompressionRatio = 0.9;
         ASSERT_GT(unpackedBitSize * minCompressionRatio, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "
                 << "compression ratio is "
-                << std::to_string(static_cast<double>(packedBitSize) / unpackedBitSize * 100) << "%!";
+                << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
     }
 
     void checkWriteRead(size_t numElements)

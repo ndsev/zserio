@@ -52,15 +52,14 @@ protected:
         Database database;
         fillDatabase(database, numBlocks);
 
-        const size_t unpackedBitSize = getUnpackedDatabaseBitSize(numBlocks);
-        const size_t packedBitSize = database.bitSizeOf();
-
+        const double unpackedBitSize = static_cast<double>(getUnpackedDatabaseBitSize(numBlocks));
+        const double packedBitSize = static_cast<double>(database.bitSizeOf());
         const double minCompressionRatio = 0.12;
         ASSERT_GT(unpackedBitSize * minCompressionRatio, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "
                 << "compression ratio is "
-                << std::to_string(static_cast<double>(packedBitSize) /unpackedBitSize * 100) << "%!";
+                << std::to_string(packedBitSize /unpackedBitSize * 100) << "%!";
     }
 
     void checkWriteRead(uint16_t numBlocks)

@@ -24,10 +24,10 @@ protected:
         uint8Array.reserve(numElements);
         uint8_t value = PACKED_ARRAY_ELEMENT0;
         uint8Array.push_back(value);
-        value += PACKED_ARRAY_DELTA;
+        value = static_cast<uint8_t>(value + PACKED_ARRAY_DELTA);
         for (size_t i = 0; i < numElements - 1; ++i)
         {
-            value += PACKED_ARRAY_DELTA;
+            value = static_cast<uint8_t>(value + PACKED_ARRAY_DELTA);
             uint8Array.push_back(value);
         }
     }
@@ -46,7 +46,7 @@ protected:
 
     void writePackedAutoArrayToByteArray(zserio::BitStreamWriter& writer, size_t numElements)
     {
-        writer.writeVarSize(numElements);
+        writer.writeVarSize(static_cast<uint32_t>(numElements));
         writer.writeBool(true);
         writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
         writer.writeBits(PACKED_ARRAY_ELEMENT0, 8);
@@ -64,12 +64,12 @@ protected:
     {
         const auto& uint8Array = packedAutoArray.getUint8Array();
         ASSERT_EQ(numElements, uint8Array.size());
-        size_t value = PACKED_ARRAY_ELEMENT0;
+        uint8_t value = PACKED_ARRAY_ELEMENT0;
         ASSERT_EQ(value, uint8Array.at(0));
-        value += PACKED_ARRAY_DELTA;
+        value = static_cast<uint8_t>(value + PACKED_ARRAY_DELTA);
         for (size_t i = 1; i < numElements - 1; ++i)
         {
-            value += PACKED_ARRAY_DELTA;
+            value = static_cast<uint8_t>(value + PACKED_ARRAY_DELTA);
             ASSERT_EQ(value, uint8Array.at(i));
         }
     }
@@ -122,7 +122,7 @@ protected:
     static const size_t AUTO_ARRAY_LENGTH3;
 
     static const uint8_t PACKED_ARRAY_ELEMENT0;
-    static const int8_t PACKED_ARRAY_DELTA;
+    static const int16_t PACKED_ARRAY_DELTA;
     static const uint8_t PACKED_ARRAY_MAX_BIT_NUMBER;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
@@ -133,7 +133,7 @@ const size_t PackedAutoArrayUInt8Test::AUTO_ARRAY_LENGTH2 = 5;
 const size_t PackedAutoArrayUInt8Test::AUTO_ARRAY_LENGTH3 = 10;
 
 const uint8_t PackedAutoArrayUInt8Test::PACKED_ARRAY_ELEMENT0 = 255;
-const int8_t PackedAutoArrayUInt8Test::PACKED_ARRAY_DELTA = -2;
+const int16_t PackedAutoArrayUInt8Test::PACKED_ARRAY_DELTA = -2;
 const uint8_t PackedAutoArrayUInt8Test::PACKED_ARRAY_MAX_BIT_NUMBER = 3;
 
 TEST_F(PackedAutoArrayUInt8Test, bitSizeOfLength1)

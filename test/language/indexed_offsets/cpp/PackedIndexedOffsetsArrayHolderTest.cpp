@@ -28,12 +28,12 @@ protected:
         auto& data1 = autoIndexedOffsetArray.getData1();
         data1.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
-            data1.push_back(static_cast<uint32_t>(i));
+            data1.push_back(static_cast<int32_t>(i));
 
         auto& data2 = autoIndexedOffsetArray.getData2();
         data2.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
-            data2.push_back(static_cast<uint32_t>(i * 2));
+            data2.push_back(static_cast<int32_t>(i * 2));
     }
 
     size_t getAutoIndexedOffsetArrayBitSize(size_t numElements)
@@ -60,14 +60,14 @@ protected:
         AutoIndexedOffsetArray autoIndexedOffsetArray;
         fillAutoIndexedOffsetArray(autoIndexedOffsetArray, numElements);
 
-        const size_t unpackedBitSize = getAutoIndexedOffsetArrayBitSize(numElements);
-        const size_t packedBitSize = autoIndexedOffsetArray.bitSizeOf();
+        const double unpackedBitSize = static_cast<double>(getAutoIndexedOffsetArrayBitSize(numElements));
+        const double packedBitSize = static_cast<double>(autoIndexedOffsetArray.bitSizeOf());
         const double minCompressionRation = 0.82;
         ASSERT_GT(unpackedBitSize * minCompressionRation, packedBitSize)
                 << "Unpacked array has " << std::to_string(unpackedBitSize) << " bits, "
                 << "packed array has " << std::to_string(packedBitSize) << " bits, "
                 << "compression ratio is "
-                << std::to_string(static_cast<double>(packedBitSize) / unpackedBitSize * 100) << "%!";
+                << std::to_string(packedBitSize / unpackedBitSize * 100) << "%!";
     }
 
     void checkWriteRead(size_t numElements)
