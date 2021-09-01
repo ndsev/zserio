@@ -28,12 +28,12 @@ protected:
         auto& data1 = autoIndexedOffsetArray.getData1();
         data1.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
-            data1.push_back(i);
+            data1.push_back(static_cast<uint32_t>(i));
 
         auto& data2 = autoIndexedOffsetArray.getData2();
         data2.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
-            data2.push_back(i * 2);
+            data2.push_back(static_cast<uint32_t>(i * 2));
     }
 
     size_t getAutoIndexedOffsetArrayBitSize(size_t numElements)
