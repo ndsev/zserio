@@ -193,26 +193,31 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
 <@compound_functions_definition name, compoundFunctionsData/>
 void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode)
 {
+<#if fieldList?has_content>
     contextNode.createChild().createContext();<#-- choice tag -->
-<#list fieldList as field>
+
+    <#list fieldList as field>
     <@compound_create_packing_context_field field/>
-</#list>
+    </#list>
+</#if>
 }
 
-void ${name}::initPackingContext(${types.packingContextNode.name}& contextNode) const
+void ${name}::initPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>) const
 {
+<#if fieldList?has_content>
     contextNode.getChildren().at(0).getContext().init(m_choiceTag);
 
     switch (m_choiceTag)
     {
-<#list fieldList as field>
+    <#list fieldList as field>
     case <@choice_tag_name field/>:
         <@compound_init_packing_context_field field, field?index + 1, 2/>
         break;
-</#list>
+    </#list>
     default:
         throw ::zserio::CppRuntimeException("No match in union ${name}!");
     }
+</#if>
 }
 
 size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const

@@ -180,7 +180,9 @@ void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldLi
 void ${name}::initPackingContext(${types.packingContextNode.name}&<#rt>
         <#lt><#if needs_packing_context_node(fieldList)> contextNode</#if>) const
 {
+<#if needs_packing_context_node(fieldList)>
     <@choice_switch "init_packing_context_member", true, true/>
+</#if>
 }
 
 <#macro choice_bitsizeof_member member packed index>
