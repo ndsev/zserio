@@ -251,7 +251,7 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#if fieldList?has_co
     size_t endBitPosition = bitPosition;
 
     endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(${choiceTagArrayTraits}(),
-            endBitPosition, m_choiceTag);
+            endBitPosition, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -302,7 +302,7 @@ size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#if fieldLis
     size_t endBitPosition = bitPosition;
 
     endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(${choiceTagArrayTraits}(),
-            endBitPosition, m_choiceTag);
+            endBitPosition, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -407,7 +407,8 @@ void ${name}::write(${types.packingContextNode.name}&<#if fieldList?has_content>
         ::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>)<#lt>
 {
     <#if fieldList?has_content>
-    contextNode.getChildren().at(0).getContext().write(${choiceTagArrayTraits}(), out, m_choiceTag);
+    contextNode.getChildren().at(0).getContext().write(${choiceTagArrayTraits}(),
+            out, static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
