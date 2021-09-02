@@ -58,17 +58,6 @@ TEST_F(FullBitmaskParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, fullBitmaskParamChoice.getBlack());
 }
 
-TEST_F(FullBitmaskParamChoiceTest, fieldConstructor)
-{
-    const Selector selector = Selector::Values::BLACK;
-    const uint8_t value = 99;
-    FullBitmaskParamChoice fullBitmaskParamChoice(value);
-    fullBitmaskParamChoice.initialize(selector);
-    ASSERT_EQ(selector, fullBitmaskParamChoice.getSelector());
-    ASSERT_EQ(value, fullBitmaskParamChoice.getBlack());
-    ASSERT_THROW(fullBitmaskParamChoice.getBlackAndWhite(), zserio::CppRuntimeException);
-}
-
 TEST_F(FullBitmaskParamChoiceTest, copyConstructor)
 {
     const Selector selector = Selector::Values::BLACK;

@@ -17,13 +17,13 @@ class PackedVariableArrayStructRecursionTest(unittest.TestCase):
     def testBitSizeOfLength3(self):
         self._checkBitSizeOf(self.VARIABLE_ARRAY_LENGTH3)
 
-    def testWriteReadfLength1(self):
+    def testWriteReadLength1(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH1)
 
-    def testWriteReadfLength2(self):
+    def testWriteReadLength2(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH2)
 
-    def testWriteReadfLength3(self):
+    def testWriteReadLength3(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH3)
 
     def _checkBitSizeOf(self, numElements):

@@ -24,24 +24,32 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
 }
 </#macro>
 
-<#macro compound_read_constructor_declaration compoundConstructorsData>
+<#macro compound_read_constructor_declaration compoundConstructorsData packed=false>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 3/></#local>
-    explicit ${compoundConstructorsData.compoundName}(::zserio::BitStreamReader& in<#rt>
+    explicit ${compoundConstructorsData.compoundName}(<#rt>
+    <#if packed>
+            <#lt>${types.packingContextNode.name}& contextNode,
+            <#nt><#rt><#-- trim only newline -->
+    </#if>
+            ::zserio::BitStreamReader& in<#t>
     <#if constructorArgumentTypeList?has_content>
             <#lt>,
             ${constructorArgumentTypeList}<#t>
     </#if>
-    <#lt>, const allocator_type& allocator = allocator_type());
+            <#lt>, const allocator_type& allocator = allocator_type());
 </#macro>
 
-<#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName>
+<#macro compound_read_constructor_definition compoundConstructorsData memberInitializationMacroName packed=false>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData, 2/></#local>
     <#local hasInitializers=constructorArgumentTypeList?has_content ||
             needs_compound_initialization(compoundConstructorsData) ||
             has_field_with_initialization(compoundConstructorsData.fieldList) ||
             memberInitializationMacroName != ""/>
 ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundName}(<#rt>
-        <#lt>::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#rt>
+    <#if packed>
+        ${types.packingContextNode.name}&<#if read_constructor_needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
+    </#if>
+        ::zserio::BitStreamReader&<#if compoundConstructorsData.fieldList?has_content> in</#if><#t>
     <#if constructorArgumentTypeList?has_content>
         <#lt>,
         ${constructorArgumentTypeList}<#t>
@@ -62,7 +70,7 @@ ${compoundConstructorsData.compoundName}::${compoundConstructorsData.compoundNam
         m_areChildrenInitialized(true)<#if memberInitializationMacroName != "">,</#if>
     </#if>
     <#if memberInitializationMacroName != "">
-        <@.vars[memberInitializationMacroName]/>
+        <@.vars[memberInitializationMacroName] packed/>
     </#if>
 {
 }
@@ -259,6 +267,15 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
 <#function read_constructor_needs_allocator fieldList>
     <#list fieldList as field>
         <#if field.holderNeedsAllocator || field.needsAllocator>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
+
+<#function read_constructor_needs_packing_context_node fieldList>
+    <#list fieldList as field>
+        <#if field.isPackable>
             <#return true>
         </#if>
     </#list>

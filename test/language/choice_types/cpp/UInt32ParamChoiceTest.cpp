@@ -75,17 +75,6 @@ TEST_F(UInt32ParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, uint32ParamChoice.getA());
 }
 
-TEST_F(UInt32ParamChoiceTest, fieldConstructor)
-{
-    const uint32_t selector = VARIANT_A_SELECTOR;
-    const int8_t value = 99;
-
-    UInt32ParamChoice uint32ParamChoice(value);
-    uint32ParamChoice.initialize(selector);
-    ASSERT_EQ(selector, uint32ParamChoice.getSelector());
-    ASSERT_EQ(value, uint32ParamChoice.getA());
-}
-
 TEST_F(UInt32ParamChoiceTest, copyConstructor)
 {
     const uint32_t selector = VARIANT_A_SELECTOR;

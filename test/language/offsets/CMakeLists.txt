@@ -20,6 +20,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/offsets/optional_member_offset/OptionalMemberOffset.cpp
     ${ZSERIO_GEN_DIR}/offsets/optional_member_offset/OptionalMemberOffset.h
 
+    ${ZSERIO_GEN_DIR}/offsets/packed_auto_array_offset/AutoArrayHolder.cpp
+    ${ZSERIO_GEN_DIR}/offsets/packed_auto_array_offset/AutoArrayHolder.h
+
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/OffsetHolder.cpp
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/OffsetHolder.h
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/Room.cpp
@@ -42,7 +45,6 @@ zserio_add_library(TARGET offsets_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    IGNORE_WARNINGS ON # TODO[mikir]: Remove it once packed arrays are implemented in C++!
 )
 
 add_test_sources(
@@ -50,6 +52,7 @@ add_test_sources(
     cpp/BitOffsetTest.cpp
     cpp/NestedOffsetTest.cpp
     cpp/OptionalMemberOffsetTest.cpp
+    cpp/PackedAutoArrayOffsetTest.cpp
     cpp/ParameterOffsetTest.cpp
     cpp/UInt64ArrayOffsetTest.cpp
     cpp/UInt64OffsetTest.cpp

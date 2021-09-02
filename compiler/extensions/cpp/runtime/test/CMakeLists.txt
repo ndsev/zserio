@@ -26,7 +26,7 @@ endif ()
 set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/AllocatorPropagatingCopyTest.cpp
     zserio/AnyHolderTest.cpp
-    zserio/ArraysTest.cpp
+    zserio/ArrayTest.cpp
     zserio/BitBufferTest.cpp
     zserio/BitFieldUtilTest.cpp
     zserio/BitPositionUtilTest.cpp

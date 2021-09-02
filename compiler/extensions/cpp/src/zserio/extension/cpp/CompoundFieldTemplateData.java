@@ -20,9 +20,10 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
-import zserio.tools.ZserioToolPrinter;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayType;
+import zserio.extension.cpp.types.NativeArrayableType;
+import zserio.extension.cpp.types.NativeBuiltinType;
 import zserio.extension.cpp.types.NativeIntegralType;
 
 public class CompoundFieldTemplateData
@@ -51,6 +52,8 @@ public class CompoundFieldTemplateData
         setterName = AccessorNameFormatter.getSetterName(field);
         readerName = AccessorNameFormatter.getReaderName(field);
 
+        isPackable = field.isPackable();
+
         integerRange = createIntegerRange(cppNativeMapper, fieldTypeInstantiation, cppExpressionFormatter);
 
         alignmentValue = createAlignmentValue(field, cppExpressionFormatter);
@@ -59,14 +62,16 @@ public class CompoundFieldTemplateData
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
         isSimpleType = fieldNativeType.isSimpleType();
+        isBuiltinType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
+                (cppNativeMapper.getCppType(fieldBaseType) instanceof NativeBuiltinType);
         needsAllocator = !isSimpleType;
         holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
         isEnum = fieldBaseType instanceof EnumType;
 
         constraint = createConstraint(field, cppNativeMapper, cppExpressionFormatter, includeCollector);
-
         offset = createOffset(field, cppNativeMapper, cppExpressionFormatter,
                 cppIndirectExpressionFormatter);
+        arrayTraits = createArrayTraits(fieldNativeType);
         array = createArray(fieldNativeType, fieldTypeInstantiation, parentType, cppNativeMapper,
                 cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector, withWriterCode);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
@@ -116,6 +121,11 @@ public class CompoundFieldTemplateData
         return readerName;
     }
 
+    public boolean getIsPackable()
+    {
+        return isPackable;
+    }
+
     public IntegerRange getIntegerRange()
     {
         return integerRange;
@@ -141,6 +151,11 @@ public class CompoundFieldTemplateData
         return isSimpleType;
     }
 
+    public boolean getIsBuiltinType()
+    {
+        return isBuiltinType;
+    }
+
     public boolean getNeedsAllocator()
     {
         return needsAllocator;
@@ -164,6 +179,11 @@ public class CompoundFieldTemplateData
     public Offset getOffset()
     {
         return offset;
+    }
+
+    public ArrayTraitsTemplateData getArrayTraits()
+    {
+        return arrayTraits;
     }
 
     public Array getArray()
@@ -440,20 +460,14 @@ public class CompoundFieldTemplateData
         {
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
-            traitsName = nativeType.getArrayTraitsName();
-            hasTemplatedTraits = nativeType.hasTemplatedTraits();
+            traits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
             isImplicit = arrayInstantiation.isImplicit();
-            if (arrayInstantiation.isPacked())
-            {
-                ZserioToolPrinter.printWarning(arrayInstantiation.getLocation(),
-                        "Unimplemented packed array field reached!");
-            }
+            isPacked = arrayInstantiation.isPacked();
             length = createLength(arrayInstantiation, cppExpressionFormatter);
             final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
             elementCppTypeName = elementNativeType.getFullName();
             includeCollector.addHeaderIncludesForType(elementNativeType);
-            requiresElementFactory = nativeType.requiresElementFactory();
-            elementBitSize = nativeType.requiresElementBitSize()
+            elementBitSize = traits.getRequiresElementBitSize()
                     ? createBitSize(elementTypeInstantiation, cppExpressionFormatter)
                     : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
@@ -462,19 +476,19 @@ public class CompoundFieldTemplateData
                     cppExpressionFormatter);
         }
 
-        public String getTraitsName()
+        public ArrayTraitsTemplateData getTraits()
         {
-            return traitsName;
-        }
-
-        public boolean getHasTemplatedTraits()
-        {
-            return hasTemplatedTraits;
+            return traits;
         }
 
         public boolean getIsImplicit()
         {
             return isImplicit;
+        }
+
+        public boolean getIsPacked()
+        {
+            return isPacked;
         }
 
         public String getLength()
@@ -485,11 +499,6 @@ public class CompoundFieldTemplateData
         public String getElementCppTypeName()
         {
             return elementCppTypeName;
-        }
-
-        public boolean getRequiresElementFactory()
-        {
-            return requiresElementFactory;
         }
 
         public BitSize getElementBitSize()
@@ -517,12 +526,11 @@ public class CompoundFieldTemplateData
             return cppExpressionFormatter.formatGetter(lengthExpression);
         }
 
-        private final String traitsName;
-        private final boolean hasTemplatedTraits;
+        private final ArrayTraitsTemplateData traits;
         private final boolean isImplicit;
+        private final boolean isPacked;
         private final String length;
         private final String elementCppTypeName;
-        private final boolean requiresElementFactory;
         private final BitSize elementBitSize;
         private final Compound elementCompound;
         private final IntegerRange elementIntegerRange;
@@ -664,6 +672,14 @@ public class CompoundFieldTemplateData
                 cppIndirectExpressionFormatter);
     }
 
+    private static ArrayTraitsTemplateData createArrayTraits(CppNativeType cppNativeType)
+    {
+        if (cppNativeType instanceof NativeArrayableType)
+            return new ArrayTraitsTemplateData(((NativeArrayableType)cppNativeType).getArrayTraits());
+        else
+            return null;
+    }
+
     private static Array createArray(CppNativeType cppNativeType, TypeInstantiation typeInstantiation,
             CompoundType parentType, CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
@@ -684,29 +700,25 @@ public class CompoundFieldTemplateData
                 withWriterCode);
     }
 
-    private static BitSize createBitSize(TypeInstantiation instantiation,
+    private static BitSize createBitSize(TypeInstantiation typeInstantiation,
             ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
     {
-        final ZserioType baseInstantiationType = instantiation.getBaseType();
-        BitSize bitSize;
-        if (baseInstantiationType instanceof FixedSizeType)
+        if (typeInstantiation.getBaseType() instanceof FixedSizeType)
         {
             final String value = CppLiteralFormatter.formatUInt8Literal(
-                    ((FixedSizeType)baseInstantiationType).getBitSize());
-            bitSize = new BitSize(value, false);
+                    ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
+            return new BitSize(value, false);
         }
-        else if (instantiation instanceof DynamicBitFieldInstantiation)
+        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
             final String value = cppExpressionFormatter.formatGetter(
-                    ((DynamicBitFieldInstantiation)instantiation).getLengthExpression());
-            bitSize = new BitSize(value, true);
+                    ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression());
+            return new BitSize(value, true);
         }
         else
         {
-            bitSize = null;
+            return null;
         }
-
-        return bitSize;
     }
 
     private static Compound createCompound(CppNativeMapper cppNativeMapper,
@@ -737,16 +749,19 @@ public class CompoundFieldTemplateData
     private final String getterName;
     private final String setterName;
     private final String readerName;
+    private final boolean isPackable;
     private final IntegerRange integerRange;
     private final String alignmentValue;
     private final String initializer;
     private final boolean usesAnyHolder;
     private final boolean isSimpleType;
+    private final boolean isBuiltinType;
     private final boolean needsAllocator;
     private final boolean holderNeedsAllocator;
     private final boolean isEnum;
     private final Constraint constraint;
     private final Offset offset;
+    private final ArrayTraitsTemplateData arrayTraits;
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final BitSize bitSize;

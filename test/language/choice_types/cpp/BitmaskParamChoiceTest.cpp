@@ -57,17 +57,6 @@ TEST_F(BitmaskParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, bitmaskParamChoice.getBlack());
 }
 
-TEST_F(BitmaskParamChoiceTest, fieldConstructor)
-{
-    const Selector selector = Selector::Values::BLACK;
-    const uint8_t value = 99;
-    BitmaskParamChoice bitmaskParamChoice(value);
-    bitmaskParamChoice.initialize(selector);
-    ASSERT_EQ(selector, bitmaskParamChoice.getSelector());
-    ASSERT_EQ(value, bitmaskParamChoice.getBlack());
-    ASSERT_THROW(bitmaskParamChoice.getBlackAndWhite(), zserio::CppRuntimeException);
-}
-
 TEST_F(BitmaskParamChoiceTest, copyConstructor)
 {
     const Selector selector = Selector::Values::BLACK;

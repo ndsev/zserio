@@ -9,6 +9,13 @@
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin ["zserio"]/>
 
+<#macro enum_array_traits arrayTraits fullName bitSize>
+    ${arrayTraits.name}<#t>
+    <#if arrayTraits.isTemplated>
+            <typename ::std::underlying_type<${fullName}>::type><#t>
+    </#if>
+    (<#if arrayTraits.requiresElementBitSize>${bitSize}</#if>)<#t>
+</#macro>
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
@@ -24,7 +31,7 @@ size_t enumToOrdinal(${fullName} value)
 </#list>
     default:
         throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: ") +
-                static_cast<${baseCppTypeName}>(value) + "!";
+                static_cast<typename ::std::underlying_type<${fullName}>::type>(value) + "!";
     }
 }
 
@@ -52,12 +59,27 @@ size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
     return ::zserio::bitSizeOf${runtimeFunction.suffix}(::zserio::enumToValue(value));
 </#if>
 }
+
+template <>
+size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition, ${fullName} value)
+{
+    return contextNode.getContext().bitSizeOf(
+            <@enum_array_traits arrayTraits, fullName, bitSize!/>,
+            bitPosition, ::zserio::enumToValue(value));
+}
 <#if withWriterCode>
 
 template <>
 size_t initializeOffsets(size_t bitPosition, ${fullName} value)
 {
     return bitPosition + bitSizeOf(value);
+}
+
+template <>
+size_t initializeOffsets(${types.packingContextNode.name}& contextNode,
+        size_t bitPosition, ${fullName} value)
+{
+    return bitPosition + bitSizeOf(contextNode, bitPosition, value);
 }
 </#if>
 
@@ -68,13 +90,28 @@ ${fullName} read(::zserio::BitStreamReader& in)
             static_cast<typename ::std::underlying_type<${fullName}>::type>(
                     in.read${runtimeFunction.suffix}(${runtimeFunction.arg!})));
 }
+
+template <>
+${fullName} read(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in)
+{
+    return valueToEnum<${fullName}>(contextNode.getContext().read(
+            <@enum_array_traits arrayTraits, fullName, bitSize!/>, in));
+}
 <#if withWriterCode>
 
 template <>
-void write<${fullName}>(BitStreamWriter& out, ${fullName} value)
+void write(BitStreamWriter& out, ${fullName} value)
 {
     out.write${runtimeFunction.suffix}(enumToValue(value)<#rt>
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
+}
+
+template <>
+void write(${types.packingContextNode.name}& contextNode, BitStreamWriter& out, ${fullName} value)
+{
+    contextNode.getContext().write(
+            <@enum_array_traits arrayTraits, fullName, bitSize!/>,
+            out, enumToValue(value));
 }
 </#if>
 <@namespace_end ["zserio"]/>

@@ -4,6 +4,7 @@ import java.math.BigInteger;
 
 import zserio.extension.common.StringEscapeConverter;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.cpp.types.NativeArrayTraits;
 import zserio.extension.cpp.types.NativeIntegralType;
 
 /**
@@ -35,5 +36,6 @@ public final class CppLiteralFormatter
         return "\"" + escapedStringLiteral + "\"";
     }
 
-    private final static NativeIntegralType uint8Type = new NativeIntegralType(8, false);
+    private final static NativeIntegralType uint8Type =
+            new NativeIntegralType(8, false, new NativeArrayTraits("StdIntArrayTraits"));
 }

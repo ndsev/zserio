@@ -21,7 +21,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/AllocatorHolder.h
     zserio/AllocatorPropagatingCopy.h
     zserio/AnyHolder.h
-    zserio/Arrays.h
+    zserio/Array.h
+    zserio/ArrayTraits.h
     zserio/BitBuffer.h
     zserio/BitFieldUtil.cpp
     zserio/BitFieldUtil.h
@@ -50,6 +51,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/ISqliteDatabaseReader.h
     zserio/IValidationObserver.h
     zserio/OptionalHolder.h
+    zserio/PackingContext.h
     zserio/PreWriteAction.h
     zserio/PubsubException.h
     zserio/ServiceException.h
@@ -65,6 +67,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/VarSizeUtil.cpp
     zserio/VarSizeUtil.h
     zserio/pmr/AnyHolder.h
+    zserio/pmr/ArrayTraits.h
     zserio/pmr/BitBuffer.h
     zserio/pmr/BlobBuffer.h
     zserio/pmr/HeapOptionalHolder.h
@@ -73,6 +76,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/MemoryResource.h
     zserio/pmr/NewDeleteResource.cpp
     zserio/pmr/NewDeleteResource.h
+    zserio/pmr/PackingContext.h
     zserio/pmr/PolymorphicAllocator.h
     zserio/pmr/Set.h
     zserio/pmr/String.h

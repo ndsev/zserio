@@ -11,6 +11,7 @@
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
+<@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -52,18 +53,34 @@ ${fullName} valueToEnum<${fullName}>(
 
 template <>
 size_t bitSizeOf<${fullName}>(${fullName}<#if !runtimeFunction.arg??> value</#if>);
+
+template <>
+size_t bitSizeOf<${types.packingContextNode.name}, ${fullName}>(
+        ${types.packingContextNode.name}& contextNode, size_t bitPosition, ${fullName} value);
 <#if withWriterCode>
 
 template <>
 size_t initializeOffsets<${fullName}>(size_t bitPosition, ${fullName} value);
+
+template <>
+size_t initializeOffsets<${types.packingContextNode.name}, ${fullName}>(
+        ${types.packingContextNode.name}& contextNode, size_t bitPosition, ${fullName} value);
 </#if>
 
 template <>
 ${fullName} read<${fullName}>(::zserio::BitStreamReader& in);
+
+template <>
+${fullName} read<${fullName}, ${types.packingContextNode.name}>(
+        ${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in);
 <#if withWriterCode>
 
 template <>
 void write<${fullName}>(BitStreamWriter& out, ${fullName} value);
+
+template <>
+void write<${types.packingContextNode.name}, ${fullName}>(
+        ${types.packingContextNode.name}& contextNode, BitStreamWriter& out, ${fullName} value);
 </#if>
 <@namespace_end ["zserio"]/>
 

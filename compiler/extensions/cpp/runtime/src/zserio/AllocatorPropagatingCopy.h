@@ -114,7 +114,7 @@ T allocatorPropagatingCopyImpl(const T& source, const ALLOC& allocator)
 
 template <typename T, typename ALLOC, typename ALLOC2>
 zserio::HeapOptionalHolder<T, ALLOC> allocatorPropagatingCopyImpl(
-    const zserio::HeapOptionalHolder<T, ALLOC>& source, const ALLOC2& allocator)
+        const zserio::HeapOptionalHolder<T, ALLOC>& source, const ALLOC2& allocator)
 {
     if (source.hasValue())
         return zserio::HeapOptionalHolder<T, ALLOC>(allocatorPropagatingCopy(*source, allocator), allocator);
@@ -124,7 +124,7 @@ zserio::HeapOptionalHolder<T, ALLOC> allocatorPropagatingCopyImpl(
 
 template <typename T, typename ALLOC>
 zserio::InplaceOptionalHolder<T> allocatorPropagatingCopyImpl(
-    const zserio::InplaceOptionalHolder<T>& source, const ALLOC& allocator)
+        const zserio::InplaceOptionalHolder<T>& source, const ALLOC& allocator)
 {
     if (source.hasValue())
         return zserio::InplaceOptionalHolder<T>(allocatorPropagatingCopy(*source, allocator));
@@ -134,7 +134,7 @@ zserio::InplaceOptionalHolder<T> allocatorPropagatingCopyImpl(
 
 template <typename T, typename ALLOC, typename ALLOC2>
 zserio::AnyHolder<ALLOC> allocatorPropagatingCopyImpl(
-    const zserio::AnyHolder<ALLOC>& source, const ALLOC2& allocator)
+        const zserio::AnyHolder<ALLOC>& source, const ALLOC2& allocator)
 {
     if (source.hasValue())
         return zserio::AnyHolder<ALLOC>(allocatorPropagatingCopy(source.template get<T>(), allocator), allocator);
@@ -144,7 +144,7 @@ zserio::AnyHolder<ALLOC> allocatorPropagatingCopyImpl(
 
 template <typename T, typename ALLOC, typename ALLOC2>
 std::vector<T, ALLOC> allocatorPropagatingCopyImpl(
-    const std::vector<T, ALLOC>& source, const ALLOC2& allocator)
+        const std::vector<T, ALLOC>& source, const ALLOC2& allocator)
 {
     return allocatorPropagatingCopyVec(std::uses_allocator<T, ALLOC>(), source, allocator);
 }

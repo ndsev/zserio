@@ -33,6 +33,16 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/indexed_offsets/optional_nested_indexed_offset_array/OptionalNestedIndexedOffsetArray.cpp
     ${ZSERIO_GEN_DIR}/indexed_offsets/optional_nested_indexed_offset_array/OptionalNestedIndexedOffsetArray.h
 
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_auto_indexed_offset_array/AutoIndexedOffsetArray.cpp
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_auto_indexed_offset_array/AutoIndexedOffsetArray.h
+
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_indexed_offset_array_holder/AutoIndexedOffsetArray.cpp
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_indexed_offset_array_holder/AutoIndexedOffsetArray.h
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_indexed_offset_array_holder/OffsetArray.cpp
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_indexed_offset_array_holder/OffsetArray.h
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_indexed_offset_array_holder/OffsetHolder.cpp
+    ${ZSERIO_GEN_DIR}/indexed_offsets/packed_indexed_offset_array_holder/OffsetHolder.h
+
     ${ZSERIO_GEN_DIR}/indexed_offsets/varint32_indexed_offset_array/NUM_VARINT32_ELEMENTS.h
     ${ZSERIO_GEN_DIR}/indexed_offsets/varint32_indexed_offset_array/VarInt32IndexedOffsetArray.cpp
     ${ZSERIO_GEN_DIR}/indexed_offsets/varint32_indexed_offset_array/VarInt32IndexedOffsetArray.h
@@ -46,7 +56,6 @@ zserio_add_library(TARGET indexed_offsets_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    IGNORE_WARNINGS ON # TODO[mikir]: Remove it once packed arrays are implemented in C++!
 )
 
 add_test_sources(
@@ -58,6 +67,8 @@ add_test_sources(
     cpp/Int14IndexedOffsetArrayTest.cpp
     cpp/OptionalIndexedOffsetArrayTest.cpp
     cpp/OptionalNestedIndexedOffsetArrayTest.cpp
+    cpp/PackedAutoIndexedOffsetArrayTest.cpp
+    cpp/PackedIndexedOffsetsArrayHolderTest.cpp
     cpp/VarInt32IndexedOffsetArrayTest.cpp
 )
 

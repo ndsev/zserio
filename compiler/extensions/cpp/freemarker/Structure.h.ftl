@@ -15,6 +15,7 @@
 #include <zserio/PreWriteAction.h>
 #include <zserio/AllocatorPropagatingCopy.h>
 <@type_includes types.allocator/>
+<@type_includes types.packingContextNode/>
 <#if has_optional_field(fieldList)>
     <#if has_optional_recursive_field(fieldList)>
 <@type_includes types.heapOptionalHolder/>
@@ -29,6 +30,7 @@
 
 class ${name}
 {
+<@top_private_section_declarations name, fieldList/>
 public:
     using allocator_type = ${types.allocator.default};
 
@@ -43,19 +45,20 @@ public:
             const allocator_type& allocator = allocator_type()) :
             ${compoundConstructorsData.compoundName}(allocator)
     {
-    <#list compoundConstructorsData.fieldList as field>
+        <#list compoundConstructorsData.fieldList as field>
         <@field_member_name field/> = <#rt>
-        <#if !field.isSimpleType || field.optional??>
-                <#lt>std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>);
-        <#else>
-                <#lt><@field_argument_name field/>;
-        </#if>
-    </#list>
+            <#if !field.isSimpleType || field.optional??>
+                <#lt><@compound_setter_field_forward_value field/>;
+            <#else>
+                <#lt><@compound_setter_field_value field/>;
+            </#if>
+        </#list>
     }
-
     </#if>
+
 </#if>
     <@compound_read_constructor_declaration compoundConstructorsData/>
+    <@compound_read_constructor_declaration compoundConstructorsData, true/>
 
     ~${name}() = default;
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
@@ -97,9 +100,15 @@ public:
 
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
+    static void createPackingContext(${types.packingContextNode.name}& contextNode);
+    void initPackingContext(${types.packingContextNode.name}& contextNode) const;
+
     size_t bitSizeOf(size_t bitPosition = 0) const;
+    size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 <#if withWriterCode>
+
     size_t initializeOffsets(size_t bitPosition);
+    size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition);
 </#if>
 
     bool operator==(const ${name}& other) const;
@@ -108,17 +117,25 @@ public:
 
     void write(::zserio::BitStreamWriter& out,
             ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
+    void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out);
 </#if>
 
 private:
-    <@inner_classes_declaration fieldList/>
 <#list fieldList as field>
-    <@field_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
+    <@field_member_type_name field/> ${field.readerName}(::zserio::BitStreamReader& in<#rt>
     <#if field.needsAllocator || field.holderNeedsAllocator>
             <#lt>,
             const allocator_type& allocator<#rt>
     </#if>
     <#lt>);
+    <#if field.isPackable>
+    <@field_member_type_name field/> ${field.readerName}(${types.packingContextNode.name}& contextNode,
+            ::zserio::BitStreamReader& in<#rt>
+        <#if field.needsAllocator || field.holderNeedsAllocator>
+            , const allocator_type& allocator<#t>
+        </#if>
+            <#lt>);
+    </#if>
     <#if !field?has_next>
 
     </#if>
@@ -126,7 +143,7 @@ private:
     <@compound_parameter_members compoundParametersData/>
     <@compound_constructor_members compoundConstructorsData/>
 <#list fieldList as field>
-    <@field_type_name field/> <@field_member_name field/>;
+    <@field_member_type_name field/> <@field_member_name field/>;
 </#list>
 };
 <@namespace_end package.path/>

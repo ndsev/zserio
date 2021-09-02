@@ -43,20 +43,6 @@ TEST_F(BoolParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, boolParamChoice.getBlack());
 }
 
-TEST_F(BoolParamChoiceTest, fieldConstructor)
-{
-    const bool selector = true;
-    const int8_t value = 99;
-    BoolParamChoice boolParamChoice(value);
-    boolParamChoice.initialize(selector);
-    ASSERT_EQ(selector, boolParamChoice.getSelector());
-    ASSERT_EQ(value, boolParamChoice.getBlack());
-
-    BoolParamChoice other(value);
-    other.initialize(selector);
-    ASSERT_EQ(boolParamChoice, other);
-}
-
 TEST_F(BoolParamChoiceTest, copyConstructor)
 {
     const bool selector = true;

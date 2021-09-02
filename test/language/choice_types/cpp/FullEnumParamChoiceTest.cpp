@@ -57,16 +57,6 @@ TEST_F(FullEnumParamChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, fullEnumParamChoice.getBlack());
 }
 
-TEST_F(FullEnumParamChoiceTest, fieldConstructor)
-{
-    const Selector selector = Selector::BLACK;
-    const int8_t value = 99;
-    FullEnumParamChoice fullEnumParamChoice(value);
-    fullEnumParamChoice.initialize(selector);
-    ASSERT_EQ(selector, fullEnumParamChoice.getSelector());
-    ASSERT_EQ(value, fullEnumParamChoice.getBlack());
-}
-
 TEST_F(FullEnumParamChoiceTest, copyConstructor)
 {
     const Selector selector = Selector::BLACK;

@@ -10,10 +10,21 @@ namespace union_templated_field
 TEST(UnionTemplatedFieldTest, readWrite)
 {
     UnionTemplatedField unionTemplatedField;
-    unionTemplatedField.setUintUnion(TemplatedUnion_uint16_uint32{static_cast<uint32_t>(42)});
-    unionTemplatedField.setFloatUnion(TemplatedUnion_float32_float64{42.0});
-    unionTemplatedField.setCompoundUnion(TemplatedUnion_Compound_uint16_Compound_uint32{
-            Compound_Compound_uint16{Compound_uint16{13}}});
+    {
+        TemplatedUnion_uint16_uint32 uintUnion;
+        uintUnion.setField2(42);
+        unionTemplatedField.setUintUnion(uintUnion);
+    }
+    {
+        TemplatedUnion_float32_float64 floatUnion;
+        floatUnion.setField2(42.0);
+        unionTemplatedField.setFloatUnion(floatUnion);
+    }
+    {
+        TemplatedUnion_Compound_uint16_Compound_uint32 compoundUnion;
+        compoundUnion.setField3(Compound_Compound_uint16{Compound_uint16{13}});
+        unionTemplatedField.setCompoundUnion(std::move(compoundUnion));
+    }
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

@@ -10,6 +10,7 @@
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
 <@type_includes types.string/>
+<@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -28,14 +29,13 @@ public:
 
     constexpr ${name}() noexcept :
         m_value(0)
-    {
-    }
+    {}
 
     explicit ${name}(::zserio::BitStreamReader& in);
+    ${name}(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in);
     constexpr ${name}(Values value) noexcept :
         m_value(static_cast<underlying_type>(value))
-    {
-    }
+    {}
 
     <#if upperBound??>
     explicit ${name}(underlying_type value);
@@ -62,9 +62,15 @@ public:
         return m_value;
     }
 
+    static void createPackingContext(${types.packingContextNode.name}& contextNode);
+    void initPackingContext(${types.packingContextNode.name}& contextNode) const;
+
     size_t bitSizeOf(size_t bitPosition = 0) const;
+    size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 <#if withWriterCode>
+
     size_t initializeOffsets(size_t bitPosition) const;
+    size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 </#if>
 
     uint32_t hashCode() const;
@@ -72,6 +78,7 @@ public:
 
     void write(::zserio::BitStreamWriter& out,
             ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS) const;
+    void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out) const;
 </#if>
 
     ${types.string.name} toString(const ${types.string.name}::allocator_type& allocator =
@@ -79,6 +86,8 @@ public:
 
 private:
     static underlying_type readValue(::zserio::BitStreamReader& in);
+    static underlying_type readValue(${types.packingContextNode.name}& contextNode,
+            ::zserio::BitStreamReader& in);
 
     underlying_type m_value;
 };
