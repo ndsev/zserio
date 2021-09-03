@@ -361,6 +361,8 @@ public:
      */
     size_t bitSizeOfPacked(size_t bitPosition) const
     {
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
+
         size_t endBitPosition = bitPosition;
 
         const size_t size = m_rawArray.size();
@@ -424,6 +426,8 @@ public:
      */
     size_t initializeOffsetsPacked(size_t bitPosition, const OFFSET_INITIALIZER& offsetInitializer)
     {
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
+
         size_t endBitPosition = bitPosition;
 
         const size_t size = m_rawArray.size();
@@ -564,6 +568,8 @@ public:
      */
     void writePacked(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
     {
+        static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
+
         const size_t size = m_rawArray.size();
         if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
             out.writeVarSize(convertSizeToUInt32(size));

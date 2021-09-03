@@ -364,13 +364,14 @@ private:
         {
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOf(i);
+            ASSERT_EQ(expectedBitSize, bitSize);
+            ASSERT_EQ(i + bitSize, array.initializeOffsets(i));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.write(writer);
-            ASSERT_EQ(i + expectedBitSize, writer.getBitPosition());
-
-            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsets(i), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -388,13 +389,14 @@ private:
         {
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOf(i);
+            ASSERT_EQ(expectedBitSize, bitSize);
+            ASSERT_EQ(i + bitSize, array.initializeOffsets(i));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.write(writer);
-            ASSERT_EQ(i + expectedBitSize, writer.getBitPosition());
-
-            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsets(i), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -413,13 +415,14 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOf(i);
+            ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize);
+            ASSERT_EQ(i + bitSize, array.initializeOffsets(i, ArrayTestOffsetInitializer()));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.write(writer, ArrayTestOffsetChecker());
-            ASSERT_EQ(alignTo(8, i) + expectedBitSize, writer.getBitPosition());
-
-            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsets(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -439,13 +442,14 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOf(i);
+            ASSERT_EQ(alignTo(8, i) - i + expectedBitSize, bitSize);
+            ASSERT_EQ(i + bitSize, array.initializeOffsets(i, ArrayTestOffsetInitializer()));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.write(writer, ArrayTestOffsetChecker());
-            ASSERT_EQ(alignTo(8, i) + expectedBitSize, writer.getBitPosition());
-
-            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsets(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -467,13 +471,14 @@ private:
         {
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::IMPLICIT> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOf(i);
+            ASSERT_EQ(expectedBitSize, bitSize);
+            ASSERT_EQ(i + bitSize, array.initializeOffsets(i));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.write(writer);
-            ASSERT_EQ(i + expectedBitSize, writer.getBitPosition());
-
-            ASSERT_EQ(i + array.bitSizeOf(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsets(i), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -498,12 +503,13 @@ private:
         {
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOfPacked(i);
+            ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.writePacked(writer);
-
-            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsetsPacked(i), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -521,12 +527,13 @@ private:
         {
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOfPacked(i);
+            ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.writePacked(writer);
-
-            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsetsPacked(i), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -545,12 +552,13 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOfPacked(i);
+            ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.writePacked(writer, ArrayTestOffsetChecker());
-
-            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -570,12 +578,13 @@ private:
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::ALIGNED_AUTO,
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
+            const size_t bitSize = array.bitSizeOfPacked(i);
+            ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()));
+
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
             writer.writeBits(0, i);
             array.writePacked(writer, ArrayTestOffsetChecker());
-
-            ASSERT_EQ(i + array.bitSizeOfPacked(i), writer.getBitPosition());
-            ASSERT_EQ(array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()), writer.getBitPosition());
+            ASSERT_EQ(i + bitSize, writer.getBitPosition());
 
             BitStreamReader reader(m_byteBuffer, writer.getBitPosition(), BitsTag());
             ASSERT_EQ(0, reader.readBits(i));
@@ -924,6 +933,41 @@ TEST_F(ArrayTest, stdUInt64PackedArray)
     // will have maxBitNumber 62 bits
     std::vector<uint64_t> rawArray = { 0, INT64_MAX / 2, 100, 200, 300, 400, 500, 600, 700 };
     testPackedArray(rawArray, StdIntArrayTraits<uint64_t>());
+}
+
+TEST_F(ArrayTest, bitField64PackedArray)
+{
+    auto arrayTraits = BitFieldArrayTraits<uint64_t>(64);
+
+    testPackedArray(std::vector<uint64_t>{10, 11, 12}, arrayTraits);
+    testPackedArray(std::vector<uint64_t>{10, 10, 10}, arrayTraits); // zero delta
+
+    testPackedArray(std::vector<uint64_t>{}, arrayTraits); // empty
+    testPackedArray(std::vector<uint64_t>{10}, arrayTraits); // single element
+
+    // packing not enabled, delta is too big
+    testPackedArray(std::vector<uint64_t>{0, UINT64_MAX}, arrayTraits);
+    testPackedArray(std::vector<uint64_t>{UINT64_MAX, UINT64_MAX / 2, 0}, arrayTraits);
+
+    // will have maxBitNumber 62 bits
+    testPackedArray(
+            std::vector<uint64_t>{0, static_cast<uint64_t>(INT64_MAX / 2), 100, 200, 300, 400, 500, 600, 700},
+            arrayTraits);
+}
+
+TEST_F(ArrayTest, intField64PackedArray)
+{
+    auto arrayTraits = BitFieldArrayTraits<int64_t>(64);
+
+    testPackedArray(std::vector<int64_t>{-10, 11, -12}, arrayTraits);
+    testPackedArray(std::vector<int64_t>{-10, -10, -10}, arrayTraits); // zero delta
+
+    testPackedArray(std::vector<int64_t>{}, arrayTraits); // empty
+    testPackedArray(std::vector<int64_t>{10}, arrayTraits); // single element
+
+    // packing not enabled, delta is too big
+    testPackedArray(std::vector<int64_t>{INT64_MIN, INT64_MAX}, arrayTraits);
+    testPackedArray(std::vector<int64_t>{INT64_MIN, 0, INT64_MAX}, arrayTraits);
 }
 
 TEST_F(ArrayTest, varUInt64PackedArray)
