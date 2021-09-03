@@ -358,7 +358,7 @@ protected:
         writeMainStructure(writer, hasArray);
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-        TestMemoryResource<> memoryResource("Memory Resource #1");
+        TestMemoryResource<1024 * 3> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
             MainStructure mainStructure(reader, allocator);
@@ -444,7 +444,7 @@ protected:
         writeMainStructure(writer, hasArray);
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-        TestMemoryResource<> memoryResource("Memory Resource #1");
+        TestMemoryResource<1024 * 3> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
             MainStructure mainStructure(reader, allocator);
