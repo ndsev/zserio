@@ -1,4 +1,4 @@
 /**
- * This package contains all arrays to which are Zserio arrays mapped.
+ * This package contains array wrapper which is used for mapping of all zserio arrays.
  */
 package zserio.runtime.array;

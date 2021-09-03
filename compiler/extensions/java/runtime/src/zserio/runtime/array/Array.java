@@ -206,7 +206,7 @@ public class Array
     }
 
     /**
-     * Gets the underlying raw array size. !@# why TODO[mikir]
+     * Gets the underlying raw array size.
      *
      * @return The number of elements stored in the underlying raw array.
      */
