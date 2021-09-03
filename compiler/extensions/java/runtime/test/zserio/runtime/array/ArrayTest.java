@@ -3,6 +3,7 @@ package zserio.runtime.array;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import static org.junit.Assert.assertFalse;
 
@@ -628,8 +629,7 @@ public class ArrayTest
         final int autoArray1BitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray1.size());
         testArrayAutoZserioMethods(rawArray1, emptyRawArray, arrayTraits,
                 autoArray1BitSizeOf + array1BitSizeOf);
-        if (arrayTraits.isBitSizeOfConstant())
-            testArrayImplicitZserioMethods(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf);
+        testArrayImplicitZserioMethods(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf);
 
         final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();
         final OffsetInitializer offsetInitializer = new ArrayTestOffsetInitializer();
@@ -645,15 +645,16 @@ public class ArrayTest
         final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
-            assertEquals(expectedBitSizeOf, array.bitSizeOf(bitPosition));
-            assertEquals(bitPosition + expectedBitSizeOf, array.initializeOffsets(bitPosition));
+            final int bitSizeOf = array.bitSizeOf(bitPosition);
+            assertEquals(expectedBitSizeOf, bitSizeOf);
+            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
             if (bitPosition > 0)
                 writer.writeBits(0, bitPosition);
             array.write(writer);
             final long writtenBitPosition = writer.getBitPosition();
-            assertEquals(bitPosition + expectedBitSizeOf, writtenBitPosition);
+            assertEquals(bitPosition + bitSizeOf, writtenBitPosition);
             final byte[] writtenByteArray = writer.toByteArray();
             writer.close();
 
@@ -673,15 +674,16 @@ public class ArrayTest
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
-            assertEquals(expectedBitSizeOf, array.bitSizeOf(bitPosition));
-            assertEquals(bitPosition + expectedBitSizeOf, array.initializeOffsets(bitPosition));
+            final int bitSizeOf = array.bitSizeOf(bitPosition);
+            assertEquals(expectedBitSizeOf, bitSizeOf);
+            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
             if (bitPosition > 0)
                 writer.writeBits(0, bitPosition);
             array.write(writer);
             final long writtenBitPosition = writer.getBitPosition();
-            assertEquals(bitPosition + expectedBitSizeOf, writtenBitPosition);
+            assertEquals(bitPosition + bitSizeOf, writtenBitPosition);
             final byte[] writtenByteArray = writer.toByteArray();
             writer.close();
 
@@ -700,15 +702,16 @@ public class ArrayTest
         final Array array = new Array(rawArray, arrayTraits, ArrayType.IMPLICIT);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
-            assertEquals(expectedBitSizeOf, array.bitSizeOf(bitPosition));
-            assertEquals(bitPosition + expectedBitSizeOf, array.initializeOffsets(bitPosition));
+            final int bitSizeOf = array.bitSizeOf(bitPosition);
+            assertEquals(expectedBitSizeOf, bitSizeOf);
+            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
             if (bitPosition > 0)
                 writer.writeBits(0, bitPosition);
             array.write(writer);
             final long writtenBitPosition = writer.getBitPosition();
-            assertEquals(bitPosition + expectedBitSizeOf, writtenBitPosition);
+            assertEquals(bitPosition + bitSizeOf, writtenBitPosition);
             final byte[] writtenByteArray = writer.toByteArray();
             writer.close();
 
@@ -716,8 +719,22 @@ public class ArrayTest
             final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(readerBuffer);
             if (bitPosition > 0)
                 assertEquals(0, reader.readBits(bitPosition));
-            final Array readArray = new Array(reader, emptyRawArray, arrayTraits, ArrayType.IMPLICIT);
-            assertEquals(array, readArray);
+            if (arrayTraits.isBitSizeOfConstant())
+            {
+                final Array readArray = new Array(reader, emptyRawArray, arrayTraits, ArrayType.IMPLICIT);
+                assertEquals(array, readArray);
+            }
+            else
+            {
+                try
+                {
+                    new Array(reader, emptyRawArray, arrayTraits, ArrayType.IMPLICIT);
+                    fail("Expected UnsupportedOperationException exception!");
+                }
+                catch (UnsupportedOperationException e)
+                {
+                }
+            }
         }
     }
 
@@ -729,17 +746,18 @@ public class ArrayTest
                 offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
+            final int bitSizeOf = array.bitSizeOf(bitPosition);
             final int alignedExpectedBitSizeOf = expectedBitSizeOf +
                     (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;
-            assertEquals(alignedExpectedBitSizeOf, array.bitSizeOf(bitPosition));
-            assertEquals(bitPosition + alignedExpectedBitSizeOf, array.initializeOffsets(bitPosition));
+            assertEquals(alignedExpectedBitSizeOf, bitSizeOf);
+            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
             if (bitPosition > 0)
                 writer.writeBits(0, bitPosition);
             array.write(writer);
             final long writtenBitPosition = writer.getBitPosition();
-            assertEquals(bitPosition + alignedExpectedBitSizeOf, writtenBitPosition);
+            assertEquals(bitPosition + bitSizeOf, writtenBitPosition);
             final byte[] writtenByteArray = writer.toByteArray();
             writer.close();
 
@@ -760,17 +778,18 @@ public class ArrayTest
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
+            final int bitSizeOf = array.bitSizeOf(bitPosition);
             final int alignedExpectedBitSizeOf = expectedBitSizeOf +
                     (int)BitPositionUtil.alignTo(8, bitPosition) - bitPosition;
-            assertEquals(alignedExpectedBitSizeOf, array.bitSizeOf(bitPosition));
-            assertEquals(bitPosition + alignedExpectedBitSizeOf, array.initializeOffsets(bitPosition));
+            assertEquals(alignedExpectedBitSizeOf, bitSizeOf);
+            assertEquals(bitPosition + bitSizeOf, array.initializeOffsets(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
             if (bitPosition > 0)
                 writer.writeBits(0, bitPosition);
             array.write(writer);
             final long writtenBitPosition = writer.getBitPosition();
-            assertEquals(bitPosition + alignedExpectedBitSizeOf, writtenBitPosition);
+            assertEquals(bitPosition + bitSizeOf, writtenBitPosition);
             final byte[] writtenByteArray = writer.toByteArray();
             writer.close();
 
