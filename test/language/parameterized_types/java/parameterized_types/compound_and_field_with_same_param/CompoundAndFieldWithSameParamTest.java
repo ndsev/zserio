@@ -13,28 +13,48 @@ import org.junit.Test;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.FileBitStreamReader;
 
-// this test is mainly for C++, so just check that it compiles ok
+// this test is mainly for C++, so just check that it is ok
 public class CompoundAndFieldWithSameParamTest
 {
     @Test
-    public void bitStreamReaderConstructor() throws IOException
+    public void compoundReadConstructor() throws IOException
     {
         final File file = new File("test.bin");
-        writeToFile(file);
+        writeCompoundReadToFile(file);
 
         BitStreamReader stream = new FileBitStreamReader(file);
-        final Compound compound = new Compound(stream, PARAM);
-        assertEquals(FIELD1, compound.getField1().getValue());
-        assertEquals(FIELD2, compound.getField2().getValue());
+        final CompoundRead compoundRead = new CompoundRead(stream, PARAM);
+        assertEquals(FIELD1, compoundRead.getField1().getValue());
+        assertEquals(FIELD2, compoundRead.getField2().getValue());
 
         stream = new FileBitStreamReader(file);
-        final SameParamTest sameParamTest = new SameParamTest(stream);
-        assertEquals(PARAM, sameParamTest.getCompound().getParam());
-        assertEquals(FIELD1, sameParamTest.getCompound().getField1().getValue());
-        assertEquals(FIELD2, sameParamTest.getCompound().getField2().getValue());
+        final CompoundReadTest compoundReadTest = new CompoundReadTest(stream);
+        assertEquals(PARAM, compoundReadTest.getCompoundRead().getParam());
+        assertEquals(FIELD1, compoundReadTest.getCompoundRead().getField1().getValue());
+        assertEquals(FIELD2, compoundReadTest.getCompoundRead().getField2().getValue());
     }
 
-    private void writeToFile(File file) throws IOException
+    @Test
+    public void compoundPackingConstructor() throws IOException
+    {
+        final File file = new File("test.bin");
+        writeCompoundPackingToFile(file);
+
+        BitStreamReader stream = new FileBitStreamReader(file);
+        final CompoundPacking compoundPacking = new CompoundPacking(stream, PARAM);
+        assertEquals(FIELD1, compoundPacking.getField1().getValue());
+        assertEquals(FIELD2, compoundPacking.getField2().getValue());
+        assertEquals(FIELD3, compoundPacking.getField3().getValue());
+
+        stream = new FileBitStreamReader(file);
+        final CompoundPackingTest compoundPackingTest = new CompoundPackingTest(stream);
+        assertEquals(PARAM, compoundPackingTest.getCompoundPacking().getParam());
+        assertEquals(FIELD1, compoundPackingTest.getCompoundPacking().getField1().getValue());
+        assertEquals(FIELD2, compoundPackingTest.getCompoundPacking().getField2().getValue());
+        assertEquals(FIELD3, compoundPackingTest.getCompoundPacking().getField3().getValue());
+    }
+
+    private void writeCompoundReadToFile(File file) throws IOException
     {
         final FileImageOutputStream stream = new FileImageOutputStream(file);
         stream.writeBits(FIELD1, 32);
@@ -42,7 +62,17 @@ public class CompoundAndFieldWithSameParamTest
         stream.close();
     }
 
+    private void writeCompoundPackingToFile(File file) throws IOException
+    {
+        final FileImageOutputStream stream = new FileImageOutputStream(file);
+        stream.writeBits(FIELD1, 32);
+        stream.writeBits(FIELD2, 32);
+        stream.writeBits(FIELD3, 32);
+        stream.close();
+    }
+
     private static final int PARAM = 10;
     private static final long FIELD1 = 1;
     private static final long FIELD2 = 9;
+    private static final long FIELD3 = 5;
 }

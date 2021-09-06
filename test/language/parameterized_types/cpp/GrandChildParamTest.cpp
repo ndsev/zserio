@@ -13,9 +13,8 @@ namespace grand_child_param
 class ParameterizedTypesGrandChildParamTest : public ::testing::Test
 {
 protected:
-    void fillGrandChildParam(GrandChildParam& grandChildParam)
+    void fillItemChoiceHolder(ItemChoiceHolder& itemChoiceHolder)
     {
-        ItemChoiceHolder& itemChoiceHolder = grandChildParam.getItemChoiceHolder();
         itemChoiceHolder.setHasItem(ITEM_CHOICE_HOLDER_HAS_ITEM);
         ItemChoice& itemChoice = itemChoiceHolder.getItemChoice();
         Item item;
@@ -24,16 +23,46 @@ protected:
         itemChoice.setItem(item);
     }
 
-    void checkGrandChildParamInBitStream(zserio::BitStreamReader& reader,
-            const GrandChildParam& grandChildParam)
+    void fillGrandChildParam(GrandChildParam& grandChildParam)
     {
-        const ItemChoiceHolder& itemChoiceHolder = grandChildParam.getItemChoiceHolder();
+        ItemChoiceHolder& itemChoiceHolder = grandChildParam.getItemChoiceHolder();
+        fillItemChoiceHolder(itemChoiceHolder);
 
+        std::vector<ItemChoiceHolder>& itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
+        itemChoiceHolderArray.push_back(itemChoiceHolder);
+
+        std::vector<uint32_t> dummyArray(1);
+        grandChildParam.setDummyArray(dummyArray);
+    }
+
+    void checkItemChoiceHolderInBitStream(zserio::BitStreamReader& reader,
+            const ItemChoiceHolder& itemChoiceHolder)
+    {
         ASSERT_EQ(itemChoiceHolder.getHasItem(), reader.readBool());
 
         const Item& item = itemChoiceHolder.getItemChoice().getItem();
         ASSERT_EQ(item.getParam(), reader.readBits(16));
         ASSERT_EQ(item.getExtraParam(), reader.readBits(32));
+    }
+
+    void checkGrandChildParamInBitStream(zserio::BitStreamReader& reader,
+            const GrandChildParam& grandChildParam)
+    {
+        const ItemChoiceHolder& itemChoiceHolder = grandChildParam.getItemChoiceHolder();
+        checkItemChoiceHolderInBitStream(reader, itemChoiceHolder);
+
+        const std::vector<ItemChoiceHolder>& itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
+        ASSERT_EQ(itemChoiceHolderArray.size(), reader.readVarSize());
+        checkItemChoiceHolderInBitStream(reader, itemChoiceHolderArray[0]);
+
+        const bool isDummyArrayUsed = grandChildParam.isDummyArrayUsed();
+        ASSERT_EQ(isDummyArrayUsed, reader.readBool());
+        if (isDummyArrayUsed)
+        {
+            const std::vector<uint32_t> dummyArray = grandChildParam.getDummyArray();
+            ASSERT_EQ(dummyArray.size(), reader.readVarSize());
+            ASSERT_EQ(dummyArray[0], reader.readBits(32));
+        }
     }
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);

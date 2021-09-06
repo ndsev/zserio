@@ -3,8 +3,10 @@
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/PackingContext.h"
 
-#include "parameterized_types/compound_and_field_with_same_param/SameParamTest.h"
+#include "parameterized_types/compound_and_field_with_same_param/CompoundReadTest.h"
+#include "parameterized_types/compound_and_field_with_same_param/CompoundPackingTest.h"
 
 namespace parameterized_types
 {
@@ -14,17 +16,23 @@ namespace compound_and_field_with_same_param
 class ParameterizedTypesCompoundAndFieldWithSameParamTest : public ::testing::Test
 {
 protected:
-    void writeToByteArray(zserio::BitStreamWriter& writer)
+    void writeCompoundReadToStream(zserio::BitStreamWriter& writer)
     {
         writer.writeBits(FIELD1, 32);
         writer.writeBits(FIELD2, 32);
     }
 
+    void writeCompoundPackingToStream(zserio::BitStreamWriter& writer)
+    {
+        writer.writeBits(FIELD1, 32);
+        writer.writeBits(FIELD2, 32);
+        writer.writeBits(FIELD3, 32);
+    }
+
     static const int PARAM;
     static const uint32_t FIELD1;
     static const uint32_t FIELD2;
-
-    static const size_t BIT_SIZE;
+    static const uint32_t FIELD3;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
@@ -34,27 +42,55 @@ protected:
 const int ParameterizedTypesCompoundAndFieldWithSameParamTest::PARAM = 10;
 const uint32_t ParameterizedTypesCompoundAndFieldWithSameParamTest::FIELD1 = 1;
 const uint32_t ParameterizedTypesCompoundAndFieldWithSameParamTest::FIELD2 = 9;
-
-const size_t ParameterizedTypesCompoundAndFieldWithSameParamTest::BIT_SIZE = 32 + 2 * 32;
+const uint32_t ParameterizedTypesCompoundAndFieldWithSameParamTest::FIELD3 = 5;
 
 TEST_F(ParameterizedTypesCompoundAndFieldWithSameParamTest, bitStreamReaderConstructor)
 {
     zserio::BitStreamWriter writer(bitBuffer);
-    writeToByteArray(writer);
+    writeCompoundReadToStream(writer);
 
     {
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-        Compound compound = Compound(reader, PARAM);
-        ASSERT_EQ(compound.getField1().getValue(), FIELD1);
-        ASSERT_EQ(compound.getField2().getValue(), FIELD2);
+        CompoundRead compoundRead = CompoundRead(reader, PARAM);
+        ASSERT_EQ(compoundRead.getField1().getValue(), FIELD1);
+        ASSERT_EQ(compoundRead.getField2().getValue(), FIELD2);
     }
 
     {
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-        SameParamTest sameParamTest = SameParamTest(reader);
-        ASSERT_EQ(PARAM, sameParamTest.getCompound().getParam());
-        ASSERT_EQ(FIELD1, sameParamTest.getCompound().getField1().getValue());
-        ASSERT_EQ(FIELD2, sameParamTest.getCompound().getField2().getValue());
+        CompoundReadTest compoundReadTest = CompoundReadTest(reader);
+        ASSERT_EQ(PARAM, compoundReadTest.getCompoundRead().getParam());
+        ASSERT_EQ(FIELD1, compoundReadTest.getCompoundRead().getField1().getValue());
+        ASSERT_EQ(FIELD2, compoundReadTest.getCompoundRead().getField2().getValue());
+    }
+}
+
+TEST_F(ParameterizedTypesCompoundAndFieldWithSameParamTest, packingContextConstructor)
+{
+    zserio::BitStreamWriter writer(bitBuffer);
+    writeCompoundPackingToStream(writer);
+
+    {
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+        const std::allocator<uint8_t> allocator = std::allocator<uint8_t>();
+        zserio::PackingContextNode contextNode(allocator);
+        CompoundPacking::createPackingContext(contextNode);
+        CompoundPacking compoundPacking = CompoundPacking(contextNode, reader, PARAM);
+        ASSERT_EQ(compoundPacking.getField1().getValue(), FIELD1);
+        ASSERT_EQ(compoundPacking.getField2().getValue(), FIELD2);
+        ASSERT_EQ(compoundPacking.getField3().getValue(), FIELD3);
+    }
+
+    {
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+        const std::allocator<uint8_t> allocator = std::allocator<uint8_t>();
+        zserio::PackingContextNode contextNode(allocator);
+        CompoundPackingTest::createPackingContext(contextNode);
+        CompoundPackingTest compoundPackingTest = CompoundPackingTest(contextNode, reader);
+        ASSERT_EQ(PARAM, compoundPackingTest.getCompoundPacking().getParam());
+        ASSERT_EQ(FIELD1, compoundPackingTest.getCompoundPacking().getField1().getValue());
+        ASSERT_EQ(FIELD2, compoundPackingTest.getCompoundPacking().getField2().getValue());
+        ASSERT_EQ(FIELD3, compoundPackingTest.getCompoundPacking().getField3().getValue());
     }
 }
 

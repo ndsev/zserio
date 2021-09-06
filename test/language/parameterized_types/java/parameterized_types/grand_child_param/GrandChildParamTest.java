@@ -18,33 +18,59 @@ public class GrandChildParamTest
         final GrandChildParam grandChildParam = createGrandChildParam();
         final File file = new File("test1.bin");
         grandChildParam.write(file);
-        checkGrandChildParamInFile(file, grandChildParam);
+        final BitStreamReader reader = new FileBitStreamReader(file);
+        checkGrandChildParamInStream(reader, grandChildParam);
+        reader.close();
         final GrandChildParam readGrandChildParam = new GrandChildParam(file);
         assertEquals(grandChildParam, readGrandChildParam);
     }
 
-    private GrandChildParam createGrandChildParam()
+    private ItemChoiceHolder createItemChoiceHolder()
     {
         final Item item = new Item(ITEM_CHOICE_HOLDER_HAS_ITEM, ITEM_PARAM, ITEM_EXTRA_PARAM);
         ItemChoice itemChoice = new ItemChoice(ITEM_CHOICE_HOLDER_HAS_ITEM);
         itemChoice.setItem(item);
-        final ItemChoiceHolder itemChoiceHolder = new ItemChoiceHolder(itemChoice.getHasItem(), itemChoice);
 
-        return new GrandChildParam(itemChoiceHolder);
+        return new ItemChoiceHolder(itemChoice.getHasItem(), itemChoice);
     }
 
-    private void checkGrandChildParamInFile(File file, GrandChildParam grandChildParam) throws IOException
+    private GrandChildParam createGrandChildParam()
     {
-        final BitStreamReader stream = new FileBitStreamReader(file);
+        final ItemChoiceHolder itemChoiceHolder = createItemChoiceHolder();
+        final ItemChoiceHolder[] itemChoiceHolderArray = new ItemChoiceHolder[] {createItemChoiceHolder()};
+        final long[] dummyArray = new long[] {0};
 
-        final ItemChoiceHolder itemChoiceHolder = grandChildParam.getItemChoiceHolder();
-        assertEquals(itemChoiceHolder.getHasItem(), stream.readBool());
+        return new GrandChildParam(itemChoiceHolder, itemChoiceHolderArray, dummyArray);
+    }
+
+    private void checkItemChoiceHolderInStream(BitStreamReader reader, ItemChoiceHolder itemChoiceHolder)
+            throws IOException
+    {
+        assertEquals(itemChoiceHolder.getHasItem(), reader.readBool());
 
         final Item item = itemChoiceHolder.getItemChoice().getItem();
-        assertEquals(item.getParam(), stream.readUnsignedShort());
-        assertEquals((long)item.getExtraParam(), stream.readUnsignedInt());
+        assertEquals(item.getParam(), reader.readBits(16));
+        assertEquals((long)item.getExtraParam(), reader.readBits(32));
+    }
 
-        stream.close();
+    private void checkGrandChildParamInStream(BitStreamReader reader, GrandChildParam grandChildParam)
+            throws IOException
+    {
+        final ItemChoiceHolder itemChoiceHolder = grandChildParam.getItemChoiceHolder();
+        checkItemChoiceHolderInStream(reader, itemChoiceHolder);
+
+        final ItemChoiceHolder[] itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
+        assertEquals(itemChoiceHolderArray.length, reader.readVarSize());
+        checkItemChoiceHolderInStream(reader, itemChoiceHolderArray[0]);
+
+        final boolean isDummyArrayUsed = grandChildParam.isDummyArrayUsed();
+        assertEquals(isDummyArrayUsed, reader.readBool());
+        if (isDummyArrayUsed)
+        {
+            final long[] dummyArray = grandChildParam.getDummyArray();
+            assertEquals(dummyArray.length, reader.readVarSize());
+            assertEquals(dummyArray[0], reader.readBits(32));
+        }
     }
 
     static final boolean ITEM_CHOICE_HOLDER_HAS_ITEM = true;

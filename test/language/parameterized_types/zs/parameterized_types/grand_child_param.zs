@@ -21,8 +21,11 @@ struct ItemChoiceHolder
     ItemChoice(hasItem) itemChoice;
 };
 
-// This compound type must have initializeChildren() method because it contains parameterized children.
+// This compound type must have C++ initializeChildren() method because it contains parameterized children.
 struct GrandChildParam
 {
-    ItemChoiceHolder    itemChoiceHolder;
+    ItemChoiceHolder itemChoiceHolder;
+    ItemChoiceHolder itemChoiceHolderArray[];
+    // Optional array is used intentionally to check initializeChildren() more deeply.
+    optional uint32  dummyArray[];
 };
