@@ -1,7 +1,5 @@
 package zserio.runtime.array;
 
-import zserio.runtime.ZserioError;
-
 /**
  * Interface used to check array indexed offsets during reading/writing of arrays from/to bit stream.
  */
@@ -12,8 +10,6 @@ public interface OffsetChecker
      *
      * @param index      Index of element in array.
      * @param byteOffset Current bit stream offset in bytes.
-     *
-     * @throws ZserioError Throws if offset offset is not correct.
      */
-    void checkOffset(int index, long byteOffset) throws ZserioError;
+    void checkOffset(int index, long byteOffset);
 }

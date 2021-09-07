@@ -37,7 +37,7 @@ public final class ZserioIO
      *
      * @return Byte array with a serialized version of the given object.
      */
-    public static <E extends Writer> byte[] write(final E obj) throws ZserioError
+    public static <E extends Writer> byte[] write(final E obj)
     {
         try
         {
@@ -61,7 +61,7 @@ public final class ZserioIO
      *
      * @return Zserio object of the given class.
      */
-    public static <E> E read(final Class<E> clazz, final byte[] byteArray) throws ZserioError
+    public static <E> E read(final Class<E> clazz, final byte[] byteArray)
     {
         try
         {
@@ -107,7 +107,6 @@ public final class ZserioIO
      * @return Zserio Read object of the given class.
      */
     public static <E> E read(final Class<E> clazz, final byte[] byteArray, final Object... args)
-            throws ZserioError
     {
         try
         {

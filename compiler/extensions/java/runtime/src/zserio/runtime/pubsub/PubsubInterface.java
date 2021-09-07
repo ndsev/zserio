@@ -9,8 +9,6 @@ public interface PubsubInterface
      * @param topic Topic definition.
      * @param data Data to publish.
      * @param context Context specific for a particular Pub/Sub implementation.
-     *
-     * @throws PubsubException when publishing fails.
      */
     public void publish(String topic, byte[] data, Object context);
 
@@ -24,7 +22,6 @@ public interface PubsubInterface
      * @param context Context specific for a particular Pub/Sub implementation.
      *
      * @return Subscription ID.
-     * @throws PubsubException when subscribing fails.
      */
     public int subscribe(String topic, Callback callback, Object context);
 
@@ -32,8 +29,6 @@ public interface PubsubInterface
      * Unsubscribes the subscription with the given ID.
      *
      * @param subscriptionId ID of the subscription to be unsubscribed.
-     *
-     * @throws PubsubException when unsubscribing fails.
      */
     public void unsubscribe(int subscriptionId);
 

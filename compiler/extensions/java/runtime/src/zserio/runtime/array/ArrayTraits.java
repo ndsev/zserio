@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.SizeOf;
-import zserio.runtime.ZserioError;
+import zserio.runtime.array.ArrayElement.IntegralArrayElement;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
@@ -24,6 +24,13 @@ public interface ArrayTraits
      * @return true if bit size of the array elements is constant.
      */
     public boolean isBitSizeOfConstant();
+
+    /**
+     * Gets packed array traits.
+     *
+     * @return Instance of packed array traits or null if the array is not packable.
+     */
+    public PackedArrayTraits getPackedArrayTraits();
 
     /**
      * Gets the bit size of the array element if it is stored in the bit stream.
@@ -54,9 +61,8 @@ public interface ArrayTraits
      * @return Array element filled by read element.
      *
      * @throws IOException Failure during bit stream manipulation.
-     * @throws ZserioError Failure during offset checking.
      */
-    public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError;
+    public ArrayElement read(BitStreamReader reader, int index) throws IOException;
 
     /**
      * Writes the array element to the bit stream.
@@ -65,14 +71,67 @@ public interface ArrayTraits
      * @param element Array element.
      *
      * @throws IOException Failure during bit stream manipulation.
-     * @throws ZserioError Failure during offset checking.
      */
-    public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError;
+    public void write(BitStreamWriter writer, ArrayElement element) throws IOException;
+
+    /**
+     * Interface for integral array traits.
+     */
+    public static interface IntegralArrayTraits extends ArrayTraits
+    {
+        /**
+         * Creates integral array element from given big integer value.
+         *
+         * @param value Big integer value of the element to create.
+         *
+         * @return Integral array element.
+         */
+        public IntegralArrayElement fromBigInteger(BigInteger value);
+
+        /**
+         * Reads the array element from the bit stream.
+         *
+         * @param reader Bit stream reader to read from.
+         *
+         * @return Array element filled by read element.
+         *
+         * @throws IOException Failure during bit stream manipulation.
+         */
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException;
+    }
+
+    /**
+     * Implementation of common integral array traits functionality.
+     */
+    public static abstract class IntegralArrayTraitsBase implements IntegralArrayTraits
+    {
+        /**
+         * Constructor.
+         */
+        public IntegralArrayTraitsBase()
+        {
+            this.packedArrayTraits = new PackedArrayTraits.IntegralPackedArrayTraits(this);
+        }
+
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return packedArrayTraits;
+        }
+
+        @Override
+        public IntegralArrayElement read(BitStreamReader reader, int index) throws IOException
+        {
+            return read(reader);
+        }
+
+        private final PackedArrayTraits packedArrayTraits;
+    }
 
     /**
      * Array traits for zserio int8 and int:1...int:8 arrays which are mapped to Java byte[] array.
      */
-    public static class SignedBitFieldByteArrayTraits implements ArrayTraits
+    public static class SignedBitFieldByteArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -103,17 +162,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set((byte)reader.readSignedBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeSignedBits(((ArrayElement.ByteArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.byteValue());
+            return element;
         }
 
         private final int numBits;
@@ -123,7 +188,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio int16 and int:9...int:16 arrays which are mapped to Java short[] array.
      */
-    public static class SignedBitFieldShortArrayTraits implements ArrayTraits
+    public static class SignedBitFieldShortArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -154,17 +219,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set((short)reader.readSignedBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeSignedBits(((ArrayElement.ShortArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.shortValue());
+            return element;
         }
 
         private final int numBits;
@@ -174,7 +245,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio int32 and int:17...int:32 arrays which are mapped to Java int[] array.
      */
-    public static class SignedBitFieldIntArrayTraits implements ArrayTraits
+    public static class SignedBitFieldIntArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -205,17 +276,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set((int)reader.readSignedBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeSignedBits(((ArrayElement.IntArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.intValue());
+            return element;
         }
 
         private final int numBits;
@@ -225,7 +302,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio int64 and int:33...int:64 arrays which are mapped to Java long[] array.
      */
-    public static class SignedBitFieldLongArrayTraits implements ArrayTraits
+    public static class SignedBitFieldLongArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -256,17 +333,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readSignedBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeSignedBits(((ArrayElement.LongArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.longValue());
+            return element;
         }
 
         private final int numBits;
@@ -276,7 +359,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio bit:1...bit:7 arrays which are mapped to Java byte[] array.
      */
-    public static class BitFieldByteArrayTraits implements ArrayTraits
+    public static class BitFieldByteArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -307,17 +390,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set((byte)reader.readBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeBits(((ArrayElement.ByteArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.byteValue());
+            return element;
         }
 
         private final int numBits;
@@ -327,7 +416,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio uint8 and bit:8...bit:15 arrays which are mapped to Java short[] array.
      */
-    public static class BitFieldShortArrayTraits implements ArrayTraits
+    public static class BitFieldShortArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -358,17 +447,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set((short)reader.readBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeBits(((ArrayElement.ShortArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.shortValue());
+            return element;
         }
 
         private final int numBits;
@@ -378,7 +473,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio uint16 and bit:16...bit:31 arrays which are mapped to Java int[] array.
      */
-    public static class BitFieldIntArrayTraits implements ArrayTraits
+    public static class BitFieldIntArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -409,17 +504,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set((int)reader.readBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeBits(((ArrayElement.IntArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.intValue());
+            return element;
         }
 
         private final int numBits;
@@ -429,7 +530,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio uint32 and bit:32...bit:63 arrays which are mapped to Java long[] array.
      */
-    public static class BitFieldLongArrayTraits implements ArrayTraits
+    public static class BitFieldLongArrayTraits extends IntegralArrayTraitsBase
     {
         /**
          * Constructor from number of bits of zserio type.
@@ -460,17 +561,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readBits(numBits));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeBits(((ArrayElement.LongArrayElement)element).get(), numBits);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.longValue());
+            return element;
         }
 
         private final int numBits;
@@ -480,7 +587,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio uint64 and bit:64 arrays which are mapped to Java BigInteger[] array.
      */
-    public static class BitFieldBigIntegerArrayTraits implements ArrayTraits
+    public static class BitFieldBigIntegerArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -501,30 +608,35 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readBigInteger(NUM_BITS));
-
             return element;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
-            writer.writeBigInteger(((ArrayElement.ObjectArrayElement<BigInteger>)element).get(), NUM_BITS);
+            writer.writeBigInteger(((ArrayElement.BigIntegerArrayElement)element).get(), NUM_BITS);
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger);
+            return element;
         }
 
         private static final int NUM_BITS = 64;
 
-        private final ArrayElement.ObjectArrayElement<BigInteger> element =
-                new ArrayElement.ObjectArrayElement<>();
+        private final ArrayElement.BigIntegerArrayElement element =
+                new ArrayElement.BigIntegerArrayElement();
     }
 
     /**
      * Array traits for zserio varint16 arrays which are mapped to Java short[] array.
      */
-    public static class VarInt16ArrayTraits implements ArrayTraits
+    public static class VarInt16ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -545,17 +657,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarInt16());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarInt16(((ArrayElement.ShortArrayElement)element).get());
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.shortValue());
+            return element;
         }
 
         private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
@@ -564,7 +682,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varint32 arrays which are mapped to Java int[] array.
      */
-    public static class VarInt32ArrayTraits implements ArrayTraits
+    public static class VarInt32ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -585,17 +703,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarInt32());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarInt32(((ArrayElement.IntArrayElement)element).get());
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.intValue());
+            return element;
         }
 
         private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
@@ -604,7 +728,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varint64 arrays which are mapped to Java long[] array.
      */
-    public static class VarInt64ArrayTraits implements ArrayTraits
+    public static class VarInt64ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -625,17 +749,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarInt64());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarInt64(((ArrayElement.LongArrayElement)element).get());
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.longValue());
+            return element;
         }
 
         private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
@@ -644,7 +774,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varint arrays which are mapped to Java long[] array.
      */
-    public static class VarIntArrayTraits implements ArrayTraits
+    public static class VarIntArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -665,26 +795,32 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarInt());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarInt(((ArrayElement.LongArrayElement)element).get());
         }
 
-    private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.longValue());
+            return element;
+        }
+
+        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
      * Array traits for zserio varuint16 arrays which are mapped to Java short[] array.
      */
-    public static class VarUInt16ArrayTraits implements ArrayTraits
+    public static class VarUInt16ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -705,17 +841,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarUInt16());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarUInt16(((ArrayElement.ShortArrayElement)element).get());
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.shortValue());
+            return element;
         }
 
         private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
@@ -724,7 +866,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varuint32 arrays which are mapped to Java int[] array.
      */
-    public static class VarUInt32ArrayTraits implements ArrayTraits
+    public static class VarUInt32ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -745,17 +887,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarUInt32());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarUInt32(((ArrayElement.IntArrayElement)element).get());
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.intValue());
+            return element;
         }
 
         private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
@@ -764,7 +912,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varuint64 arrays which are mapped to Java long[] array.
      */
-    public static class VarUInt64ArrayTraits implements ArrayTraits
+    public static class VarUInt64ArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -785,17 +933,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarUInt64());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarUInt64(((ArrayElement.LongArrayElement)element).get());
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.longValue());
+            return element;
         }
 
         private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
@@ -804,7 +958,7 @@ public interface ArrayTraits
     /**
      * Array traits for zserio varuint arrays which are mapped to Java BigInteger[] array.
      */
-    public static class VarUIntArrayTraits implements ArrayTraits
+    public static class VarUIntArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -812,12 +966,11 @@ public interface ArrayTraits
             return false;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public int bitSizeOf(long bitPosition, ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarUInt(
-                    ((ArrayElement.ObjectArrayElement<BigInteger>)element).get());
+                    ((ArrayElement.BigIntegerArrayElement)element).get());
         }
 
         @Override
@@ -827,28 +980,32 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarUInt());
-
             return element;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
-            writer.writeVarUInt(((ArrayElement.ObjectArrayElement<BigInteger>)element).get());
+            writer.writeVarUInt(((ArrayElement.BigIntegerArrayElement)element).get());
         }
 
-        private final ArrayElement.ObjectArrayElement<BigInteger> element =
-                new ArrayElement.ObjectArrayElement<>();
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger);
+            return element;
+        }
+
+        private final ArrayElement.BigIntegerArrayElement element = new ArrayElement.BigIntegerArrayElement();
     }
 
     /**
      * Array traits for zserio varsize arrays which are mapped to Java int[] array.
      */
-    public static class VarSizeArrayTraits implements ArrayTraits
+    public static class VarSizeArrayTraits extends IntegralArrayTraitsBase
     {
         @Override
         public boolean isBitSizeOfConstant()
@@ -869,17 +1026,23 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
             element.set(reader.readVarSize());
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeVarSize(((ArrayElement.IntArrayElement)element).get());
+        }
+
+        @Override
+        public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
+        {
+            element.set(bigInteger.intValue());
+            return element;
         }
 
         private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
@@ -890,6 +1053,12 @@ public interface ArrayTraits
      */
     public static class Float16ArrayTraits implements ArrayTraits
     {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return null;
+        }
+
         @Override
         public boolean isBitSizeOfConstant()
         {
@@ -909,7 +1078,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
             element.set(reader.readFloat16());
 
@@ -917,7 +1086,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeFloat16(((ArrayElement.FloatArrayElement)element).get());
         }
@@ -930,6 +1099,12 @@ public interface ArrayTraits
      */
     public static class Float32ArrayTraits implements ArrayTraits
     {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return null;
+        }
+
         @Override
         public boolean isBitSizeOfConstant()
         {
@@ -949,7 +1124,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
             element.set(reader.readFloat32());
 
@@ -957,7 +1132,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeFloat32(((ArrayElement.FloatArrayElement)element).get());
         }
@@ -970,6 +1145,12 @@ public interface ArrayTraits
      */
     public static class Float64ArrayTraits implements ArrayTraits
     {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return null;
+        }
+
         @Override
         public boolean isBitSizeOfConstant()
         {
@@ -989,7 +1170,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
             element.set(reader.readFloat64());
 
@@ -997,7 +1178,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeFloat64(((ArrayElement.DoubleArrayElement)element).get());
         }
@@ -1010,6 +1191,12 @@ public interface ArrayTraits
      */
     public static class StringArrayTraits implements ArrayTraits
     {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return null;
+        }
+
         @Override
         public boolean isBitSizeOfConstant()
         {
@@ -1031,7 +1218,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
             element.set(reader.readString());
 
@@ -1040,7 +1227,7 @@ public interface ArrayTraits
 
         @SuppressWarnings("unchecked")
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeString(((ArrayElement.ObjectArrayElement<String>)element).get());
         }
@@ -1053,6 +1240,12 @@ public interface ArrayTraits
      */
     public static class BoolArrayTraits implements ArrayTraits
     {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return null;
+        }
+
         @Override
         public boolean isBitSizeOfConstant()
         {
@@ -1072,7 +1265,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
             element.set(reader.readBool());
 
@@ -1080,7 +1273,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeBool(((ArrayElement.BooleanArrayElement)element).get());
         }
@@ -1093,6 +1286,12 @@ public interface ArrayTraits
      */
     public static class BitBufferArrayTraits implements ArrayTraits
     {
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return null;
+        }
+
         @Override
         public boolean isBitSizeOfConstant()
         {
@@ -1114,7 +1313,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
             element.set(reader.readBitBuffer());
 
@@ -1123,7 +1322,7 @@ public interface ArrayTraits
 
         @SuppressWarnings("unchecked")
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             writer.writeBitBuffer(((ArrayElement.ObjectArrayElement<BitBuffer>)element).get());
         }
@@ -1148,6 +1347,12 @@ public interface ArrayTraits
         }
 
         @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return new PackedArrayTraits.ObjectPackedArrayTraits<>(elementFactory);
+        }
+
+        @Override
         public boolean isBitSizeOfConstant()
         {
             return false;
@@ -1164,22 +1369,26 @@ public interface ArrayTraits
         public long initializeOffsets(long bitPosition, ArrayElement element)
         {
             throw new UnsupportedOperationException(
-                    "Array: initializeOffsets is not implemented for read only ObjectArrayTraits!");
+                    "ArrayTraits: initializeOffsets is not implemented for read only ObjectArrayTraits!");
         }
 
         @Override
-        public ArrayElement read(BitStreamReader reader, int index) throws IOException, ZserioError
+        public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
             element.set(elementFactory.create(reader, index));
-
             return element;
         }
 
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             throw new UnsupportedOperationException(
-                    "Array: write is not implemented for read only ObjectArrayTraits!");
+                    "ArrayTraits: write is not implemented for read only ObjectArrayTraits!");
+        }
+
+        protected ElementFactory<E> getElementFactory()
+        {
+            return elementFactory;
         }
 
         private final ElementFactory<E> elementFactory;
@@ -1202,6 +1411,12 @@ public interface ArrayTraits
             super(elementFactory);
         }
 
+        @Override
+        public PackedArrayTraits getPackedArrayTraits()
+        {
+            return new PackedArrayTraits.WriteObjectPackedArrayTraits<>(getElementFactory());
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public long initializeOffsets(long bitPosition, ArrayElement element)
@@ -1211,7 +1426,7 @@ public interface ArrayTraits
 
         @SuppressWarnings("unchecked")
         @Override
-        public void write(BitStreamWriter writer, ArrayElement element) throws IOException, ZserioError
+        public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
             ((ArrayElement.ObjectArrayElement<E>)element).get().write(writer);
         }

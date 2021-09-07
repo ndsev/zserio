@@ -1,5 +1,7 @@
 package zserio.runtime.array;
 
+import java.math.BigInteger;
+
 /**
  * Common interface for all array elements.
  */
@@ -11,16 +13,28 @@ public interface ArrayElement
     public static ArrayElement Dummy = new DummyElement();
 
     /**
+     * Interface for elements of integral arrays.
+     */
+    public static interface IntegralArrayElement extends ArrayElement
+    {
+        /**
+         * Converts the element value to big integer.
+         *
+         * @return Element value as BigInteger.
+         */
+        public BigInteger toBigInteger();
+    }
+
+    /**
      * Dummy array element.
      */
     public static class DummyElement implements ArrayElement
-    {
-    }
+    {}
 
     /**
      * Array element for bytes.
      */
-    public static class ByteArrayElement implements ArrayElement
+    public static class ByteArrayElement implements IntegralArrayElement
     {
         /**
          * Sets the element value.
@@ -42,13 +56,23 @@ public interface ArrayElement
             return element;
         }
 
+        /**
+         * Creates big integer from the element value.
+         *
+         * @return Element value as BigInteger.
+         */
+        public BigInteger toBigInteger()
+        {
+            return BigInteger.valueOf(element);
+        }
+
         private byte element;
     }
 
     /**
      * Array element for shorts.
      */
-    public static class ShortArrayElement implements ArrayElement
+    public static class ShortArrayElement implements IntegralArrayElement
     {
         /**
          * Sets the element value.
@@ -70,13 +94,23 @@ public interface ArrayElement
             return element;
         }
 
+        /**
+         * Creates big integer from the element value.
+         *
+         * @return Element value as BigInteger.
+         */
+        public BigInteger toBigInteger()
+        {
+            return BigInteger.valueOf(element);
+        }
+
         private short element;
     }
 
     /**
      * Array element for ints.
      */
-    public static class IntArrayElement implements ArrayElement
+    public static class IntArrayElement implements IntegralArrayElement
     {
         /**
          * Sets the element value.
@@ -98,13 +132,23 @@ public interface ArrayElement
             return element;
         }
 
+        /**
+         * Creates big integer from the element value.
+         *
+         * @return Element value as BigInteger.
+         */
+        public BigInteger toBigInteger()
+        {
+            return BigInteger.valueOf(element);
+        }
+
         private int element;
     }
 
     /**
      * Array element for longs.
      */
-    public static class LongArrayElement implements ArrayElement
+    public static class LongArrayElement implements IntegralArrayElement
     {
         /**
          * Sets the element value.
@@ -126,7 +170,55 @@ public interface ArrayElement
             return element;
         }
 
+        /**
+         * Creates big integer from the element value.
+         *
+         * @return Element value as BigInteger.
+         */
+        public BigInteger toBigInteger()
+        {
+            return BigInteger.valueOf(element);
+        }
+
         private long element;
+    }
+
+    /**
+     * Array element for big integers.
+     */
+    public static class BigIntegerArrayElement implements IntegralArrayElement
+    {
+        /**
+         * Sets the element value.
+         *
+         * @param element Element value to set.
+         */
+        public void set(BigInteger element)
+        {
+            this.element = element;
+        }
+
+        /**
+         * Gets the element value.
+         *
+         * @return Element value.
+         */
+        public BigInteger get()
+        {
+            return element;
+        }
+
+        /**
+         * Creates big integer from the element value.
+         *
+         * @return Element value as BigInteger.
+         */
+        public BigInteger toBigInteger()
+        {
+            return element;
+        }
+
+        private BigInteger element;
     }
 
     /**

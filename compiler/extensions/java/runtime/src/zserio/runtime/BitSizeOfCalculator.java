@@ -16,10 +16,8 @@ public class BitSizeOfCalculator
      * @param value varint16 value for calculation.
      *
      * @return Length of varint16 value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varint16 type.
      */
-    public static int getBitSizeOfVarInt16(short value) throws ZserioError
+    public static int getBitSizeOfVarInt16(short value)
     {
         final short absoluteValue = (short) Math.abs(value);
         if (absoluteValue >= (short)(1 << (6 + 8)))
@@ -34,10 +32,8 @@ public class BitSizeOfCalculator
      * @param value varint32 value for calculation.
      *
      * @return Length of varint32 value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varint32 type.
      */
-    public static int getBitSizeOfVarInt32(int value) throws ZserioError
+    public static int getBitSizeOfVarInt32(int value)
     {
         final int absoluteValue = Math.abs(value);
         if (absoluteValue >= (1 << (6 + 7 + 7 + 8)))
@@ -70,10 +66,8 @@ public class BitSizeOfCalculator
      * @param value varint64 value for calculation.
      *
      * @return Length of varint64 value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varint64 type.
      */
-    public static int getBitSizeOfVarInt64(long value) throws ZserioError
+    public static int getBitSizeOfVarInt64(long value)
     {
         final long absoluteValue = Math.abs(value);
         if (absoluteValue >= (1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)))
@@ -122,10 +116,8 @@ public class BitSizeOfCalculator
      * @param value varuint16 value for calculation.
      *
      * @return Length of varuint16 value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varuint16 type.
      */
-    public static int getBitSizeOfVarUInt16(short value) throws ZserioError
+    public static int getBitSizeOfVarUInt16(short value)
     {
         if (value < 0)
             throw new ZserioError("BitSizeOfCalculator: Value '" + value + "' is out of range for varuint16!");
@@ -139,10 +131,8 @@ public class BitSizeOfCalculator
      * @param value varuint32 value for calculation.
      *
      * @return Length of varuint32 value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varuint32 type.
      */
-    public static int getBitSizeOfVarUInt32(int value) throws ZserioError
+    public static int getBitSizeOfVarUInt32(int value)
     {
         if (value < 0 || value >= (1 << (7 + 7 + 7 + 8)))
             throw new ZserioError("BitSizeOfCalculator: Value '" + value + "' is out of range for varuint32!");
@@ -174,10 +164,8 @@ public class BitSizeOfCalculator
      * @param value varuint64 value for calculation.
      *
      * @return Length of varuint64 value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varuint64 type.
      */
-    public static int getBitSizeOfVarUInt64(long value) throws ZserioError
+    public static int getBitSizeOfVarUInt64(long value)
     {
         if (value < 0 || value >= (1L << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)))
             throw new ZserioError("BitSizeOfCalculator: Value '" + value + "' is out of range for varuint64!");
@@ -225,8 +213,6 @@ public class BitSizeOfCalculator
      * @param value varint value for calculation.
      *
      * @return Length of varint value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varint type.
      */
     public static int getBitSizeOfVarInt(long value)
     {
@@ -282,10 +268,8 @@ public class BitSizeOfCalculator
      * @param value varuint value for calculation.
      *
      * @return Length of varuint value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varuint type.
      */
-    public static int getBitSizeOfVarUInt(BigInteger value) throws ZserioError
+    public static int getBitSizeOfVarUInt(BigInteger value)
     {
         if (value.compareTo(BigInteger.ZERO) == -1 || value.compareTo(VARUINT_MAX) == 1)
             throw new ZserioError("BitSizeOfCalculator: Value '" + value + "' is out of range for varuint!");
@@ -337,10 +321,8 @@ public class BitSizeOfCalculator
      * @param value varsize value for calculation.
      *
      * @return Length of varsize value in bits.
-     *
-     * @throws ZserioError Throws if given value is out of range for varsize type.
      */
-    public static int getBitSizeOfVarSize(int value) throws ZserioError
+    public static int getBitSizeOfVarSize(int value)
     {
         if (value < 0)
             throw new ZserioError("BitSizeOfCalculator: Value '" + value + "' is out of range for varsize!");
@@ -376,10 +358,8 @@ public class BitSizeOfCalculator
      * @param value Zserio string value for calculation.
      *
      * @return Length of Zserio string value in bits.
-     *
-     * @throws ZserioError Throws if given string is too long.
      */
-    public static int getBitSizeOfString(String value) throws ZserioError
+    public static int getBitSizeOfString(String value)
     {
         final int stringBytes = sizeOfString(value);
 
@@ -393,10 +373,8 @@ public class BitSizeOfCalculator
      * @param bitBuffer Bit buffer for calculation.
      *
      * @return Length of bit buffer in bits.
-     *
-     * @throws ZserioError Throws if given bit buffer is too long.
      */
-    public static int getBitSizeOfBitBuffer(BitBuffer bitBuffer) throws ZserioError
+    public static int getBitSizeOfBitBuffer(BitBuffer bitBuffer)
     {
         final long bitBufferSize = bitBuffer.getBitSize();
 
