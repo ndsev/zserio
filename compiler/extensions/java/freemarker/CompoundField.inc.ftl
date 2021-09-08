@@ -27,22 +27,16 @@
 </#macro>
 
 <#macro array_wrapper_raw_constructor field withWriterCode rawArray indent>
-    <@array_wrapper_constructor_inner field, withWriterCode, rawArray, false, indent/>
+    <@array_wrapper_constructor_inner field, withWriterCode, rawArray, indent/>
 </#macro>
 
 <#macro array_wrapper_read_constructor field withWriterCode indent>
-    <@array_wrapper_constructor_inner field, withWriterCode, "", true, indent/>
+    <@array_wrapper_constructor_inner field, withWriterCode, "", indent/>
 </#macro>
 
-<#macro array_wrapper_constructor_inner field withWriterCode rawArray isRead indent>
+<#macro array_wrapper_constructor_inner field withWriterCode rawArray indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 new ${field.array.wrapperJavaTypeName}(
-    <#if isRead>
-${I}in,
-        <#if field.array.length??>
-${I}(int)${field.array.length},
-        </#if>
-    </#if>
 ${I}new ${field.array.rawHolderJavaTypeName}(<#rt>
     <#if field.array.requiresElementClass>
         ${field.array.elementJavaTypeName}.class<#if rawArray?has_content>, </#if><#t>
@@ -104,6 +98,7 @@ ${I}in.alignTo(${field.alignmentValue});
     </#if>
     <#if field.array??>
 ${I}<@field_member_name field/> = <@array_wrapper_read_constructor field, withWriterCode, indent + 2/>;
+${I}<@compound_get_field field/>.read(in<#if field.array.length??>, (int)${field.array.length}</#if>);
     <#elseif field.runtimeFunction??>
 ${I}<@field_member_name field/> = <#if field.runtimeFunction.javaReadTypeName??>(${field.runtimeFunction.javaReadTypeName})</#if><#rt>
         <#lt>in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!});
