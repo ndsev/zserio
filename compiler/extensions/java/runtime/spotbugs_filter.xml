@@ -32,6 +32,17 @@
     <Match>
         <!-- Unchecked/unconfirmed cast - this is ok, our responsibility -->
         <Bug code="BC"/>
+        <Class name="~zserio.runtime.array.PackedArrayTraits\$.*PackedArrayTraits"/>
+        <Or>
+            <Method name="initContext"/>
+            <Method name="bitSizeOf"/>
+            <Method name="initializeOffsets"/>
+            <Method name="write"/>
+        </Or>
+    </Match>
+    <Match>
+        <!-- Unchecked/unconfirmed cast - this is ok, our responsibility -->
+        <Bug code="BC"/>
         <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
         <Method name="setElement"/>
     </Match>

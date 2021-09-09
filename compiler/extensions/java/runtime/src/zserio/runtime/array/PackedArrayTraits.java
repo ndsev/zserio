@@ -68,7 +68,7 @@ public interface PackedArrayTraits
      * Writes the element to the bit stream.
      *
      * @param contextNode Packing context node.
-     * @param out Bit stream writer.
+     * @param writer Bit stream writer.
      * @param element Element to write.
      *
      * @throws IOException Failure during bit stream manipulation.

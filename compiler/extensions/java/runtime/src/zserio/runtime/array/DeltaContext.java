@@ -108,7 +108,7 @@ public class DeltaContext
         {
             processingStarted = true;
             final IntegralArrayElement element = arrayTraits.read(reader);
-            previousElement = ((IntegralArrayElement)element).toBigInteger();
+            previousElement = element.toBigInteger();
             return element;
         }
         else

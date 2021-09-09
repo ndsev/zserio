@@ -1,5 +1,6 @@
 package zserio.runtime.array;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
@@ -339,6 +340,78 @@ public interface RawArray
     }
 
     /**
+     * Raw array for Java native array of BigIntegers.
+     */
+    public static class BigIntegerRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public BigIntegerRawArray()
+        {
+        }
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public BigIntegerRawArray(BigInteger[] rawArray)
+        {
+            this.rawArray = rawArray;
+        }
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof BigIntegerRawArray) ?
+                    Arrays.equals(rawArray, ((BigIntegerRawArray)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+        }
+
+        @Override
+        public int size()
+        {
+            return (rawArray == null) ? 0 : rawArray.length;
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+            rawArray = new BigInteger[capacity];
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T getRawArray()
+        {
+            return (T)rawArray;
+        }
+
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.BigIntegerArrayElement)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            element.set(rawArray[index]);
+
+            return element;
+        }
+
+        private final ArrayElement.BigIntegerArrayElement element = new ArrayElement.BigIntegerArrayElement();
+        private BigInteger[] rawArray;
+    }
+
+    /**
      * Raw array for Java native array of floats.
      */
     public static class FloatRawArray implements RawArray
@@ -550,6 +623,7 @@ public interface RawArray
             return element;
         }
 
+        // !@# TODO[remove cache!!!
         private final ArrayElement.BooleanArrayElement element = new ArrayElement.BooleanArrayElement();
         private boolean[] rawArray;
     }

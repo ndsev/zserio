@@ -37,6 +37,23 @@ public interface ArrayElement
     public static class ByteArrayElement implements IntegralArrayElement
     {
         /**
+         * Constructor.
+         */
+        public ByteArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public ByteArrayElement(byte element)
+        {
+            set(element);
+        }
+
+        /**
          * Sets the element value.
          *
          * @param element Element value to set.
@@ -61,6 +78,7 @@ public interface ArrayElement
          *
          * @return Element value as BigInteger.
          */
+        @Override
         public BigInteger toBigInteger()
         {
             return BigInteger.valueOf(element);
@@ -74,6 +92,23 @@ public interface ArrayElement
      */
     public static class ShortArrayElement implements IntegralArrayElement
     {
+        /**
+         * Constructor.
+         */
+        public ShortArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public ShortArrayElement(short element)
+        {
+            set(element);
+        }
+
         /**
          * Sets the element value.
          *
@@ -99,6 +134,7 @@ public interface ArrayElement
          *
          * @return Element value as BigInteger.
          */
+        @Override
         public BigInteger toBigInteger()
         {
             return BigInteger.valueOf(element);
@@ -112,6 +148,23 @@ public interface ArrayElement
      */
     public static class IntArrayElement implements IntegralArrayElement
     {
+        /**
+         * Constructor.
+         */
+        public IntArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public IntArrayElement(int element)
+        {
+            set(element);
+        }
+
         /**
          * Sets the element value.
          *
@@ -137,6 +190,7 @@ public interface ArrayElement
          *
          * @return Element value as BigInteger.
          */
+        @Override
         public BigInteger toBigInteger()
         {
             return BigInteger.valueOf(element);
@@ -150,6 +204,23 @@ public interface ArrayElement
      */
     public static class LongArrayElement implements IntegralArrayElement
     {
+        /**
+         * Constructor.
+         */
+        public LongArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public LongArrayElement(long element)
+        {
+            set(element);
+        }
+
         /**
          * Sets the element value.
          *
@@ -175,6 +246,7 @@ public interface ArrayElement
          *
          * @return Element value as BigInteger.
          */
+        @Override
         public BigInteger toBigInteger()
         {
             return BigInteger.valueOf(element);
@@ -188,6 +260,23 @@ public interface ArrayElement
      */
     public static class BigIntegerArrayElement implements IntegralArrayElement
     {
+        /**
+         * Constructor.
+         */
+        public BigIntegerArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public BigIntegerArrayElement(BigInteger element)
+        {
+            set(element);
+        }
+
         /**
          * Sets the element value.
          *
@@ -213,6 +302,7 @@ public interface ArrayElement
          *
          * @return Element value as BigInteger.
          */
+        @Override
         public BigInteger toBigInteger()
         {
             return element;
@@ -226,6 +316,23 @@ public interface ArrayElement
      */
     public static class FloatArrayElement implements ArrayElement
     {
+        /**
+         * Constructor.
+         */
+        public FloatArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public FloatArrayElement(float element)
+        {
+            set(element);
+        }
+
         /**
          * Sets the element value.
          *
@@ -255,6 +362,23 @@ public interface ArrayElement
     public static class DoubleArrayElement implements ArrayElement
     {
         /**
+         * Constructor.
+         */
+        public DoubleArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public DoubleArrayElement(double element)
+        {
+            set(element);
+        }
+
+        /**
          * Sets the element value.
          *
          * @param element Element value to set.
@@ -283,6 +407,23 @@ public interface ArrayElement
     public static class BooleanArrayElement implements ArrayElement
     {
         /**
+         * Constructor.
+         */
+        public BooleanArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public BooleanArrayElement(boolean element)
+        {
+            set(element);
+        }
+
+        /**
          * Sets the element value.
          *
          * @param element Element value to set.
@@ -310,6 +451,23 @@ public interface ArrayElement
      */
     public static class ObjectArrayElement<E> implements ArrayElement
     {
+        /**
+         * Constructor.
+         */
+        public ObjectArrayElement()
+        {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param element Element to construct from.
+         */
+        public ObjectArrayElement(E element)
+        {
+            set(element);
+        }
+
         /**
          * Sets the element value.
          *
