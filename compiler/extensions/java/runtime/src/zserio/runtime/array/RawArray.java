@@ -115,12 +115,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.ByteArrayElement(rawArray[index]);
         }
 
-        private final ArrayElement.ByteArrayElement element = new ArrayElement.ByteArrayElement();
         private byte[] rawArray;
     }
 
@@ -187,12 +184,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.ShortArrayElement(rawArray[index]);
         }
 
-        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
         private short[] rawArray;
     }
 
@@ -258,12 +252,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.IntArrayElement(rawArray[index]);
         }
 
-        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
         private int[] rawArray;
     }
 
@@ -330,12 +321,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.LongArrayElement(rawArray[index]);
         }
 
-        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
         private long[] rawArray;
     }
 
@@ -402,12 +390,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.BigIntegerArrayElement(rawArray[index]);
         }
 
-        private final ArrayElement.BigIntegerArrayElement element = new ArrayElement.BigIntegerArrayElement();
         private BigInteger[] rawArray;
     }
 
@@ -474,12 +459,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.FloatArrayElement(rawArray[index]);
         }
 
-        private final ArrayElement.FloatArrayElement element = new ArrayElement.FloatArrayElement();
         private float[] rawArray;
     }
 
@@ -546,12 +528,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.DoubleArrayElement(rawArray[index]);
         }
 
-        private final ArrayElement.DoubleArrayElement element = new ArrayElement.DoubleArrayElement();
         private double[] rawArray;
     }
 
@@ -618,13 +597,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.BooleanArrayElement(rawArray[index]);
         }
 
-        // !@# TODO[remove cache!!!
-        private final ArrayElement.BooleanArrayElement element = new ArrayElement.BooleanArrayElement();
         private boolean[] rawArray;
     }
 
@@ -699,12 +674,9 @@ public interface RawArray
         @Override
         public ArrayElement getElement(int index)
         {
-            element.set(rawArray[index]);
-
-            return element;
+            return new ArrayElement.ObjectArrayElement<>(rawArray[index]);
         }
 
-        private final ArrayElement.ObjectArrayElement<E> element = new ArrayElement.ObjectArrayElement<E>();
         private final Class<E> elementClass;
         private E[] rawArray;
     }

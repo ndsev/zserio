@@ -38,29 +38,18 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public ByteArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public ByteArrayElement(byte element)
         {
-            set(element);
+            this.element = element;
         }
 
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(byte element)
+        @Override
+        public BigInteger toBigInteger()
         {
-            this.element = element;
+            return BigInteger.valueOf(element);
         }
 
         /**
@@ -73,18 +62,7 @@ public interface ArrayElement
             return element;
         }
 
-        /**
-         * Creates big integer from the element value.
-         *
-         * @return Element value as BigInteger.
-         */
-        @Override
-        public BigInteger toBigInteger()
-        {
-            return BigInteger.valueOf(element);
-        }
-
-        private byte element;
+        private final byte element;
     }
 
     /**
@@ -94,29 +72,18 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public ShortArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public ShortArrayElement(short element)
         {
-            set(element);
+            this.element = element;
         }
 
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(short element)
+        @Override
+        public BigInteger toBigInteger()
         {
-            this.element = element;
+            return BigInteger.valueOf(element);
         }
 
         /**
@@ -129,18 +96,7 @@ public interface ArrayElement
             return element;
         }
 
-        /**
-         * Creates big integer from the element value.
-         *
-         * @return Element value as BigInteger.
-         */
-        @Override
-        public BigInteger toBigInteger()
-        {
-            return BigInteger.valueOf(element);
-        }
-
-        private short element;
+        private final short element;
     }
 
     /**
@@ -150,29 +106,18 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public IntArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public IntArrayElement(int element)
         {
-            set(element);
+            this.element = element;
         }
 
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(int element)
+        @Override
+        public BigInteger toBigInteger()
         {
-            this.element = element;
+            return BigInteger.valueOf(element);
         }
 
         /**
@@ -185,18 +130,7 @@ public interface ArrayElement
             return element;
         }
 
-        /**
-         * Creates big integer from the element value.
-         *
-         * @return Element value as BigInteger.
-         */
-        @Override
-        public BigInteger toBigInteger()
-        {
-            return BigInteger.valueOf(element);
-        }
-
-        private int element;
+        private final int element;
     }
 
     /**
@@ -206,29 +140,18 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public LongArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public LongArrayElement(long element)
         {
-            set(element);
+            this.element = element;
         }
 
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(long element)
+        @Override
+        public BigInteger toBigInteger()
         {
-            this.element = element;
+            return BigInteger.valueOf(element);
         }
 
         /**
@@ -241,18 +164,7 @@ public interface ArrayElement
             return element;
         }
 
-        /**
-         * Creates big integer from the element value.
-         *
-         * @return Element value as BigInteger.
-         */
-        @Override
-        public BigInteger toBigInteger()
-        {
-            return BigInteger.valueOf(element);
-        }
-
-        private long element;
+        private final long element;
     }
 
     /**
@@ -262,29 +174,18 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public BigIntegerArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public BigIntegerArrayElement(BigInteger element)
         {
-            set(element);
+            this.element = element;
         }
 
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(BigInteger element)
+        @Override
+        public BigInteger toBigInteger()
         {
-            this.element = element;
+            return element;
         }
 
         /**
@@ -297,18 +198,7 @@ public interface ArrayElement
             return element;
         }
 
-        /**
-         * Creates big integer from the element value.
-         *
-         * @return Element value as BigInteger.
-         */
-        @Override
-        public BigInteger toBigInteger()
-        {
-            return element;
-        }
-
-        private BigInteger element;
+        private final BigInteger element;
     }
 
     /**
@@ -318,27 +208,10 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public FloatArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public FloatArrayElement(float element)
-        {
-            set(element);
-        }
-
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(float element)
         {
             this.element = element;
         }
@@ -353,7 +226,7 @@ public interface ArrayElement
             return element;
         }
 
-        private float element;
+        private final float element;
     }
 
     /**
@@ -363,27 +236,10 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public DoubleArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public DoubleArrayElement(double element)
-        {
-            set(element);
-        }
-
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(double element)
         {
             this.element = element;
         }
@@ -398,7 +254,7 @@ public interface ArrayElement
             return element;
         }
 
-        private double element;
+        private final double element;
     }
 
     /**
@@ -408,27 +264,10 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public BooleanArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public BooleanArrayElement(boolean element)
-        {
-            set(element);
-        }
-
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(boolean element)
         {
             this.element = element;
         }
@@ -443,7 +282,7 @@ public interface ArrayElement
             return element;
         }
 
-        private boolean element;
+        private final boolean element;
     }
 
     /**
@@ -453,27 +292,10 @@ public interface ArrayElement
     {
         /**
          * Constructor.
-         */
-        public ObjectArrayElement()
-        {
-        }
-
-        /**
-         * Constructor.
          *
          * @param element Element to construct from.
          */
         public ObjectArrayElement(E element)
-        {
-            set(element);
-        }
-
-        /**
-         * Sets the element value.
-         *
-         * @param element Element value to set.
-         */
-        public void set(E element)
         {
             this.element = element;
         }
@@ -488,6 +310,6 @@ public interface ArrayElement
             return element;
         }
 
-        private E element;
+        private final E element;
     }
 }

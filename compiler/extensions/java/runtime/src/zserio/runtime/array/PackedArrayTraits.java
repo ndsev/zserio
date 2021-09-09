@@ -184,8 +184,7 @@ public interface PackedArrayTraits
         public ArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
                 throws IOException
         {
-            element.set(elementFactory.create(contextNode, reader, index));
-            return element;
+            return new ArrayElement.ObjectArrayElement<>(elementFactory.create(contextNode, reader, index));
         }
 
         @Override
@@ -197,7 +196,6 @@ public interface PackedArrayTraits
         }
 
         private final ElementFactory<E> elementFactory;
-        private final ArrayElement.ObjectArrayElement<E> element = new ArrayElement.ObjectArrayElement<>();
     }
 
     /**

@@ -164,8 +164,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set((byte)reader.readSignedBits(numBits));
-            return element;
+            return new ArrayElement.ByteArrayElement((byte)reader.readSignedBits(numBits));
         }
 
         @Override
@@ -177,12 +176,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.byteValue());
-            return element;
+            return new ArrayElement.ByteArrayElement(bigInteger.byteValue());
         }
 
         private final int numBits;
-        private final ArrayElement.ByteArrayElement element = new ArrayElement.ByteArrayElement();
     }
 
     /**
@@ -221,8 +218,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set((short)reader.readSignedBits(numBits));
-            return element;
+            return new ArrayElement.ShortArrayElement((short)reader.readSignedBits(numBits));
         }
 
         @Override
@@ -234,12 +230,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.shortValue());
-            return element;
+            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());
         }
 
         private final int numBits;
-        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
@@ -278,8 +272,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set((int)reader.readSignedBits(numBits));
-            return element;
+            return new ArrayElement.IntArrayElement((int)reader.readSignedBits(numBits));
         }
 
         @Override
@@ -291,12 +284,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.intValue());
-            return element;
+            return new ArrayElement.IntArrayElement(bigInteger.intValue());
         }
 
         private final int numBits;
-        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
@@ -335,8 +326,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readSignedBits(numBits));
-            return element;
+            return new ArrayElement.LongArrayElement(reader.readSignedBits(numBits));
         }
 
         @Override
@@ -348,12 +338,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.longValue());
-            return element;
+            return new ArrayElement.LongArrayElement(bigInteger.longValue());
         }
 
         private final int numBits;
-        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
@@ -392,8 +380,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set((byte)reader.readBits(numBits));
-            return element;
+            return new ArrayElement.ByteArrayElement((byte)reader.readBits(numBits));
         }
 
         @Override
@@ -405,12 +392,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.byteValue());
-            return element;
+            return new ArrayElement.ByteArrayElement(bigInteger.byteValue());
         }
 
         private final int numBits;
-        private final ArrayElement.ByteArrayElement element = new ArrayElement.ByteArrayElement();
     }
 
     /**
@@ -449,8 +434,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set((short)reader.readBits(numBits));
-            return element;
+            return new ArrayElement.ShortArrayElement((short)reader.readBits(numBits));
         }
 
         @Override
@@ -462,12 +446,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.shortValue());
-            return element;
+            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());
         }
 
         private final int numBits;
-        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
@@ -506,8 +488,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set((int)reader.readBits(numBits));
-            return element;
+            return new ArrayElement.IntArrayElement((int)reader.readBits(numBits));
         }
 
         @Override
@@ -519,12 +500,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.intValue());
-            return element;
+            return new ArrayElement.IntArrayElement(bigInteger.intValue());
         }
 
         private final int numBits;
-        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
@@ -563,8 +542,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readBits(numBits));
-            return element;
+            return new ArrayElement.LongArrayElement(reader.readBits(numBits));
         }
 
         @Override
@@ -576,12 +554,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.longValue());
-            return element;
+            return new ArrayElement.LongArrayElement(bigInteger.longValue());
         }
 
         private final int numBits;
-        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
@@ -610,8 +586,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readBigInteger(NUM_BITS));
-            return element;
+            return new ArrayElement.BigIntegerArrayElement(reader.readBigInteger(NUM_BITS));
         }
 
         @Override
@@ -623,14 +598,10 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger);
-            return element;
+            return new ArrayElement.BigIntegerArrayElement(bigInteger);
         }
 
         private static final int NUM_BITS = 64;
-
-        private final ArrayElement.BigIntegerArrayElement element =
-                new ArrayElement.BigIntegerArrayElement();
     }
 
     /**
@@ -659,8 +630,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarInt16());
-            return element;
+            return new ArrayElement.ShortArrayElement(reader.readVarInt16());
         }
 
         @Override
@@ -672,11 +642,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.shortValue());
-            return element;
+            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());
         }
-
-        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
@@ -705,8 +672,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarInt32());
-            return element;
+            return new ArrayElement.IntArrayElement(reader.readVarInt32());
         }
 
         @Override
@@ -718,11 +684,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.intValue());
-            return element;
+            return new ArrayElement.IntArrayElement(bigInteger.intValue());
         }
-
-        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
@@ -751,8 +714,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarInt64());
-            return element;
+            return new ArrayElement.LongArrayElement(reader.readVarInt64());
         }
 
         @Override
@@ -764,11 +726,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.longValue());
-            return element;
+            return new ArrayElement.LongArrayElement(bigInteger.longValue());
         }
-
-        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
@@ -797,8 +756,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarInt());
-            return element;
+            return new ArrayElement.LongArrayElement(reader.readVarInt());
         }
 
         @Override
@@ -810,11 +768,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.longValue());
-            return element;
+            return new ArrayElement.LongArrayElement(bigInteger.longValue());
         }
-
-        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
@@ -843,8 +798,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarUInt16());
-            return element;
+            return new ArrayElement.ShortArrayElement(reader.readVarUInt16());
         }
 
         @Override
@@ -856,11 +810,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.shortValue());
-            return element;
+            return new ArrayElement.ShortArrayElement(bigInteger.shortValue());
         }
-
-        private final ArrayElement.ShortArrayElement element = new ArrayElement.ShortArrayElement();
     }
 
     /**
@@ -889,8 +840,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarUInt32());
-            return element;
+            return new ArrayElement.IntArrayElement(reader.readVarUInt32());
         }
 
         @Override
@@ -902,11 +852,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.intValue());
-            return element;
+            return new ArrayElement.IntArrayElement(bigInteger.intValue());
         }
-
-        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
@@ -935,8 +882,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarUInt64());
-            return element;
+            return new ArrayElement.LongArrayElement(reader.readVarUInt64());
         }
 
         @Override
@@ -948,11 +894,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.longValue());
-            return element;
+            return new ArrayElement.LongArrayElement(bigInteger.longValue());
         }
-
-        private final ArrayElement.LongArrayElement element = new ArrayElement.LongArrayElement();
     }
 
     /**
@@ -982,8 +925,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarUInt());
-            return element;
+            return new ArrayElement.BigIntegerArrayElement(reader.readVarUInt());
         }
 
         @Override
@@ -995,11 +937,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger);
-            return element;
+            return new ArrayElement.BigIntegerArrayElement(bigInteger);
         }
-
-        private final ArrayElement.BigIntegerArrayElement element = new ArrayElement.BigIntegerArrayElement();
     }
 
     /**
@@ -1028,8 +967,7 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            element.set(reader.readVarSize());
-            return element;
+            return new ArrayElement.IntArrayElement(reader.readVarSize());
         }
 
         @Override
@@ -1041,11 +979,8 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement fromBigInteger(BigInteger bigInteger)
         {
-            element.set(bigInteger.intValue());
-            return element;
+            return new ArrayElement.IntArrayElement(bigInteger.intValue());
         }
-
-        private final ArrayElement.IntArrayElement element = new ArrayElement.IntArrayElement();
     }
 
     /**
@@ -1080,9 +1015,7 @@ public interface ArrayTraits
         @Override
         public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
-            element.set(reader.readFloat16());
-
-            return element;
+            return new ArrayElement.FloatArrayElement(reader.readFloat16());
         }
 
         @Override
@@ -1090,8 +1023,6 @@ public interface ArrayTraits
         {
             writer.writeFloat16(((ArrayElement.FloatArrayElement)element).get());
         }
-
-        private final ArrayElement.FloatArrayElement element = new ArrayElement.FloatArrayElement();
     }
 
     /**
@@ -1126,9 +1057,7 @@ public interface ArrayTraits
         @Override
         public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
-            element.set(reader.readFloat32());
-
-            return element;
+            return new ArrayElement.FloatArrayElement(reader.readFloat32());
         }
 
         @Override
@@ -1136,8 +1065,6 @@ public interface ArrayTraits
         {
             writer.writeFloat32(((ArrayElement.FloatArrayElement)element).get());
         }
-
-        private final ArrayElement.FloatArrayElement element = new ArrayElement.FloatArrayElement();
     }
 
     /**
@@ -1172,9 +1099,7 @@ public interface ArrayTraits
         @Override
         public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
-            element.set(reader.readFloat64());
-
-            return element;
+            return new ArrayElement.DoubleArrayElement(reader.readFloat64());
         }
 
         @Override
@@ -1182,8 +1107,6 @@ public interface ArrayTraits
         {
             writer.writeFloat64(((ArrayElement.DoubleArrayElement)element).get());
         }
-
-        private final ArrayElement.DoubleArrayElement element = new ArrayElement.DoubleArrayElement();
     }
 
     /**
@@ -1220,9 +1143,7 @@ public interface ArrayTraits
         @Override
         public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
-            element.set(reader.readString());
-
-            return element;
+            return new ArrayElement.ObjectArrayElement<>(reader.readString());
         }
 
         @SuppressWarnings("unchecked")
@@ -1231,8 +1152,6 @@ public interface ArrayTraits
         {
             writer.writeString(((ArrayElement.ObjectArrayElement<String>)element).get());
         }
-
-        private final ArrayElement.ObjectArrayElement<String> element = new ArrayElement.ObjectArrayElement<>();
     }
 
     /**
@@ -1267,9 +1186,7 @@ public interface ArrayTraits
         @Override
         public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
-            element.set(reader.readBool());
-
-            return element;
+            return new ArrayElement.BooleanArrayElement(reader.readBool());
         }
 
         @Override
@@ -1277,8 +1194,6 @@ public interface ArrayTraits
         {
             writer.writeBool(((ArrayElement.BooleanArrayElement)element).get());
         }
-
-        private final ArrayElement.BooleanArrayElement element = new ArrayElement.BooleanArrayElement();
     }
 
     /**
@@ -1315,9 +1230,7 @@ public interface ArrayTraits
         @Override
         public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
-            element.set(reader.readBitBuffer());
-
-            return element;
+            return new ArrayElement.ObjectArrayElement<>(reader.readBitBuffer());
         }
 
         @SuppressWarnings("unchecked")
@@ -1326,9 +1239,6 @@ public interface ArrayTraits
         {
             writer.writeBitBuffer(((ArrayElement.ObjectArrayElement<BitBuffer>)element).get());
         }
-
-        private final ArrayElement.ObjectArrayElement<BitBuffer> element =
-                new ArrayElement.ObjectArrayElement<>();
     }
 
     /**
@@ -1375,8 +1285,7 @@ public interface ArrayTraits
         @Override
         public ArrayElement read(BitStreamReader reader, int index) throws IOException
         {
-            element.set(elementFactory.create(reader, index));
-            return element;
+            return new ArrayElement.ObjectArrayElement<>(elementFactory.create(reader, index));
         }
 
         @Override
@@ -1392,7 +1301,6 @@ public interface ArrayTraits
         }
 
         private final ElementFactory<E> elementFactory;
-        private final ArrayElement.ObjectArrayElement<E> element = new ArrayElement.ObjectArrayElement<>();
     }
 
     /**
