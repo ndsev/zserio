@@ -1143,7 +1143,8 @@ public class ArrayTest
     {
         testPackedArrayNormal(rawArray, emptyRawArray, arrayTraits, bitSizeOf);
         final int autoSizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray.size());
-        final int autoBitSizeOf = (bitSizeOf != UNKNOWN_BITSIZE) ? autoSizeBitSizeOf + bitSizeOf : bitSizeOf;
+        final int autoBitSizeOf = (bitSizeOf != UNKNOWN_BITSIZE) ?
+                autoSizeBitSizeOf + bitSizeOf : UNKNOWN_BITSIZE;
         testPackedArrayAuto(rawArray, emptyRawArray, arrayTraits, autoBitSizeOf);
         testPackedArrayImplicit(rawArray, emptyRawArray, arrayTraits);
 
@@ -1152,7 +1153,7 @@ public class ArrayTest
         testPackedArrayAligned(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,
                 alignedBitSizeOf);
         final int autoAlignedBitSizeOf = (alignedBitSizeOf != UNKNOWN_BITSIZE) ?
-                autoSizeBitSizeOf + alignedBitSizeOf : alignedBitSizeOf;
+                autoSizeBitSizeOf + alignedBitSizeOf : UNKNOWN_BITSIZE;
         testPackedArrayAlignedAuto(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,
                 autoAlignedBitSizeOf);
     }
@@ -1270,7 +1271,7 @@ public class ArrayTest
         {
             final int bitSizeOf = array.bitSizeOfPacked(bitPosition);
             if (expectedBitSizeOf != UNKNOWN_BITSIZE && bitPosition == 0)
-                assertEquals(expectedBitSizeOf, array.initializeOffsetsPacked(bitPosition));
+                assertEquals(expectedBitSizeOf, bitSizeOf);
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -1302,7 +1303,7 @@ public class ArrayTest
         {
             final int bitSizeOf = array.bitSizeOfPacked(bitPosition);
             if (expectedBitSizeOf != UNKNOWN_BITSIZE && bitPosition == 0)
-                assertEquals(expectedBitSizeOf, array.initializeOffsetsPacked(bitPosition));
+                assertEquals(expectedBitSizeOf, bitSizeOf);
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
