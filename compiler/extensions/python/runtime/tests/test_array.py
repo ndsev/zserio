@@ -235,10 +235,31 @@ class ArrayTest(unittest.TestCase):
     def test_bitfield_packed_array(self):
         array_traits = BitFieldArrayTraits(64)
 
-        self._test_packed_array(array_traits, [10, 11, 12])
-        self._test_packed_array(array_traits, [10, 10, 10]) # zero delta
-        self._test_packed_array(array_traits, []) # empty
-        self._test_packed_array(array_traits, [10]) # single element
+        # none-zero delta
+        array1_values = [10, 11, 12]
+        array1_max_delta_bit_size = 1
+        array1_bitsizeof = self._calc_packed_bit_size(64, len(array1_values), array1_max_delta_bit_size)
+        array1_aligned_bitsizeof = self._calc_aligned_packed_bit_size(64, len(array1_values),
+                                                                      array1_max_delta_bit_size)
+        self._test_packed_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof)
+
+        # zero delta
+        array2_values = [10, 10, 10]
+        array2_bitsizeof = self.PACKING_DESCRIPTOR_BITSIZE + 64
+        array2_aligned_bitsizeof = self.PACKING_DESCRIPTOR_BITSIZE + 1 + 64
+        self._test_packed_array(array_traits, array2_values, array2_bitsizeof, array2_aligned_bitsizeof)
+
+        # one-element array
+        array3_values = [10]
+        array3_bitsizeof = 1 + 64
+        array3_aligned_bitsizeof = 1 + 7 + 64
+        self._test_packed_array(array_traits, array3_values, array3_bitsizeof, array3_aligned_bitsizeof)
+
+        # empty array
+        array4_values = []
+        array4_bitsizeof = 0
+        array4_aligned_bitsizeof = 0
+        self._test_packed_array(array_traits, array4_values, array4_bitsizeof, array4_aligned_bitsizeof)
 
         # packing not applied, delta is too big
         self._test_packed_array(array_traits, [UINT64_MIN, UINT64_MAX])
@@ -303,12 +324,22 @@ class ArrayTest(unittest.TestCase):
         self._test_array_aligned_auto(array_traits, array1_values, auto_bitsize + array1_aligned_bitsizeof)
         self._test_array_implicit(array_traits, array1_values, array1_bitsizeof)
 
-    def _test_packed_array(self, array_traits, array_values):
-        self._test_packed_array_normal(array_traits, array_values)
-        self._test_packed_array_auto(array_traits, array_values)
-        self._test_packed_array_aligned(array_traits, array_values)
-        self._test_packed_array_aligned_auto(array_traits, array_values)
-        self._test_packed_array_implicit(array_traits, array_values)
+    def _test_packed_array(self, array_traits, array_values, array_bitsizeof=None,
+                           array_aligned_bitsizeof=None):
+
+        self._test_packed_array_normal(array_traits, array_values, array_bitsizeof)
+
+        auto_size_bitsize = bitsizeof_varsize(len(array_values))
+        auto_bitsize = auto_size_bitsize + array_bitsizeof if array_bitsizeof is not None else None
+        self._test_packed_array_auto(array_traits, array_values, auto_bitsize)
+
+        self._test_packed_array_aligned(array_traits, array_values, array_aligned_bitsizeof)
+
+        auto_aligned_bitsize = (auto_size_bitsize + array_aligned_bitsizeof
+                                if array_aligned_bitsizeof is not None else None)
+        self._test_packed_array_aligned_auto(array_traits, array_values, auto_aligned_bitsize)
+
+        self._test_packed_array_implicit(array_traits, array_values, array_bitsizeof)
 
     def _test_eq(self, array_traits, array1_values, array2_values):
         array1 = Array(array_traits, array1_values)
@@ -502,11 +533,13 @@ class ArrayTest(unittest.TestCase):
                 with self.assertRaises(PythonRuntimeException):
                     read_array.read(reader)
 
-    def _test_packed_array_normal(self, array_traits, array_values):
+    def _test_packed_array_normal(self, array_traits, array_values, expected_bitsize):
         for i in range(8):
             array = Array(array_traits, array_values)
 
             bitsize = array.bitsizeof_packed(i)
+            if expected_bitsize is not None:
+                self.assertEqual(expected_bitsize, bitsize)
             self.assertEqual(i + bitsize, array.initialize_offsets_packed(i), i)
 
             writer = BitStreamWriter()
@@ -527,11 +560,13 @@ class ArrayTest(unittest.TestCase):
             read_array.read_packed(reader, len(array_values))
             self.assertEqual(array, read_array, i)
 
-    def _test_packed_array_auto(self, array_traits, array_values):
+    def _test_packed_array_auto(self, array_traits, array_values, expected_bitsize):
         for i in range(8):
             array = Array(array_traits, array_values, is_auto=True)
 
             bitsize = array.bitsizeof_packed(i)
+            if expected_bitsize is not None:
+                self.assertEqual(expected_bitsize, bitsize)
             self.assertEqual(i + bitsize, array.initialize_offsets_packed(i), i)
 
             writer = BitStreamWriter()
@@ -552,12 +587,14 @@ class ArrayTest(unittest.TestCase):
             read_array.read_packed(reader)
             self.assertEqual(array, read_array, i)
 
-    def _test_packed_array_aligned(self, array_traits, array_values):
+    def _test_packed_array_aligned(self, array_traits, array_values, expected_bitsize):
         for i in range(8):
             array = Array(array_traits, array_values, set_offset_method=ArrayTest._set_offset_method,
                           check_offset_method=ArrayTest._check_offset_method)
 
             bitsize = array.bitsizeof_packed(i)
+            if expected_bitsize is not None and i == 0:
+                self.assertEqual(expected_bitsize, bitsize)
             self.assertEqual(i + bitsize, array.initialize_offsets_packed(i), i)
 
             writer = BitStreamWriter()
@@ -582,13 +619,15 @@ class ArrayTest(unittest.TestCase):
             read_array.read_packed(reader, len(array_values))
             self.assertEqual(array, read_array, i)
 
-    def _test_packed_array_aligned_auto(self, array_traits, array_values):
+    def _test_packed_array_aligned_auto(self, array_traits, array_values, expected_bitsize):
         for i in range(8):
             array = Array(array_traits, array_values, is_auto=True,
                           set_offset_method=ArrayTest._set_offset_method,
                           check_offset_method=ArrayTest._check_offset_method)
 
             bitsize = array.bitsizeof_packed(i)
+            if expected_bitsize is not None and i == 0:
+                self.assertEqual(expected_bitsize, bitsize)
             self.assertEqual(i + bitsize, array.initialize_offsets_packed(i), i)
 
             writer = BitStreamWriter()
@@ -614,11 +653,13 @@ class ArrayTest(unittest.TestCase):
             read_array.read_packed(reader)
             self.assertEqual(array, read_array, i)
 
-    def _test_packed_array_implicit(self, array_traits, array_values):
+    def _test_packed_array_implicit(self, array_traits, array_values, expected_bitsize):
         for i in range(8):
             array = Array(array_traits, array_values, is_implicit=True)
 
             bitsize = array.bitsizeof_packed(i)
+            if expected_bitsize is not None:
+                self.assertEqual(expected_bitsize, bitsize)
             self.assertEqual(i + bitsize, array.initialize_offsets_packed(i), i)
 
             writer = BitStreamWriter()
@@ -633,3 +674,15 @@ class ArrayTest(unittest.TestCase):
             read_array = Array(array_traits, is_implicit=True)
             with self.assertRaises(PythonRuntimeException):
                 read_array.read_packed(reader)
+
+    def _calc_packed_bit_size(self, element_bit_size, array_size, max_delta_bit_size):
+        return self.PACKING_DESCRIPTOR_BITSIZE + element_bit_size + (array_size - 1) * (max_delta_bit_size + 1)
+
+    def _calc_aligned_packed_bit_size(self, element_bit_size, array_size, max_delta_bit_size):
+        aligned_element_bit_size = (element_bit_size + 7) // 8 * 8
+        aligned_max_delta_bit_size = (max_delta_bit_size + 1 + 7) // 8 * 8
+
+        return (self.PACKING_DESCRIPTOR_BITSIZE + 1 + aligned_element_bit_size +
+                (array_size - 2) * aligned_max_delta_bit_size + (max_delta_bit_size + 1))
+
+    PACKING_DESCRIPTOR_BITSIZE = 1 + 6

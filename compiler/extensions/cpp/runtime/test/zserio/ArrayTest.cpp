@@ -349,11 +349,36 @@ protected:
     void testPackedArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
             const ELEMENT_FACTORY& elementFactory = ELEMENT_FACTORY())
     {
-        testPackedArrayNormal(rawArray, arrayTraits, elementFactory);
-        testPackedArrayAuto(rawArray, arrayTraits, elementFactory);
-        testPackedArrayAligned(rawArray, arrayTraits, elementFactory);
-        testPackedArrayAlignedAuto(rawArray, arrayTraits, elementFactory);
+        testPackedArray(rawArray, arrayTraits, UNKNOWN_BIT_SIZE, UNKNOWN_BIT_SIZE, elementFactory);
     }
+
+    template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY = detail::DummyElementFactory>
+    void testPackedArray(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t unalignedBitSize,
+            size_t alignedBitSize, const ELEMENT_FACTORY& elementFactory = ELEMENT_FACTORY())
+    {
+        testPackedArrayNormal(rawArray, arrayTraits, unalignedBitSize, elementFactory);
+        testPackedArrayAuto(rawArray, arrayTraits, (unalignedBitSize != UNKNOWN_BIT_SIZE) ?
+                AUTO_LENGTH_BIT_SIZE + unalignedBitSize : UNKNOWN_BIT_SIZE, elementFactory);
+        testPackedArrayAligned(rawArray, arrayTraits, alignedBitSize, elementFactory);
+        testPackedArrayAlignedAuto(rawArray, arrayTraits, (alignedBitSize != UNKNOWN_BIT_SIZE) ?
+                AUTO_LENGTH_BIT_SIZE + alignedBitSize : UNKNOWN_BIT_SIZE, elementFactory);
+    }
+
+    size_t calcPackedBitSize(size_t elementBitSize, size_t arraySize, size_t maxDeltaBitSize)
+    {
+        return PACKING_DESCRIPTOR_BITSIZE + elementBitSize + (arraySize - 1) * (maxDeltaBitSize + 1);
+    }
+
+    size_t calcAlignedPackedBitSize(size_t elementBitSize, size_t arraySize, size_t maxDeltaBitSize)
+    {
+        const int alignedElementBitSize = (elementBitSize + 7) / 8 * 8;
+        const int alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
+
+        return PACKING_DESCRIPTOR_BITSIZE + 1 /* packing descriptor alignment */ + alignedElementBitSize +
+            (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
+    }
+
+    static const size_t PACKING_DESCRIPTOR_BITSIZE = 1 + 6;
 
 private:
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
@@ -497,13 +522,17 @@ private:
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
     void testPackedArrayNormal(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            const ELEMENT_FACTORY& elementFactory)
+            size_t expectedBitSize, const ELEMENT_FACTORY& elementFactory)
     {
         for (uint8_t i = 0; i < 8; ++i)
         {
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
 
             const size_t bitSize = array.bitSizeOfPacked(i);
+            if (expectedBitSize != UNKNOWN_BIT_SIZE)
+            {
+                ASSERT_EQ(expectedBitSize, bitSize);
+            }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i));
 
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
@@ -521,13 +550,17 @@ private:
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
     void testPackedArrayAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            const ELEMENT_FACTORY& elementFactory)
+            size_t expectedBitSize, const ELEMENT_FACTORY& elementFactory)
     {
         for (uint8_t i = 0; i < 8; ++i)
         {
             Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::AUTO> array{rawArray, arrayTraits};
 
             const size_t bitSize = array.bitSizeOfPacked(i);
+            if (expectedBitSize != UNKNOWN_BIT_SIZE)
+            {
+                ASSERT_EQ(expectedBitSize, bitSize);
+            }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i));
 
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
@@ -545,7 +578,7 @@ private:
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
     void testPackedArrayAligned(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            const ELEMENT_FACTORY& elementFactory)
+            size_t expectedBitSize, const ELEMENT_FACTORY& elementFactory)
     {
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -553,6 +586,10 @@ private:
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
             const size_t bitSize = array.bitSizeOfPacked(i);
+            if (expectedBitSize != UNKNOWN_BIT_SIZE && i == 0)
+            {
+                ASSERT_EQ(expectedBitSize, bitSize);
+            }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()));
 
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
@@ -571,7 +608,7 @@ private:
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
     void testPackedArrayAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
-            const ELEMENT_FACTORY& elementFactory)
+            size_t expectedBitSize, const ELEMENT_FACTORY& elementFactory)
     {
         for (uint8_t i = 0; i < 8; ++i)
         {
@@ -579,6 +616,10 @@ private:
                     ArrayTestOffsetChecker, ArrayTestOffsetInitializer> array{rawArray, arrayTraits};
 
             const size_t bitSize = array.bitSizeOfPacked(i);
+            if (expectedBitSize != UNKNOWN_BIT_SIZE && i == 0)
+            {
+                ASSERT_EQ(expectedBitSize, bitSize);
+            }
             ASSERT_EQ(i + bitSize, array.initializeOffsetsPacked(i, ArrayTestOffsetInitializer()));
 
             BitStreamWriter writer(m_byteBuffer, BUFFER_SIZE);
@@ -597,6 +638,7 @@ private:
 
     static const size_t AUTO_LENGTH_BIT_SIZE = 8;
     static const size_t BUFFER_SIZE = 256;
+    static const size_t UNKNOWN_BIT_SIZE = 0;
 
     uint8_t m_byteBuffer[BUFFER_SIZE];
 };
@@ -939,11 +981,30 @@ TEST_F(ArrayTest, bitField64PackedArray)
 {
     auto arrayTraits = BitFieldArrayTraits<uint64_t>(64);
 
-    testPackedArray(std::vector<uint64_t>{10, 11, 12}, arrayTraits);
-    testPackedArray(std::vector<uint64_t>{10, 10, 10}, arrayTraits); // zero delta
+    // none-zero delta
+    std::vector<uint64_t> rawArray1 = {10, 11, 12};
+    const size_t array1MaxDeltaBitSize = 1;
+    const size_t array1BitSizeOf = calcPackedBitSize(64, rawArray1.size(), array1MaxDeltaBitSize);
+    const size_t array1AlignedBitSizeOf = calcAlignedPackedBitSize(64, rawArray1.size(), array1MaxDeltaBitSize);
+    testPackedArray(rawArray1, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);
 
-    testPackedArray(std::vector<uint64_t>{}, arrayTraits); // empty
-    testPackedArray(std::vector<uint64_t>{10}, arrayTraits); // single element
+    // zero delta
+    std::vector<uint64_t> rawArray2 = {10, 10, 10};
+    const size_t array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + 64;
+    const size_t array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + /* alignment */ 1 + 64;
+    testPackedArray(rawArray2, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
+
+    // one-element array
+    std::vector<uint64_t> rawArray3 = {10};
+    const size_t array3BitSizeOf = 1 + 64;
+    const size_t array3AlignedBitSizeOf = 1 + /* alignment */ 7 + 64;
+    testPackedArray(rawArray3, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);
+
+    // empty array
+    std::vector<uint64_t> rawArray4 = {};
+    const size_t array4BitSizeOf = 0;
+    const size_t array4AlignedBitSizeOf = 0;
+    testPackedArray(rawArray4, arrayTraits, array4BitSizeOf, array4AlignedBitSizeOf);
 
     // packing not enabled, delta is too big
     testPackedArray(std::vector<uint64_t>{0, UINT64_MAX}, arrayTraits);
