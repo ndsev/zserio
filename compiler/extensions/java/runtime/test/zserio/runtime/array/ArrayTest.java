@@ -468,22 +468,37 @@ public class ArrayTest
     @Test
     public void signedBitFieldBytePackedArray() throws IOException
     {
+        final int elementBitSize = 5;
         final RawArray emptyRawArray = new RawArray.ByteRawArray();
-        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldByteArrayTraits(5);
+        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldByteArrayTraits(elementBitSize);
 
         // none-zero delta
-        testPackedArray(new RawArray.ByteRawArray(new byte[] {-10, -6, -7, -3, 0, 4, 6, 9}),
-                emptyRawArray, arrayTraits);
+        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {
+                -10, -8, -6, -7, -4, -1, 0, 2, 4, 6, 9});
+        final int array1MaxDeltaBitSize = 2;
+        final int array1BitSizeOf = calcPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);
+        final int array1AlignedBitSizeOf = calcAlignedPackedBitSize(elementBitSize, rawArray1.size(),
+                array1MaxDeltaBitSize);
+        testPackedArray(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);
 
         // zero delta
-        testPackedArray(new RawArray.ByteRawArray(new byte[] {-10, -10, -10, -10,
-                -10, -10, -10, -10}), emptyRawArray, arrayTraits);
+        final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {-10, -10, -10, -10, -10, -10, -10});
+        final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
+        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + /* alignment */ 1 + elementBitSize +
+                /* alignment */ 3;
+        testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
 
         // one-element array
-        testPackedArray(new RawArray.ByteRawArray(new byte[] {-10}), emptyRawArray, arrayTraits);
+        final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {-10});
+        final int array3BitSizeOf = 1 + elementBitSize;
+        final int array3AlignedBitSizeOf = 1 + 7 + elementBitSize;
+        testPackedArray(rawArray3, emptyRawArray, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);
 
         // empty array
-        testPackedArray(new RawArray.ByteRawArray(new byte[] {}), emptyRawArray, arrayTraits);
+        final RawArray rawArray4 = new RawArray.ByteRawArray(new byte[] {});
+        final int array4BitSizeOf = 0;
+        final int array4AlignedBitSizeOf = 0;
+        testPackedArray(rawArray4, emptyRawArray, arrayTraits, array4BitSizeOf, array4AlignedBitSizeOf);
     }
 
     @Test
@@ -519,10 +534,37 @@ public class ArrayTest
     @Test
     public void bitFieldBytePackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.ByteRawArray(new byte[] {1, 2, 5, 10, 11, 12, 20, 25, 31, 30});
+        final int elementBitSize = 5;
         final RawArray emptyRawArray = new RawArray.ByteRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BitFieldByteArrayTraits(5);
-        testPackedArray(rawArray, emptyRawArray, arrayTraits);
+
+        // none-zero delta
+        final RawArray rawArray1 = new RawArray.ByteRawArray(new byte[] {
+                1, 2, 5, 4, 7, 10, 12, 15, 18, 20, 22, 23});
+        final int array1MaxDeltaBitSize = 2;
+        final int array1BitSizeOf = calcPackedBitSize(elementBitSize, rawArray1.size(), array1MaxDeltaBitSize);
+        final int array1AlignedBitSizeOf = calcAlignedPackedBitSize(elementBitSize, rawArray1.size(),
+                array1MaxDeltaBitSize);
+        testPackedArray(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);
+
+        // zero delta
+        final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {1, 1, 1, 1, 1, 1, 1});
+        final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
+        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + /* alignment */ 1 + elementBitSize +
+                /* alignment */ 3;
+        testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
+
+        // one-element array
+        final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {1});
+        final int array3BitSizeOf = 1 + elementBitSize;
+        final int array3AlignedBitSizeOf = 1 + 7 + elementBitSize;
+        testPackedArray(rawArray3, emptyRawArray, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);
+
+        // empty array
+        final RawArray rawArray4 = new RawArray.ByteRawArray(new byte[] {});
+        final int array4BitSizeOf = 0;
+        final int array4AlignedBitSizeOf = 0;
+        testPackedArray(rawArray4, emptyRawArray, arrayTraits, array4BitSizeOf, array4AlignedBitSizeOf);
     }
 
     @Test
@@ -909,8 +951,8 @@ public class ArrayTest
             int array1AlignedBitSizeOf, RawArray emptyRawArray, ArrayTraits arrayTraits) throws IOException
     {
         testArrayNormal(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf);
-        final int autoArray1BitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray1.size());
-        testArrayAuto(rawArray1, emptyRawArray, arrayTraits, autoArray1BitSizeOf + array1BitSizeOf);
+        final int autoArray1SizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray1.size());
+        testArrayAuto(rawArray1, emptyRawArray, arrayTraits, autoArray1SizeBitSizeOf + array1BitSizeOf);
         testArrayImplicit(rawArray1, emptyRawArray, arrayTraits, array1BitSizeOf);
 
         final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();
@@ -918,7 +960,7 @@ public class ArrayTest
         testArrayAligned(rawArray1, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,
                 array1AlignedBitSizeOf);
         testArrayAlignedAuto(rawArray1, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,
-                autoArray1BitSizeOf + array1AlignedBitSizeOf);
+                autoArray1SizeBitSizeOf + array1AlignedBitSizeOf);
     }
 
     private static void testArrayNormal(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
@@ -1093,23 +1135,37 @@ public class ArrayTest
     private static void testPackedArray(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits)
             throws IOException
     {
-        testPackedArrayNormal(rawArray, emptyRawArray, arrayTraits);
-        testPackedArrayAuto(rawArray, emptyRawArray, arrayTraits);
+        testPackedArray(rawArray, emptyRawArray, arrayTraits, UNKNOWN_BITSIZE, UNKNOWN_BITSIZE);
+    }
+
+    private static void testPackedArray(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            int bitSizeOf, int alignedBitSizeOf) throws IOException
+    {
+        testPackedArrayNormal(rawArray, emptyRawArray, arrayTraits, bitSizeOf);
+        final int autoSizeBitSizeOf = BitSizeOfCalculator.getBitSizeOfVarSize(rawArray.size());
+        final int autoBitSizeOf = (bitSizeOf != UNKNOWN_BITSIZE) ? autoSizeBitSizeOf + bitSizeOf : bitSizeOf;
+        testPackedArrayAuto(rawArray, emptyRawArray, arrayTraits, autoBitSizeOf);
         testPackedArrayImplicit(rawArray, emptyRawArray, arrayTraits);
 
         final OffsetChecker offsetChecker = new ArrayTestOffsetChecker();
         final OffsetInitializer offsetInitializer = new ArrayTestOffsetInitializer();
-        testPackedArrayAligned(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer);
-        testPackedArrayAlignedAuto(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer);
+        testPackedArrayAligned(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,
+                alignedBitSizeOf);
+        final int autoAlignedBitSizeOf = (alignedBitSizeOf != UNKNOWN_BITSIZE) ?
+                autoSizeBitSizeOf + alignedBitSizeOf : alignedBitSizeOf;
+        testPackedArrayAlignedAuto(rawArray, emptyRawArray, arrayTraits, offsetChecker, offsetInitializer,
+                autoAlignedBitSizeOf);
     }
 
     private static void testPackedArrayNormal(RawArray rawArray, RawArray emptyRawArray,
-            ArrayTraits arrayTraits) throws IOException
+    ArrayTraits arrayTraits, int expectedBitSizeOf) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
             final int bitSizeOf = array.bitSizeOfPacked(bitPosition);
+            if (expectedBitSizeOf != UNKNOWN_BITSIZE)
+                assertEquals(expectedBitSizeOf, bitSizeOf);
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -1131,13 +1187,15 @@ public class ArrayTest
         }
     }
 
-    private static void testPackedArrayAuto(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits)
-            throws IOException
+    private static void testPackedArrayAuto(RawArray rawArray, RawArray emptyRawArray, ArrayTraits arrayTraits,
+            int expectedBitSizeOf) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
             final int bitSizeOf = array.bitSizeOfPacked(bitPosition);
+            if (expectedBitSizeOf != UNKNOWN_BITSIZE)
+                assertEquals(expectedBitSizeOf, bitSizeOf);
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -1203,14 +1261,16 @@ public class ArrayTest
     }
 
     private static void testPackedArrayAligned(RawArray rawArray, RawArray emptyRawArray,
-            ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
-                    throws IOException
+            ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
+            int expectedBitSizeOf) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL, offsetChecker,
                 offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
             final int bitSizeOf = array.bitSizeOfPacked(bitPosition);
+            if (expectedBitSizeOf != UNKNOWN_BITSIZE && bitPosition == 0)
+                assertEquals(expectedBitSizeOf, array.initializeOffsetsPacked(bitPosition));
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -1234,13 +1294,15 @@ public class ArrayTest
     }
 
     private static void testPackedArrayAlignedAuto(RawArray rawArray, RawArray emptyRawArray,
-            ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer)
-                    throws IOException
+            ArrayTraits arrayTraits, OffsetChecker offsetChecker, OffsetInitializer offsetInitializer,
+            int expectedBitSizeOf) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.AUTO, offsetChecker, offsetInitializer);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)
         {
             final int bitSizeOf = array.bitSizeOfPacked(bitPosition);
+            if (expectedBitSizeOf != UNKNOWN_BITSIZE && bitPosition == 0)
+                assertEquals(expectedBitSizeOf, array.initializeOffsetsPacked(bitPosition));
             assertEquals(bitPosition + bitSizeOf, array.initializeOffsetsPacked(bitPosition));
 
             final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -1262,4 +1324,21 @@ public class ArrayTest
             assertEquals(array, readArray);
         }
     }
+
+    private static int calcPackedBitSize(int elementBitSize, int arraySize, int maxDeltaBitSize)
+    {
+        return PACKING_DESCRIPTOR_BITSIZE + elementBitSize + (arraySize - 1) * (maxDeltaBitSize + 1);
+    }
+
+    private static int calcAlignedPackedBitSize(int elementBitSize, int arraySize, int maxDeltaBitSize)
+    {
+        final int alignedElementBitSize = (elementBitSize + 7) / 8 * 8;
+        final int alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
+
+        return PACKING_DESCRIPTOR_BITSIZE + 1 /* packing descriptor alignment */ + alignedElementBitSize +
+            (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
+    }
+
+    private static int PACKING_DESCRIPTOR_BITSIZE = 1 + 6;
+    private static int UNKNOWN_BITSIZE = -1;
 }

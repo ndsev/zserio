@@ -34,7 +34,7 @@ public class DeltaContext
         }
         else
         {
-            if (maxBitNumber > MAX_BIT_NUMBER_LIMIT)
+            if (maxBitNumber <= MAX_BIT_NUMBER_LIMIT)
                 isPacked = true;
             final BigInteger bigElement = element.toBigInteger();
             final BigInteger delta = bigElement.subtract(previousElement);
@@ -115,7 +115,7 @@ public class DeltaContext
         {
             if (maxBitNumber > 0)
             {
-                final BigInteger delta = reader.readSignedBigInteger(MAX_BIT_NUMBER_BITS + 1);
+                final BigInteger delta = BigInteger.valueOf(reader.readSignedBits(maxBitNumber + 1));
                 previousElement = previousElement.add(delta);
             }
 
@@ -158,7 +158,7 @@ public class DeltaContext
             {
                 final BigInteger bigElement = element.toBigInteger();
                 final BigInteger delta = bigElement.subtract(previousElement);
-                writer.writeBigInteger(delta, MAX_BIT_NUMBER_BITS + 1);
+                writer.writeSignedBits(delta.longValue(), maxBitNumber + 1);
                 previousElement = bigElement;
             }
         }
