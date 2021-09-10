@@ -371,8 +371,8 @@ protected:
 
     size_t calcAlignedPackedBitSize(size_t elementBitSize, size_t arraySize, size_t maxDeltaBitSize)
     {
-        const int alignedElementBitSize = (elementBitSize + 7) / 8 * 8;
-        const int alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
+        const size_t alignedElementBitSize = (elementBitSize + 7) / 8 * 8;
+        const size_t alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
 
         return PACKING_DESCRIPTOR_BITSIZE + 1 /* packing descriptor alignment */ + alignedElementBitSize +
             (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
