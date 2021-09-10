@@ -10,7 +10,7 @@
 
     </#if>
     public ${name}(java.io.File file<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
-            throws java.io.IOException, zserio.runtime.ZserioError
+            throws java.io.IOException
     {
         <@compound_constructors_set_parameters compoundConstructorsData/>
         <#if constructorArgumentTypeList?has_content>
@@ -22,13 +22,24 @@
     }
 
     public ${name}(zserio.runtime.io.BitStreamReader in<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
-            throws java.io.IOException, zserio.runtime.ZserioError
+            throws java.io.IOException
     {
         <@compound_constructors_set_parameters compoundConstructorsData/>
         <#if constructorArgumentTypeList?has_content>
 
         </#if>
         read(in);
+    }
+
+    public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in<#rt>
+            <#lt><#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
+            throws java.io.IOException
+    {
+        <@compound_constructors_set_parameters compoundConstructorsData/>
+        <#if constructorArgumentTypeList?has_content>
+
+        </#if>
+        read(contextNode, in);
     }
 
 </#macro>

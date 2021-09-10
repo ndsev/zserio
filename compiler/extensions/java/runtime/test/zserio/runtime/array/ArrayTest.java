@@ -1159,7 +1159,7 @@ public class ArrayTest
     }
 
     private static void testPackedArrayNormal(RawArray rawArray, RawArray emptyRawArray,
-    ArrayTraits arrayTraits, int expectedBitSizeOf) throws IOException
+            ArrayTraits arrayTraits, int expectedBitSizeOf) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.NORMAL);
         for (int bitPosition = 0; bitPosition < 8; ++bitPosition)

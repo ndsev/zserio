@@ -7,7 +7,8 @@ public class NativeDoubleType extends NativeArrayableType
     public NativeDoubleType(boolean nullable)
     {
         super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Double" : "double",
-                new NativeArrayTraits("Float64ArrayTraits"));
+                new NativeRawArray("DoubleRawArray"), new NativeArrayTraits("Float64ArrayTraits"),
+                new NativeArrayElement("DoubleArrayElement"));
 
         this.nullable = nullable;
     }

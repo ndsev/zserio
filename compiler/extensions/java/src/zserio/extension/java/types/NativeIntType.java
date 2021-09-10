@@ -8,7 +8,8 @@ public class NativeIntType extends NativeIntegralType
 {
     public NativeIntType(boolean nullable, NativeArrayTraits arrayTraits)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Integer" : "int", arrayTraits);
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Integer" : "int",
+                new NativeRawArray("IntRawArray"), arrayTraits, new NativeArrayElement("IntArrayElement"));
 
         this.nullable = nullable;
     }

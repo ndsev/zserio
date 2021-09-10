@@ -5,18 +5,50 @@
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
 <@standard_header generatorDescription, packageName/>
+<#assign choiceTagArrayTraits="zserio.runtime.array.ArrayTraits.VarSizeArrayTraits">
+<#assign choiceTagArrayElement="zserio.runtime.array.ArrayElement.IntArrayElement">
 
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
+    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    {
+<#if fieldList?has_content>
+        contextNode.createChild().createContext();<#-- choice tag -->
+
+    <#list fieldList as field>
+        <@compound_create_packing_context_field field/>
+    </#list>
+</#if>
+    }
+
     @Override
-    public int bitSizeOf() throws zserio.runtime.ZserioError
+    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    {
+<#if fieldList?has_content>
+        contextNode.getChildren().get(0).getContext().init(new ${choiceTagArrayElement}(choiceTag));
+
+        switch (choiceTag)
+        {
+    <#list fieldList as field>
+        case <@choice_tag_name field/>:
+            <@compound_init_packing_context_field field, field?index + 1, 3/>
+            break;
+    </#list>
+        default:
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
+        }
+</#if>
+    }
+
+    @Override
+    public int bitSizeOf()
     {
         return bitSizeOf(0);
     }
 
     @Override
-    public int bitSizeOf(long bitPosition) throws zserio.runtime.ZserioError
+    public int bitSizeOf(long bitPosition)
     {
 <#if fieldList?has_content>
         long endBitPosition = bitPosition;
@@ -25,11 +57,38 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
         switch (choiceTag)
         {
-        <#list fieldList as field>
+    <#list fieldList as field>
         case <@choice_tag_name field/>:
             <@compound_bitsizeof_field field, 3/>
             break;
-        </#list>
+    </#list>
+        default:
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
+        }
+
+        return (int)(endBitPosition - bitPosition);
+<#else>
+        return 0;
+</#if>
+    }
+
+    @Override
+    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    {
+<#if fieldList?has_content>
+        long endBitPosition = bitPosition;
+
+        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
+                new ${choiceTagArrayTraits}(), endBitPosition,
+                new ${choiceTagArrayElement}(choiceTag));
+
+        switch (choiceTag)
+        {
+    <#list fieldList as field>
+        case <@choice_tag_name field/>:
+            <@compound_bitsizeof_field field, 3, true, field?index + 1/>
+            break;
+    </#list>
         default:
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
@@ -108,20 +167,41 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         return result;
     }
 
-    public void read(final zserio.runtime.io.BitStreamReader in)
-            throws java.io.IOException, zserio.runtime.ZserioError
+    public void read(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
 <#if fieldList?has_content>
         choiceTag = in.readVarSize();
 
         switch (choiceTag)
         {
-        <#list fieldList as field>
+    <#list fieldList as field>
         case <@choice_tag_name field/>:
             <@compound_read_field field, name, 3/>
             <@compound_check_constraint_field field, name, 3/>
             break;
-        </#list>
+    </#list>
+        default:
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
+        }
+</#if>
+    }
+
+    public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+            throws java.io.IOException
+    {
+<#if fieldList?has_content>
+        choiceTag = ((${choiceTagArrayElement})
+                contextNode.getChildren().get(0).getContext().read(
+                        new ${choiceTagArrayTraits}(), in)).get();
+
+        switch (choiceTag)
+        {
+    <#list fieldList as field>
+        case <@choice_tag_name field/>:
+            <@compound_read_field field, name, 3, true, field?index + 1/>
+            <@compound_check_constraint_field field, name, 3/>
+            break;
+    </#list>
         default:
             throw new zserio.runtime.ZserioError("No match in union ${name}!");
         }
@@ -129,7 +209,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 <#if withWriterCode>
 
-    public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
+    public long initializeOffsets(long bitPosition)
     {
     <#if fieldList?has_content>
         long endBitPosition = bitPosition;
@@ -140,7 +220,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         {
         <#list fieldList as field>
         case <@choice_tag_name field/>:
-            <@compound_field_initialize_offsets field, 3/>
+            <@compound_initialize_offsets_field field, 3/>
             break;
         </#list>
         default:
@@ -153,7 +233,33 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     </#if>
     }
 
-    public void write(java.io.File file) throws java.io.IOException, zserio.runtime.ZserioError
+    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    {
+    <#if fieldList?has_content>
+        long endBitPosition = bitPosition;
+
+        endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
+                new ${choiceTagArrayTraits}(), endBitPosition,
+                new ${choiceTagArrayElement}(choiceTag));
+
+        switch (choiceTag)
+        {
+        <#list fieldList as field>
+        case <@choice_tag_name field/>:
+            <@compound_initialize_offsets_field field, 3, true, field?index + 1/>
+            break;
+        </#list>
+        default:
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
+        }
+
+        return endBitPosition;
+    <#else>
+        return bitPosition;
+    </#if>
+    }
+
+    public void write(java.io.File file) throws java.io.IOException
     {
         zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file);
         write(out);
@@ -162,14 +268,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     @Override
     public void write(zserio.runtime.io.BitStreamWriter out)
-            throws java.io.IOException, zserio.runtime.ZserioError
+            throws java.io.IOException
     {
         write(out, true);
     }
 
     @Override
     public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
-            throws java.io.IOException, zserio.runtime.ZserioError
+            throws java.io.IOException
     {
     <#if fieldList?has_content>
         <#if hasFieldWithOffset>
@@ -189,6 +295,29 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         case <@choice_tag_name field/>:
             <@compound_check_constraint_field field, name, 3/>
             <@compound_write_field field, name, 3/>
+            break;
+        </#list>
+        default:
+            throw new zserio.runtime.ZserioError("No match in union ${name}!");
+        };
+    </#if>
+    }
+
+    @Override
+    public void write(zserio.runtime.array.PackingContextNode contextNode,
+            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    {
+    <#if fieldList?has_content>
+        contextNode.getChildren().get(0).getContext().write(
+                new ${choiceTagArrayTraits}(), out,
+                new ${choiceTagArrayElement}(choiceTag));
+
+        switch (choiceTag)
+        {
+        <#list fieldList as field>
+        case <@choice_tag_name field/>:
+            <@compound_check_constraint_field field, name, 3/>
+            <@compound_write_field field, name, 3, true, field?index + 1/>
             break;
         </#list>
         default:

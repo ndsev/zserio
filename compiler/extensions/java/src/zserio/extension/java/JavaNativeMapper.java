@@ -672,39 +672,48 @@ final class JavaNativeMapper
     private final static NativeBigIntegerType bitFieldBigIntegerType =
             new NativeBigIntegerType(bitFieldBigIntegerArrayTraits);
 
-    private final static NativeArrayTraits varInt16ArrayTraits = new NativeArrayTraits("VarInt16ArrayTraits");
+    private final static NativeArrayTraits varInt16ArrayTraits =
+            new NativeArrayTraits("VarInt16ArrayTraits");
     private final static NativeShortType varInt16Type = new NativeShortType(false, varInt16ArrayTraits);
     private final static NativeShortType varInt16NullableType = new NativeShortType(true, varInt16ArrayTraits);
 
-    private final static NativeArrayTraits varInt32ArrayTraits = new NativeArrayTraits("VarInt32ArrayTraits");
+    private final static NativeArrayTraits varInt32ArrayTraits =
+            new NativeArrayTraits("VarInt32ArrayTraits");
     private final static NativeIntType varInt32Type = new NativeIntType(false, varInt32ArrayTraits);
     private final static NativeIntType varInt32NullableType = new NativeIntType(true, varInt32ArrayTraits);
 
-    private final static NativeArrayTraits varInt64ArrayTraits = new NativeArrayTraits("VarInt64ArrayTraits");
+    private final static NativeArrayTraits varInt64ArrayTraits =
+            new NativeArrayTraits("VarInt64ArrayTraits");
     private final static NativeLongType varInt64Type = new NativeLongType(false, varInt64ArrayTraits);
     private final static NativeLongType varInt64NullableType = new NativeLongType(true, varInt64ArrayTraits);
 
-    private final static NativeArrayTraits varIntArrayTraits = new NativeArrayTraits("VarIntArrayTraits");
+    private final static NativeArrayTraits varIntArrayTraits =
+            new NativeArrayTraits("VarIntArrayTraits");
     private final static NativeLongType varIntType = new NativeLongType(false, varIntArrayTraits);
     private final static NativeLongType varIntNullableType = new NativeLongType(true, varIntArrayTraits);
 
-    private final static NativeArrayTraits varUInt16ArrayTraits = new NativeArrayTraits("VarUInt16ArrayTraits");
+    private final static NativeArrayTraits varUInt16ArrayTraits =
+            new NativeArrayTraits("VarUInt16ArrayTraits");
     private final static NativeShortType varUInt16Type = new NativeShortType(false, varUInt16ArrayTraits);
     private final static NativeShortType varUInt16NullableType =
             new NativeShortType(true, varUInt16ArrayTraits);
 
-    private final static NativeArrayTraits varUInt32ArrayTraits = new NativeArrayTraits("VarUInt32ArrayTraits");
+    private final static NativeArrayTraits varUInt32ArrayTraits =
+            new NativeArrayTraits("VarUInt32ArrayTraits");
     private final static NativeIntType varUInt32Type = new NativeIntType(false, varUInt32ArrayTraits);
     private final static NativeIntType varUInt32NullableType = new NativeIntType(true, varUInt32ArrayTraits);
 
-    private final static NativeArrayTraits varUInt64ArrayTraits = new NativeArrayTraits("VarUInt64ArrayTraits");
+    private final static NativeArrayTraits varUInt64ArrayTraits =
+            new NativeArrayTraits("VarUInt64ArrayTraits");
     private final static NativeLongType varUInt64Type = new NativeLongType(false, varUInt64ArrayTraits);
     private final static NativeLongType varUInt64NullableType = new NativeLongType(true, varUInt64ArrayTraits);
 
-    private final static NativeArrayTraits varUIntArrayTraits = new NativeArrayTraits("VarUIntArrayTraits");
+    private final static NativeArrayTraits varUIntArrayTraits =
+            new NativeArrayTraits("VarUIntArrayTraits");
     private final static NativeBigIntegerType varUIntType = new NativeBigIntegerType(varUIntArrayTraits);
 
-    private final static NativeArrayTraits varSizeArrayTraits = new NativeArrayTraits("VarSizeArrayTraits");
+    private final static NativeArrayTraits varSizeArrayTraits =
+            new NativeArrayTraits("VarSizeArrayTraits");
     private final static NativeIntType varSizeType = new NativeIntType(false, varSizeArrayTraits);
     private final static NativeIntType varSizeNullableType = new NativeIntType(true, varSizeArrayTraits);
 

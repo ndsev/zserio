@@ -6,7 +6,8 @@ public class NativeFloatType extends NativeArrayableType
 {
     public NativeFloatType(boolean nullable, NativeArrayTraits arrayTraits)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Float" : "float", arrayTraits);
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Float" : "float",
+                new NativeRawArray("FloatRawArray"), arrayTraits, new NativeArrayElement("FloatArrayElement"));
 
         this.nullable = nullable;
     }

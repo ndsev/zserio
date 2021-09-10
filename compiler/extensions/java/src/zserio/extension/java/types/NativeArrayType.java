@@ -7,8 +7,9 @@ public class NativeArrayType extends JavaNativeType
         super(elementType.getPackageName(), elementType.getName() + "[]");
 
         arrayWrapper = new NativeArrayWrapper();
-        rawArray = new NativeRawArray(elementType);
+        rawArray = elementType.getRawArray();
         arrayTraits = elementType.getArrayTraits();
+        arrayElement = elementType.getArrayElement();
     }
 
     @Override
@@ -32,7 +33,13 @@ public class NativeArrayType extends JavaNativeType
         return arrayTraits;
     }
 
+    public NativeArrayElement getArrayElement()
+    {
+        return arrayElement;
+    }
+
     private final NativeArrayWrapper arrayWrapper;
     private final NativeRawArray rawArray;
     private final NativeArrayTraits arrayTraits;
+    private final NativeArrayElement arrayElement;
 }

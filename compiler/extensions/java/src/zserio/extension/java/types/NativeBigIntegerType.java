@@ -17,7 +17,9 @@ public class NativeBigIntegerType extends NativeIntegralType
 {
     public NativeBigIntegerType(NativeArrayTraits arrayTraits)
     {
-        super(BIG_INTEGER_PACKAGE, "BigInteger", arrayTraits);
+        super(BIG_INTEGER_PACKAGE, "BigInteger",
+                new NativeRawArray("BigIntegerRawArray"), arrayTraits,
+                new NativeArrayElement("BigIntegerArrayElement"));
     }
 
     @Override

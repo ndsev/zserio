@@ -7,9 +7,10 @@ import zserio.extension.common.ZserioExtensionException;
 
 public abstract class NativeIntegralType extends NativeArrayableType
 {
-    public NativeIntegralType(PackageName packageName, String name, NativeArrayTraits arrayTraits)
+    public NativeIntegralType(PackageName packageName, String name,
+            NativeRawArray rawArray, NativeArrayTraits arrayTraits, NativeArrayElement arrayElement)
     {
-        super(packageName, name, arrayTraits);
+        super(packageName, name, rawArray, arrayTraits, arrayElement);
     }
 
     /**

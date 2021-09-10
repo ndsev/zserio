@@ -28,6 +28,8 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
                 javaNativeMapper.getJavaIntegralType(enumTypeInstantiation);
         baseJavaTypeName = nativeIntegralType.getFullName();
 
+        arrayTraits = new ArrayTraitsTemplateData(nativeIntegralType.getArrayTraits());
+        arrayElement = nativeIntegralType.getArrayElement().getFullName();
         bitSize = createBitSize(enumType);
 
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
@@ -41,6 +43,16 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public String getBaseJavaTypeName()
     {
         return baseJavaTypeName;
+    }
+
+    public ArrayTraitsTemplateData getArrayTraits()
+    {
+        return arrayTraits;
+    }
+
+    public String getArrayElement()
+    {
+        return arrayElement;
     }
 
     public String getBitSize()
@@ -102,8 +114,9 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     }
 
     private final String baseJavaTypeName;
+    private final String arrayElement;
+    ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
-
-    private final RuntimeFunctionTemplateData   runtimeFunction;
-    private final List<EnumItemData>            items;
+    private final RuntimeFunctionTemplateData runtimeFunction;
+    private final List<EnumItemData> items;
 }

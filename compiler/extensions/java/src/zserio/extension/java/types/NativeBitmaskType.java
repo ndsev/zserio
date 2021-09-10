@@ -7,7 +7,10 @@ public class NativeBitmaskType extends NativeArrayableType
     public NativeBitmaskType(PackageName packageName, String name, NativeIntegralType nativeBaseType,
             boolean withWriterCode)
     {
-        super(packageName, name, new NativeObjectArrayTraits(packageName, name, withWriterCode));
+        super(packageName, name,
+                new NativeObjectRawArray(),
+                new NativeObjectArrayTraits(packageName, name, withWriterCode),
+                new NativeObjectArrayElement(packageName, name));
 
         this.nativeBaseType = nativeBaseType;
     }

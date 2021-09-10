@@ -8,7 +8,8 @@ public class NativeByteType extends NativeIntegralType
 {
     public NativeByteType(boolean nullable, NativeArrayTraits arrayTraits)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Byte" : "byte", arrayTraits);
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Byte" : "byte",
+                new NativeRawArray("ByteRawArray"), arrayTraits, new NativeArrayElement("ByteArrayElement"));
 
         this.nullable = nullable;
     }

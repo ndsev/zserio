@@ -1,5 +1,12 @@
 <#include "FileHeader.inc.ftl">
 <@standard_header generatorDescription, packageName/>
+<#macro bitmask_array_traits arrayTraits bitSize>
+new ${arrayTraits.name}(<#rt>
+        <#if arrayTraits.requiresElementBitSize>
+        ${bitSize}<#t>
+        </#if>
+        )<#t>
+</#macro>
 
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
@@ -32,6 +39,25 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
                 <#lt>in.read${runtimeFunction.suffix}(${runtimeFunction.arg!});
     }
 
+    public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+            throws java.io.IOException
+    {
+        value = ((${arrayElement})
+                contextNode.getContext().read(
+                        <@bitmask_array_traits arrayTraits, bitSize!/>, in)).get();
+    }
+
+    public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    {
+        contextNode.createContext();
+    }
+
+    @Override
+    public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+    {
+        contextNode.getContext().init(new ${arrayElement}(value));
+    }
+
     @Override
     public int bitSizeOf()
     {
@@ -47,12 +73,26 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
 </#if>
     }
+
+    @Override
+    public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    {
+        return contextNode.getContext().bitSizeOf(
+                <@bitmask_array_traits arrayTraits, bitSize!/>, bitPosition,
+                new ${arrayElement}(value));
+    }
 <#if withWriterCode>
 
     @Override
-    public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
+    public long initializeOffsets(long bitPosition)
     {
         return bitPosition + bitSizeOf(bitPosition);
+    }
+
+    @Override
+    public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
+    {
+        return bitPosition + bitSizeOf(contextNode, bitPosition);
     }
 </#if>
 
@@ -120,6 +160,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             throws java.io.IOException
     {
         out.write${runtimeFunction.suffix}(value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
+    }
+
+    @Override
+    public void write(zserio.runtime.array.PackingContextNode contextNode,
+            zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
+    {
+        contextNode.getContext().write(
+                <@bitmask_array_traits arrayTraits, bitSize!/>, out,
+                new ${arrayElement}(value));
     }
 </#if>
 

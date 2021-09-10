@@ -15,6 +15,7 @@ import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
@@ -27,7 +28,6 @@ import zserio.extension.java.types.NativeFloatType;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
 import zserio.extension.java.types.NativeRawArray;
-import zserio.tools.ZserioToolPrinter;
 
 public final class CompoundFieldTemplateData
 {
@@ -40,7 +40,8 @@ public final class CompoundFieldTemplateData
         name = field.getName();
 
         // this must be the first one because we need to determine isTypeNullable
-        optional = createOptional(field, javaExpressionFormatter);
+        optional = createOptional(field, fieldTypeInstantiation.getBaseType(), parentType,
+                javaExpressionFormatter);
 
         final boolean isTypeNullable = (optional != null);
         final JavaNativeType nullableNativeType = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
@@ -52,6 +53,8 @@ public final class CompoundFieldTemplateData
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
+
+        isPackable = field.isPackable();
 
         rangeCheckData = new RangeCheckTemplateData(this, javaNativeMapper, withRangeCheckCode,
                 fieldTypeInstantiation, isTypeNullable, javaExpressionFormatter);
@@ -67,11 +70,15 @@ public final class CompoundFieldTemplateData
         isDouble = nativeType instanceof NativeDoubleType;
         isEnum = nativeType instanceof NativeEnumType;
         isSimpleType = nativeType.isSimple();
+        isIntegralType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
+                (nativeType instanceof NativeIntegralType);
 
         constraint = createConstraint(field, javaExpressionFormatter);
 
         bitSize = new BitSize(fieldTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter);
+        arrayTraits = createArrayTraits(nativeType);
+        arrayElement = createArrayElement(nativeType);
         array = createArray(nativeType, fieldTypeInstantiation, parentType, javaNativeMapper, withWriterCode,
                 javaExpressionFormatter);
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
@@ -103,6 +110,11 @@ public final class CompoundFieldTemplateData
     public String getSetterName()
     {
         return setterName;
+    }
+
+    public boolean getIsPackable()
+    {
+        return isPackable;
     }
 
     public RangeCheckTemplateData getRangeCheckData()
@@ -160,6 +172,11 @@ public final class CompoundFieldTemplateData
         return isSimpleType;
     }
 
+    public boolean getIsIntegralType()
+    {
+        return isIntegralType;
+    }
+
     public String getConstraint()
     {
         return constraint;
@@ -173,6 +190,16 @@ public final class CompoundFieldTemplateData
     public Offset getOffset()
     {
         return offset;
+    }
+
+    public ArrayTraitsTemplateData getArrayTraits()
+    {
+        return arrayTraits;
+    }
+
+    public String getArrayElement()
+    {
+        return arrayElement;
     }
 
     public Array getArray()
@@ -192,12 +219,13 @@ public final class CompoundFieldTemplateData
 
     public static class Optional
     {
-        public Optional(Expression optionalClauseExpression, String indicatorName,
+        public Optional(Expression optionalClauseExpression, String indicatorName, boolean isRecursive,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
         {
             clause = (optionalClauseExpression == null) ? null :
                 javaExpressionFormatter.formatGetter(optionalClauseExpression);
             this.indicatorName = indicatorName;
+            this.isRecursive = isRecursive;
         }
 
         public String getClause()
@@ -210,8 +238,14 @@ public final class CompoundFieldTemplateData
             return indicatorName;
         }
 
-        private final String  clause;
-        private final String  indicatorName;
+        public boolean getIsRecursive()
+        {
+            return isRecursive;
+        }
+
+        private final String clause;
+        private final String indicatorName;
+        private final boolean isRecursive;
     }
 
     public static class BitSize
@@ -255,8 +289,8 @@ public final class CompoundFieldTemplateData
             return value;
         }
 
-        private final String                        value;
-        private final RuntimeFunctionTemplateData   runtimeFunction;
+        private final String value;
+        private final RuntimeFunctionTemplateData runtimeFunction;
     }
 
     public static class Offset
@@ -299,11 +333,11 @@ public final class CompoundFieldTemplateData
             return containsIndex;
         }
 
-        private final String    getter;
-        private final String    setter;
-        private final String    typeName;
-        private final boolean   requiresBigInt;
-        private final boolean   containsIndex;
+        private final String getter;
+        private final String setter;
+        private final String typeName;
+        private final boolean requiresBigInt;
+        private final boolean containsIndex;
     }
 
     public static class Array
@@ -315,25 +349,21 @@ public final class CompoundFieldTemplateData
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
             isImplicit = arrayInstantiation.isImplicit();
-            if (arrayInstantiation.isPacked())
-            {
-                ZserioToolPrinter.printWarning(arrayInstantiation.getLocation(),
-                        "Unimplemented packed array field reached!");
-            }
+            isPacked = arrayInstantiation.isPacked();
+
             length = createLength(arrayInstantiation, javaExpressionFormatter);
 
             wrapperJavaTypeName = nativeType.getArrayWrapper().getFullName();
             final NativeRawArray nativeRawArray = nativeType.getRawArray();
             rawHolderJavaTypeName = nativeRawArray.getFullName();
+
             final NativeArrayTraits nativeArrayTraits = nativeType.getArrayTraits();
-            traitsJavaTypeName = nativeArrayTraits.getFullName();
+            traits = new ArrayTraitsTemplateData(nativeArrayTraits);
 
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementJavaTypeName = elementNativeType.getFullName();
 
             requiresElementClass = nativeRawArray.requiresElementClass();
-            requiresElementBitSize = nativeArrayTraits.requiresElementBitSize();
-            requiresElementFactory = nativeArrayTraits.requiresElementFactory();
             requiresParentContext = createRequiresParentContext(elementTypeInstantiation);
 
             elementBitSize = new BitSize(elementTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
@@ -345,6 +375,11 @@ public final class CompoundFieldTemplateData
         public boolean getIsImplicit()
         {
             return isImplicit;
+        }
+
+        public boolean getIsPacked()
+        {
+            return isPacked;
         }
 
         public String getLength()
@@ -362,9 +397,9 @@ public final class CompoundFieldTemplateData
             return rawHolderJavaTypeName;
         }
 
-        public String getTraitsJavaTypeName()
+        public ArrayTraitsTemplateData getTraits()
         {
-            return traitsJavaTypeName;
+            return traits;
         }
 
         public String getElementJavaTypeName()
@@ -375,16 +410,6 @@ public final class CompoundFieldTemplateData
         public boolean getRequiresElementClass()
         {
             return requiresElementClass;
-        }
-
-        public boolean getRequiresElementBitSize()
-        {
-            return requiresElementBitSize;
-        }
-
-        public boolean getRequiresElementFactory()
-        {
-            return requiresElementFactory;
         }
 
         public boolean getRequiresParentContext()
@@ -439,19 +464,18 @@ public final class CompoundFieldTemplateData
             return false;
         }
 
-        private final boolean   isImplicit;
-        private final String    length;
-        private final String    wrapperJavaTypeName;
-        private final String    rawHolderJavaTypeName;
-        private final String    traitsJavaTypeName;
-        private final String    elementJavaTypeName;
-        private final boolean   requiresElementClass;
-        private final boolean   requiresElementBitSize;
-        private final boolean   requiresElementFactory;
-        private final boolean   requiresParentContext;
-        private final BitSize   elementBitSize;
-        private final boolean   isElementEnum;
-        private final Compound  elementCompound;
+        private final boolean isImplicit;
+        private final boolean isPacked;
+        private final String length;
+        private final String wrapperJavaTypeName;
+        private final String rawHolderJavaTypeName;
+        private final ArrayTraitsTemplateData traits;
+        private final String elementJavaTypeName;
+        private final boolean requiresElementClass;
+        private final boolean requiresParentContext;
+        private final BitSize elementBitSize;
+        private final boolean isElementEnum;
+        private final Compound elementCompound;
     }
 
     public static class Compound
@@ -508,24 +532,25 @@ public final class CompoundFieldTemplateData
                 return expression;
             }
 
-            private final String    javaTypeName;
-            private final boolean   isSimpleType;
-            private final String    expression;
+            private final String javaTypeName;
+            private final boolean isSimpleType;
+            private final String expression;
         }
 
         private final ArrayList<InstantiatedParameterData> instantiatedParameters;
     }
 
-    private static Optional createOptional(Field field, ExpressionFormatter javaExpressionFormatter)
-            throws ZserioExtensionException
+    private static Optional createOptional(Field field, ZserioType fieldBaseType, CompoundType parentType,
+            ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
     {
         if (!field.isOptional())
             return null;
 
         final Expression optionalClauseExpression = field.getOptionalClauseExpr();
         final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
+        final boolean isRecursive = fieldBaseType == parentType;
 
-        return new Optional(optionalClauseExpression, indicatorName, javaExpressionFormatter);
+        return new Optional(optionalClauseExpression, indicatorName, isRecursive, javaExpressionFormatter);
     }
 
     private static String createInitializer(Field field, ExpressionFormatter javaExpressionFormatter)
@@ -568,6 +593,22 @@ public final class CompoundFieldTemplateData
         return new Offset(offsetExpression, javaNativeMapper, javaExpressionFormatter);
     }
 
+    private static ArrayTraitsTemplateData createArrayTraits(JavaNativeType nativeType)
+    {
+        if (nativeType instanceof NativeIntegralType)
+            return new ArrayTraitsTemplateData(((NativeIntegralType)nativeType).getArrayTraits());
+        else
+            return null;
+    }
+
+    private static String createArrayElement(JavaNativeType nativeType)
+    {
+        if (nativeType instanceof NativeIntegralType)
+            return ((NativeIntegralType)nativeType).getArrayElement().getFullName();
+        else
+            return null;
+    }
+
     private static Array createArray(JavaNativeType nativeType, TypeInstantiation typeInstantiation,
             CompoundType parentType, JavaNativeMapper javaNativeMapper, boolean withWriterCode,
             ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
@@ -605,29 +646,30 @@ public final class CompoundFieldTemplateData
         }
     }
 
-    private final String                        name;
-    private final String                        javaTypeName;
-    private final String                        javaNullableTypeName;
-    private final String                        getterName;
-    private final String                        setterName;
-    private final RangeCheckTemplateData        rangeCheckData;
-    private final Optional                      optional;
-    private final String                        alignmentValue;
-    private final String                        initializer;
-
-    private final boolean                       usesObjectChoice;
-
-    private final boolean                       isBool;
-    private final boolean                       isLong;
-    private final boolean                       isFloat;
-    private final boolean                       isDouble;
-    private final boolean                       isEnum;
-    private final boolean                       isSimpleType;
-    private final String                        constraint;
-
-    private final BitSize                       bitSize;
-    private final Offset                        offset;
-    private final Array                         array;
-    private final RuntimeFunctionTemplateData   runtimeFunction;
-    private final Compound                      compound;
+    private final String name;
+    private final String javaTypeName;
+    private final String javaNullableTypeName;
+    private final String getterName;
+    private final String setterName;
+    private final boolean isPackable;
+    private final RangeCheckTemplateData rangeCheckData;
+    private final Optional optional;
+    private final String alignmentValue;
+    private final String initializer;
+    private final boolean usesObjectChoice;
+    private final boolean isBool;
+    private final boolean isLong;
+    private final boolean isFloat;
+    private final boolean isDouble;
+    private final boolean isEnum;
+    private final boolean isSimpleType;
+    private final boolean isIntegralType;
+    private final String constraint;
+    private final BitSize bitSize;
+    private final Offset offset;
+    private final String arrayElement;
+    private final ArrayTraitsTemplateData arrayTraits;
+    private final Array array;
+    private final RuntimeFunctionTemplateData runtimeFunction;
+    private final Compound compound;
 }

@@ -22,6 +22,14 @@
     </#if>
 </#macro>
 
+<#macro compound_field_packing_context_node field index>
+    <#if field.optional?? && field.optional.isRecursive>
+        contextNode<#t>
+    <#else>
+        contextNode.getChildren().get(${index})<#t>
+    </#if>
+</#macro>
+
 <#macro choice_tag_name field>
     CHOICE_${field.name}<#t>
 </#macro>
@@ -45,13 +53,7 @@ ${I}new ${field.array.rawHolderJavaTypeName}(<#rt>
         ${rawArray}<#t>
     </#if>
     <#lt>),
-${I}new ${field.array.traitsJavaTypeName}(<#rt>
-    <#if field.array.requiresElementBitSize>
-        ${field.array.elementBitSize.value}<#t>
-    <#elseif field.array.requiresElementFactory>
-        new <@element_factory_name field.name/>()<#t>
-    </#if>
-    <#lt>),
+${I}<@array_traits field/>,
     <#if field.array.length??>
 ${I}zserio.runtime.array.ArrayType.NORMAL<#rt>
     <#elseif field.array.isImplicit>
@@ -70,12 +72,40 @@ ${I}new <@offset_initializer_name field.name/>()<#rt>
     <#lt>)<#rt>
 </#macro>
 
+<#macro array_traits field>
+    <#if field.array??>
+new ${field.array.traits.name}(<#rt>
+        <#if field.array.traits.requiresElementBitSize>
+        ${field.array.elementBitSize.value}<#t>
+        <#elseif field.array.traits.requiresElementFactory>
+        new <@element_factory_name field.name/>()<#t>
+        </#if>
+        )<#t>
+    <#else>
+new ${field.arrayTraits.name}(<#rt>
+        <#if field.arrayTraits.requiresElementBitSize>
+            ${field.bitSize.value}<#t>
+        </#if>
+        )<#t>
+    </#if>
+</#macro>
+
+<#macro array_field_packed_suffix field packed>
+    <#if field.isPackable && (packed || field.array.isPacked)>
+        Packed<#t>
+    </#if>
+</#macro>
+
 <#macro compound_field_get_offset field>
     <#if field.offset.requiresBigInt>
         ${field.offset.getter}.longValue()<#t>
     <#else>
         ${field.offset.getter}<#t>
     </#if>
+</#macro>
+
+<#macro field_optional_condition field>
+    <#if field.optional.clause??>${field.optional.clause}<#else><@compound_get_field field/> != null</#if><#t>
 </#macro>
 
 <#macro compound_read_field_offset_check field compoundName indent>
@@ -88,7 +118,30 @@ ${I}            in.getBytePosition() + " != " + <@compound_field_get_offset fiel
 ${I}}
 </#macro>
 
-<#macro compound_read_field_inner field compoundName indent>
+<#macro compound_field_compound_ctor_params compound>
+    <#list compound.instantiatedParameters as parameter>
+        <#if parameter.isSimpleType>(${parameter.javaTypeName})(</#if>${parameter.expression}<#if parameter.isSimpleType>)</#if><#t>
+        <#if parameter_has_next>, </#if><#t>
+    </#list>
+</#macro>
+
+<#macro compound_read_field field compoundName indent packed=false index=0>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+        <#if field.optional.clause??>
+${I}if (${field.optional.clause})
+        <#else>
+${I}if (in.readBool())
+        </#if>
+${I}{
+        <@compound_read_field_inner field, compoundName, indent + 1, packed, index/>
+${I}}
+    <#else>
+        <@compound_read_field_inner field, compoundName, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_read_field_inner field compoundName indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
 ${I}in.alignTo(${field.alignmentValue});
@@ -96,9 +149,25 @@ ${I}in.alignTo(${field.alignmentValue});
     <#if field.offset?? && !field.offset.containsIndex>
         <@compound_read_field_offset_check field, compoundName, indent/>
     </#if>
-    <#if field.array??>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isIntegralType>
+${I}<@field_member_name field/> = ((${field.arrayElement})
+${I}        <@compound_field_packing_context_node field, index/>.getContext().read(
+${I}                <@array_traits field/>, in)).get();
+        <#elseif field.isEnum>
+${I}<@field_member_name field/> = ${field.javaTypeName}.readEnum(<@compound_field_packing_context_node field, index/>, in);
+        <#else>
+            <#local compoundParamsArguments>
+                <#if field.compound??><#-- can be a bitmask -->
+                    <@compound_field_compound_ctor_params field.compound/>
+                </#if>
+            </#local>
+${I}<@field_member_name field/> = new ${field.javaTypeName}(<@compound_field_packing_context_node field, index/>, in<#rt>
+        <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
+        </#if>
+    <#elseif field.array??>
 ${I}<@field_member_name field/> = <@array_wrapper_read_constructor field, withWriterCode, indent + 2/>;
-${I}<@compound_get_field field/>.read(in<#if field.array.length??>, (int)${field.array.length}</#if>);
+${I}<@compound_get_field field/>.read<@array_field_packed_suffix field, packed/>(in<#if field.array.length??>, (int)${field.array.length}</#if>);
     <#elseif field.runtimeFunction??>
 ${I}<@field_member_name field/> = <#if field.runtimeFunction.javaReadTypeName??>(${field.runtimeFunction.javaReadTypeName})</#if><#rt>
         <#lt>in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!});
@@ -111,33 +180,11 @@ ${I}<@field_member_name field/> = ${field.javaTypeName}.readEnum(in);
                 <@compound_field_compound_ctor_params field.compound/>
             </#if>
         </#local>
-        <#local compoundArguments>in<#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if></#local>
-${I}<@field_member_name field/> = new ${field.javaTypeName}(${compoundArguments});
+${I}<@field_member_name field/> = new ${field.javaTypeName}(in<#rt>
+        <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
     </#if>
 </#macro>
 
-<#macro compound_field_compound_ctor_params compound>
-    <#list compound.instantiatedParameters as parameter>
-        <#if parameter.isSimpleType>(${parameter.javaTypeName})(</#if>${parameter.expression}<#if parameter.isSimpleType>)</#if><#t>
-        <#if parameter_has_next>, </#if><#t>
-    </#list>
-</#macro>
-
-<#macro compound_read_field field compoundName indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.optional??>
-        <#if field.optional.clause??>
-${I}if (${field.optional.clause})
-        <#else>
-${I}if (in.readBool())
-        </#if>
-${I}{
-        <@compound_read_field_inner field, compoundName, indent + 1/>
-${I}}
-    <#else>
-        <@compound_read_field_inner field, compoundName, indent/>
-    </#if>
-</#macro>
 
 <#macro compound_write_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
@@ -149,36 +196,7 @@ ${I}            out.getBytePosition() + " != " + <@compound_field_get_offset fie
 ${I}}
 </#macro>
 
-<#macro compound_write_field_inner field compoundName indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.alignmentValue??>
-${I}out.alignTo(${field.alignmentValue});
-    </#if>
-    <#if field.offset?? && !field.offset.containsIndex>
-        <@compound_write_field_offset_check field, compoundName, indent/>
-    </#if>
-    <#if field.array??>
-        <#if field.array.length??>
-${I}if (<@compound_get_field field/>.size() != (int)(${field.array.length}))
-${I}{
-${I}    throw new zserio.runtime.ZserioError("Write: Wrong array length for field ${compoundName}.${field.name}: " +
-${I}            <@compound_get_field field/>.size() + " != " + (int)(${field.array.length}) + "!");
-${I}}
-        </#if>
-${I}<@compound_get_field field/>.write(out);
-    <#elseif field.runtimeFunction??>
-${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>);
-    <#else>
-        <#-- enum or compound -->
-${I}<@compound_get_field field/>.write(out, false);
-    </#if>
-</#macro>
-
-<#macro field_optional_condition field>
-    <#if field.optional.clause??>${field.optional.clause}<#else><@compound_get_field field/> != null</#if><#t>
-</#macro>
-
-<#macro compound_write_field field compoundName indent>
+<#macro compound_write_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
 ${I}if (<@field_optional_condition field/>)
@@ -186,7 +204,7 @@ ${I}{
         <#if !field.optional.clause??>
 ${I}    out.writeBool(true);
         </#if>
-        <@compound_write_field_inner field, compoundName, indent + 1/>
+        <@compound_write_field_inner field, compoundName, indent + 1, packed, index/>
 ${I}}
         <#if !field.optional.clause??>
 ${I}else
@@ -195,7 +213,40 @@ ${I}    out.writeBool(false);
 ${I}}
         </#if>
     <#else>
-        <@compound_write_field_inner field, compoundName, indent/>
+        <@compound_write_field_inner field, compoundName, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_write_field_inner field compoundName indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.alignmentValue??>
+${I}out.alignTo(${field.alignmentValue});
+    </#if>
+    <#if field.offset?? && !field.offset.containsIndex>
+        <@compound_write_field_offset_check field, compoundName, indent/>
+    </#if>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isIntegralType>
+${I}<@compound_field_packing_context_node field, index/>.getContext().write(
+${I}        <@array_traits field/>, out,
+${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+        <#else>
+${I}<@compound_get_field field/>.write(<@compound_field_packing_context_node field, index/>, out);
+        </#if>
+    <#elseif field.array??>
+        <#if field.array.length??>
+${I}if (<@compound_get_field field/>.size() != (int)(${field.array.length}))
+${I}{
+${I}    throw new zserio.runtime.ZserioError("Write: Wrong array length for field ${compoundName}.${field.name}: " +
+${I}            <@compound_get_field field/>.size() + " != " + (int)(${field.array.length}) + "!");
+${I}}
+        </#if>
+${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/>(out);
+    <#elseif field.runtimeFunction??>
+${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>);
+    <#else>
+        <#-- enum or compound -->
+${I}<@compound_get_field field/>.write(out, false);
     </#if>
 </#macro>
 
@@ -228,10 +279,46 @@ java.lang.Double.doubleToLongBits(<@compound_get_field field/>) == java.lang.Dou
     </#if>
 </#macro>
 
-<#macro compound_bitsizeof_field field indent>
+<#macro compound_align_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.array??>
-${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
+    <#if field.alignmentValue??>
+${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(${field.alignmentValue}, endBitPosition);
+    </#if>
+    <#if field.offset?? && !field.offset.containsIndex>
+${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE, endBitPosition);
+    </#if>
+</#macro>
+
+<#macro compound_bitsizeof_field field indent packed=false index=0>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.optional??>
+        <#if !field.optional.clause??>
+            <#-- auto optional field -->
+${I}endBitPosition += 1;
+        </#if>
+${I}if (<@field_optional_condition field/>)
+${I}{
+        <@compound_bitsizeof_field_inner field, indent+1, packed, index/>
+${I}}
+    <#else>
+    <@compound_bitsizeof_field_inner field, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_bitsizeof_field_inner field indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <@compound_align_field field, indent/>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isIntegralType>
+${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
+${I}        <@array_traits field/>, endBitPosition,
+${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+        <#else>
+${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(<@compound_field_packing_context_node field, index/>,
+${I}        endBitPosition);
+        </#if>
+    <#elseif field.array??>
+${I}endBitPosition += <@compound_get_field field/>.bitSizeOf<@array_field_packed_suffix field, packed/>(endBitPosition);
     <#elseif field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value};
     <#elseif field.bitSize.runtimeFunction??>
@@ -241,10 +328,47 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
 </#macro>
 
-<#macro compound_field_initialize_offsets field indent>
+<#macro compound_initialize_offsets_field field indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.array??>
-${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition);
+    <#if field.optional??>
+        <#if !field.optional.clause??>
+            <#-- auto optional field -->
+${I}endBitPosition += 1;
+                </#if>
+${I}if (<@field_optional_condition field/>)
+${I}{
+        <@compound_initialize_offsets_field_inner field, indent+1, packed, index/>
+${I}}
+    <#else>
+    <@compound_initialize_offsets_field_inner field, indent, packed, index/>
+    </#if>
+</#macro>
+
+<#macro compound_initialize_offsets_field_inner field indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <@compound_align_field field, indent/>
+    <#if field.offset?? && !field.offset.containsIndex>
+${I}{
+${I}    final ${field.offset.typeName} value = <#rt>
+            <#if field.offset.requiresBigInt>
+                <#lt>java.math.BigInteger.valueOf(zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition));
+            <#else>
+                <#lt>(${field.offset.typeName})zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition);
+            </#if>
+${I}    ${field.offset.setter};
+${I}}
+        </#if>
+    <#if packed && field.isPackable && !field.array??>
+        <#if field.isIntegralType>
+${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
+${I}        <@array_traits field/>, endBitPosition,
+${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+        <#else>
+${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(<@compound_field_packing_context_node field, index/>,
+${I}        endBitPosition);
+        </#if>
+    <#elseif field.array??>
+${I}endBitPosition = <@compound_get_field field/>.initializeOffsets<@array_field_packed_suffix field, packed/>(endBitPosition);
     <#elseif field.bitSize.value??>
 ${I}endBitPosition += ${field.bitSize.value};
     <#elseif field.bitSize.runtimeFunction??>
@@ -281,6 +405,43 @@ ${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + <@compound_get_fie
         <#-- complex type: use hashCode() but account for possible null -->
 ${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
 ${I}        ((<@compound_get_field field/> == null) ? 0 : <@compound_get_field field/>.hashCode());
+    </#if>
+</#macro>
+
+<#macro compound_create_packing_context_field field>
+    <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
+        <#if field.isIntegralType>
+        contextNode.createChild().createContext();
+        <#else>
+        ${field.javaTypeName}.createPackingContext(contextNode.createChild());
+        </#if>
+    <#else>
+        contextNode.createChild();
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field field index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isPackable && !field.array??>
+        <#if field.optional??>
+${I}if (<@field_optional_condition field/>)
+${I}{
+        <@compound_init_packing_context_field_inner field, index, indent+1/>
+${I}}
+        <#else>
+    <@compound_init_packing_context_field_inner field, index, indent/>
+        </#if>
+    </#if>
+</#macro>
+
+<#macro compound_init_packing_context_field_inner field index indent>
+    <#-- arrays are solved in compound_init_packing_context_field -->
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.isIntegralType>
+${I}<@compound_field_packing_context_node field, index/>.getContext().init(
+${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+    <#else>
+${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_context_node field, index/>);
     </#if>
 </#macro>
 
@@ -339,12 +500,29 @@ ${I}        ((<@compound_get_field field/> == null) ? 0 : <@compound_get_field f
     {
         @Override
         public ${field.array.elementJavaTypeName} create(zserio.runtime.io.BitStreamReader in, int index)
-                throws java.io.IOException, zserio.runtime.ZserioError
+                throws java.io.IOException
         {
     <#if field.array.isElementEnum>
             return ${field.array.elementJavaTypeName}.readEnum(in);
     <#else>
             return new ${field.array.elementJavaTypeName}(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
+    </#if>
+        }
+        
+        @Override
+        public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
+        {
+            ${field.array.elementJavaTypeName}.createPackingContext(contextNode);
+        }
+        
+        @Override
+        public ${field.array.elementJavaTypeName} create(zserio.runtime.array.PackingContextNode contextNode,
+                zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
+        {
+    <#if field.array.isElementEnum>
+            return ${field.array.elementJavaTypeName}.readEnum(contextNode, in);
+    <#else>
+            return new ${field.array.elementJavaTypeName}(contextNode, in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
     </#if>
         }
     }
@@ -360,7 +538,7 @@ ${I}        ((<@compound_get_field field/> == null) ? 0 : <@compound_get_field f
                 <@define_offset_initializer field/>
             </#if>
         </#if>
-        <#if field.array.requiresElementFactory>
+        <#if field.array.traits.requiresElementFactory>
 
             <@define_element_factory field/>
         </#if>

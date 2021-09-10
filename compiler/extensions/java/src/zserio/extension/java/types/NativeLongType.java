@@ -8,7 +8,8 @@ public class NativeLongType extends NativeIntegralType
 {
     public NativeLongType(boolean nullable, NativeArrayTraits arrayTraits)
     {
-        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Long" : "long", arrayTraits);
+        super(nullable ? JAVA_LANG_PACKAGE : PackageName.EMPTY, nullable ? "Long" : "long",
+                new NativeRawArray("LongRawArray"), arrayTraits, new NativeArrayElement("LongArrayElement"));
 
         this.nullable = nullable;
     }

@@ -2,11 +2,11 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
-public class NativeRawArray extends JavaNativeType
+public class NativeArrayElement extends JavaNativeType
 {
-    public NativeRawArray(String rawArrayName)
+    public NativeArrayElement(String name)
     {
-        super(RUNTIME_ARRAY_PACKAGE, RAW_ARRAY_NAME + "." + rawArrayName);
+        super(RUNTIME_ARRAY_PACKAGE, ARRAY_ELEMENT_NAME + "." + name);
     }
 
     @Override
@@ -15,12 +15,7 @@ public class NativeRawArray extends JavaNativeType
         return false;
     }
 
-    public boolean requiresElementClass()
-    {
-        return false;
-    }
-
     private static final PackageName RUNTIME_ARRAY_PACKAGE =
             new PackageName.Builder().addId("zserio").addId("runtime").addId("array").get();
-    private static final String RAW_ARRAY_NAME = "RawArray";
+    private static final String ARRAY_ELEMENT_NAME = "ArrayElement";
 }
