@@ -68,7 +68,7 @@ public class PackedVariableArrayStructTest
     @Test
     public void writeReadLength4() throws IOException, ZserioError
     {
-        checkWriteRead(VARIABLE_ARRAY_LENGTH3);
+        checkWriteRead(VARIABLE_ARRAY_LENGTH4);
     }
 
     private void checkBitSizeOf(int numElements) throws IOException, ZserioError
