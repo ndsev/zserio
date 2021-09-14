@@ -1029,7 +1029,6 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
     <#return false>
 </#function>
 
-
 <#function needs_packing_context_node fieldList>
     <#list fieldList as field>
         <#if field_needs_packing_context_node(field)>

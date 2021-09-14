@@ -50,12 +50,12 @@ int64_t calcUncheckedDelta(T lhs, uint64_t rhs)
 /**
  * Context for delta packing created for each packable field.
  *
- * Contexts are always newly crated for each array operation (bitSizeOfPacked, initializeOffsetsPacked,
+ * Contexts are always newly created for each array operation (bitSizeOfPacked, initializeOffsetsPacked,
  * readPacked, writePacked). They must be initialized at first via calling the init method for each packable
  * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
  * can be repeatedly called for exactly the same sequence of packable elements.
  *
- * Note that *Desriptor methods doesn't change context's internal state and can be called as needed. They are
+ * Note that *Descriptor methods doesn't change context's internal state and can be called as needed. They are
  * designed to be called once for each context before the actual operation.
  */
 class DeltaContext
@@ -104,9 +104,9 @@ public:
     }
 
     /**
-     * Gets bit size of the current delta context.
+     * Returns length of the descriptor stored in the bit stream in bits.
      *
-     * \return Bit size of this context.
+     * \return Length of the descriptor stored in the bit stream in bits.
      */
     size_t bitSizeOfDescriptor() const
     {
@@ -120,7 +120,7 @@ public:
      * Returns length of the packed element stored in the bit stream in bits.
      *
      * \param arrayTraits Standard array traits.
-     * \param bitPosition Curent bit stream position.
+     * \param bitPosition Current bit stream position.
      * \param element Value of the current element.
      *
      * \return Length of the packed element stored in the bit stream in bits.
@@ -141,7 +141,8 @@ public:
     }
 
     /**
-     * Reads the context from the bit stream.
+     * Reads the delta packing descriptor from the bit stream. Called for all contexts before the first element
+     * is read.
      *
      * \param in Bit stream reader.
      */
@@ -186,7 +187,8 @@ public:
     }
 
     /**
-     * Writes the context to the bit stream.
+     * Writes the delta packing descriptor to the bit stream. Called for all contexts before the first element
+     * is written.
      *
      * \param out Bit stream writer.
      */
@@ -240,7 +242,7 @@ private:
  * Packing context node.
  *
  * This class is used to handle a tree of contexts created by appropriate PackedArrayTraits.
- * For built-in packable types only a single context are kept. However for Zserio objects, a tree
+ * For built-in packable types only a single context is kept. However for Zserio objects, a tree
  * of all packable fields is created recursively.
  *
  * When the context node has no children and no context, then it's so called dummy context which is used

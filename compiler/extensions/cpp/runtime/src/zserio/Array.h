@@ -202,8 +202,8 @@ public:
      * \param other Source array to copy.
      */
     Array(const Array& other)
-    :   m_rawArray(other.m_rawArray), m_arrayTraits(other.m_arrayTraits),
-        m_packedArrayTraits(other.m_packedArrayTraits)
+    :       m_rawArray(other.m_rawArray), m_arrayTraits(other.m_arrayTraits),
+            m_packedArrayTraits(other.m_packedArrayTraits)
     {
         if (other.m_packingContextNode)
             createContext();
@@ -421,6 +421,7 @@ public:
      * Initializes indexed offsets for the packed array.
      *
      * \param bitPosition Current bit stream position.
+     * \param offsetInitializer Initializer which initializes offsets for each element.
      *
      * \return Updated bit stream position which points to the first bit after the array.
      */
