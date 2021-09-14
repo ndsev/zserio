@@ -561,10 +561,16 @@ public interface ArrayTraits
     }
 
     /**
-     * Array traits for zserio uint64 and bit:64 arrays which are mapped to Java BigInteger[] array.
+     * Array traits for zserio uint64, bit:64 and dynamic bit field arrays which are mapped to
+     * Java BigInteger[] array.
      */
     public static class BitFieldBigIntegerArrayTraits extends IntegralArrayTraitsBase
     {
+        public BitFieldBigIntegerArrayTraits(int numBits)
+        {
+            this.numBits = numBits;
+        }
+
         @Override
         public boolean isBitSizeOfConstant()
         {
@@ -574,7 +580,7 @@ public interface ArrayTraits
         @Override
         public int bitSizeOf(long bitPosition, ArrayElement element)
         {
-            return NUM_BITS;
+            return numBits;
         }
 
         @Override
@@ -586,13 +592,13 @@ public interface ArrayTraits
         @Override
         public IntegralArrayElement read(BitStreamReader reader) throws IOException
         {
-            return new ArrayElement.BigIntegerArrayElement(reader.readBigInteger(NUM_BITS));
+            return new ArrayElement.BigIntegerArrayElement(reader.readBigInteger(numBits));
         }
 
         @Override
         public void write(BitStreamWriter writer, ArrayElement element) throws IOException
         {
-            writer.writeBigInteger(((ArrayElement.BigIntegerArrayElement)element).get(), NUM_BITS);
+            writer.writeBigInteger(((ArrayElement.BigIntegerArrayElement)element).get(), numBits);
         }
 
         @Override
@@ -601,7 +607,7 @@ public interface ArrayTraits
             return new ArrayElement.BigIntegerArrayElement(bigInteger);
         }
 
-        private static final int NUM_BITS = 64;
+        private final int numBits;
     }
 
     /**

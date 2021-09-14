@@ -668,7 +668,7 @@ final class JavaNativeMapper
             new NativeLongType(true, bitFieldLongArrayTraits);
 
     private final static NativeArrayTraits bitFieldBigIntegerArrayTraits =
-            new NativeArrayTraits("BitFieldBigIntegerArrayTraits");
+            new NativeBitFieldArrayTraits("BitFieldBigIntegerArrayTraits");
     private final static NativeBigIntegerType bitFieldBigIntegerType =
             new NativeBigIntegerType(bitFieldBigIntegerArrayTraits);
 

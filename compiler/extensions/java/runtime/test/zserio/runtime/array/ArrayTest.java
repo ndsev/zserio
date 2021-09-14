@@ -170,7 +170,7 @@ public class ArrayTest
         final RawArray rawArray2 = new RawArray.BigIntegerRawArray(new BigInteger[] {
                 BigInteger.valueOf(8589934594L), BigInteger.valueOf(8589934595L)});
         final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();
-        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits();
+        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits(64);
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
         final Array normalArray1 = new Array(rawArray1, arrayTraits, ArrayType.NORMAL);
@@ -608,7 +608,7 @@ public class ArrayTest
                 BigInteger.valueOf(8589932000L),
                 BigInteger.valueOf(8589932001L)});
         final RawArray emptyRawArray = new RawArray.BigIntegerRawArray();
-        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits();
+        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldBigIntegerArrayTraits(64);
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
     }
 

@@ -76,7 +76,7 @@ ${I}new <@offset_initializer_name field.name/>()<#rt>
     <#if field.array??>
 new ${field.array.traits.name}(<#rt>
         <#if field.array.traits.requiresElementBitSize>
-        ${field.array.elementBitSize.value}<#t>
+        (int)(${field.array.elementBitSize.value})<#t>
         <#elseif field.array.traits.requiresElementFactory>
         new <@element_factory_name field.name/>()<#t>
         </#if>
@@ -84,7 +84,7 @@ new ${field.array.traits.name}(<#rt>
     <#else>
 new ${field.arrayTraits.name}(<#rt>
         <#if field.arrayTraits.requiresElementBitSize>
-            ${field.bitSize.value}<#t>
+            (int)(${field.bitSize.value})<#t>
         </#if>
         )<#t>
     </#if>
