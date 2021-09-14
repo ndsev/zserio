@@ -209,7 +209,7 @@ public class Array
      *
      * @param bitPosition Current bit stream position.
      *
-     * \return Updated bit stream position which points to the first bit after the array.
+     * @return Updated bit stream position which points to the first bit after the array.
      */
     public long initializeOffsetsPacked(long bitPosition)
     {

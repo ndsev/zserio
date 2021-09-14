@@ -566,6 +566,11 @@ public interface ArrayTraits
      */
     public static class BitFieldBigIntegerArrayTraits extends IntegralArrayTraitsBase
     {
+        /**
+         * Constructor from number of bits of zserio type.
+         *
+         * @param numBits Number of bits of zserio type.
+         */
         public BitFieldBigIntegerArrayTraits(int numBits)
         {
             this.numBits = numBits;

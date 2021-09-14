@@ -56,10 +56,11 @@ public interface PackedArrayTraits
      *
      * @param contextNode Packing context node.
      * @param reader Bit stream reader.
+     * @param index Index of the current element.
      *
      * @return Read element.
      *
-     * @throws Failure during bit stream manipulation.
+     * @throws IOException Failure during bit stream manipulation.
      */
     public ArrayElement read(PackingContextNode contextNode, BitStreamReader reader, int index)
             throws IOException;
@@ -204,6 +205,11 @@ public interface PackedArrayTraits
     public static class WriteObjectPackedArrayTraits<E extends InitializeOffsetsWriter & SizeOf>
             extends ObjectPackedArrayTraits<E>
     {
+        /**
+         * Constructor.
+         *
+         * @param elementFactory Element factory to construct from.
+         */
         public WriteObjectPackedArrayTraits(ElementFactory<E> elementFactory)
         {
             super(elementFactory);

@@ -86,6 +86,8 @@ public class DeltaContext
      * is read.
      *
      * @param reader Bit stream reader.
+     *
+     * @throws IOException Failure during bit stream manipulation.
      */
     public void readDescriptor(BitStreamReader reader) throws IOException
     {
@@ -101,6 +103,8 @@ public class DeltaContext
      * @param reader Bit stream reader.
      *
      * @return Packed element.
+     *
+     * @throws IOException Failure during bit stream manipulation.
      */
     public IntegralArrayElement read(IntegralArrayTraits arrayTraits, BitStreamReader reader) throws IOException
     {
@@ -128,6 +132,8 @@ public class DeltaContext
      * is written.
      *
      * @param writer Bit stream writer.
+     *
+     * @throws IOException Failure during bit stream manipulation.
      */
     public void writeDescriptor(BitStreamWriter writer) throws IOException
     {
@@ -142,6 +148,8 @@ public class DeltaContext
      * @param arrayTraits Standard array traits.
      * @param writer Bit stream writer.
      * @param element Current element.
+     *
+     * @throws IOException Failure during bit stream manipulation.
      */
     public void write(IntegralArrayTraits arrayTraits, BitStreamWriter writer, IntegralArrayElement element)
             throws IOException
