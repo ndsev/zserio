@@ -16,7 +16,6 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
-import zserio.runtime.array.UnsignedIntArray;
 
 public class ArrayLengthofConstraintTest
 {
@@ -28,7 +27,7 @@ public class ArrayLengthofConstraintTest
         final BitStreamReader stream = new FileBitStreamReader(file);
         final ArrayLengthofConstraint arrayLengthofConstraint = new ArrayLengthofConstraint(stream);
         stream.close();
-        assertEquals(CORRECT_LENGTH, arrayLengthofConstraint.getArray().length());
+        assertEquals(CORRECT_LENGTH, arrayLengthofConstraint.getArray().length);
     }
 
     @Test(expected=ZserioError.class)
@@ -55,16 +54,16 @@ public class ArrayLengthofConstraintTest
     public void writeCorrectLength() throws IOException, ZserioError
     {
         final ArrayLengthofConstraint arrayLengthofConstraint = new ArrayLengthofConstraint();
-        UnsignedIntArray array = new UnsignedIntArray(CORRECT_LENGTH);
+        final long[] array = new long[CORRECT_LENGTH];
         for (int i = 0; i < CORRECT_LENGTH; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
         arrayLengthofConstraint.setArray(array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         arrayLengthofConstraint.write(writer);
         writer.close();
         final ArrayLengthofConstraint readArrayLengthofConstraint = new ArrayLengthofConstraint(file);
-        assertEquals(CORRECT_LENGTH, readArrayLengthofConstraint.getArray().length());
+        assertEquals(CORRECT_LENGTH, readArrayLengthofConstraint.getArray().length);
         assertTrue(arrayLengthofConstraint.equals(readArrayLengthofConstraint));
     }
 
@@ -72,9 +71,9 @@ public class ArrayLengthofConstraintTest
     public void writeWrongLengthLess() throws IOException, ZserioError
     {
         final ArrayLengthofConstraint arrayLengthofConstraint = new ArrayLengthofConstraint();
-        UnsignedIntArray array = new UnsignedIntArray(WRONG_LENGTH_LESS);
+        final long[] array = new long[WRONG_LENGTH_LESS];
         for (int i = 0; i < WRONG_LENGTH_LESS; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
         arrayLengthofConstraint.setArray(array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
@@ -86,9 +85,9 @@ public class ArrayLengthofConstraintTest
     public void writeWrongLengthGreater() throws IOException, ZserioError
     {
         final ArrayLengthofConstraint arrayLengthofConstraint = new ArrayLengthofConstraint();
-        UnsignedIntArray array = new UnsignedIntArray(WRONG_LENGTH_GREATER);
+        final long[] array = new long[WRONG_LENGTH_GREATER];
         for (int i = 0; i < WRONG_LENGTH_GREATER; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
         arrayLengthofConstraint.setArray(array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);

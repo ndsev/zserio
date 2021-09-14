@@ -5,11 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -71,7 +69,7 @@ public class UnionArrayTest
     {
         final OuterArray outerArray = new OuterArray();
         outerArray.setNumElements(NUM_ITEM_ELEMENTS);
-        outerArray.setValues(new ObjectArray<Item>(ITEMS));
+        outerArray.setValues(ITEMS);
 
         final short isExplicit = (pos >= NUM_ITEM_ELEMENTS) ? (short)1 : (short)0;
         final ItemRef itemRef = new ItemRef(outerArray);
@@ -97,7 +95,7 @@ public class UnionArrayTest
         }
         else
         {
-            assertEquals(ITEMS.get(pos), inner.getRef().funcGetElement());
+            assertEquals(ITEMS[pos], inner.getRef().funcGetElement());
         }
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -114,13 +112,12 @@ public class UnionArrayTest
         assertEquals(inner, readInner);
     }
 
-    private static final List<Item> ITEMS = Arrays.asList
-    (
-        new Item((short)12, (short)13),
-        new Item((short)42, (short)18),
-        new Item((short)17, (short)14)
-    );
-    private static final int NUM_ITEM_ELEMENTS = ITEMS.size();
+    private static final Item[] ITEMS = new Item[] {
+            new Item((short)12, (short)13),
+            new Item((short)42, (short)18),
+            new Item((short)17, (short)14)
+    };
+    private static final int NUM_ITEM_ELEMENTS = ITEMS.length;
 
     private static final Item EXPLICIT_ITEM = new Item((short)27, (short)29);
 }

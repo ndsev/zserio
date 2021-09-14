@@ -1,7 +1,5 @@
 package zserio.runtime.service;
 
-import zserio.runtime.ZserioError;
-
 /** Generic interface for all Zserio services. */
 public interface ServiceInterface
 {
@@ -13,10 +11,6 @@ public interface ServiceInterface
      * @param context       Context specific for particular service.
      *
      * @return Response data.
-     *
-     * @throws ZserioError if serialization or deserialization fails.
-     * @throws ServiceException if the call fails.
      */
-    public byte[] callMethod(String methodName, byte[] requestData, Object context)
-            throws ZserioError;
+    public byte[] callMethod(String methodName, byte[] requestData, Object context);
 };

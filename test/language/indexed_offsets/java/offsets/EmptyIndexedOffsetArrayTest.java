@@ -10,8 +10,6 @@ import org.junit.Test;
 import indexed_offsets.empty_indexed_offset_array.EmptyIndexedOffsetArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -91,26 +89,26 @@ public class EmptyIndexedOffsetArrayTest
 
     private void checkEmptyIndexedOffsetArray(EmptyIndexedOffsetArray emptyIndexedOffsetArray)
     {
-        final UnsignedIntArray offsets = emptyIndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = emptyIndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
 
         assertEquals(SPACER_VALUE, emptyIndexedOffsetArray.getSpacer());
         assertEquals(FIELD_VALUE, emptyIndexedOffsetArray.getField());
 
-        final UnsignedByteArray data = emptyIndexedOffsetArray.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final byte[] data = emptyIndexedOffsetArray.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
     }
 
     private EmptyIndexedOffsetArray createEmptyIndexedOffsetArray()
     {
         final EmptyIndexedOffsetArray emptyIndexedOffsetArray = new EmptyIndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         emptyIndexedOffsetArray.setOffsets(offsets);
         emptyIndexedOffsetArray.setSpacer(SPACER_VALUE);
         emptyIndexedOffsetArray.setField(FIELD_VALUE);
 
-        final UnsignedByteArray data = new UnsignedByteArray(NUM_ELEMENTS);
+        final byte[] data = new byte[NUM_ELEMENTS];
         emptyIndexedOffsetArray.setData(data);
 
         return emptyIndexedOffsetArray;

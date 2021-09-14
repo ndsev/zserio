@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import zserio.runtime.array.ByteArray;
-
 import expressions.array_type.ArrayTypeExpression;
 
 public class ArrayTypeTest
@@ -13,8 +11,7 @@ public class ArrayTypeTest
     @Test
     public void bitSizeOfWithOptional()
     {
-        final byte[] arrayData = new byte[] { 0, 0 };
-        final ByteArray array = new ByteArray(arrayData, 0, arrayData.length);
+        final byte[] array = new byte[] { 0, 0 };
         final ArrayTypeExpression arrayTypeExpression = new ArrayTypeExpression(array, true);
 
         assertEquals(ARRAY_TYPE_EXPRESSION_BIT_SIZE_WITH_OPTIONAL, arrayTypeExpression.bitSizeOf());
@@ -24,8 +21,7 @@ public class ArrayTypeTest
     public void bitSizeOfWithoutOptional()
     {
         final ArrayTypeExpression arrayTypeExpression = new ArrayTypeExpression();
-        final byte[] arrayData = new byte[] { 1, 1 };
-        final ByteArray array = new ByteArray(arrayData, 0, arrayData.length);
+        final byte[] array = new byte[] { 1, 1 };
         arrayTypeExpression.setArray(array);
 
         assertEquals(ARRAY_TYPE_EXPRESSION_BIT_SIZE_WITHOUT_OPTIONAL, arrayTypeExpression.bitSizeOf());

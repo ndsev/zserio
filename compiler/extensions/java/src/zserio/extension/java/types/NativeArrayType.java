@@ -1,12 +1,15 @@
 package zserio.extension.java.types;
 
-import zserio.ast.PackageName;
-
 public class NativeArrayType extends JavaNativeType
 {
-    public NativeArrayType(String name)
+    public NativeArrayType(NativeArrayableType elementType)
     {
-        super(RUNTIME_ARRAY_PACKAGE, name);
+        super(elementType.getPackageName(), elementType.getName() + "[]");
+
+        arrayWrapper = new NativeArrayWrapper();
+        rawArray = elementType.getRawArray();
+        arrayTraits = elementType.getArrayTraits();
+        arrayElement = elementType.getArrayElement();
     }
 
     @Override
@@ -15,16 +18,28 @@ public class NativeArrayType extends JavaNativeType
         return false;
     }
 
-    public boolean requiresElementBitSize()
+    public NativeArrayWrapper getArrayWrapper()
     {
-        return false;
+        return arrayWrapper;
     }
 
-    public boolean requiresElementFactory()
+    public NativeRawArray getRawArray()
     {
-        return false;
+        return rawArray;
     }
 
-    private static final PackageName RUNTIME_ARRAY_PACKAGE =
-            new PackageName.Builder().addId("zserio").addId("runtime").addId("array").get();
+    public NativeArrayTraits getArrayTraits()
+    {
+        return arrayTraits;
+    }
+
+    public NativeArrayElement getArrayElement()
+    {
+        return arrayElement;
+    }
+
+    private final NativeArrayWrapper arrayWrapper;
+    private final NativeRawArray rawArray;
+    private final NativeArrayTraits arrayTraits;
+    private final NativeArrayElement arrayElement;
 }

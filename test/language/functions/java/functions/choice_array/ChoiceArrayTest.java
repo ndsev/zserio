@@ -5,11 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -62,7 +60,7 @@ public class ChoiceArrayTest
         else
         {
             writer.writeBits(pos, 16);
-            elementA = ITEMS.get(pos).getA();
+            elementA = ITEMS[pos].getA();
         }
 
         if (elementA == ELEMENT_A_FOR_EXTRA_VALUE)
@@ -78,7 +76,7 @@ public class ChoiceArrayTest
         final OuterArray outerArray = new OuterArray();
 
         outerArray.setNumElements(NUM_ITEM_ELEMENTS);
-        outerArray.setValues(new ObjectArray<Item>(ITEMS));
+        outerArray.setValues(ITEMS);
 
         final Inner inner = new Inner();
         inner.setOuterArray(outerArray);
@@ -96,7 +94,7 @@ public class ChoiceArrayTest
         else
         {
             itemRef.setPos(pos);
-            elementA = ITEMS.get(pos).getA();
+            elementA = ITEMS[pos].getA();
         }
         inner.setRef(itemRef);
 
@@ -116,7 +114,7 @@ public class ChoiceArrayTest
         }
         else
         {
-            assertEquals(ITEMS.get(pos), readElement);
+            assertEquals(ITEMS[pos], readElement);
         }
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -135,13 +133,12 @@ public class ChoiceArrayTest
     private static final short ELEMENT_A_FOR_EXTRA_VALUE = 20;
     private static final int EXTRA_VALUE = 4711;
 
-    private static final List<Item> ITEMS = Arrays.asList
-    (
-        new Item((short)12, (short)13),
-        new Item(ELEMENT_A_FOR_EXTRA_VALUE, (short)18),
-        new Item((short)17, (short)14)
-    );
-    private static final int NUM_ITEM_ELEMENTS = ITEMS.size();
+    private static final Item[] ITEMS = new Item[] {
+            new Item((short)12, (short)13),
+            new Item(ELEMENT_A_FOR_EXTRA_VALUE, (short)18),
+            new Item((short)17, (short)14)
+    };
+    private static final int NUM_ITEM_ELEMENTS = ITEMS.length;
 
     private static final Item EXPLICIT_ITEM = new Item((short)27, (short)29);
 }

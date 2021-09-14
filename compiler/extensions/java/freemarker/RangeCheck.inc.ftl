@@ -13,11 +13,11 @@
         final ${rangeData.javaTypeName} lowerBound = ${rangeData.lowerBound};
         final ${rangeData.javaTypeName} upperBound = ${rangeData.upperBound};
         </#if>
-        if <#if rangeData.isTypeNullable>(<@field_member_name rangeData.field/> != null && </#if><#rt>
-            (<@field_member_name rangeData.field/> < lowerBound<#if rangeData.checkUpperBound> || <@field_member_name rangeData.field/> > upperBound</#if>)<#t>
+        if <#if rangeData.isTypeNullable>(<@field_argument_name rangeData.field/> != null && </#if><#rt>
+            (<@field_argument_name rangeData.field/> < lowerBound<#if rangeData.checkUpperBound> || <@field_argument_name rangeData.field/> > upperBound</#if>)<#t>
             <#if rangeData.isTypeNullable>)</#if><#lt>
         {
-            throw new zserio.runtime.ZserioError("Value " + <@field_member_name rangeData.field/> +
+            throw new zserio.runtime.ZserioError("Value " + <@field_argument_name rangeData.field/> +
                     " of ${compoundName}.${rangeData.field.name} exceeds the range of <" +
                     lowerBound + ".." + upperBound + ">!");
         }

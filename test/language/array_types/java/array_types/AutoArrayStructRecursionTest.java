@@ -4,13 +4,10 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -108,27 +105,26 @@ public class AutoArrayStructRecursionTest
 
     private AutoArrayRecursion createAutoArrayRecursion(short numElements)
     {
-        final List<AutoArrayRecursion> autoArray = new ArrayList<AutoArrayRecursion>();
+        final AutoArrayRecursion[] autoArray = new AutoArrayRecursion[numElements];
         for (short i = 1; i <= numElements; ++i)
         {
-            final AutoArrayRecursion element = new AutoArrayRecursion(i,
-                    new ObjectArray<AutoArrayRecursion>(0));
-            autoArray.add(element);
+            final AutoArrayRecursion element = new AutoArrayRecursion(i, new AutoArrayRecursion[0]);
+            autoArray[i - 1] = element;
         }
 
-        return new AutoArrayRecursion((short) 0, new ObjectArray<AutoArrayRecursion>(autoArray));
+        return new AutoArrayRecursion((short) 0, autoArray);
     }
 
     private void checkAutoArrayRecursion(AutoArrayRecursion autoArrayRecursion, short numElements)
     {
         assertEquals(0, autoArrayRecursion.getId());
-        final ObjectArray<AutoArrayRecursion> autoArray = autoArrayRecursion.getAutoArrayRecursion();
-        assertEquals(numElements, autoArray.length());
+        final AutoArrayRecursion[] autoArray = autoArrayRecursion.getAutoArrayRecursion();
+        assertEquals(numElements, autoArray.length);
         for (short i = 1; i <= numElements; ++i)
         {
-            final AutoArrayRecursion element = autoArray.elementAt(i - 1);
+            final AutoArrayRecursion element = autoArray[i - 1];
             assertEquals(i, element.getId());
-            assertEquals(0, element.getAutoArrayRecursion().length());
+            assertEquals(0, element.getAutoArrayRecursion().length);
         }
     }
 

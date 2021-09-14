@@ -4,15 +4,12 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
 import optional_members.optional_array_recursion.Employee;
 import optional_members.optional_array_recursion.Title;
 
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.FileBitStreamReader;
 
 public class OptionalArrayRecursionTest
@@ -112,7 +109,7 @@ public class OptionalArrayRecursionTest
         assertEquals(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName());
         assertEquals(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
         assertEquals(Title.TEAM_LEAD, readTeamLead.getTitle());
-        assertEquals(NUM_DEVELOPERS, readTeamLead.getTeamMembers().length());
+        assertEquals(NUM_DEVELOPERS, readTeamLead.getTeamMembers().length);
     }
 
     private static Employee createEmployee(String name, int salary, Title title)
@@ -129,15 +126,11 @@ public class OptionalArrayRecursionTest
     {
         final Employee teamLead = createEmployee(EMPLOYEE_TEAM_LEAD_NAME, EMPLOYEE_TEAM_LEAD_SALARY,
                 Title.TEAM_LEAD);
-
-        final List<Employee> teamMembers = new ArrayList<Employee>();
-        final Employee teamMember1 = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
-                Title.DEVELOPER);
-        teamMembers.add(teamMember1);
-        final Employee teamMember2 = createEmployee(EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY,
-                Title.DEVELOPER);
-        teamMembers.add(teamMember2);
-        teamLead.setTeamMembers(new ObjectArray<Employee>(teamMembers));
+        final Employee[] teamMembers = new Employee[] {
+                createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER),
+                createEmployee(EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER)
+        };
+        teamLead.setTeamMembers(teamMembers);
 
         return teamLead;
     }

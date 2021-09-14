@@ -30,36 +30,36 @@ import zserio.ast.VarIntegerType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.symbols.JavaNativeSymbol;
 import zserio.extension.java.types.JavaNativeType;
+import zserio.extension.java.types.NativeArrayTraits;
 import zserio.extension.java.types.NativeArrayType;
-import zserio.extension.java.types.NativeBigIntegerArrayType;
+import zserio.extension.java.types.NativeArrayableType;
 import zserio.extension.java.types.NativeBigIntegerType;
 import zserio.extension.java.types.NativeBitBufferType;
 import zserio.extension.java.types.NativeBitmaskType;
 import zserio.extension.java.types.NativeBooleanType;
-import zserio.extension.java.types.NativeByteArrayType;
 import zserio.extension.java.types.NativeByteType;
 import zserio.extension.java.types.NativeCompoundType;
 import zserio.extension.java.types.NativeDoubleType;
 import zserio.extension.java.types.NativeEnumType;
 import zserio.extension.java.types.NativeFloatType;
-import zserio.extension.java.types.NativeIntArrayType;
+import zserio.extension.java.types.NativeBitFieldArrayTraits;
 import zserio.extension.java.types.NativeIntType;
 import zserio.extension.java.types.NativeIntegralType;
-import zserio.extension.java.types.NativeLongArrayType;
 import zserio.extension.java.types.NativeLongType;
-import zserio.extension.java.types.NativeObjectArrayType;
 import zserio.extension.java.types.NativePubsubType;
 import zserio.extension.java.types.NativeServiceType;
-import zserio.extension.java.types.NativeShortArrayType;
 import zserio.extension.java.types.NativeShortType;
+import zserio.extension.java.types.NativeSqlDatabaseType;
+import zserio.extension.java.types.NativeSqlTableType;
 import zserio.extension.java.types.NativeStringType;
-import zserio.extension.java.types.NativeUnsignedByteArrayType;
-import zserio.extension.java.types.NativeUnsignedIntArrayType;
-import zserio.extension.java.types.NativeUnsignedLongArrayType;
-import zserio.extension.java.types.NativeUnsignedShortArrayType;
 
 final class JavaNativeMapper
 {
+    public JavaNativeMapper(boolean withWriterCode)
+    {
+        this.withWriterCode = withWriterCode;
+    }
+
     /**
      * Returns a Java symbol that can hold an instance of Zserio symbol.
      *
@@ -94,13 +94,15 @@ final class JavaNativeMapper
      */
     public JavaNativeType getJavaType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
-        if (typeInstantiation instanceof ArrayInstantiation)
-            return mapArray((ArrayInstantiation)typeInstantiation);
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-            return mapDynamicBitField((DynamicBitFieldInstantiation)typeInstantiation);
+        final JavaNativeTypes javaTypes = getJavaTypes(typeInstantiation);
+        final JavaNativeType nativeType = javaTypes.getType();
+        if (nativeType == null)
+        {
+            throw new ZserioExtensionException("Unhandled type '" + typeInstantiation.getClass().getName() +
+                    "' in JavaNativeMapper!");
+        }
 
-        // always resolve subtypes
-        return getJavaType(typeInstantiation.getBaseType());
+        return nativeType;
     }
 
     /**
@@ -114,8 +116,15 @@ final class JavaNativeMapper
      */
     public JavaNativeType getJavaType(TypeReference typeReference) throws ZserioExtensionException
     {
-        // always resolve subtypes
-        return getJavaType(typeReference.getBaseTypeReference().getType());
+        final JavaNativeTypes javaTypes = getJavaTypes(typeReference);
+        final JavaNativeType nativeType = javaTypes.getType();
+        if (nativeType == null)
+        {
+            throw new ZserioExtensionException("Unhandled type '" + typeReference.getClass().getName() +
+                    "' in JavaNativeMapper!");
+        }
+
+        return nativeType;
     }
 
     /**
@@ -131,9 +140,8 @@ final class JavaNativeMapper
      */
     public JavaNativeType getJavaType(ZserioType type) throws ZserioExtensionException
     {
-        final ZserioTypeMapperVisitor visitor = visitType(type);
-
-        final JavaNativeType nativeType = visitor.getJavaType();
+        final JavaNativeTypes javaTypes = getJavaTypes(type);
+        final JavaNativeType nativeType = javaTypes.getType();
         if (nativeType == null)
         {
             throw new ZserioExtensionException("Unhandled type '" + type.getClass().getName() +
@@ -141,36 +149,6 @@ final class JavaNativeMapper
         }
 
         return nativeType;
-    }
-
-    /**
-     * Return a Java type for given Zserio type that is suitable to be stored as an Object.
-     *
-     * In other words it never returns a primitive data type (e.g. byte), but
-     * the wrapper class (e.g. Byte).
-     *
-     * @param typeInstantiation Instantiation of Zserio type.
-     *
-     * @return JavaNativeType that is derived from Object and can hold values of the Zserio type.
-     *
-     * @throws ZserioExtensionException If the zserio type cannot be mapped to any Java type.
-     */
-    public JavaNativeType getNullableJavaType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
-    {
-        if (typeInstantiation instanceof ArrayInstantiation)
-            return mapArray((ArrayInstantiation)typeInstantiation);
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-            return mapDynamicBitFieldToNullableType((DynamicBitFieldInstantiation)typeInstantiation);
-
-        final ZserioType type = typeInstantiation.getBaseType();
-        final ZserioTypeMapperVisitor visitor = visitType(type);
-
-        final JavaNativeType nativeNullableType = visitor.getJavaNullableType();
-        if (nativeNullableType == null)
-            throw new ZserioExtensionException("Unhandled type '" + type.getClass().getName() +
-                    "' in JavaNativeMapper!");
-
-        return nativeNullableType;
     }
 
     /**
@@ -189,389 +167,211 @@ final class JavaNativeMapper
     public NativeIntegralType getJavaIntegralType(TypeInstantiation typeInstantiation)
             throws ZserioExtensionException
     {
-        final JavaNativeType javaType = getJavaType(typeInstantiation);
-
-        if (!(javaType instanceof NativeIntegralType))
+        final JavaNativeTypes javaTypes = getJavaTypes(typeInstantiation);
+        final JavaNativeType nativeType = javaTypes.getType();
+        if (!(nativeType instanceof NativeIntegralType))
         {
-            throw new ZserioExtensionException("Unhandled integral type '" + typeInstantiation.getClass().getName() +
+            throw new ZserioExtensionException("Unhandled integral type '" +
+                    typeInstantiation.getClass().getName() + "' in JavaNativeMapper!");
+        }
+
+        return (NativeIntegralType)nativeType;
+    }
+
+    /**
+     * Return a Java type for given Zserio type that is suitable to be stored as an Object.
+     *
+     * In other words it never returns a primitive data type (e.g. byte), but
+     * the wrapper class (e.g. Byte).
+     *
+     * @param typeInstantiation Instantiation of Zserio type.
+     *
+     * @return JavaNativeType that is derived from Object and can hold values of the Zserio type.
+     *
+     * @throws ZserioExtensionException If the zserio type cannot be mapped to any Java type.
+     */
+    public JavaNativeType getNullableJavaType(TypeInstantiation typeInstantiation)
+            throws ZserioExtensionException
+    {
+        final JavaNativeTypes javaTypes = getJavaTypes(typeInstantiation);
+        final JavaNativeType nativeNullableType = javaTypes.getNullableType();
+        if (nativeNullableType == null)
+        {
+            throw new ZserioExtensionException("Unhandled type '" + typeInstantiation.getClass().getName() +
                     "' in JavaNativeMapper!");
         }
 
-        return (NativeIntegralType)javaType;
+        return nativeNullableType;
     }
 
-    private ZserioTypeMapperVisitor visitType(ZserioType type) throws ZserioExtensionException
+    public JavaNativeTypes getJavaTypes(TypeReference typeReference) throws ZserioExtensionException
     {
-        final ZserioTypeMapperVisitor visitor = new ZserioTypeMapperVisitor();
+        // always resolve subtypes
+        return getJavaTypes(typeReference.getBaseTypeReference().getType());
+    }
+
+    public JavaNativeTypes getJavaTypes(TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    {
+        if (typeInstantiation instanceof ArrayInstantiation)
+            return mapArray((ArrayInstantiation)typeInstantiation);
+        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+            return mapDynamicBitField((DynamicBitFieldInstantiation)typeInstantiation);
+
+        // always resolve subtypes
+        return getJavaTypes(typeInstantiation.getBaseType());
+    }
+
+    private JavaNativeTypes getJavaTypes(ZserioType type) throws ZserioExtensionException
+    {
+        final TypeMapperVisitor visitor = new TypeMapperVisitor();
         type.accept(visitor);
 
         final ZserioExtensionException thrownException = visitor.getThrownException();
         if (thrownException != null)
             throw thrownException;
 
-        return visitor;
+        return visitor.getJavaTypes();
     }
 
-    private JavaNativeType mapArray(ArrayInstantiation instantiation) throws ZserioExtensionException
+    private static class JavaNativeTypes
+    {
+        public JavaNativeTypes(JavaNativeType type, JavaNativeType nullableType)
+        {
+            this.type = type;
+            this.nullableType = nullableType;
+        }
+
+        public JavaNativeTypes(JavaNativeType type)
+        {
+            this(type, type);
+        }
+
+        public JavaNativeType getType()
+        {
+            return type;
+        }
+
+        public JavaNativeType getNullableType()
+        {
+            return nullableType;
+        }
+
+        private final JavaNativeType type;
+        private final JavaNativeType nullableType;
+    }
+
+    private JavaNativeTypes mapArray(ArrayInstantiation instantiation) throws ZserioExtensionException
     {
         final TypeInstantiation elementInstantiation = instantiation.getElementTypeInstantiation();
-        if (elementInstantiation instanceof DynamicBitFieldInstantiation)
-            return mapDynamicBitFieldArray((DynamicBitFieldInstantiation)elementInstantiation);
-
-        final ZserioType elementBaseType = elementInstantiation.getBaseType();
-        final ArrayElementTypeMapperVisitor arrayVisitor = new ArrayElementTypeMapperVisitor();
-
-        elementBaseType.accept(arrayVisitor);
-
-        final ZserioExtensionException thrownException = arrayVisitor.getThrownException();
-        if (thrownException != null)
-            throw thrownException;
-
-        final JavaNativeType nativeType = arrayVisitor.getJavaNullableType();
-        if (nativeType == null)
+        final JavaNativeTypes nativeElementTypes = getJavaTypes(elementInstantiation);
+        final JavaNativeType nativeElementType = nativeElementTypes.getType();
+        if (!(nativeElementType instanceof NativeArrayableType))
         {
-            throw new ZserioExtensionException("Unhandled type '" +
-                    elementInstantiation.getBaseType().getClass().getName() + "' in JavaNativeMapper!");
+            throw new ZserioExtensionException("Unhandled arrayable type '" +
+                    elementInstantiation.getClass().getName() + "' in JavaNativeMapper!");
         }
 
-        return nativeType;
+        final JavaNativeType javaType = new NativeArrayType((NativeArrayableType)nativeElementType);
+
+        return new JavaNativeTypes(javaType);
     }
 
-    private static JavaNativeType mapDynamicBitField(DynamicBitFieldInstantiation instantiation)
+    private JavaNativeTypes mapDynamicBitField(DynamicBitFieldInstantiation instantiation)
+            throws ZserioExtensionException
     {
         final boolean isSigned = instantiation.getBaseType().isSigned();
         final int numBits = instantiation.getMaxBitSize();
-        return isSigned ? mapSignedIntegralType(numBits) : mapUnsignedIntegralType(numBits);
+
+        return mapFixedInteger(numBits, isSigned);
     }
 
-    private static JavaNativeType mapDynamicBitFieldToNullableType(DynamicBitFieldInstantiation instantiation)
+    private JavaNativeTypes mapFixedInteger(int numBits, boolean isSigned)
     {
-        final boolean isSigned = instantiation.getBaseType().isSigned();
-        final int numBits = instantiation.getMaxBitSize();
-        return isSigned ? mapSignedIntegralNullableType(numBits) : mapUnsignedIntegralNullableType(numBits);
-    }
-
-    private static JavaNativeType mapDynamicBitFieldArray(DynamicBitFieldInstantiation instantiation)
-    {
-        final boolean isSigned = instantiation.getBaseType().isSigned();
-        final int numBits = instantiation.getMaxBitSize();
-        return isSigned ? mapSignedIntegralArray(numBits) : mapUnsignedIntegralArray(numBits);
-    }
-
-    private static JavaNativeType mapSignedIntegralType(int numBits)
-    {
-        if (numBits <= Byte.SIZE)
-            return byteType;
-        else if (numBits <= Short.SIZE)
-            return shortType;
-        else if (numBits <= Integer.SIZE)
-            return intType;
-        else
-            return longType;
-    }
-
-    private static JavaNativeType mapSignedIntegralNullableType(int numBits)
-    {
-        if (numBits <= Byte.SIZE)
-            return byteNullableType;
-        else if (numBits <= Short.SIZE)
-            return shortNullableType;
-        else if (numBits <= Integer.SIZE)
-            return intNullableType;
-        else
-            return longNullableType;
-    }
-
-    private static JavaNativeType mapUnsignedIntegralType(int numBits)
-    {
-        if (numBits < Byte.SIZE)
-            return byteType;
-        else if (numBits < Short.SIZE)
-            return shortType;
-        else if (numBits < Integer.SIZE)
-            return intType;
-        else if (numBits < Long.SIZE)
-            return longType;
-        else
-            return bigIntegerType;
-    }
-
-    private static JavaNativeType mapUnsignedIntegralNullableType(int numBits)
-    {
-        if (numBits < Byte.SIZE)
-            return byteNullableType;
-        else if (numBits < Short.SIZE)
-            return shortNullableType;
-        else if (numBits < Integer.SIZE)
-            return intNullableType;
-        else if (numBits < Long.SIZE)
-            return longNullableType;
-        else
-            return bigIntegerType;
-    }
-
-    private static JavaNativeType mapSignedIntegralArray(int numBits)
-    {
-        if (numBits <= Byte.SIZE)
-            return byteArrayType;
-        else if (numBits <= Short.SIZE)
-            return shortArrayType;
-        else if (numBits <= Integer.SIZE)
-            return intArrayType;
-        else // this could be > 64 (int8 foo; int<foo> a;) but if we're above 64, we explode at runtime
-            return longArrayType;
-    }
-
-    private static JavaNativeType mapUnsignedIntegralArray(int numBits)
-    {
-        // always keep the MSB clear
-        if (numBits <= Byte.SIZE)
-            return unsignedByteArrayType;
-        else if (numBits <= Short.SIZE)
-            return unsignedShortArrayType;
-        else if (numBits <= Integer.SIZE)
-            return unsignedIntArrayType;
-        else if (numBits < Long.SIZE)
-            return unsignedLongArrayType;
-        else
-            return bigIntegerArrayType;
-    }
-
-    private abstract class TypeMapperVisitor extends ZserioAstDefaultVisitor
-    {
-        @Override
-        public void visitFixedBitFieldType(FixedBitFieldType type)
+        JavaNativeType javaType = null;
+        JavaNativeType javaNullableType = null;
+        if (isSigned)
         {
-            mapIntegralType(type.getBitSize(), type.isSigned(), false);
+            if (numBits <= Byte.SIZE)
+            {
+                javaType = signedBitFieldByteType;
+                javaNullableType = signedBitFieldByteNullableType;
+            }
+            else if (numBits <= Short.SIZE)
+            {
+                javaType = signedBitFieldShortType;
+                javaNullableType = signedBitFieldShortNullableType;
+            }
+            else if (numBits <= Integer.SIZE)
+            {
+                javaType = signedBitFieldIntType;
+                javaNullableType = signedBitFieldIntNullableType;
+            }
+            else if (numBits <= Long.SIZE)
+            {
+                javaType = signedBitFieldLongType;
+                javaNullableType = signedBitFieldLongNullableType;
+            }
+        }
+        else
+        {
+            if (numBits < Byte.SIZE)
+            {
+                javaType = bitFieldByteType;
+                javaNullableType = bitFieldByteNullableType;
+            }
+            else if (numBits < Short.SIZE)
+            {
+                javaType = bitFieldShortType;
+                javaNullableType = bitFieldShortNullableType;
+            }
+            else if (numBits < Integer.SIZE)
+            {
+                javaType = bitFieldIntType;
+                javaNullableType = bitFieldIntNullableType;
+            }
+            else if (numBits < Long.SIZE)
+            {
+                javaType = bitFieldLongType;
+                javaNullableType = bitFieldLongNullableType;
+            }
+            else if (numBits == Long.SIZE)
+            {
+                javaType = bitFieldBigIntegerType;
+                javaNullableType = javaType;
+            }
         }
 
-        @Override
-        public void visitDynamicBitFieldType(DynamicBitFieldType type)
-        {
-            mapIntegralType(type.getMaxBitSize(), type.isSigned(), false);
-        }
-
-        @Override
-        public void visitStdIntegerType(StdIntegerType type)
-        {
-            mapIntegralType(type.getBitSize(), type.isSigned(), false);
-        }
-
-        @Override
-        public void visitVarIntegerType(VarIntegerType type)
-        {
-            mapIntegralType(type.getMaxBitSize(), type.isSigned(), true);
-        }
-
-        protected void mapIntegralType(int numBits, boolean isSigned, boolean isVarInteger)
-        {
-            if (isSigned)
-                mapSignedIntegralType(numBits, isVarInteger);
-            else
-                mapUnsignedIntegralType(numBits, isVarInteger);
-        }
-
-        protected abstract void mapSignedIntegralType(int numBits, boolean isVarInteger);
-        protected abstract void mapUnsignedIntegralType(int numBits, boolean isVarInteger);
+        return new JavaNativeTypes(javaType, javaNullableType);
     }
 
-    private class ArrayElementTypeMapperVisitor extends TypeMapperVisitor
+    private class TypeMapperVisitor extends ZserioAstDefaultVisitor
     {
-        public JavaNativeType getJavaNullableType()
+        public JavaNativeTypes getJavaTypes()
         {
-            return javaNullableType;
+            return javaTypes;
         }
 
         public ZserioExtensionException getThrownException()
         {
             return thrownException;
-        }
-
-        @Override
-        public void visitBooleanType(BooleanType type)
-        {
-            javaNullableType = boolArrayType;
-        }
-
-        @Override
-        public void visitChoiceType(ChoiceType type)
-        {
-            mapObjectArray(type);
-        }
-
-        @Override
-        public void visitEnumType(EnumType type)
-        {
-            mapObjectArray(type);
-        }
-
-        @Override
-        public void visitBitmaskType(BitmaskType type)
-        {
-            mapObjectArray(type);
-        }
-
-        @Override
-        public void visitFloatType(FloatType type)
-        {
-            switch (type.getBitSize())
-            {
-            case 16:
-                javaNullableType = float16ArrayType;
-                break;
-
-            case 32:
-                javaNullableType = float32ArrayType;
-                break;
-
-            case 64:
-                javaNullableType = float64ArrayType;
-                break;
-
-            default:
-                break;
-            }
-        }
-
-        @Override
-        public void visitExternType(ExternType externType)
-        {
-            javaNullableType = bitBufferArrayType;
-        }
-
-        @Override
-        public void visitStringType(StringType type)
-        {
-            javaNullableType = stdStringArrayType;
         }
 
         @Override
         public void visitStructureType(StructureType type)
         {
-            mapObjectArray(type);
-        }
-
-        @Override
-        public void visitUnionType(UnionType type)
-        {
-            mapObjectArray(type);
-        }
-
-        @Override
-        protected void mapSignedIntegralType(int numBits, boolean isVarInteger)
-        {
-            if (isVarInteger)
-            {
-                switch (numBits)
-                {
-                case 16:
-                    javaNullableType = varInt16ArrayType;
-                    break;
-
-                case 32:
-                    javaNullableType = varInt32ArrayType;
-                    break;
-
-                case 64:
-                    javaNullableType = varInt64ArrayType;
-                    break;
-
-                case 72:
-                    javaNullableType = varIntArrayType;
-                    break;
-
-                default:
-                    break;
-                }
-            }
-            else
-            {
-                javaNullableType = JavaNativeMapper.mapSignedIntegralArray(numBits);
-            }
-        }
-
-        @Override
-        protected void mapUnsignedIntegralType(int numBits, boolean isVarInteger)
-        {
-            if (isVarInteger)
-            {
-                switch (numBits)
-                {
-                case 16:
-                    javaNullableType = varUInt16ArrayType;
-                    break;
-
-                case 32:
-                    javaNullableType = varUInt32ArrayType;
-                    break;
-
-                case 40:
-                    javaNullableType = varSizeArrayType;
-                    break;
-
-                case 64:
-                    javaNullableType = varUInt64ArrayType;
-                    break;
-
-                case 72:
-                    javaNullableType = varUIntArrayType;
-                    break;
-
-                default:
-                    break;
-                }
-            }
-            else
-            {
-                javaNullableType = JavaNativeMapper.mapUnsignedIntegralArray(numBits);
-            }
-        }
-
-        private void mapObjectArray(ZserioType type)
-        {
-            try
-            {
-                final JavaNativeType nativeElementType = getJavaType(type);
-                javaNullableType = new NativeObjectArrayType(nativeElementType);
-            }
-            catch (ZserioExtensionException exception)
-            {
-                thrownException = exception;
-            }
-        }
-
-        private JavaNativeType javaNullableType = null;
-        private ZserioExtensionException thrownException = null;
-    }
-
-    private class ZserioTypeMapperVisitor extends TypeMapperVisitor
-    {
-        public JavaNativeType getJavaType()
-        {
-            return javaType;
-        }
-
-        public JavaNativeType getJavaNullableType()
-        {
-            return javaNullableType;
-        }
-
-        public ZserioExtensionException getThrownException()
-        {
-            return thrownException;
-        }
-
-        @Override
-        public void visitBooleanType(BooleanType type)
-        {
-            javaType = booleanType;
-            javaNullableType = booleanNullableType;
+           javaTypes = mapCompoundType(type);
         }
 
         @Override
         public void visitChoiceType(ChoiceType type)
         {
-            mapCompoundType(type);
+            javaTypes = mapCompoundType(type);
+        }
+
+        @Override
+        public void visitUnionType(UnionType type)
+        {
+            javaTypes = mapCompoundType(type);
         }
 
         @Override
@@ -582,8 +382,9 @@ final class JavaNativeMapper
                 final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getTypeInstantiation());
                 final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
-                javaType = new NativeEnumType(packageName, name, nativeBaseType);
-                javaNullableType = javaType;
+                final JavaNativeType javaType =
+                        new NativeEnumType(packageName, name, nativeBaseType, withWriterCode);
+                javaTypes = new JavaNativeTypes(javaType);
             }
             catch (ZserioExtensionException exception)
             {
@@ -599,8 +400,9 @@ final class JavaNativeMapper
                 final NativeIntegralType nativeBaseType = getJavaIntegralType(type.getTypeInstantiation());
                 final PackageName packageName = type.getPackage().getPackageName();
                 final String name = type.getName();
-                javaType = new NativeBitmaskType(packageName, name, nativeBaseType);
-                javaNullableType = javaType;
+                final JavaNativeType javaType =
+                        new NativeBitmaskType(packageName, name, nativeBaseType, withWriterCode);
+                javaTypes = new JavaNativeTypes(javaType);
             }
             catch (ZserioExtensionException exception)
             {
@@ -609,31 +411,21 @@ final class JavaNativeMapper
         }
 
         @Override
-        public void visitFloatType(FloatType type)
+        public void visitSqlTableType(SqlTableType type)
         {
-            switch (type.getBitSize())
-            {
-            case 16:
-            case 32:
-                javaType = floatType;
-                javaNullableType = floatNullableType;
-                break;
-
-            case 64:
-                javaType = doubleType;
-                javaNullableType = doubleNullableType;
-                break;
-
-            default:
-                break;
-            }
+            final PackageName packageName = type.getPackage().getPackageName();
+            final String name = type.getName();
+            final JavaNativeType javaType = new NativeSqlTableType(packageName, name);
+            javaTypes = new JavaNativeTypes(javaType);
         }
 
         @Override
-        public void visitExternType(ExternType externType)
+        public void visitSqlDatabaseType(SqlDatabaseType type)
         {
-            javaType = bitBufferType;
-            javaNullableType = bitBufferType;
+            final PackageName packageName = type.getPackage().getPackageName();
+            final String name = type.getName();
+            final JavaNativeType javaType = new NativeSqlDatabaseType(packageName, name);
+            javaTypes = new JavaNativeTypes(javaType);
         }
 
         @Override
@@ -641,8 +433,8 @@ final class JavaNativeMapper
         {
             final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
-            javaType = new NativeServiceType(packageName, name);
-            javaNullableType = javaType;
+            final JavaNativeType javaType = new NativeServiceType(packageName, name);
+            javaTypes = new JavaNativeTypes(javaType);
         }
 
         @Override
@@ -650,105 +442,61 @@ final class JavaNativeMapper
         {
             final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
-            javaType = new NativePubsubType(packageName, name);
-            javaNullableType = javaType;
+            final JavaNativeType javaType = new NativePubsubType(packageName, name);
+            javaTypes = new JavaNativeTypes(javaType);
         }
 
         @Override
-        public void visitSqlDatabaseType(SqlDatabaseType type)
+        public void visitStdIntegerType(StdIntegerType type)
         {
-            mapCompoundType(type);
+            javaTypes = mapFixedInteger(type.getBitSize(), type.isSigned());
         }
 
         @Override
-        public void visitSqlTableType(SqlTableType type)
+        public void visitVarIntegerType(VarIntegerType type)
         {
-            mapCompoundType(type);
+            javaTypes = mapVariableInteger(type.getMaxBitSize(), type.isSigned());
+        }
+
+        @Override
+        public void visitFixedBitFieldType(FixedBitFieldType type)
+        {
+            javaTypes = mapFixedInteger(type.getBitSize(), type.isSigned());
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType type)
+        {
+            javaTypes = mapFixedInteger(type.getMaxBitSize(), type.isSigned());
+        }
+
+        @Override
+        public void visitBooleanType(BooleanType type)
+        {
+            javaTypes = new JavaNativeTypes(booleanType, booleanNullableType);
         }
 
         @Override
         public void visitStringType(StringType type)
         {
-            javaType = stringType;
-            javaNullableType = stringType;
+            javaTypes = new JavaNativeTypes(stringType);
         }
 
         @Override
-        public void visitStructureType(StructureType type)
+        public void visitFloatType(FloatType type)
         {
-            mapCompoundType(type);
-        }
-
-        @Override
-        public void visitUnionType(UnionType type)
-        {
-            mapCompoundType(type);
-        }
-
-        @Override
-        protected void mapSignedIntegralType(int numBits, boolean isVarInteger)
-        {
-            if (isVarInteger)
-            {
-                mapVariableInteger(numBits, true);
-            }
-            else
-            {
-                javaType = JavaNativeMapper.mapSignedIntegralType(numBits);
-                javaNullableType = JavaNativeMapper.mapSignedIntegralNullableType(numBits);
-            }
-        }
-
-        @Override
-        protected void mapUnsignedIntegralType(int numBits, boolean isVarInteger)
-        {
-            if (isVarInteger)
-            {
-                mapVariableInteger(numBits, false);
-            }
-            else
-            {
-                javaType = JavaNativeMapper.mapUnsignedIntegralType(numBits);
-                javaNullableType = JavaNativeMapper.mapUnsignedIntegralNullableType(numBits);
-            }
-        }
-
-        private void mapVariableInteger(int numBits, boolean isSigned)
-        {
-            /*
-             * In Java, varintN and varuintN always fit in the same native type.
-             * (varuintN always uses less than N bits, so it fits w/o setting the MSB, and neither of varuintN
-             * and varintN fits in the next smaller native type.)
-             */
-            switch (numBits)
+            switch (type.getBitSize())
             {
             case 16:
-                javaType = shortType;
-                javaNullableType = shortNullableType;
+                javaTypes = new JavaNativeTypes(float16Type, float16NullableType);
                 break;
 
             case 32:
-            case 40:
-                javaType = intType;
-                javaNullableType = intNullableType;
+                javaTypes = new JavaNativeTypes(float32Type, float32NullableType);
                 break;
 
             case 64:
-                javaType = longType;
-                javaNullableType = longNullableType;
-                break;
-
-            case 72:
-                if (isSigned)
-                {
-                    javaType = longType;
-                    javaNullableType = longNullableType;
-                }
-                else
-                {
-                    javaType = bigIntegerType;
-                    javaNullableType = bigIntegerType;
-                }
+                javaTypes = new JavaNativeTypes(doubleType, doubleNullableType);
                 break;
 
             default:
@@ -756,16 +504,91 @@ final class JavaNativeMapper
             }
         }
 
-        private void mapCompoundType(CompoundType compoundType)
+        @Override
+        public void visitExternType(ExternType externType)
+        {
+            javaTypes = new JavaNativeTypes(bitBufferType);
+        }
+
+        private JavaNativeTypes mapVariableInteger(int numBits, boolean isSigned)
+        {
+            JavaNativeType javaType = null;
+            JavaNativeType javaNullableType = null;
+            if (isSigned)
+            {
+                switch (numBits)
+                {
+                case 16:
+                    javaType = varInt16Type;
+                    javaNullableType = varInt16NullableType;
+                    break;
+
+                case 32:
+                    javaType = varInt32Type;
+                    javaNullableType = varInt32NullableType;
+                    break;
+
+                case 64:
+                    javaType = varInt64Type;
+                    javaNullableType = varInt64NullableType;
+                    break;
+
+                case 72:
+                    javaType = varIntType;
+                    javaNullableType = varIntNullableType;
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            else
+            {
+                switch (numBits)
+                {
+                case 16:
+                    javaType = varUInt16Type;
+                    javaNullableType = varUInt16NullableType;
+                    break;
+
+                case 32:
+                    javaType = varUInt32Type;
+                    javaNullableType = varUInt32NullableType;
+                    break;
+
+                case 40:
+                    javaType = varSizeType;
+                    javaNullableType = varSizeNullableType;
+                    break;
+
+                case 64:
+                    javaType = varUInt64Type;
+                    javaNullableType = varUInt64NullableType;
+                    break;
+
+                case 72:
+                    javaType = varUIntType;
+                    javaNullableType = javaType;
+                    break;
+
+                default:
+                    break;
+                }
+            }
+
+            return new JavaNativeTypes(javaType, javaNullableType);
+        }
+
+        private JavaNativeTypes mapCompoundType(CompoundType compoundType)
         {
             final PackageName packageName = compoundType.getPackage().getPackageName();
             final String name = compoundType.getName();
-            javaType = new NativeCompoundType(packageName, name);
-            javaNullableType = javaType;
+            final JavaNativeType javaType = new NativeCompoundType(packageName, name, withWriterCode);
+
+            return new JavaNativeTypes(javaType);
         }
 
-        private JavaNativeType javaType = null;
-        private JavaNativeType javaNullableType = null;
+        private JavaNativeTypes javaTypes = null;
         private ZserioExtensionException thrownException = null;
     }
 
@@ -774,61 +597,125 @@ final class JavaNativeMapper
 
     private final static NativeStringType stringType = new NativeStringType();
 
-    private final static NativeFloatType floatType = new NativeFloatType(false);
-    private final static NativeFloatType floatNullableType = new NativeFloatType(true);
+    private final static NativeArrayTraits float16ArrayTraits = new NativeArrayTraits("Float16ArrayTraits");
+    private final static NativeFloatType float16Type = new NativeFloatType(false, float16ArrayTraits);
+    private final static NativeFloatType float16NullableType = new NativeFloatType(true, float16ArrayTraits);
+
+    private final static NativeArrayTraits float32ArrayTraits = new NativeArrayTraits("Float32ArrayTraits");
+    private final static NativeFloatType float32Type = new NativeFloatType(false, float32ArrayTraits);
+    private final static NativeFloatType float32NullableType = new NativeFloatType(true, float32ArrayTraits);
+
     private final static NativeDoubleType doubleType = new NativeDoubleType(false);
     private final static NativeDoubleType doubleNullableType = new NativeDoubleType(true);
 
     private final static NativeBitBufferType bitBufferType = new NativeBitBufferType();
 
-    // integral types
-    private final static NativeByteType byteType = new NativeByteType(false);
-    private final static NativeByteType byteNullableType = new NativeByteType(true);
-    private final static NativeShortType shortType = new NativeShortType(false);
-    private final static NativeShortType shortNullableType = new NativeShortType(true);
-    private final static NativeIntType intType = new NativeIntType(false);
-    private final static NativeIntType intNullableType = new NativeIntType(true);
-    private final static NativeLongType longType = new NativeLongType(false);
-    private final static NativeLongType longNullableType = new NativeLongType(true);
-    private final static NativeBigIntegerType bigIntegerType = new NativeBigIntegerType();
+    // integral arrays
+    private final static NativeBitFieldArrayTraits signedBitFieldByteArrayTraits =
+            new NativeBitFieldArrayTraits("SignedBitFieldByteArrayTraits");
+    private final static NativeByteType signedBitFieldByteType =
+            new NativeByteType(false, signedBitFieldByteArrayTraits);
+    private final static NativeByteType signedBitFieldByteNullableType =
+            new NativeByteType(true, signedBitFieldByteArrayTraits);
 
-    // zserio.runtime arrays
-    private final static NativeArrayType boolArrayType = new NativeArrayType("BoolArray");
+    private final static NativeBitFieldArrayTraits signedBitFieldShortArrayTraits =
+            new NativeBitFieldArrayTraits("SignedBitFieldShortArrayTraits");
+    private final static NativeShortType signedBitFieldShortType =
+            new NativeShortType(false, signedBitFieldShortArrayTraits);
+    private final static NativeShortType signedBitFieldShortNullableType =
+            new NativeShortType(true, signedBitFieldShortArrayTraits);
 
-    private final static NativeArrayType stdStringArrayType = new NativeArrayType("StringArray");
+    private final static NativeBitFieldArrayTraits signedBitFieldIntArrayTraits =
+            new NativeBitFieldArrayTraits("SignedBitFieldIntArrayTraits");
+    private final static NativeIntType signedBitFieldIntType =
+            new NativeIntType(false, signedBitFieldIntArrayTraits);
+    private final static NativeIntType signedBitFieldIntNullableType =
+            new NativeIntType(true, signedBitFieldIntArrayTraits);
 
-    private final static NativeArrayType float16ArrayType = new NativeArrayType("Float16Array");
-    private final static NativeArrayType float32ArrayType = new NativeArrayType("Float32Array");
-    private final static NativeArrayType float64ArrayType = new NativeArrayType("Float64Array");
+    private final static NativeBitFieldArrayTraits signedBitFieldLongArrayTraits =
+            new NativeBitFieldArrayTraits("SignedBitFieldLongArrayTraits");
+    private final static NativeLongType signedBitFieldLongType =
+            new NativeLongType(false, signedBitFieldLongArrayTraits);
+    private final static NativeLongType signedBitFieldLongNullableType =
+            new NativeLongType(true, signedBitFieldLongArrayTraits);
 
-    private final static NativeArrayType bitBufferArrayType = new NativeArrayType("BitBufferArray");
+    private final static NativeBitFieldArrayTraits bitFieldByteArrayTraits =
+            new NativeBitFieldArrayTraits("BitFieldByteArrayTraits");
+    private final static NativeByteType bitFieldByteType =
+            new NativeByteType(false, bitFieldByteArrayTraits);
+    private final static NativeByteType bitFieldByteNullableType =
+            new NativeByteType(true, bitFieldByteArrayTraits);
 
-    private final static NativeByteArrayType byteArrayType = new NativeByteArrayType();
-    private final static NativeUnsignedByteArrayType unsignedByteArrayType = new NativeUnsignedByteArrayType();
+    private final static NativeBitFieldArrayTraits bitFieldShortArrayTraits =
+            new NativeBitFieldArrayTraits("BitFieldShortArrayTraits");
+    private final static NativeShortType bitFieldShortType =
+            new NativeShortType(false, bitFieldShortArrayTraits);
+    private final static NativeShortType bitFieldShortNullableType =
+            new NativeShortType(true, bitFieldShortArrayTraits);
 
-    private final static NativeShortArrayType shortArrayType = new NativeShortArrayType();
-    private final static NativeUnsignedShortArrayType unsignedShortArrayType =
-            new NativeUnsignedShortArrayType();
+    private final static NativeBitFieldArrayTraits bitFieldIntArrayTraits =
+            new NativeBitFieldArrayTraits("BitFieldIntArrayTraits");
+    private final static NativeIntType bitFieldIntType =
+            new NativeIntType(false, bitFieldIntArrayTraits);
+    private final static NativeIntType bitFieldIntNullableType =
+            new NativeIntType(true, bitFieldIntArrayTraits);
 
-    private final static NativeIntArrayType intArrayType = new NativeIntArrayType();
-    private final static NativeUnsignedIntArrayType unsignedIntArrayType = new NativeUnsignedIntArrayType();
+    private final static NativeBitFieldArrayTraits bitFieldLongArrayTraits =
+            new NativeBitFieldArrayTraits("BitFieldLongArrayTraits");
+    private final static NativeLongType bitFieldLongType =
+            new NativeLongType(false, bitFieldLongArrayTraits);
+    private final static NativeLongType bitFieldLongNullableType =
+            new NativeLongType(true, bitFieldLongArrayTraits);
 
-    private final static NativeLongArrayType longArrayType = new NativeLongArrayType();
-    private final static NativeUnsignedLongArrayType unsignedLongArrayType = new NativeUnsignedLongArrayType();
+    private final static NativeArrayTraits bitFieldBigIntegerArrayTraits =
+            new NativeBitFieldArrayTraits("BitFieldBigIntegerArrayTraits");
+    private final static NativeBigIntegerType bitFieldBigIntegerType =
+            new NativeBigIntegerType(bitFieldBigIntegerArrayTraits);
 
-    private final static NativeBigIntegerArrayType bigIntegerArrayType = new NativeBigIntegerArrayType();
+    private final static NativeArrayTraits varInt16ArrayTraits =
+            new NativeArrayTraits("VarInt16ArrayTraits");
+    private final static NativeShortType varInt16Type = new NativeShortType(false, varInt16ArrayTraits);
+    private final static NativeShortType varInt16NullableType = new NativeShortType(true, varInt16ArrayTraits);
 
-    private final static NativeArrayType varInt16ArrayType = new NativeArrayType("VarInt16Array");
-    private final static NativeArrayType varUInt16ArrayType = new NativeArrayType("VarUInt16Array");
+    private final static NativeArrayTraits varInt32ArrayTraits =
+            new NativeArrayTraits("VarInt32ArrayTraits");
+    private final static NativeIntType varInt32Type = new NativeIntType(false, varInt32ArrayTraits);
+    private final static NativeIntType varInt32NullableType = new NativeIntType(true, varInt32ArrayTraits);
 
-    private final static NativeArrayType varInt32ArrayType = new NativeArrayType("VarInt32Array");
-    private final static NativeArrayType varUInt32ArrayType = new NativeArrayType("VarUInt32Array");
+    private final static NativeArrayTraits varInt64ArrayTraits =
+            new NativeArrayTraits("VarInt64ArrayTraits");
+    private final static NativeLongType varInt64Type = new NativeLongType(false, varInt64ArrayTraits);
+    private final static NativeLongType varInt64NullableType = new NativeLongType(true, varInt64ArrayTraits);
 
-    private final static NativeArrayType varInt64ArrayType = new NativeArrayType("VarInt64Array");
-    private final static NativeArrayType varUInt64ArrayType = new NativeArrayType("VarUInt64Array");
+    private final static NativeArrayTraits varIntArrayTraits =
+            new NativeArrayTraits("VarIntArrayTraits");
+    private final static NativeLongType varIntType = new NativeLongType(false, varIntArrayTraits);
+    private final static NativeLongType varIntNullableType = new NativeLongType(true, varIntArrayTraits);
 
-    private final static NativeArrayType varIntArrayType = new NativeArrayType("VarIntArray");
-    private final static NativeArrayType varUIntArrayType = new NativeArrayType("VarUIntArray");
+    private final static NativeArrayTraits varUInt16ArrayTraits =
+            new NativeArrayTraits("VarUInt16ArrayTraits");
+    private final static NativeShortType varUInt16Type = new NativeShortType(false, varUInt16ArrayTraits);
+    private final static NativeShortType varUInt16NullableType =
+            new NativeShortType(true, varUInt16ArrayTraits);
 
-    private final static NativeArrayType varSizeArrayType = new NativeArrayType("VarSizeArray");
+    private final static NativeArrayTraits varUInt32ArrayTraits =
+            new NativeArrayTraits("VarUInt32ArrayTraits");
+    private final static NativeIntType varUInt32Type = new NativeIntType(false, varUInt32ArrayTraits);
+    private final static NativeIntType varUInt32NullableType = new NativeIntType(true, varUInt32ArrayTraits);
+
+    private final static NativeArrayTraits varUInt64ArrayTraits =
+            new NativeArrayTraits("VarUInt64ArrayTraits");
+    private final static NativeLongType varUInt64Type = new NativeLongType(false, varUInt64ArrayTraits);
+    private final static NativeLongType varUInt64NullableType = new NativeLongType(true, varUInt64ArrayTraits);
+
+    private final static NativeArrayTraits varUIntArrayTraits =
+            new NativeArrayTraits("VarUIntArrayTraits");
+    private final static NativeBigIntegerType varUIntType = new NativeBigIntegerType(varUIntArrayTraits);
+
+    private final static NativeArrayTraits varSizeArrayTraits =
+            new NativeArrayTraits("VarSizeArrayTraits");
+    private final static NativeIntType varSizeType = new NativeIntType(false, varSizeArrayTraits);
+    private final static NativeIntType varSizeNullableType = new NativeIntType(true, varSizeArrayTraits);
+
+    private final boolean withWriterCode;
 }

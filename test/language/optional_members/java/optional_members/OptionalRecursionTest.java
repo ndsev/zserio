@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import optional_members.optional_recursion.Block;
 
-import zserio.runtime.array.UnsignedByteArray;
 import zserio.runtime.io.FileBitStreamReader;
 
 public class OptionalRecursionTest
@@ -110,17 +109,14 @@ public class OptionalRecursionTest
 
     private static Block createBlock(short[] blockData)
     {
-        final UnsignedByteArray blockDataArray = new UnsignedByteArray(blockData, 0, blockData.length); 
-
-        return new Block((short)blockData.length, blockDataArray, (short)0, null);
+        return new Block((short)blockData.length, blockData, (short)0, null);
     }
 
     private static Block createBlock(short[] block1Data, short[] block2Data)
     {
         final Block block2 = createBlock(block2Data);
-        final UnsignedByteArray block1DataArray = new UnsignedByteArray(block1Data, 0, block1Data.length);
 
-        return new Block((short)block1Data.length, block1DataArray, (short)block2Data.length, block2);
+        return new Block((short)block1Data.length, block1Data, (short)block2Data.length, block2);
     }
 
     private static int getBlockBitSize(short[] blockData)

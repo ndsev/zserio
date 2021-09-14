@@ -2,9 +2,17 @@
     <Match>
         <!-- This field is never written. -->
         <Bug code="UwF"/>
-        <And>
-            <Class name="~.*\.EmptyChoice.*"/>
-            <Field name="objectChoice"/>
-        </And>
+        <Class name="~.*\.EmptyChoice.*"/>
+        <Field name="objectChoice"/>
+    </Match>
+    <Match>
+        <!-- Method uses the same code for two switch clauses. -->
+        <Bug code="DB"/>
+        <Class name="choice_types.choice_with_array.TestChoice"/>
+        <Or>
+            <Method name="bitSizeOf"/>
+            <Method name="initializeOffsets"/>
+            <Method name="write"/>
+        </Or>
     </Match>
 </FindBugsFilter>

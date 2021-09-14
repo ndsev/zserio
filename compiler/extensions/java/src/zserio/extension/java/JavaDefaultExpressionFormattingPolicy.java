@@ -229,7 +229,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public UnaryExpressionFormatting getLengthOf(Expression expr)
     {
-        return new UnaryExpressionFormatting("", ".length()");
+        return new UnaryExpressionFormatting("", ".length");
     }
 
     @Override
@@ -405,7 +405,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
     {
-        return new BinaryExpressionFormatting("", (isSetter) ? ".setElementAt(value, " : ".elementAt(", ")");
+        return new BinaryExpressionFormatting("", "[", (isSetter) ? "] = value" : "]");
     }
 
     @Override

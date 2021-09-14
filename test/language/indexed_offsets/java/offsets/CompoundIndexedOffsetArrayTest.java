@@ -11,8 +11,6 @@ import indexed_offsets.compound_indexed_offset_array.Compound;
 import indexed_offsets.compound_indexed_offset_array.CompoundIndexedOffsetArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ObjectArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -165,8 +163,8 @@ public class CompoundIndexedOffsetArrayTest
 
     private void checkOffsets(CompoundIndexedOffsetArray compoundIndexedOffsetArray, short offsetShift)
     {
-        final UnsignedIntArray offsets = compoundIndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = compoundIndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (long offset : offsets)
         {
@@ -182,11 +180,11 @@ public class CompoundIndexedOffsetArrayTest
 
         assertEquals(SPACER_VALUE, compoundIndexedOffsetArray.getSpacer());
 
-        final ObjectArray<Compound> data = compoundIndexedOffsetArray.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final Compound[] data = compoundIndexedOffsetArray.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
-            final Compound compound = data.elementAt(i);
+            final Compound compound = data[i];
             assertEquals(i, compound.getId());
             assertEquals((byte)(i % 8), compound.getValue());
         }
@@ -196,24 +194,24 @@ public class CompoundIndexedOffsetArrayTest
     {
         final CompoundIndexedOffsetArray compoundIndexedOffsetArray = new CompoundIndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
         compoundIndexedOffsetArray.setOffsets(offsets);
         compoundIndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        final ObjectArray<Compound> data = new ObjectArray<Compound>(NUM_ELEMENTS);
+        final Compound[] data = new Compound[NUM_ELEMENTS];
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             final Compound compound = new Compound(i, (byte)(i % 8));
-            data.setElementAt(compound, i);
+            data[i] = compound;
         }
         compoundIndexedOffsetArray.setData(data);
 

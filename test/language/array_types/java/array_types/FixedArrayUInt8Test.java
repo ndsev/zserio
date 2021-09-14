@@ -8,7 +8,6 @@ import java.io.File;
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -21,9 +20,9 @@ public class FixedArrayUInt8Test
     @Test
     public void bitSizeOf() throws IOException, ZserioError
     {
-        final UnsignedByteArray uint8Array = new UnsignedByteArray(FIXED_ARRAY_LENGTH);
+        final short[] uint8Array = new short[FIXED_ARRAY_LENGTH];
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            uint8Array.setElementAt(i, i);
+            uint8Array[i] = i;
 
         final FixedArray fixedArray = new FixedArray(uint8Array);
         final int bitPosition = 2;
@@ -34,9 +33,9 @@ public class FixedArrayUInt8Test
     @Test
     public void initializeOffsets() throws IOException, ZserioError
     {
-        final UnsignedByteArray uint8Array = new UnsignedByteArray(FIXED_ARRAY_LENGTH);
+        final short[] uint8Array = new short[FIXED_ARRAY_LENGTH];
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            uint8Array.setElementAt(i, i);
+            uint8Array[i] = i;
 
         final FixedArray fixedArray = new FixedArray(uint8Array);
         final int bitPosition = 2;
@@ -53,18 +52,18 @@ public class FixedArrayUInt8Test
         final FixedArray fixedArray = new FixedArray(stream);
         stream.close();
 
-        final UnsignedByteArray uint8Array = fixedArray.getUint8Array();
-        assertEquals(FIXED_ARRAY_LENGTH, uint8Array.length());
+        final short[] uint8Array = fixedArray.getUint8Array();
+        assertEquals(FIXED_ARRAY_LENGTH, uint8Array.length);
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            assertEquals(i, uint8Array.elementAt(i));
+            assertEquals(i, uint8Array[i]);
     }
 
     @Test
     public void write() throws IOException, ZserioError
     {
-        final UnsignedByteArray uint8Array = new UnsignedByteArray(FIXED_ARRAY_LENGTH);
+        final short[] uint8Array = new short[FIXED_ARRAY_LENGTH];
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            uint8Array.setElementAt(i, i);
+            uint8Array[i] = i;
 
         FixedArray fixedArray = new FixedArray(uint8Array);
         final File file = new File("test.bin");
@@ -73,18 +72,18 @@ public class FixedArrayUInt8Test
         writer.close();
 
         final FixedArray readFixedArray = new FixedArray(file);
-        final UnsignedByteArray readUint8Array = readFixedArray.getUint8Array();
-        assertEquals(FIXED_ARRAY_LENGTH, readUint8Array.length());
+        final short[] readUint8Array = readFixedArray.getUint8Array();
+        assertEquals(FIXED_ARRAY_LENGTH, readUint8Array.length);
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            assertEquals(i, readUint8Array.elementAt(i));
+            assertEquals(i, readUint8Array[i]);
     }
 
     @Test(expected=ZserioError.class)
     public void writeWrongArray() throws IOException, ZserioError
     {
-        UnsignedByteArray uint8Array = new UnsignedByteArray(FIXED_ARRAY_LENGTH + 1);
+        final short[] uint8Array = new short[FIXED_ARRAY_LENGTH + 1];
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
-            uint8Array.setElementAt(i, i);
+            uint8Array[i] = i;
 
         FixedArray fixedArray = new FixedArray(uint8Array);
         final File file = new File("test.bin");

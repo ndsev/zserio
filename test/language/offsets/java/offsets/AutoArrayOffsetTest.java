@@ -10,7 +10,6 @@ import offsets.auto_array_offset.AutoArrayHolder;
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ByteArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -142,18 +141,18 @@ public class AutoArrayOffsetTest
 
         assertEquals(FORCED_ALIGNMENT_VALUE, autoArrayHolder.getForceAlignment());
 
-        final ByteArray autoArray = autoArrayHolder.getAutoArray();
-        assertEquals(AUTO_ARRAY_LENGTH, autoArray.length());
+        final byte[] autoArray = autoArrayHolder.getAutoArray();
+        assertEquals(AUTO_ARRAY_LENGTH, autoArray.length);
         for (int i = 0; i < AUTO_ARRAY_LENGTH; ++i)
-            assertEquals((byte)i, autoArray.elementAt(i));
+            assertEquals((byte)i, autoArray[i]);
     }
 
     private AutoArrayHolder createAutoArrayHolder(boolean createWrongOffset)
     {
         final long autoArrayOffset = (createWrongOffset) ? WRONG_AUTO_ARRAY_OFFSET : AUTO_ARRAY_OFFSET;
-        final ByteArray autoArray = new ByteArray(AUTO_ARRAY_LENGTH);
+        final byte[] autoArray = new byte[AUTO_ARRAY_LENGTH];
         for (int i = 0; i < AUTO_ARRAY_LENGTH; ++i)
-            autoArray.setElementAt((byte)i, i);
+            autoArray[i] = (byte)i;
 
         return new AutoArrayHolder(autoArrayOffset, FORCED_ALIGNMENT_VALUE, autoArray);
     }

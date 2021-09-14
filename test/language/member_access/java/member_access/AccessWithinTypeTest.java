@@ -11,7 +11,6 @@ import member_access.access_within_type.Header;
 import member_access.access_within_type.Message;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.StringArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -90,12 +89,12 @@ public class AccessWithinTypeTest
         assertEquals(VERSION_VALUE, message.getHeader().getVersion());
         assertEquals(numSentences, message.getHeader().getNumSentences());
 
-        final StringArray sentences = message.getSentences();
-        assertEquals(numSentences, sentences.length());
+        final String[] sentences = message.getSentences();
+        assertEquals(numSentences, sentences.length);
         for (int i = 0; i < numSentences; ++i)
         {
             final String expectedSentence = SENTENCE_PREFIX + i;
-            assertTrue(sentences.elementAt(i).equals(expectedSentence));
+            assertTrue(sentences[i].equals(expectedSentence));
         }
     }
 
@@ -103,9 +102,9 @@ public class AccessWithinTypeTest
     {
         final Header header = new Header(VERSION_VALUE, numSentences);
         final int numStrings = (wrongArrayLength) ? numSentences - 1 : numSentences;
-        final StringArray sentences = new StringArray(numStrings);
+        final String[] sentences = new String[numStrings];
         for (int i = 0; i < numStrings; ++i)
-            sentences.setElementAt(SENTENCE_PREFIX + i, i);
+            sentences[i] = SENTENCE_PREFIX + i;
 
         return new Message(header, sentences);
     }

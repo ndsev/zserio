@@ -10,8 +10,6 @@ import java.io.File;
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedByteArray;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -157,8 +155,8 @@ public class AutoIndexedOffsetArrayTest
 
     private void checkOffsets(AutoIndexedOffsetArray autoIndexedOffsetArray, short offsetShift)
     {
-        final UnsignedIntArray offsets = autoIndexedOffsetArray.getOffsets();
-        assertEquals(NUM_ELEMENTS, offsets.length());
+        final long[] offsets = autoIndexedOffsetArray.getOffsets();
+        assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
         for (long offset : offsets)
         {
@@ -174,32 +172,32 @@ public class AutoIndexedOffsetArrayTest
 
         assertEquals(SPACER_VALUE, autoIndexedOffsetArray.getSpacer());
 
-        final UnsignedByteArray data = autoIndexedOffsetArray.getData();
-        assertEquals(NUM_ELEMENTS, data.length());
+        final byte[] data = autoIndexedOffsetArray.getData();
+        assertEquals(NUM_ELEMENTS, data.length);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            assertEquals(i % 64, data.elementAt(i));
+            assertEquals(i % 64, data[i]);
     }
 
     private AutoIndexedOffsetArray createAutoIndexedOffsetArray(boolean createWrongOffsets)
     {
         final AutoIndexedOffsetArray autoIndexedOffsetArray = new AutoIndexedOffsetArray();
 
-        final UnsignedIntArray offsets = new UnsignedIntArray(NUM_ELEMENTS);
+        final long[] offsets = new long[NUM_ELEMENTS];
         long currentOffset = ELEMENT0_OFFSET;
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && createWrongOffsets)
-                offsets.setElementAt(WRONG_OFFSET, i);
+                offsets[i] = WRONG_OFFSET;
             else
-                offsets.setElementAt(currentOffset, i);
+                offsets[i] = currentOffset;
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
         autoIndexedOffsetArray.setOffsets(offsets);
         autoIndexedOffsetArray.setSpacer(SPACER_VALUE);
 
-        final UnsignedByteArray data = new UnsignedByteArray(NUM_ELEMENTS);
+        final byte[] data = new byte[NUM_ELEMENTS];
         for (short i = 0; i < NUM_ELEMENTS; ++i)
-            data.setElementAt((short)(i % 64), i);
+            data[i] = (byte)(i % 64);
         autoIndexedOffsetArray.setData(data);
 
         return autoIndexedOffsetArray;

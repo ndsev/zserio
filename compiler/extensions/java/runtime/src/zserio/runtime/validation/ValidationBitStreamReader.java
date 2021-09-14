@@ -13,7 +13,7 @@ import zserio.runtime.io.ByteArrayBitStreamReader;
  * <p>
  * Bits in reader do not have to be used for validation in the following situations:
  * 1. If the bits have been skipped (not read) which can happen using Zserio 'align' command for example.
- * 2. If NaN occurs. NaNs do not have unique binary represantion and they must be normalized to NaNs used by
+ * 2. If NaN occurs. NaNs do not have unique binary representation and they must be normalized to NaNs used by
  *    writer.</p>
  */
 public class ValidationBitStreamReader extends ByteArrayBitStreamReader
@@ -154,6 +154,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             this.maskBuffer = maskBuffer;
         }
 
+        @Override
         public void modifyBits(int bytePosition, int bitOffset, int numBits)
         {
             // numBits |  0   |  1   |  2   |  3   |  4   |  5   |  6   |  7   |  8   |
@@ -163,7 +164,8 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             maskBuffer[bytePosition] |= mask << (8 - bitOffset - numBits);
          }
 
-         public void modifyByte(int bytePosition)
+         @Override
+        public void modifyByte(int bytePosition)
          {
              maskBuffer[bytePosition] = (byte)0xFF;
          }
@@ -178,6 +180,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             this.maskBuffer = maskBuffer;
         }
 
+        @Override
         public void modifyBits(int bytePosition, int bitOffset, int numBits)
         {
             // numBits |  0   |  1   |  2   |  3   |  4   |  5   |  6   |  7   |  8   |
@@ -187,6 +190,7 @@ public class ValidationBitStreamReader extends ByteArrayBitStreamReader
             maskBuffer[bytePosition] &= mask << (8 - bitOffset - numBits);
         }
 
+        @Override
         public void modifyByte(int bytePosition)
         {
             maskBuffer[bytePosition] = (byte)0x00;

@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -25,9 +24,8 @@ public class InstantiateTypeAsParameterTest
     public void readWrite() throws IOException
     {
         final P32 param = new P32(2);
-        final Parameterized_P32 parameterized = new Parameterized_P32(param, new UnsignedIntArray(2));
-        parameterized.getArr().setElementAt(13, 0);
-        parameterized.getArr().setElementAt(42, 1);
+        final long[] array = new long[] { 13, 42 };
+        final Parameterized_P32 parameterized = new Parameterized_P32(param, array);
 
         final InstantiateTypeAsParameter instantiateTypeAsParameter = new InstantiateTypeAsParameter(
                 param, parameterized);

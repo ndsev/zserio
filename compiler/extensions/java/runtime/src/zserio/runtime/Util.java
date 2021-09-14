@@ -12,10 +12,8 @@ public final class Util
      * @param isSigned True if it's a signed bitfield, false otherwise.
      *
      * @return The lowest value the bitfield can hold.
-     *
-     * @throws ZserioError if bitfield with wrong length has been specified.
      */
-    public static long getBitFieldLowerBound(int length, boolean isSigned) throws ZserioError
+    public static long getBitFieldLowerBound(int length, boolean isSigned)
     {
         if (length <= 0 || length > getMaxBitFieldSize(isSigned))
             throw new ZserioError("getBitFieldLowerBound: Asking for lower bound of bitfield with wrong " +
@@ -34,10 +32,8 @@ public final class Util
      * @param isSigned True if it's a signed bitfield, false otherwise.
      *
      * @return The largest value the bitfield can hold.
-     *
-     * @throws ZserioError if bitfield with wrong length has been specified.
      */
-    public static long getBitFieldUpperBound(int length, boolean isSigned) throws ZserioError
+    public static long getBitFieldUpperBound(int length, boolean isSigned)
     {
         if (length <= 0 || length > getMaxBitFieldSize(isSigned))
             throw new ZserioError("getBitFieldUpperBound: Asking for upper bound of bitfield with wrong " +

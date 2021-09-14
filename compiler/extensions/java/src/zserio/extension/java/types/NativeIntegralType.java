@@ -5,11 +5,12 @@ import java.math.BigInteger;
 import zserio.ast.PackageName;
 import zserio.extension.common.ZserioExtensionException;
 
-abstract public class NativeIntegralType extends JavaNativeType
+public abstract class NativeIntegralType extends NativeArrayableType
 {
-    public NativeIntegralType(PackageName packageName, String name)
+    public NativeIntegralType(PackageName packageName, String name,
+            NativeRawArray rawArray, NativeArrayTraits arrayTraits, NativeArrayElement arrayElement)
     {
-        super(packageName, name);
+        super(packageName, name, rawArray, arrayTraits, arrayElement);
     }
 
     /**
@@ -35,12 +36,6 @@ abstract public class NativeIntegralType extends JavaNativeType
     {
         checkRange(value);
         return formatLiteral(value.toString());
-    }
-
-    public boolean isSigned()
-    {
-        // all java integral types are signed
-        return true;
     }
 
     /**

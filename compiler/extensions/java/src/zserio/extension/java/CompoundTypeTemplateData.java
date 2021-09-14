@@ -19,10 +19,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         final boolean withWriterCode = context.getWithWriterCode();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
-        compoundConstructorsData = new CompoundConstructorTemplateData(javaNativeMapper, withRangeCheckCode,
-                withWriterCode, compoundType, javaExpressionFormatter);
+
         compoundParametersData = new CompoundParameterTemplateData(javaNativeMapper, withRangeCheckCode,
                 withWriterCode, compoundType, javaExpressionFormatter);
+        compoundConstructorsData = new CompoundConstructorTemplateData(withWriterCode, compoundType,
+                compoundParametersData);
         compoundFunctionsData = new CompoundFunctionTemplateData(javaNativeMapper, compoundType,
                 javaExpressionFormatter);
 
@@ -37,14 +38,14 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         }
     }
 
-    public CompoundConstructorTemplateData getCompoundConstructorsData()
-    {
-        return compoundConstructorsData;
-    }
-
     public CompoundParameterTemplateData getCompoundParametersData()
     {
         return compoundParametersData;
+    }
+
+    public CompoundConstructorTemplateData getCompoundConstructorsData()
+    {
+        return compoundConstructorsData;
     }
 
     public CompoundFunctionTemplateData getCompoundFunctionsData()
@@ -62,8 +63,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return fieldList;
     }
 
-    private final CompoundConstructorTemplateData   compoundConstructorsData;
     private final CompoundParameterTemplateData     compoundParametersData;
+    private final CompoundConstructorTemplateData   compoundConstructorsData;
     private final CompoundFunctionTemplateData      compoundFunctionsData;
     private final boolean                           hasFieldWithOffset;
     private final List<CompoundFieldTemplateData>   fieldList;

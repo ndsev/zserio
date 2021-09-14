@@ -39,3 +39,11 @@
 <#macro sql_parameter_provider_getter_name parameter>
     get${parameter.expression?cap_first}<#t>
 </#macro>
+
+<#macro sql_field_member_name field>
+    ${field.name}_<#t>
+</#macro>
+
+<#macro sql_field_argument_name field>
+    ${field.name}_<#t>
+</#macro>

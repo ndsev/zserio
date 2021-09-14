@@ -89,8 +89,7 @@ public class ArrayTypesWarningTest
     @Test
     public void checkNumberOfWarnings()
     {
-        // TODO[Mi-L@]: Remove + 24 once packed arrays are implemented in Java!
-        final int expectedNumberOfWarnings = 10 + 24;
+        final int expectedNumberOfWarnings = 10;
         assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
     }
 

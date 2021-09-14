@@ -8,8 +8,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ObjectArray;
-import zserio.runtime.array.UnsignedByteArray;
 
 import gif.gif_data.*;
 import gif.rgb_color.RgbColor;
@@ -23,14 +21,14 @@ public class GifTest
         final File file = new File(ONE_PIX_GIF_FILE_NAME);
         final GifFile gifFile = new GifFile(file);
 
-        final UnsignedByteArray signatureFormat = gifFile.getSignature().getFormat();
-        final String fileFormat = String.format("%1$c%2$c%3$c", signatureFormat.elementAt(0),
-                signatureFormat.elementAt(1), signatureFormat.elementAt(2));
+        final short[] signatureFormat = gifFile.getSignature().getFormat();
+        final String fileFormat = String.format("%1$c%2$c%3$c", signatureFormat[0], signatureFormat[1],
+                signatureFormat[2]);
         assertEquals(GIF_FILE_FORMAT, fileFormat);
 
-        final UnsignedByteArray signatureVersion = gifFile.getSignature().getVersion();
-        final String fileVersion = String.format("%1$c%2$c%3$c", signatureVersion.elementAt(0),
-                signatureVersion.elementAt(1), signatureVersion.elementAt(2));
+        final short[] signatureVersion = gifFile.getSignature().getVersion();
+        final String fileVersion = String.format("%1$c%2$c%3$c", signatureVersion[0], signatureVersion[1],
+                signatureVersion[2]);
         assertEquals(GIF_FILE_VERSION, fileVersion);
 
         final ScreenDescriptor screenDescriptor = gifFile.getScreen();
@@ -46,14 +44,12 @@ public class GifTest
     {
         alignment = "";
         final File file = new File(ONE_PIX_GIF_FILE_NAME);
-        GifFile gifFile = new GifFile(file);
+        final GifFile gifFile = new GifFile(file);
 
-        UnsignedByteArray signature = gifFile.getSignature().getFormat();
-        System.out.format(alignment + "Header: %1$c%2$c%3$c",
-                signature.elementAt(0), signature.elementAt(1), signature.elementAt(2));
-        UnsignedByteArray version = gifFile.getSignature().getVersion();
-        System.out.format(alignment + ", %1$c%2$c%3$c%n",
-                version.elementAt(0), version.elementAt(1), version.elementAt(2));
+        final short[] signature = gifFile.getSignature().getFormat();
+        System.out.format(alignment + "Header: %1$c%2$c%3$c", signature[0], signature[1], signature[2]);
+        final short[] version = gifFile.getSignature().getVersion();
+        System.out.format(alignment + ", %1$c%2$c%3$c%n", version[0], version[1], version[2]);
 
         System.out.format(alignment + "Size: %1$d x %2$d%n", gifFile.getScreen().getWidth(),
                 gifFile.getScreen().getHeight());
@@ -101,27 +97,27 @@ public class GifTest
         assertTrue(true);
     }
 
-    private void printColorMap(ObjectArray<RgbColor> globalColorMap)
+    private void printColorMap(RgbColor[] globalColorMap)
     {
         System.out.println(alignment + "ColorMap:");
         int entry = 0;
         increaseAlignment();
-        for (int rowcnt = globalColorMap.length() / 16; rowcnt > 0; rowcnt--)
+        for (int rowcnt = globalColorMap.length / 16; rowcnt > 0; rowcnt--)
         {
             System.out.print(alignment);
             for (int i = 0; i < 16; i++, entry++)
             {
-                String sep = (i == 16-1) ? "%n" : ", ";
-                RgbColor rgbColor = globalColorMap.elementAt(entry);
+                final String sep = (i == 16-1) ? "%n" : ", ";
+                final RgbColor rgbColor = globalColorMap[entry];
                 System.out.format("#%1$02X%2$02X%3$02X" + sep,
                         rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
             }
         }
         System.out.print(alignment);
-        for (int i = globalColorMap.length() % 16; i > 0; i--, entry++)
+        for (int i = globalColorMap.length % 16; i > 0; i--, entry++)
         {
-            String sep = (i == 1) ? "%n" : ", ";
-            RgbColor rgbColor = globalColorMap.elementAt(entry);
+            final String sep = (i == 1) ? "%n" : ", ";
+            final RgbColor rgbColor = globalColorMap[entry];
             System.out.format("#%1$02X%2$02X%3$02X" + sep,
                     rgbColor.getRed(), rgbColor.getGreen(), rgbColor.getBlue());
         }
@@ -131,9 +127,9 @@ public class GifTest
 
     private void printComment(SubBlock block, short byteCount)
     {
-        UnsignedByteArray commentData = block.getDataBytes();
+        final short[] commentData = block.getDataBytes();
         for (int i = 0; i < byteCount; i++)
-            System.out.print((char)commentData.elementAt(i));
+            System.out.print((char)commentData[i]);
 
         byteCount = block.getBlockTerminator();
         if (byteCount > 0)
@@ -165,7 +161,7 @@ public class GifTest
                 System.out.println(alignment + "Plain text:");
                 increaseAlignment();
                 PlainTextExtension plainText = extensionBlock.getExtension().getPlainTextData();
-                short byteCount = plainText.getByteCount();
+                final short byteCount = plainText.getByteCount();
                 if (byteCount > 0)
                     printComment(plainText.getPlainTextData(), byteCount);
                 decreaseAlignment();
@@ -181,8 +177,8 @@ public class GifTest
             case COMMENT_EXTENSION:
             {
                 System.out.print(alignment + "Comment: ");
-                CommentExtension comment = extensionBlock.getExtension().getCommentData();
-                short byteCount = comment.getByteCount();
+                final CommentExtension comment = extensionBlock.getExtension().getCommentData();
+                final short byteCount = comment.getByteCount();
                 if (byteCount > 0)
                     printComment(comment.getCommentData(), byteCount);
                 System.out.println();
@@ -193,17 +189,17 @@ public class GifTest
             {
                 System.out.println(alignment + "Application extension:");
                 increaseAlignment();
-                ApplicationExtension appData = extensionBlock.getExtension().getApplicationData();
+                final ApplicationExtension appData = extensionBlock.getExtension().getApplicationData();
 
                 System.out.print(alignment + "Appl-ID: ");
-                UnsignedByteArray appID = appData.getApplicationIdentifier();
+                final short[] appID = appData.getApplicationIdentifier();
                 for (int i = 0; i < 8; i++)
-                    System.out.print((char)appID.elementAt(i));
+                    System.out.print((char)appID[i]);
                 System.out.println();
 
-                UnsignedByteArray applCode = appData.getAuthenticationCode();
-                System.out.format(alignment + "Appl-Code: %1$c%2$c%3$c%n",
-                        applCode.elementAt(0), applCode.elementAt(1), applCode.elementAt(2));
+                final short[] applCode = appData.getAuthenticationCode();
+                System.out.format(alignment + "Appl-Code: %1$c%2$c%3$c%n", applCode[0], applCode[1],
+                        applCode[2]);
 
                 int applDataSize = 0;
                 if (appData.getApplDataSize() > 0)
@@ -245,14 +241,14 @@ public class GifTest
 
     private void printRasterData(RasterData rasterData)
     {
-        int raterDataSize = rasterData.getCodeSize();
-        if (raterDataSize > 0)
+        int rasterDataSize = rasterData.getCodeSize();
+        if (rasterDataSize > 0)
         {
             if (rasterData.getData().getByteCount() > 0)
-                raterDataSize += rasterData.getData().getByteCount() +
+                rasterDataSize += rasterData.getData().getByteCount() +
                 calcBlockSize(rasterData.getData().getDataBytes());
         }
-        System.out.format(alignment + "Raster Data size: %1$d Bytes%n", raterDataSize);
+        System.out.format(alignment + "Raster Data size: %1$d Bytes%n", rasterDataSize);
     }
 
     private void printImageBlock(ImageBlock imageBlock)

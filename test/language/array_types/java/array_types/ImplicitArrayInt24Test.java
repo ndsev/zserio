@@ -10,7 +10,6 @@ import org.junit.Test;
 import array_types.implicit_array_int24.ImplicitArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.IntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -22,9 +21,9 @@ public class ImplicitArrayInt24Test
     public void bitSizeOf() throws IOException, ZserioError
     {
         final int numElements = 44;
-        IntArray array = new IntArray(numElements);
+        final int[] array = new int[numElements];
         for (int i = 0; i < numElements; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
 
         final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
@@ -36,9 +35,9 @@ public class ImplicitArrayInt24Test
     public void initializeOffsets() throws IOException, ZserioError
     {
         final int numElements = 66;
-        IntArray array = new IntArray(numElements);
+        final int[] array = new int[numElements];
         for (int i = 0; i < numElements; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
 
         final ImplicitArray implicitArray = new ImplicitArray(array);
         final int bitPosition = 2;
@@ -56,19 +55,19 @@ public class ImplicitArrayInt24Test
         final ImplicitArray implicitArray = new ImplicitArray(stream);
         stream.close();
 
-        final IntArray array = implicitArray.getArray();
-        assertEquals(numElements, array.length());
+        final int[] array = implicitArray.getArray();
+        assertEquals(numElements, array.length);
         for (int i = 0; i < numElements; ++i)
-            assertEquals(i, array.elementAt(i));
+            assertEquals(i, array[i]);
     }
 
     @Test
     public void write() throws IOException, ZserioError
     {
         final int numElements = 55;
-        IntArray array = new IntArray(numElements);
+        final int[] array = new int[numElements];
         for (int i = 0; i < numElements; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
 
         ImplicitArray implicitArray = new ImplicitArray(array);
         final File file = new File("test.bin");
@@ -77,10 +76,10 @@ public class ImplicitArrayInt24Test
         writer.close();
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
-        final IntArray readArray = readImplicitArray.getArray();
-        assertEquals(numElements, readArray.length());
+        final int[] readArray = readImplicitArray.getArray();
+        assertEquals(numElements, readArray.length);
         for (int i = 0; i < numElements; ++i)
-            assertEquals(i, readArray.elementAt(i));
+            assertEquals(i, readArray[i]);
     }
 
     private void writeImplicitArrayToFile(File file, int numElements) throws IOException

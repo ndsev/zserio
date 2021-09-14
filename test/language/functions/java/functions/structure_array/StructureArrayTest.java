@@ -5,11 +5,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.junit.Test;
 
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -56,7 +54,7 @@ public class StructureArrayTest
         final StructureArray structureArray = new StructureArray();
 
         structureArray.setNumElements(NUM_ITEM_ELEMENTS);
-        structureArray.setValues(new ObjectArray<Item>(ITEMS));
+        structureArray.setValues(ITEMS);
 
         structureArray.setPos(pos);
 
@@ -66,7 +64,7 @@ public class StructureArrayTest
     private void checkStructureArray(int pos) throws IOException
     {
         final StructureArray structureArray = createStructureArray(pos);
-        assertEquals(ITEMS.get(pos), structureArray.funcGetElement());
+        assertEquals(ITEMS[pos], structureArray.funcGetElement());
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         structureArray.write(writer);
@@ -81,11 +79,10 @@ public class StructureArrayTest
         assertEquals(structureArray, readStructureArray);
     }
 
-    private static final List<Item> ITEMS = Arrays.asList
-    (
-        new Item((short)1, (short)2),
-        new Item((short)3, (short)4),
-        new Item((short)5, (short)6)
-    );
-    private static final int NUM_ITEM_ELEMENTS = ITEMS.size();
+    private static final Item[] ITEMS = new Item[] {
+            new Item((short)1, (short)2),
+            new Item((short)3, (short)4),
+            new Item((short)5, (short)6)
+    };
+    private static final int NUM_ITEM_ELEMENTS = ITEMS.length;
 }

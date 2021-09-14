@@ -46,39 +46,7 @@ string          | `String`               | `std::string` | `string`    |
 
 ## Array Types
 
-Zserio element type | Java type
-------------------- | -----------------------------------------
-uint8               | `zserio.runtime.array.UnsignedByteArray`
-uint16              | `zserio.runtime.array.UnsignedShortArray`
-uint32              | `zserio.runtime.array.UnsignedIntArray`
-uint64              | `zserio.runtime.array.BigIntegerArray`
-int8                | `zserio.runtime.array.ByteArray`
-int16               | `zserio.runtime.array.ShortArray`
-int32               | `zserio.runtime.array.IntArray`
-int64               | `zserio.runtime.array.LongArray`
-bit:1...bit:8       | `zserio.runtime.array.UnsignedByteArray`
-bit:9...bit:16      | `zserio.runtime.array.UnsignedShortArray`
-bit:17...bit:32     | `zserio.runtime.array.UnsignedIntArray`
-bit:33...bit:63     | `zserio.runtime.array.UnsignedLongArray`
-int:1...int:8       | `zserio.runtime.array.ByteArray`
-int:9...int:16      | `zserio.runtime.array.ShortArray`
-int:17...int:32     | `zserio.runtime.array.IntArray`
-int:33...int:64     | `zserio.runtime.array.LongArray`
-float16             | `zserio.runtime.array.Float16Array`
-float32             | `zserio.runtime.array.Float32Array`
-float64             | `zserio.runtime.array.Float64Array`
-varint16            | `zserio.runtime.array.VarInt16Array`
-varint32            | `zserio.runtime.array.VarInt32Array`
-varint64            | `zserio.runtime.array.VarInt64Array`
-varint              | `zserio.runtime.array.VarIntArray`
-varuint16           | `zserio.runtime.array.VarUInt16Array`
-varuint32           | `zserio.runtime.array.VarUInt32Array`
-varuint64           | `zserio.runtime.array.VarUInt64Array`
-varuint             | `zserio.runtime.array.VarUIntArray`
-bool                | `zserio.runtime.array.BoolArray`
-string              | `zserio.runtime.array.StringArray`
-struct              | `zserio.runtime.array.ObjectArray`
-choice              | `zserio.runtime.array.ObjectArray`
+> Java uses native arrays.
 
 > C++ uses STL vector.
 

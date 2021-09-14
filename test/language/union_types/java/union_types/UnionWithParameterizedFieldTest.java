@@ -12,7 +12,6 @@ import union_types.union_with_parameterized_field.ArrayHolder;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
-import zserio.runtime.array.UnsignedIntArray;
 
 public class UnionWithParameterizedFieldTest
 {
@@ -28,7 +27,7 @@ public class UnionWithParameterizedFieldTest
     {
         final TestUnion testUnion = new TestUnion();
         final ArrayHolder arrayHolder = new ArrayHolder((short)10);
-        arrayHolder.setArray(new UnsignedIntArray(10));
+        arrayHolder.setArray(new long[10]);
         testUnion.setArrayHolder(arrayHolder);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         testUnion.write(writer);

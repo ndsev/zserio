@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import zserio.runtime.array.UnsignedByteArray;
-
 import expressions.lengthof_operator.LengthOfFunctions;
 
 public class LengthOfOperatorTest
@@ -15,7 +13,7 @@ public class LengthOfOperatorTest
     {
         final LengthOfFunctions lengthOfFunctions = new LengthOfFunctions();
         final int fixedArrayLength = 10;
-        final UnsignedByteArray fixedArray = new UnsignedByteArray(fixedArrayLength);
+        final short[] fixedArray = new short[fixedArrayLength];
         lengthOfFunctions.setFixedArray(fixedArray);
         assertEquals(fixedArrayLength, lengthOfFunctions.funcGetLengthOfFixedArray());
     }
@@ -25,7 +23,7 @@ public class LengthOfOperatorTest
     {
         final LengthOfFunctions lengthOfFunctions = new LengthOfFunctions();
         final int variableArrayLength = 11;
-        final UnsignedByteArray variableArray = new UnsignedByteArray(variableArrayLength);
+        final short[] variableArray = new short[variableArrayLength];
         lengthOfFunctions.setNumElements((short)variableArrayLength);
         lengthOfFunctions.setVariableArray(variableArray);
         assertEquals(variableArrayLength, lengthOfFunctions.funcGetLengthOfVariableArray());
@@ -36,7 +34,7 @@ public class LengthOfOperatorTest
     {
         final LengthOfFunctions lengthOfFunctions = new LengthOfFunctions();
         final int implicitArrayLength = 12;
-        final UnsignedByteArray implicitArray = new UnsignedByteArray(implicitArrayLength);
+        final short[] implicitArray = new short[implicitArrayLength];
         lengthOfFunctions.setImplicitArray(implicitArray);
         assertEquals(implicitArrayLength, lengthOfFunctions.funcGetLengthOfImplicitArray());
     }

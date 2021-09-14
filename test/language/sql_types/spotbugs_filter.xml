@@ -14,11 +14,10 @@
         </Or>
     </Match>
 
-        <Match>
-        <!-- Full range check is useless in validation code -->
+    <Match>
+        <!-- Condition has no effect due to the variable type. -->
         <Bug code="UC"/>
-        <Or>
-            <Method name="validateFieldVarintType"/>
-        </Or>
+        <Class name="sql_types.SqlTypesTable"/>
+        <Method name="validateFieldVarintType"/>
     </Match>
 </FindBugsFilter>

@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -16,7 +14,6 @@ import offsets.nested_offset.NestedOffsetStructure;
 import offsets.nested_offset.NestedOffsetUnion;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -160,12 +157,12 @@ public class NestedOffsetTest
                 nestedOffsetUnion.getNestedOffsetArrayStructure();
         assertEquals(NUM_ELEMENTS, nestedOffsetArrayStructure.getNumElements());
 
-        final ObjectArray<NestedOffsetStructure> nestedOffsetStructureList =
+        final NestedOffsetStructure[] nestedOffsetStructureList =
                 nestedOffsetArrayStructure.getNestedOffsetStructureList();
-        assertEquals(NUM_ELEMENTS, nestedOffsetStructureList.length());
+        assertEquals(NUM_ELEMENTS, nestedOffsetStructureList.length);
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
-            final NestedOffsetStructure nestedOffsetStructure = nestedOffsetStructureList.elementAt(i);
+            final NestedOffsetStructure nestedOffsetStructure = nestedOffsetStructureList[i];
             assertEquals(FIRST_DATA_OFFSET + i * 8L, nestedOffsetStructure.getDataOffset());
             assertEquals(i, nestedOffsetStructure.getData());
         }
@@ -175,15 +172,15 @@ public class NestedOffsetTest
 
     private NestedOffset createNestedOffset(boolean createWrongOffsets)
     {
-        final List<NestedOffsetStructure> nestedOffsetStructureList = new ArrayList<NestedOffsetStructure>();
+        final NestedOffsetStructure[] nestedOffsetStructureList = new NestedOffsetStructure[NUM_ELEMENTS];
         for (short i = 0; i < NUM_ELEMENTS; ++i)
         {
             final long dataOffset = (createWrongOffsets) ? WRONG_DATA_OFFSET : FIRST_DATA_OFFSET + i * 8L;
-            nestedOffsetStructureList.add(new NestedOffsetStructure(dataOffset, i));
+            nestedOffsetStructureList[i] = new NestedOffsetStructure(dataOffset, i);
         }
 
-        final NestedOffsetArrayStructure nestedOffsetArrayStructure = new NestedOffsetArrayStructure(
-                NUM_ELEMENTS, new ObjectArray<NestedOffsetStructure>(nestedOffsetStructureList));
+        final NestedOffsetArrayStructure nestedOffsetArrayStructure =
+                new NestedOffsetArrayStructure(NUM_ELEMENTS, nestedOffsetStructureList);
 
         final NestedOffsetUnion nestedOffsetUnion = new NestedOffsetUnion();
         nestedOffsetUnion.setNestedOffsetArrayStructure(nestedOffsetArrayStructure);

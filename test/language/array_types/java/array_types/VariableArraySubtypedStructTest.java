@@ -11,7 +11,6 @@ import array_types.variable_array_subtyped_struct.TestStructure;
 import array_types.variable_array_subtyped_struct.VariableArray;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ObjectArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -23,11 +22,11 @@ public class VariableArraySubtypedStructTest
     public void bitSizeOf() throws IOException, ZserioError
     {
         final short numElements = 33;
-        final ObjectArray<TestStructure> compoundArray = new ObjectArray<TestStructure>(numElements);
+        final TestStructure[] compoundArray = new TestStructure[numElements];
         for (short i = 0; i < numElements; ++i)
         {
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
-            compoundArray.setElementAt(testStructure, i);
+            compoundArray[i] = testStructure;
         }
         final VariableArray variableArray = new VariableArray(numElements, compoundArray);
         final int bitPosition = 2;
@@ -40,11 +39,11 @@ public class VariableArraySubtypedStructTest
     public void initializeOffsets() throws IOException, ZserioError
     {
         final short numElements = 33;
-        final ObjectArray<TestStructure> compoundArray = new ObjectArray<TestStructure>(numElements);
+        final TestStructure[] compoundArray = new TestStructure[numElements];
         for (short i = 0; i < numElements; ++i)
         {
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
-            compoundArray.setElementAt(testStructure, i);
+            compoundArray[i] = testStructure;
         }
         final VariableArray variableArray = new VariableArray(numElements, compoundArray);
         final int bitPosition = 2;
@@ -64,11 +63,11 @@ public class VariableArraySubtypedStructTest
         stream.close();
 
         assertEquals(numElements, variableArray.getNumElements());
-        final ObjectArray<TestStructure> compoundArray = variableArray.getCompoundArray();
-        assertEquals(numElements, compoundArray.length());
+        final TestStructure[] compoundArray = variableArray.getCompoundArray();
+        assertEquals(numElements, compoundArray.length);
         for (short i = 0; i < numElements; ++i)
         {
-            final TestStructure testStructure = compoundArray.elementAt(i);
+            final TestStructure testStructure = compoundArray[i];
             assertEquals(i, testStructure.getId());
             assertTrue(testStructure.getName().equals("Name" + i));
         }
@@ -78,11 +77,11 @@ public class VariableArraySubtypedStructTest
     public void write() throws IOException, ZserioError
     {
         final short numElements = 33;
-        final ObjectArray<TestStructure> compoundArray = new ObjectArray<TestStructure>(numElements);
+        final TestStructure[] compoundArray = new TestStructure[numElements];
         for (short i = 0; i < numElements; ++i)
         {
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
-            compoundArray.setElementAt(testStructure, i);
+            compoundArray[i] = testStructure;
         }
         final VariableArray variableArray = new VariableArray(numElements, compoundArray);
         final File file = new File("test.bin");
@@ -92,11 +91,11 @@ public class VariableArraySubtypedStructTest
 
         final VariableArray readVariableArray = new VariableArray(file);
         assertEquals(numElements, readVariableArray.getNumElements());
-        final ObjectArray<TestStructure> readCompoundArray = readVariableArray.getCompoundArray();
-        assertEquals(numElements, readCompoundArray.length());
+        final TestStructure[] readCompoundArray = readVariableArray.getCompoundArray();
+        assertEquals(numElements, readCompoundArray.length);
         for (short i = 0; i < numElements; ++i)
         {
-            final TestStructure readTestStructure = readCompoundArray.elementAt(i);
+            final TestStructure readTestStructure = readCompoundArray[i];
             assertEquals(i, readTestStructure.getId());
             assertTrue(readTestStructure.getName().equals("Name" + i));
         }
@@ -106,11 +105,11 @@ public class VariableArraySubtypedStructTest
     public void writeWrongArray() throws IOException, ZserioError
     {
         final short numElements = 33;
-        ObjectArray<TestStructure> compoundArray = new ObjectArray<TestStructure>(numElements);
+        final TestStructure[] compoundArray = new TestStructure[numElements];
         for (short i = 0; i < numElements; ++i)
         {
             final TestStructure testStructure = new TestStructure(i, "Name" + i);
-            compoundArray.setElementAt(testStructure, i);
+            compoundArray[i] = testStructure;
         }
         VariableArray variableArray = new VariableArray((short)(numElements + 1), compoundArray);
 

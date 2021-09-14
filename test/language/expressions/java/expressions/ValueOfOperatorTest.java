@@ -4,8 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import zserio.runtime.array.UnsignedByteArray;
-
 import expressions.valueof_operator.ValueOfFunctions;
 import expressions.valueof_operator.Color;
 

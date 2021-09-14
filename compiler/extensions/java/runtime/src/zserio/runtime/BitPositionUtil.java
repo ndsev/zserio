@@ -27,10 +27,8 @@ public class BitPositionUtil
      * @param numBits The number of bits to convert.
      *
      * @return Number of bytes.
-     *
-     * @throws ZserioError Throws if given number of bits is not multiple of 8.
      */
-    public static long bitsToBytes(long numBits) throws ZserioError
+    public static long bitsToBytes(long numBits)
     {
         if (numBits % 8 != 0)
             throw new ZserioError("bitsToBytes: " + numBits + " is not a multiple of 8.");

@@ -13,8 +13,6 @@ import optional_members.optional_expression.BasicColor;
 import optional_members.optional_expression.BlackColor;
 import optional_members.optional_expression.Container;
 
-import zserio.runtime.array.IntArray;
-
 public class OptionalExpressionTest
 {
     @Test
@@ -141,10 +139,9 @@ public class OptionalExpressionTest
     {
         final BlackColor blackColor = new BlackColor(numBlackTones);
 
-        final int toneValues[] = new int[numBlackTones];
+        final int tones[] = new int[numBlackTones];
         for (short i = 0; i < numBlackTones; ++i)
-            toneValues[i] = i + 1;
-        final IntArray tones = new IntArray(toneValues, 0, toneValues.length);
+            tones[i] = i + 1;
         blackColor.setTones(tones);
 
         return blackColor;

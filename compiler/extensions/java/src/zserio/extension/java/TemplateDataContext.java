@@ -7,7 +7,7 @@ final class TemplateDataContext
 {
     public TemplateDataContext(JavaExtensionParameters javaParameters, PackageName rootPackageName)
     {
-        javaNativeMapper = new JavaNativeMapper();
+        javaNativeMapper = new JavaNativeMapper(javaParameters.getWithWriterCode());
         javaRootPackageName = JavaFullNameFormatter.getFullName(rootPackageName);
 
         final JavaExpressionFormattingPolicy policy = new JavaExpressionFormattingPolicy(javaNativeMapper);

@@ -23,7 +23,6 @@ import test_utils.JdbcUtil;
 import sql_tables.TestDb;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedIntArray;
 
 public class BlobParamTableTest
 {
@@ -143,9 +142,9 @@ public class BlobParamTableTest
         row.setName(name);
         final Parameters parameters = new Parameters(PARAMETERS_COUNT);
         row.setParameters(parameters);
-        final UnsignedIntArray array = new UnsignedIntArray(PARAMETERS_COUNT);
+        final long[] array = new long[PARAMETERS_COUNT];
         for (int i = 0; i < PARAMETERS_COUNT; ++i)
-            array.setElementAt(i, i);
+            array[i] = i;
         final ParameterizedBlob parameterizedBlob = new ParameterizedBlob(parameters, array);
         row.setBlob(parameterizedBlob);
 

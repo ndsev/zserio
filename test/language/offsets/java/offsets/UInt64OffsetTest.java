@@ -12,7 +12,6 @@ import org.junit.Test;
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.ByteArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -54,7 +53,7 @@ public class UInt64OffsetTest
     public void initializeOffsets()
     {
         final UInt64Offset uint64Offset = new UInt64Offset();
-        uint64Offset.setArray(new ByteArray(ARRAY_SIZE));
+        uint64Offset.setArray(new byte[ARRAY_SIZE]);
         uint64Offset.initializeOffsets(0);
         assertEquals(OFFSET, uint64Offset.getOffset().longValue());
     }
@@ -63,7 +62,7 @@ public class UInt64OffsetTest
     public void initializeOffsetsWithPosition()
     {
         final UInt64Offset uint64Offset = new UInt64Offset();
-        uint64Offset.setArray(new ByteArray(ARRAY_SIZE));
+        uint64Offset.setArray(new byte[ARRAY_SIZE]);
         uint64Offset.initializeOffsets(3);
         // 3 bits start position + 5 bits alignment -> + 1 byte
         assertEquals(OFFSET + 1, uint64Offset.getOffset().longValue());
@@ -73,7 +72,7 @@ public class UInt64OffsetTest
     public void write() throws IOException, ZserioError
     {
         final UInt64Offset uint64Offset = new UInt64Offset();
-        uint64Offset.setArray(new ByteArray(ARRAY_SIZE));
+        uint64Offset.setArray(new byte[ARRAY_SIZE]);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint64Offset.write(writer);
         assertEquals(OFFSET, uint64Offset.getOffset().longValue());
@@ -84,7 +83,7 @@ public class UInt64OffsetTest
     public void writeWithPosition() throws IOException, ZserioError
     {
         final UInt64Offset uint64Offset = new UInt64Offset();
-        uint64Offset.setArray(new ByteArray(ARRAY_SIZE));
+        uint64Offset.setArray(new byte[ARRAY_SIZE]);
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeBits(0, 3);
         uint64Offset.write(writer);
@@ -96,7 +95,7 @@ public class UInt64OffsetTest
     public void writeWrongOffsets() throws ZserioError, IOException
     {
         final UInt64Offset uint64Offset = new UInt64Offset();
-        uint64Offset.setArray(new ByteArray(ARRAY_SIZE));
+        uint64Offset.setArray(new byte[ARRAY_SIZE]);
         uint64Offset.setOffset(BigInteger.valueOf(WRONG_OFFSET));
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         uint64Offset.write(writer, false);

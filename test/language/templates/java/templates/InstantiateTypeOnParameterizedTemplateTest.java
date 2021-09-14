@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
-import zserio.runtime.array.UnsignedIntArray;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
@@ -24,9 +23,8 @@ public class InstantiateTypeOnParameterizedTemplateTest
     @Test
     public void readWrite() throws IOException
     {
-        final Parameterized parameterized = new Parameterized(2, new UnsignedIntArray(2));
-        parameterized.getArray().setElementAt(13, 0);
-        parameterized.getArray().setElementAt(42, 1);
+        final long[] array = new long[] { 13, 42 };
+        final Parameterized parameterized = new Parameterized(2, array);
         final InstantiateTypeOnParameterizedTemplate instantiateTypeOnParameterizedTemplate =
                 new InstantiateTypeOnParameterizedTemplate(2, new TestP(2, parameterized));
 
