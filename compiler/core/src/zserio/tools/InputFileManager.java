@@ -89,7 +89,9 @@ public class InputFileManager
     /**
      * Returns true if the input file has been already registered.
      *
-     * @param fileName Input file full name name to check.
+     * @param fileFullName Input file full name name to check.
+     *
+     * @return True when the file is already registered.
      */
     public boolean isFileRegistered(String fileFullName)
     {

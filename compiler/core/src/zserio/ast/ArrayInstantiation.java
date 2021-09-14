@@ -12,12 +12,12 @@ public class ArrayInstantiation extends TypeInstantiation
     /**
      * Constructor.
      *
-     * @param location             AST node location.
-     * @param typeReference        Reference to the instantiated type definition.
-     * @param elementTypeArguments Arguments for the type instantiation.
-     * @param isPacked             Whether this array is packed.
-     * @param isImplicit           Whether this is an implicit array.
-     * @param lengthExpression     Array length expression.
+     * @param location                 AST node location.
+     * @param typeReference            Reference to the instantiated type definition.
+     * @param elementTypeInstantiation Element type instantiation.
+     * @param isPacked                 Whether this array is packed.
+     * @param isImplicit               Whether this is an implicit array.
+     * @param lengthExpression         Array length expression.
      */
     public ArrayInstantiation(AstLocation location, TypeReference typeReference,
             TypeInstantiation elementTypeInstantiation, boolean isPacked,
@@ -54,10 +54,10 @@ public class ArrayInstantiation extends TypeInstantiation
     /**
      * Gets whether the array is a packed array.
      *
-     * \note Packed arrays can be defined only for integral types or
+     * @note Packed arrays can be defined only for integral types or
      *       for structures which contain packable fields.
      *
-     * \return True if the array is packed, false otherwise.
+     * @return True if the array is packed, false otherwise.
      */
     public boolean isPacked()
     {
@@ -111,8 +111,7 @@ public class ArrayInstantiation extends TypeInstantiation
         if (!(super.getBaseType() instanceof ArrayType))
         {
             throw new ParserException(getTypeReference(), "Referenced type '" +
-                    ZserioTypeUtil.getReferencedFullName(getTypeReference()) +
-                    "' is not an array type!");
+                    ZserioTypeUtil.getReferencedFullName(getTypeReference()) + "' is not an array type!");
         }
     }
 

@@ -68,7 +68,7 @@ class Scope
     /**
      * Adds another scope to the scope.
      *
-     * @param scope Scope to be added.
+     * @param addedScope Scope to be added.
      */
     public void add(Scope addedScope)
     {

@@ -15,11 +15,11 @@ public class Function extends DocumentableAstNode implements ScopeSymbol
     /**
      * Constructor.
      *
-     * @param location           AST node location.
-     * @param returnTypeRefernce Type reference to the function return type.
-     * @param name               Name of the function type.
-     * @param resultExpression   Result expression of the function type.
-     * @param docComments        List of documentation comments belonging to this node.
+     * @param location            AST node location.
+     * @param returnTypeReference Type reference to the function return type.
+     * @param name                Name of the function type.
+     * @param resultExpression    Result expression of the function type.
+     * @param docComments         List of documentation comments belonging to this node.
      */
     public Function(AstLocation location, TypeReference returnTypeReference, String name,
             Expression resultExpression, List<DocComment> docComments)

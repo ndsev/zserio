@@ -58,6 +58,7 @@ public class BitmaskValue extends DocumentableAstNode implements ScopeSymbol
     /**
      * Gets the integer value.
      *
+     * @return Bitmask value.
      */
     public BigInteger getValue()
     {

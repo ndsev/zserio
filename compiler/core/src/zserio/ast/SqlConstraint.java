@@ -15,8 +15,8 @@ public class SqlConstraint extends AstNodeBase
     /**
      * Constructor.
      *
-     * @param location      AST node location.
-     * @param constaintExpr Constraint expression.
+     * @param location       AST node location.
+     * @param constraintExpr Constraint expression.
      */
     public SqlConstraint(AstLocation location, Expression constraintExpr)
     {
@@ -81,6 +81,8 @@ public class SqlConstraint extends AstNodeBase
      * Indicates if the SQL constraint allows 'NULL' value.
      *
      * By default, no SQL constraint means that 'NULL' value is allowed.
+     *
+     * @param sqlConstraint SQL constraint.
      *
      * @return True if the SQL constraint allows 'NULL' value.
      */

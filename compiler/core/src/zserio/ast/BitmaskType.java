@@ -20,7 +20,7 @@ public class BitmaskType extends DocumentableAstNode implements ZserioScopedType
      * @param pkg               Package to which belongs the bitmask type.
      * @param typeInstantiation Type instantiation of the bitmask type.
      * @param name              Name of the bitmask type.
-     * @param bitmaskValues     List of all named values which belong to the bitmask type.
+     * @param values            List of all named values which belong to the bitmask type.
      * @param docComments       List of documentation comments belonging to this node.
      */
     public BitmaskType(AstLocation location, Package pkg, TypeInstantiation typeInstantiation, String name,

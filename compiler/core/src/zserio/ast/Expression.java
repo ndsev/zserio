@@ -18,11 +18,16 @@ public class Expression extends AstNodeBase
      */
     public enum ExpressionFlag
     {
-        NONE,                       /** no flag */
-        IS_EXPLICIT,                /** the explicit keyword was before expression in the source */
-        IS_TOP_LEVEL_DOT,           /** the expression is top level dot operator */
-        IS_DOT_RIGHT_OPERAND_ID,    /** the expression is identifier which is dot right operand */
-        IS_DOT_LEFT_OPERAND_ID      /** the expression is identifier which is dot left operand */
+        /** no flag */
+        NONE,
+        /** the explicit keyword was before expression in the source */
+        IS_EXPLICIT,
+        /** the expression is top level dot operator */
+        IS_TOP_LEVEL_DOT,
+        /** the expression is identifier which is dot right operand */
+        IS_DOT_RIGHT_OPERAND_ID,
+        /** the expression is identifier which is dot left operand */
+        IS_DOT_LEFT_OPERAND_ID
     };
 
     /**

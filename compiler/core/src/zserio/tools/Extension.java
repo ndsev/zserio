@@ -52,6 +52,8 @@ public interface Extension
      *
      * @param rootNode   The root node of Zserio tree to check.
      * @param parameters The parameters to pass to extension.
+     *
+     * @throws ZserioExtensionException In case of any error in extension.
      */
     public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException;
 

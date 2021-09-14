@@ -13,7 +13,6 @@ public class DynamicBitFieldInstantiation extends TypeInstantiation
      *
      * @param location             AST node location.
      * @param typeReference        Reference to the instantiated type definition.
-     * @param elementTypeArguments Arguments for the type instantiation.
      * @param lengthExpression     Length expression associated with this dynamic bit field type.
      */
     public DynamicBitFieldInstantiation(AstLocation location, TypeReference typeReference,

@@ -55,17 +55,33 @@ public class ParserStackedException extends ParserException
      */
     public static class Message
     {
+        /**
+         * Constructor.
+         *
+         * @param location Location of the message source.
+         * @param message Message as a string.
+         */
         public Message(AstLocation location, String message)
         {
             this.location = location;
             this.message = message;
         }
 
+        /**
+         * Gets AST location of the message source.
+         *
+         * @return AST location.
+         */
         public AstLocation getLocation()
         {
             return location;
         }
 
+        /**
+         * Gets the message as a string.
+         *
+         * @return Message.
+         */
         public String getMessage()
         {
             return message;

@@ -57,8 +57,10 @@ class ExpressionIntegerValue
     /**
      * Constructor from BigInteger value, lower and upper bounds and from BigInteger flag.
      *
-     * @param lowerBound Lower bound to construct from.
-     * @param upperBound Upper bound to construct from.
+     * @param value           Value as a BigInteger.
+     * @param lowerBound      Lower bound to construct from.
+     * @param upperBound      Upper bound to construct from.
+     * @param needsBigInteger Whether big integer type is needed.
      */
     public ExpressionIntegerValue(BigInteger value, BigInteger lowerBound, BigInteger upperBound,
             boolean needsBigInteger)

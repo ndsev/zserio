@@ -75,7 +75,7 @@ public class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
     /**
      * Gets whether the message should be published.
      *
-     * @returns True when the message should be published, false otherwise.
+     * @return True when the message should be published, false otherwise.
      */
     public boolean isPublished()
     {
@@ -85,7 +85,7 @@ public class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
     /**
      * Gets whether the message should be subscribed.
      *
-     * @returns True when the message should be subscribed, false otherwise.
+     * @return True when the message should be subscribed, false otherwise.
      */
     public boolean isSubscribed()
     {

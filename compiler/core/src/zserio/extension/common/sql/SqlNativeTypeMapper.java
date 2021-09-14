@@ -33,7 +33,7 @@ public class SqlNativeTypeMapper
     /**
      * Gets SQLite3 native type from Zserio type.
      *
-     * @param type Zserio type to map to SQLite3 native type.
+     * @param typeInstantiation Zserio type to map to SQLite3 native type.
      *
      * @return Mapped Zserio type to SQLite3 native type.
      *

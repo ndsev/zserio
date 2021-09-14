@@ -71,7 +71,7 @@ public class PackageName implements Comparable<PackageName>
         /**
          * Appends given package name at the end of the building package name.
          *
-         * @param packageName
+         * @param packageName Package name.
          *
          * @return This builder for easy building.
          */

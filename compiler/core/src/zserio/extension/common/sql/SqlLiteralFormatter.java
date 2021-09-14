@@ -22,6 +22,8 @@ public class SqlLiteralFormatter
      * @param valueExpression Expression value to format.
      *
      * @return The value in SQLite format.
+     *
+     * @throws ZserioExtensionException In case of any error in the extension.
      */
     public static String formatLiteral(Expression valueExpression) throws ZserioExtensionException
     {

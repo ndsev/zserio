@@ -38,7 +38,7 @@ public interface TreeWalker
      *
      * @param root Current Root AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginRoot(Root root) throws ZserioExtensionException;
 
@@ -47,25 +47,25 @@ public interface TreeWalker
      *
      * @param root Current Root AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void endRoot(Root root) throws ZserioExtensionException;
 
     /**
      * Called when Package AST node begins.
      *
-     * @param translationUnit Current Package AST node.
+     * @param pkg Current Package AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginPackage(Package pkg) throws ZserioExtensionException;
 
     /**
      * Called when Package node ends.
      *
-     * @param translationUnit Current Package AST node.
+     * @param pkg Current Package AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void endPackage(Package pkg) throws ZserioExtensionException;
 
@@ -74,7 +74,7 @@ public interface TreeWalker
      *
      * @param importNode Current Import AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginImport(Import importNode) throws ZserioExtensionException;
 
@@ -83,7 +83,7 @@ public interface TreeWalker
      *
      * @param constant Current Constant AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginConst(Constant constant) throws ZserioExtensionException;
 
@@ -92,7 +92,7 @@ public interface TreeWalker
      *
      * @param ruleGroup Current RuleGroup AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginRuleGroup(RuleGroup ruleGroup) throws ZserioExtensionException;
 
@@ -101,7 +101,7 @@ public interface TreeWalker
      *
      * @param subType Current Subtype AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginSubtype(Subtype subType) throws ZserioExtensionException;
 
@@ -110,7 +110,7 @@ public interface TreeWalker
      *
      * @param structureType Current StructureType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginStructure(StructureType structureType) throws ZserioExtensionException;
 
@@ -119,7 +119,7 @@ public interface TreeWalker
      *
      * @param choiceType Current ChoiceType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginChoice(ChoiceType choiceType) throws ZserioExtensionException;
 
@@ -128,7 +128,7 @@ public interface TreeWalker
      *
      * @param unionType Current UnionType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginUnion(UnionType unionType) throws ZserioExtensionException;
 
@@ -137,7 +137,7 @@ public interface TreeWalker
      *
      * @param enumType Current EnumType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginEnumeration(EnumType enumType) throws ZserioExtensionException;
 
@@ -146,7 +146,7 @@ public interface TreeWalker
      *
      * @param bitmaskType Current BitmaskType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginBitmask(BitmaskType bitmaskType) throws ZserioExtensionException;
 
@@ -155,7 +155,7 @@ public interface TreeWalker
      *
      * @param sqlTableType Current SqlTableType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginSqlTable(SqlTableType sqlTableType) throws ZserioExtensionException;
 
@@ -164,7 +164,7 @@ public interface TreeWalker
      *
      * @param sqlDatabaseType Current SqlDatabaseType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType) throws ZserioExtensionException;
 
@@ -173,7 +173,7 @@ public interface TreeWalker
      *
      * @param service Current ServiceType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginService(ServiceType service) throws ZserioExtensionException;
 
@@ -182,7 +182,7 @@ public interface TreeWalker
      *
      * @param pubsub Current PubsubType AST node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginPubsub(PubsubType pubsub) throws ZserioExtensionException;
 
@@ -191,7 +191,7 @@ public interface TreeWalker
      *
      * @param instantiateType Current InstantiateType node.
      *
-     * @throws In case of any internal error of the extension.
+     * @throws ZserioExtensionException In case of any internal error of the extension.
      */
     public void beginInstantiateType(InstantiateType instantiateType) throws ZserioExtensionException;
 }

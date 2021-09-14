@@ -24,5 +24,5 @@ public interface AstNode
      *
      * @param visitor Visitor to use.
      */
-    public void visitChildren(ZserioAstVisitor vistor);
+    public void visitChildren(ZserioAstVisitor visitor);
 }

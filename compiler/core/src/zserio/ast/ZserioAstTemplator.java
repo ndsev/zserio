@@ -13,6 +13,11 @@ import zserio.tools.HashUtil;
  */
 public class ZserioAstTemplator extends ZserioAstWalker
 {
+    /**
+     * Constructor.
+     *
+     * @param typeResolver Type resolver.
+     */
     public ZserioAstTemplator(ZserioAstTypeResolver typeResolver)
     {
         this.typeResolver = typeResolver;

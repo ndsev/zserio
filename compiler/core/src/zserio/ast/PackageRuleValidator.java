@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * The class implements validation of rule IDs within a single package.
  *
- * Rule ID must be unique using case insensitive comparison wihtin a single package.
+ * Rule ID must be unique using case insensitive comparison within a single package.
  */
 class PackageRuleValidator extends ZserioAstWalker
 {

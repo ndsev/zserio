@@ -38,7 +38,7 @@ class CommandLineArguments
     /**
      * Gets the option abstraction to have possibility to add new options by extensions.
      *
-     * @returns The option abstraction.
+     * @return The option abstraction.
      */
     public Options getOptions()
     {
@@ -73,7 +73,7 @@ class CommandLineArguments
     /**
      * Gets the path name to the Zserio sources.
      *
-     * @returns Path name to the Zserio sources.
+     * @return Path name to the Zserio sources.
      */
     public String getSrcPathName()
     {
@@ -83,7 +83,7 @@ class CommandLineArguments
     /**
      * Gets the help option.
      *
-     * @returns True if command line arguments contain help option.
+     * @return True if command line arguments contain help option.
      */
     public boolean hasHelpOption()
     {
@@ -93,7 +93,7 @@ class CommandLineArguments
     /**
      * Gets the version option.
      *
-     * @returns True if command line arguments contain version option.
+     * @return True if command line arguments contain version option.
      */
     public boolean hasVersionOption()
     {
@@ -103,7 +103,7 @@ class CommandLineArguments
     /**
      * Gets whether the range check code option is enabled.
      *
-     * @returns True if command line arguments enable range check code option.
+     * @return True if command line arguments enable range check code option.
      */
     public boolean getWithRangeCheckCode()
     {
@@ -113,7 +113,7 @@ class CommandLineArguments
     /**
      * Gets whether the Pub/Sub code option is enabled.
      *
-     * @returns True if command line arguments enable Pub/Sub code option.
+     * @return True if command line arguments enable Pub/Sub code option.
      */
     public boolean getWithPubsubCode()
     {
@@ -123,7 +123,7 @@ class CommandLineArguments
     /**
      * Gets whether the Service code option is enabled.
      *
-     * @returns True if command line arguments enable Service code option.
+     * @return True if command line arguments enable Service code option.
      */
     public boolean getWithServiceCode()
     {
@@ -133,7 +133,7 @@ class CommandLineArguments
     /**
      * Gets whether the sources amalgamation option is enabled.
      *
-     * @returns True if sources amalgamation is enabled.
+     * @return True if sources amalgamation is enabled.
      */
     public boolean getWithSourcesAmalgamation()
     {
@@ -143,7 +143,7 @@ class CommandLineArguments
     /**
      * Gets whether the SQL code option is enabled.
      *
-     * @returns True if command line arguments enable SQL code option.
+     * @return True if command line arguments enable SQL code option.
      */
     public boolean getWithSqlCode()
     {
@@ -153,7 +153,7 @@ class CommandLineArguments
     /**
      * Gets whether the validation code option is enabled.
      *
-     * @returns True if command line arguments enable validation code option.
+     * @return True if command line arguments enable validation code option.
      */
     public boolean getWithValidationCode()
     {
@@ -163,7 +163,7 @@ class CommandLineArguments
     /**
      * Gets whether the writer code option.
      *
-     * @returns True if command line arguments enable writer code option.
+     * @return True if command line arguments enable writer code option.
      */
     public boolean getWithWriterCode()
     {
@@ -173,7 +173,7 @@ class CommandLineArguments
     /**
      * Gets whether warnings for unused types are enabled.
      *
-     * @returns True if command line arguments enable unused warnings option.
+     * @return True if command line arguments enable unused warnings option.
      */
     public boolean getWithUnusedWarnings()
     {
@@ -193,7 +193,7 @@ class CommandLineArguments
     /**
      * Gets the top level package name identifier list.
      *
-     * @returns List of top level package name identifier or empty list if not specified.
+     * @return List of top level package name identifier or empty list if not specified.
      */
     public List<String> getTopLevelPackageNameIds()
     {
@@ -214,6 +214,8 @@ class CommandLineArguments
      * Returns true if command line arguments contain given option name.
      *
      * @param optionName Option name to check.
+     *
+     * @return True if the option is present.
      */
     public boolean hasOption(String optionName)
     {

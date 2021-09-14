@@ -50,7 +50,7 @@ public class ExtensionParameters
     /**
      * Gets the file name of the initial Zserio file.
      *
-     * @returns The file name of the initial Zserio file.
+     * @return The file name of the initial Zserio file.
      */
     public String getFileName()
     {
@@ -60,7 +60,7 @@ public class ExtensionParameters
     /**
      * Gets the pathname to Zserio source files.
      *
-     * @returns The pathname to Zserio source files.
+     * @return The pathname to Zserio source files.
      */
     public String getPathName()
     {
@@ -70,7 +70,7 @@ public class ExtensionParameters
     /**
      * Gets the range check code flag.
      *
-     * @returns True if range checking is enabled.
+     * @return True if range checking is enabled.
      */
     public boolean getWithRangeCheckCode()
     {
@@ -79,6 +79,8 @@ public class ExtensionParameters
 
     /**
      * Gets the Pub/Sub code flag.
+     *
+     * @return True when generation of pub/sub code is enabled.
      */
     public boolean getWithPubsubCode()
     {
@@ -87,6 +89,8 @@ public class ExtensionParameters
 
     /**
      * Gets the service code flag.
+     *
+     * @return True when generation of service code is enabled.
      */
     public boolean getWithServiceCode()
     {
@@ -106,7 +110,7 @@ public class ExtensionParameters
     /**
      * Gets the SQL commands code flag.
      *
-     * @returns True if code for SQL commands is enabled.
+     * @return True if code for SQL commands is enabled.
      */
     public boolean getWithSqlCode()
     {
@@ -116,7 +120,7 @@ public class ExtensionParameters
     /**
      * Gets the include validation flag.
      *
-     * @returns True if validation is enabled.
+     * @return True if validation code is enabled.
      */
     public boolean getWithValidationCode()
     {
@@ -126,7 +130,7 @@ public class ExtensionParameters
     /**
      * Gets the writer code flag.
      *
-     * @returns True if writer code is enabled.
+     * @return True if writer code is enabled.
      */
     public boolean getWithWriterCode()
     {
