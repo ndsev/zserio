@@ -118,24 +118,24 @@ public class PackedVariableArrayStructTest
 
     private TestStructure createTestStructure(int index)
     {
-        final String name = new String("name" + index);
+        final String name = "name" + index;
         final BitBuffer data = new BitBuffer(new byte[] {(byte)0xCD, (byte)0xC0}, 10);
 
         final TestChoice testChoice = new TestChoice(index);
         if (index == 0 || index == 2 || index == 4)
             testChoice.setValue16(index);
         else if (index == 5)
-            testChoice.setArray32(new long[] {index * 2, index * 2 + 1});
+            testChoice.setArray32(new long[] {(long)index * 2, (long)index * 2 + 1});
         else
-            testChoice.setValue32(new Value32(index * 2));
+            testChoice.setValue32(new Value32((long)index * 2));
 
         final TestUnion testUnion = new TestUnion();
         if ((index % 2) == 0)
             testUnion.setValue16(index);
         else if (index == 5)
-            testUnion.setArray32(new long[] {index * 2, index * 2 + 1});
+            testUnion.setArray32(new long[] {(long)index * 2, (long)index * 2 + 1});
         else
-            testUnion.setValue32(new Value32(index * 2));
+            testUnion.setValue32(new Value32((long)index * 2));
 
         final TestEnum testEnum = ((index % 2) == 0) ? TestEnum.DARK_RED : TestEnum.DARK_GREEN;
         final TestBitmask testBitmask = ((index % 2) == 0) ? TestBitmask.Values.READ :

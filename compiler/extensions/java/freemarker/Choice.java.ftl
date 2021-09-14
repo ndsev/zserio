@@ -97,6 +97,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#list>
     }
 
+<#function choice_needs_init_packing_context fieldList>
+    <#list fieldList as field>
+        <#if field.isPackable && !field.array??>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>
 <#macro choice_init_packing_context_member member indent packed index>
     <#if member.compoundField??>
         <@compound_init_packing_context_field member.compoundField, index, indent/>
@@ -108,7 +116,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
+<#if choice_needs_init_packing_context(fieldList)>
         <@choice_switch "choice_init_packing_context_member", 2, true/>
+</#if>
     }
 
     @Override
