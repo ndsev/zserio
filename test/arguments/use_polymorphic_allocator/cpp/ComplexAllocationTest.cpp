@@ -75,6 +75,12 @@ protected:
         writer.writeBits(STRUCT_BIT7_ARRAY_ELEMENT1, 7);
         writer.writeBits(STRUCT_BIT7_ARRAY_ELEMENT2, 7);
         writer.writeString(zserio::string<>(STRUCT_STRING_FIELD));
+        writer.writeVarSize(STRUCT_PACKED_UINT16_ARRAY_SIZE);
+        writer.writeBool(true);
+        writer.writeBits(STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER, 6);
+        writer.writeBits(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0, 16);
+        writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA, STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1);
+        writer.writeSignedBits(STRUCT_PACKED_UINT16_ARRAY_DELTA, STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER + 1);
 
         // structOptionalField
         writer.writeBool(true);
@@ -155,6 +161,11 @@ protected:
         bit7Array.push_back(STRUCT_BIT7_ARRAY_ELEMENT2);
         auto& stringField = structField.getStringField();
         stringField.assign(STRUCT_STRING_FIELD);
+        auto& packedUInt16Array = structField.getPackedUInt16Array();
+        packedUInt16Array.reserve(STRUCT_PACKED_UINT16_ARRAY_SIZE);
+        packedUInt16Array.push_back(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0);
+        packedUInt16Array.push_back(STRUCT_PACKED_UINT16_ARRAY_ELEMENT1);
+        packedUInt16Array.push_back(STRUCT_PACKED_UINT16_ARRAY_ELEMENT2);
     }
 
     void fillOptionalField(allocation_struct_optional::AllocationStructOptional& structOptionalField,
@@ -283,6 +294,11 @@ protected:
         ASSERT_EQ(STRUCT_BIT7_ARRAY_ELEMENT1, bit7Array[1]);
         ASSERT_EQ(STRUCT_BIT7_ARRAY_ELEMENT2, bit7Array[2]);
         ASSERT_EQ(STRUCT_STRING_FIELD, structField.getStringField());
+        const auto& packedUInt16Array = structField.getPackedUInt16Array();
+        ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_SIZE, packedUInt16Array.size());
+        ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0, packedUInt16Array[0]);
+        ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT1, packedUInt16Array[1]);
+        ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT2, packedUInt16Array[2]);
 
         // structOptionalField
         const auto& optionalField0 = mainStructure.getStructOptionalField();
@@ -729,11 +745,14 @@ protected:
         InvalidMemoryResource invalidMemoryResource;
         MemoryResourceScopedSetter invalidMemoryResourceScopedSetter(invalidMemoryResource);
 
+        zserio::BitStreamWriter writer(bitBuffer);
+        writeMainStructure(writer, hasArray);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+
         TestMemoryResource<> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
-            MainStructure mainStructure(allocator);
-            fillMainStructure(mainStructure, allocator, hasArray);
+            MainStructure mainStructure(reader, allocator);
 
             // check that no further memory allocation will take place
             const size_t numAllocations = memoryResource.getNumAllocations();
@@ -758,18 +777,21 @@ protected:
         InvalidMemoryResource invalidMemoryResource;
         MemoryResourceScopedSetter invalidMemoryResourceScopedSetter(invalidMemoryResource);
 
+        zserio::BitStreamWriter writer(bitBuffer);
+        writeMainStructure(writer, hasArray);
+        zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
+
         TestMemoryResource<> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
-            MainStructure mainStructure(allocator);
-            fillMainStructure(mainStructure, allocator, hasArray);
+            MainStructure mainStructure(reader, allocator);
 
             // check that no further memory allocation will take place
             const size_t numAllocations = memoryResource.getNumAllocations();
             const size_t allocatedSize = memoryResource.getAllocatedSize();
+            const size_t bitPosition = 1;
             const size_t expectedBitSize = (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE :
                     MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
-            const size_t bitPosition = 1;
             ASSERT_EQ(bitPosition + expectedBitSize, mainStructure.initializeOffsets(bitPosition));
             ASSERT_EQ(numAllocations, memoryResource.getNumAllocations());
             ASSERT_EQ(allocatedSize, memoryResource.getAllocatedSize());
@@ -870,13 +892,16 @@ protected:
             MainStructure mainStructure(allocator);
             fillMainStructure(mainStructure, allocator, hasArray);
 
+            // call bitSizeOf to allocate possible packing context for packed arrays
+            const size_t expectedBitSize = (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE :
+                    MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
+            ASSERT_EQ(expectedBitSize, mainStructure.bitSizeOf(0));
+
             // check that no further memory allocation will take place
             const size_t numAllocations = memoryResource.getNumAllocations();
             const size_t allocatedSize = memoryResource.getAllocatedSize();
             zserio::BitStreamWriter writer(bitBuffer);
             mainStructure.write(writer);
-            const size_t expectedBitSize = (hasArray) ? MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE :
-                    MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE;
             ASSERT_EQ(expectedBitSize, writer.getBitPosition());
             ASSERT_EQ(numAllocations, memoryResource.getNumAllocations());
             ASSERT_EQ(allocatedSize, memoryResource.getAllocatedSize());
@@ -981,6 +1006,12 @@ private:
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT1;
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT2;
     static const char* STRUCT_STRING_FIELD;
+    static const uint32_t STRUCT_PACKED_UINT16_ARRAY_SIZE;
+    static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT0;
+    static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT1;
+    static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT2;
+    static const int8_t STRUCT_PACKED_UINT16_ARRAY_DELTA;
+    static const uint8_t STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER;
 
     static const uint32_t STRUCT_OPTIONAL_NAMES0_SIZE;
     static const char* STRUCT_OPTIONAL_NAMES0_ELEMENT0;
@@ -1028,6 +1059,12 @@ const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT0 = 0x2B;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT1 = 0x4D;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT2 = 0x6F;
 const char* ComplexAllocationTest::STRUCT_STRING_FIELD = "Structure String Field Must Be Longer Than 32 Bytes";
+const uint32_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_SIZE = 3;
+const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT0 = 0xCAFC;
+const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT1 = 0xCAFD;
+const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT2 = 0xCAFE;
+const int8_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_DELTA = 1;
+const uint8_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER = 1;
 
 const uint32_t ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_SIZE = 2;
 const char* ComplexAllocationTest::STRUCT_OPTIONAL_NAMES0_ELEMENT0 =
@@ -1047,8 +1084,8 @@ const uint8_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT0_DATA = 0xAE;
 const uint8_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE = 15;
 const uint16_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT1_DATA = 0xEA;
 
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3254;
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3221;
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3289;
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3256;
 
 TEST_F(ComplexAllocationTest, readConstructor)
 {

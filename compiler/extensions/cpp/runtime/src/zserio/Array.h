@@ -199,21 +199,18 @@ public:
     /**
      * Copy constructor.
      *
-     * Note that packing context node is not copied since it will be lazy initialized once it's needed.
-     * Moreover this approach makes it easier to implement allocator propagating copy constructor.
-     *
      * \param other Source array to copy.
      */
     Array(const Array& other)
     :   m_rawArray(other.m_rawArray), m_arrayTraits(other.m_arrayTraits),
         m_packedArrayTraits(other.m_packedArrayTraits)
-    {}
+    {
+        if (other.m_packingContextNode)
+            createContext();
+    }
 
     /**
      * Copy assignment operator.
-     *
-     * Note that packing context node is not copied since it will be lazy initialized once it's needed.
-     * Moreover this approach makes it easier to implement allocator propagating copy constructor.
      *
      * \param other Source array to copy.
      *
@@ -225,7 +222,10 @@ public:
         m_arrayTraits = other.m_arrayTraits;
         m_packedArrayTraits = other.m_packedArrayTraits;
 
-        return  *this;
+        if (other.m_packingContextNode)
+            createContext();
+
+        return *this;
     }
 
     /**
@@ -243,9 +243,6 @@ public:
     /**
      * Copy constructor which forces allocator propagating while copying the raw array.
      *
-     * Note that packing context node is not copied since it will be lazy initialized once it's needed.
-     * Moreover this approach makes it easier to implement allocator propagating copy constructor.
-     *
      * \param other Source array to copy.
      * \param allocator Allocator to propagate during copying.
      */
@@ -253,7 +250,10 @@ public:
             const Array& other, const allocator_type& allocator) :
             m_rawArray(::zserio::allocatorPropagatingCopy(other.m_rawArray, allocator)),
             m_arrayTraits(other.m_arrayTraits), m_packedArrayTraits(other.m_packedArrayTraits)
-    {}
+    {
+        if (other.m_packingContextNode)
+            createContext();
+    }
 
     /**
      * Gets raw array.
@@ -858,15 +858,18 @@ private:
     PackingContextNodeType& getPackingContextNode() const
     {
         if (!m_packingContextNode) // lazy init
-        {
-            m_packingContextNode = allocate_unique<PackingContextNodeType>(
-                    m_rawArray.get_allocator(), m_rawArray.get_allocator());
-            m_packedArrayTraits.createContext(*m_packingContextNode);
-        }
+            createContext();
         else
             resetContext(*m_packingContextNode);
 
         return *m_packingContextNode;
+    }
+
+    void createContext() const
+    {
+        m_packingContextNode = allocate_unique<PackingContextNodeType>(
+                m_rawArray.get_allocator(), m_rawArray.get_allocator());
+        m_packedArrayTraits.createContext(*m_packingContextNode);
     }
 
     static void resetContext(PackingContextNodeType& contextNode)
