@@ -99,8 +99,8 @@ protected:
     static const uint32_t   WRONG_OFFSET = 0;
 
     static const size_t     AUTO_ARRAY_LENGTH_BYTE_SIZE = 1;
-    static const uint32_t   ELEMENT0_OFFSET = AUTO_ARRAY_LENGTH_BYTE_SIZE + NUM_ELEMENTS * sizeof(uint32_t) +
-            AUTO_ARRAY_LENGTH_BYTE_SIZE + sizeof(uint8_t) + 1;
+    static const uint32_t   ELEMENT0_OFFSET = AUTO_ARRAY_LENGTH_BYTE_SIZE + NUM_ELEMENTS * 4 +
+            (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 1 + 6 + 6 /* alignment */) / 8;
     static const uint8_t    ELEMENT_SIZE = 5;
     static const uint8_t    ALIGNED_ELEMENT_SIZE = 8;
     static const uint8_t    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;

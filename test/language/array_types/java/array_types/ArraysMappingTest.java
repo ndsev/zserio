@@ -64,6 +64,9 @@ public class ArraysMappingTest
         final short[] unsignedByteArray = new short[FIXED_ARRAY_LENGTH];
         arraysMapping.setVariableBitfieldByteArray(unsignedByteArray);
         assertTrue(Arrays.equals(unsignedByteArray, arraysMapping.getVariableBitfieldByteArray()));
+
+        arraysMapping.setLength64(BigInteger.valueOf(64));
+        arraysMapping.setVariableBitfield64Array(new BigInteger[FIXED_ARRAY_LENGTH]);
     }
 
     @Test
@@ -84,6 +87,9 @@ public class ArraysMappingTest
         final byte[] byteArray = new byte[FIXED_ARRAY_LENGTH];
         arraysMapping.setVariableIntfieldByteArray(byteArray);
         assertTrue(Arrays.equals(byteArray, arraysMapping.getVariableIntfieldByteArray()));
+
+        arraysMapping.setLength32(64);
+        arraysMapping.setVariableIntfield64Array(new long[FIXED_ARRAY_LENGTH]);
     }
 
     @Test

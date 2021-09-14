@@ -45,6 +45,9 @@ struct ArraysMapping
     bit<getNumBitsForInt()>     variableBitfieldIntArray[5];
     bit<getNumBitsForShort()>   variableBitfieldShortArray[5];
     bit<getNumBitsForByte()>    variableBitfieldByteArray[5];
+    // intentionally uses uint64 length since it's mapped to BigInteger in Java
+    uint64                      length64;
+    bit<length64>               variableBitfield64Array[5];
 
     // signed bitfield arrays
     int:8                       intfield8Array[5];
@@ -56,6 +59,9 @@ struct ArraysMapping
     int<getNumBitsForInt()>     variableIntfieldIntArray[5];
     int<getNumBitsForShort()>   variableIntfieldShortArray[5];
     int<getNumBitsForByte()>    variableIntfieldByteArray[5];
+    // intentionally uses uint32 length since it's mapped to long in Java
+    uint32                      length32;
+    int<length32>               variableIntfield64Array[5];
 
     // float arrays
     float16                     float16Array[5];

@@ -74,12 +74,12 @@ public class PackedVariableArrayStructTest
     private void checkBitSizeOf(int numElements) throws IOException, ZserioError
     {
         final PackedVariableArray packedVariableArray = createPackedVariableArray(numElements);
-        final int unpackedBitsizeOf = packedVariableArray.getTestUnpackedArray().bitSizeOf();
-        final int packedBitsizeOf = packedVariableArray.getTestPackedArray().bitSizeOf();
+        final int unpackedBitSizeOf = packedVariableArray.getTestUnpackedArray().bitSizeOf();
+        final int packedBitSizeOf = packedVariableArray.getTestPackedArray().bitSizeOf();
         final double minCompressionRatio = 0.59;
-        assertTrue("Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
-                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!",
-                unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf);
+        assertTrue("Unpacked array has " + unpackedBitSizeOf + " bits, packed array has " + packedBitSizeOf +
+                " bits, " + "compression ratio is " + packedBitSizeOf * 100.0 / unpackedBitSizeOf + "%!",
+                unpackedBitSizeOf * minCompressionRatio > packedBitSizeOf);
     }
 
     private void checkWriteRead(int numElements) throws IOException, ZserioError
@@ -133,7 +133,7 @@ public class PackedVariableArrayStructTest
         if ((index % 2) == 0)
             testUnion.setValue16(index);
         else if (index == 5)
-            testUnion.setArray32(new long[] {index *2, index * 2 + 1});
+            testUnion.setArray32(new long[] {index * 2, index * 2 + 1});
         else
             testUnion.setValue32(new Value32(index * 2));
 

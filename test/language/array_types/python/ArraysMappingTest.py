@@ -40,6 +40,8 @@ class ArraysMappingTest(unittest.TestCase):
         arraysMapping.variable_bitfield_int_array = intArray
         arraysMapping.variable_bitfield_short_array = intArray
         arraysMapping.variable_bitfield_byte_array = intArray
+        arraysMapping.length64 = 64
+        arraysMapping.variable_bitfield64_array = intArray
 
     def testSignedBitfieldArrays(self):
         arraysMapping = self.api.ArraysMapping()
@@ -54,6 +56,8 @@ class ArraysMappingTest(unittest.TestCase):
         arraysMapping.variable_intfield_int_array = intArray
         arraysMapping.variable_intfield_short_array = intArray
         arraysMapping.variable_intfield_byte_array = intArray
+        arraysMapping.length32 = 64
+        arraysMapping.variable_intfield32_array = intArray
 
     def testFloatArrays(self):
         arraysMapping = self.api.ArraysMapping()

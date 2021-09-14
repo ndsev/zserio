@@ -158,11 +158,16 @@ public class PackedAutoArrayStructRecursionTest
     {
         final FileBitStreamWriter writer = new FileBitStreamWriter(file);
 
-        writer.writeUnsignedByte((short) 0);
+        writer.writeBits(0, 8);
         writer.writeVarSize(numElements);
+        writer.writeBool(true);
+        final byte maxBitNumber = 1;
+        writer.writeBits(maxBitNumber, 6);
+        writer.writeBits(1, 8);
+        writer.writeVarSize(0);
         for (short i = 1; i <= numElements; ++i)
         {
-            writer.writeUnsignedByte(i);
+            writer.writeSignedBits(1, maxBitNumber + 1);
             writer.writeVarSize(0);
         }
 
