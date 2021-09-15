@@ -10,6 +10,10 @@ namespace parameterized_types
 namespace grand_child_param
 {
 
+using allocator_type = GrandChildParam::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
 class ParameterizedTypesGrandChildParamTest : public ::testing::Test
 {
 protected:
@@ -28,10 +32,10 @@ protected:
         ItemChoiceHolder& itemChoiceHolder = grandChildParam.getItemChoiceHolder();
         fillItemChoiceHolder(itemChoiceHolder);
 
-        std::vector<ItemChoiceHolder>& itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
+        auto& itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
         itemChoiceHolderArray.push_back(itemChoiceHolder);
 
-        std::vector<uint32_t> dummyArray(1);
+        vector_type<uint32_t> dummyArray(1);
         grandChildParam.setDummyArray(dummyArray);
     }
 
@@ -51,7 +55,7 @@ protected:
         const ItemChoiceHolder& itemChoiceHolder = grandChildParam.getItemChoiceHolder();
         checkItemChoiceHolderInBitStream(reader, itemChoiceHolder);
 
-        const std::vector<ItemChoiceHolder>& itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
+        const auto& itemChoiceHolderArray = grandChildParam.getItemChoiceHolderArray();
         ASSERT_EQ(itemChoiceHolderArray.size(), reader.readVarSize());
         checkItemChoiceHolderInBitStream(reader, itemChoiceHolderArray[0]);
 
@@ -59,7 +63,7 @@ protected:
         ASSERT_EQ(isDummyArrayUsed, reader.readBool());
         if (isDummyArrayUsed)
         {
-            const std::vector<uint32_t> dummyArray = grandChildParam.getDummyArray();
+            const auto& dummyArray = grandChildParam.getDummyArray();
             ASSERT_EQ(dummyArray.size(), reader.readVarSize());
             ASSERT_EQ(dummyArray[0], reader.readBits(32));
         }

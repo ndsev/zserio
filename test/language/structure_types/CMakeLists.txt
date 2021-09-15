@@ -6,6 +6,15 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.cpp
     ${ZSERIO_GEN_DIR}/structure_types/empty_structure_with_parameter/EmptyStructureWithParameter.h
 
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/FieldConstructorClashing.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/FieldConstructorClashing.h
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/CompoundPackingRead.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/CompoundPackingRead.h
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/CompoundRead.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/CompoundRead.h
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/Field.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/field_constructor_clashing/Field.h
+
     ${ZSERIO_GEN_DIR}/structure_types/one_string_structure/OneStringStructure.cpp
     ${ZSERIO_GEN_DIR}/structure_types/one_string_structure/OneStringStructure.h
 
@@ -26,6 +35,7 @@ zserio_add_library(TARGET structure_types_zs
 add_test_sources(
     cpp/EmptyStructureTest.cpp
     cpp/EmptyStructureWithParameterTest.cpp
+    cpp/FieldConstructorClashingTest.cpp
     cpp/OneStringStructureTest.cpp
     cpp/SimpleStructureTest.cpp
 )

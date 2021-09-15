@@ -7,18 +7,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.h
 
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundPacking.cpp
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundPacking.h
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundPackingTest.cpp
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundPackingTest.h
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundRead.cpp
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundRead.h
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundReadTest.cpp
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/CompoundReadTest.h
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Field.cpp
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Field.h
-    ${ZSERIO_GEN_DIR}/parameterized_types/compound_and_field_with_same_param/Param.h
-    
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/GrandChildParam.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/GrandChildParam.h
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/Item.cpp
@@ -57,7 +45,6 @@ zserio_add_library(TARGET parameterized_types_zs
 
 add_test_sources(
     cpp/ArrayElementParamTest.cpp
-    cpp/CompoundAndFieldWithSameParamTest.cpp
     cpp/GrandChildParamTest.cpp
     cpp/PackedArrayElementParamTest.cpp
     cpp/SimpleParamTest.cpp
