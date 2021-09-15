@@ -1,4 +1,4 @@
-name: build-ubuntu_16_04
+name: build-ubuntu_20_04
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-20.04
     env:
       CPPCHECK_HOME: "${{github.workspace}}/cppcheck-1.90"
       SPOTBUGS_HOME: "${{github.workspace}}/spotbugs-3.1.12"
