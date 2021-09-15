@@ -74,17 +74,19 @@ ${I}new <@offset_initializer_name field.name/>()<#rt>
 
 <#macro array_traits field>
     <#if field.array??>
-new ${field.array.traits.name}(<#rt>
-        <#if field.array.traits.requiresElementBitSize>
+new ${field.array.arrayTraits.name}(<#rt>
+        <#if field.array.arrayTraits.requiresElementBitSize>
         (int)(${field.array.elementBitSize.value})<#t>
-        <#elseif field.array.traits.requiresElementFactory>
+        <#elseif field.array.arrayTraits.requiresElementFactory>
         new <@element_factory_name field.name/>()<#t>
         </#if>
         )<#t>
     <#else>
-new ${field.arrayTraits.name}(<#rt>
-        <#if field.arrayTraits.requiresElementBitSize>
-            (int)(${field.bitSize.value})<#t>
+new ${field.arrayableInfo.arrayTraits.name}(<#rt>
+        <#if field.arrayableInfo.arrayTraits.requiresElementBitSize>
+        (int)(${field.bitSize.value})<#t>
+        <#elseif field.arrayableInfo.arrayTraits.requiresElementFactory>
+        new <@element_factory_name field.name/>()<#t>
         </#if>
         )<#t>
     </#if>
@@ -151,7 +153,7 @@ ${I}in.alignTo(${field.alignmentValue});
     </#if>
     <#if packed && field.isPackable && !field.array??>
         <#if field.isIntegralType>
-${I}<@field_member_name field/> = ((${field.arrayElement})
+${I}<@field_member_name field/> = ((${field.arrayableInfo.arrayElement})
 ${I}        <@compound_field_packing_context_node field, index/>.getContext().read(
 ${I}                <@array_traits field/>, in)).get();
         <#elseif field.isEnum>
@@ -229,7 +231,7 @@ ${I}out.alignTo(${field.alignmentValue});
         <#if field.isIntegralType>
 ${I}<@compound_field_packing_context_node field, index/>.getContext().write(
 ${I}        <@array_traits field/>, out,
-${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
 ${I}<@compound_get_field field/>.write(<@compound_field_packing_context_node field, index/>, out);
         </#if>
@@ -312,7 +314,7 @@ ${I}}
         <#if field.isIntegralType>
 ${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
 ${I}        <@array_traits field/>, endBitPosition,
-${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(<@compound_field_packing_context_node field, index/>,
 ${I}        endBitPosition);
@@ -362,7 +364,7 @@ ${I}}
         <#if field.isIntegralType>
 ${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
 ${I}        <@array_traits field/>, endBitPosition,
-${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(<@compound_field_packing_context_node field, index/>,
 ${I}        endBitPosition);
@@ -439,7 +441,7 @@ ${I}}
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isIntegralType>
 ${I}<@compound_field_packing_context_node field, index/>.getContext().init(
-${I}        new ${field.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
     <#else>
 ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_context_node field, index/>);
     </#if>
@@ -538,7 +540,7 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
                 <@define_offset_initializer field/>
             </#if>
         </#if>
-        <#if field.array.traits.requiresElementFactory>
+        <#if field.array.arrayTraits.requiresElementFactory>
 
             <@define_element_factory field/>
         </#if>

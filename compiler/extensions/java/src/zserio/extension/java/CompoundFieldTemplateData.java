@@ -21,6 +21,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 import zserio.extension.java.types.NativeArrayTraits;
 import zserio.extension.java.types.NativeArrayType;
+import zserio.extension.java.types.NativeArrayableType;
 import zserio.extension.java.types.NativeBooleanType;
 import zserio.extension.java.types.NativeDoubleType;
 import zserio.extension.java.types.NativeEnumType;
@@ -77,8 +78,7 @@ public final class CompoundFieldTemplateData
 
         bitSize = new BitSize(fieldTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter);
-        arrayTraits = createArrayTraits(nativeType);
-        arrayElement = createArrayElement(nativeType);
+        arrayableInfo = createArrayableInfo(nativeType);
         array = createArray(nativeType, fieldTypeInstantiation, parentType, javaNativeMapper, withWriterCode,
                 javaExpressionFormatter);
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
@@ -192,14 +192,9 @@ public final class CompoundFieldTemplateData
         return offset;
     }
 
-    public ArrayTraitsTemplateData getArrayTraits()
+    public ArrayableInfoTemplateData getArrayableInfo()
     {
-        return arrayTraits;
-    }
-
-    public String getArrayElement()
-    {
-        return arrayElement;
+        return arrayableInfo;
     }
 
     public Array getArray()
@@ -358,7 +353,7 @@ public final class CompoundFieldTemplateData
             rawHolderJavaTypeName = nativeRawArray.getFullName();
 
             final NativeArrayTraits nativeArrayTraits = nativeType.getArrayTraits();
-            traits = new ArrayTraitsTemplateData(nativeArrayTraits);
+            arrayTraits = new ArrayTraitsTemplateData(nativeArrayTraits);
 
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementJavaTypeName = elementNativeType.getFullName();
@@ -397,9 +392,9 @@ public final class CompoundFieldTemplateData
             return rawHolderJavaTypeName;
         }
 
-        public ArrayTraitsTemplateData getTraits()
+        public ArrayTraitsTemplateData getArrayTraits()
         {
-            return traits;
+            return arrayTraits;
         }
 
         public String getElementJavaTypeName()
@@ -469,7 +464,7 @@ public final class CompoundFieldTemplateData
         private final String length;
         private final String wrapperJavaTypeName;
         private final String rawHolderJavaTypeName;
-        private final ArrayTraitsTemplateData traits;
+        private final ArrayTraitsTemplateData arrayTraits;
         private final String elementJavaTypeName;
         private final boolean requiresElementClass;
         private final boolean requiresParentContext;
@@ -593,18 +588,10 @@ public final class CompoundFieldTemplateData
         return new Offset(offsetExpression, javaNativeMapper, javaExpressionFormatter);
     }
 
-    private static ArrayTraitsTemplateData createArrayTraits(JavaNativeType nativeType)
+    private static ArrayableInfoTemplateData createArrayableInfo(JavaNativeType nativeType)
     {
-        if (nativeType instanceof NativeIntegralType)
-            return new ArrayTraitsTemplateData(((NativeIntegralType)nativeType).getArrayTraits());
-        else
-            return null;
-    }
-
-    private static String createArrayElement(JavaNativeType nativeType)
-    {
-        if (nativeType instanceof NativeIntegralType)
-            return ((NativeIntegralType)nativeType).getArrayElement().getFullName();
+        if (nativeType instanceof NativeArrayableType)
+            return new ArrayableInfoTemplateData((NativeArrayableType)nativeType);
         else
             return null;
     }
@@ -667,8 +654,7 @@ public final class CompoundFieldTemplateData
     private final String constraint;
     private final BitSize bitSize;
     private final Offset offset;
-    private final String arrayElement;
-    private final ArrayTraitsTemplateData arrayTraits;
+    private final ArrayableInfoTemplateData arrayableInfo;
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final Compound compound;

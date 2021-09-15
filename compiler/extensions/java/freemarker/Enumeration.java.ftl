@@ -1,8 +1,8 @@
 <#include "FileHeader.inc.ftl">
 <@standard_header generatorDescription, packageName/>
-<#macro enum_array_traits arrayTraits bitSize>
-new ${arrayTraits.name}(<#rt>
-        <#if arrayTraits.requiresElementBitSize>
+<#macro enum_array_traits arrayableInfo bitSize>
+new ${arrayableInfo.arrayTraits.name}(<#rt>
+        <#if arrayableInfo.arrayTraits.requiresElementBitSize>
             ${bitSize}<#t>
         </#if>
             )<#t>
@@ -39,7 +39,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
-        contextNode.getContext().init(new ${arrayElement}(value));
+        contextNode.getContext().init(new ${arrayableInfo.arrayElement}(value));
     }
 
     @Override
@@ -62,8 +62,8 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
         return contextNode.getContext().bitSizeOf(
-                <@enum_array_traits arrayTraits, bitSize!/>, bitPosition,
-                new ${arrayElement}(value));
+                <@enum_array_traits arrayableInfo, bitSize!/>, bitPosition,
+                new ${arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>
 
@@ -97,8 +97,8 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
             zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
         contextNode.getContext().write(
-                <@enum_array_traits arrayTraits, bitSize!/>, out,
-                new ${arrayElement}(value));
+                <@enum_array_traits arrayableInfo, bitSize!/>, out,
+                new ${arrayableInfo.arrayElement}(value));
     }
 
 </#if>
@@ -111,9 +111,9 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     public static ${name} readEnum(zserio.runtime.array.PackingContextNode contextNode,
             zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
-        return toEnum(((${arrayElement})
+        return toEnum(((${arrayableInfo.arrayElement})
                 contextNode.getContext().read(
-                        <@enum_array_traits arrayTraits, bitSize!/>, in)).get());
+                        <@enum_array_traits arrayableInfo, bitSize!/>, in)).get());
     }
 
     public static ${name} toEnum(${baseJavaTypeName} value)

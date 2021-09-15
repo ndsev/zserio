@@ -34,8 +34,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         isLong = nativeIntegralType instanceof NativeLongType;
         isSimpleType = nativeIntegralType.isSimple();
 
-        arrayTraits = new ArrayTraitsTemplateData(nativeIntegralType.getArrayTraits());
-        arrayElement = nativeIntegralType.getArrayElement().getFullName();
+        arrayableInfo = new ArrayableInfoTemplateData(nativeIntegralType);
         bitSize = createBitSize(bitmaskType);
 
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(bitmaskTypeInstantiation,
@@ -69,14 +68,9 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         return isLong;
     }
 
-    public ArrayTraitsTemplateData getArrayTraits()
+    public ArrayableInfoTemplateData getArrayableInfo()
     {
-        return arrayTraits;
-    }
-
-    public String getArrayElement()
-    {
-        return arrayElement;
+        return arrayableInfo;
     }
 
     public String getBitSize()
@@ -181,8 +175,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
     private final String baseJavaTypeName;
     private final boolean isSimpleType;
     private final boolean isLong;
-    private final ArrayTraitsTemplateData arrayTraits;
-    private final String arrayElement;
+    private final ArrayableInfoTemplateData arrayableInfo;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String lowerBound;

@@ -1,8 +1,8 @@
 <#include "FileHeader.inc.ftl">
 <@standard_header generatorDescription, packageName/>
-<#macro bitmask_array_traits arrayTraits bitSize>
-new ${arrayTraits.name}(<#rt>
-        <#if arrayTraits.requiresElementBitSize>
+<#macro bitmask_array_traits arrayableInfo bitSize>
+new ${arrayableInfo.arrayTraits.name}(<#rt>
+        <#if arrayableInfo.arrayTraits.requiresElementBitSize>
         ${bitSize}<#t>
         </#if>
         )<#t>
@@ -42,9 +42,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-        value = ((${arrayElement})
+        value = ((${arrayableInfo.arrayElement})
                 contextNode.getContext().read(
-                        <@bitmask_array_traits arrayTraits, bitSize!/>, in)).get();
+                        <@bitmask_array_traits arrayableInfo, bitSize!/>, in)).get();
     }
 
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
@@ -55,7 +55,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
-        contextNode.getContext().init(new ${arrayElement}(value));
+        contextNode.getContext().init(new ${arrayableInfo.arrayElement}(value));
     }
 
     @Override
@@ -78,8 +78,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
         return contextNode.getContext().bitSizeOf(
-                <@bitmask_array_traits arrayTraits, bitSize!/>, bitPosition,
-                new ${arrayElement}(value));
+                <@bitmask_array_traits arrayableInfo, bitSize!/>, bitPosition,
+                new ${arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>
 
@@ -167,8 +167,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
         contextNode.getContext().write(
-                <@bitmask_array_traits arrayTraits, bitSize!/>, out,
-                new ${arrayElement}(value));
+                <@bitmask_array_traits arrayableInfo, bitSize!/>, out,
+                new ${arrayableInfo.arrayElement}(value));
     }
 </#if>
 
