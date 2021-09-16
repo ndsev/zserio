@@ -53,7 +53,7 @@ public class RulesErrorTest
     public void invalidIdFormatError()
     {
         final String error = "invalid_id_format_error.zs:5:10: Invalid rule identifier! " +
-                "Rule identifier must match pattern '[a-zA-Z][a-zA-Z0-9_-]*'!";
+                "Rule identifier must match pattern '[a-zA-Z][a-zA-Z0-9_:.-]*'!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

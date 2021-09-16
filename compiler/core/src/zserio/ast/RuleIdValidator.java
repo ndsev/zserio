@@ -16,5 +16,5 @@ class RuleIdValidator
         }
     }
 
-    private static String RULE_ID_PATTERN = "[a-zA-Z][a-zA-Z0-9_-]*";
+    private static String RULE_ID_PATTERN = "[a-zA-Z][a-zA-Z0-9_:.-]*";
 }
