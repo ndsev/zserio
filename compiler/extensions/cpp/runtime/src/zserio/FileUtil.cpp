@@ -12,7 +12,7 @@ void writeBufferToFile(const uint8_t* buffer, size_t bitSize, BitsTag, const std
         throw CppRuntimeException("writeBufferToFile: Failed to open '" + fileName +"' for writing!");
 
     const size_t byteSize = (bitSize + 7) / 8;
-    os.write(reinterpret_cast<const char*>(buffer), byteSize);
+    os.write(reinterpret_cast<const char*>(buffer), static_cast<std::streamsize>(byteSize));
     if (!os)
         throw CppRuntimeException("writeBufferToFile: Failed to write '" + fileName +"'!");
 }
@@ -38,7 +38,8 @@ BitBuffer readBufferFromFile(const std::string& fileName)
     }
 
     zserio::BitBuffer bitBuffer(static_cast<size_t>(fileSize) * 8);
-    is.read(reinterpret_cast<char*>(bitBuffer.getBuffer()), bitBuffer.getByteSize());
+    is.read(reinterpret_cast<char*>(bitBuffer.getBuffer()),
+            static_cast<std::streamsize>(bitBuffer.getByteSize()));
     if (!is)
         throw CppRuntimeException("readBufferFromFile: Failed to read '" + fileName + "'!");
 

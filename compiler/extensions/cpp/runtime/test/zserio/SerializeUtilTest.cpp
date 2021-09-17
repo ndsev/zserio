@@ -12,8 +12,8 @@ struct DummyObject
 {
     using allocator_type = std::allocator<uint8_t>;
 
-    explicit DummyObject(uint32_t value) :
-            value(value)
+    explicit DummyObject(uint32_t value_) :
+            value(value_)
     {}
 
     explicit DummyObject(BitStreamReader& reader) :
@@ -49,25 +49,25 @@ struct DummyObjectWithInitializeChildren : DummyObject
 
 struct ParameterizedDummyObject : DummyObject
 {
-    explicit ParameterizedDummyObject(uint32_t value) :
-            DummyObject(value), param(false), optionalValue(0)
+    explicit ParameterizedDummyObject(uint32_t value_) :
+            DummyObject(value_), param(false), optionalValue(0)
     {}
 
-    ParameterizedDummyObject(BitStreamReader& reader, bool param) :
-            DummyObject(reader), param(param)
+    ParameterizedDummyObject(BitStreamReader& reader, bool param_) :
+            DummyObject(reader), param(param_)
     {
         if (param)
             optionalValue = reader.readBits(32);
     }
 
-    void initialize(bool param)
+    void initialize(bool param_)
     {
-        this->param = param;
+        param = param_;
     }
 
-    void setOptionalValue(uint32_t optionalValue)
+    void setOptionalValue(uint32_t optionalValue_)
     {
-        this->optionalValue = optionalValue;
+        optionalValue = optionalValue_;
     }
 
     size_t initializeOffsets(size_t bitPosition)
