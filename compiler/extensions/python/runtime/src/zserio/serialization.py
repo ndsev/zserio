@@ -78,3 +78,35 @@ def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) 
     bitbuffer = BitBuffer(buffer)
 
     return deserialize(obj_class, bitbuffer, *args)
+
+def serialize_to_file(obj: typing.Any, filename: str) -> None:
+    """
+    Serializes generated object to the byte buffer.
+
+    This is a convenient method for users to easily write given generated object to file.
+
+    :param obj: Generated object to serialize.
+    :param filename: File to write.
+    :raises PythonRuntimeException: Throws in case of any error during serialization.
+    """
+
+    writer = BitStreamWriter()
+    obj.write(writer)
+    writer.to_file(filename)
+
+def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *args) -> typing.Any:
+    """
+    Deserializes file to the generated object.
+
+    This is a convenient method for users to easily read given generated object from file.
+
+    :param obj_class: Class instance of the generated object to deserialize.
+    :param filename: File which represents generated object in binary format.
+    :param args: Additional arguments needed for obj_class.from_reader method.
+    :returns: Generated object created from given file contents.
+    :raises PythonRuntimeException: Throws in case of any error during deserialization.
+    """
+
+    reader = BitStreamReader.from_file(filename)
+
+    return obj_class.from_reader(reader, *args)
