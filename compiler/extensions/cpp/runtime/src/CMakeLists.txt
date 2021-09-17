@@ -45,6 +45,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/FloatUtil.cpp
     zserio/FloatUtil.h
     zserio/HashCodeUtil.h
+    zserio/FileUtil.cpp
+    zserio/FileUtil.h
     zserio/IPubsub.h
     zserio/IService.h
     zserio/ISqliteDatabase.h
@@ -54,6 +56,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/PackingContext.h
     zserio/PreWriteAction.h
     zserio/PubsubException.h
+    zserio/SerializeUtil.h
     zserio/ServiceException.h
     zserio/Span.h
     zserio/SqliteConnection.h

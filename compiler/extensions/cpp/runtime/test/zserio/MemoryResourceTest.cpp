@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include <zserio/pmr/MemoryResource.h>
+#include "zserio/pmr/MemoryResource.h"
 
 namespace zserio
 {
