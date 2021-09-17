@@ -1,5 +1,5 @@
 PROJECT_NAME           = Zserio
-PROJECT_NUMBER         = 2.4.0-pre2
+PROJECT_NUMBER         = 2.4.0-pre3
 PROJECT_BRIEF          = "C++ runtime library"
 OUTPUT_DIRECTORY       = .
 DISTRIBUTE_GROUP_DOC   = YES
