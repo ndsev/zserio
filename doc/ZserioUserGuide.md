@@ -29,18 +29,19 @@ java -jar zserio.jar
     [-ignoreTimestamps]
     [-java <output directory>]
     [-python <output directory>]
+    [-setCppAllocator <allocator>]
     [-setDotExecutable <dotExec>]
-    [-setDotLinksPrefix <prefix>]
     [-setTopLevelPackage <package>]
     [-src <source directory>]
     [-v,--version]
     [-withCrossExtensionCheck|-withoutCrossExtensionCheck]
-    [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withPubsubCode|-withoutPubsubCode]
+    [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withServiceCode|-withoutServiceCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
     [-withSvgDiagrams|-withoutSvgDiagrams]
+    [-withTypeInfoCode|-withoutTypeInfoCode]
     [-withUnusedWarnings|-withoutUnusedWarnings]
     [-withValidationCode|-withoutValidationCode]
     [-withWriterCode|-withoutWriterCode]
@@ -78,6 +79,14 @@ Zserio will generate Java API into a given output directory.
 
 Zserio will generate Python API into a given output directory.
 
+**`-setCppAllocator`**
+
+Sets the C++ allocator type to be used in generated code. Possible values: `std` (default), `polymorphic`.
+
+`std` stands for `std::allocator<>` class implemented in standard C++ library.
+`polymorphic` stands for `zserio::pmr::PropagatingPolymorphicAllocator<>` class implemented in
+Zserio C++ runtime library.
+
 **`-setDotExecutable`**
 
 Sets path to the executable for conversion of dot files to svg format. If this option is omitted, the `dot`
@@ -85,15 +94,6 @@ executable is used and it is supposed that this executable is on the system path
 
 > `-setDotExecutable /usr/bin/dot` causes to run executable `/usr/bin/dot` whenever the conversion
 > of dot file to svg file is needed.
-
-**`-setDotLinksPrefix`**
-
-Sets the prefix to all URL links which are generated in graphviz file `overview.dot`. Setting the prefix
-to "`.`" means setting the URL links to the locally generated HMTL documentation (which is the default behavior
-if this option is omitted).
-
-> Parameter `-setDotLinksPrefix https://my.web-site.org/zserio/html_doc` sets the URL links
-> to `my.web-site.org` web site.
 
 **`-setTopLevelPackage`**
 
@@ -109,8 +109,8 @@ value is the current working directory. Currently, only one source directory can
 directories as in the Java `CLASSPATH` is not supported.
 
 > If the source path is `C:\zserio` and the input file is `com\acme\foo.zs`, Zserio will try parsing
-> `C:\zserio\com\acme\foo.zs`. If `foo.zs` contains the declaration `import com.acme.bar.*`, Zserio will try
-> parsing `C:\zserio\com\acme\bar.zs`.
+> `C:\zserio\com\acme\foo.zs`. If `foo.zs` contains the declaration `import com.acme.bar.*`, Zserio will
+> try parsing `C:\zserio\com\acme\bar.zs`.
 
 **`-v`, `--version`**
 
@@ -121,15 +121,15 @@ Shows the version of the Zserio tool.
 Enabled/disables cross extension check, which causes that the checking phase is executed for all available
 extensions. By default is enabled to simplify to write portable schemas.
 
-**`-withRangeCheckCode|-withoutRangeCheckCode`**
-
-Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
-Note that range checking can be enabled only when writer code is enabled (see `-withWriterCode` option).
-
 **`-withPubsubCode|-withoutPubsubCode`**
 
 Enables/disables generation of code for Pubsub Types. By default is enabled, but note that pubsub types can be
 enabled only when writer code is enabled (see `-withWriterCode` option).
+
+**`-withRangeCheckCode|-withoutRangeCheckCode`**
+
+Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
+Note that range checking can be enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withServiceCode|-withoutServiceCode`**
 
@@ -155,6 +155,12 @@ svg files is done by calling of the external dot tool executable. Therefore this
 available on system path or must be defined by `-setDotExecutable` option. By default is disabled. The dot
 executable is a part of the Graphviz package which can be downloaded from
 [Graphviz Web Page](http://www.graphviz.org/download).
+
+**`-withTypeInfoCode|-withoutTypeInfoCode`**
+
+Enables/disables generation of type information code. By default is disabled.
+
+> This parameter is currently supported by Python generator only.
 
 **`-withUnusedWarnings|-withoutUnusedWarnings`**
 

@@ -59,7 +59,7 @@ zserio_add_library(TARGET complex_allocation_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_COMPLEX_ALLOCATION}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -usePolymorphicAllocator -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
 )
 
 zserio_add_library(TARGET pubsub_allocation_zs
@@ -69,7 +69,7 @@ zserio_add_library(TARGET pubsub_allocation_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_PUBSUB_ALLOCATION}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -usePolymorphicAllocator -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
 )
 
 zserio_add_library(TARGET service_allocation_zs
@@ -79,7 +79,7 @@ zserio_add_library(TARGET service_allocation_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_SERVICE_ALLOCATION}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -usePolymorphicAllocator -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation
 )
 
 zserio_add_library(TARGET sql_allocation_zs
@@ -89,7 +89,7 @@ zserio_add_library(TARGET sql_allocation_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_SQL_ALLOCATION}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -usePolymorphicAllocator -withoutSourcesAmalgamation -withValidationCode
+    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation -withValidationCode
 )
 
 target_include_directories(sql_allocation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})

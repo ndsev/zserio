@@ -44,6 +44,8 @@ public class CppExtension implements Extension
     @Override
     public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
+        CppExtensionParameters.check(parameters);
+
         final ReservedKeywordsClashChecker cppKeywordsClashChecker =
                 new ReservedKeywordsClashChecker("C++", CPP_KEYWORDS);
         rootNode.walk(cppKeywordsClashChecker);
