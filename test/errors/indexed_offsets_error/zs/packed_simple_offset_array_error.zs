@@ -7,5 +7,3 @@ struct PackedOffsetArrayError
 offsets[@index]:
     int32 fields[10];
 };
-
-// TODO[mikir] new test in offsets_error: offsets[0]:

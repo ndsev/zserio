@@ -15,8 +15,7 @@
     </target>
 
     <target name="gen.checkWarnings" depends="gen">
-        <!-- TODO[mikir]: Remove maxWarnings once packed arrays are implemented in Java! -->
-        <testGenCheckWarnings testName="parameterized_types" maxWarnings="2"/>
+        <testGenCheckWarnings testName="parameterized_types"/>
     </target>
 
     <target name="compile" depends="gen.checkWarnings">
