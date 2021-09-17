@@ -27,7 +27,7 @@ BitBuffer readBufferFromFile(const std::string& fileName)
     const std::streampos fileSize = is.tellg();
     is.seekg(0);
 
-    if (fileSize == -1)
+    if (static_cast<int>(fileSize) == -1)
         throw CppRuntimeException("readBufferFromFile: Failed to get file size of '" + fileName + "'!");
 
     const size_t sizeLimit = std::numeric_limits<size_t>::max() / 8;
