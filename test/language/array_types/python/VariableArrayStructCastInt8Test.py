@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class VariableArrayStructCastInt8Test(unittest.TestCase):
     @classmethod
@@ -41,12 +42,31 @@ class VariableArrayStructCastInt8Test(unittest.TestCase):
             self.assertEqual(i, testStructure.id)
             self.assertTrue(testStructure.name == "Name" + str(i))
 
-    def testWrite(self):
+    def testWriteRead(self):
         numElements = 33
         compoundArray = [self.api.TestStructure(i, "Name" + str(i)) for i in range(numElements)]
         variableArray = self.api.VariableArray(numElements, compoundArray)
         bitBuffer = zserio.serialize(variableArray)
+
+        self.assertEqual(variableArray.bitsizeof(), bitBuffer.bitsize)
+        self.assertEqual(variableArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readVariableArray = zserio.deserialize(self.api.VariableArray, bitBuffer)
+        self.assertEqual(numElements, readVariableArray.num_elements)
+        readCompoundArray = readVariableArray.compound_array
+        self.assertEqual(numElements, len(readCompoundArray))
+        for i in range(numElements):
+            readTestStructure = readCompoundArray[i]
+            self.assertEqual(i, readTestStructure.id)
+            self.assertTrue(readTestStructure.name == "Name" + str(i))
+
+    def testWriteReadFile(self):
+        numElements = 33
+        compoundArray = [self.api.TestStructure(i, "Name" + str(i)) for i in range(numElements)]
+        variableArray = self.api.VariableArray(numElements, compoundArray)
+        zserio.serialize_to_file(variableArray, self.BLOB_NAME)
+
+        readVariableArray = zserio.deserialize_from_file(self.api.VariableArray, self.BLOB_NAME)
         self.assertEqual(numElements, readVariableArray.num_elements)
         readCompoundArray = readVariableArray.compound_array
         self.assertEqual(numElements, len(readCompoundArray))
@@ -69,3 +89,5 @@ class VariableArrayStructCastInt8Test(unittest.TestCase):
         for i in range(numElements):
             writer.write_bits(i, 32)
             writer.write_string("Name" + str(i))
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "variable_array_struct_cast_int8.blob")

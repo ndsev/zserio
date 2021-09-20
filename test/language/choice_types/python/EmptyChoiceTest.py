@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class EmptyChoiceTest(unittest.TestCase):
     @classmethod
@@ -55,13 +56,23 @@ class EmptyChoiceTest(unittest.TestCase):
         self.assertEqual(selector, emptyChoice.selector)
         self.assertEqual(0, emptyChoice.bitsizeof())
 
-    def testWrite(self):
+    def testWriteRead(self):
         selector = 1
         emptyChoice = self.api.EmptyChoice(selector)
         writer = zserio.BitStreamWriter()
         emptyChoice.write(writer)
         byteArray = writer.byte_array
         self.assertEqual(0, len(byteArray))
+
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readEmptyChoice = self.api.EmptyChoice.from_reader(reader, selector)
+        self.assertEqual(emptyChoice, readEmptyChoice)
+
+    def testWriteReadFile(self):
+        selector = 1
+        emptyChoice = self.api.EmptyChoice(selector)
+        filename = os.path.join(getApiDir(os.path.dirname(__file__)), "empty_choice.blob")
+        zserio.serialize_to_file(emptyChoice, filename)
+
+        readEmptyChoice = zserio.deserialize_from_file(self.api.EmptyChoice, filename, selector)
         self.assertEqual(emptyChoice, readEmptyChoice)

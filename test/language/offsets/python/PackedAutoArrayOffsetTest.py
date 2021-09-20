@@ -1,7 +1,8 @@
 import unittest
+import os
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedAutoArrayOffsetTest(unittest.TestCase):
     @classmethod
@@ -54,7 +55,7 @@ class PackedAutoArrayOffsetTest(unittest.TestCase):
             autoArrayHolder = self.api.AutoArrayHolder.from_reader(reader)
             self._checkAutoArrayHolder(autoArrayHolder)
 
-    def testWrite(self):
+    def testWriteRead(self):
         createWrongOffset = True
         autoArrayHolder = self._createAutoArrayHolder(createWrongOffset)
         writer = zserio.BitStreamWriter()
@@ -64,6 +65,14 @@ class PackedAutoArrayOffsetTest(unittest.TestCase):
         readAutoArrayHolder = self.api.AutoArrayHolder.from_reader(reader)
         self._checkAutoArrayHolder(readAutoArrayHolder)
         self.assertTrue(autoArrayHolder == readAutoArrayHolder)
+
+    def testWriteReadFile(self):
+        createWrongOffset = True
+        autoArrayHolder = self._createAutoArrayHolder(createWrongOffset)
+        zserio.serialize_to_file(autoArrayHolder, self.BLOB_NAME)
+
+        readAutoArrayHolder = zserio.deserialize_from_file(self.api.AutoArrayHolder, self.BLOB_NAME)
+        self.assertEqual(autoArrayHolder, readAutoArrayHolder)
 
     def testWriteWithPosition(self):
         createWrongOffset = True
@@ -122,6 +131,8 @@ class PackedAutoArrayOffsetTest(unittest.TestCase):
         bitSize += (self.AUTO_ARRAY_LENGTH - 1) * (self.PACKED_ARRAY_MAX_BIT_NUMBER + 1) # all deltas
 
         return bitSize
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_auto_array_offset.blob")
 
     AUTO_ARRAY_LENGTH = 5
     FORCED_ALIGNMENT_VALUE = 0

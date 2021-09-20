@@ -83,18 +83,18 @@ public class PackedAutoArrayOffsetTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeReadFile() throws IOException, ZserioError
     {
         final boolean createWrongOffset = true;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME);
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         autoArrayHolder.write(writer);
         writer.close();
         checkAutoArrayHolder(autoArrayHolder);
         final AutoArrayHolder readAutoArrayHolder = new AutoArrayHolder(file);
         checkAutoArrayHolder(readAutoArrayHolder);
-        assertTrue(autoArrayHolder.equals(readAutoArrayHolder));
+        assertEquals(autoArrayHolder, readAutoArrayHolder);
     }
 
     @Test
@@ -179,6 +179,8 @@ public class PackedAutoArrayOffsetTest
 
         return bitSize;
     }
+
+    private static final String BLOB_NAME = "packed_auto_array_offset.blob";
 
     private static final int    AUTO_ARRAY_LENGTH = 5;
     private static final byte   FORCED_ALIGNMENT_VALUE = 0;

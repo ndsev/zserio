@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 #include "parameterized_types/packed_array_element_param/Database.h"
 
@@ -31,6 +30,7 @@ protected:
             Block block;
             auto& items = block.getItems();
             const uint16_t numItems = it->getNumItems();
+            block.setValue(numItems);
             for (uint16_t j = 0; j < numItems; ++j)
                 items.push_back(j * 2);
             blocks.push_back(block);
@@ -78,6 +78,19 @@ protected:
         ASSERT_EQ(database, readDatabase);
     }
 
+    void checkWriteReadFile(uint16_t numBlocks)
+    {
+        Database database;
+        fillDatabase(database, numBlocks);
+
+        const std::string fileName = BLOB_NAME_BASE + std::to_string(numBlocks) + ".blob";
+        zserio::serializeToFile(database, fileName);
+
+        const auto readDatabase = zserio::deserializeFromFile<Database>(fileName);
+        ASSERT_EQ(database, readDatabase);
+    }
+
+    static const std::string BLOB_NAME_BASE;
     static const uint16_t NUM_BLOCKS1;
     static const uint16_t NUM_BLOCKS2;
     static const uint16_t NUM_BLOCKS3;
@@ -85,6 +98,8 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(200 * 1024 * 8);
 };
 
+const std::string PackedArrayElementParamTest::BLOB_NAME_BASE =
+        "language/parameterized_types/packed_array_element_param_";
 const uint16_t PackedArrayElementParamTest::NUM_BLOCKS1 = 50;
 const uint16_t PackedArrayElementParamTest::NUM_BLOCKS2 = 100;
 const uint16_t PackedArrayElementParamTest::NUM_BLOCKS3 = 1000;
@@ -117,6 +132,21 @@ TEST_F(PackedArrayElementParamTest, writeReadLength2)
 TEST_F(PackedArrayElementParamTest, writeReadLength3)
 {
     checkWriteRead(NUM_BLOCKS3);
+}
+
+TEST_F(PackedArrayElementParamTest, writeReadFileLength1)
+{
+    checkWriteReadFile(NUM_BLOCKS1);
+}
+
+TEST_F(PackedArrayElementParamTest, writeReadFileLength2)
+{
+    checkWriteReadFile(NUM_BLOCKS2);
+}
+
+TEST_F(PackedArrayElementParamTest, writeReadFileLength3)
+{
+    checkWriteReadFile(NUM_BLOCKS3);
 }
 
 } // namespace packed_array_element_param

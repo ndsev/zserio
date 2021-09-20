@@ -72,21 +72,21 @@ public class PackedAutoArrayStructRecursionTest
     }
 
     @Test
-    public void writeLength1() throws IOException, ZserioError
+    public void writeReadLength1() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH1);
+        checkWriteRead(AUTO_ARRAY_LENGTH1);
     }
 
     @Test
-    public void writeLength2() throws IOException, ZserioError
+    public void writeReadLength2() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH2);
+        checkWriteRead(AUTO_ARRAY_LENGTH2);
     }
 
     @Test
-    public void writeLength3() throws IOException, ZserioError
+    public void writeReadLength3() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH2);
+        checkWriteRead(AUTO_ARRAY_LENGTH3);
     }
 
     private void checkBitSizeOf(short numElements) throws IOException, ZserioError
@@ -115,13 +115,16 @@ public class PackedAutoArrayStructRecursionTest
         checkPackedAutoArrayRecursion(packedAutoArrayRecursion, numElements);
     }
 
-    private void checkWrite(short numElements) throws IOException, ZserioError
+    private void checkWriteRead(short numElements) throws IOException, ZserioError
     {
         final PackedAutoArrayRecursion packedAutoArrayRecursion = createPackedAutoArrayRecursion(numElements);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         packedAutoArrayRecursion.write(writer);
         writer.close();
+
+        assertEquals(packedAutoArrayRecursion.bitSizeOf(), writer.getBitPosition());
+        assertEquals(packedAutoArrayRecursion.initializeOffsets(0), writer.getBitPosition());
 
         final PackedAutoArrayRecursion readAutoArrayRecursion = new PackedAutoArrayRecursion(file);
         checkPackedAutoArrayRecursion(readAutoArrayRecursion, numElements);
@@ -187,6 +190,7 @@ public class PackedAutoArrayStructRecursionTest
         return bitSize;
     }
 
+    private static final String BLOB_NAME_BASE = "packed_auto_array_struct_recursion_";
     private static final short AUTO_ARRAY_LENGTH1 = 1;
     private static final short AUTO_ARRAY_LENGTH2 = 5;
     private static final short AUTO_ARRAY_LENGTH3 = 10;

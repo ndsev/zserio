@@ -1,7 +1,8 @@
 import unittest
+import os
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class OneStringStructureTest(unittest.TestCase):
     @classmethod
@@ -62,7 +63,7 @@ class OneStringStructureTest(unittest.TestCase):
         self.assertEqual(self.ONE_STRING_STRUCTURE_BIT_SIZE + bitPosition,
                          oneStringStructure.initialize_offsets(bitPosition))
 
-    def testReadWrite(self):
+    def testWriteRead(self):
         oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
         writer = zserio.BitStreamWriter()
         oneStringStructure.write(writer)
@@ -72,9 +73,18 @@ class OneStringStructureTest(unittest.TestCase):
         self.assertEqual(self.ONE_STRING, readOneStringStructure.one_string)
         self.assertTrue(oneStringStructure == readOneStringStructure)
 
+    def testWriteReadFile(self):
+        oneStringStructure = self.api.OneStringStructure(self.ONE_STRING)
+        zserio.serialize_to_file(oneStringStructure, self.BLOB_NAME)
+
+        readOneStringStructure = zserio.deserialize_from_file(self.api.OneStringStructure, self.BLOB_NAME)
+        self.assertEqual(self.ONE_STRING, readOneStringStructure.one_string)
+        self.assertTrue(oneStringStructure == readOneStringStructure)
+
     @staticmethod
     def _writeOneStringStructureToStream(writer, oneString):
         writer.write_string(oneString)
 
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "one_string_structure.blob")
     ONE_STRING = "This is a string!"
     ONE_STRING_STRUCTURE_BIT_SIZE = (1 + len(ONE_STRING)) * 8

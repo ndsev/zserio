@@ -68,7 +68,7 @@ add_test_sources(
     cpp/OptionalIndexedOffsetArrayTest.cpp
     cpp/OptionalNestedIndexedOffsetArrayTest.cpp
     cpp/PackedAutoIndexedOffsetArrayTest.cpp
-    cpp/PackedIndexedOffsetsArrayHolderTest.cpp
+    cpp/PackedIndexedOffsetArrayHolderTest.cpp
     cpp/VarInt32IndexedOffsetArrayTest.cpp
 )
 

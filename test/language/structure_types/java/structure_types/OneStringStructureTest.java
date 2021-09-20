@@ -108,7 +108,7 @@ public class OneStringStructureTest
     public void fileWrite() throws IOException, ZserioError
     {
         final OneStringStructure oneStringStructure = new OneStringStructure(ONE_STRING);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME);
         oneStringStructure.write(file);
         final OneStringStructure readOneStringStructure = new OneStringStructure(file);
         assertEquals(ONE_STRING, readOneStringStructure.getOneString());
@@ -138,6 +138,7 @@ public class OneStringStructureTest
         stream.close();
     }
 
+    private static final String BLOB_NAME = "one_string_structure.blob";
     private static final String ONE_STRING = "This is a string!";
     private static final int    ONE_STRING_STRUCTURE_BIT_SIZE = (1 + ONE_STRING.length()) * 8;
 }

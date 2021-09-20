@@ -3,8 +3,7 @@
 #include "offsets/packed_auto_array_offset/AutoArrayHolder.h"
 
 #include "zserio/RebindAlloc.h"
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 namespace offsets
 {
@@ -77,17 +76,21 @@ protected:
             ASSERT_EQ(i, autoArray[i]);
     }
 
-    static const size_t     AUTO_ARRAY_LENGTH;
-    static const uint8_t    FORCED_ALIGNMENT_VALUE;
+    static const std::string BLOB_NAME;
 
-    static const uint32_t   WRONG_AUTO_ARRAY_OFFSET;
-    static const uint32_t   AUTO_ARRAY_OFFSET;
+    static const size_t AUTO_ARRAY_LENGTH;
+    static const uint8_t FORCED_ALIGNMENT_VALUE;
 
-    static const int8_t     PACKED_ARRAY_DELTA;
-    static const uint8_t    PACKED_ARRAY_MAX_BIT_NUMBER;
+    static const uint32_t WRONG_AUTO_ARRAY_OFFSET;
+    static const uint32_t AUTO_ARRAY_OFFSET;
+
+    static const int8_t PACKED_ARRAY_DELTA;
+    static const uint8_t PACKED_ARRAY_MAX_BIT_NUMBER;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string PackedAutoArrayOffsetTest::BLOB_NAME = "language/offsets/packed_auto_array_offset.blob";
 
 const size_t PackedAutoArrayOffsetTest::AUTO_ARRAY_LENGTH = 5;
 const uint8_t PackedAutoArrayOffsetTest::FORCED_ALIGNMENT_VALUE = 0;
@@ -163,7 +166,7 @@ TEST_F(PackedAutoArrayOffsetTest, initializeOffsetsWithPosition)
     checkAutoArrayHolder(autoArrayHolder, bitPosition);
 }
 
-TEST_F(PackedAutoArrayOffsetTest, write)
+TEST_F(PackedAutoArrayOffsetTest, writeRead)
 {
     const bool createWrongOffset = true;
     AutoArrayHolder autoArrayHolder;
@@ -176,7 +179,18 @@ TEST_F(PackedAutoArrayOffsetTest, write)
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     const AutoArrayHolder readAutoArrayHolder(reader);
     checkAutoArrayHolder(readAutoArrayHolder);
-    ASSERT_TRUE(autoArrayHolder == readAutoArrayHolder);
+    ASSERT_EQ(autoArrayHolder, readAutoArrayHolder);
+}
+
+TEST_F(PackedAutoArrayOffsetTest, writeReadFile)
+{
+    const bool createWrongOffset = false;
+    AutoArrayHolder autoArrayHolder;
+    fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
+    zserio::serializeToFile(autoArrayHolder, BLOB_NAME);
+
+    const auto readAutoArrayHolder = zserio::deserializeFromFile<AutoArrayHolder>(BLOB_NAME);
+    ASSERT_EQ(autoArrayHolder, readAutoArrayHolder);
 }
 
 TEST_F(PackedAutoArrayOffsetTest, writeWithPosition)

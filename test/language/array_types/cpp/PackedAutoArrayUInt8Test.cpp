@@ -2,9 +2,8 @@
 
 #include "array_types/packed_auto_array_uint8/PackedAutoArray.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {
@@ -104,7 +103,7 @@ protected:
         checkPackedAutoArray(packedAutoArray, numElements);
     }
 
-    void checkWrite(size_t numElements)
+    void checkWriteRead(size_t numElements)
     {
         PackedAutoArray packedAutoArray;
         fillPackedAutoArray(packedAutoArray, numElements);
@@ -112,10 +111,27 @@ protected:
         zserio::BitStreamWriter writer(bitBuffer);
         packedAutoArray.write(writer);
 
+        ASSERT_EQ(packedAutoArray.bitSizeOf(), writer.getBitPosition());
+        ASSERT_EQ(packedAutoArray.initializeOffsets(0), writer.getBitPosition());
+
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedAutoArray readPackedAutoArray(reader);
         checkPackedAutoArray(readPackedAutoArray, numElements);
     }
+
+    void checkWriteReadFile(size_t numElements)
+    {
+        PackedAutoArray packedAutoArray;
+        fillPackedAutoArray(packedAutoArray, numElements);
+
+        const std::string fileName = BLOB_NAME_BASE + std::to_string(numElements) + ".blob";
+        zserio::serializeToFile(packedAutoArray, fileName);
+
+        PackedAutoArray readPackedAutoArray = zserio::deserializeFromFile<PackedAutoArray>(fileName);
+        checkPackedAutoArray(readPackedAutoArray, numElements);
+    }
+
+    static const std::string BLOB_NAME_BASE;
 
     static const size_t AUTO_ARRAY_LENGTH1;
     static const size_t AUTO_ARRAY_LENGTH2;
@@ -127,6 +143,8 @@ protected:
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string PackedAutoArrayUInt8Test::BLOB_NAME_BASE = "language/array_types/packed_auto_array_uint8_";
 
 const size_t PackedAutoArrayUInt8Test::AUTO_ARRAY_LENGTH1 = 1;
 const size_t PackedAutoArrayUInt8Test::AUTO_ARRAY_LENGTH2 = 5;
@@ -181,19 +199,34 @@ TEST_F(PackedAutoArrayUInt8Test, readConstructorLength3)
     checkReadConstructor(AUTO_ARRAY_LENGTH3);
 }
 
-TEST_F(PackedAutoArrayUInt8Test, writeLength1)
+TEST_F(PackedAutoArrayUInt8Test, writeReadLength1)
 {
-    checkWrite(AUTO_ARRAY_LENGTH1);
+    checkWriteRead(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(PackedAutoArrayUInt8Test, writeLength2)
+TEST_F(PackedAutoArrayUInt8Test, writeReadLength2)
 {
-    checkWrite(AUTO_ARRAY_LENGTH2);
+    checkWriteRead(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(PackedAutoArrayUInt8Test, writeLength3)
+TEST_F(PackedAutoArrayUInt8Test, writeReadLength3)
 {
-    checkWrite(AUTO_ARRAY_LENGTH3);
+    checkWriteRead(AUTO_ARRAY_LENGTH3);
+}
+
+TEST_F(PackedAutoArrayUInt8Test, writeReadFileLength1)
+{
+    checkWriteReadFile(AUTO_ARRAY_LENGTH1);
+}
+
+TEST_F(PackedAutoArrayUInt8Test, writeReadFileLength2)
+{
+    checkWriteReadFile(AUTO_ARRAY_LENGTH2);
+}
+
+TEST_F(PackedAutoArrayUInt8Test, writeReadFileLength3)
+{
+    checkWriteReadFile(AUTO_ARRAY_LENGTH3);
 }
 
 } // namespace packed_auto_array_uint8

@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 #include "parameterized_types/grand_child_param/GrandChildParam.h"
 
@@ -69,6 +68,8 @@ protected:
         }
     }
 
+    static const std::string BLOB_NAME;
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 
 private:
@@ -77,11 +78,14 @@ private:
     static const uint32_t ITEM_EXTRA_PARAM;
 };
 
+const std::string ParameterizedTypesGrandChildParamTest::BLOB_NAME =
+        "language/parameterized_types/grand_child_param.blob";
+
 const bool     ParameterizedTypesGrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
 const uint16_t ParameterizedTypesGrandChildParamTest::ITEM_PARAM = 0xAABB;
 const uint32_t ParameterizedTypesGrandChildParamTest::ITEM_EXTRA_PARAM = 0x11223344;
 
-TEST_F(ParameterizedTypesGrandChildParamTest, write)
+TEST_F(ParameterizedTypesGrandChildParamTest, writeRead)
 {
     GrandChildParam grandChildParam;
     fillGrandChildParam(grandChildParam);
@@ -94,6 +98,17 @@ TEST_F(ParameterizedTypesGrandChildParamTest, write)
     reader.setBitPosition(0);
 
     GrandChildParam readGrandChildParam(reader);
+    ASSERT_EQ(grandChildParam, readGrandChildParam);
+}
+
+TEST_F(ParameterizedTypesGrandChildParamTest, writeReadFile)
+{
+    GrandChildParam grandChildParam;
+    fillGrandChildParam(grandChildParam);
+
+    zserio::serializeToFile(grandChildParam, BLOB_NAME);
+
+    const auto readGrandChildParam = zserio::deserializeFromFile<GrandChildParam>(BLOB_NAME);
     ASSERT_EQ(grandChildParam, readGrandChildParam);
 }
 

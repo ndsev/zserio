@@ -1,7 +1,8 @@
 import unittest
+import os
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedArrayElementParamTest(unittest.TestCase):
     @classmethod
@@ -17,14 +18,23 @@ class PackedArrayElementParamTest(unittest.TestCase):
     def testBitSizeOfLength3(self):
         self._checkBitSizeOf(self.NUM_BLOCKS3)
 
-    def testWriteReadfLength1(self):
+    def testWriteReadLength1(self):
         self._checkWriteRead(self.NUM_BLOCKS1)
 
-    def testWriteReadfLength2(self):
+    def testWriteReadLength2(self):
         self._checkWriteRead(self.NUM_BLOCKS2)
 
-    def testWriteReadfLength3(self):
+    def testWriteReadLength3(self):
         self._checkWriteRead(self.NUM_BLOCKS3)
+
+    def testWriteReadFileLength1(self):
+        self._checkWriteReadFile(self.NUM_BLOCKS1)
+
+    def testWriteReadFileLength2(self):
+        self._checkWriteReadFile(self.NUM_BLOCKS2)
+
+    def testWriteReadFileLength3(self):
+        self._checkWriteReadFile(self.NUM_BLOCKS3)
 
     def _checkBitSizeOf(self, numBlocks):
         database = self._createDatabase(numBlocks)
@@ -44,6 +54,14 @@ class PackedArrayElementParamTest(unittest.TestCase):
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readDatabase = self.api.Database.from_reader(reader)
+        self.assertEqual(database, readDatabase)
+
+    def _checkWriteReadFile(self, numBlocks):
+        database = self._createDatabase(numBlocks)
+        filename = self.BLOB_NAME_BASE + str(numBlocks) + ".blob"
+        zserio.serialize_to_file(database, filename)
+
+        readDatabase = zserio.deserialize_from_file(self.api.Database, filename)
         self.assertEqual(database, readDatabase)
 
     def _createDatabase(self, numBlocks):
@@ -71,6 +89,7 @@ class PackedArrayElementParamTest(unittest.TestCase):
 
         return bitSize
 
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_array_element_param_")
     NUM_BLOCKS1 = 50
     NUM_BLOCKS2 = 100
     NUM_BLOCKS3 = 1000

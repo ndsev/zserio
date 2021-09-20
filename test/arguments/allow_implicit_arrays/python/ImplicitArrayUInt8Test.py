@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class ImplicitArrayUInt8Test(unittest.TestCase):
     @classmethod
@@ -37,12 +38,28 @@ class ImplicitArrayUInt8Test(unittest.TestCase):
         for i in range(numElements):
             self.assertEqual(i, array[i])
 
-    def testWrite(self):
+    def testWriteRead(self):
         numElements = 55
         array = list(range(numElements))
         implicitArray = self.api.ImplicitArray(array)
         bitBuffer = zserio.serialize(implicitArray)
+
+        self.assertEqual(implicitArray.bitsizeof(), bitBuffer.bitsize)
+        self.assertEqual(implicitArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readImplicitArray = zserio.deserialize(self.api.ImplicitArray, bitBuffer)
+        readArray = readImplicitArray.array
+        self.assertEqual(numElements, len(readArray))
+        for i in range(numElements):
+            self.assertEqual(i, readArray[i])
+
+    def testWriteReadFile(self):
+        numElements = 55
+        array = list(range(numElements))
+        implicitArray = self.api.ImplicitArray(array)
+        zserio.serialize_to_file(implicitArray, self.BLOB_NAME)
+
+        readImplicitArray = zserio.deserialize_from_file(self.api.ImplicitArray, self.BLOB_NAME)
         readArray = readImplicitArray.array
         self.assertEqual(numElements, len(readArray))
         for i in range(numElements):
@@ -52,3 +69,5 @@ class ImplicitArrayUInt8Test(unittest.TestCase):
     def _writeImplicitArrayToStream(writer, numElements):
         for i in range(numElements):
             writer.write_bits(i, 8)
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "implicit_array_uint8.blob")

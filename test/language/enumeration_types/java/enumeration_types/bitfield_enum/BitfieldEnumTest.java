@@ -3,12 +3,15 @@ package enumeration_types.bitfield_enum;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.File;
 
 import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.FileBitStreamWriter;
 
 public class BitfieldEnumTest
 {
@@ -41,7 +44,7 @@ public class BitfieldEnumTest
     }
 
     @Test
-    public void write() throws IOException
+    public void writeRead() throws IOException
     {
         final Color color = Color.GREEN;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -49,6 +52,20 @@ public class BitfieldEnumTest
         final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
         final byte readColor = (byte)reader.readBits(BITFIELD_ENUM_BITSIZEOF);
         assertEquals(readColor, color.getValue());
+    }
+
+    @Test
+    public void writeReadFile() throws IOException
+    {
+        final Color color = Color.GREEN;
+        final File file = new File(BLOB_NAME);
+        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        color.write(writer);
+        writer.close();
+
+        final BitStreamReader reader = new FileBitStreamReader(file);
+        final Color readColor = Color.readEnum(reader);
+        assertEquals(color, readColor);
     }
 
     @Test
@@ -72,6 +89,8 @@ public class BitfieldEnumTest
     {
         Color.toEnum((byte)1);
     }
+
+    private static final String BLOB_NAME = "bitfield_enum.blob";
 
     private static int BITFIELD_ENUM_BITSIZEOF = 3;
 

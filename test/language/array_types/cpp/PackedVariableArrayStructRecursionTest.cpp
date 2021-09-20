@@ -2,8 +2,7 @@
 
 #include "array_types/packed_variable_array_struct_recursion/PackedVariableArray.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {
@@ -102,12 +101,30 @@ protected:
         ASSERT_EQ(packedVariableArray, readPackedVariableArray);
     }
 
+    void checkWriteReadFile(size_t numElements)
+    {
+        PackedVariableArray packedVariableArray;
+        fillPackedVariableArray(packedVariableArray, numElements);
+
+        const std::string fileName = BLOB_NAME_BASE + std::to_string(numElements) + ".blob";
+        zserio::serializeToFile(packedVariableArray, fileName);
+
+        PackedVariableArray readPackedVariableArray =
+                zserio::deserializeFromFile<PackedVariableArray>(fileName);
+        ASSERT_EQ(packedVariableArray, readPackedVariableArray);
+    }
+
+    static const std::string BLOB_NAME_BASE;
+
     static const size_t VARIABLE_ARRAY_LENGTH1;
     static const size_t VARIABLE_ARRAY_LENGTH2;
     static const size_t VARIABLE_ARRAY_LENGTH3;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(20 * 1024 * 8);
 };
+
+const std::string PackedVariableArrayStructRecursionTest::BLOB_NAME_BASE =
+        "language/array_types/packed_variable_array_struct_recursion_";
 
 const size_t PackedVariableArrayStructRecursionTest::VARIABLE_ARRAY_LENGTH1 = 100;
 const size_t PackedVariableArrayStructRecursionTest::VARIABLE_ARRAY_LENGTH2 = 500;
@@ -141,6 +158,21 @@ TEST_F(PackedVariableArrayStructRecursionTest, writeReadLength2)
 TEST_F(PackedVariableArrayStructRecursionTest, writeReadLength3)
 {
     checkWriteRead(VARIABLE_ARRAY_LENGTH3);
+}
+
+TEST_F(PackedVariableArrayStructRecursionTest, writeReadFileLength1)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH1);
+}
+
+TEST_F(PackedVariableArrayStructRecursionTest, writeReadFileLength2)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH2);
+}
+
+TEST_F(PackedVariableArrayStructRecursionTest, writeReadFileLength3)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH3);
 }
 
 } // namespace packed_variable_array_struct_recursion

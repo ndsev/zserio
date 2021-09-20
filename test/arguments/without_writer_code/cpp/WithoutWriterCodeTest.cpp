@@ -7,7 +7,7 @@
 #include "without_writer_code/Tile.h"
 #include "without_writer_code/WorldDb.h"
 
-#include "zserio/BitStreamWriter.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
@@ -228,6 +228,7 @@ protected:
         ASSERT_EQ(PARAMS[1], itemChoice1.getParam());
     }
 
+    static const std::string BLOB_NAME;
     static const char* PATH;
     static const int32_t TILE_ID_EUROPE;
     static const int32_t TILE_ID_AMERICA;
@@ -240,6 +241,7 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
+const std::string WithoutWriterCode::BLOB_NAME = "arguments/without_writer_code/without_writer_code.blob";
 const char* WithoutWriterCode::PATH = "arguments/without_writer_code/gen/without_writer_code/";
 const int32_t WithoutWriterCode::TILE_ID_EUROPE = 99;
 const int32_t WithoutWriterCode::TILE_ID_AMERICA = 11;
@@ -496,12 +498,21 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
 TEST_F(WithoutWriterCode, readConstructor)
 {
     zserio::BitStreamWriter writer(bitBuffer);
-
     writeTile(writer);
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     Tile tile = Tile(reader);
 
+    checkTile(tile);
+}
+
+TEST_F(WithoutWriterCode, readFile)
+{
+    zserio::BitStreamWriter writer(bitBuffer);
+    writeTile(writer);
+    zserio::writeBufferToFile(writer, BLOB_NAME);
+
+    const Tile tile = zserio::deserializeFromFile<Tile>(BLOB_NAME);
     checkTile(tile);
 }
 

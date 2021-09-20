@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 #include "indexed_offsets/packed_indexed_offset_array_holder/AutoIndexedOffsetArray.h"
 
@@ -86,12 +85,28 @@ protected:
         ASSERT_EQ(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
     }
 
+    void checkWriteReadFile(size_t numElements)
+    {
+        AutoIndexedOffsetArray autoIndexedOffsetArray;
+        fillAutoIndexedOffsetArray(autoIndexedOffsetArray, numElements);
+        const std::string fileName = BLOB_NAME_BASE + std::to_string(numElements) + ".blob";
+        zserio::serializeToFile(autoIndexedOffsetArray, fileName);
+
+        const auto readAutoIndexedOffsetArray = zserio::deserializeFromFile<AutoIndexedOffsetArray>(fileName);
+        ASSERT_EQ(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
+    }
+
+    static const std::string BLOB_NAME_BASE;
+
     static const size_t NUM_ELEMENTS1 = 50;
     static const size_t NUM_ELEMENTS2 = 100;
     static const size_t NUM_ELEMENTS3 = 1000;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(20 * 1024 * 8);
 };
+
+const std::string PackedIndexedOffsetArrayHolderTest::BLOB_NAME_BASE =
+        "language/indexed_offsets/packed_indexed_offset_array_holder_";
 
 const size_t PackedIndexedOffsetArrayHolderTest::NUM_ELEMENTS1;
 const size_t PackedIndexedOffsetArrayHolderTest::NUM_ELEMENTS2;
@@ -125,6 +140,21 @@ TEST_F(PackedIndexedOffsetArrayHolderTest, writeReadLength2)
 TEST_F(PackedIndexedOffsetArrayHolderTest, writeReadLength3)
 {
     checkWriteRead(NUM_ELEMENTS3);
+}
+
+TEST_F(PackedIndexedOffsetArrayHolderTest, writeReadFileLength1)
+{
+    checkWriteReadFile(NUM_ELEMENTS1);
+}
+
+TEST_F(PackedIndexedOffsetArrayHolderTest, writeReadFileLength2)
+{
+    checkWriteReadFile(NUM_ELEMENTS2);
+}
+
+TEST_F(PackedIndexedOffsetArrayHolderTest, writeReadFileLength3)
+{
+    checkWriteReadFile(NUM_ELEMENTS3);
 }
 
 } // namespace packed_indexed_offset_array_holder

@@ -4,6 +4,8 @@
 
 #include "builtin_types/bitfield_uint64_length/Container.h"
 
+#include "zserio/SerializeUtil.h"
+
 namespace builtin_types
 {
 namespace bitfield_uint64_length
@@ -28,13 +30,10 @@ TEST(BitFieldUIn64LengthTest, readWrite)
     container.setUnsignedBitField(std::numeric_limits<uint32_t>::max() + static_cast<uint64_t>(1));
     container.setSignedBitField(std::numeric_limits<int32_t>::max() + static_cast<int64_t>(1));
 
-    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
-    zserio::BitStreamWriter writer(bitBuffer);
-    container.write(writer);
+    const std::string fileName = "language/builtin_types/bit_field_uint64_length.blob";
+    zserio::serializeToFile(container, fileName);
 
-    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    const Container readContainer(reader);
-
+    const Container readContainer = zserio::deserializeFromFile<Container>(fileName);
     ASSERT_TRUE(container == readContainer);
 }
 

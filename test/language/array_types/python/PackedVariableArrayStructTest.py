@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedVariableArrayStructTest(unittest.TestCase):
     @classmethod
@@ -20,17 +21,29 @@ class PackedVariableArrayStructTest(unittest.TestCase):
     def testBitSizeOfLength4(self):
         self._checkBitSizeOf(self.VARIABLE_ARRAY_LENGTH4)
 
-    def testWriteReadfLength1(self):
+    def testWriteReadLength1(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH1)
 
-    def testWriteReadfLength2(self):
+    def testWriteReadLength2(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH2)
 
-    def testWriteReadfLength3(self):
+    def testWriteReadLength3(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH3)
 
-    def testWriteReadfLength4(self):
+    def testWriteReadLength4(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH4)
+
+    def testWriteReadFileLength1(self):
+        self._checkWriteReadFile(self.VARIABLE_ARRAY_LENGTH1)
+
+    def testWriteReadFileLength2(self):
+        self._checkWriteReadFile(self.VARIABLE_ARRAY_LENGTH2)
+
+    def testWriteReadFileLength3(self):
+        self._checkWriteReadFile(self.VARIABLE_ARRAY_LENGTH3)
+
+    def testWriteReadFileLength4(self):
+        self._checkWriteReadFile(self.VARIABLE_ARRAY_LENGTH4)
 
     def _checkBitSizeOf(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
@@ -44,9 +57,19 @@ class PackedVariableArrayStructTest(unittest.TestCase):
     def _checkWriteRead(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
         bitBuffer = zserio.serialize(packedVariableArray)
+
         self.assertEqual(packedVariableArray.bitsizeof(), bitBuffer.bitsize)
         self.assertEqual(packedVariableArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readPackedVariableArray = zserio.deserialize(self.api.PackedVariableArray, bitBuffer)
+        self.assertEqual(packedVariableArray, readPackedVariableArray)
+
+    def _checkWriteReadFile(self, numElements):
+        packedVariableArray = self._createPackedVariableArray(numElements)
+        filename = self.BLOB_NAME_BASE + str(numElements) + ".blob"
+        zserio.serialize_to_file(packedVariableArray, filename)
+
+        readPackedVariableArray = zserio.deserialize_from_file(self.api.PackedVariableArray, filename)
         self.assertEqual(packedVariableArray, readPackedVariableArray)
 
     def _createPackedVariableArray(self, numElements):
@@ -85,6 +108,7 @@ class PackedVariableArrayStructTest(unittest.TestCase):
                                       test_optional_=testOptional, test_dynamic_bitfield_=testDynamicBitfield,
                                       num_values_=numValues, unpacked_values_=values, packed_values_=values)
 
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_variable_array_struct_")
     VARIABLE_ARRAY_LENGTH1 = 25
     VARIABLE_ARRAY_LENGTH2 = 50
     VARIABLE_ARRAY_LENGTH3 = 100

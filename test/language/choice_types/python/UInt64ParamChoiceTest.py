@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class UInt64ParamChoiceTest(unittest.TestCase):
     @classmethod
@@ -95,7 +96,7 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
         self.assertEqual(17, uint64ParamChoice.initialize_offsets(bitPosition))
 
-    def testReadWrite(self):
+    def testWriteRead(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         byteValue = 99
         uint64ParamChoice.a = byteValue
@@ -117,6 +118,28 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         self.assertEqual(shortValue, readUInt64ParamChoice.b)
         self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
 
+    def testWriteReadFile(self):
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
+        byteValue = 99
+        uint64ParamChoice.a = byteValue
+        filenameA = self.BLOB_NAME_BASE + "a.blob"
+        zserio.serialize_to_file(uint64ParamChoice, filenameA)
+
+        readUInt64ParamChoice = zserio.deserialize_from_file(self.api.UInt64ParamChoice, filenameA,
+                                                             self.VARIANT_A_SELECTOR)
+        self.assertEqual(byteValue, readUInt64ParamChoice.a)
+        self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
+
+        shortValue = 234
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR, b_=shortValue)
+        filenameB = self.BLOB_NAME_BASE + "b.blob"
+        zserio.serialize_to_file(uint64ParamChoice, filenameB)
+
+        readUInt64ParamChoice = zserio.deserialize_from_file(self.api.UInt64ParamChoice, filenameB,
+                                                             self.VARIANT_B_SELECTOR)
+        self.assertEqual(shortValue, readUInt64ParamChoice.b)
+        self.assertEqual(uint64ParamChoice, readUInt64ParamChoice)
+
     @staticmethod
     def _writeUInt64ParamChoiceToStream(writer, selector, value):
         if selector == 1:
@@ -128,6 +151,7 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         else:
             writer.write_signed_bits(value, 32)
 
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "uint64_param_choice_")
     VARIANT_A_SELECTOR = 1
     VARIANT_B_SELECTOR = 2
     VARIANT_C_SELECTOR = 7

@@ -1,8 +1,9 @@
 import unittest
+import os
 
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class BitfieldEnumTest(unittest.TestCase):
     @classmethod
@@ -34,11 +35,21 @@ class BitfieldEnumTest(unittest.TestCase):
         self.assertEqual(COLOR_BITSIZEOF + 2, self.api.Color.BLUE.initialize_offsets(2))
         self.assertEqual(COLOR_BITSIZEOF + 3, self.api.Color.GREEN.initialize_offsets(3))
 
-    def testWrite(self):
+    def testWriteRead(self):
         writer = zserio.BitStreamWriter()
         self.api.Color.RED.write(writer)
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         self.assertEqual(RED_VALUE, reader.read_bits(COLOR_BITSIZEOF))
+
+    def testWriteReadFile(self):
+        color = self.api.Color.GREEN
+        zserio.serialize_to_file(color, BLOB_NAME)
+
+        readColor = zserio.deserialize_from_file(self.api.Color, BLOB_NAME)
+        self.assertEqual(color, readColor)
+
+
+BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "bitfield_enum.blob")
 
 COLOR_BITSIZEOF = 3
 

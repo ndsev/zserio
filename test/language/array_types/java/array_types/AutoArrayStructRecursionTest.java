@@ -54,15 +54,15 @@ public class AutoArrayStructRecursionTest
     }
 
     @Test
-    public void writeLength1() throws IOException, ZserioError
+    public void writeReadLength1() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH1);
+        checkWriteRead(AUTO_ARRAY_LENGTH1);
     }
 
     @Test
-    public void writeLength2() throws IOException, ZserioError
+    public void writeReadLength2() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH2);
+        checkWriteRead(AUTO_ARRAY_LENGTH2);
     }
 
     private void checkBitSizeOf(short numElements) throws IOException, ZserioError
@@ -91,13 +91,16 @@ public class AutoArrayStructRecursionTest
         checkAutoArrayRecursion(autoArrayRecursion, numElements);
     }
 
-    private void checkWrite(short numElements) throws IOException, ZserioError
+    private void checkWriteRead(short numElements) throws IOException, ZserioError
     {
         final AutoArrayRecursion autoArrayRecursion = createAutoArrayRecursion(numElements);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         autoArrayRecursion.write(writer);
         writer.close();
+
+        assertEquals(autoArrayRecursion.bitSizeOf(), writer.getBitPosition());
+        assertEquals(autoArrayRecursion.initializeOffsets(0), writer.getBitPosition());
 
         final AutoArrayRecursion readAutoArrayRecursion = new AutoArrayRecursion(file);
         checkAutoArrayRecursion(readAutoArrayRecursion, numElements);
@@ -143,6 +146,7 @@ public class AutoArrayStructRecursionTest
         writer.close();
     }
 
+    private static final String BLOB_NAME_BASE = "auto_array_struct_recursion_";
     private static final short AUTO_ARRAY_LENGTH1 = 5;
     private static final short AUTO_ARRAY_LENGTH2 = 10;
 }

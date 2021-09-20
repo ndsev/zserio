@@ -414,7 +414,7 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setUint8Type((short)8);
         allBuiltInTypes.setUint16Type((int)0xFFFF);
         allBuiltInTypes.setUint32Type((long)0xFFFFFFFFL);
-        allBuiltInTypes.setUint64Type(BigInteger.TEN);
+        allBuiltInTypes.setUint64Type(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
         allBuiltInTypes.setInt8Type(Byte.MAX_VALUE);
         allBuiltInTypes.setInt16Type(Short.MAX_VALUE);
         allBuiltInTypes.setInt32Type(Integer.MAX_VALUE);
@@ -442,6 +442,7 @@ public class AllBuiltInTypesTest
         allBuiltInTypes.setVaruint32Type(((int)1 << 29) - 1);
         allBuiltInTypes.setVaruint64Type(((long)1 << 57) - 1);
         allBuiltInTypes.setVaruintType(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+        allBuiltInTypes.setVarsizeType(((int)1 << 31) - 1);
         allBuiltInTypes.setVarint16Type((short)(((short)1 << 14) - 1));
         allBuiltInTypes.setVarint32Type(((int)1 << 28) - 1);
         allBuiltInTypes.setVarint64Type(((long)1 << 56) - 1);
@@ -472,5 +473,5 @@ public class AllBuiltInTypesTest
 
     private final AllBuiltInTypes allBuiltInTypes = new AllBuiltInTypes();
 
-    private static final File TEST_FILE = new File("test.bin");
+    private static final File TEST_FILE = new File("all_builtin_types.blob");
 }

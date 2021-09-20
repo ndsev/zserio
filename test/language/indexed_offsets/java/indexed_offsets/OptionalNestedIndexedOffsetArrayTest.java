@@ -1,4 +1,4 @@
-package offsets;
+package indexed_offsets;
 
 import static org.junit.Assert.*;
 

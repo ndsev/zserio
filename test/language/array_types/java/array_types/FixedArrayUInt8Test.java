@@ -59,17 +59,20 @@ public class FixedArrayUInt8Test
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final short[] uint8Array = new short[FIXED_ARRAY_LENGTH];
         for (short i = 0; i < FIXED_ARRAY_LENGTH; ++i)
             uint8Array[i] = i;
 
         FixedArray fixedArray = new FixedArray(uint8Array);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME);
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         fixedArray.write(writer);
         writer.close();
+
+        assertEquals(fixedArray.bitSizeOf(), writer.getBitPosition());
+        assertEquals(fixedArray.initializeOffsets(0), writer.getBitPosition());
 
         final FixedArray readFixedArray = new FixedArray(file);
         final short[] readUint8Array = readFixedArray.getUint8Array();
@@ -102,5 +105,6 @@ public class FixedArrayUInt8Test
         writer.close();
     }
 
+    private static final String BLOB_NAME = "fixed_array_uint8.blob";
     private static final int FIXED_ARRAY_LENGTH = 5;
 }

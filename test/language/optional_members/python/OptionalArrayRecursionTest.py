@@ -1,7 +1,8 @@
 import unittest
+import os
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class OptionalArrayRecursionTest(unittest.TestCase):
     @classmethod
@@ -78,7 +79,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         teamLead = self._createTeamLead()
         self.assertEqual(bitPosition + self.TEAM_LEAD_BIT_SIZE, teamLead.initialize_offsets(bitPosition))
 
-    def testWriteEmployee(self):
+    def testWriteReadEmployee(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                         self.api.Title.DEVELOPER)
 
@@ -94,7 +95,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         self.assertEqual(self.EMPLOYEE_DEVELOPER1_SALARY, readEmployee.salary)
         self.assertEqual(self.api.Title.DEVELOPER, readEmployee.title)
 
-    def testWriteTeamLead(self):
+    def testWriteReadTeamLead(self):
         teamLead = self._createTeamLead()
         writer = zserio.BitStreamWriter()
         teamLead.write(writer)
@@ -107,6 +108,23 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         self.assertEqual(self.EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.salary)
         self.assertEqual(self.api.Title.TEAM_LEAD, readTeamLead.title)
         self.assertEqual(self.NUM_DEVELOPERS, len(readTeamLead.team_members))
+
+    def testWriteReadFileEmployee(self):
+        employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
+                                        self.api.Title.DEVELOPER)
+        filename = self.BLOB_NAME_BASE + "employee.blob"
+        zserio.serialize_to_file(employee, filename)
+
+        readEmployee = zserio.deserialize_from_file(self.api.Employee, filename)
+        self.assertEqual(employee, readEmployee)
+
+    def testWriteReadFileTeamLead(self):
+        teamLead = self._createTeamLead()
+        filename = self.BLOB_NAME_BASE + "team_lead.blob"
+        zserio.serialize_to_file(teamLead, filename)
+
+        readTeamLead = zserio.deserialize_from_file(self.api.Employee, filename)
+        self.assertEqual(teamLead, readTeamLead)
 
     def _createEmployee(self, name, salary, title):
         employee = self.api.Employee()
@@ -141,6 +159,8 @@ class OptionalArrayRecursionTest(unittest.TestCase):
                                     self.api.Title.DEVELOPER)
         self._checkEmployeeInStream(reader, self.EMPLOYEE_DEVELOPER2_NAME, self.EMPLOYEE_DEVELOPER2_SALARY,
                                     self.api.Title.DEVELOPER)
+
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "optional_array_recursion_")
 
     EMPLOYEE_TEAM_LEAD_NAME = "Nico"
     EMPLOYEE_TEAM_LEAD_SALARY = 2000

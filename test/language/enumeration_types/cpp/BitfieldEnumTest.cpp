@@ -2,8 +2,7 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/CppRuntimeException.h"
 
 #include "enumeration_types/bitfield_enum/Color.h"
@@ -16,6 +15,8 @@ namespace bitfield_enum
 class BitfieldEnumTest : public ::testing::Test
 {
 protected:
+    static const std::string BLOB_NAME;
+
     static const size_t COLOR_BITSIZEOF;
 
     static const uint8_t NONE_VALUE;
@@ -25,6 +26,8 @@ protected:
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string BitfieldEnumTest::BLOB_NAME = "language/enumeration_types/bitfield_enum.blob";
 
 const size_t BitfieldEnumTest::COLOR_BITSIZEOF = 3;
 
@@ -86,7 +89,7 @@ TEST_F(BitfieldEnumTest, read)
     ASSERT_EQ(RED_VALUE, zserio::enumToValue(color));
 }
 
-TEST_F(BitfieldEnumTest, write)
+TEST_F(BitfieldEnumTest, writeRead)
 {
     const Color color(Color::BLUE);
     zserio::BitStreamWriter writer(bitBuffer);
@@ -94,6 +97,15 @@ TEST_F(BitfieldEnumTest, write)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ASSERT_EQ(BLUE_VALUE, reader.readBits(COLOR_BITSIZEOF));
+}
+
+TEST_F(BitfieldEnumTest, writeReadFile)
+{
+    const Color color(Color::GREEN);
+    zserio::serializeToFile(color, BLOB_NAME);
+
+    const Color readColor = zserio::deserializeFromFile<Color>(BLOB_NAME);
+    ASSERT_EQ(color, readColor);
 }
 
 } // namespace bitfield_enum

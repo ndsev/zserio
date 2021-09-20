@@ -71,21 +71,21 @@ public class PackedVariableArrayUInt8Test
     }
 
     @Test
-    public void writeLength1() throws IOException, ZserioError
+    public void writeReadLength1() throws IOException, ZserioError
     {
-        checkWrite(VARIABLE_ARRAY_LENGTH1);
+        checkWriteRead(VARIABLE_ARRAY_LENGTH1);
     }
 
     @Test
-    public void writeLength2() throws IOException, ZserioError
+    public void writeReadLength2() throws IOException, ZserioError
     {
-        checkWrite(VARIABLE_ARRAY_LENGTH2);
+        checkWriteRead(VARIABLE_ARRAY_LENGTH2);
     }
 
     @Test
-    public void writeLength3() throws IOException, ZserioError
+    public void writeReadLength3() throws IOException, ZserioError
     {
-        checkWrite(VARIABLE_ARRAY_LENGTH2);
+        checkWriteRead(VARIABLE_ARRAY_LENGTH3);
     }
 
     private void checkBitSizeOf(int numElements) throws IOException, ZserioError
@@ -115,13 +115,16 @@ public class PackedVariableArrayUInt8Test
         checkPackedVariableArray(packedVariableArray, numElements);
     }
 
-    private void checkWrite(int numElements) throws IOException, ZserioError
+    private void checkWriteRead(int numElements) throws IOException, ZserioError
     {
         final PackedVariableArray packedVariableArray = createPackedVariableArray(numElements);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         packedVariableArray.write(writer);
         writer.close();
+
+        assertEquals(packedVariableArray.bitSizeOf(), writer.getBitPosition());
+        assertEquals(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
 
         final PackedVariableArray readPackedVariableArray = new PackedVariableArray(file);
         checkPackedVariableArray(readPackedVariableArray, numElements);
@@ -186,6 +189,8 @@ public class PackedVariableArrayUInt8Test
 
         return bitSize;
     }
+
+    private static final String BLOB_NAME_BASE = "packed_variable_array_uint8_";
 
     private static final int VARIABLE_ARRAY_LENGTH1 = 1;
     private static final int VARIABLE_ARRAY_LENGTH2 = 5;

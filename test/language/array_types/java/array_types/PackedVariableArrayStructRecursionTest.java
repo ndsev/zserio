@@ -3,12 +3,15 @@ package array_types;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.File;
 
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.FileBitStreamWriter;
 import array_types.packed_variable_array_struct_recursion.Block;
 import array_types.packed_variable_array_struct_recursion.PackedVariableArray;
 
@@ -66,15 +69,15 @@ public class PackedVariableArrayStructRecursionTest
     private void checkWriteRead(int numElements) throws IOException, ZserioError
     {
         final PackedVariableArray packedVariableArray = createPackedVariableArray(numElements);
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
+        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
         packedVariableArray.write(writer);
         writer.close();
 
-        final long writtenBitPosition = writer.getBitPosition();
-        assertEquals(packedVariableArray.bitSizeOf(), writtenBitPosition);
-        assertEquals(packedVariableArray.initializeOffsets(0), writtenBitPosition);
+        assertEquals(packedVariableArray.bitSizeOf(), writer.getBitPosition());
+        assertEquals(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final FileBitStreamReader reader = new FileBitStreamReader(file);
         final PackedVariableArray readPackedVariableArray = new PackedVariableArray(reader);
         assertEquals(packedVariableArray, readPackedVariableArray);
     }
@@ -126,6 +129,8 @@ public class PackedVariableArrayStructRecursionTest
 
         return bitSize;
     }
+
+    private static final String BLOB_NAME_BASE = "packed_variable_array_struct_recursion_";
 
     private static final int VARIABLE_ARRAY_LENGTH1 = 100;
     private static final int VARIABLE_ARRAY_LENGTH2 = 500;

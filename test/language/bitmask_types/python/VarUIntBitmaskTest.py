@@ -1,8 +1,9 @@
 import unittest
+import os
 
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class VarUIntBitmaskTest(unittest.TestCase):
     @classmethod
@@ -129,7 +130,7 @@ class VarUIntBitmaskTest(unittest.TestCase):
         self.assertEqual(bitPosition + zserio.bitsizeof.bitsizeof_varuint(READ_VALUE),
                          self.api.Permission.Values.READ.initialize_offsets(bitPosition))
 
-    def testWrite(self):
+    def testWriteRead(self):
         permission = self.api.Permission.Values.READ
         writer = zserio.BitStreamWriter()
         permission.write(writer)
@@ -138,10 +139,19 @@ class VarUIntBitmaskTest(unittest.TestCase):
         readPermission = self.api.Permission.from_reader(reader)
         self.assertEqual(permission, readPermission)
 
+    def testWriteReadFile(self):
+        permission = self.api.Permission.Values.READ
+        zserio.serialize_to_file(permission, BLOB_NAME)
+
+        readPermission = zserio.deserialize_from_file(self.api.Permission, BLOB_NAME)
+        self.assertEqual(permission, readPermission)
+
     def testGetValue(self):
         self.assertEqual(NONE_VALUE, self.api.Permission.Values.NONE.value)
         self.assertEqual(READ_VALUE, self.api.Permission.Values.READ.value)
         self.assertEqual(WRITE_VALUE, self.api.Permission.Values.WRITE.value)
+
+BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "varuint_bitmask.blob")
 
 NONE_VALUE = 0
 READ_VALUE = 2

@@ -3,6 +3,7 @@ package bitmask_types.varuint_bitmask;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.File;
 import java.math.BigInteger;
 
 import org.junit.Test;
@@ -10,6 +11,8 @@ import org.junit.Test;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.FileBitStreamWriter;
 import zserio.runtime.BitSizeOfCalculator;
 
 public class VarUIntBitmaskTest
@@ -117,7 +120,7 @@ public class VarUIntBitmaskTest
     }
 
     @Test
-    public void write() throws IOException
+    public void writeRead() throws IOException
     {
         final Permission permission = Permission.Values.READ;
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -125,6 +128,21 @@ public class VarUIntBitmaskTest
 
         final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
         final Permission readPermission = new Permission(reader);
+        assertEquals(permission, readPermission);
+    }
+
+    @Test
+    public void writeReadFile() throws IOException
+    {
+        final Permission permission = Permission.Values.READ;
+        final File file = new File(BLOB_NAME);
+        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        permission.write(writer);
+        writer.close();
+
+        final FileBitStreamReader reader = new FileBitStreamReader(file);
+        final Permission readPermission = new Permission(reader);
+        reader.close();
         assertEquals(permission, readPermission);
     }
 
@@ -192,7 +210,8 @@ public class VarUIntBitmaskTest
         assertEquals(read.or(write), none.not().and(read.or(write)));
     }
 
-    private static BigInteger NONE_VALUE = BigInteger.ZERO;
-    private static BigInteger READ_VALUE = BigInteger.valueOf(2);
-    private static BigInteger WRITE_VALUE = BigInteger.valueOf(4);
+    private static final String BLOB_NAME = "varuint_bitmask.blob";
+    private static final BigInteger NONE_VALUE = BigInteger.ZERO;
+    private static final BigInteger READ_VALUE = BigInteger.valueOf(2);
+    private static final BigInteger WRITE_VALUE = BigInteger.valueOf(4);
 }

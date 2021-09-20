@@ -1,7 +1,8 @@
 import unittest
+import os
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedIndexedOffsetArrayHolderTest(unittest.TestCase):
     @classmethod
@@ -17,14 +18,23 @@ class PackedIndexedOffsetArrayHolderTest(unittest.TestCase):
     def testBitSizeOfLength3(self):
         self._checkBitSizeOf(self.NUM_ELEMENTS3)
 
-    def testWriteReadfLength1(self):
+    def testWriteReadLength1(self):
         self._checkWriteRead(self.NUM_ELEMENTS1)
 
-    def testWriteReadfLength2(self):
+    def testWriteReadLength2(self):
         self._checkWriteRead(self.NUM_ELEMENTS2)
 
-    def testWriteReadfLength3(self):
+    def testWriteReadLength3(self):
         self._checkWriteRead(self.NUM_ELEMENTS3)
+
+    def testWriteReadFileLength1(self):
+        self._checkWriteReadFile(self.NUM_ELEMENTS1)
+
+    def testWriteReadFileLength2(self):
+        self._checkWriteReadFile(self.NUM_ELEMENTS2)
+
+    def testWriteReadFileLength3(self):
+        self._checkWriteReadFile(self.NUM_ELEMENTS3)
 
     def _checkBitSizeOf(self, numElements):
         autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(numElements)
@@ -44,6 +54,14 @@ class PackedIndexedOffsetArrayHolderTest(unittest.TestCase):
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         readAutoIndexedOffsetArray = self.api.AutoIndexedOffsetArray.from_reader(reader)
+        self.assertEqual(autoIndexedOffsetArray, readAutoIndexedOffsetArray)
+
+    def _checkWriteReadFile(self, numElements):
+        autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(numElements)
+        filename = self.BLOB_NAME_BASE + str(numElements) + ".blob"
+        zserio.serialize_to_file(autoIndexedOffsetArray, filename)
+
+        readAutoIndexedOffsetArray = zserio.deserialize_from_file(self.api.AutoIndexedOffsetArray, filename)
         self.assertEqual(autoIndexedOffsetArray, readAutoIndexedOffsetArray)
 
     def _createAutoIndexedOffsetArray(self, numElements):
@@ -74,6 +92,8 @@ class PackedIndexedOffsetArrayHolderTest(unittest.TestCase):
             bitSize += 32 # data2[i]
 
         return bitSize
+
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_indexed_offset_array_holder_")
 
     NUM_ELEMENTS1 = 50
     NUM_ELEMENTS2 = 100

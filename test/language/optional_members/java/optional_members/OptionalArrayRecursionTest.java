@@ -77,12 +77,12 @@ public class OptionalArrayRecursionTest
     }
 
     @Test
-    public void fileWriteEmployee() throws IOException
+    public void writeReadFileEmployee() throws IOException
     {
         final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
                 Title.DEVELOPER);
 
-        final File employeeFile = new File("employee.bin");
+        final File employeeFile = new File(BLOB_NAME_BASE + "employee.blob");
         employee.write(employeeFile);
         final FileBitStreamReader reader = new FileBitStreamReader(employeeFile);
         checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title.DEVELOPER);
@@ -95,11 +95,11 @@ public class OptionalArrayRecursionTest
     }
 
     @Test
-    public void fileWriteTeamLead() throws IOException
+    public void writeReadFileTeamLead() throws IOException
     {
         final Employee teamLead = createTeamLead();
 
-        final File teamLeadFile = new File("team_lead.bin");
+        final File teamLeadFile = new File(BLOB_NAME_BASE + "team_lead.blob");
         teamLead.write(teamLeadFile);
         final FileBitStreamReader reader = new FileBitStreamReader(teamLeadFile);
         checkTeamLeadInStream(reader);
@@ -151,17 +151,19 @@ public class OptionalArrayRecursionTest
         checkEmployeeInStream(reader, EMPLOYEE_DEVELOPER2_NAME, EMPLOYEE_DEVELOPER2_SALARY, Title.DEVELOPER);
     }
 
-    private static String   EMPLOYEE_TEAM_LEAD_NAME = "Nico";
-    private static int      EMPLOYEE_TEAM_LEAD_SALARY = 2000;
+    private static final String BLOB_NAME_BASE = "optional_array_recursion_";
 
-    private static String   EMPLOYEE_DEVELOPER1_NAME = "Mike";
-    private static int      EMPLOYEE_DEVELOPER1_SALARY = 1000;
+    private static final String EMPLOYEE_TEAM_LEAD_NAME = "Nico";
+    private static final int EMPLOYEE_TEAM_LEAD_SALARY = 2000;
 
-    private static String   EMPLOYEE_DEVELOPER2_NAME = "Luke";
-    private static int      EMPLOYEE_DEVELOPER2_SALARY = 1800;
+    private static final String EMPLOYEE_DEVELOPER1_NAME = "Mike";
+    private static final int EMPLOYEE_DEVELOPER1_SALARY = 1000;
 
-    private static int      NUM_DEVELOPERS = 2;
-    private static int      DEVELOPER1_BIT_SIZE = EMPLOYEE_DEVELOPER1_NAME.length() * 8 + 32;
-    private static int      TEAM_LEAD_BIT_SIZE = EMPLOYEE_TEAM_LEAD_NAME.length() * 8 + 32 + 8 +
+    private static final String EMPLOYEE_DEVELOPER2_NAME = "Luke";
+    private static final int EMPLOYEE_DEVELOPER2_SALARY = 1800;
+
+    private static final int NUM_DEVELOPERS = 2;
+    private static final int DEVELOPER1_BIT_SIZE = EMPLOYEE_DEVELOPER1_NAME.length() * 8 + 32;
+    private static final int TEAM_LEAD_BIT_SIZE = EMPLOYEE_TEAM_LEAD_NAME.length() * 8 + 32 + 8 +
             DEVELOPER1_BIT_SIZE + EMPLOYEE_DEVELOPER2_NAME.length() * 8 + 32;
 }

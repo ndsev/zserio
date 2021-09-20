@@ -75,7 +75,7 @@ public class VariableArrayStructCastVarUIntTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final byte numElements = 33;
         final TestStructure[] compoundArray = new TestStructure[numElements];
@@ -85,10 +85,13 @@ public class VariableArrayStructCastVarUIntTest
             compoundArray[i] = testStructure;
         }
         final VariableArray variableArray = new VariableArray(BigInteger.valueOf(numElements), compoundArray);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME);
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         variableArray.write(writer);
         writer.close();
+
+        assertEquals(variableArray.bitSizeOf(), writer.getBitPosition());
+        assertEquals(variableArray.initializeOffsets(0), writer.getBitPosition());
 
         final VariableArray readVariableArray = new VariableArray(file);
         assertEquals(BigInteger.valueOf(numElements), readVariableArray.getNumElements());
@@ -133,4 +136,6 @@ public class VariableArrayStructCastVarUIntTest
 
         writer.close();
     }
+
+    private static final String BLOB_NAME = "variable_array_struct_cast_varuint.blob";
 }

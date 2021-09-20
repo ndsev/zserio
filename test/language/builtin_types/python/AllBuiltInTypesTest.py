@@ -1,9 +1,11 @@
 import sys
 import unittest
+import os
+import struct
 
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class AllBuiltInTypesTest(unittest.TestCase):
     @classmethod
@@ -295,7 +297,7 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.variable_intfield_type = variableIntfieldTypeMax
         allBuiltInTypes.variable_intfield8_type = zserio.limits.INT8_MAX
         allBuiltInTypes.float16_type = 1.0
-        allBuiltInTypes.float32_type = 1.0
+        allBuiltInTypes.float32_type = self.FLOAT32_MAX
         allBuiltInTypes.float64_type = sys.float_info.max
         allBuiltInTypes.varuint16_type = zserio.limits.VARUINT16_MAX
         allBuiltInTypes.varuint32_type = zserio.limits.VARUINT32_MAX
@@ -309,11 +311,9 @@ class AllBuiltInTypesTest(unittest.TestCase):
         allBuiltInTypes.string_type = "TEST"
         allBuiltInTypes.extern_type = self._getExternalBitBuffer()
 
-        writer = zserio.BitStreamWriter()
-        allBuiltInTypes.write(writer)
-        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readAllBuiltInTypes = self.api.AllBuiltInTypes()
-        readAllBuiltInTypes.read(reader)
+        zserio.serialize_to_file(allBuiltInTypes, self.BLOB_NAME)
+
+        readAllBuiltInTypes = zserio.deserialize_from_file(self.api.AllBuiltInTypes, self.BLOB_NAME)
         self.assertEqual(allBuiltInTypes, readAllBuiltInTypes)
 
     def _getExternalBitBuffer(self):
@@ -322,3 +322,6 @@ class AllBuiltInTypesTest(unittest.TestCase):
         externalStructure.write(writer)
 
         return zserio.BitBuffer(writer.byte_array, writer.bitposition)
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "all_builtin_types.blob")
+    FLOAT32_MAX = struct.unpack('>f', bytes(b'\x7f\x7f\xff\xff'))[0]

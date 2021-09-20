@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedAutoArrayStructRecursionTest(unittest.TestCase):
     @classmethod
@@ -35,14 +36,23 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
     def testReadLength3(self):
         self._checkRead(self.AUTO_ARRAY_LENGTH3)
 
-    def testWriteLength1(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH1)
+    def testWriteReadLength1(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH1)
 
-    def testWriteLength2(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH2)
+    def testWriteReadLength2(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH2)
 
-    def testWriteLength3(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH3)
+    def testWriteReadLength3(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH3)
+
+    def testWriteReadFileLength1(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH1)
+
+    def testWriteReadFileLength2(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH2)
+
+    def testWriteReadFileLength3(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH3)
 
     def _checkBitSizeOf(self, numElements):
         packedAutoArrayRecursion = self._createPackedAutoArrayRecursion(numElements)
@@ -66,10 +76,22 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
         packedAutoArrayRecursion = self.api.PackedAutoArrayRecursion.from_reader(reader)
         self._checkPackedAutoArrayRecursion(packedAutoArrayRecursion, numElements)
 
-    def _checkWrite(self, numElements):
+    def _checkWriteRead(self, numElements):
         packedAutoArrayRecursion = self._createPackedAutoArrayRecursion(numElements)
         bitBuffer = zserio.serialize(packedAutoArrayRecursion)
+
+        self.assertEqual(packedAutoArrayRecursion.bitsizeof(), bitBuffer.bitsize)
+        self.assertEqual(packedAutoArrayRecursion.initialize_offsets(0), bitBuffer.bitsize)
+
         readPackedAutoArrayRecursion = zserio.deserialize(self.api.PackedAutoArrayRecursion, bitBuffer)
+        self._checkPackedAutoArrayRecursion(readPackedAutoArrayRecursion, numElements)
+
+    def _checkWriteReadFile(self, numElements):
+        packedAutoArrayRecursion = self._createPackedAutoArrayRecursion(numElements)
+        filename = self.BLOB_NAME_BASE + str(numElements) + ".blob"
+        zserio.serialize_to_file(packedAutoArrayRecursion, filename)
+
+        readPackedAutoArrayRecursion = zserio.deserialize_from_file(self.api.PackedAutoArrayRecursion, filename)
         self._checkPackedAutoArrayRecursion(readPackedAutoArrayRecursion, numElements)
 
     def _createPackedAutoArrayRecursion(self, numElements):
@@ -113,6 +135,8 @@ class PackedAutoArrayStructRecursionTest(unittest.TestCase):
         bitSize += (numElements - 1) * (8 + 2) # all deltas
 
         return bitSize
+
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_auto_array_struct_recursion_")
 
     AUTO_ARRAY_LENGTH1 = 1
     AUTO_ARRAY_LENGTH2 = 5

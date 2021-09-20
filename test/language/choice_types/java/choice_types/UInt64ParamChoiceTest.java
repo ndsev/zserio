@@ -145,26 +145,7 @@ public class UInt64ParamChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException, ZserioError
-    {
-        UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
-        final byte byteValue = 99;
-        uint64ParamChoice.setA(byteValue);
-        final File file = new File("test.bin");
-        uint64ParamChoice.write(file);
-        UInt64ParamChoice readUInt64ParamChoice = new UInt64ParamChoice(file, VARIANT_A_SELECTOR);
-        assertEquals(byteValue, readUInt64ParamChoice.getA());
-
-        uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
-        final short shortValue = 234;
-        uint64ParamChoice.setB(shortValue);
-        uint64ParamChoice.write(file);
-        readUInt64ParamChoice = new UInt64ParamChoice(file, VARIANT_B_SELECTOR);
-        assertEquals(shortValue, readUInt64ParamChoice.getB());
-    }
-
-    @Test
-    public void bitStreamWriterWrite() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
         final byte byteValue = 99;
@@ -186,6 +167,26 @@ public class UInt64ParamChoiceTest
         assertEquals(shortValue, readUInt64ParamChoice.getB());
     }
 
+    @Test
+    public void writeReadFile() throws IOException, ZserioError
+    {
+        UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
+        final byte byteValue = 99;
+        uint64ParamChoice.setA(byteValue);
+        final File fileA = new File(BLOB_NAME_BASE + "a.blob");
+        uint64ParamChoice.write(fileA);
+        UInt64ParamChoice readUInt64ParamChoice = new UInt64ParamChoice(fileA, VARIANT_A_SELECTOR);
+        assertEquals(byteValue, readUInt64ParamChoice.getA());
+
+        uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
+        final short shortValue = 234;
+        uint64ParamChoice.setB(shortValue);
+        final File fileB = new File(BLOB_NAME_BASE + "b.blob");
+        uint64ParamChoice.write(fileB);
+        readUInt64ParamChoice = new UInt64ParamChoice(fileB, VARIANT_B_SELECTOR);
+        assertEquals(shortValue, readUInt64ParamChoice.getB());
+    }
+
     private void writeUInt64ParamChoiceToFile(File file, BigInteger selector, int value) throws IOException
     {
         final FileImageOutputStream stream = new FileImageOutputStream(file);
@@ -203,6 +204,7 @@ public class UInt64ParamChoiceTest
         stream.close();
     }
 
+    private final static String BLOB_NAME_BASE = "uint64_param_choice_";
     private final static BigInteger VARIANT_A_SELECTOR = BigInteger.ONE;
     private final static BigInteger VARIANT_B_SELECTOR = new BigInteger("2");
     private final static BigInteger VARIANT_C_SELECTOR = new BigInteger("7");

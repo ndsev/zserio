@@ -2,9 +2,8 @@
 
 #include "allow_implicit_arrays/implicit_array_float16/ImplicitArray.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 namespace allow_implicit_arrays
 {
@@ -24,8 +23,12 @@ protected:
             writer.writeFloat16(static_cast<float>(i));
     }
 
+    static const std::string BLOB_NAME;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string ImplicitArrayFloat16Test::BLOB_NAME =
+        "arguments/allow_implicit_arrays/implicit_array_float16.blob";
 
 TEST_F(ImplicitArrayFloat16Test, bitSizeOf)
 {
@@ -70,7 +73,7 @@ TEST_F(ImplicitArrayFloat16Test, readConstructor)
         ASSERT_EQ(static_cast<float>(i), array[i]);
 }
 
-TEST_F(ImplicitArrayFloat16Test, write)
+TEST_F(ImplicitArrayFloat16Test, writeRead)
 {
     const size_t numElements = 55;
     vector_type<float> array;
@@ -85,6 +88,25 @@ TEST_F(ImplicitArrayFloat16Test, write)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ImplicitArray readImplicitArray(reader);
+    const vector_type<float>& readArray = readImplicitArray.getArray();
+    ASSERT_EQ(numElements, readArray.size());
+    for (size_t i = 0; i < numElements; ++i)
+        ASSERT_EQ(static_cast<float>(i), readArray[i]);
+}
+
+TEST_F(ImplicitArrayFloat16Test, writeReadFile)
+{
+    const size_t numElements = 55;
+    vector_type<float> array;
+    array.reserve(numElements);
+    for (size_t i = 0; i < numElements; ++i)
+        array.push_back(static_cast<float>(i));
+    ImplicitArray implicitArray;
+    implicitArray.setArray(array);
+
+    zserio::serializeToFile(implicitArray, BLOB_NAME);
+
+    ImplicitArray readImplicitArray = zserio::deserializeFromFile<ImplicitArray>(BLOB_NAME);
     const vector_type<float>& readArray = readImplicitArray.getArray();
     ASSERT_EQ(numElements, readArray.size());
     for (size_t i = 0; i < numElements; ++i)

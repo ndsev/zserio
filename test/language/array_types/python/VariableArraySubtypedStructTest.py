@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class VariableArraySubtypedStructTest(unittest.TestCase):
     @classmethod
@@ -41,12 +42,31 @@ class VariableArraySubtypedStructTest(unittest.TestCase):
             self.assertEqual(i, testStructure.id)
             self.assertTrue(testStructure.name == "Name" + str(i))
 
-    def testWrite(self):
+    def testWriteRead(self):
         numElements = 33
         compoundArray = [self.api.ArrayElement(i, "Name" + str(i)) for i in range(numElements)]
         variableArray = self.api.VariableArray(numElements, compoundArray)
         bitBuffer = zserio.serialize(variableArray)
+
+        self.assertEqual(variableArray.bitsizeof(), bitBuffer.bitsize)
+        self.assertEqual(variableArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readSubtypedStructVariableArray = zserio.deserialize(self.api.VariableArray, bitBuffer)
+        self.assertEqual(numElements, readSubtypedStructVariableArray.num_elements)
+        readCompoundArray = readSubtypedStructVariableArray.compound_array
+        self.assertEqual(numElements, len(readCompoundArray))
+        for i in range(numElements):
+            readArrayElement = readCompoundArray[i]
+            self.assertEqual(i, readArrayElement.id)
+            self.assertTrue(readArrayElement.name == "Name" + str(i))
+
+    def testWriteReadFile(self):
+        numElements = 33
+        compoundArray = [self.api.ArrayElement(i, "Name" + str(i)) for i in range(numElements)]
+        variableArray = self.api.VariableArray(numElements, compoundArray)
+        zserio.serialize_to_file(variableArray, self.BLOB_NAME)
+
+        readSubtypedStructVariableArray = zserio.deserialize_from_file(self.api.VariableArray, self.BLOB_NAME)
         self.assertEqual(numElements, readSubtypedStructVariableArray.num_elements)
         readCompoundArray = readSubtypedStructVariableArray.compound_array
         self.assertEqual(numElements, len(readCompoundArray))
@@ -69,3 +89,5 @@ class VariableArraySubtypedStructTest(unittest.TestCase):
         for i in range(numElements):
             writer.write_bits(i, 32)
             writer.write_string("Name" + str(i))
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "variable_array_subtyped_struct.blob")

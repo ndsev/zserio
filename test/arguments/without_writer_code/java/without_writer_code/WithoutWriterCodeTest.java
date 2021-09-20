@@ -1,6 +1,7 @@
 package without_writer_code;
 
 import java.io.IOException;
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -24,6 +25,7 @@ import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.FileBitStreamWriter;
 
 public class WithoutWriterCodeTest
 {
@@ -247,12 +249,22 @@ public class WithoutWriterCodeTest
     public void readConstructor() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-
         writeTile(writer);
 
         final BitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
         final Tile tile = new Tile(reader);
+        checkTile(tile);
+    }
 
+    @Test
+    public void readFile() throws IOException
+    {
+        final File file = new File(BLOB_NAME);
+        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        writeTile(writer);
+        writer.close();
+
+        final Tile tile = new Tile(file);
         checkTile(tile);
     }
 
@@ -438,6 +450,7 @@ public class WithoutWriterCodeTest
         assertEquals(PARAMS[1], itemChoice1.getParam());
     }
 
+    private static final String BLOB_NAME = "without_writer_code.blob";
     private static final int TILE_ID_EUROPE = 99;
     private static final int TILE_ID_AMERICA = 11;
     private static final short VERSION = 8;

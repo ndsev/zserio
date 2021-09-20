@@ -1,7 +1,8 @@
 import unittest
+import os
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
     @classmethod
@@ -66,6 +67,14 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
         readAutoIndexedOffsetArray = self.api.AutoIndexedOffsetArray.from_reader(reader)
         self._checkAutoIndexedOffsetArray(readAutoIndexedOffsetArray)
         self.assertTrue(autoIndexedOffsetArray == readAutoIndexedOffsetArray)
+
+    def testWriteFile(self):
+        createWrongOffsets = True
+        autoIndexedOffsetArray = self._createAutoIndexedOffsetArray(createWrongOffsets)
+        zserio.serialize_to_file(autoIndexedOffsetArray, BLOB_NAME)
+
+        readAutoIndexedOffsetArray = zserio.deserialize_from_file(self.api.AutoIndexedOffsetArray, BLOB_NAME)
+        self.assertEqual(autoIndexedOffsetArray, readAutoIndexedOffsetArray)
 
     def testWriteWithPosition(self):
         createWrongOffsets = True
@@ -142,6 +151,8 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
             data.append(i)
 
         return self.api.AutoIndexedOffsetArray(offsets, SPACER_VALUE, data)
+
+BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_auto_indexed_offset_array.blob")
 
 NUM_ELEMENTS = 5
 

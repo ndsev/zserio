@@ -1,8 +1,9 @@
 import unittest
+import os
 import apsw
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class WithoutWriterCodeTest(unittest.TestCase):
     @classmethod
@@ -158,12 +159,19 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
     def testFromReader(self):
         writer = zserio.BitStreamWriter()
-
         self._writeTile(writer)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
         tile = self.api.Tile.from_reader(reader)
 
+        self._checkTile(tile)
+
+    def testReadFile(self):
+        writer = zserio.BitStreamWriter()
+        self._writeTile(writer)
+        writer.to_file(BLOB_NAME)
+
+        tile = zserio.deserialize_from_file(self.api.Tile, BLOB_NAME)
         self._checkTile(tile)
 
     def testReadWorldDb(self):
@@ -293,6 +301,8 @@ class WithoutWriterCodeTest(unittest.TestCase):
                 propAttr.fset,
                 msg=("Property '%s' setter is not set in '%s'!" % (prop, userType.__name__))
             )
+
+BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "without_writer_code.blob")
 
 TILE_ID_EUROPE = 99
 TILE_ID_AMERICA = 11

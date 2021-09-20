@@ -1,8 +1,8 @@
-package offsets;
+package indexed_offsets;
 
 import static org.junit.Assert.*;
 
-import indexed_offsets.auto_indexed_offset_array.AutoIndexedOffsetArray;
+import indexed_offsets.packed_auto_indexed_offset_array.AutoIndexedOffsetArray;
 
 import java.io.IOException;
 import java.io.File;
@@ -16,7 +16,7 @@ import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 
-public class AutoIndexedOffsetArrayTest
+public class PackedAutoIndexedOffsetArrayTest
 {
     @Test
     public void read() throws IOException, ZserioError
@@ -84,11 +84,11 @@ public class AutoIndexedOffsetArrayTest
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeReadFile() throws IOException, ZserioError
     {
         final boolean createWrongOffsets = true;
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(createWrongOffsets);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME);
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         autoIndexedOffsetArray.write(writer);
         writer.close();
@@ -130,24 +130,27 @@ public class AutoIndexedOffsetArrayTest
 
         writer.writeVarSize(NUM_ELEMENTS);
         long currentOffset = ELEMENT0_OFFSET;
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+        for (int i = 0; i < NUM_ELEMENTS; ++i)
         {
             if ((i + 1) == NUM_ELEMENTS && writeWrongOffsets)
-                writer.writeUnsignedInt(WRONG_OFFSET);
+                writer.writeBits(WRONG_OFFSET, 32);
             else
-                writer.writeUnsignedInt(currentOffset);
+                writer.writeBits(currentOffset, 32);
             currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
 
-        writer.writeBits(SPACER_VALUE, 1);
+        writer.writeBits(SPACER_VALUE, 3);
 
         writer.writeVarSize(NUM_ELEMENTS);
-        writer.writeBits(0, 7);
-        for (short i = 0; i < NUM_ELEMENTS; ++i)
+
+        writer.writeBool(true);
+        writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
+        writer.alignTo(8);
+        writer.writeBits(0, ELEMENT_SIZE);
+        for (int i = 0; i < NUM_ELEMENTS - 1; ++i)
         {
-            writer.writeBits(i % 64, ELEMENT_SIZE);
-            if ((i + 1) != NUM_ELEMENTS)
-                writer.writeBits(0, ALIGNED_ELEMENT_SIZE - ELEMENT_SIZE);
+            writer.alignTo(8);
+            writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
         }
 
         writer.close();
@@ -158,9 +161,10 @@ public class AutoIndexedOffsetArrayTest
         final long[] offsets = autoIndexedOffsetArray.getOffsets();
         assertEquals(NUM_ELEMENTS, offsets.length);
         long expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (long offset : offsets)
+        for (int i = 0; i < offsets.length; ++i)
         {
-            assertEquals(expectedOffset, offset);
+            final long offset = offsets[i];
+            assertEquals("index: " + i, expectedOffset, offset);
             expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
         }
     }
@@ -203,19 +207,25 @@ public class AutoIndexedOffsetArrayTest
         return autoIndexedOffsetArray;
     }
 
+    private static final String BLOB_NAME = "packed_auto_indexed_offset_array.blob";
+
     private static final short  NUM_ELEMENTS = (short)5;
 
-    private static final long   WRONG_OFFSET = (long)0;
+    private static final long   WRONG_OFFSET = 0;
 
     private static final int    AUTO_ARRAY_LENGTH_BYTE_SIZE = 1;
-    private static final long   ELEMENT0_OFFSET = AUTO_ARRAY_LENGTH_BYTE_SIZE +
-            (long)(NUM_ELEMENTS * Integer.SIZE + Byte.SIZE) / Byte.SIZE + AUTO_ARRAY_LENGTH_BYTE_SIZE;
+    private static final long   ELEMENT0_OFFSET =
+            AUTO_ARRAY_LENGTH_BYTE_SIZE + (long)(NUM_ELEMENTS * 4) +
+            (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 1 + 6 + 6 /* alignment */) / 8;
     private static final int    ELEMENT_SIZE = 5;
-    private static final int    ALIGNED_ELEMENT_SIZE = Byte.SIZE;
-    private static final int    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / Byte.SIZE;
+    private static final int    ALIGNED_ELEMENT_SIZE = 8;
+    private static final int    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
 
-    private static final byte   SPACER_VALUE = 1;
+    private static final byte   SPACER_VALUE = 7;
 
-    private static final int    AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = (int)ELEMENT0_OFFSET * Byte.SIZE +
-            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + ELEMENT_SIZE;
+    private static final short  PACKED_ARRAY_DELTA = 1;
+    private static final short  PACKED_ARRAY_MAX_BIT_NUMBER = 1;
+
+    private static final int    AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = (int)ELEMENT0_OFFSET * 8 +
+            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + PACKED_ARRAY_MAX_BIT_NUMBER + 1;
 }

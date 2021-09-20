@@ -1,4 +1,4 @@
-package offsets;
+package indexed_offsets;
 
 import static org.junit.Assert.*;
 
@@ -7,12 +7,14 @@ import indexed_offsets.packed_indexed_offset_array_holder.OffsetArray;
 import indexed_offsets.packed_indexed_offset_array_holder.OffsetHolder;
 
 import java.io.IOException;
+import java.io.File;
 
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.FileBitStreamWriter;
 
 public class PackedIndexedOffsetArrayHolderTest
 {
@@ -67,7 +69,8 @@ public class PackedIndexedOffsetArrayHolderTest
     private void checkWriteRead(int numElements) throws IOException, ZserioError
     {
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(numElements);
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
+        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
         autoIndexedOffsetArray.write(writer);
         writer.close();
 
@@ -75,8 +78,7 @@ public class PackedIndexedOffsetArrayHolderTest
         assertEquals(autoIndexedOffsetArray.bitSizeOf(), writtenBitPosition);
         assertEquals(autoIndexedOffsetArray.initializeOffsets(0), writtenBitPosition);
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
-        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(reader);
+        final AutoIndexedOffsetArray readAutoIndexedOffsetArray = new AutoIndexedOffsetArray(file);
         assertEquals(autoIndexedOffsetArray, readAutoIndexedOffsetArray);
     }
 
@@ -114,6 +116,8 @@ public class PackedIndexedOffsetArrayHolderTest
 
         return bitSize;
     }
+
+    private static final String BLOB_NAME_BASE = "packed_indexed_offset_array_holder_";
 
     private static final int NUM_ELEMENTS1 = 50;
     private static final int NUM_ELEMENTS2 = 100;

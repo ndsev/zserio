@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.File;
 import java.math.BigInteger;
 
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.FileBitStreamWriter;
 
 public class PackedArrayElementParamTest
 {
@@ -50,6 +52,24 @@ public class PackedArrayElementParamTest
         checkWriteRead(NUM_BLOCK3);
     }
 
+    @Test
+    public void writeReadFileLength1() throws IOException, ZserioError
+    {
+        checkWriteReadFile(NUM_BLOCKS1);
+    }
+
+    @Test
+    public void writeReadFileLength2() throws IOException, ZserioError
+    {
+        checkWriteReadFile(NUM_BLOCK2);
+    }
+
+    @Test
+    public void writeReadFileLength3() throws IOException, ZserioError
+    {
+        checkWriteReadFile(NUM_BLOCK3);
+    }
+
     private void checkBitSizeOf(int numBlocks) throws IOException, ZserioError
     {
         final Database database = createDatabase(numBlocks);
@@ -75,6 +95,18 @@ public class PackedArrayElementParamTest
 
         final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
         final Database readDatabase = new Database(reader);
+        assertEquals(database, readDatabase);
+    }
+
+    private void checkWriteReadFile(int numBlocks) throws IOException, ZserioError
+    {
+        final Database database = createDatabase(numBlocks);
+        final File file = new File(BLOB_NAME_BASE + numBlocks + ".blob");
+        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
+        database.write(writer);
+        writer.close();
+
+        final Database readDatabase = new Database(file);
         assertEquals(database, readDatabase);
     }
 
@@ -110,6 +142,7 @@ public class PackedArrayElementParamTest
         return bitSize;
     }
 
+    private static final String BLOB_NAME_BASE = "packed_array_element_param_";
     private static final int NUM_BLOCKS1 = 50;
     private static final int NUM_BLOCK2 = 100;
     private static final int NUM_BLOCK3 = 1000;

@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class FixedArrayUInt8Test(unittest.TestCase):
     @classmethod
@@ -37,7 +38,22 @@ class FixedArrayUInt8Test(unittest.TestCase):
         uint8Array = list(range(self.FIXED_ARRAY_LENGTH))
         fixedArray = self.api.FixedArray(uint8Array)
         bitBuffer = zserio.serialize(fixedArray)
+
+        self.assertEqual(fixedArray.bitsizeof(), bitBuffer.bitsize)
+        self.assertEqual(fixedArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readFixedArray = zserio.deserialize(self.api.FixedArray, bitBuffer)
+        readUint8Array = readFixedArray.uint8_array
+        self.assertEqual(self.FIXED_ARRAY_LENGTH, len(readUint8Array))
+        for i in range(self.FIXED_ARRAY_LENGTH):
+            self.assertEqual(i, readUint8Array[i])
+
+    def testWriteReadFile(self):
+        uint8Array = list(range(self.FIXED_ARRAY_LENGTH))
+        fixedArray = self.api.FixedArray(uint8Array)
+        zserio.serialize_to_file(fixedArray, self.BLOB_NAME)
+
+        readFixedArray = zserio.deserialize_from_file(self.api.FixedArray, self.BLOB_NAME)
         readUint8Array = readFixedArray.uint8_array
         self.assertEqual(self.FIXED_ARRAY_LENGTH, len(readUint8Array))
         for i in range(self.FIXED_ARRAY_LENGTH):
@@ -54,4 +70,5 @@ class FixedArrayUInt8Test(unittest.TestCase):
         for i in range(self.FIXED_ARRAY_LENGTH):
             writer.write_bits(i, 8)
 
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "fixed_array_uint8.blob")
     FIXED_ARRAY_LENGTH = 5

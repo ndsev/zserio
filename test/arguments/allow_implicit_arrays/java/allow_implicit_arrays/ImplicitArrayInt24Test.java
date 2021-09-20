@@ -62,7 +62,7 @@ public class ImplicitArrayInt24Test
     }
 
     @Test
-    public void write() throws IOException, ZserioError
+    public void writeRead() throws IOException, ZserioError
     {
         final int numElements = 55;
         final int[] array = new int[numElements];
@@ -70,10 +70,13 @@ public class ImplicitArrayInt24Test
             array[i] = i;
 
         ImplicitArray implicitArray = new ImplicitArray(array);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME);
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         implicitArray.write(writer);
         writer.close();
+
+        assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
+        assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
         final int[] readArray = readImplicitArray.getArray();
@@ -91,4 +94,6 @@ public class ImplicitArrayInt24Test
 
         writer.close();
     }
+
+    private static final String BLOB_NAME = "implicit_array_int24.blob";
 }

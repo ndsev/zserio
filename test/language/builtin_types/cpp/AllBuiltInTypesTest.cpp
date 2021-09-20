@@ -6,6 +6,7 @@
 #include "builtin_types/all_builtin_types/ExternalStructure.h"
 
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 namespace builtin_types
 {
@@ -34,7 +35,11 @@ protected:
 
 protected:
     AllBuiltInTypes  m_allBuiltInTypes;
+
+    static const std::string BLOB_NAME;
 };
+
+const std::string AllBuiltInTypesTest::BLOB_NAME = "language/builtin_types/all_builtin_types.blob";
 
 TEST_F(AllBuiltInTypesTest, uint8Type)
 {
@@ -355,7 +360,7 @@ TEST_F(AllBuiltInTypesTest, bitSizeOf)
     m_allBuiltInTypes.setUint8Type(1);
     m_allBuiltInTypes.setUint16Type(std::numeric_limits<uint16_t>::max());
     m_allBuiltInTypes.setUint32Type(std::numeric_limits<uint32_t>::max());
-    m_allBuiltInTypes.setUint64Type(std::numeric_limits<uint64_t>::max());
+    m_allBuiltInTypes.setUint64Type(10);
     m_allBuiltInTypes.setInt8Type(std::numeric_limits<int8_t>::max());
     m_allBuiltInTypes.setInt16Type(std::numeric_limits<int16_t>::max());
     m_allBuiltInTypes.setInt32Type(std::numeric_limits<int32_t>::max());
@@ -382,12 +387,12 @@ TEST_F(AllBuiltInTypesTest, bitSizeOf)
     m_allBuiltInTypes.setVaruint16Type((UINT16_C(1) << 15) - 1);
     m_allBuiltInTypes.setVaruint32Type((UINT32_C(1) << 29) - 1);
     m_allBuiltInTypes.setVaruint64Type((UINT64_C(1) << 57) - 1);
-    m_allBuiltInTypes.setVaruintType(UINT64_MAX);
+    m_allBuiltInTypes.setVaruintType(std::numeric_limits<uint64_t>::max());
     m_allBuiltInTypes.setVarsizeType((UINT32_C(1) << 31) - 1);
     m_allBuiltInTypes.setVarint16Type((INT16_C(1) << 14) - 1);
     m_allBuiltInTypes.setVarint32Type((INT32_C(1) << 28) - 1);
     m_allBuiltInTypes.setVarint64Type((INT64_C(1) << 56) - 1);
-    m_allBuiltInTypes.setVarintType(INT64_MAX);
+    m_allBuiltInTypes.setVarintType(std::numeric_limits<int64_t>::max());
     m_allBuiltInTypes.setStringType("TEST");
     m_allBuiltInTypes.setExternType(getExternalBitBuffer());
     const size_t expectedBitSizeOf = 1142;
@@ -427,22 +432,18 @@ TEST_F(AllBuiltInTypesTest, readWrite)
     m_allBuiltInTypes.setVaruint16Type((UINT16_C(1) << 15) - 1);
     m_allBuiltInTypes.setVaruint32Type((UINT32_C(1) << 29) - 1);
     m_allBuiltInTypes.setVaruint64Type((UINT64_C(1) << 57) - 1);
-    m_allBuiltInTypes.setVaruintType(UINT64_MAX);
+    m_allBuiltInTypes.setVaruintType(std::numeric_limits<uint64_t>::max());
     m_allBuiltInTypes.setVarsizeType((UINT32_C(1) << 31) - 1);
     m_allBuiltInTypes.setVarint16Type((INT16_C(1) << 14) - 1);
     m_allBuiltInTypes.setVarint32Type((INT32_C(1) << 28) - 1);
     m_allBuiltInTypes.setVarint64Type((INT64_C(1) << 56) - 1);
-    m_allBuiltInTypes.setVarintType(INT64_MAX);
+    m_allBuiltInTypes.setVarintType(std::numeric_limits<int64_t>::max());
     m_allBuiltInTypes.setStringType("TEST");
     m_allBuiltInTypes.setExternType(getExternalBitBuffer());
 
-    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
-    zserio::BitStreamWriter writer(bitBuffer);
-    m_allBuiltInTypes.write(writer);
+    zserio::serializeToFile(m_allBuiltInTypes, BLOB_NAME);
 
-    zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    const AllBuiltInTypes readAllBuiltInTypes(reader);
-
+    const AllBuiltInTypes readAllBuiltInTypes = zserio::deserializeFromFile<AllBuiltInTypes>(BLOB_NAME);
     ASSERT_TRUE(m_allBuiltInTypes == readAllBuiltInTypes);
 }
 

@@ -16,7 +16,7 @@ public class GrandChildParamTest
     public void fileWrite() throws IOException
     {
         final GrandChildParam grandChildParam = createGrandChildParam();
-        final File file = new File("test1.bin");
+        final File file = new File(BLOB_NAME);
         grandChildParam.write(file);
         final BitStreamReader reader = new FileBitStreamReader(file);
         checkGrandChildParamInStream(reader, grandChildParam);
@@ -73,7 +73,8 @@ public class GrandChildParamTest
         }
     }
 
-    static final boolean ITEM_CHOICE_HOLDER_HAS_ITEM = true;
-    static final int ITEM_PARAM = 0xAABB;
-    static final long ITEM_EXTRA_PARAM = 0x11223344;
+    private static final String BLOB_NAME = "grand_child_param.blob";
+    private static final boolean ITEM_CHOICE_HOLDER_HAS_ITEM = true;
+    private static final int ITEM_PARAM = 0xAABB;
+    private static final long ITEM_EXTRA_PARAM = 0x11223344;
 }

@@ -3,6 +3,7 @@
 #include "union_types/union_with_array/TestUnion.h"
 
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/CppRuntimeException.h"
 
 namespace union_types
@@ -64,6 +65,8 @@ protected:
         return vector_type<int16_t>(ARRAY16, ARRAY16 + ARRAY16_SIZE);
     }
 
+    static const std::string BLOB_NAME_BASE;
+
     static constexpr size_t ARRAY8_SIZE = 4;
     static const int8_t ARRAY8[ARRAY8_SIZE];
     static constexpr size_t ARRAY8_BITSIZE = 8 + 8 + ARRAY8_SIZE * 8;
@@ -73,6 +76,8 @@ protected:
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string UnionWithArrayTest::BLOB_NAME_BASE = "language/union_types/union_with_array_";
 
 constexpr size_t UnionWithArrayTest::ARRAY8_SIZE;
 constexpr size_t UnionWithArrayTest::ARRAY8_BITSIZE;
@@ -304,7 +309,7 @@ TEST_F(UnionWithArrayTest, hashCode)
     ASSERT_EQ(testUnion1.hashCode(), testUnion2.hashCode());
 }
 
-TEST_F(UnionWithArrayTest, write)
+TEST_F(UnionWithArrayTest, writeRead)
 {
     {
         TestUnion testUnion;
@@ -327,6 +332,30 @@ TEST_F(UnionWithArrayTest, write)
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         TestUnion readTestUnion(reader);
+        ASSERT_EQ(testUnion, readTestUnion);
+        checkArray(ARRAY16, readTestUnion.getArray16());
+    }
+}
+
+TEST_F(UnionWithArrayTest, writeReadFile)
+{
+    {
+        TestUnion testUnion;
+        testUnion.setArray8(createArray8());
+        const std::string fileName = BLOB_NAME_BASE + "array8.blob";
+        zserio::serializeToFile(testUnion, fileName);
+
+        TestUnion readTestUnion = zserio::deserializeFromFile<TestUnion>(fileName);
+        ASSERT_EQ(testUnion, readTestUnion);
+        checkArray(ARRAY8, readTestUnion.getArray8());
+    }
+    {
+        TestUnion testUnion;
+        testUnion.setArray16(createArray16());
+        const std::string fileName = BLOB_NAME_BASE + "array16.blob";
+        zserio::serializeToFile(testUnion, fileName);
+
+        TestUnion readTestUnion = zserio::deserializeFromFile<TestUnion>(fileName);
         ASSERT_EQ(testUnion, readTestUnion);
         checkArray(ARRAY16, readTestUnion.getArray16());
     }

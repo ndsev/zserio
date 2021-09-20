@@ -1,7 +1,8 @@
 import unittest
+import os
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class GrandChildParamTest(unittest.TestCase):
     @classmethod
@@ -17,6 +18,13 @@ class GrandChildParamTest(unittest.TestCase):
 
         reader.bitposition = 0
         readGrandChildParam = self.api.GrandChildParam.from_reader(reader)
+        self.assertEqual(grandChildParam, readGrandChildParam)
+
+    def testWriteFile(self):
+        grandChildParam = self._createGrandChildParam()
+        zserio.serialize_to_file(grandChildParam, self.BLOB_NAME)
+
+        readGrandChildParam = zserio.deserialize_from_file(self.api.GrandChildParam, self.BLOB_NAME)
         self.assertEqual(grandChildParam, readGrandChildParam)
 
     def _createItemChoiceHolder(self):
@@ -55,6 +63,8 @@ class GrandChildParamTest(unittest.TestCase):
             dummyArray = grandChildParam.dummy_array
             self.assertEqual(len(dummyArray), reader.read_varsize())
             self.assertEqual(dummyArray[0], reader.read_bits(32))
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "grand_child_param.blob")
 
     ITEM_CHOICE_HOLDER_HAS_ITEM = True
     ITEM_PARAM = 0xAABB

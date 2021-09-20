@@ -4,8 +4,7 @@
 #include "optional_members/optional_array_recursion/Title.h"
 
 #include "zserio/RebindAlloc.h"
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 namespace optional_members
 {
@@ -60,6 +59,8 @@ protected:
                 Title::DEVELOPER);
     }
 
+    static const std::string BLOB_NAME_BASE;
+
     static const char   EMPTY_EMPLOYEE_NAME[];
     static uint16_t     EMPTY_EMPLOYEE_SALARY;
 
@@ -78,6 +79,9 @@ protected:
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string OptionalArrayRecursionTest::BLOB_NAME_BASE =
+        "language/optional_members/optional_array_recursion_";
 
 const char  OptionalArrayRecursionTest::EMPTY_EMPLOYEE_NAME[] = "";
 uint16_t    OptionalArrayRecursionTest::EMPTY_EMPLOYEE_SALARY = 0;
@@ -157,7 +161,7 @@ TEST_F(OptionalArrayRecursionTest, hashCode)
     ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
 }
 
-TEST_F(OptionalArrayRecursionTest, writeEmployee)
+TEST_F(OptionalArrayRecursionTest, writeReadEmployee)
 {
     Employee employee;
     fillEmployee(employee, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
@@ -168,13 +172,13 @@ TEST_F(OptionalArrayRecursionTest, writeEmployee)
     checkEmployeeInBitStream(reader, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
     reader.setBitPosition(0);
 
-    Employee readTeamLead(reader);
-    ASSERT_EQ(EMPLOYEE_DEVELOPER1_NAME, readTeamLead.getName());
-    ASSERT_EQ(EMPLOYEE_DEVELOPER1_SALARY, readTeamLead.getSalary());
-    ASSERT_EQ(Title::DEVELOPER, readTeamLead.getTitle());
+    Employee readEmployee(reader);
+    ASSERT_EQ(EMPLOYEE_DEVELOPER1_NAME, readEmployee.getName());
+    ASSERT_EQ(EMPLOYEE_DEVELOPER1_SALARY, readEmployee.getSalary());
+    ASSERT_EQ(Title::DEVELOPER, readEmployee.getTitle());
 }
 
-TEST_F(OptionalArrayRecursionTest, writeTeamLead)
+TEST_F(OptionalArrayRecursionTest, writeReadTeamLead)
 {
     Employee teamLead;
     fillTeamLead(teamLead);
@@ -192,6 +196,28 @@ TEST_F(OptionalArrayRecursionTest, writeTeamLead)
     ASSERT_TRUE(readTeamLead.isTeamMembersUsed());
     vector_type<Employee> teamMembers = readTeamLead.getTeamMembers();
     ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
+}
+
+TEST_F(OptionalArrayRecursionTest, writeReadFileEmployee)
+{
+    Employee employee;
+    fillEmployee(employee, EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY, Title::DEVELOPER);
+    const std::string fileName = BLOB_NAME_BASE + "employee.blob";
+    zserio::serializeToFile(employee, fileName);
+
+    Employee readEmployee = zserio::deserializeFromFile<Employee>(fileName);
+    ASSERT_EQ(employee, readEmployee);
+}
+
+TEST_F(OptionalArrayRecursionTest, writeReadFileTeamLead)
+{
+    Employee teamLead;
+    fillTeamLead(teamLead);
+    const std::string fileName = BLOB_NAME_BASE + "team_lead.blob";
+    zserio::serializeToFile(teamLead, fileName);
+
+    const auto readTeamLead = zserio::deserializeFromFile<Employee>(fileName);
+    ASSERT_EQ(teamLead, readTeamLead);
 }
 
 } // namespace optional_array_recursion

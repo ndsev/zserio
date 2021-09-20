@@ -72,21 +72,21 @@ public class PackedAutoArrayUInt8Test
     }
 
     @Test
-    public void writeLength1() throws IOException, ZserioError
+    public void writeReadLength1() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH1);
+        checkWriteRead(AUTO_ARRAY_LENGTH1);
     }
 
     @Test
-    public void writeLength2() throws IOException, ZserioError
+    public void writeReadLength2() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH2);
+        checkWriteRead(AUTO_ARRAY_LENGTH2);
     }
 
     @Test
-    public void writeLength3() throws IOException, ZserioError
+    public void writeReadLength3() throws IOException, ZserioError
     {
-        checkWrite(AUTO_ARRAY_LENGTH2);
+        checkWriteRead(AUTO_ARRAY_LENGTH3);
     }
 
     private void checkBitSizeOf(short numElements) throws IOException, ZserioError
@@ -116,13 +116,16 @@ public class PackedAutoArrayUInt8Test
         checkPackedAutoArray(packedAutoArray, numElements);
     }
 
-    private void checkWrite(short numElements) throws IOException, ZserioError
+    private void checkWriteRead(short numElements) throws IOException, ZserioError
     {
         final PackedAutoArray packedAutoArray = createPackedAutoArray(numElements);
-        final File file = new File("test.bin");
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         packedAutoArray.write(writer);
         writer.close();
+
+        assertEquals(packedAutoArray.bitSizeOf(), writer.getBitPosition());
+        assertEquals(packedAutoArray.initializeOffsets(0), writer.getBitPosition());
 
         final PackedAutoArray readPackedAutoArray = new PackedAutoArray(file);
         checkPackedAutoArray(readPackedAutoArray, numElements);
@@ -187,6 +190,8 @@ public class PackedAutoArrayUInt8Test
 
         return bitSize;
     }
+
+    private static final String BLOB_NAME_BASE = "packed_auto_array_uint8_";
 
     private static final short AUTO_ARRAY_LENGTH1 = 1;
     private static final short AUTO_ARRAY_LENGTH2 = 5;

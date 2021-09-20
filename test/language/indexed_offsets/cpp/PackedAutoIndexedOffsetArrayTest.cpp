@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 #include "indexed_offsets/packed_auto_indexed_offset_array/AutoIndexedOffsetArray.h"
 
@@ -94,6 +93,8 @@ protected:
             data.push_back(i);
     }
 
+    static const std::string BLOB_NAME;
+
     static const uint8_t    NUM_ELEMENTS = 5;
 
     static const uint32_t   WRONG_OFFSET = 0;
@@ -115,6 +116,9 @@ protected:
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string PackedAutoIndexedOffsetArrayTest::BLOB_NAME =
+        "language/indexed_offsets/packed_auto_indexed_offset_array.blob";
 
 TEST_F(PackedAutoIndexedOffsetArrayTest, readConstructor)
 {
@@ -184,7 +188,7 @@ TEST_F(PackedAutoIndexedOffsetArrayTest, initializeOffsetsWithPosition)
     checkOffsets(autoIndexedOffsetArray, offsetShift);
 }
 
-TEST_F(PackedAutoIndexedOffsetArrayTest, write)
+TEST_F(PackedAutoIndexedOffsetArrayTest, writeRead)
 {
     const bool createWrongOffsets = true;
     AutoIndexedOffsetArray autoIndexedOffsetArray;
@@ -198,6 +202,18 @@ TEST_F(PackedAutoIndexedOffsetArrayTest, write)
     AutoIndexedOffsetArray readPackedAutoIndexedOffsetArray(reader);
     checkAutoIndexedOffsetArray(readPackedAutoIndexedOffsetArray);
     ASSERT_TRUE(autoIndexedOffsetArray == readPackedAutoIndexedOffsetArray);
+}
+
+TEST_F(PackedAutoIndexedOffsetArrayTest, writeReadFile)
+{
+    const bool createWrongOffsets = false;
+    AutoIndexedOffsetArray autoIndexedOffsetArray;
+    fillAutoIndexedOffsetArray(autoIndexedOffsetArray, createWrongOffsets);
+    zserio::serializeToFile(autoIndexedOffsetArray, BLOB_NAME);
+
+    const auto readPackedAutoIndexedOffsetArray =
+            zserio::deserializeFromFile<AutoIndexedOffsetArray>(BLOB_NAME);
+    ASSERT_EQ(autoIndexedOffsetArray, readPackedAutoIndexedOffsetArray);
 }
 
 TEST_F(PackedAutoIndexedOffsetArrayTest, writeWithPosition)

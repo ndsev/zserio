@@ -2,8 +2,7 @@
 
 #include "array_types/packed_variable_array_struct/PackedVariableArray.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {
@@ -117,12 +116,30 @@ protected:
         ASSERT_EQ(packedVariableArray, readPackedVariableArray);
     }
 
+    void checkWriteReadFile(uint32_t numElements)
+    {
+        PackedVariableArray packedVariableArray;
+        fillPackedVariableArray(packedVariableArray, numElements);
+
+        const std::string fileName = BLOB_NAME_BASE + std::to_string(numElements) + ".blob";
+        zserio::serializeToFile(packedVariableArray, fileName);
+
+        ASSERT_EQ(packedVariableArray.bitSizeOf(), packedVariableArray.initializeOffsets(0));
+
+        auto readPackedVariableArray = zserio::deserializeFromFile<PackedVariableArray>(fileName);
+        ASSERT_EQ(packedVariableArray, readPackedVariableArray);
+    }
+
+    static const std::string BLOB_NAME_BASE;
     static const uint32_t VARIABLE_ARRAY_LENGTH1;
     static const uint32_t VARIABLE_ARRAY_LENGTH2;
     static const uint32_t VARIABLE_ARRAY_LENGTH3;
     static const uint32_t VARIABLE_ARRAY_LENGTH4;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(70 * 1024 * 8);
 };
+
+const std::string PackedVariableArrayStructTest::BLOB_NAME_BASE =
+        "language/array_types/packed_variable_array_struct_";
 
 const uint32_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH1 = 25;
 const uint32_t PackedVariableArrayStructTest::VARIABLE_ARRAY_LENGTH2 = 50;
@@ -167,6 +184,26 @@ TEST_F(PackedVariableArrayStructTest, writeReadLength3)
 TEST_F(PackedVariableArrayStructTest, writeReadLength4)
 {
     checkWriteRead(VARIABLE_ARRAY_LENGTH4);
+}
+
+TEST_F(PackedVariableArrayStructTest, writeReadFileLength1)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH1);
+}
+
+TEST_F(PackedVariableArrayStructTest, writeReadFileLength2)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH2);
+}
+
+TEST_F(PackedVariableArrayStructTest, writeReadFileLength3)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH3);
+}
+
+TEST_F(PackedVariableArrayStructTest, writeReadFileLength4)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH4);
 }
 
 } // namespace packed_variable_array_struct_recursion

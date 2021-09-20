@@ -2,9 +2,8 @@
 
 #include "array_types/packed_fixed_array_uint8/PackedFixedArray.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {
@@ -51,12 +50,16 @@ protected:
         writer.writeBits(PACKED_ARRAY_ELEMENT, 8);
     }
 
+    static const std::string BLOB_NAME;
+
     static const size_t FIXED_ARRAY_LENGTH;
     static const uint8_t PACKED_ARRAY_MAX_BIT_NUMBER;
     static const uint8_t PACKED_ARRAY_ELEMENT;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string PackedFixedArrayUInt8Test::BLOB_NAME = "language/array_types/packed_fixed_array_uint8.blob";
 
 const size_t PackedFixedArrayUInt8Test::FIXED_ARRAY_LENGTH = 5;
 const uint8_t PackedFixedArrayUInt8Test::PACKED_ARRAY_MAX_BIT_NUMBER = 0;
@@ -92,7 +95,7 @@ TEST_F(PackedFixedArrayUInt8Test, readConstructor)
     checkPackedFixedArray(packedFixedArray);
 }
 
-TEST_F(PackedFixedArrayUInt8Test, write)
+TEST_F(PackedFixedArrayUInt8Test, writeRead)
 {
     PackedFixedArray packedFixedArray;
     fillPackedFixedArray(packedFixedArray);
@@ -100,8 +103,22 @@ TEST_F(PackedFixedArrayUInt8Test, write)
     zserio::BitStreamWriter writer(bitBuffer);
     packedFixedArray.write(writer);
 
+    ASSERT_EQ(packedFixedArray.bitSizeOf(), writer.getBitPosition());
+    ASSERT_EQ(packedFixedArray.initializeOffsets(0), writer.getBitPosition());
+
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     PackedFixedArray readPackedFixedArray(reader);
+    checkPackedFixedArray(readPackedFixedArray);
+}
+
+TEST_F(PackedFixedArrayUInt8Test, writeReadFile)
+{
+    PackedFixedArray packedFixedArray;
+    fillPackedFixedArray(packedFixedArray);
+
+    zserio::serializeToFile(packedFixedArray, BLOB_NAME);
+
+    PackedFixedArray readPackedFixedArray = zserio::deserializeFromFile<PackedFixedArray>(BLOB_NAME);
     checkPackedFixedArray(readPackedFixedArray);
 }
 

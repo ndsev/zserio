@@ -107,17 +107,7 @@ public class EmptyChoiceTest
     }
 
     @Test
-    public void fileWrite() throws IOException
-    {
-        final short selector = 1;
-        final EmptyChoice emptyChoice = new EmptyChoice(selector);
-        emptyChoice.write(testFile);
-        EmptyChoice readEmptyChoice = new EmptyChoice(testFile, selector);
-        assertEquals(emptyChoice, readEmptyChoice);
-    }
-
-    @Test
-    public void write() throws IOException
+    public void writeRead() throws IOException
     {
         final short selector = 1;
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
@@ -130,5 +120,15 @@ public class EmptyChoiceTest
         assertEquals(emptyChoice, readEmptyChoice);
     }
 
-    private final File testFile = new File("test.bin");
+    @Test
+    public void writeReadFile() throws IOException
+    {
+        final short selector = 1;
+        final EmptyChoice emptyChoice = new EmptyChoice(selector);
+        emptyChoice.write(testFile);
+        EmptyChoice readEmptyChoice = new EmptyChoice(testFile, selector);
+        assertEquals(emptyChoice, readEmptyChoice);
+    }
+
+    private final File testFile = new File("empty_choice.blob");
 };

@@ -2,9 +2,8 @@
 
 #include "array_types/variable_array_struct_cast_int8/VariableArray.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/StringConvertUtil.h"
 
 namespace array_types
@@ -30,8 +29,12 @@ protected:
         }
     }
 
+    static const std::string BLOB_NAME;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string VariableArrayStructCastInt8Test::BLOB_NAME =
+        "language/array_types/variable_array_struct_cast_int8.blob";
 
 TEST_F(VariableArrayStructCastInt8Test, bitSizeOf)
 {
@@ -96,7 +99,7 @@ TEST_F(VariableArrayStructCastInt8Test, readConstructor)
     }
 }
 
-TEST_F(VariableArrayStructCastInt8Test, write)
+TEST_F(VariableArrayStructCastInt8Test, writeRead)
 {
     const size_t numElements = 33;
     vector_type<TestStructure> compoundArray;
@@ -115,8 +118,39 @@ TEST_F(VariableArrayStructCastInt8Test, write)
     zserio::BitStreamWriter writer(bitBuffer);
     variableArray.write(writer);
 
+    ASSERT_EQ(variableArray.bitSizeOf(), writer.getBitPosition());
+    ASSERT_EQ(variableArray.initializeOffsets(0), writer.getBitPosition());
+
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     VariableArray readVariableArray(reader);
+    const vector_type<TestStructure>& readCompoundArray = readVariableArray.getCompoundArray();
+    ASSERT_EQ(numElements, readCompoundArray.size());
+    for (size_t i = 0; i < numElements; ++i)
+    {
+        ASSERT_EQ(i, readCompoundArray[i].getId());
+        ASSERT_EQ(std::string("Name") + std::to_string(i), readCompoundArray[i].getName().c_str());
+    }
+}
+
+TEST_F(VariableArrayStructCastInt8Test, writeReadFile)
+{
+    const size_t numElements = 33;
+    vector_type<TestStructure> compoundArray;
+    compoundArray.reserve(numElements);
+    for (size_t i = 0; i < numElements; ++i)
+    {
+        TestStructure testStructure;
+        testStructure.setId(static_cast<uint32_t>(i));
+        testStructure.setName(string_type("Name") + zserio::toString<allocator_type>(i));
+        compoundArray.push_back(testStructure);
+    }
+    VariableArray variableArray;
+    variableArray.setNumElements(static_cast<int8_t>(numElements));
+    variableArray.setCompoundArray(compoundArray);
+
+    zserio::serializeToFile(variableArray, BLOB_NAME);
+
+    VariableArray readVariableArray = zserio::deserializeFromFile<VariableArray>(BLOB_NAME);
     const vector_type<TestStructure>& readCompoundArray = readVariableArray.getCompoundArray();
     ASSERT_EQ(numElements, readCompoundArray.size());
     for (size_t i = 0; i < numElements; ++i)

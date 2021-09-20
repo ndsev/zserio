@@ -1,8 +1,9 @@
 import unittest
+import os
 
 import zserio
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class BitFieldUInt64LengthTest(unittest.TestCase):
     @classmethod
@@ -26,9 +27,9 @@ class BitFieldUInt64LengthTest(unittest.TestCase):
         container.unsigned_bit_field = zserio.limits.UINT32_MAX + 1
         container.signed_bit_field = zserio.limits.INT32_MAX + 1
 
-        writer = zserio.BitStreamWriter()
-        container.write(writer)
-        reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        readContainer = self.api.Container()
-        readContainer.read(reader)
+        zserio.serialize_to_file(container, self.BLOB_NAME)
+
+        readContainer = zserio.deserialize_from_file(self.api.Container, self.BLOB_NAME)
         self.assertEqual(container, readContainer)
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "bit_field_uint64_length.blob")

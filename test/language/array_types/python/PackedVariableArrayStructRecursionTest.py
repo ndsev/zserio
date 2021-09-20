@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedVariableArrayStructRecursionTest(unittest.TestCase):
     @classmethod
@@ -26,6 +27,15 @@ class PackedVariableArrayStructRecursionTest(unittest.TestCase):
     def testWriteReadLength3(self):
         self._checkWriteRead(self.VARIABLE_ARRAY_LENGTH3)
 
+    def testWriteReadFileLength1(self):
+        self._checkWriteReadFile(self.VARIABLE_ARRAY_LENGTH1)
+
+    def testWriteReadFileLength2(self):
+        self._checkWriteReadFile(self.VARIABLE_ARRAY_LENGTH2)
+
+    def testWriteReadFileLength3(self):
+        self._checkWriteReadFile(self.VARIABLE_ARRAY_LENGTH3)
+
     def _checkBitSizeOf(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
         unpackedBitsizeOf = PackedVariableArrayStructRecursionTest._calcUnpackedVariableArrayBitSize(
@@ -39,9 +49,19 @@ class PackedVariableArrayStructRecursionTest(unittest.TestCase):
     def _checkWriteRead(self, numElements):
         packedVariableArray = self._createPackedVariableArray(numElements)
         bitBuffer = zserio.serialize(packedVariableArray)
+
         self.assertEqual(packedVariableArray.bitsizeof(), bitBuffer.bitsize)
         self.assertEqual(packedVariableArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readPackedVariableArray = zserio.deserialize(self.api.PackedVariableArray, bitBuffer)
+        self.assertEqual(packedVariableArray, readPackedVariableArray)
+
+    def _checkWriteReadFile(self, numElements):
+        packedVariableArray = self._createPackedVariableArray(numElements)
+        filename = self.BLOB_NAME_BASE + str(numElements) + ".blob"
+        zserio.serialize_to_file(packedVariableArray, filename)
+
+        readPackedVariableArray = zserio.deserialize_from_file(self.api.PackedVariableArray, filename)
         self.assertEqual(packedVariableArray, readPackedVariableArray)
 
     def _createPackedVariableArray(self, numElements):
@@ -82,6 +102,9 @@ class PackedVariableArrayStructRecursionTest(unittest.TestCase):
                                                                                         blockTerminator > 5)
 
         return bitSize
+
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                  "packed_variable_array_struct_recursion_")
 
     VARIABLE_ARRAY_LENGTH1 = 100
     VARIABLE_ARRAY_LENGTH2 = 500

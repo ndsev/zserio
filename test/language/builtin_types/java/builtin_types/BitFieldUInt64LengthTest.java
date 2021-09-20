@@ -24,8 +24,8 @@ public class BitFieldUInt64LengthTest
         final Container container = new Container();
         final BigInteger bitFieldLength = BigInteger.valueOf(33);
         container.setLength(bitFieldLength);
-        container.setUnsignedBitField(BigInteger.valueOf(0xFFFFFFFFL + 1L));
-        container.setSignedBitField(Integer.MAX_VALUE + (long)1);
+        container.setUnsignedBitField(UNSIGNED_BIT_FIELD_VALUE);
+        container.setSignedBitField(SIGNED_BIT_FIELD_VALUE);
 
         final int expectedBitSizeOfContainer = 64 + 33 + 33;
         assertEquals(expectedBitSizeOfContainer, container.bitSizeOf());
@@ -37,8 +37,8 @@ public class BitFieldUInt64LengthTest
         final Container container = new Container();
         final BigInteger bitFieldLength = BigInteger.valueOf(33);
         container.setLength(bitFieldLength);
-        container.setUnsignedBitField(BigInteger.valueOf(0xFFFFFFFFL));
-        container.setSignedBitField(Integer.MAX_VALUE);
+        container.setUnsignedBitField(UNSIGNED_BIT_FIELD_VALUE);
+        container.setSignedBitField(SIGNED_BIT_FIELD_VALUE);
 
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
         container.write(writer);
@@ -50,5 +50,8 @@ public class BitFieldUInt64LengthTest
         assertEquals(container, readContainer);
     }
 
-    private static final File TEST_FILE = new File("test.bin");
+    private static final File TEST_FILE = new File("bit_field_uint64_length.blob");
+
+    private static final BigInteger UNSIGNED_BIT_FIELD_VALUE = BigInteger.valueOf(0xFFFFFFFFL + 1L);
+    private static final long SIGNED_BIT_FIELD_VALUE = Integer.MAX_VALUE + (long)1;
 }

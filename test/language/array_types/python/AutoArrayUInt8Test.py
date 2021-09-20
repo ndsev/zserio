@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class AutoArrayUInt8Test(unittest.TestCase):
     @classmethod
@@ -26,11 +27,17 @@ class AutoArrayUInt8Test(unittest.TestCase):
     def testReadLength2(self):
         self._checkRead(self.AUTO_ARRAY_LENGTH2)
 
-    def testWriteLength1(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH1)
+    def testWriteReadLength1(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH1)
 
-    def testWriteLength2(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH2)
+    def testWriteReadLength2(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH2)
+
+    def testWriteReadFileLength1(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH1)
+
+    def testWriteReadFileLength2(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH2)
 
     def _checkBitSizeOf(self, numElements):
         uint8Array = list(range(numElements))
@@ -57,11 +64,24 @@ class AutoArrayUInt8Test(unittest.TestCase):
         for i in range(numElements):
             self.assertEqual(i, uint8Array[i])
 
-    def _checkWrite(self, numElements):
+    def _checkWriteRead(self, numElements):
         uint8Array = list(range(numElements))
         autoArray = self.api.AutoArray(uint8Array)
         bitBuffer = zserio.serialize(autoArray)
         readAutoArray = zserio.deserialize(self.api.AutoArray, bitBuffer)
+        readUint8Array = readAutoArray.uint8_array
+        self.assertEqual(numElements, len(readUint8Array))
+        for i in range(numElements):
+            self.assertEqual(i, readUint8Array[i])
+
+    def _checkWriteReadFile(self, numElements):
+        uint8Array = list(range(numElements))
+        autoArray = self.api.AutoArray(uint8Array)
+
+        filename = self.BLOB_NAME_BASE + str(numElements) + ".blob"
+        zserio.serialize_to_file(autoArray, filename)
+
+        readAutoArray = zserio.deserialize_from_file(self.api.AutoArray, filename)
         readUint8Array = readAutoArray.uint8_array
         self.assertEqual(numElements, len(readUint8Array))
         for i in range(numElements):
@@ -73,5 +93,6 @@ class AutoArrayUInt8Test(unittest.TestCase):
         for i in range(numElements):
             writer.write_bits(i, 8)
 
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "auto_array_uint8_")
     AUTO_ARRAY_LENGTH1 = 5
     AUTO_ARRAY_LENGTH2 = 10

@@ -3,14 +3,18 @@
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.io.File;
 import java.math.BigInteger;
 
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
+import zserio.runtime.io.FileBitStreamReader;
+import zserio.runtime.io.FileBitStreamWriter;
 import array_types.packed_variable_array_struct.PackedVariableArray;
 import array_types.packed_variable_array_struct.TestBitmask;
 import array_types.packed_variable_array_struct.TestChoice;
@@ -85,15 +89,15 @@ public class PackedVariableArrayStructTest
     private void checkWriteRead(int numElements) throws IOException, ZserioError
     {
         final PackedVariableArray packedVariableArray = createPackedVariableArray(numElements);
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        final File file = new File(BLOB_NAME_BASE + numElements + ".blob");
+        final BitStreamWriter writer = new FileBitStreamWriter(file);
         packedVariableArray.write(writer);
         writer.close();
 
-        final long writtenBitPosition = writer.getBitPosition();
-        assertEquals(packedVariableArray.bitSizeOf(), writtenBitPosition);
-        assertEquals(packedVariableArray.initializeOffsets(0), writtenBitPosition);
+        assertEquals(packedVariableArray.bitSizeOf(), writer.getBitPosition());
+        assertEquals(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
+        final ByteArrayBitStreamReader reader = new FileBitStreamReader(file);
         final PackedVariableArray readPackedVariableArray = new PackedVariableArray(reader);
         assertEquals(packedVariableArray, readPackedVariableArray);
     }
@@ -155,6 +159,8 @@ public class PackedVariableArrayStructTest
         return new TestStructure(index, name, data, testChoice, testUnion, testEnum, testBitmask, testOptional,
                 testDynamicBitfield, values.length, values, values);
     }
+
+    private static final String BLOB_NAME_BASE = "packed_variable_array_struct_";
 
     private static final int VARIABLE_ARRAY_LENGTH1 = 25;
     private static final int VARIABLE_ARRAY_LENGTH2 = 50;

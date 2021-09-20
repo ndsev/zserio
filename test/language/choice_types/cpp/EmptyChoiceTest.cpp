@@ -1,7 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/CppRuntimeException.h"
 
 #include "choice_types/empty_choice/EmptyChoice.h"
@@ -144,7 +143,7 @@ TEST(EmptyChoiceTest, hashCode)
     ASSERT_NE(emptyChoice1.hashCode(), emptyChoice3.hashCode());
 }
 
-TEST(EmptyChoiceTest, write)
+TEST(EmptyChoiceTest, writeRead)
 {
     const uint8_t selector = 1;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
@@ -156,6 +155,18 @@ TEST(EmptyChoiceTest, write)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), 0);
     EmptyChoice readEmptyChoice(reader, selector);
+    ASSERT_EQ(emptyChoice, readEmptyChoice);
+}
+
+TEST(EmptyChoiceTest, writeReadFile)
+{
+    const uint8_t selector = 1;
+    EmptyChoice emptyChoice;
+    emptyChoice.initialize(selector);
+    const std::string fileName = "language/choice_types/empty_choice.blob";
+    zserio::serializeToFile(emptyChoice, fileName);
+
+    EmptyChoice readEmptyChoice = zserio::deserializeFromFile<EmptyChoice>(fileName, selector);
     ASSERT_EQ(emptyChoice, readEmptyChoice);
 }
 

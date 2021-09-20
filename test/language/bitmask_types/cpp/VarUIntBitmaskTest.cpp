@@ -3,9 +3,8 @@
 
 #include "gtest/gtest.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/SerializeUtil.h"
 
 #include "bitmask_types/varuint_bitmask/Permission.h"
 
@@ -17,12 +16,16 @@ namespace varuint_bitmask
 class VarUIntBitmaskTest : public ::testing::Test
 {
 protected:
+    static const std::string BLOB_NAME;
+
     static const Permission::underlying_type NONE_VALUE;
     static const Permission::underlying_type READ_VALUE;
     static const Permission::underlying_type WRITE_VALUE;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string VarUIntBitmaskTest::BLOB_NAME = "language/bitmask_types/varuint_bitmask.blob";
 
 const Permission::underlying_type VarUIntBitmaskTest::NONE_VALUE = 0;
 const Permission::underlying_type VarUIntBitmaskTest::READ_VALUE = 2;
@@ -130,7 +133,7 @@ TEST_F(VarUIntBitmaskTest, hashCode)
     ASSERT_NE(writePermission.hashCode(), Permission(Permission::Values::NONE).hashCode());
 }
 
-TEST_F(VarUIntBitmaskTest, write)
+TEST_F(VarUIntBitmaskTest, writeRead)
 {
     const Permission permission(Permission::Values::READ);
     zserio::BitStreamWriter writer(bitBuffer);
@@ -138,6 +141,15 @@ TEST_F(VarUIntBitmaskTest, write)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     ASSERT_EQ(READ_VALUE, reader.readVarUInt());
+}
+
+TEST_F(VarUIntBitmaskTest, writeReadFile)
+{
+    const Permission permission(Permission::Values::READ);
+    zserio::serializeToFile(permission, BLOB_NAME);
+
+    const auto readPermission = zserio::deserializeFromFile<Permission>(BLOB_NAME);
+    ASSERT_EQ(permission, readPermission);
 }
 
 TEST_F(VarUIntBitmaskTest, toString)

@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedFixedArrayUInt8Test(unittest.TestCase):
     @classmethod
@@ -31,11 +32,24 @@ class PackedFixedArrayUInt8Test(unittest.TestCase):
         uint8Array = packedFixedArray.uint8_array
         self._checkPackedFixedArray(uint8Array)
 
-    def testWrite(self):
+    def testWriteRead(self):
         uint8Array = self._createAutoArray()
         packedFixedArray = self.api.PackedFixedArray(uint8Array)
         bitBuffer = zserio.serialize(packedFixedArray)
+
+        self.assertEqual(packedFixedArray.bitsizeof(), bitBuffer.bitsize)
+        self.assertEqual(packedFixedArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readPackedFixedArray = zserio.deserialize(self.api.PackedFixedArray, bitBuffer)
+        readUint8Array = readPackedFixedArray.uint8_array
+        self._checkPackedFixedArray(readUint8Array)
+
+    def testWriteReadFile(self):
+        uint8Array = self._createAutoArray()
+        packedFixedArray = self.api.PackedFixedArray(uint8Array)
+        zserio.serialize_to_file(packedFixedArray, self.BLOB_NAME)
+
+        readPackedFixedArray = zserio.deserialize_from_file(self.api.PackedFixedArray, self.BLOB_NAME)
         readUint8Array = readPackedFixedArray.uint8_array
         self._checkPackedFixedArray(readUint8Array)
 
@@ -66,6 +80,8 @@ class PackedFixedArrayUInt8Test(unittest.TestCase):
         bitSize += 8 # first element
 
         return bitSize
+
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_fixed_array_uint8.blob")
 
     FIXED_ARRAY_LENGTH = 5
     PACKED_ARRAY_MAX_BIT_NUMBER = 0

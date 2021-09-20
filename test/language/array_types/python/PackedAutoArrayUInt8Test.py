@@ -1,7 +1,8 @@
 import unittest
 import zserio
+import os
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class PackedAutoArrayUInt8Test(unittest.TestCase):
     @classmethod
@@ -35,14 +36,23 @@ class PackedAutoArrayUInt8Test(unittest.TestCase):
     def testReadLength3(self):
         self._checkRead(self.AUTO_ARRAY_LENGTH3)
 
-    def testWriteLength1(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH1)
+    def testWriteReadLength1(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH1)
 
-    def testWriteLength2(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH2)
+    def testWriteReadLength2(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH2)
 
-    def testWriteLength3(self):
-        self._checkWrite(self.AUTO_ARRAY_LENGTH3)
+    def testWriteReadLength3(self):
+        self._checkWriteRead(self.AUTO_ARRAY_LENGTH3)
+
+    def testWriteReadFileLength1(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH1)
+
+    def testWriteReadFileLength2(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH2)
+
+    def testWriteReadFileLength3(self):
+        self._checkWriteReadFile(self.AUTO_ARRAY_LENGTH3)
 
     def _checkBitSizeOf(self, numElements):
         uint8Array = self._createAutoArray(numElements)
@@ -67,11 +77,25 @@ class PackedAutoArrayUInt8Test(unittest.TestCase):
         uint8Array = packedAutoArray.uint8_array
         self._checkPackedAutoArray(uint8Array, numElements)
 
-    def _checkWrite(self, numElements):
+    def _checkWriteRead(self, numElements):
         uint8Array = self._createAutoArray(numElements)
         packedAutoArray = self.api.PackedAutoArray(uint8Array)
         bitBuffer = zserio.serialize(packedAutoArray)
+
+        self.assertEqual(packedAutoArray.bitsizeof(), bitBuffer.bitsize)
+        self.assertEqual(packedAutoArray.initialize_offsets(0), bitBuffer.bitsize)
+
         readPackedAutoArray = zserio.deserialize(self.api.PackedAutoArray, bitBuffer)
+        readUint8Array = readPackedAutoArray.uint8_array
+        self._checkPackedAutoArray(readUint8Array, numElements)
+
+    def _checkWriteReadFile(self, numElements):
+        uint8Array = self._createAutoArray(numElements)
+        packedAutoArray = self.api.PackedAutoArray(uint8Array)
+        filename = self.BLOB_NAME_BASE + str(numElements) + ".blob"
+        zserio.serialize_to_file(packedAutoArray, filename)
+
+        readPackedAutoArray = zserio.deserialize_from_file(self.api.PackedAutoArray, filename)
         readUint8Array = readPackedAutoArray.uint8_array
         self._checkPackedAutoArray(readUint8Array, numElements)
 
@@ -114,6 +138,8 @@ class PackedAutoArrayUInt8Test(unittest.TestCase):
         bitSize += (numElements - 1) * (self.PACKED_ARRAY_MAX_BIT_NUMBER + 1) # all deltas
 
         return bitSize
+
+    BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_auto_array_uint8_")
 
     AUTO_ARRAY_LENGTH1 = 1
     AUTO_ARRAY_LENGTH2 = 5

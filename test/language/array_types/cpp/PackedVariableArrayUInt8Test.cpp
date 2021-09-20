@@ -2,9 +2,8 @@
 
 #include "array_types/packed_variable_array_uint8/PackedVariableArray.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {
@@ -106,7 +105,7 @@ protected:
         checkPackedVariableArray(packedVariableArray, numElements);
     }
 
-    void checkWrite(size_t numElements)
+    void checkWriteRead(size_t numElements)
     {
         PackedVariableArray packedVariableArray;
         fillPackedVariableArray(packedVariableArray, numElements);
@@ -114,10 +113,28 @@ protected:
         zserio::BitStreamWriter writer(bitBuffer);
         packedVariableArray.write(writer);
 
+        ASSERT_EQ(packedVariableArray.bitSizeOf(), writer.getBitPosition());
+        ASSERT_EQ(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
+
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedVariableArray readPackedVariableArray(reader);
         checkPackedVariableArray(readPackedVariableArray, numElements);
     }
+
+    void checkWriteReadFile(size_t numElements)
+    {
+        PackedVariableArray packedVariableArray;
+        fillPackedVariableArray(packedVariableArray, numElements);
+
+        const std::string fileName = BLOB_NAME_BASE + std::to_string(numElements) + ".blob";
+        zserio::serializeToFile(packedVariableArray, fileName);
+
+        PackedVariableArray readPackedVariableArray =
+                zserio::deserializeFromFile<PackedVariableArray>(fileName);
+        checkPackedVariableArray(readPackedVariableArray, numElements);
+    }
+
+    static const std::string BLOB_NAME_BASE;
 
     static const size_t VARIABLE_ARRAY_LENGTH1;
     static const size_t VARIABLE_ARRAY_LENGTH2;
@@ -129,6 +146,9 @@ protected:
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string PackedVariableArrayUInt8Test::BLOB_NAME_BASE =
+        "language/array_types/packed_variable_array_uint8_";
 
 const size_t PackedVariableArrayUInt8Test::VARIABLE_ARRAY_LENGTH1 = 1;
 const size_t PackedVariableArrayUInt8Test::VARIABLE_ARRAY_LENGTH2 = 5;
@@ -183,19 +203,34 @@ TEST_F(PackedVariableArrayUInt8Test, readConstructorLength3)
     checkReadConstructor(VARIABLE_ARRAY_LENGTH3);
 }
 
-TEST_F(PackedVariableArrayUInt8Test, writeLength1)
+TEST_F(PackedVariableArrayUInt8Test, writeReadLength1)
 {
-    checkWrite(VARIABLE_ARRAY_LENGTH1);
+    checkWriteRead(VARIABLE_ARRAY_LENGTH1);
 }
 
-TEST_F(PackedVariableArrayUInt8Test, writeLength2)
+TEST_F(PackedVariableArrayUInt8Test, writeReadLength2)
 {
-    checkWrite(VARIABLE_ARRAY_LENGTH2);
+    checkWriteRead(VARIABLE_ARRAY_LENGTH2);
 }
 
-TEST_F(PackedVariableArrayUInt8Test, writeLength3)
+TEST_F(PackedVariableArrayUInt8Test, writeReadLength3)
 {
-    checkWrite(VARIABLE_ARRAY_LENGTH3);
+    checkWriteRead(VARIABLE_ARRAY_LENGTH3);
+}
+
+TEST_F(PackedVariableArrayUInt8Test, writeReadFileLength1)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH1);
+}
+
+TEST_F(PackedVariableArrayUInt8Test, writeReadFileLength2)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH2);
+}
+
+TEST_F(PackedVariableArrayUInt8Test, writeReadFileLength3)
+{
+    checkWriteReadFile(VARIABLE_ARRAY_LENGTH3);
 }
 
 } // namespace packed_variable_array_uint8

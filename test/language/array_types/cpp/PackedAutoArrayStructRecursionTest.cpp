@@ -2,8 +2,7 @@
 
 #include "array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 
 namespace array_types
 {
@@ -99,7 +98,7 @@ protected:
         checkPackedAutoArrayRecursion(packedAutoArrayRecursion, numElements);
     }
 
-    void checkWrite(size_t numElements)
+    void checkWriteRead(size_t numElements)
     {
         PackedAutoArrayRecursion packedAutoArrayRecursion;
         fillPackedAutoArrayRecursion(packedAutoArrayRecursion, numElements);
@@ -107,17 +106,36 @@ protected:
         zserio::BitStreamWriter writer(bitBuffer);
         packedAutoArrayRecursion.write(writer);
 
+        ASSERT_EQ(packedAutoArrayRecursion.bitSizeOf(), writer.getBitPosition());
+        ASSERT_EQ(packedAutoArrayRecursion.initializeOffsets(0), writer.getBitPosition());
+
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedAutoArrayRecursion readPackedAutoArrayRecursion(reader);
         checkPackedAutoArrayRecursion(readPackedAutoArrayRecursion, numElements);
     }
 
+    void checkWriteReadFile(size_t numElements)
+    {
+        PackedAutoArrayRecursion packedAutoArrayRecursion;
+        fillPackedAutoArrayRecursion(packedAutoArrayRecursion, numElements);
+
+        const std::string fileName = BLOB_NAME_BASE + std::to_string(numElements) + ".blob";
+        zserio::serializeToFile(packedAutoArrayRecursion, fileName);
+
+        PackedAutoArrayRecursion readPackedAutoArrayRecursion =
+                zserio::deserializeFromFile<PackedAutoArrayRecursion>(fileName);
+        checkPackedAutoArrayRecursion(readPackedAutoArrayRecursion, numElements);
+    }
+
+    static const std::string BLOB_NAME_BASE;
     static const size_t AUTO_ARRAY_LENGTH1;
     static const size_t AUTO_ARRAY_LENGTH2;
     static const size_t AUTO_ARRAY_LENGTH3;
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
+const std::string PackedAutoArrayStructRecursionTest::BLOB_NAME_BASE =
+        "language/array_types/packed_auto_array_struct_recursion_";
 const size_t PackedAutoArrayStructRecursionTest::AUTO_ARRAY_LENGTH1 = 1;
 const size_t PackedAutoArrayStructRecursionTest::AUTO_ARRAY_LENGTH2 = 5;
 const size_t PackedAutoArrayStructRecursionTest::AUTO_ARRAY_LENGTH3 = 10;
@@ -167,19 +185,34 @@ TEST_F(PackedAutoArrayStructRecursionTest, readConstructorLength3)
     checkReadConstructor(AUTO_ARRAY_LENGTH3);
 }
 
-TEST_F(PackedAutoArrayStructRecursionTest, writeLength1)
+TEST_F(PackedAutoArrayStructRecursionTest, writeReadLength1)
 {
-    checkWrite(AUTO_ARRAY_LENGTH1);
+    checkWriteRead(AUTO_ARRAY_LENGTH1);
 }
 
-TEST_F(PackedAutoArrayStructRecursionTest, writeLength2)
+TEST_F(PackedAutoArrayStructRecursionTest, writeReadLength2)
 {
-    checkWrite(AUTO_ARRAY_LENGTH2);
+    checkWriteRead(AUTO_ARRAY_LENGTH2);
 }
 
-TEST_F(PackedAutoArrayStructRecursionTest, writeLength3)
+TEST_F(PackedAutoArrayStructRecursionTest, writeReadLength3)
 {
-    checkWrite(AUTO_ARRAY_LENGTH3);
+    checkWriteRead(AUTO_ARRAY_LENGTH3);
+}
+
+TEST_F(PackedAutoArrayStructRecursionTest, writeReadFileLength1)
+{
+    checkWriteReadFile(AUTO_ARRAY_LENGTH1);
+}
+
+TEST_F(PackedAutoArrayStructRecursionTest, writeReadFileLength2)
+{
+    checkWriteReadFile(AUTO_ARRAY_LENGTH2);
+}
+
+TEST_F(PackedAutoArrayStructRecursionTest, writeReadFileLength3)
+{
+    checkWriteReadFile(AUTO_ARRAY_LENGTH3);
 }
 
 } // namespace packed_auto_array_struct_recursion

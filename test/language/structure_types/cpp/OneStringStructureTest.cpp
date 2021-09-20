@@ -2,8 +2,7 @@
 
 #include "structure_types/one_string_structure/OneStringStructure.h"
 
-#include "zserio/BitStreamWriter.h"
-#include "zserio/BitStreamReader.h"
+#include "zserio/SerializeUtil.h"
 #include "zserio/RebindAlloc.h"
 
 namespace structure_types
@@ -22,6 +21,8 @@ protected:
         writer.writeString(oneString);
     }
 
+    static const std::string BLOB_NAME;
+
     static const size_t EMPTY_ONE_STRING_STRUCTURE_BIT_SIZE;
 
     static const char ONE_STRING[];
@@ -30,7 +31,8 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const char   OneStringStructureTest::ONE_STRING[] = "This is a string!";
+const std::string OneStringStructureTest::BLOB_NAME = "language/structure_types/one_string_structure.blob";
+const char OneStringStructureTest::ONE_STRING[] = "This is a string!";
 const size_t OneStringStructureTest::ONE_STRING_STRUCTURE_BIT_SIZE = (1 + sizeof(ONE_STRING) - 1) * 8;
 
 TEST_F(OneStringStructureTest, emptyConstructor)
@@ -179,7 +181,7 @@ TEST_F(OneStringStructureTest, hashCode)
     ASSERT_EQ(oneStringStructure1.hashCode(), oneStringStructure2.hashCode());
 }
 
-TEST_F(OneStringStructureTest, write)
+TEST_F(OneStringStructureTest, writeRead)
 {
     OneStringStructure oneStringStructure;
     oneStringStructure.setOneString(ONE_STRING);
@@ -189,6 +191,17 @@ TEST_F(OneStringStructureTest, write)
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     OneStringStructure readOneStringStructure(reader);
+    ASSERT_EQ(ONE_STRING, readOneStringStructure.getOneString());
+    ASSERT_TRUE(oneStringStructure == readOneStringStructure);
+}
+
+TEST_F(OneStringStructureTest, writeReadFile)
+{
+    OneStringStructure oneStringStructure;
+    oneStringStructure.setOneString(ONE_STRING);
+    zserio::serializeToFile(oneStringStructure, BLOB_NAME);
+
+    OneStringStructure readOneStringStructure = zserio::deserializeFromFile<OneStringStructure>(BLOB_NAME);
     ASSERT_EQ(ONE_STRING, readOneStringStructure.getOneString());
     ASSERT_TRUE(oneStringStructure == readOneStringStructure);
 }
