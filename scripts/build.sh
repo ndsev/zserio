@@ -167,8 +167,8 @@ Package can be the combination of:
     cpp                      Zserio C++ extension.
     cpp_rt-linux32-gcc       Zserio C++ extension runtime library for native linux32 (gcc).
     cpp_rt-linux64-gcc       Zserio C++ extension runtime library for native linux64 (gcc).
-    cpp_rt-linux32-clang   Zserio ASIL C++ extension runtime library for native linux32 (Clang).
-    cpp_rt-linux64-clang   Zserio ASIL C++ extension runtime library for native linux64 (Clang).
+    cpp_rt-linux32-clang     Zserio ASIL C++ extension runtime library for native linux32 (Clang).
+    cpp_rt-linux64-clang     Zserio ASIL C++ extension runtime library for native linux64 (Clang).
     cpp_rt-windows64-mingw   Zserio C++ extension runtime library for windows64 target (MinGW64).
     cpp_rt-windows64-msvc    Zserio C++ extension runtime library for windows64 target (MSVC).
     java                     Zserio Java extension.
@@ -522,7 +522,7 @@ main()
                     -DLLVM_PROFDATA_BIN="${LLVM_PROFDATA_BIN}"
                     -DLLVM_COV_BIN="${LLVM_COV_BIN}"
             )
-        else 
+        else
             CMAKE_ARGS+=(-DZSERIO_CODE_COVERAGE_ENABLE=OFF)
         fi
         local CTEST_ARGS=()
