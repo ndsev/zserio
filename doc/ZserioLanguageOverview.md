@@ -656,6 +656,8 @@ struct ImplicitArray
 The length of the `list` array can be referenced as `lengthof(list)`, see
 [lengthof Operator](#lengthof-operator).
 
+> Deprecated since `2.4.0`
+
 ### Auto Length Arrays
 
 An array type may have an automatic length indicated by an empty pair of brackets. In this case, the encoder

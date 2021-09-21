@@ -8,7 +8,8 @@ from testutils import getZserioApi
 class WithTypeInfoCodeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "with_type_info_code.zs", extraArgs=["-withTypeInfoCode"])
+        cls.api = getZserioApi(__file__, "with_type_info_code.zs", extraArgs=["-withTypeInfoCode",
+                                                                              "-allowImplicitArrays"])
 
     def testSqlDatabase(self):
         self._checkSqlDatabase(self.api.SqlDatabase.type_info())

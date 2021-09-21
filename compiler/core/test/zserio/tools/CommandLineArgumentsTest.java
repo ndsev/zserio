@@ -347,6 +347,20 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getIgnoreTimestamps());
     }
 
+    @Test
+    public void allowImplicitArraysDefault() throws ParseException
+    {
+        final String[] args = { };
+        assertFalse(parse(args).getAllowImplicitArrays());
+    }
+
+    @Test
+    public void allowImplicitArrays() throws ParseException
+    {
+        final String[] args = { "-allowImplicitArrays" };
+        assertTrue(parse(args).getAllowImplicitArrays());
+    }
+
     private static CommandLineArguments parse(String[] args) throws ParseException
     {
         final CommandLineArguments commandLineArgs = new CommandLineArguments(ZserioTool.Executor.JAVA_MAIN);

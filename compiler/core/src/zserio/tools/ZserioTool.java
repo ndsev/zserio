@@ -215,7 +215,8 @@ public class ZserioTool
 
         final ParseTree tree = parser.packageDeclaration();
 
-        final ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker();
+        final ZserioParseTreeChecker parseTreeChecker = new ZserioParseTreeChecker(
+                commandLineArguments.getAllowImplicitArrays());
         parseTreeChecker.visit(tree);
 
         final Package parsedPackage = (Package)astBuilder.visit(tree, tokenStream);

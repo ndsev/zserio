@@ -211,6 +211,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether to allow implicit arrays in zserio language.
+     *
+     * @return True if implicit arrays should be allowed.
+     */
+    public boolean getAllowImplicitArrays()
+    {
+        return allowImplicitArrays;
+    }
+
+    /**
      * Returns true if command line arguments contain given option name.
      *
      * @param optionName Option name to check.
@@ -353,6 +363,10 @@ class CommandLineArguments
         option = new Option(OptionNameIgnoreTimestamps, false,
                 "ignore timestamps and always regenerate output");
         options.addOption(option);
+
+        option = new Option(OptionNameAllowImplicitArrays, false,
+                "allow implicit arrays in zserio language");
+        options.addOption(option);
     }
 
     private void readOptions() throws ParseException
@@ -373,6 +387,7 @@ class CommandLineArguments
         topLevelPackageNameIds = (topLevelPackageName == null) ? new ArrayList<String>() :
             java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
         ignoreTimestampsOption = hasOption(OptionNameIgnoreTimestamps);
+        allowImplicitArrays = hasOption(OptionNameAllowImplicitArrays);
 
         validateOptions();
 
@@ -488,6 +503,7 @@ class CommandLineArguments
     private static final String OptionNameWithoutCrossExtensionCheck = "withoutCrossExtensionCheck";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
     private static final String OptionNameIgnoreTimestamps = "ignoreTimestamps";
+    private static final String OptionNameAllowImplicitArrays = "allowImplicitArrays";
 
     private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
 
@@ -511,4 +527,5 @@ class CommandLineArguments
     private boolean withCrossExtensionCheckOption;
     private List<String> topLevelPackageNameIds;
     private boolean ignoreTimestampsOption;
+    private boolean allowImplicitArrays;
 }

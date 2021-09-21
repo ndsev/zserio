@@ -14,7 +14,9 @@
         <testGen testName="structure_types_error" zsFile="constant_used_as_type_error.zs" ignoreErrors="true"/>
         <testGen testName="structure_types_error" zsFile="database_array_field_error.zs" ignoreErrors="true"/>
         <testGen testName="structure_types_error" zsFile="implicit_non_array_field_error.zs"
-            ignoreErrors="true"/>
+            ignoreErrors="true">
+            <arg name="allowImplicitArrays"/>
+        </testGen>
         <testGen testName="structure_types_error" zsFile="indirect_array_recursion_error.zs"
             ignoreErrors="true"/>
         <testGen testName="structure_types_error" zsFile="indirect_recursion_error.zs" ignoreErrors="true"/>

@@ -26,6 +26,19 @@ public class ArrayTypesErrorTest
     }
 
     @Test
+    public void deprecatedImplicitArray()
+    {
+        final String errors[] =
+        {
+            "deprecated_implicit_array_error.zs:5:5:     For strong compatibility reason, please consider " +
+                    "to use command line option '-allowImplicitArray'.",
+            "deprecated_implicit_array_error.zs:5:5: Implicit arrays are deprecated and will be removed from " +
+                    "the language!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void implicitArrayBitfieldWithWrongLength()
     {
         final String error = "implicit_array_bitfield_with_wrong_length_error.zs:5:14: " +

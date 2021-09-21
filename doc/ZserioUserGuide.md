@@ -23,6 +23,7 @@ The following shows Zserio compiler command line syntax:
 
 ```
 java -jar zserio.jar
+    [-allowImplicitArrays]
     [-cpp <output directory>]
     [-doc <output directory>]
     [-h,--help]
@@ -54,6 +55,11 @@ java -jar zserio.jar
 It is an absolute or relative file name for the top-level Zserio package to be parsed. If this package
 contains imports, e.g. `import foo.bar.*`, Zserio will convert this package name to a relative path name
 and try to read the imported package from `foo\bar.zs`.
+
+**`-allowImplicitArrays`**
+
+Allows implicit arrays in zserio language to be compatible with old schemas. Implicit arrays are disabled
+by default because they are deprecated and they will removed in the future.
 
 **`-cpp`**
 

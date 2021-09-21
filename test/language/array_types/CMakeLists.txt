@@ -22,21 +22,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/fixed_array_uint8/FixedArray.cpp
     ${ZSERIO_GEN_DIR}/array_types/fixed_array_uint8/FixedArray.h
 
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_bit8/ImplicitArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_bit8/ImplicitArray.h
-
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_int24/ImplicitArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_int24/ImplicitArray.h
-
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_float16/ImplicitArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_float16/ImplicitArray.h
-
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint8/ImplicitArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint8/ImplicitArray.h
-
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/implicit_array_uint64/ImplicitArray.h
-
     ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestStructure.h
     ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/PackedArraysMapping.h
@@ -117,11 +102,6 @@ add_test_sources(
     cpp/AutoArraySubtypedUInt8Test.cpp
     cpp/AutoArrayUInt8Test.cpp
     cpp/FixedArrayUInt8Test.cpp
-    cpp/ImplicitArrayBit8Test.cpp
-    cpp/ImplicitArrayInt24Test.cpp
-    cpp/ImplicitArrayFloat16Test.cpp
-    cpp/ImplicitArrayUInt8Test.cpp
-    cpp/ImplicitArrayUInt64Test.cpp
     cpp/PackedArraysMappingTest.cpp
     cpp/PackedAutoArrayStructRecursionTest.cpp
     cpp/PackedAutoArrayUInt8Test.cpp

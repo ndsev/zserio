@@ -34,14 +34,5 @@ TEST(LengthOfOperatorTest, GetLengthOfVariableArray)
     ASSERT_EQ(variableArrayLength, lengthOfFunctions.funcGetLengthOfVariableArray());
 }
 
-TEST(LengthOfOperatorTest, GetLengthOfImplicitArray)
-{
-    LengthOfFunctions lengthOfFunctions;
-    const size_t implicitArrayLength = 12;
-    vector_type<uint8_t> implicitArray(implicitArrayLength);
-    lengthOfFunctions.setImplicitArray(implicitArray);
-    ASSERT_EQ(implicitArrayLength, lengthOfFunctions.funcGetLengthOfImplicitArray());
-}
-
 } // namespace lengthof_operator
 } // namespace expressions

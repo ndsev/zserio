@@ -68,11 +68,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/subtyped_table/TestTable.h
 
-    ${ZSERIO_GEN_DIR}/sql_tables/table_with_implicit_array/TableWithImplicitArray.cpp
-    ${ZSERIO_GEN_DIR}/sql_tables/table_with_implicit_array/TableWithImplicitArray.h
-    ${ZSERIO_GEN_DIR}/sql_tables/table_with_implicit_array/StructWithImplicit.cpp
-    ${ZSERIO_GEN_DIR}/sql_tables/table_with_implicit_array/StructWithImplicit.h
-
     ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTable.cpp
     ${ZSERIO_GEN_DIR}/sql_tables/without_pk_table/WithoutPkTable.h
 
@@ -106,7 +101,6 @@ add_test_sources(
     cpp/SubtypedBoolFieldTableTest.cpp
     cpp/SubtypedEnumFieldTableTest.cpp
     cpp/SubtypedTableTest.cpp
-    cpp/TableWithImplicitArrayTest.cpp
     cpp/WithoutPkTableTest.cpp
 )
 

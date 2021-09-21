@@ -1,0 +1,38 @@
+<project name="allow_implicit_arrays" basedir="." default="run">
+    <testProperties testPath="arguments/allow_implicit_arrays" testName="allow_implicit_arrays"/>
+
+    <target name="prepare">
+        <testPrepare testName="allow_implicit_arrays"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="allow_implicit_arrays"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="allow_implicit_arrays.zs.gen_is_uptodate">
+        <testGenClean testName="allow_implicit_arrays"/>
+        <testGen testName="allow_implicit_arrays" zsFile="allow_implicit_arrays.zs">
+            <arg name="allowImplicitArrays"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="allow_implicit_arrays"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="allow_implicit_arrays"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="allow_implicit_arrays"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="allow_implicit_arrays"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="allow_implicit_arrays"/>
+    </target>
+</project>

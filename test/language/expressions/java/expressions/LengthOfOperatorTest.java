@@ -28,14 +28,4 @@ public class LengthOfOperatorTest
         lengthOfFunctions.setVariableArray(variableArray);
         assertEquals(variableArrayLength, lengthOfFunctions.funcGetLengthOfVariableArray());
     }
-
-    @Test
-    public void getLengthOfImplicitArray()
-    {
-        final LengthOfFunctions lengthOfFunctions = new LengthOfFunctions();
-        final int implicitArrayLength = 12;
-        final short[] implicitArray = new short[implicitArrayLength];
-        lengthOfFunctions.setImplicitArray(implicitArray);
-        assertEquals(implicitArrayLength, lengthOfFunctions.funcGetLengthOfImplicitArray());
-    }
 }

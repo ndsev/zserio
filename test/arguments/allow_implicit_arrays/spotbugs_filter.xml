@@ -1,0 +1,16 @@
+<FindBugsFilter>
+    <Match>
+        <!-- A prepared statement is generated from a nonconstant String. -->
+        <Bug code="SQL"/>
+        <Or>
+            <Method name="createTable"/>
+            <Method name="deleteTable"/>
+            <Method name="read"/>
+            <Method name="update"/>
+            <Method name="validate"/>
+            <Method name="attachDatabase"/>
+            <Method name="detachDatabases"/>
+            <Method name="executeUpdate"/>
+        </Or>
+    </Match>
+</FindBugsFilter>
