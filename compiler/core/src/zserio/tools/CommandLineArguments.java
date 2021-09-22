@@ -288,7 +288,7 @@ class CommandLineArguments
         final OptionGroup pubsubCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithPubsubCode, false, "enable code for Zserio Pub/Sub (default)");
         pubsubCodeGroup.addOption(option);
-        option = new Option(OptionNameWithoutPubsubCode, false, "disable code for Zseiro Pub/Sub");
+        option = new Option(OptionNameWithoutPubsubCode, false, "disable code for Zserio Pub/Sub");
         pubsubCodeGroup.addOption(option);
         pubsubCodeGroup.setRequired(false);
         options.addOptionGroup(pubsubCodeGroup);
@@ -296,7 +296,7 @@ class CommandLineArguments
         final OptionGroup serviceCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithServiceCode, false, "enable code for Zserio services (default)");
         serviceCodeGroup.addOption(option);
-        option = new Option(OptionNameWithoutServiceCode, false, "disable code for Zseiro services");
+        option = new Option(OptionNameWithoutServiceCode, false, "disable code for Zserio services");
         serviceCodeGroup.addOption(option);
         serviceCodeGroup.setRequired(false);
         options.addOptionGroup(serviceCodeGroup);

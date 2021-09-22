@@ -18,9 +18,9 @@ import zserio.tools.ZserioToolPrinter;
  */
 public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
 {
-    public ZserioParseTreeChecker(boolean allowImplicitArray)
+    public ZserioParseTreeChecker(boolean allowImplicitArrays)
     {
-        this.allowImplicitArray = allowImplicitArray;
+        this.allowImplicitArrays = allowImplicitArrays;
     }
 
     @Override
@@ -73,13 +73,13 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         // this check avoids implicit for none-array fields and implicit arrays with length expression
         if (ctx.IMPLICIT() != null)
         {
-            if (!allowImplicitArray)
+            if (!allowImplicitArrays)
             {
                 final AstLocation location = new AstLocation(ctx.IMPLICIT().getSymbol());
                 final ParserStackedException stackedException = new ParserStackedException(location,
                         "Implicit arrays are deprecated and will be removed from the language!");
                 stackedException.pushMessage(location,  "    For strong compatibility reason, please " +
-                        "consider to use command line option '-allowImplicitArray'.");
+                        "consider to use command line option '-allowImplicitArrays'.");
                 throw stackedException;
             }
 
@@ -264,7 +264,7 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         return fileContent;
     }
 
-    private final boolean allowImplicitArray;
+    private final boolean allowImplicitArrays;
 
     /** Flags used to allow index operator only in offsets or arguments in array fields. */
     private boolean isInArrayField = false;

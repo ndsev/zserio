@@ -31,7 +31,7 @@ public class ArrayTypesErrorTest
         final String errors[] =
         {
             "deprecated_implicit_array_error.zs:5:5:     For strong compatibility reason, please consider " +
-                    "to use command line option '-allowImplicitArray'.",
+                    "to use command line option '-allowImplicitArrays'.",
             "deprecated_implicit_array_error.zs:5:5: Implicit arrays are deprecated and will be removed from " +
                     "the language!"
         };

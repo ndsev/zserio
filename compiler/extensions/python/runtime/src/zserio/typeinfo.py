@@ -171,7 +171,7 @@ class MemberInfo:
         """
         Member info constructor.
 
-        :param schema_name: Name of the member as is defined in Zseiro schema.
+        :param schema_name: Name of the member as is defined in Zserio schema.
         :param type_info: Type info of the member.
         :param attributes: List of member attributes.
         """
