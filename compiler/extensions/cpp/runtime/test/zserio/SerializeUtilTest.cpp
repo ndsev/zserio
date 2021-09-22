@@ -1,12 +1,20 @@
 #include "gtest/gtest.h"
 
 #include "zserio/SerializeUtil.h"
+#include "zserio/Enums.h"
 
 namespace zserio
 {
 
 namespace
 {
+
+enum class DummyEnum : uint8_t
+{
+    VALUE1 = UINT8_C(0),
+    VALUE2 = UINT8_C(1),
+    VALUE3 = UINT8_C(2)
+};
 
 struct DummyObject
 {
@@ -88,7 +96,40 @@ struct ParameterizedDummyObject : DummyObject
 
 } // namespace
 
-TEST(SerializeUtil, dummyObjectFile)
+template <>
+inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
+{
+    switch (rawValue)
+    {
+    case UINT8_C(0):
+    case UINT8_C(1):
+    case UINT8_C(2):
+        return DummyEnum(rawValue);
+    default:
+        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") + rawValue + "!";
+    }
+}
+
+template <>
+inline size_t bitSizeOf<DummyEnum>(DummyEnum)
+{
+    return UINT8_C(8);
+}
+
+template <>
+inline DummyEnum read<DummyEnum>(zserio::BitStreamReader& in)
+{
+    return valueToEnum<DummyEnum>(
+            static_cast<typename std::underlying_type<DummyEnum>::type>(in.readBits(UINT8_C(8))));
+}
+
+template <>
+inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
+{
+    out.writeBits(enumToValue(value), UINT8_C(8));
+}
+
+TEST(SerializeUtilTest, dummyObjectFile)
 {
     const std::string fileName = "SerializeUtilTest.bin";
 
@@ -100,7 +141,7 @@ TEST(SerializeUtil, dummyObjectFile)
     ASSERT_EQ(42, readDummy.value);
 }
 
-TEST(SerializeUtil, dummyObjectBitBuffer)
+TEST(SerializeUtilTest, dummyObjectBitBuffer)
 {
     DummyObject dummy(42);
     const BitBuffer bitBuffer = serialize(dummy);
@@ -115,7 +156,7 @@ TEST(SerializeUtil, dummyObjectBitBuffer)
     ASSERT_EQ(42, readDummy.value);
 }
 
-TEST(SerializeUtil, dummyObjectWithInitializeChildrenFile)
+TEST(SerializeUtilTest, dummyObjectWithInitializeChildrenFile)
 {
     const std::string fileName = "SerializeUtilTest.bin";
 
@@ -128,7 +169,7 @@ TEST(SerializeUtil, dummyObjectWithInitializeChildrenFile)
     ASSERT_EQ(13, readDummy.value);
 }
 
-TEST(SerializeUtil, dummyObjectWithInitializeChildrenBitBuffer)
+TEST(SerializeUtilTest, dummyObjectWithInitializeChildrenBitBuffer)
 {
     DummyObjectWithInitializeChildren dummy(13);
     const BitBuffer bitBuffer = serialize(dummy);
@@ -144,7 +185,7 @@ TEST(SerializeUtil, dummyObjectWithInitializeChildrenBitBuffer)
     ASSERT_EQ(13, readDummy.value);
 }
 
-TEST(SerializeUtil, parameterizedDummyObjectFile)
+TEST(SerializeUtilTest, parameterizedDummyObjectFile)
 {
     const std::string fileName = "SerializeUtilTest.bin";
 
@@ -174,7 +215,7 @@ TEST(SerializeUtil, parameterizedDummyObjectFile)
     }
 }
 
-TEST(SerializeUtil, parameterizedDummyObjectBitBuffer)
+TEST(SerializeUtilTest, parameterizedDummyObjectBitBuffer)
 {
     {
         // with optional value
@@ -214,6 +255,29 @@ TEST(SerializeUtil, parameterizedDummyObjectBitBuffer)
         ASSERT_EQ(42, readDummy.value);
         ASSERT_FALSE(readDummy.param);
     }
+}
+
+TEST(SerializeUtilTest, dummyEnumFile)
+{
+    const std::string fileName = "SerializeUtilTest.bin";
+
+    const DummyEnum dummy = DummyEnum::VALUE1;
+    zserio::serializeToFile(dummy, fileName);
+
+    const DummyEnum readDummy = zserio::deserializeFromFile<DummyEnum>(fileName);
+    ASSERT_EQ(dummy, readDummy);
+}
+
+TEST(SerializeUtilTest, dummyEnumBitBuffer)
+{
+    const DummyEnum dummy = DummyEnum::VALUE1;
+    const BitBuffer bitBuffer = zserio::serialize(dummy);
+
+    ASSERT_EQ(8, bitBuffer.getBitSize());
+    ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
+
+    const DummyEnum readDummy = zserio::deserialize<DummyEnum>(bitBuffer);
+    ASSERT_EQ(dummy, readDummy);
 }
 
 } // namespace zserio

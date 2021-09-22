@@ -7,6 +7,8 @@
 #ifndef ZSERIO_SERIALIZE_UTIL_H_INC
 #define ZSERIO_SERIALIZE_UTIL_H_INC
 
+#include <type_traits>
+
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/FileUtil.h"
@@ -51,18 +53,40 @@ void initializeChildren(T& object)
  * Serializes given generated object to bit buffer.
  *
  * \param object Generated object to serialize.
+ * \param allocator Allocator to use to allocate bit buffer.
  *
  * \return Bit buffer containing the serialized object.
  *
  * \throw CppRuntimeException When serialization fails.
  */
-template <typename T, typename ALLOC = std::allocator<uint8_t>>
+template <typename T, typename ALLOC = std::allocator<uint8_t>,
+        typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
 BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator = ALLOC())
 {
     detail::initializeChildren(object);
     BasicBitBuffer<ALLOC> bitBuffer(object.initializeOffsets(0), allocator);
     BitStreamWriter writer(bitBuffer);
     object.write(writer, PreWriteAction::NO_PRE_WRITE_ACTION);
+    return bitBuffer;
+}
+
+/**
+ * Serializes given generated enum to bit buffer.
+ *
+ * \param enumValue Generated enum to serialize.
+ * \param allocator Allocator to use to allocate bit buffer.
+ *
+ * \return Bit buffer containing the serialized enum.
+ *
+ * \throw CppRuntimeException When serialization fails.
+ */
+template <typename T, typename ALLOC = std::allocator<uint8_t>,
+        typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+BasicBitBuffer<ALLOC> serialize(T enumValue, const ALLOC& allocator = ALLOC())
+{
+    BasicBitBuffer<ALLOC> bitBuffer(zserio::bitSizeOf(enumValue), allocator);
+    BitStreamWriter writer(bitBuffer);
+    zserio::write(writer, enumValue);
     return bitBuffer;
 }
 
@@ -77,10 +101,27 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator = ALLOC())
  * \throw CppRuntimeException When deserialization fails.
  */
 template <typename T, typename ALLOC, typename ...ARGS>
-T deserialize(const BasicBitBuffer<ALLOC>& bitBuffer, ARGS&&... arguments)
+typename std::enable_if<!std::is_enum<T>::value, T>::type deserialize(
+        const BasicBitBuffer<ALLOC>& bitBuffer, ARGS&&... arguments)
 {
     BitStreamReader reader(bitBuffer);
     return T(reader, std::forward<ARGS>(arguments)...);
+}
+
+/**
+ * Deserializes given bit buffer to instance of generated enum.
+ *
+ * \param bitBuffer Bit buffer to use.
+ *
+ * \return Generated enum created from the given bit buffer.
+ *
+ * \throw CppRuntimeException When deserialization fails.
+ */
+template <typename T, typename ALLOC>
+typename std::enable_if<std::is_enum<T>::value, T>::type deserialize(const BasicBitBuffer<ALLOC>& bitBuffer)
+{
+    BitStreamReader reader(bitBuffer);
+    return zserio::read<T>(reader);
 }
 
 /**
@@ -94,11 +135,8 @@ T deserialize(const BasicBitBuffer<ALLOC>& bitBuffer, ARGS&&... arguments)
 template <typename T>
 void serializeToFile(T& object, const std::string& fileName)
 {
-    detail::initializeChildren(object);
-    BitBuffer bitBuffer(object.initializeOffsets(0));
-    BitStreamWriter writer(bitBuffer);
-    object.write(writer, PreWriteAction::NO_PRE_WRITE_ACTION);
-    writeBufferToFile(writer, fileName);
+    const BitBuffer bitBuffer = serialize(object);
+    writeBufferToFile(bitBuffer, fileName);
 }
 
 /**
@@ -115,8 +153,7 @@ template <typename T, typename ...ARGS>
 T deserializeFromFile(const std::string& fileName, ARGS&&... arguments)
 {
     const BitBuffer bitBuffer = readBufferFromFile(fileName);
-    BitStreamReader reader(bitBuffer);
-    return T(reader, std::forward<ARGS>(arguments)...);
+    return deserialize<T>(bitBuffer, std::forward<ARGS>(arguments)...);
 }
 
 } // namespace zserio

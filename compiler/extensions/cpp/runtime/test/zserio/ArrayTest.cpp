@@ -12,6 +12,9 @@
 namespace zserio
 {
 
+namespace
+{
+
 class ArrayTestOffsetInitializer
 {
 public:
@@ -34,72 +37,6 @@ enum class DummyEnum : uint8_t
     VALUE2 = UINT8_C(1),
     VALUE3 = UINT8_C(2)
 };
-
-template <>
-inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
-{
-    switch (rawValue)
-    {
-    case UINT8_C(0):
-    case UINT8_C(1):
-    case UINT8_C(2):
-        return DummyEnum(rawValue);
-    default:
-        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") + rawValue + "!";
-    }
-}
-
-template <>
-inline size_t bitSizeOf<DummyEnum>(DummyEnum)
-{
-    return UINT8_C(8);
-}
-
-template <>
-inline size_t bitSizeOf<::zserio::PackingContextNode, DummyEnum>(::zserio::PackingContextNode& contextNode,
-        size_t bitPosition, DummyEnum value)
-{
-    return contextNode.getContext().bitSizeOf(
-            StdIntArrayTraits<uint8_t>(), bitPosition, enumToValue(value));
-}
-
-template <>
-inline size_t initializeOffsets<DummyEnum>(size_t bitPosition, DummyEnum value)
-{
-    return bitPosition + bitSizeOf(value);
-}
-
-template <>
-inline size_t initializeOffsets<::zserio::PackingContextNode, DummyEnum>(
-        ::zserio::PackingContextNode& contextNode, size_t bitPosition, DummyEnum value)
-{
-    return bitPosition + bitSizeOf(contextNode, bitPosition, value);
-}
-
-template <>
-inline DummyEnum read<DummyEnum>(zserio::BitStreamReader& in)
-{
-    return valueToEnum<DummyEnum>(
-            static_cast<typename std::underlying_type<DummyEnum>::type>(in.readBits(UINT8_C(8))));
-}
-
-template <>
-inline DummyEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
-{
-    return valueToEnum<DummyEnum>(contextNode.getContext().read(::zserio::StdIntArrayTraits<uint8_t>(), in));
-}
-
-template <>
-inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
-{
-    out.writeBits(enumToValue(value), UINT8_C(8));
-}
-
-template <>
-inline void write(::zserio::PackingContextNode& contextNode, BitStreamWriter& out, DummyEnum value)
-{
-    contextNode.getContext().write(::zserio::StdIntArrayTraits<uint8_t>(), out, enumToValue(value));
-}
 
 class DummyBitmask
 {
@@ -194,7 +131,6 @@ const DummyBitmask DummyBitmask::Values::WRITE = DummyBitmask(UINT8_C(8));
 class DummyObject
 {
 public:
-    DummyObject() : m_value(0) {}
     explicit DummyObject(uint32_t value) : m_value(value) {}
     explicit DummyObject(BitStreamReader& in) : m_value(in.readBits(31)) {}
     DummyObject(PackingContextNode& contextNode, BitStreamReader& in)
@@ -301,6 +237,74 @@ public:
         array.emplace_back(contextNode, in);
     }
 };
+
+} // namespace
+
+template <>
+inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
+{
+    switch (rawValue)
+    {
+    case UINT8_C(0):
+    case UINT8_C(1):
+    case UINT8_C(2):
+        return DummyEnum(rawValue);
+    default:
+        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") + rawValue + "!";
+    }
+}
+
+template <>
+inline size_t bitSizeOf<DummyEnum>(DummyEnum)
+{
+    return UINT8_C(8);
+}
+
+template <>
+inline size_t bitSizeOf<::zserio::PackingContextNode, DummyEnum>(::zserio::PackingContextNode& contextNode,
+        size_t bitPosition, DummyEnum value)
+{
+    return contextNode.getContext().bitSizeOf(
+            StdIntArrayTraits<uint8_t>(), bitPosition, enumToValue(value));
+}
+
+template <>
+inline size_t initializeOffsets<DummyEnum>(size_t bitPosition, DummyEnum value)
+{
+    return bitPosition + bitSizeOf(value);
+}
+
+template <>
+inline size_t initializeOffsets<::zserio::PackingContextNode, DummyEnum>(
+        ::zserio::PackingContextNode& contextNode, size_t bitPosition, DummyEnum value)
+{
+    return bitPosition + bitSizeOf(contextNode, bitPosition, value);
+}
+
+template <>
+inline DummyEnum read<DummyEnum>(zserio::BitStreamReader& in)
+{
+    return valueToEnum<DummyEnum>(
+            static_cast<typename std::underlying_type<DummyEnum>::type>(in.readBits(UINT8_C(8))));
+}
+
+template <>
+inline DummyEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+{
+    return valueToEnum<DummyEnum>(contextNode.getContext().read(::zserio::StdIntArrayTraits<uint8_t>(), in));
+}
+
+template <>
+inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
+{
+    out.writeBits(enumToValue(value), UINT8_C(8));
+}
+
+template <>
+inline void write(::zserio::PackingContextNode& contextNode, BitStreamWriter& out, DummyEnum value)
+{
+    contextNode.getContext().write(::zserio::StdIntArrayTraits<uint8_t>(), out, enumToValue(value));
+}
 
 class ArrayTest : public ::testing::Test
 {

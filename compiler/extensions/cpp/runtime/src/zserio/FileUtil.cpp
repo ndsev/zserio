@@ -1,6 +1,7 @@
 #include <fstream>
 
-#include "FileUtil.h"
+#include "zserio/FileUtil.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {
