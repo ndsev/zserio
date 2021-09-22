@@ -2,13 +2,13 @@ package duplicated_id_within_group_error;
 
 rule_group RuleGroup
 {
-    /*! Rule one. */
+    /*! Rule one. !*/
     rule "rule-one";
 
-    /*! Rule two. */
+    /*! Rule two. !*/
     rule "rule-two";
 
-    /*! Duplicated rule one. */
+    /*! Duplicated rule one. !*/
     rule "rule-one";
 };
 

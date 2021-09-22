@@ -218,7 +218,9 @@ public class Package extends DocumentableAstNode
         }
     }
 
-    /** Checks the package. */
+    /**
+     * Checks the package.
+     */
     void check()
     {
         if (!packageName.toString().equals(packageName.toString().toLowerCase(Locale.ENGLISH)))
@@ -227,9 +229,6 @@ public class Package extends DocumentableAstNode
         final PackageSymbolValidator packageSymbolValidator = new PackageSymbolValidator();
         for (PackageSymbol localSymbol : localSymbols.values())
             packageSymbolValidator.validate(localSymbol.getName(), localSymbol);
-
-        final PackageRuleValidator ruleValidator = new PackageRuleValidator();
-        accept(ruleValidator);
     }
 
     /**

@@ -5,11 +5,11 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * The class implements validation of rule IDs within a single package.
+ * The class implements checking of rule IDs to be unique between all packages.
  *
- * Rule ID must be unique using case insensitive comparison within a single package.
+ * Rule ID must be unique globally using case insensitive comparison.
  */
-class PackageRuleValidator extends ZserioAstWalker
+class RuleIdUniqueChecker extends ZserioAstWalker
 {
     @Override
     public void visitRule(Rule rule)
@@ -19,7 +19,7 @@ class PackageRuleValidator extends ZserioAstWalker
         if (addedRule != null)
         {
             final ParserStackedException stackedException = new ParserStackedException(rule.getLocation(),
-                    "Rule ID '" + rule.getRuleId() + "' is not unique (case insensitive) within this package!");
+                    "Rule ID '" + rule.getRuleId() + "' is not unique (case insensitive)!");
             stackedException.pushMessage(addedRule.getLocation(), "    Conflicting rule defined here.");
             throw stackedException;
         }

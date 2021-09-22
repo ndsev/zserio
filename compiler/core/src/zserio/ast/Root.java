@@ -72,6 +72,15 @@ public class Root extends AstNodeBase
     }
 
     /**
+     * Checks the root node.
+     */
+    void check()
+    {
+        final RuleIdUniqueChecker checker = new RuleIdUniqueChecker();
+        accept(checker);
+    }
+
+    /**
      * Gets map of all packages.
      *
      * @return The map of all available packages.

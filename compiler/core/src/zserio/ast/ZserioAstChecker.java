@@ -26,6 +26,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     public void visitRoot(Root root)
     {
         root.visitChildren(this);
+        root.check();
         if (checkUnusedTypes)
         {
             for (ZserioType definedType : definedTypes)
