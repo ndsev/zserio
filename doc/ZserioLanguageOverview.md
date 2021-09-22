@@ -1350,8 +1350,8 @@ line, it is rendered without indentation.
 Zserio also provides a way how to organize semantic restrictions for the schema which cannot be easily defined
 using constraints. Rules are defined within rule groups and are described using
 [documentation comments](#comments). Each rule have it's own identifier which is standard Zserio identifier
-extended by `-`, `:` and `.` characters. The rule ID must be unique (using case insensitive comparison)
-within a single Zserio package.
+extended by `-`, `:` and `.` characters. The rule ID must be unique globally (using case insensitive
+comparison) within all Zserio packages.
 
 **Example**
 ```
