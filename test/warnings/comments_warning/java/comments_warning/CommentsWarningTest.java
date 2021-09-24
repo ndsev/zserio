@@ -37,6 +37,13 @@ public class CommentsWarningTest
     }
 
     @Test
+    public void unresolvedSeeTagInTemplatedStruct()
+    {
+        assertTrue(zserioWarnings.isPresent("unresolved_see_tag_in_templated_struct.zs:3:5: " +
+                "Documentation: Unresolved referenced symbol 'unknown' for type 'TemplatedStruct'!"));
+    }
+
+    @Test
     public void unresolvedSeeTagReference()
     {
         assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:8:4: " +
@@ -76,7 +83,7 @@ public class CommentsWarningTest
     @Test
     public void checkNumberOfWarnings()
     {
-        final int expectedNumberOfWarnings = 12;
+        final int expectedNumberOfWarnings = 13;
         assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
     }
 

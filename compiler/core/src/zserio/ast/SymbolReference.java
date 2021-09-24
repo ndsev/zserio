@@ -24,14 +24,7 @@ public class SymbolReference
     public SymbolReference(AstNode ownerNode, String symbolReferenceText)
     {
         this.ownerNode = ownerNode;
-
-        final String[] referenceElementList = symbolReferenceText.split("\\" + SYMBOL_REFERENCE_SEPARATOR);
-        for (String referenceElement : referenceElementList)
-        {
-            if (referencedName != null)
-                referencedPackageNameBuilder.addId(referencedName);
-            referencedName = referenceElement;
-        }
+        this.symbolReferenceText = symbolReferenceText;
     }
 
     /**
@@ -62,8 +55,16 @@ public class SymbolReference
      */
     void resolve(Package ownerPackage, ZserioScopedType ownerType)
     {
+        if (resolveCalled)
+            return;
+
+        resolveCalled = true;
+
         // try if the last link component was a package symbol
-        PackageName referencedPackageName = getReferencedPackageName(ownerPackage);
+        final PackageName.Builder referencedPackageNameBuilder = new PackageName.Builder();
+        String referencedName = getReferencedName(referencedPackageNameBuilder);
+        PackageName referencedPackageName = getReferencedPackageName(ownerPackage,
+                referencedPackageNameBuilder);
         referencedPackageSymbol = ownerPackage.getVisibleSymbol(ownerNode, referencedPackageName,
                 referencedName);
         if (referencedPackageSymbol == null)
@@ -80,7 +81,7 @@ public class SymbolReference
             else
             {
                 // try to resolve it again
-                referencedPackageName = getReferencedPackageName(ownerPackage);
+                referencedPackageName = getReferencedPackageName(ownerPackage, referencedPackageNameBuilder);
                 referencedPackageSymbol = ownerPackage.getVisibleSymbol(ownerNode, referencedPackageName,
                         referencedName);
             }
@@ -93,12 +94,14 @@ public class SymbolReference
             if (referencedScopeSymbol == null)
             {
                 throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
-                        referencedScopeSymbolName + "' for type '" + referencedPackageSymbol.getName() + "'!");
+                        referencedScopeSymbolName + "' for type '" +
+                        getUnresolvedSymbolName(referencedPackageSymbol) + "'!");
             }
         }
     }
 
-    private PackageName getReferencedPackageName(Package ownerPackage)
+    private PackageName getReferencedPackageName(Package ownerPackage,
+            PackageName.Builder referencedPackageNameBuilder)
     {
         final PackageName referencedPackageName = referencedPackageNameBuilder.get();
         if (referencedPackageName.isEmpty())
@@ -111,12 +114,39 @@ public class SymbolReference
         return packageNameBuilder.get();
     }
 
+    private String getReferencedName(PackageName.Builder referencedPackageNameBuilder)
+    {
+        String referencedName = null;
+        final String[] referenceElementList = symbolReferenceText.split("\\" + SYMBOL_REFERENCE_SEPARATOR);
+        for (String referenceElement : referenceElementList)
+        {
+            if (referencedName != null)
+                referencedPackageNameBuilder.addId(referencedName);
+            referencedName = referenceElement;
+        }
+        return referencedName;
+    }
+
+    private String getUnresolvedSymbolName(PackageSymbol referencedPackageSymbol)
+    {
+        // return template name for template instantiations
+        if (referencedPackageSymbol instanceof ZserioTemplatableType)
+        {
+            final ZserioTemplatableType template =
+                    ((ZserioTemplatableType)referencedPackageSymbol).getTemplate();
+            if (template != null)
+                return template.getName();
+        }
+
+        return referencedPackageSymbol.getName();
+    }
+
     private static final String SYMBOL_REFERENCE_SEPARATOR = ".";
 
     private final AstNode ownerNode;
-    private final PackageName.Builder referencedPackageNameBuilder = new PackageName.Builder();
+    private final String symbolReferenceText;
 
-    private String referencedName = null;
+    private boolean resolveCalled = false; // even unsuccessful resolve means that the symbol has been resolved
     private PackageSymbol referencedPackageSymbol = null;
     private ScopeSymbol referencedScopeSymbol = null;
 }
