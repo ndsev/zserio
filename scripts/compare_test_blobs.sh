@@ -12,11 +12,6 @@ set_common_variables()
         stderr_echo "Cannot find bash command find! Set FIND environment variable."
         return 1
     fi
-
-    CMP="${CMP:-/usr/bin/cmp}"
-    if [ ! -f "`which "${CMP}"`" ] ; then
-        stderr_echo "Cannot find bash command cmp! Set CMP environment variable."
-    fi
 }
 
 print_help_env()
@@ -24,7 +19,6 @@ print_help_env()
     cat << EOF
 Uses the following environment variables:
     FIND            Bash command find to use. Default is "/usr/bin/find".
-    CMP             Bash command cmp to use. Default is "/usr/bin/cmp".
 
     Either set these directly, or create 'scripts/build-env.sh' that sets
     these. It's sourced automatically if it exists.
