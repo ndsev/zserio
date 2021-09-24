@@ -40,7 +40,8 @@ protected:
     sql_constraints::TestDb* m_database;
 };
 
-const char TableConstraintsTest::DB_FILE_NAME[] = "table_constraints_test.sqlite";
+const char TableConstraintsTest::DB_FILE_NAME[] =
+        "language/sql_constraints/table_constraints_test.sqlite";
 
 TEST_F(TableConstraintsTest, primaryKey)
 {

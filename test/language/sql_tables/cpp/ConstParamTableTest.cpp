@@ -108,7 +108,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char ConstParamTableTest::DB_FILE_NAME[] = "const_param_table_test.sqlite";
+const char ConstParamTableTest::DB_FILE_NAME[] = "language/sql_tables/const_param_table_test.sqlite";
 
 const uint32_t ConstParamTableTest::PARAMETERIZED_BLOB_VALUE = 0xABCD;
 const uint32_t ConstParamTableTest::PARAMETERIZED_BLOB_PARAM = 2;

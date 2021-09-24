@@ -112,7 +112,8 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char BlobOffsetsParamTableTest::DB_FILE_NAME[] = "blob_offsets_param_table_test.sqlite";
+const char BlobOffsetsParamTableTest::DB_FILE_NAME[] =
+        "language/sql_tables/blob_offsets_param_table_test.sqlite";
 
 const uint32_t BlobOffsetsParamTableTest::NUM_BLOB_OFFSETS_PARAM_TABLE_ROWS = 20;
 

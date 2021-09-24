@@ -111,7 +111,8 @@ protected:
     HiddenVirtualColumnsDb* m_database;
 };
 
-const char HiddenVirtualColumnsTest::DB_FILE_NAME[] = "hidden_virtual_columns_test.sqlite";
+const char HiddenVirtualColumnsTest::DB_FILE_NAME[] =
+        "language/sql_virtual_columns/hidden_virtual_columns_test.sqlite";
 const int32_t HiddenVirtualColumnsTest::NUM_TABLE_ROWS = 5;
 
 TEST_F(HiddenVirtualColumnsTest, deleteTable)

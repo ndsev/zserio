@@ -164,7 +164,8 @@ constexpr uint32_t ControlValidationTest::TABLE1_NUM_ROWS;
 constexpr uint32_t ControlValidationTest::TABLE2_NUM_ROWS;
 constexpr uint32_t ControlValidationTest::TABLE3_NUM_ROWS;
 
-const char ControlValidationTest::DB_FILE_NAME[] = "control_validation_test.sqlite";
+const char ControlValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/control_validation_test.sqlite";
 
 TEST_F(ControlValidationTest, validate)
 {

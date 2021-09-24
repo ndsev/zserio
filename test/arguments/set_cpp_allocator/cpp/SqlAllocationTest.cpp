@@ -148,7 +148,8 @@ constexpr uint32_t SqlAllocationTest::NUM_ROWS;
 constexpr uint32_t SqlAllocationTest::RED_ROW_ID;
 constexpr uint32_t SqlAllocationTest::MAGIC;
 constexpr uint32_t SqlAllocationTest::WRONG_MAGIC;
-const string_type SqlAllocationTest::DB_FILE_NAME = "sql_allocation_test.sqlite";
+const string_type SqlAllocationTest::DB_FILE_NAME =
+        "arguments/set_cpp_allocator/sql_allocation_test.sqlite";
 
 TEST_F(SqlAllocationTest, readWithoutCondition)
 {

@@ -115,7 +115,8 @@ protected:
     static const TestEnum ENUM_PARAM_TABLE_COUNT2;
 };
 
-const char ExplicitEnumParamTest::DB_FILE_NAME[] = "explicit_enum_param_test.sqlite";
+const char ExplicitEnumParamTest::DB_FILE_NAME[] =
+        "language/explicit_parameters/explicit_enum_param_test.sqlite";
 
 const uint32_t ExplicitEnumParamTest::NUM_ENUM_PARAM_TABLE_ROWS = 5;
 const TestEnum ExplicitEnumParamTest::ENUM_PARAM_TABLE_COUNT1 = TestEnum::TEN;

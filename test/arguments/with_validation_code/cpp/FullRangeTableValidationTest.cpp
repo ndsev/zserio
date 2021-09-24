@@ -68,7 +68,8 @@ private:
 
 constexpr size_t FullRangeTableValidationTest::NUM_TABLE_ROWS;
 
-const char FullRangeTableValidationTest::DB_FILE_NAME[] = "full_range_table_validation_test.sqlite";
+const char FullRangeTableValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/full_range_table_validation_test.sqlite";
 
 TEST_F(FullRangeTableValidationTest, validate)
 {

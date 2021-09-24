@@ -45,7 +45,8 @@ protected:
     }
 };
 
-const string_type SqlTableTemplatedFieldTest::DB_FILE_NAME = "sql_table_templated_field_test.sqlite";
+const string_type SqlTableTemplatedFieldTest::DB_FILE_NAME =
+        "language/templates/sql_table_templated_field_test.sqlite";
 
 TEST_F(SqlTableTemplatedFieldTest, readWrite)
 {

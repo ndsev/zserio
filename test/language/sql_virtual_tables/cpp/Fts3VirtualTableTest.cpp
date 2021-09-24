@@ -100,7 +100,7 @@ protected:
     sql_virtual_tables::fts3_virtual_table::Fts3TestDb* m_database;
 };
 
-const char Fts3VirtualTableTest::DB_FILE_NAME[] = "fts3_virtual_table_test.sqlite";
+const char Fts3VirtualTableTest::DB_FILE_NAME[] = "language/sql_virtual_tables/fts3_virtual_table_test.sqlite";
 const int32_t Fts3VirtualTableTest::NUM_VIRTUAL_TABLE_ROWS = 5;
 
 TEST_F(Fts3VirtualTableTest, deleteTable)

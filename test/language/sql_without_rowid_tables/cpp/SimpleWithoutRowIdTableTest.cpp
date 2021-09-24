@@ -24,7 +24,7 @@ class SimpleWithoutRowIdTableTest : public ::testing::Test
 {
 public:
     SimpleWithoutRowIdTableTest() :
-            m_dbFileName("simple_without_rowid_table_test.sqlite"),
+            m_dbFileName("language/sql_without_rowid_tables/simple_without_rowid_table_test.sqlite"),
             m_tableName("simpleWithoutRowIdTable"),
             m_rowIdColumnName("rowid")
     {

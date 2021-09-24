@@ -61,7 +61,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedTableTest::DB_FILE_NAME[] = "subtyped_table_test.sqlite";
+const char SubtypedTableTest::DB_FILE_NAME[] = "language/sql_tables/subtyped_table_test.sqlite";
 
 TEST_F(SubtypedTableTest, testSubtypedTable)
 {

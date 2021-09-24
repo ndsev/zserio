@@ -31,7 +31,8 @@ private:
     static const char DB_FILE_NAME[];
 };
 
-const char VirtualTableValidationTest::DB_FILE_NAME[] = "virtual_table_validation_test.sqlite";
+const char VirtualTableValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/virtual_table_validation_test.sqlite";
 
 TEST_F(VirtualTableValidationTest, validate)
 {

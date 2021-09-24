@@ -69,7 +69,8 @@ private:
 
 constexpr size_t HiddenColumnTableValidationTest::NUM_TABLE_ROWS;
 
-const char HiddenColumnTableValidationTest::DB_FILE_NAME[] = "hidden_column_table_validation_test.sqlite";
+const char HiddenColumnTableValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/hidden_column_table_validation_test.sqlite";
 
 TEST_F(HiddenColumnTableValidationTest, validate)
 {

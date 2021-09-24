@@ -75,7 +75,8 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedEnumFieldTableTest::DB_FILE_NAME[] = "subtyped_enum_field_table_test.sqlite";
+const char SubtypedEnumFieldTableTest::DB_FILE_NAME[] =
+        "language/sql_tables/subtyped_enum_field_table_test.sqlite";
 const size_t SubtypedEnumFieldTableTest::NUM_ROWS = 5;
 
 TEST_F(SubtypedEnumFieldTableTest, readWithoutCondition)

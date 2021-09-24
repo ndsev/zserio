@@ -66,7 +66,8 @@ private:
     static constexpr int8_t END_VALUE = 0x23;
 };
 
-const char BlobTableValidationTest::DB_FILE_NAME[] = "blob_table_validation_test.sqlite";
+const char BlobTableValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/blob_table_validation_test.sqlite";
 
 constexpr uint32_t BlobTableValidationTest::ROW_ID;
 constexpr bool BlobTableValidationTest::HAS_NAN;

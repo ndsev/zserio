@@ -103,7 +103,8 @@ protected:
     static const uint32_t SAME_AS_FIELD_TABLE_COUNT_EXPLICIT;
 };
 
-const char ExplicitSameAsFieldTest::DB_FILE_NAME[] = "explicit_same_as_field_test.sqlite";
+const char ExplicitSameAsFieldTest::DB_FILE_NAME[] =
+        "language/explicit_parameters/explicit_same_as_field_test.sqlite";
 
 const uint32_t ExplicitSameAsFieldTest::NUM_SAME_AS_FIELD_TABLE_ROWS = 5;
 const uint32_t ExplicitSameAsFieldTest::SAME_AS_FIELD_TABLE_COUNT = 10;

@@ -75,7 +75,8 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedBitmaskFieldTableTest::DB_FILE_NAME[] = "subtyped_bitmask_field_table_test.sqlite";
+const char SubtypedBitmaskFieldTableTest::DB_FILE_NAME[] =
+        "language/sql_tables/subtyped_bitmask_field_table_test.sqlite";
 const size_t SubtypedBitmaskFieldTableTest::NUM_ROWS = 5;
 
 TEST_F(SubtypedBitmaskFieldTableTest, readWithoutCondition)

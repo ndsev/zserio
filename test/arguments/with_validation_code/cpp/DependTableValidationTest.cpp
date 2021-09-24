@@ -67,7 +67,8 @@ private:
     static const char DB_FILE_NAME[];
 };
 
-const char DependTableValidationTest::DB_FILE_NAME[] = "depend_table_validation_test.sqlite";
+const char DependTableValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/depend_table_validation_test.sqlite";
 
 TEST_F(DependTableValidationTest, validate)
 {

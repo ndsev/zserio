@@ -101,7 +101,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char MultiplePkTableTest::DB_FILE_NAME[] = "multiple_pk_table_test.sqlite";
+const char MultiplePkTableTest::DB_FILE_NAME[] = "language/sql_tables/multiple_pk_table_test.sqlite";
 
 const int32_t MultiplePkTableTest::NUM_MULTIPLE_PK_TABLE_ROWS = 5;
 

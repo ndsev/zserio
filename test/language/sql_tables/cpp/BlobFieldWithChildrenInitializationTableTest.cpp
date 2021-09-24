@@ -76,7 +76,7 @@ protected:
 };
 
 const char BlobFieldWithChildrenInitializationTableTest::DB_FILE_NAME[] =
-        "blob_field_with_children_initialization_table_test.sqlite";
+        "language/sql_tables/blob_field_with_children_initialization_table_test.sqlite";
 const size_t BlobFieldWithChildrenInitializationTableTest::NUM_ROWS = 5;
 
 TEST_F(BlobFieldWithChildrenInitializationTableTest, readWithoutCondition)

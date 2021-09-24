@@ -98,7 +98,8 @@ protected:
     static const float PARAM2;
 };
 
-const char MultipleWithSameNameTest::DB_FILE_NAME[] = "multiple_with_same_name_test.sqlite";
+const char MultipleWithSameNameTest::DB_FILE_NAME[] =
+        "language/explicit_parameters/multiple_with_same_name_test.sqlite";
 
 const uint32_t MultipleWithSameNameTest::NUM_ROWS = 5;
 const uint32_t MultipleWithSameNameTest::PARAM1 = 100;

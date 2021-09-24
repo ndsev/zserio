@@ -98,7 +98,7 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char WithoutPkTableTest::DB_FILE_NAME[] = "without_pk_table_test.sqlite";
+const char WithoutPkTableTest::DB_FILE_NAME[] = "language/sql_tables/without_pk_table_test.sqlite";
 const int32_t WithoutPkTableTest::NUM_WITHOUT_PK_TABLE_ROWS = 5;
 
 TEST_F(WithoutPkTableTest, deleteTable)

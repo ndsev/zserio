@@ -76,7 +76,8 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char DynamicBitFieldEnumFieldTableTest::DB_FILE_NAME[] = "dynamic_bit_field_enum_field_table_test.sqlite";
+const char DynamicBitFieldEnumFieldTableTest::DB_FILE_NAME[] =
+        "language/sql_tables/dynamic_bit_field_enum_field_table_test.sqlite";
 const size_t DynamicBitFieldEnumFieldTableTest::NUM_ROWS = 5;
 
 TEST_F(DynamicBitFieldEnumFieldTableTest, readWithoutCondition)

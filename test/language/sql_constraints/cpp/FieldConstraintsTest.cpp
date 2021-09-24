@@ -63,7 +63,8 @@ protected:
     sql_constraints::TestDb* m_database;
 };
 
-const char FieldConstraintsTest::DB_FILE_NAME[] = "field_constraints_test.sqlite";
+const char FieldConstraintsTest::DB_FILE_NAME[] =
+        "language/sql_constraints/field_constraints_test.sqlite";
 
 const uint8_t FieldConstraintsTest::UNICODE_ESCAPE_CONST = 1;
 const uint8_t FieldConstraintsTest::HEX_ESCAPE_CONST = 2;

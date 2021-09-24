@@ -120,7 +120,8 @@ protected:
     SimpleVirtualColumnsDb* m_database;
 };
 
-const char SimpleVirtualColumnsTest::DB_FILE_NAME[] = "simple_virtual_columns_test.sqlite";
+const char SimpleVirtualColumnsTest::DB_FILE_NAME[] =
+        "language/sql_virtual_columns/simple_virtual_columns_test.sqlite";
 const int32_t SimpleVirtualColumnsTest::NUM_TABLE_ROWS = 5;
 
 TEST_F(SimpleVirtualColumnsTest, deleteTable)

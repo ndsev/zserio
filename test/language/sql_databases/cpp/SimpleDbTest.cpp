@@ -28,8 +28,9 @@ using set_type = std::set<T, COMPARE, zserio::RebindAlloc<allocator_type, T>>;
 class SimpleDbTest : public ::testing::Test
 {
 public:
-    SimpleDbTest() : m_dbFileName("simple_db_test.sqlite"), m_worldDbName("WorldDb"),
-            m_europeTableName("europe"), m_americaTableName("america")
+    SimpleDbTest() :
+            m_dbFileName("language/sql_databases/simple_db_test.sqlite"),
+            m_worldDbName("WorldDb"), m_europeTableName("europe"), m_americaTableName("america")
     {
         std::remove(m_dbFileName.c_str());
     }

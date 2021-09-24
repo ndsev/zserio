@@ -26,8 +26,8 @@ class DbWithRelocationTest : public ::testing::Test
 {
 public:
     DbWithRelocationTest() :
-            m_europeDbFileName("db_with_relocation_test_europe.sqlite"),
-            m_americaDbFileName("db_with_relocation_test_america.sqlite"),
+            m_europeDbFileName("language/sql_databases/db_with_relocation_test_europe.sqlite"),
+            m_americaDbFileName("language/sql_databases/db_with_relocation_test_america.sqlite"),
             m_relocatedSlovakiaTableName("slovakia"),
             m_relocatedCzechiaTableName("czechia")
     {

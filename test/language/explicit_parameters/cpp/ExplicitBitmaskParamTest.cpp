@@ -116,7 +116,8 @@ protected:
     static const TestBitmask BITMASK_PARAM_TABLE_COUNT2;
 };
 
-const char ExplicitBitmaskParamTest::DB_FILE_NAME[] = "explicit_bitmask_param_test.sqlite";
+const char ExplicitBitmaskParamTest::DB_FILE_NAME[] =
+        "language/explicit_parameters/explicit_bitmask_param_test.sqlite";
 
 const uint32_t ExplicitBitmaskParamTest::NUM_BITMASK_PARAM_TABLE_ROWS = 5;
 const TestBitmask ExplicitBitmaskParamTest::BITMASK_PARAM_TABLE_COUNT1 = TestBitmask::Values::TEN;

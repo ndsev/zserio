@@ -46,7 +46,7 @@ protected:
 };
 
 const string_type InstantiateTypeAsSqlDatabaseFieldTest::DB_FILE_NAME =
-        "instantiate_type_as_sql_database_field_test.sqlite";
+        "language/templates/instantiate_type_as_sql_database_field_test.sqlite";
 
 TEST_F(InstantiateTypeAsSqlDatabaseFieldTest, readWrite)
 {

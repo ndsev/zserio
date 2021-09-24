@@ -58,7 +58,8 @@ private:
     static constexpr uint8_t VALUE = 0x7F;
 };
 
-const char ConstraintTableValidationTest::DB_FILE_NAME[] = "constraint_table_validation_test.sqlite";
+const char ConstraintTableValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/constraint_table_validation_test.sqlite";
 
 constexpr uint32_t ConstraintTableValidationTest::ROW_ID;
 constexpr uint8_t  ConstraintTableValidationTest::VALUE;

@@ -71,7 +71,8 @@ protected:
     sql_tables::TestDb* m_database;
 };
 
-const char SubtypedBoolFieldTableTest::DB_FILE_NAME[] = "subtyped_bool_field_table_test.sqlite";
+const char SubtypedBoolFieldTableTest::DB_FILE_NAME[] =
+        "language/sql_tables/subtyped_bool_field_table_test.sqlite";
 const size_t SubtypedBoolFieldTableTest::NUM_ROWS = 5;
 
 TEST_F(SubtypedBoolFieldTableTest, readWithoutCondition)

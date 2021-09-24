@@ -160,7 +160,8 @@ private:
     }
 };
 
-const char SimpleTableValidationTest::DB_FILE_NAME[] = "simple_table_validation_test.sqlite";
+const char SimpleTableValidationTest::DB_FILE_NAME[] =
+        "arguments/with_validation_code/simple_table_validation_test.sqlite";
 constexpr uint64_t SimpleTableValidationTest::ENTRY_COUNT;
 constexpr uint32_t SimpleTableValidationTest::SIMPLE_TABLE_LOCAL_COUNT;
 constexpr uint32_t SimpleTableValidationTest::FIELD_BIT5_OUT_OF_RANGE_ROW_ID;

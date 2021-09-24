@@ -74,7 +74,8 @@ protected:
     allow_implicit_arrays::table_with_implicit_array::DbWithImplicitArray* m_database;
 };
 
-const char TableWithImplicitArrayTest::DB_FILE_NAME[] = "table_with_implicit_array_test.sqlite";
+const char TableWithImplicitArrayTest::DB_FILE_NAME[] =
+        "arguments/allow_implicit_arrays/table_with_implicit_array_test.sqlite";
 const size_t TableWithImplicitArrayTest::NUM_ROWS = 5;
 
 TEST_F(TableWithImplicitArrayTest, readWithoutCondition)
