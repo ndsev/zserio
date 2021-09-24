@@ -1,6 +1,6 @@
 import unittest
-import zserio
 import os
+import zserio
 
 from testutils import getZserioApi, getApiDir
 
