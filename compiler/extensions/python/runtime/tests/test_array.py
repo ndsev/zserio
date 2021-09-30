@@ -12,7 +12,7 @@ from zserio.bitreader import BitStreamReader
 from zserio.bitsizeof import bitsizeof_varsize
 from zserio.bitwriter import BitStreamWriter
 from zserio import PythonRuntimeException
-from zserio.limits import UINT64_MIN, UINT64_MAX, INT64_MIN, INT64_MAX
+from zserio.limits import UINT64_MIN, UINT64_MAX, INT64_MIN, INT64_MAX, UINT8_MAX, INT16_MIN
 
 class ArrayTest(unittest.TestCase):
 
@@ -182,7 +182,7 @@ class ArrayTest(unittest.TestCase):
 
         def init_packing_context(self, context_node):
             context = context_node.children[0].context
-            context.init(self._value)
+            context.init(BitFieldArrayTraits(31), self._value)
 
         @staticmethod
         def bitsizeof(_bitposition):
@@ -192,7 +192,7 @@ class ArrayTest(unittest.TestCase):
             end_bitposition = bitposition
 
             context = context_node.children[0].context
-            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), end_bitposition, self._value)
+            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), self._value)
 
             return end_bitposition - bitposition
 
@@ -203,7 +203,7 @@ class ArrayTest(unittest.TestCase):
             end_bitposition = bitposition
 
             context = context_node.children[0].context
-            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), end_bitposition, self._value)
+            end_bitposition += context.bitsizeof(BitFieldArrayTraits(31), self._value)
 
             return end_bitposition
 
@@ -233,7 +233,7 @@ class ArrayTest(unittest.TestCase):
         self._test_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof, array2_values)
 
     def test_bitfield_packed_array(self):
-        array_traits = BitFieldArrayTraits(64)
+        array_traits64 = BitFieldArrayTraits(64)
 
         # none-zero delta
         array1_values = [10, 11, 12]
@@ -241,49 +241,77 @@ class ArrayTest(unittest.TestCase):
         array1_bitsizeof = self._calc_packed_bit_size(64, len(array1_values), array1_max_delta_bit_size)
         array1_aligned_bitsizeof = self._calc_aligned_packed_bit_size(64, len(array1_values),
                                                                       array1_max_delta_bit_size)
-        self._test_packed_array(array_traits, array1_values, array1_bitsizeof, array1_aligned_bitsizeof)
+        self._test_packed_array(array_traits64, array1_values, array1_bitsizeof, array1_aligned_bitsizeof)
 
         # zero delta
         array2_values = [10, 10, 10]
         array2_bitsizeof = self.PACKING_DESCRIPTOR_BITSIZE + 64
         array2_aligned_bitsizeof = self.PACKING_DESCRIPTOR_BITSIZE + 1 + 64
-        self._test_packed_array(array_traits, array2_values, array2_bitsizeof, array2_aligned_bitsizeof)
+        self._test_packed_array(array_traits64, array2_values, array2_bitsizeof, array2_aligned_bitsizeof)
 
         # one-element array
         array3_values = [10]
         array3_bitsizeof = 1 + 64
         array3_aligned_bitsizeof = 1 + 7 + 64
-        self._test_packed_array(array_traits, array3_values, array3_bitsizeof, array3_aligned_bitsizeof)
+        self._test_packed_array(array_traits64, array3_values, array3_bitsizeof, array3_aligned_bitsizeof)
 
         # empty array
         array4_values = []
         array4_bitsizeof = 0
         array4_aligned_bitsizeof = 0
-        self._test_packed_array(array_traits, array4_values, array4_bitsizeof, array4_aligned_bitsizeof)
+        self._test_packed_array(array_traits64, array4_values, array4_bitsizeof, array4_aligned_bitsizeof)
 
         # packing not applied, delta is too big
-        self._test_packed_array(array_traits, [UINT64_MIN, UINT64_MAX])
-        self._test_packed_array(array_traits, [UINT64_MAX, UINT64_MAX // 2, UINT64_MIN])
+        self._test_packed_array(array_traits64, [UINT64_MIN, UINT64_MAX])
+        self._test_packed_array(array_traits64, [UINT64_MAX, UINT64_MAX // 2, UINT64_MIN])
 
         # will have maxBitNumber 62 bits
-        self._test_packed_array(array_traits, [0, INT64_MAX // 2, 100, 200, 300, 400, 500, 600, 700])
+        self._test_packed_array(array_traits64, [0, INT64_MAX // 2, 100, 200, 300, 400, 500, 600, 700])
+
+        # will not be packed because unpacked 8bit values will be more efficient
+        array_traits8 = BitFieldArrayTraits(8)
+        array5_values = [UINT8_MAX, 0, 10, 20, 30, 40] # max_bit_number 8, delta needs 9 bits
+        array5_bitsizeof = 1 + 6 * 8
+        array5_aligned_bitsizeof = 8 + 6 * 8
+        self._test_packed_array(array_traits8, array5_values, array5_bitsizeof, array5_aligned_bitsizeof)
+
+        # will not be packed because unpacked 8bit values will be more efficient
+        # (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+        array6_values = [UINT8_MAX, UINT8_MAX // 2 + 1, 10, 20, 30, 40] # max_bit_number 7, delta needs 8 bits
+        array6_bitsizeof = 1 + 6 * 8
+        array6_aligned_bitsizeof = 8 + 6 * 8
+        self._test_packed_array(array_traits8, array6_values, array6_bitsizeof, array6_aligned_bitsizeof)
 
     def test_signed_bitfield_packed_array(self):
-        array_traits = SignedBitFieldArrayTraits(64)
-        self._test_packed_array(array_traits, [-10, 11, -12])
-        self._test_packed_array(array_traits, [-10, -10, -10]) # zero delta
+        array_traits64 = SignedBitFieldArrayTraits(64)
+        self._test_packed_array(array_traits64, [-10, 11, -12])
+        self._test_packed_array(array_traits64, [-10, -10, -10]) # zero delta
 
-        self._test_packed_array(array_traits, []) # empty
-        self._test_packed_array(array_traits, [-10]) # single element
+        self._test_packed_array(array_traits64, []) # empty
+        self._test_packed_array(array_traits64, [-10]) # single element
 
         # packing not applied, delta is too big
-        self._test_packed_array(array_traits, [INT64_MIN, INT64_MAX])
-        self._test_packed_array(array_traits, [INT64_MIN, 0, INT64_MAX])
+        self._test_packed_array(array_traits64, [INT64_MIN, INT64_MAX])
+        self._test_packed_array(array_traits64, [INT64_MIN, 0, INT64_MAX])
+
+        # will not be packed because unpacked 16bit values will be more efficient
+        # (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+        array_traits16 = SignedBitFieldArrayTraits(16)
+        array16_values = [INT16_MIN, -1, 10, 20, 30, 40] # max_bit_number 15, delta needs 16 bits
+        array16_bitsizeof = 1 + 6 * 16
+        array16_aligned_bitsizeof = 8 + 6 * 16
+        self._test_packed_array(array_traits16, array16_values, array16_bitsizeof, array16_aligned_bitsizeof)
 
     def test_varuint_packed_array(self):
         array_traits = VarUIntArrayTraits()
         self._test_packed_array(array_traits, [100, 200, 300])
         self._test_packed_array(array_traits, [300, 200, 100])
+
+        # won't be packed because unpacked varuint values will be more efficient
+        unpacked_array = [5000000, 0, 0, 0, 0, 0, 0]
+        unpacked_bitsizeof = 1 + 32 + 6 * 8
+        unpacked_aligned_bitsizeof = 8 + 32 + 6 * 8
+        self._test_packed_array(array_traits, unpacked_array, unpacked_bitsizeof, unpacked_aligned_bitsizeof)
 
         self._test_packed_array(array_traits, [UINT64_MIN, UINT64_MAX])
         self._test_packed_array(array_traits, [UINT64_MAX, UINT64_MAX // 2, UINT64_MIN])

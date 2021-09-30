@@ -163,7 +163,10 @@ class Array:
             for element in self._raw_array:
                 if self._set_offset_method is not None:
                     end_bitposition = alignto(8, end_bitposition)
-                end_bitposition += self._array_traits.bitsizeof(end_bitposition, element)
+                if self._array_traits.NEEDS_BITSIZEOF_POSITION:
+                    end_bitposition += self._array_traits.bitsizeof(end_bitposition, element)
+                else:
+                    end_bitposition += self._array_traits.bitsizeof(element)
 
         return end_bitposition - bitposition
 
@@ -229,8 +232,8 @@ class Array:
 
         if size > 0:
             context_node = self._packed_array_traits.create_context()
-            for index in range(size):
-                self._packed_array_traits.init_context(context_node, self._raw_array[index])
+            for element in self._raw_array:
+                self._packed_array_traits.init_context(context_node, element)
             end_bitposition += Array._bitsizeof_descriptor(context_node, end_bitposition)
 
             for index in range(size):
@@ -384,15 +387,17 @@ class DeltaContext:
     array. After the full initialization, only a single method (bitsizeof, read, write) can be repeatedly
     called for exactly the same sequence of packable elements.
 
-    Note that *_descriptor* methods doesn't change context's internal state and can be called as needed. They
-    are designed to be called once for each context before the actual operation.
+    Note that bitsizeof_descriptor, write_descriptor and read_descriptor methods finish the context
+    initialization and must be called before bitsizeof, write and read operations respectively. Finishing of
+    the context initialization is made in the bitsizeof_descriptor and write_descriptor methods to safe one
+    iteration in the Array wrapper which would be otherwise needed to do the job.
 
     Example::
 
         context = DeltaContext(array_traits)
         for element in array:
             context.init(element) # initialization step, needed for max_bit_number calculation
-        context.write_descriptor(writer)
+        context.write_descriptor(writer) # finishes the initialization
         for element in array:
             context.write(writer, element)
     """
@@ -404,29 +409,39 @@ class DeltaContext:
         self._max_bit_number = 0
         self._previous_element: typing.Optional[int] = None
         self._processing_started = False
+        self._unpacked_bitsize = 0
+        self._first_element_bitsize = 0
+        self._num_elements = 0
 
-    def init(self, element: int) -> None:
+    def init(self, array_traits: typing.Any, element: int) -> None:
         """
         Makes initialization step for the provided array element.
 
+        :param array_traits: Standard array traits.
         :param element: Current element of the array.
         """
 
+        self._num_elements += 1
+        self._unpacked_bitsize += DeltaContext._array_traits_bitsizeof(array_traits, element)
+
         if self._previous_element is None:
             self._previous_element = element
+            self._first_element_bitsize = self._unpacked_bitsize
         else:
             if self._max_bit_number <= self._MAX_BIT_NUMBER_LIMIT:
                 self._is_packed = True
-            delta = element - self._previous_element
-            max_bit_number = delta.bit_length()
-            # if delta is negative, we need one bit more because of sign
-            # if delta is positive, we need one bit more because delta are treated as signed number
-            # if delta is zero, we need one bit more because bit_length() returned zero
-            if max_bit_number > self._max_bit_number:
-                self._max_bit_number = max_bit_number
-                if max_bit_number > self._MAX_BIT_NUMBER_LIMIT:
-                    self._is_packed = False
-            self._previous_element = element
+
+                delta = element - self._previous_element
+                max_bit_number = delta.bit_length()
+                # if delta is negative, we need one bit more because of sign
+                # if delta is positive, we need one bit more because delta are treated as signed number
+                # if delta is zero, we need one bit more because bit_length() returned zero
+                if max_bit_number > self._max_bit_number:
+                    self._max_bit_number = max_bit_number
+                    if max_bit_number > self._MAX_BIT_NUMBER_LIMIT:
+                        self._is_packed = False
+
+                self._previous_element = element
 
     def bitsizeof_descriptor(self) -> int:
         """
@@ -435,17 +450,18 @@ class DeltaContext:
         :returns: Length of the descriptor stored in the bit stream in bits.
         """
 
+        self._finish_init() # called from here for better performance
+
         if self._is_packed:
             return 1 + self._MAX_BIT_NUMBER_BITS
         else:
             return 1
 
-    def bitsizeof(self, array_traits: typing.Any, bitposition: int, element: int) -> int:
+    def bitsizeof(self, array_traits: typing.Any, element: int) -> int:
         """
         Returns length of the element representation stored in the bit stream in bits.
 
-        :param array_traits: Standard array traits.
-        :param bitposition: Current bit stream position.
+        :param array_traits: Standard integral array traits.
         :param element: Current element.
 
         :returns: Length of the element representation stored in the bit stream in bits.
@@ -453,10 +469,7 @@ class DeltaContext:
 
         if not self._processing_started or not self._is_packed:
             self._processing_started = True
-            if array_traits.HAS_BITSIZEOF_CONSTANT:
-                return array_traits.bitsizeof()
-            else:
-                return array_traits.bitsizeof(bitposition, element)
+            return DeltaContext._array_traits_bitsizeof(array_traits, element)
         else: # packed and not first
             return self._max_bit_number + 1 if self._max_bit_number > 0 else 0
 
@@ -500,6 +513,8 @@ class DeltaContext:
         :param writer: Bit stream writer.
         """
 
+        self._finish_init() # called from here for better performance
+
         writer.write_bool(self._is_packed)
         if self._is_packed:
             writer.write_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
@@ -523,6 +538,24 @@ class DeltaContext:
                 delta = element - self._previous_element
                 writer.write_signed_bits(delta, self._max_bit_number + 1)
                 self._previous_element = element
+
+    def _finish_init(self) -> None:
+        if self._is_packed:
+            delta_bitsize = self._max_bit_number + 1 if self._max_bit_number > 0 else 0
+            packed_bitsize_with_descriptor = (
+                1 + self._MAX_BIT_NUMBER_BITS + # descriptor
+                self._first_element_bitsize + (self._num_elements - 1) * delta_bitsize
+            )
+            unpacked_bitsize_with_descriptor = 1 + self._unpacked_bitsize
+            if packed_bitsize_with_descriptor >= unpacked_bitsize_with_descriptor:
+                self._is_packed = False
+
+    @staticmethod
+    def _array_traits_bitsizeof(array_traits, element):
+        if array_traits.HAS_BITSIZEOF_CONSTANT:
+            return array_traits.bitsizeof()
+        else: # we know that NEEDS_BITSIZEOF_POSITION is False here
+            return array_traits.bitsizeof(element)
 
     _MAX_BIT_NUMBER_BITS = 6
     _MAX_BIT_NUMBER_LIMIT = 62
@@ -620,8 +653,7 @@ class PackedArrayTraits:
         packing_context_node.create_context()
         return packing_context_node
 
-    @staticmethod
-    def init_context(context_node: PackingContextNode, element: int) -> None:
+    def init_context(self, context_node: PackingContextNode, element: int) -> None:
         """
         Calls context initialization step for the current element.
 
@@ -630,33 +662,33 @@ class PackedArrayTraits:
         """
 
         context = context_node.context
-        context.init(element)
+        context.init(self._array_traits, element)
 
-    def bitsizeof(self, context_node: PackingContextNode, bitposition: int, element: int) -> int:
+    def bitsizeof(self, context_node: PackingContextNode, _bitposition: int, element: int) -> int:
         """
         Returns length of the array element stored in the bit stream in bits.
 
         :param context_node: Packing context node.
-        :param bitposition: Current bit stream position.
+        :param _bitposition: Current bit stream position (not used).
         :param elemnet: Current element.
         :returns: Length of the array element stored in the bit stream in bits.
         """
 
         context = context_node.context
-        return context.bitsizeof(self._array_traits, bitposition, element)
+        return context.bitsizeof(self._array_traits, element)
 
     def initialize_offsets(self, context_node: PackingContextNode, bitposition: int, element: int) -> int:
         """
         Calls indexed offsets initialization for the current element.
 
         :param context_node: Packing context node.
-        :param bitposition: Current bit stream position.
+        :param _bitposition: Current bit stream position.
         :param element: Current element.
         :returns: Updated bit stream position which points to the first bit after this element.
         """
 
         context = context_node.context
-        return bitposition + context.bitsizeof(self._array_traits, bitposition, element)
+        return bitposition + context.bitsizeof(self._array_traits, element)
 
     def write(self, context_node: PackingContextNode, writer: BitStreamWriter, element: int) -> None:
         """
@@ -783,6 +815,7 @@ class BitFieldArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     def __init__(self, numbits: int) -> None:
@@ -849,6 +882,7 @@ class SignedBitFieldArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     def __init__(self, numbits: int) -> None:
@@ -915,6 +949,7 @@ class VarUInt16ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -928,11 +963,10 @@ class VarUInt16ArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varuint16 type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varuint16 type value.
         :returns: Length of given Zserio varuint16 type in bits.
         """
@@ -949,7 +983,7 @@ class VarUInt16ArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varuint16 type.
         """
 
-        return bitposition + VarUInt16ArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarUInt16ArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -978,6 +1012,7 @@ class VarUInt32ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -991,11 +1026,10 @@ class VarUInt32ArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varuint32 type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varuint32 type value.
         :returns: Length of given Zserio varuint32 type in bits.
         """
@@ -1012,7 +1046,7 @@ class VarUInt32ArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varuint32 type.
         """
 
-        return bitposition + VarUInt32ArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarUInt32ArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1041,6 +1075,7 @@ class VarUInt64ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1054,11 +1089,10 @@ class VarUInt64ArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varuint64 type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varuint64 type value.
         :returns: Length of given Zserio varuint64 type in bits.
         """
@@ -1070,12 +1104,11 @@ class VarUInt64ArrayTraits:
         """
         Initializes indexed offsets for Zserio varuint64 type.
 
-        :param bitposition: Current bit stream position.
         :param value: Zserio varuint64 type value.
         :returns: Updated bit stream position which points to the first bit after Zserio varuint64 type.
         """
 
-        return bitposition + VarUInt64ArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarUInt64ArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1104,6 +1137,7 @@ class VarUIntArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1117,11 +1151,10 @@ class VarUIntArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varuint type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varuint type value.
         :returns: Length of given Zserio varuint type in bits.
         """
@@ -1138,7 +1171,7 @@ class VarUIntArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varuint type.
         """
 
-        return bitposition + VarUIntArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarUIntArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1167,6 +1200,7 @@ class VarSizeArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1180,11 +1214,10 @@ class VarSizeArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varsize type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varsize type value.
         :returns: Length of given Zserio varsize type in bits.
         """
@@ -1201,7 +1234,7 @@ class VarSizeArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varsize type.
         """
 
-        return bitposition + VarSizeArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarSizeArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1230,6 +1263,7 @@ class VarInt16ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1243,11 +1277,10 @@ class VarInt16ArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varint16 type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varint16 type value.
         :returns: Length of given Zserio varint16 type in bits.
         """
@@ -1264,7 +1297,7 @@ class VarInt16ArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varint16 type.
         """
 
-        return bitposition + VarInt16ArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarInt16ArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1293,6 +1326,7 @@ class VarInt32ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1306,11 +1340,10 @@ class VarInt32ArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varint32 type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varint32 type value.
         :returns: Length of given Zserio varint32 type in bits.
         """
@@ -1327,7 +1360,7 @@ class VarInt32ArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varint32 type.
         """
 
-        return bitposition + VarInt32ArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarInt32ArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1356,6 +1389,7 @@ class VarInt64ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1369,11 +1403,10 @@ class VarInt64ArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varint64 type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varint64 type value.
         :returns: Length of given Zserio varint64 type in bits.
         """
@@ -1390,7 +1423,7 @@ class VarInt64ArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varint64 type.
         """
 
-        return bitposition + VarInt64ArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarInt64ArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1419,6 +1452,7 @@ class VarIntArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1432,11 +1466,10 @@ class VarIntArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: int) -> int:
+    def bitsizeof(value: int) -> int:
         """
         Returns length of Zserio varint type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio varint type value.
         :returns: Length of given Zserio varint type in bits.
         """
@@ -1453,7 +1486,7 @@ class VarIntArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio varint type.
         """
 
-        return bitposition + VarIntArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + VarIntArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> int:
@@ -1482,6 +1515,7 @@ class Float16ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1543,6 +1577,7 @@ class Float32ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1604,6 +1639,7 @@ class Float64ArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1665,6 +1701,7 @@ class StringArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1678,11 +1715,10 @@ class StringArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition, value: str) -> int:
+    def bitsizeof(value: str) -> int:
         """
         Returns length of Zserio string type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio string type value.
         :returns: Length of given Zserio string type in bits.
         """
@@ -1699,7 +1735,7 @@ class StringArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio string type.
         """
 
-        return bitposition + StringArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + StringArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> str:
@@ -1728,6 +1764,7 @@ class BoolArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = True
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1789,6 +1826,7 @@ class BitBufferArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
 
     @property
@@ -1802,11 +1840,10 @@ class BitBufferArrayTraits:
         return PackedArrayTraits(self)
 
     @staticmethod
-    def bitsizeof(_bitposition: int, value: BitBuffer) -> int:
+    def bitsizeof(value: BitBuffer) -> int:
         """
         Returns length of Zserio extern bit buffer type stored in the bit stream in bits.
 
-        :param _bitposition: Not used.
         :param value: Zserio extern bit buffer type value.
         :returns: Length of given Zserio string type in bits.
         """
@@ -1823,7 +1860,7 @@ class BitBufferArrayTraits:
         :returns: Updated bit stream position which points to the first bit after Zserio extern bit buffer type.
         """
 
-        return bitposition + BitBufferArrayTraits.bitsizeof(bitposition, value)
+        return bitposition + BitBufferArrayTraits.bitsizeof(value)
 
     @staticmethod
     def read(reader: BitStreamReader) -> BitBuffer:
@@ -1852,6 +1889,7 @@ class ObjectArrayTraits:
     """
 
     HAS_BITSIZEOF_CONSTANT = False
+    NEEDS_BITSIZEOF_POSITION = True
     NEEDS_READ_INDEX = True
 
     def __init__(self, object_creator: typing.Callable[[BitStreamReader, int], typing.Any],
