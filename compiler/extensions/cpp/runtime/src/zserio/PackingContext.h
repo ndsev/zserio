@@ -55,8 +55,10 @@ int64_t calcUncheckedDelta(T lhs, uint64_t rhs)
  * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
  * can be repeatedly called for exactly the same sequence of packable elements.
  *
- * Note that *Descriptor methods doesn't change context's internal state and can be called as needed. They are
- * designed to be called once for each context before the actual operation.
+ * Note that bitSizeOfDescriptor, writeDescriptor and readDescriptor methods finish the context initialization
+ * and must be called before bitSizeOf, write and read operations respectively. Finishing of the context
+ * initialization is made in the bitSizeOfDescriptor and writeDescriptor methods to safe one iteration in
+ * the Array wrapper which would be otherwise needed to do the job.
  */
 class DeltaContext
 {
@@ -73,6 +75,10 @@ public:
         m_maxBitNumber = 0;
         m_previousElement.reset();
         m_processingStarted = false;
+
+        m_unpackedBitSize = 0;
+        m_firstElementBitSize = 0;
+        m_numElements = 0;
     }
 
     /**
@@ -80,26 +86,33 @@ public:
      *
      * \param element Current element.
      */
-    template <typename ELEMENT_TYPE>
-    void init(ELEMENT_TYPE element)
+    template <typename ARRAY_TRAITS>
+    void init(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
     {
+        m_numElements++;
+        m_unpackedBitSize += arrayTraits.bitSizeOf(element);
+
         if (!m_previousElement.hasValue())
         {
             m_previousElement = static_cast<uint64_t>(element);
+            m_firstElementBitSize = m_unpackedBitSize;
         }
         else
         {
             if (m_maxBitNumber <= MAX_BIT_NUMBER_LIMIT)
-                m_isPacked = true;
-            const auto previousElement = static_cast<ELEMENT_TYPE>(m_previousElement.value());
-            const uint8_t maxBitNumber = detail::calcBitLength(element, previousElement);
-            if (maxBitNumber > m_maxBitNumber)
             {
-                m_maxBitNumber = maxBitNumber;
-                if (m_maxBitNumber > MAX_BIT_NUMBER_LIMIT)
-                    m_isPacked = false;
+                m_isPacked = true;
+                const auto previousElement = static_cast<typename ARRAY_TRAITS::ElementType>(
+                        m_previousElement.value());
+                const uint8_t maxBitNumber = detail::calcBitLength(element, previousElement);
+                if (maxBitNumber > m_maxBitNumber)
+                {
+                    m_maxBitNumber = maxBitNumber;
+                    if (m_maxBitNumber > MAX_BIT_NUMBER_LIMIT)
+                        m_isPacked = false;
+                }
+                m_previousElement = static_cast<uint64_t>(element);
             }
-            m_previousElement = static_cast<uint64_t>(element);
         }
     }
 
@@ -108,8 +121,10 @@ public:
      *
      * \return Length of the descriptor stored in the bit stream in bits.
      */
-    size_t bitSizeOfDescriptor() const
+    size_t bitSizeOfDescriptor()
     {
+        finishInit(); // called from here for better performance
+
         if (m_isPacked)
             return 1 + MAX_BIT_NUMBER_BITS;
         else
@@ -126,13 +141,12 @@ public:
      * \return Length of the packed element stored in the bit stream in bits.
      */
     template <typename ARRAY_TRAITS>
-    size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, size_t bitPosition,
-            typename ARRAY_TRAITS::ElementType element)
+    size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
     {
         if (!m_processingStarted || !m_isPacked)
         {
             m_processingStarted = true;
-            return arrayTraits.bitSizeOf(bitPosition, element);
+            return arrayTraits.bitSizeOf(element);
         }
         else
         {
@@ -192,8 +206,10 @@ public:
      *
      * \param out Bit stream writer.
      */
-    void writeDescriptor(BitStreamWriter& out) const
+    void writeDescriptor(BitStreamWriter& out)
     {
+        finishInit(); // called from here for better performance
+
         out.writeBool(m_isPacked);
         if (m_isPacked)
             out.writeBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
@@ -229,6 +245,19 @@ public:
     }
 
 private:
+    void finishInit()
+    {
+        if (m_isPacked)
+        {
+            const size_t deltaBitSize = m_maxBitNumber + (m_maxBitNumber > 0 ? 1 : 0);
+            const size_t packedBitSizeWithDescriptor = 1 + MAX_BIT_NUMBER_BITS + // descriptor
+                    m_firstElementBitSize + (m_numElements - 1) * deltaBitSize;
+            const size_t unpackedBitSizeWithDescriptor = 1 + m_unpackedBitSize;
+            if (packedBitSizeWithDescriptor >= unpackedBitSizeWithDescriptor)
+                m_isPacked = false;
+        }
+    }
+
     static const uint8_t MAX_BIT_NUMBER_BITS = 6;
     static const uint8_t MAX_BIT_NUMBER_LIMIT = 62;
 
@@ -236,6 +265,10 @@ private:
     uint8_t m_maxBitNumber = 0;
     InplaceOptionalHolder<uint64_t> m_previousElement;
     bool m_processingStarted = false;
+
+    size_t m_unpackedBitSize = 0;
+    size_t m_firstElementBitSize = 0;
+    size_t m_numElements = 0;
 };
 
 /**

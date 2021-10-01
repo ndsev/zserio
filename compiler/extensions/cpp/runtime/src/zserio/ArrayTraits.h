@@ -157,9 +157,19 @@ public:
      *
      * \return Bit size of the array element.
      */
+    size_t bitSizeOf(ElementType) const
+    {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
     size_t bitSizeOf(size_t, ElementType) const
     {
-        return m_numBits;
+        return bitSizeOf();
     }
 
     /**
@@ -199,6 +209,8 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = true;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 
 private:
     uint8_t m_numBits;
@@ -221,6 +233,16 @@ struct StdIntArrayTraits
     static size_t bitSizeOf()
     {
         return NUM_BITS;
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    size_t bitSizeOf(ElementType) const
+    {
+        return bitSizeOf();
     }
 
     /**
@@ -270,6 +292,8 @@ struct StdIntArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = true;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 
 private:
     static const uint8_t NUM_BITS = sizeof(T) * 8;
@@ -297,9 +321,21 @@ struct VarIntNNArrayTraits<int16_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarInt16(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -340,6 +376,8 @@ struct VarIntNNArrayTraits<int16_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -358,9 +396,21 @@ struct VarIntNNArrayTraits<int32_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarInt32(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -401,6 +451,8 @@ struct VarIntNNArrayTraits<int32_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -419,9 +471,21 @@ struct VarIntNNArrayTraits<int64_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarInt64(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -462,6 +526,8 @@ struct VarIntNNArrayTraits<int64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -480,9 +546,21 @@ struct VarIntNNArrayTraits<uint16_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarUInt16(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -523,6 +601,8 @@ struct VarIntNNArrayTraits<uint16_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -541,9 +621,21 @@ struct VarIntNNArrayTraits<uint32_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarUInt32(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -584,6 +676,8 @@ struct VarIntNNArrayTraits<uint32_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -602,9 +696,21 @@ struct VarIntNNArrayTraits<uint64_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarUInt64(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -645,6 +751,8 @@ struct VarIntNNArrayTraits<uint64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -669,9 +777,21 @@ struct VarIntArrayTraits<int64_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarInt(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -712,6 +832,8 @@ struct VarIntArrayTraits<int64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -730,9 +852,21 @@ struct VarIntArrayTraits<uint64_t>
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarUInt(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -773,6 +907,8 @@ struct VarIntArrayTraits<uint64_t>
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -790,9 +926,21 @@ struct VarSizeArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOfVarSize(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -833,6 +981,8 @@ struct VarSizeArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -851,6 +1001,16 @@ struct Float16ArrayTraits
     static size_t bitSizeOf()
     {
         return 16;
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(ElementType)
+    {
+        return bitSizeOf();
     }
 
     /**
@@ -901,6 +1061,8 @@ struct Float16ArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = true;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -919,6 +1081,16 @@ struct Float32ArrayTraits
     static size_t bitSizeOf()
     {
         return 32;
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(ElementType)
+    {
+        return bitSizeOf();
     }
 
     /**
@@ -969,6 +1141,8 @@ struct Float32ArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = true;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -987,6 +1161,16 @@ struct Float64ArrayTraits
     static size_t bitSizeOf()
     {
         return 64;
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(ElementType)
+    {
+        return bitSizeOf();
     }
 
     /**
@@ -1037,6 +1221,8 @@ struct Float64ArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = true;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1055,6 +1241,16 @@ struct BoolArrayTraits
     static size_t bitSizeOf()
     {
         return 1;
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(ElementType)
+    {
+        return bitSizeOf();
     }
 
     /**
@@ -1105,6 +1301,8 @@ struct BoolArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = true;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1126,9 +1324,21 @@ struct BasicStringArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, const ElementType& element)
+    static size_t bitSizeOf(const ElementType& element)
     {
         return zserio::bitSizeOfString(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, const ElementType& element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -1169,6 +1379,8 @@ struct BasicStringArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 using StringArrayTraits = BasicStringArrayTraits<>;
@@ -1192,9 +1404,21 @@ struct BasicBitBufferArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, const ElementType& element)
+    static size_t bitSizeOf(const ElementType& element)
     {
         return zserio::bitSizeOfBitBuffer(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, const ElementType& element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -1233,6 +1457,8 @@ struct BasicBitBufferArrayTraits
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 using BitBufferArrayTraits = BasicBitBufferArrayTraits<>;
@@ -1253,9 +1479,21 @@ struct EnumArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return zserio::bitSizeOf(element);
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -1297,6 +1535,8 @@ struct EnumArrayTraits
     // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1315,9 +1555,21 @@ struct BitmaskArrayTraits
      *
      * \return Bit size of the array element.
      */
-    static size_t bitSizeOf(size_t, ElementType element)
+    static size_t bitSizeOf(ElementType element)
     {
         return element.bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \param element Element to use for calculation.
+     *
+     * \return Bit size of the array element.
+     */
+    static size_t bitSizeOf(size_t, ElementType element)
+    {
+        return bitSizeOf(element);
     }
 
     /**
@@ -1359,6 +1611,8 @@ struct BitmaskArrayTraits
     // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
 };
 
 /**
@@ -1425,6 +1679,8 @@ public:
 
     /** Determines whether the bit size of the single element is constant. */
     static const bool IS_BITSIZEOF_CONSTANT = false;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = true;
 };
 
 /**
@@ -1454,7 +1710,7 @@ public:
      * \param contextNode Packing context node where the context is created.
      */
     template <typename PACKING_CONTEXT_NODE>
-    void createContext(PACKING_CONTEXT_NODE& contextNode) const
+    static void createContext(PACKING_CONTEXT_NODE& contextNode)
     {
         contextNode.createContext();
     }
@@ -1468,7 +1724,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element) const
     {
-        contextNode.getContext().init(element);
+        contextNode.getContext().init(m_arrayTraits, element);
     }
 
     /**
@@ -1481,9 +1737,9 @@ public:
      * \return Length of the array element stored in the bit stream in bits.
      */
     template <typename PACKING_CONTEXT_NODE>
-    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t, ElementType element) const
     {
-        return contextNode.getContext().bitSizeOf(m_arrayTraits, bitPosition, element);
+        return contextNode.getContext().bitSizeOf(m_arrayTraits, element);
     }
 
     /**
@@ -1498,7 +1754,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
     {
-        return bitPosition + contextNode.getContext().bitSizeOf(m_arrayTraits, bitPosition, element);
+        return bitPosition + bitSizeOf(contextNode, bitPosition, element);
     }
 
     /**
@@ -1557,7 +1813,7 @@ public:
      * \param contextNode Packing context node where the context is created.
      */
     template <typename PACKING_CONTEXT_NODE>
-    void createContext(PACKING_CONTEXT_NODE& contextNode) const
+    static void createContext(PACKING_CONTEXT_NODE& contextNode)
     {
         contextNode.createContext();
     }
@@ -1571,7 +1827,7 @@ public:
     template <typename PACKING_CONTEXT_NODE>
     void initContext(PACKING_CONTEXT_NODE& contextNode, ElementType element) const
     {
-        contextNode.getContext().init(enumToValue(element));
+        zserio::initPackingContext(contextNode, element);
     }
 
     /**
@@ -1584,9 +1840,9 @@ public:
      * \return Length of the array element stored in the bit stream in bits.
      */
     template <typename PACKING_CONTEXT_NODE>
-    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, ElementType element) const
+    size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t, ElementType element) const
     {
-        return zserio::bitSizeOf(contextNode, bitPosition, element);
+        return zserio::bitSizeOf(contextNode, element);
     }
 
     /**
@@ -1635,7 +1891,7 @@ public:
 namespace detail
 {
 
-/** Object packed array tratis. */
+/** Object packed array traits. */
 template <typename T>
 class ObjectPackedArrayTraits
 {

@@ -73,6 +73,15 @@ const char* enumToString(T value)
 }
 
 /**
+ * Initializes packing context for the given enum item.
+ *
+ * \param contextNode Packing context node.
+ * \param value Enum item.
+ */
+template <typename PACKING_CONTEXT_NODE, typename T>
+void initPackingContext(PACKING_CONTEXT_NODE& contextNode, T value);
+
+/**
  * Gets bit size of the given enum item.
  *
  * Note that T can be varuint, so bitSizeOf cannot return constant value and depends on the concrete item.
@@ -91,13 +100,12 @@ size_t bitSizeOf(T value);
  * Note that T can be varuint, so bitSizeOf cannot return constant value and depends on the concrete item.
  *
  * \param contextNode Packing context node.
- * \param bitPosition Current bit position.
  * \param value Enum item.
  *
  * \return Bit size of the enum item.
  */
 template <typename PACKING_CONTEXT_NODE, typename T>
-size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition, T value);
+size_t bitSizeOf(PACKING_CONTEXT_NODE& contextNode, T value);
 
 /**
  * Initializes offsets for the enum item.

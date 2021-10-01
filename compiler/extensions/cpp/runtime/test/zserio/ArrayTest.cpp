@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <limits>
 
 #include "zserio/Array.h"
 #include "zserio/ArrayTraits.h"
@@ -50,7 +51,7 @@ public:
         static const DummyBitmask WRITE;
     };
 
-    explicit DummyBitmask(::zserio::BitStreamReader& in) :
+    explicit DummyBitmask(BitStreamReader& in) :
         m_value(readValue(in))
     {}
 
@@ -58,18 +59,18 @@ public:
         m_value(value)
     {}
 
-    DummyBitmask(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in) :
+    DummyBitmask(PackingContextNode& contextNode, BitStreamReader& in) :
         m_value(readValue(contextNode, in))
     {}
 
-    static void createPackingContext(::zserio::PackingContextNode& contextNode)
+    static void createPackingContext(PackingContextNode& contextNode)
     {
         contextNode.createContext();
     }
 
-    void initPackingContext(::zserio::PackingContextNode& contextNode) const
+    void initPackingContext(PackingContextNode& contextNode) const
     {
-        contextNode.getContext().init(m_value);
+        contextNode.getContext().init(StdIntArrayTraits<underlying_type>(), m_value);
     }
 
     size_t bitSizeOf(size_t = 0) const
@@ -77,10 +78,9 @@ public:
         return UINT8_C(8);
     }
 
-    size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+    size_t bitSizeOf(PackingContextNode& contextNode, size_t) const
     {
-        return contextNode.getContext().bitSizeOf(::zserio::StdIntArrayTraits<underlying_type>(),
-                bitPosition, m_value);
+        return contextNode.getContext().bitSizeOf(StdIntArrayTraits<underlying_type>(), m_value);
     }
 
     size_t initializeOffsets(size_t bitPosition) const
@@ -88,7 +88,7 @@ public:
         return bitPosition + bitSizeOf(bitPosition);
     }
 
-    size_t initializeOffsets(::zserio::PackingContextNode& contextNode, size_t bitPosition) const
+    size_t initializeOffsets(PackingContextNode& contextNode, size_t bitPosition) const
     {
         return bitPosition + bitSizeOf(contextNode, bitPosition);
     }
@@ -98,27 +98,27 @@ public:
         return m_value == other.m_value;
     }
 
-    void write(::zserio::BitStreamWriter& out,
-            ::zserio::PreWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS) const
+    void write(BitStreamWriter& out,
+            PreWriteAction = ALL_PRE_WRITE_ACTIONS) const
     {
         out.writeBits(m_value, UINT8_C(8));
     }
 
-    void write(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamWriter& out) const
+    void write(PackingContextNode& contextNode, BitStreamWriter& out) const
     {
-        contextNode.getContext().write(::zserio::StdIntArrayTraits<underlying_type>(), out, m_value);
+        contextNode.getContext().write(StdIntArrayTraits<underlying_type>(), out, m_value);
     }
 
 private:
-    static underlying_type readValue(::zserio::BitStreamReader& in)
+    static underlying_type readValue(BitStreamReader& in)
     {
         return static_cast<underlying_type>(in.readBits(UINT8_C(8)));
     }
 
-    static underlying_type readValue(::zserio::PackingContextNode& contextNode,
-            ::zserio::BitStreamReader& in)
+    static underlying_type readValue(PackingContextNode& contextNode,
+            BitStreamReader& in)
     {
-        return contextNode.getContext().read(::zserio::StdIntArrayTraits<underlying_type>(), in);
+        return contextNode.getContext().read(StdIntArrayTraits<underlying_type>(), in);
     }
 
     underlying_type m_value;
@@ -148,7 +148,7 @@ public:
     void initPackingContext(PackingContextNode& contextNode) const
     {
         auto& context = contextNode.getChildren().at(0).getContext();
-        context.init(m_value);
+        context.init(BitFieldArrayTraits<uint32_t>(31), m_value);
     }
 
     void initialize(uint32_t value)
@@ -166,7 +166,7 @@ public:
         size_t endBitPosition = bitPosition;
 
         auto& context = contextNode.getChildren().at(0).getContext();
-        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31), endBitPosition, m_value);
+        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31), m_value);
 
         return endBitPosition - bitPosition;
     }
@@ -181,7 +181,7 @@ public:
         size_t endBitPosition = bitPosition;
 
         auto& context = contextNode.getChildren().at(0).getContext();
-        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31), endBitPosition, m_value);
+        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31), m_value);
 
         return endBitPosition;
     }
@@ -255,17 +255,21 @@ inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawV
 }
 
 template <>
+void initPackingContext<PackingContextNode, DummyEnum>(PackingContextNode& contextNode, DummyEnum value)
+{
+    return contextNode.getContext().init(StdIntArrayTraits<uint8_t>(), enumToValue(value));
+}
+
+template <>
 inline size_t bitSizeOf<DummyEnum>(DummyEnum)
 {
     return UINT8_C(8);
 }
 
 template <>
-inline size_t bitSizeOf<::zserio::PackingContextNode, DummyEnum>(::zserio::PackingContextNode& contextNode,
-        size_t bitPosition, DummyEnum value)
+inline size_t bitSizeOf<PackingContextNode, DummyEnum>(PackingContextNode& contextNode, DummyEnum value)
 {
-    return contextNode.getContext().bitSizeOf(
-            StdIntArrayTraits<uint8_t>(), bitPosition, enumToValue(value));
+    return contextNode.getContext().bitSizeOf(StdIntArrayTraits<uint8_t>(), enumToValue(value));
 }
 
 template <>
@@ -275,23 +279,23 @@ inline size_t initializeOffsets<DummyEnum>(size_t bitPosition, DummyEnum value)
 }
 
 template <>
-inline size_t initializeOffsets<::zserio::PackingContextNode, DummyEnum>(
-        ::zserio::PackingContextNode& contextNode, size_t bitPosition, DummyEnum value)
+inline size_t initializeOffsets<PackingContextNode, DummyEnum>(
+        PackingContextNode& contextNode, size_t bitPosition, DummyEnum value)
 {
-    return bitPosition + bitSizeOf(contextNode, bitPosition, value);
+    return bitPosition + bitSizeOf(contextNode, value);
 }
 
 template <>
-inline DummyEnum read<DummyEnum>(zserio::BitStreamReader& in)
+inline DummyEnum read<DummyEnum>(BitStreamReader& in)
 {
     return valueToEnum<DummyEnum>(
             static_cast<typename std::underlying_type<DummyEnum>::type>(in.readBits(UINT8_C(8))));
 }
 
 template <>
-inline DummyEnum read(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader& in)
+inline DummyEnum read(PackingContextNode& contextNode, BitStreamReader& in)
 {
-    return valueToEnum<DummyEnum>(contextNode.getContext().read(::zserio::StdIntArrayTraits<uint8_t>(), in));
+    return valueToEnum<DummyEnum>(contextNode.getContext().read(StdIntArrayTraits<uint8_t>(), in));
 }
 
 template <>
@@ -301,9 +305,9 @@ inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
 }
 
 template <>
-inline void write(::zserio::PackingContextNode& contextNode, BitStreamWriter& out, DummyEnum value)
+inline void write(PackingContextNode& contextNode, BitStreamWriter& out, DummyEnum value)
 {
-    contextNode.getContext().write(::zserio::StdIntArrayTraits<uint8_t>(), out, enumToValue(value));
+    contextNode.getContext().write(StdIntArrayTraits<uint8_t>(), out, enumToValue(value));
 }
 
 class ArrayTest : public ::testing::Test
@@ -642,7 +646,7 @@ private:
 
     static const size_t AUTO_LENGTH_BIT_SIZE = 8;
     static const size_t BUFFER_SIZE = 256;
-    static const size_t UNKNOWN_BIT_SIZE = 0;
+    static const size_t UNKNOWN_BIT_SIZE = std::numeric_limits<size_t>::max();
 
     uint8_t m_byteBuffer[BUFFER_SIZE];
 };
@@ -1020,6 +1024,25 @@ TEST_F(ArrayTest, bitField64PackedArray)
             arrayTraits);
 }
 
+TEST_F(ArrayTest, bitField8PackedArray)
+{
+    auto arrayTraits = BitFieldArrayTraits<uint8_t>(8);
+
+    // will not be packed because unpacked 8bit values will be more efficient
+    std::vector<uint8_t> rawArray1 = {UINT8_MAX, 0, 10, 20, 30, 40}; // max_bit_number 8, delta needs 9 bits
+    const size_t array1BitSizeOf = 1 + 6 * 8;
+    const size_t array1AlignedBitSizeOf = 8 + 6 * 8;
+    testPackedArray(rawArray1, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);
+
+    // will not be packed because unpacked 8bit values will be more efficient
+    // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+    std::vector<uint8_t> rawArray2 =
+            {UINT8_MAX, UINT8_MAX / 2 + 1, 10, 20, 30, 40}; // max_bit_number 7, delta needs 8 bits
+    const size_t array2BitSizeOf = 1 + 6 * 8;
+    const size_t array2AlignedBitSizeOf = 8 + 6 * 8;
+    testPackedArray(rawArray2, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
+}
+
 TEST_F(ArrayTest, intField64PackedArray)
 {
     auto arrayTraits = BitFieldArrayTraits<int64_t>(64);
@@ -1035,6 +1058,18 @@ TEST_F(ArrayTest, intField64PackedArray)
     testPackedArray(std::vector<int64_t>{INT64_MIN, 0, INT64_MAX}, arrayTraits);
 }
 
+TEST_F(ArrayTest, intField16PackedArray)
+{
+    auto arrayTraits = BitFieldArrayTraits<int16_t>(16);
+
+    // will not be packed because unpacked 16bit values will be more efficient
+    // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+    std::vector<int16_t> rawArray = {INT16_MIN, -1, 10, 20, 30, 40}; // max_bit_number 15, delta needs 16 bits
+    const size_t unpackedBitSizeOf = 1 + 6 * 16;
+    const size_t unpackedAlignedBitSizeOf = 8 + 6 * 16;
+    testPackedArray(rawArray, arrayTraits, unpackedBitSizeOf, unpackedAlignedBitSizeOf);
+}
+
 TEST_F(ArrayTest, varUInt64PackedArray)
 {
     std::vector<uint64_t> rawArray = {
@@ -1047,6 +1082,12 @@ TEST_F(ArrayTest, varUInt64PackedArray)
             UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7),
             UINT64_C(1) << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)};
     testPackedArray(rawArray, VarIntNNArrayTraits<uint64_t>());
+
+    std::vector<uint64_t> unpackedRawArray = {UINT64_C(5000000), 0, 0, 0, 0, 0, 0};
+    const size_t unpackedBitSizeOf = 1 + 32 + 6 * 8;
+    const size_t unpackedAlignedBitSizeOf = 8 + 32 + 6 * 8;
+    testPackedArray(unpackedRawArray, VarIntNNArrayTraits<uint64_t>(),
+            unpackedBitSizeOf, unpackedAlignedBitSizeOf);
 }
 
 TEST_F(ArrayTest, enumPackedArray)
