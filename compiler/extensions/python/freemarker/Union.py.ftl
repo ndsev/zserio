@@ -189,7 +189,8 @@ ${I}pass
 </#macro>
     def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
 <#if fieldList?has_content>
-        context_node.children[0].context.init(self._choice_tag)
+        context_node.children[0].context.init(${choiceTagArrayTraits}(),
+                                              self._choice_tag)
         <@union_if "union_init_packing_context", true, "context_node"/>
 <#else>
         del context_node
@@ -216,7 +217,7 @@ ${I}pass
         end_bitposition = bitposition
 
         end_bitposition += context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
-                                                                      end_bitposition, self._choice_tag)
+                                                                      self._choice_tag)
 
         <@union_if "compound_bitsizeof_field", true, "context_node"/>
 
@@ -248,7 +249,7 @@ ${I}pass
         end_bitposition = bitposition
 
         end_bitposition += context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
-                                                                      end_bitposition, self._choice_tag)
+                                                                      self._choice_tag)
 
         <@union_if "compound_initialize_offsets_field", true, "context_node"/>
 

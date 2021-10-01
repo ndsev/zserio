@@ -45,7 +45,8 @@ class ${name}(enum.Enum):
         context_node.create_context()
 
     def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
-        context_node.context.init(self.value)
+        context_node.context.init(<@array_traits_create arrayTraits, bitSize!/>,
+                                  self.value)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
 <#if bitSize??>
@@ -55,9 +56,9 @@ class ${name}(enum.Enum):
 </#if>
 
     def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
-                         bitposition: int) -> int:
+                         _bitposition: int) -> int:
         return context_node.context.bitsizeof(<@array_traits_create arrayTraits, bitSize!/>,
-                                              bitposition, self.value)
+                                              self.value)
 <#if withWriterCode>
 
     def initialize_offsets(self, bitposition: int) -> int:

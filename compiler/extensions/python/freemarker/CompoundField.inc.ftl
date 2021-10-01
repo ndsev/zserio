@@ -66,7 +66,7 @@ ${I}if self.${field.optional.indicatorName}():
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType || field.isExternType>
 ${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
-        <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
+        <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
 ${I}end_bitposition += self.<@field_member_name field/>.bitsizeof_packed(<@field_packing_context_node_name field/>, end_bitposition)
         </#if>
@@ -118,7 +118,7 @@ ${I}${field.offset.setter}
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType || field.isExternType>
 ${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
-        <#lt><@array_traits_create_field field/>, end_bitposition, self.<@field_member_name field/>)
+        <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
 ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets_packed(<@field_packing_context_node_name field/>, end_bitposition)
         </#if>
@@ -480,7 +480,8 @@ ${I}if self.${field.optional.indicatorName}():
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isBuiltinType || field.isExternType>
-${I}<@field_packing_context_node_name field/>.context.init(self.<@field_member_name field/>)
+${I}<@field_packing_context_node_name field/>.context.init(<@array_traits_create_field field/>, <#rt>
+        <#lt>self.<@field_member_name field/>)
     <#else>
 ${I}self.<@field_member_name field/>.init_packing_context(<@field_packing_context_node_name field/>)
     </#if>
