@@ -686,10 +686,10 @@ ${I}}
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType>
 ${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
-${I}        <@array_traits field/>, endBitPosition, <@compound_get_field field/>);
+${I}        <@array_traits field/>, <@compound_get_field field/>);
         <#elseif field.isEnum>
 ${I}endBitPosition += ::zserio::bitSizeOf(
-${I}        <@compound_field_packing_context_node field, index/>, endBitPosition, <@compound_get_field field/>);
+${I}        <@compound_field_packing_context_node field, index/>, <@compound_get_field field/>);
         <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(
 ${I}        <@compound_field_packing_context_node field, index/>, endBitPosition);
@@ -741,7 +741,7 @@ ${I}}
     <#if packed && field.isPackable && !field.array??>
         <#if field.isBuiltinType>
 ${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
-${I}        <@array_traits field/>, endBitPosition, <@compound_get_field field/>);
+${I}        <@array_traits field/>, <@compound_get_field field/>);
         <#elseif field.isEnum>
 ${I}endBitPosition = ::zserio::initializeOffsets(
 ${I}        <@compound_field_packing_context_node field, index/>, endBitPosition, <@compound_get_field field/>);
@@ -984,10 +984,11 @@ ${I}}
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isBuiltinType>
-${I}<@compound_field_packing_context_node field, index/>.getContext().init(<@compound_get_field field/>);
-    <#elseif field.isEnum>
 ${I}<@compound_field_packing_context_node field, index/>.getContext().init(
-${I}        ::zserio::enumToValue(<@compound_get_field field/>));
+${I}        <@array_traits field/>, <@compound_get_field field/>);
+    <#elseif field.isEnum>
+${I}::zserio::initPackingContext(<@compound_field_packing_context_node field, index/>,
+${I}        <@compound_get_field field/>);
     <#else>
 ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_context_node field, index/>);
     </#if>

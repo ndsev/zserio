@@ -52,11 +52,15 @@ ${fullName} valueToEnum<${fullName}>(
         typename ::std::underlying_type<${fullName}>::type rawValue);
 
 template <>
-size_t bitSizeOf<${fullName}>(${fullName}<#if !runtimeFunction.arg??> value</#if>);
+void initPackingContext<${types.packingContextNode.name}, ${fullName}>(
+        ${types.packingContextNode.name}& contextNode, ${fullName} value);
+
+template <>
+size_t bitSizeOf<${fullName}>(${fullName} value);
 
 template <>
 size_t bitSizeOf<${types.packingContextNode.name}, ${fullName}>(
-        ${types.packingContextNode.name}& contextNode, size_t bitPosition, ${fullName} value);
+        ${types.packingContextNode.name}& contextNode, ${fullName} value);
 <#if withWriterCode>
 
 template <>

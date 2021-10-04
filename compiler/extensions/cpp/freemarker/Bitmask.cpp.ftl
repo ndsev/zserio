@@ -43,7 +43,8 @@ void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode
 
 void ${name}::initPackingContext(${types.packingContextNode.name}& contextNode) const
 {
-    contextNode.getContext().init(m_value);
+    contextNode.getContext().init(<@bitmask_array_traits arrayTraits, fullName, bitSize!/>,
+            m_value);
 }
 
 size_t ${name}::bitSizeOf(size_t) const
@@ -55,11 +56,11 @@ size_t ${name}::bitSizeOf(size_t) const
 </#if>
 }
 
-size_t ${name}::bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const
+size_t ${name}::bitSizeOf(${types.packingContextNode.name}& contextNode, size_t) const
 {
     return contextNode.getContext().bitSizeOf(
             <@bitmask_array_traits arrayTraits, fullName, bitSize!/>,
-            bitPosition, m_value);
+            m_value);
 }
 
 <#if withWriterCode>

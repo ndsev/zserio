@@ -205,7 +205,7 @@ void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldLi
 void ${name}::initPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>) const
 {
 <#if fieldList?has_content>
-    contextNode.getChildren().at(0).getContext().init(m_choiceTag);
+    contextNode.getChildren().at(0).getContext().init(${choiceTagArrayTraits}(), m_choiceTag);
 
     switch (m_choiceTag)
     {
@@ -251,7 +251,7 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#if fieldList?has_co
     size_t endBitPosition = bitPosition;
 
     endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(${choiceTagArrayTraits}(),
-            endBitPosition, static_cast<uint32_t>(m_choiceTag));
+            static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
@@ -302,7 +302,7 @@ size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#if fieldLis
     size_t endBitPosition = bitPosition;
 
     endBitPosition += contextNode.getChildren().at(0).getContext().bitSizeOf(${choiceTagArrayTraits}(),
-            endBitPosition, static_cast<uint32_t>(m_choiceTag));
+            static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {

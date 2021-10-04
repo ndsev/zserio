@@ -51,6 +51,13 @@ ${fullName} valueToEnum(
 }
 
 template <>
+void initPackingContext(${types.packingContextNode.name}& contextNode, ${fullName} value)
+{
+    contextNode.getContext().init(<@enum_array_traits arrayTraits, fullName, bitSize!/>,
+            ::zserio::enumToValue(value));
+}
+
+template <>
 size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
 {
 <#if runtimeFunction.arg??>
@@ -61,11 +68,11 @@ size_t bitSizeOf(${fullName}<#if !runtimeFunction.arg??> value</#if>)
 }
 
 template <>
-size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition, ${fullName} value)
+size_t bitSizeOf(${types.packingContextNode.name}& contextNode, ${fullName} value)
 {
     return contextNode.getContext().bitSizeOf(
             <@enum_array_traits arrayTraits, fullName, bitSize!/>,
-            bitPosition, ::zserio::enumToValue(value));
+            ::zserio::enumToValue(value));
 }
 <#if withWriterCode>
 
@@ -79,7 +86,7 @@ template <>
 size_t initializeOffsets(${types.packingContextNode.name}& contextNode,
         size_t bitPosition, ${fullName} value)
 {
-    return bitPosition + bitSizeOf(contextNode, bitPosition, value);
+    return bitPosition + bitSizeOf(contextNode, value);
 }
 </#if>
 
