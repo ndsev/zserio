@@ -55,7 +55,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
-        contextNode.getContext().init(new ${arrayableInfo.arrayElement}(value));
+        contextNode.getContext().init(
+                <@bitmask_array_traits arrayableInfo, bitSize!/>,
+                new ${arrayableInfo.arrayElement}(value));
     }
 
     @Override
@@ -78,7 +80,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
         return contextNode.getContext().bitSizeOf(
-                <@bitmask_array_traits arrayableInfo, bitSize!/>, bitPosition,
+                <@bitmask_array_traits arrayableInfo, bitSize!/>,
                 new ${arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>

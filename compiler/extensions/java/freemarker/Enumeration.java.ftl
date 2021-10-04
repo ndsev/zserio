@@ -39,7 +39,9 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
-        contextNode.getContext().init(new ${arrayableInfo.arrayElement}(value));
+        contextNode.getContext().init(
+                <@enum_array_traits arrayableInfo, bitSize!/>,
+                new ${arrayableInfo.arrayElement}(value));
     }
 
     @Override
@@ -62,7 +64,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
         return contextNode.getContext().bitSizeOf(
-                <@enum_array_traits arrayableInfo, bitSize!/>, bitPosition,
+                <@enum_array_traits arrayableInfo, bitSize!/>,
                 new ${arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>

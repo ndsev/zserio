@@ -26,7 +26,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
 <#if fieldList?has_content>
-        contextNode.getChildren().get(0).getContext().init(new ${choiceTagArrayElement}(choiceTag));
+        contextNode.getChildren().get(0).getContext().init(
+                new ${choiceTagArrayTraits}(),
+                new ${choiceTagArrayElement}(choiceTag));
 
         switch (choiceTag)
         {
@@ -79,7 +81,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         long endBitPosition = bitPosition;
 
         endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new ${choiceTagArrayTraits}(), endBitPosition,
+                new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
         switch (choiceTag)
@@ -239,7 +241,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         long endBitPosition = bitPosition;
 
         endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                new ${choiceTagArrayTraits}(), endBitPosition,
+                new ${choiceTagArrayTraits}(),
                 new ${choiceTagArrayElement}(choiceTag));
 
         switch (choiceTag)
