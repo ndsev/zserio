@@ -504,11 +504,20 @@ public class ArrayTest
     @Test
     public void signedBitFieldShortPackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.ShortRawArray(new short[] {-512, -481, -422, -389, -350, -300,
-                -267, -250});
+        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {
+                -512, -481, -422, -389, -350, -300, -267, -250});
         final RawArray emptyRawArray = new RawArray.ShortRawArray();
-        final ArrayTraits arrayTraits = new ArrayTraits.SignedBitFieldShortArrayTraits(13);
-        testPackedArray(rawArray, emptyRawArray, arrayTraits);
+        final ArrayTraits arrayTraits13 = new ArrayTraits.SignedBitFieldShortArrayTraits(13);
+        testPackedArray(rawArray1, emptyRawArray, arrayTraits13);
+
+        // will not be packed because unpacked 16bit values will be more efficient
+        // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {
+                Short.MIN_VALUE, -1, 10, 20, 30, 40}); // max_bit_number 15, delta needs 16 bits
+        final ArrayTraits arrayTraits16 = new ArrayTraits.SignedBitFieldShortArrayTraits(16);
+        final int unpackedBitSizeOf = 1 + 6 * 16;
+        final int unpackedAlignedBitSizeOf = 8 + 6 * 16;
+        testPackedArray(rawArray2, emptyRawArray, arrayTraits16, unpackedBitSizeOf, unpackedAlignedBitSizeOf);
     }
 
     @Test
@@ -570,11 +579,28 @@ public class ArrayTest
     @Test
     public void bitFieldShortPackedArray() throws IOException
     {
-        final RawArray rawArray = new RawArray.ShortRawArray(new short[] {512, 500, 459, 400, 333, 300, 222,
+        final RawArray rawArray1 = new RawArray.ShortRawArray(new short[] {512, 500, 459, 400, 333, 300, 222,
                 200, 201});
         final RawArray emptyRawArray = new RawArray.ShortRawArray();
-        final ArrayTraits arrayTraits = new ArrayTraits.BitFieldShortArrayTraits(13);
-        testPackedArray(rawArray, emptyRawArray, arrayTraits);
+        final ArrayTraits arrayTraits13 = new ArrayTraits.BitFieldShortArrayTraits(13);
+        testPackedArray(rawArray1, emptyRawArray, arrayTraits13);
+
+        final ArrayTraits arrayTraits8 = new ArrayTraits.BitFieldShortArrayTraits(8);
+
+        // will not be packed because unpacked 8bit values will be more efficient
+        final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {
+                255, 0, 10, 20, 30, 40}); // max_bit_number 8, delta needs 9 bits
+        final int array2BitSizeOf = 1 + 6 * 8;
+        final int array2AlignedBitSizeOf = 8 + 6 * 8;
+        testPackedArray(rawArray2, emptyRawArray, arrayTraits8, array2BitSizeOf, array2AlignedBitSizeOf);
+
+        // will not be packed because unpacked 8bit values will be more efficient
+        // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
+        final RawArray rawArray3 = new RawArray.ShortRawArray(new short[] {
+                255, 128, 10, 20, 30, 40}); // max_bit_number 7, delta needs 8 bits
+        final int array3BitSizeOf = 1 + 6 * 8;
+        final int array3AlignedBitSizeOf = 8 + 6 * 8;
+        testPackedArray(rawArray3, emptyRawArray, arrayTraits8, array3BitSizeOf, array3AlignedBitSizeOf);
     }
 
     @Test
@@ -678,6 +704,12 @@ public class ArrayTest
         final RawArray emptyRawArray = new RawArray.LongRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.VarUInt64ArrayTraits();
         testPackedArray(rawArray, emptyRawArray, arrayTraits);
+
+        final RawArray unpackedRawArray = new RawArray.LongRawArray(new long[] {5000000L, 0, 0, 0, 0, 0, 0});
+        final int unpackedBitSizeOf = 1 + 32 + 6 * 8;
+        final int unpackedAlignedBitSizeOf = 8 + 32 + 6 * 8;
+        testPackedArray(unpackedRawArray, emptyRawArray, arrayTraits,
+                unpackedBitSizeOf, unpackedAlignedBitSizeOf);
     }
 
     @Test
@@ -748,7 +780,7 @@ public class ArrayTest
         public void initPackingContext(PackingContextNode contextNode)
         {
             contextNode.getChildren().get(0).getContext().init(
-                    new ArrayElement.ByteArrayElement(value));
+                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
         }
 
         @Override
@@ -773,8 +805,7 @@ public class ArrayTest
             long endBitPosition = bitPosition;
 
             endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                    new ArrayTraits.BitFieldByteArrayTraits(3), endBitPosition,
-                    new ArrayElement.ByteArrayElement(value));
+                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
 
             return (int)(endBitPosition - bitPosition);
         }
@@ -836,8 +867,7 @@ public class ArrayTest
             long endBitPosition = bitPosition;
 
             endBitPosition += contextNode.getChildren().get(0).getContext().bitSizeOf(
-                    new ArrayTraits.BitFieldByteArrayTraits(3), endBitPosition,
-                    new ArrayElement.ByteArrayElement(value));
+                    new ArrayTraits.BitFieldByteArrayTraits(3), new ArrayElement.ByteArrayElement(value));
 
             return endBitPosition;
         }

@@ -16,8 +16,10 @@ import zserio.runtime.io.BitStreamWriter;
  * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
  * can be repeatedly called for exactly the same sequence of packable elements.
  *
- * Note that *Descriptor methods doesn't change context's internal state and can be called as needed. They are
- * designed to be called once for each context before the actual operation.
+ Note that bitSizeOfDescriptor, writeDescriptor and readDescriptor methods finish the context initialization
+ * and must be called before bitSizeOf, write and read operations respectively. Finishing of the context
+ * initialization is made in the bitSizeOfDescriptor and writeDescriptor methods to safe one iteration in
+ * the Array wrapper which would be otherwise needed to do the job.
  */
 public class DeltaContext
 {
@@ -26,26 +28,32 @@ public class DeltaContext
      *
      * @param element Current element.
      */
-    public void init(IntegralArrayElement element)
+    public void init(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
     {
+        numElements++;
+        unpackedBitSize += arrayTraits.bitSizeOf(element);
+
         if (previousElement == null)
         {
             previousElement = element.toBigInteger();
+            firstElementBitSize = unpackedBitSize;
         }
         else
         {
             if (maxBitNumber <= MAX_BIT_NUMBER_LIMIT)
-                isPacked = true;
-            final BigInteger bigElement = element.toBigInteger();
-            final BigInteger delta = bigElement.subtract(previousElement);
-            final byte maxBitNumber = bitLength(delta);
-            if (maxBitNumber > this.maxBitNumber)
             {
-                this.maxBitNumber = maxBitNumber;
-                if (maxBitNumber > MAX_BIT_NUMBER_LIMIT)
-                    isPacked = false;
+                isPacked = true;
+                final BigInteger bigElement = element.toBigInteger();
+                final BigInteger delta = bigElement.subtract(previousElement);
+                final byte maxBitNumber = bitLength(delta);
+                if (maxBitNumber > this.maxBitNumber)
+                {
+                    this.maxBitNumber = maxBitNumber;
+                    if (maxBitNumber > MAX_BIT_NUMBER_LIMIT)
+                        isPacked = false;
+                }
+                previousElement = bigElement;
             }
-            previousElement = bigElement;
         }
     }
 
@@ -56,6 +64,8 @@ public class DeltaContext
      */
     public int bitSizeOfDescriptor()
     {
+        finishInit(); // called from here for better performance
+
         return isPacked ? 1 + MAX_BIT_NUMBER_BITS : 1;
     }
 
@@ -63,17 +73,16 @@ public class DeltaContext
      * Returns length of the packed element stored in the bit stream in bits.
      *
      * @param arrayTraits Standard array traits.
-     * @param bitPosition Current bit stream position.
      * @param element Value of the current element.
      *
      * @return Length of the packed element stored in the bit stream in bits.
      */
-    public int bitSizeOf(ArrayTraits arrayTraits, long bitPosition, IntegralArrayElement element)
+    public int bitSizeOf(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
     {
         if (!processingStarted || !isPacked)
         {
             processingStarted = true;
-            return arrayTraits.bitSizeOf(bitPosition, element);
+            return arrayTraits.bitSizeOf(element);
         }
         else
         {
@@ -137,6 +146,8 @@ public class DeltaContext
      */
     public void writeDescriptor(BitStreamWriter writer) throws IOException
     {
+        finishInit(); // called from here for better performance
+
         writer.writeBool(isPacked);
         if (isPacked)
             writer.writeBits(maxBitNumber, MAX_BIT_NUMBER_BITS);
@@ -172,6 +183,19 @@ public class DeltaContext
         }
     }
 
+    private void finishInit()
+    {
+        if (isPacked)
+        {
+            final int deltaBitSize = maxBitNumber + (maxBitNumber > 0 ? 1 : 0);
+            final int packedBitSizeWithDescriptor = 1 + MAX_BIT_NUMBER_BITS + // descriptor
+                    firstElementBitSize + (numElements - 1) * deltaBitSize;
+            final int unpackedBitSizeWithDescriptor = 1 + unpackedBitSize;
+            if (packedBitSizeWithDescriptor >= unpackedBitSizeWithDescriptor)
+                isPacked = false;
+        }
+    }
+
     private static byte bitLength(BigInteger element)
     {
         // need to call abs() first to get the same behavior as in Python and C++
@@ -185,4 +209,8 @@ public class DeltaContext
     private boolean processingStarted = false;
     private byte maxBitNumber = 0;
     private BigInteger previousElement; // BigInteger covers all integral array element values
+
+    private int unpackedBitSize = 0;
+    private int firstElementBitSize = 0;
+    private int numElements = 0;
 }

@@ -89,6 +89,15 @@ public interface ArrayTraits
         public IntegralArrayElement fromBigInteger(BigInteger value);
 
         /**
+         * Gets the bit size of the array element if it is stored in the bit stream.
+         *
+         * @param element     Array element.
+         *
+         * @return Bit size of the given array element if it is stored in the bit stream.
+         */
+        public int bitSizeOf(ArrayElement element);
+
+        /**
          * Reads the array element from the bit stream.
          *
          * @param reader Bit stream reader to read from.
@@ -117,6 +126,12 @@ public interface ArrayTraits
         public PackedArrayTraits getPackedArrayTraits()
         {
             return packedArrayTraits;
+        }
+
+        @Override
+        public int bitSizeOf(long bitPosition, ArrayElement element)
+        {
+            return bitSizeOf(element);
         }
 
         @Override
@@ -150,7 +165,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -204,7 +219,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -258,7 +273,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -312,7 +327,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -366,7 +381,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -420,7 +435,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -474,7 +489,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -528,7 +543,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -583,7 +598,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return numBits;
         }
@@ -627,7 +642,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarInt16(((ArrayElement.ShortArrayElement)element).get());
         }
@@ -669,7 +684,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarInt32(((ArrayElement.IntArrayElement)element).get());
         }
@@ -711,7 +726,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarInt64(((ArrayElement.LongArrayElement)element).get());
         }
@@ -753,7 +768,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarInt(((ArrayElement.LongArrayElement)element).get());
         }
@@ -795,7 +810,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarUInt16(((ArrayElement.ShortArrayElement)element).get());
         }
@@ -837,7 +852,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarUInt32(((ArrayElement.IntArrayElement)element).get());
         }
@@ -879,7 +894,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarUInt64(((ArrayElement.LongArrayElement)element).get());
         }
@@ -921,7 +936,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarUInt(
                     ((ArrayElement.BigIntegerArrayElement)element).get());
@@ -964,7 +979,7 @@ public interface ArrayTraits
         }
 
         @Override
-        public int bitSizeOf(long bitPosition, ArrayElement element)
+        public int bitSizeOf(ArrayElement element)
         {
             return BitSizeOfCalculator.getBitSizeOfVarSize(((ArrayElement.IntArrayElement)element).get());
         }

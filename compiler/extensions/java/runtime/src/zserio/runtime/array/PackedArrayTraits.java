@@ -105,13 +105,13 @@ public interface PackedArrayTraits
         @Override
         public void initContext(PackingContextNode contextNode, ArrayElement element)
         {
-            contextNode.getContext().init((IntegralArrayElement)element);
+            contextNode.getContext().init(arrayTraits, (IntegralArrayElement)element);
         }
 
         @Override
         public int bitSizeOf(PackingContextNode contextNode, long bitPosition, ArrayElement element)
         {
-            return contextNode.getContext().bitSizeOf(arrayTraits, bitPosition, (IntegralArrayElement)element);
+            return contextNode.getContext().bitSizeOf(arrayTraits, (IntegralArrayElement)element);
         }
 
         @Override
