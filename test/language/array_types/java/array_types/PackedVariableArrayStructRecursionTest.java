@@ -8,8 +8,6 @@ import java.io.File;
 import org.junit.Test;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.ByteArrayBitStreamReader;
-import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
 import array_types.packed_variable_array_struct_recursion.Block;
