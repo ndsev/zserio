@@ -135,7 +135,6 @@ public:
      * Returns length of the packed element stored in the bit stream in bits.
      *
      * \param arrayTraits Standard array traits.
-     * \param bitPosition Current bit stream position.
      * \param element Value of the current element.
      *
      * \return Length of the packed element stored in the bit stream in bits.

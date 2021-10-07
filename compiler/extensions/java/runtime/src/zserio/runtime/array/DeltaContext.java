@@ -26,6 +26,7 @@ public class DeltaContext
     /**
      * Calls the initialization step for a single element.
      *
+     * @param arrayTraits Standard array traits.
      * @param element Current element.
      */
     public void init(IntegralArrayTraits arrayTraits, IntegralArrayElement element)

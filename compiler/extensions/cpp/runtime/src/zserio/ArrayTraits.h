@@ -1731,7 +1731,6 @@ public:
      * Returns length of the array element stored in the bit stream in bits.
      *
      * \param contextNode Packing context node.
-     * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
@@ -1834,7 +1833,6 @@ public:
      * Returns length of the array element stored in the bit stream in bits.
      *
      * \param contextNode Packing context node.
-     * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
      * \return Length of the array element stored in the bit stream in bits.
