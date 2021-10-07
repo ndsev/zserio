@@ -14,10 +14,10 @@ selector == (${expressionList?first})<#rt>
 selector in (<#list expressionList as expression>${expression}<#if expression?has_next>, </#if></#list>)<#rt>
     </#if>
 </#macro>
-<#macro choice_if memberActionMacroName packed=false contextNodeVarName="">
+<#macro choice_if memberActionMacroName packed=false>
         selector = ${selector}
 
-    <#if packed><#local fieldIndex=0></#if>
+    <#local fieldIndex=0>
     <#list caseMemberList as caseMember>
         <#if caseMember?has_next || !isDefaultUnreachable>
         <#if caseMember?is_first>if <#else>elif </#if><@choice_selector_condition caseMember.expressionList/>:
@@ -25,11 +25,8 @@ selector in (<#list expressionList as expression>${expression}<#if expression?ha
         else:
         </#if>
         <#if caseMember.compoundField??>
-            <#if packed>
-            <@compound_field_packing_context_node caseMember.compoundField, fieldIndex, contextNodeVarName, 3/>
-                <#local fieldIndex+=1>
-            </#if>
-            <@.vars[memberActionMacroName] caseMember.compoundField, 3, packed/>
+            <@.vars[memberActionMacroName] caseMember.compoundField, 3, packed, fieldIndex/>
+            <#local fieldIndex+=1>
         <#else>
             pass
         </#if>
@@ -38,11 +35,8 @@ selector in (<#list expressionList as expression>${expression}<#if expression?ha
         else:
         <#if defaultMember??>
             <#if defaultMember.compoundField??>
-                <#if packed>
-            <@compound_field_packing_context_node defaultMember.compoundField, fieldIndex, contextNodeVarName, 3/>
-                    <#local fieldIndex+=1>
-                </#if>
-            <@.vars[memberActionMacroName] defaultMember.compoundField, 3, packed/>
+            <@.vars[memberActionMacroName] defaultMember.compoundField, 3, packed, fieldIndex/>
+                <#local fieldIndex+=1>
             <#else>
             pass
             </#if>
@@ -191,17 +185,17 @@ class ${name}:
 </#list>
 
     @staticmethod
-    def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
+    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
     <#if fieldList?has_content>
         <#list fieldList as field>
         <@compound_create_packing_context_field field/>
         </#list>
     <#else>
-        del context_node
+        del zserio_context_node
     </#if>
 
-<#macro choice_init_packing_context_field field indent packed>
-    <#local initCode><@compound_init_packing_context_field field, indent/></#local>
+<#macro choice_init_packing_context_field field indent packed index>
+    <#local initCode><@compound_init_packing_context_field field, index, indent/></#local>
     <#if initCode?has_content>
 ${initCode}<#rt>
     <#else>
@@ -209,11 +203,11 @@ ${initCode}<#rt>
 ${I}pass
     </#if>
 </#macro>
-    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
+    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
 <#if compound_needs_packing_context_node(fieldList)>
-        <@choice_if "choice_init_packing_context_field", true, "context_node"/>
+        <@choice_if "choice_init_packing_context_field", true/>
 <#else>
-        del context_node
+        del zserio_context_node
 </#if>
 
     def bitsizeof(self, bitposition: int = 0) -> int:
@@ -229,16 +223,16 @@ ${I}pass
         return 0
 </#if>
 
-    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
+    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                          bitposition: int = 0) -> int:
 <#if !compound_needs_packing_context_node(fieldList)>
-        del context_node
+        del zserio_context_node
 
 </#if>
 <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "compound_bitsizeof_field", true, "context_node"/>
+        <@choice_if "compound_bitsizeof_field", true/>
 
         return end_bitposition - bitposition
 <#else>
@@ -259,16 +253,16 @@ ${I}pass
         return bitposition
     </#if>
 
-    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
+    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
 <#if !compound_needs_packing_context_node(fieldList)>
-        del context_node
+        del zserio_context_node
 
 </#if>
     <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "compound_initialize_offsets_field", true, "context_node"/>
+        <@choice_if "compound_initialize_offsets_field", true/>
 
         return end_bitposition
     <#else>
@@ -276,8 +270,8 @@ ${I}pass
     </#if>
 </#if>
 
-<#macro choice_read_field field indent packed>
-    <@compound_read_field field, name, withWriterCode, indent, packed/>
+<#macro choice_read_field field indent packed index>
+    <@compound_read_field field, name, withWriterCode, indent, packed, index/>
 </#macro>
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
@@ -293,15 +287,15 @@ ${I}pass
         del zserio_context_node
 
     </#if>
-        <@choice_if "choice_read_field", true, "zserio_context_node"/>
+        <@choice_if "choice_read_field", true/>
 <#else>
         del zserio_context_node
         del zserio_reader
 </#if>
 <#if withWriterCode>
 
-<#macro choice_write_field field indent packed>
-    <@compound_write_field field, name, indent, packed/>
+<#macro choice_write_field field indent packed index>
+    <@compound_write_field field, name, indent, packed, index/>
 </#macro>
     def write(self, zserio_writer: zserio.BitStreamWriter, *,
               zserio_call_initialize_offsets: bool = True) -> None:
@@ -326,7 +320,7 @@ ${I}pass
         del zserio_context_node
 
         </#if>
-        <@choice_if "choice_write_field", true, "zserio_context_node"/>
+        <@choice_if "choice_write_field", true/>
     <#else>
         del zserio_context_node
         del zserio_writer

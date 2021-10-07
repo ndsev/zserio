@@ -10,13 +10,10 @@
 <#macro choice_tag_name field>
     CHOICE_${field.snakeCaseName?upper_case}<#t>
 </#macro>
-<#macro union_if memberActionMacroName packed=false contextNodeVarName="">
+<#macro union_if memberActionMacroName packed=false index=0>
     <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choice_tag == self.<@choice_tag_name field/>:
-            <#if packed>
-            <@compound_field_packing_context_node field, field?index + 1 , contextNodeVarName, 3/>
-            </#if>
-            <@.vars[memberActionMacroName] field, 3, packed/>
+            <@.vars[memberActionMacroName] field, 3, packed, field?index+1/>
     </#list>
         else:
             raise zserio.PythonRuntimeException("No match in union ${name}!")
@@ -166,20 +163,20 @@ class ${name}:
         return self._choice_tag
 
     @staticmethod
-    def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
+    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
 <#if fieldList?has_content>
-        context_node.create_child().create_context()
+        zserio_context_node.create_child().create_context()
 
     <#list fieldList as field>
         <@compound_create_packing_context_field field/>
     </#list>
 
 <#else>
-        del context_node
+        del zserio_context_node
 </#if>
 
-<#macro union_init_packing_context field indent packed>
-    <#local initCode><@compound_init_packing_context_field field, indent/></#local>
+<#macro union_init_packing_context field indent packed index>
+    <#local initCode><@compound_init_packing_context_field field, index, indent/></#local>
     <#if initCode?has_content>
 ${initCode}<#t>
     <#else>
@@ -187,13 +184,13 @@ ${initCode}<#t>
 ${I}pass
     </#if>
 </#macro>
-    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
+    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
 <#if fieldList?has_content>
-        context_node.children[0].context.init(${choiceTagArrayTraits}(),
-                                              self._choice_tag)
-        <@union_if "union_init_packing_context", true, "context_node"/>
+        zserio_context_node.children[0].context.init(${choiceTagArrayTraits}(),
+                                                     self._choice_tag)
+        <@union_if "union_init_packing_context", true/>
 <#else>
-        del context_node
+        del zserio_context_node
 </#if>
 
     def bitsizeof(self, bitposition: int = 0) -> int:
@@ -211,19 +208,19 @@ ${I}pass
         return 0
 </#if>
 
-    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
+    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        end_bitposition += context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
-                                                                      self._choice_tag)
+        end_bitposition += zserio_context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
+                                                                             self._choice_tag)
 
-        <@union_if "compound_bitsizeof_field", true, "context_node"/>
+        <@union_if "compound_bitsizeof_field", true/>
 
         return end_bitposition - bitposition
 <#else>
-        del context_node
+        del zserio_context_node
         del bitposition
 
         return 0
@@ -243,25 +240,25 @@ ${I}pass
         return bitposition
     </#if>
 
-    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
+    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        end_bitposition += context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
-                                                                      self._choice_tag)
+        end_bitposition += zserio_context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
+                                                                             self._choice_tag)
 
-        <@union_if "compound_initialize_offsets_field", true, "context_node"/>
+        <@union_if "compound_initialize_offsets_field", true/>
 
         return end_bitposition
     <#else>
-        del context_node
+        del zserio_context_node
         return bitposition
     </#if>
 </#if>
 
-<#macro union_read_field field indent packed>
-    <@compound_read_field field, name, withWriterCode, indent, packed/>
+<#macro union_read_field field indent packed index>
+    <@compound_read_field field, name, withWriterCode, indent, packed, index/>
 </#macro>
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
@@ -278,15 +275,15 @@ ${I}pass
         self._choice_tag = zserio_context_node.children[0].context.read(${choiceTagArrayTraits}(),
                                                                         zserio_reader)
 
-        <@union_if "union_read_field" true "zserio_context_node"/>
+        <@union_if "union_read_field", true/>
 <#else>
         del zserio_context_node
         del zserio_reader
 </#if>
 <#if withWriterCode>
 
-<#macro union_write_field field indent packed>
-    <@compound_write_field field, name, indent, packed/>
+<#macro union_write_field field indent packed index>
+    <@compound_write_field field, name, indent, packed, index/>
 </#macro>
     def write(self, zserio_writer: zserio.BitStreamWriter, *,
               zserio_call_initialize_offsets: bool = True) -> None:
@@ -312,7 +309,7 @@ ${I}pass
         zserio_context_node.children[0].context.write(${choiceTagArrayTraits}(),
                                                       zserio_writer, self._choice_tag)
 
-        <@union_if "union_write_field", true, "zserio_context_node"/>
+        <@union_if "union_write_field", true/>
     <#else>
         del zserio_context_node
         del zserio_writer

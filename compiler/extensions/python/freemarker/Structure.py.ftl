@@ -167,23 +167,22 @@ ${I}<#rt>
 </#list>
 
     @staticmethod
-    def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
+    def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
     <#if fieldList?has_content>
         <#list fieldList as field>
         <@compound_create_packing_context_field field/>
         </#list>
     <#else>
-        del context_node
+        del zserio_context_node
     </#if>
 
-    def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
+    def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
 <#if compound_needs_packing_context_node(fieldList)>
     <#list fieldList as field>
-        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
-        <@compound_init_packing_context_field field, 2/>
+        <@compound_init_packing_context_field field, field?index, 2/>
     </#list>
 <#else>
-        del context_node
+        del zserio_context_node
 </#if>
 
     def bitsizeof(self, bitposition: int = 0) -> int:
@@ -200,22 +199,21 @@ ${I}<#rt>
         return 0
 </#if>
 
-    def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
+    def bitsizeof_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                          bitposition: int = 0) -> int:
 <#if fieldList?has_content>
     <#if !compound_needs_packing_context_node(fieldList)>
-        del context_node
+        del zserio_context_node
 
     </#if>
         end_bitposition = bitposition
     <#list fieldList as field>
-        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
-        <@compound_bitsizeof_field field, 2, true/>
+        <@compound_bitsizeof_field field, 2, true, field?index/>
     </#list>
 
         return end_bitposition - bitposition
 <#else>
-        del context_node
+        del zserio_context_node
         del bitposition
 
         return 0
@@ -234,22 +232,21 @@ ${I}<#rt>
         return bitposition
     </#if>
 
-    def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
+    def initialize_offsets_packed(self, zserio_context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
     <#if fieldList?has_content>
         <#if !compound_needs_packing_context_node(fieldList)>
-        del context_node
+        del zserio_context_node
 
         </#if>
         end_bitposition = bitposition
         <#list fieldList as field>
-        <@compound_field_packing_context_node field, field?index, "context_node", 2/>
-        <@compound_initialize_offsets_field field, 2, true/>
+        <@compound_initialize_offsets_field field, 2, true, field?index/>
         </#list>
 
         return end_bitposition
     <#else>
-        del context_node
+        del zserio_context_node
         return bitposition
     </#if>
 </#if>
@@ -281,8 +278,7 @@ ${I}<#rt>
 
     </#if>
     <#list fieldList as field>
-        <@compound_field_packing_context_node field, field?index, "zserio_context_node", 2/>
-        <@compound_read_field field, name, withWriterCode, 2, true/>
+        <@compound_read_field field, name, withWriterCode, 2, true, field?index/>
         <#if field?has_next>
 
         </#if>
@@ -329,8 +325,7 @@ ${I}<#rt>
 
         </#if>
         <#list fieldList as field>
-        <@compound_field_packing_context_node field, field?index, "zserio_context_node", 2/>
-        <@compound_write_field field, name, 2, true/>
+        <@compound_write_field field, name, 2, true, field?index/>
             <#if field?has_next>
 
             </#if>
