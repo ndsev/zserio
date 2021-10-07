@@ -205,7 +205,8 @@ void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldLi
 void ${name}::initPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>) const
 {
 <#if fieldList?has_content>
-    contextNode.getChildren().at(0).getContext().init(${choiceTagArrayTraits}(), m_choiceTag);
+    contextNode.getChildren().at(0).getContext().init(
+            ${choiceTagArrayTraits}(), static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
     {
