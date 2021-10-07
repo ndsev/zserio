@@ -12,7 +12,8 @@ namespace packed_variable_array_struct
 using allocator_type = PackedVariableArray::allocator_type;
 template <typename T>
 using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
-using bit_buffer_type = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
+
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
 class PackedVariableArrayStructTest : public ::testing::Test
 {
@@ -39,7 +40,7 @@ protected:
         TestStructure testStructure;
         testStructure.setId(index);
         testStructure.setName("name" + zserio::toString<allocator_type>(index));
-        testStructure.setData(bit_buffer_type{vector_type<uint8_t>{0xCD, 0xC0}, 10});
+        testStructure.setData(BitBuffer{vector_type<uint8_t>{0xCD, 0xC0}, 10});
         testStructure.setTestChoice(createTestChoice(index));
         testStructure.setTestUnion(createTestUnion(index));
         testStructure.setTestEnum(index % 2 == 0 ? TestEnum::DARK_RED : TestEnum::DARK_GREEN);

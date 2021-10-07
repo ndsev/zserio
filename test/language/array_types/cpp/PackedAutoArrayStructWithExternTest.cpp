@@ -2,6 +2,7 @@
 
 #include "array_types/packed_auto_array_struct_with_extern/PackedAutoArray.h"
 
+#include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
 
 #include <vector>
@@ -11,6 +12,12 @@ namespace array_types
 namespace packed_auto_array_struct_with_extern
 {
 
+using allocator_type = PackedAutoArray::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
+
 class PackedAutoArrayStructWithExternTest : public ::testing::Test
 {
 protected:
@@ -19,13 +26,13 @@ protected:
         PackedAutoArray packedAutoArray;
         auto& array = packedAutoArray.getArray();
         for (size_t i = 0; i < sizeof(UINT8_FIELD); ++i)
-            array.emplace_back(UINT32_FIELD[i], zserio::BitBuffer{EXTERN_FIELD[i]}, UINT8_FIELD[i]);
+            array.emplace_back(UINT32_FIELD[i], BitBuffer{EXTERN_FIELD[i]}, UINT8_FIELD[i]);
 
         return packedAutoArray;
     }
 
     static const uint32_t UINT32_FIELD[10];
-    static const std::vector<uint8_t> EXTERN_FIELD[10];
+    static const vector_type<uint8_t> EXTERN_FIELD[10];
     static const uint8_t UINT8_FIELD[10];
 
     static const uint8_t UINT8_MAX_BIT_NUMBER;
@@ -36,7 +43,7 @@ protected:
 
 const uint32_t PackedAutoArrayStructWithExternTest::UINT32_FIELD[] = {
         100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000, 180000, 190000};
-const std::vector<uint8_t> PackedAutoArrayStructWithExternTest::EXTERN_FIELD[] =
+const vector_type<uint8_t> PackedAutoArrayStructWithExternTest::EXTERN_FIELD[] =
         {{0xAB, 0xCD, 0xEF}, {0x00}, {0x01}, {0x00}, {0x01}, {0x00}, {0x01}, {0x00}, {0x01}, {0x00}};
 const uint8_t PackedAutoArrayStructWithExternTest::UINT8_FIELD[] = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18};
 

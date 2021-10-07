@@ -20,7 +20,8 @@ using allocator_type = MainStructure::allocator_type;
 using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
 template <typename T>
 using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
-using bit_buffer_type = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
+
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
 class ComplexAllocationTest : public ::testing::Test
 {
@@ -187,15 +188,15 @@ protected:
         structOptionalField.setOthers(std::move(others));
     }
 
-    bit_buffer_type createExternalField(const allocator_type& allocator)
+    BitBuffer createExternalField(const allocator_type& allocator)
     {
         const uint8_t externalFieldData[] = {static_cast<uint8_t>(EXTERNAL_FIELD_DATA >> 8),
                 static_cast<uint8_t>(EXTERNAL_FIELD_DATA)};
 
-        return bit_buffer_type(externalFieldData, EXTERNAL_FIELD_VAR_SIZE, allocator);
+        return BitBuffer(externalFieldData, EXTERNAL_FIELD_VAR_SIZE, allocator);
     }
 
-    void fillExternalArray(vector_type<bit_buffer_type>& externalArray, const allocator_type& allocator)
+    void fillExternalArray(vector_type<BitBuffer>& externalArray, const allocator_type& allocator)
     {
         externalArray.reserve(EXTERNAL_ARRAY_SIZE);
         externalArray.emplace_back(&EXTERNAL_ARRAY_ELEMENT0_DATA, EXTERNAL_ARRAY_ELEMENT0_VAR_SIZE, allocator);
@@ -638,7 +639,7 @@ protected:
             fillOptionalField(structOptionalField, allocator);
 
             // externalArray
-            vector_type<bit_buffer_type> externalArray(allocator);
+            vector_type<BitBuffer> externalArray(allocator);
             fillExternalArray(externalArray, allocator);
 
             if (hasCopyPropagatingAllocator())
@@ -700,7 +701,7 @@ protected:
             fillOptionalField(structOptionalField, allocator);
 
             // externalArray
-            vector_type<bit_buffer_type> externalArray(allocator);
+            vector_type<BitBuffer> externalArray(allocator);
             fillExternalArray(externalArray, allocator);
 
             MainStructure mainStructure(allocator);
