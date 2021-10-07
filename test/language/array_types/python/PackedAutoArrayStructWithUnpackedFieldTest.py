@@ -4,7 +4,7 @@ import zserio
 
 from testutils import getZserioApi, getApiDir
 
-class PackedAutoArrayStructRecursionTest(unittest.TestCase):
+class PackedAutoArrayStructWithUnpackedFieldTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "array_types.zs").packed_auto_array_struct_with_unpacked_field

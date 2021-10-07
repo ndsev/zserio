@@ -64,7 +64,7 @@ ${I}if self.${field.optional.indicatorName}():
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType || field.isExternType>
+        <#if field.isBuiltinType>
 ${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
@@ -116,7 +116,7 @@ ${I}value = zserio.bitposition.bits_to_bytes(end_bitposition)
 ${I}${field.offset.setter}
     </#if>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType || field.isExternType>
+        <#if field.isBuiltinType>
 ${I}end_bitposition += <@field_packing_context_node_name field/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
@@ -159,7 +159,7 @@ ${I}zserio_reader.alignto(8)
         <@compound_check_offset_field field, compoundName, "zserio_reader.bitposition", indent/>
     </#if>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType || field.isExternType>
+        <#if field.isBuiltinType>
 ${I}self.<@field_member_name field/> = <@field_packing_context_node_name field/>.context.read(<#rt>
         <#lt><@array_traits_create_field field/>, zserio_reader)
         <#else>
@@ -258,7 +258,7 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType || field.isExternType>
+        <#if field.isBuiltinType>
 ${I}<@field_packing_context_node_name field/>.context.write(<@array_traits_create_field field/>, <#rt>
         <#lt>zserio_writer, self.<@field_member_name field/>)
         <#else>
@@ -454,7 +454,7 @@ ${I}                                        (self.<@field_member_name field/>, l
 
 <#macro compound_create_packing_context_field field>
     <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
-        <#if field.isBuiltinType || field.isExternType>
+        <#if field.isBuiltinType>
         context_node.create_child().create_context()
         <#else>
         ${field.pythonTypeName}.create_packing_context(context_node.create_child())
@@ -479,7 +479,7 @@ ${I}if self.${field.optional.indicatorName}():
 <#macro compound_init_packing_context_field_inner field indent>
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isBuiltinType || field.isExternType>
+    <#if field.isBuiltinType>
 ${I}<@field_packing_context_node_name field/>.context.init(<@array_traits_create_field field/>, <#rt>
         <#lt>self.<@field_member_name field/>)
     <#else>
