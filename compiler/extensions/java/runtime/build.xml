@@ -115,6 +115,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
         <javac destdir="${zserio_java_runtime.classes_dir}" debug="on" encoding="utf8"
             includeAntRuntime="false">
             <compilerarg value="-Xlint:all"/>
+            <compilerarg value="-Xdoclint:all/public"/>
             <compilerarg value="-Werror"/>
             <src path="${zserio_java_runtime.src_dir}"/>
             <patternset refid="zserio_java_runtime.sources_patterns"/>
