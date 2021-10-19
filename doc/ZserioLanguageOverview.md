@@ -3,7 +3,7 @@
 This document contains a detailed specification of the zserio schema language. The Zserio Language Overview
 document is targeted for developers who write zserio schema definitions.
 
-Zserio is a serialization schema language for modeling binary datatypes, bitstreams or file formats. Based
+Zserio is a serialization schema language for modeling binary data types, bitstreams or file formats. Based
 on the zserio language it is possible to automatically generate encoders and decoders for a given schema
 in various target languages (e.g. Java, C++, Python).
 
@@ -245,7 +245,7 @@ struct TestStructure
 
 ### String Type
 
-A String type is denoted by `string`. It is represented by a length field (stored as a varuint64) followed by
+A String type is denoted by `string`. It is represented by a length field (stored as a `varsize`) followed by
 a sequence of bytes (8 bits) in UTF-8 encoding. The string type allows a reader to skip the byte sequence since
 its length is known upfront.
 
@@ -261,7 +261,7 @@ struct TestStructure
 
 External type is a zserio built-in type which format is not known by zserio. It is handled as arbitrary bit
 sequence which is passed to application for further processing. It is denoted by zserio keyword `extern`. It is
-represented by a number of bits (stored as a varuint64) followed by a bit sequence.
+represented by a number of bits (stored as a `varsize`) followed by a bit sequence.
 
 **Example**
 ```
@@ -349,7 +349,7 @@ bitmask uint8 Permission
 ```
 
 In the example above, `EXECUTABLE` is auto-assigned to 1, `READABLE` is manually assigned to 2 and the
-`WRITABLE` is assigned by finding the first unsued bit to value 4.
+`WRITABLE` is assigned by finding the first unused bit to value 4.
 
 A bitmask type provides its own lexical scope. The member names must be unique within each bitmask type.
 In expressions outside of the defining type, bitmask members must alway be prefixed by the type name and a dot,
@@ -1342,6 +1342,8 @@ line, it is rendered without indentation.
 
     !*/
 ```
+
+> Since `2.1.0`
 
 [top](#language-guide)
 
