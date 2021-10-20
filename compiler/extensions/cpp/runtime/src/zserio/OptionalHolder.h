@@ -187,7 +187,7 @@ public:
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
     explicit constexpr heap_optional_holder(const allocator_type& allocator = allocator_type()) noexcept :
-        m_storage(nullptr, allocator)
+            m_storage(nullptr, allocator)
     {}
 
     /**
@@ -195,8 +195,8 @@ public:
      *
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
-    constexpr heap_optional_holder(NullOptType, const allocator_type& allocator = allocator_type()) noexcept :
-        m_storage(nullptr, allocator)
+    constexpr heap_optional_holder(NullOptType,
+            const allocator_type& allocator = allocator_type()) noexcept : m_storage(nullptr, allocator)
     {}
 
     /**
@@ -206,7 +206,7 @@ public:
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
     heap_optional_holder(const T& value, const allocator_type& allocator = allocator_type()) :
-        m_storage(zserio::allocate_unique<T, allocator_type>(allocator, value))
+            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, value))
     {}
 
     /**
@@ -216,7 +216,7 @@ public:
      * \param allocator Allocator to be used to perform dynamic memory allocations.
      */
     heap_optional_holder(T&& value, const allocator_type& allocator = allocator_type()) :
-        m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::move(value)))
+            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::move(value)))
     {}
 
     /**
@@ -226,8 +226,8 @@ public:
      * \param u Parameters for object's constructor.
      */
     template <typename ...U>
-    heap_optional_holder(const allocator_type& allocator, U&& ...u) :
-        m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::forward<U>(u)...))
+    explicit heap_optional_holder(const allocator_type& allocator, U&& ...u) :
+            m_storage(zserio::allocate_unique<T, allocator_type>(allocator, std::forward<U>(u)...))
     {}
 
     /**
@@ -236,8 +236,8 @@ public:
      * \param other Other holder to copy.
      */
     heap_optional_holder(const heap_optional_holder& other) :
-        m_storage(copy_initialize(other,
-            allocator_traits::select_on_container_copy_construction(other.m_storage.get_deleter().get_allocator())))
+            m_storage(copy_initialize(other, allocator_traits::select_on_container_copy_construction(
+                    other.m_storage.get_deleter().get_allocator())))
     {}
 
     /**
@@ -247,7 +247,7 @@ public:
      * \param allocator Allocator to be used for dynamic memory allocations.
      */
     heap_optional_holder(const heap_optional_holder& other, const allocator_type& allocator) :
-        m_storage(copy_initialize(other, allocator))
+            m_storage(copy_initialize(other, allocator))
     {}
 
     /**
@@ -264,7 +264,7 @@ public:
      * \param allocator Allocator to be used for dynamic memory allocations.
      */
     heap_optional_holder(heap_optional_holder&& other, const allocator_type& allocator) :
-        m_storage(move_initialize(std::move(other), allocator))
+            m_storage(move_initialize(std::move(other), allocator))
     {
         other.reset();
     }
@@ -388,14 +388,14 @@ private:
     {
         reset();
         m_storage = zserio::allocate_unique<T, allocator_type>(
-            m_storage.get_deleter().get_allocator(), std::forward<U>(value));
+                m_storage.get_deleter().get_allocator(), std::forward<U>(value));
     }
 
     static storage_type copy_initialize(const heap_optional_holder& other, const allocator_type& allocator)
     {
         return other.hasValue() ?
-            zserio::allocate_unique<T, allocator_type>(allocator, *other) :
-            storage_type(nullptr, allocator);
+                zserio::allocate_unique<T, allocator_type>(allocator, *other) :
+                storage_type(nullptr, allocator);
     }
 
     static storage_type move_initialize(heap_optional_holder&& other, const allocator_type& allocator)
@@ -403,8 +403,8 @@ private:
         if (other.hasValue())
         {
             return allocator == other.m_storage.get_deleter().get_allocator() ?
-                std::move(other.m_storage) :
-                zserio::allocate_unique<T, allocator_type>(allocator, std::move(*other));
+                    std::move(other.m_storage) :
+                    zserio::allocate_unique<T, allocator_type>(allocator, std::move(*other));
         }
         else
             return storage_type(nullptr, allocator);

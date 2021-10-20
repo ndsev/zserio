@@ -40,7 +40,7 @@ public:
 
     <@compound_field_constructor_template_arg_list compoundConstructorsData.compoundName,
             compoundConstructorsData.fieldList/>
-    explicit ${compoundConstructorsData.compoundName}(
+    <#if compoundConstructorsData.fieldList?size == 1>explicit </#if>${compoundConstructorsData.compoundName}(
             <#lt><@compound_field_constructor_type_list compoundConstructorsData.fieldList, 3/>,
             const allocator_type& allocator = allocator_type()) :
             ${compoundConstructorsData.compoundName}(allocator)
