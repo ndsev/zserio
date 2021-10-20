@@ -151,7 +151,7 @@ public class ZserioTask extends Task
     private File    srcPath = null;
 
     private boolean ignoreError = false;
-    private String  extraArgs = null;
+    private String  extraArgs = "";
 
     private Vector<Path>        classpath = new Vector<Path>();
     private Vector<Argument>    arguments = new Vector<Argument>();
