@@ -69,7 +69,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         return 0;
 </#if>
     }
-    
+
     @Override
     public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
