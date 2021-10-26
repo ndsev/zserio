@@ -54,8 +54,8 @@ public class ArrayInstantiation extends TypeInstantiation
     /**
      * Gets whether the array is a packed array.
      *
-     * @note Packed arrays can be defined only for integral types or
-     *       for structures which contain packable fields.
+     * Note that packed arrays can be defined only for integral types or for structures which contain
+     * packable fields.
      *
      * @return True if the array is packed, false otherwise.
      */
@@ -67,7 +67,7 @@ public class ArrayInstantiation extends TypeInstantiation
     /**
      * Gets whether the array is an implicit array.
      *
-     * \note Implicit arrays have no length expression.
+     * Note that implicit arrays have no length expression.
      *
      * @return True if the array is implicit, false otherwise.
      */
