@@ -28,6 +28,8 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(bitmaskTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
+        underlyingTypeInfo = new TypeInfoTemplateData(bitmaskTypeInstantiation.getTypeReference(), nativeBaseType);
+
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         bitSize = createBitSize(bitmaskTypeInstantiation);
         baseCppTypeName = nativeBaseType.getFullName();
@@ -44,6 +46,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         values = new ArrayList<BitmaskValueData>(bitmaskValues.size());
         for (BitmaskValue bitmaskValue : bitmaskValues)
             values.add(new BitmaskValueData(nativeBaseType, bitmaskValue));
+    }
+
+    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    {
+        return underlyingTypeInfo;
     }
 
     public ArrayTraitsTemplateData getArrayTraits()
@@ -135,6 +142,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final TypeInfoTemplateData underlyingTypeInfo;
     private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final String baseCppTypeName;

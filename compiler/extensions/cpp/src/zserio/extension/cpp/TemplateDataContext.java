@@ -13,6 +13,7 @@ final class TemplateDataContext
         withWriterCode = cppParameters.getWithWriterCode();
         withRangeCheckCode = cppParameters.getWithRangeCheckCode();
         withValidationCode = cppParameters.getWithValidationCode();
+        withTypeInfoCode = cppParameters.getWithTypeInfoCode();
 
         generatorDescription =
                 "/**\n" +
@@ -61,6 +62,11 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCode;
+    }
+
     public boolean getWithValidationCode()
     {
         return withValidationCode;
@@ -82,6 +88,7 @@ final class TemplateDataContext
 
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;
+    private final boolean withTypeInfoCode;
     private final boolean withValidationCode;
     private final String generatorDescription;
 }

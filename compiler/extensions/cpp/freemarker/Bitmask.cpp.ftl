@@ -1,10 +1,14 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/HashCodeUtil.h>
 #include <zserio/StringConvertUtil.h>
 <#if upperBound??>
 #include <zserio/CppRuntimeException.h>
+</#if>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -33,6 +37,22 @@ ${name}::${name}(underlying_type value) :
 {
     if (m_value > ${upperBound})
         throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") + value + "!";
+}
+</#if>
+<#if withTypeInfoCode>
+
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    <@underlying_type_info_type_arguments_var "underlyingTypeArguments" underlyingTypeInfo/>
+
+    <@item_info_array_var "values" values/>
+
+    static const ::zserio::BitmaskTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"),
+        <@type_info underlyingTypeInfo/>, underlyingTypeArguments, values
+    };
+
+    return typeInfo;
 }
 </#if>
 

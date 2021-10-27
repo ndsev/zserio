@@ -16,6 +16,10 @@
 #include <zserio/StringConvertUtil.h>
 #include <zserio/PreWriteAction.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+#include <zserio/IIntrospectable.h>
+</#if>
 <@type_includes types.anyHolder/>
 <@type_includes types.allocator/>
 <@type_includes types.packingContextNode/>
@@ -62,6 +66,11 @@ public:
 </#if>
 
     <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
+<#if withTypeInfoCode>
+
+    static const ::zserio::ITypeInfo& typeInfo();
+    ::zserio::IIntrospectablePtr introspectable();
+</#if>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
 
     <#if needs_compound_initialization(compoundConstructorsData)>

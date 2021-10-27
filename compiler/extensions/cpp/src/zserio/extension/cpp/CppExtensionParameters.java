@@ -26,6 +26,7 @@ public class CppExtensionParameters
         withValidationCode = parameters.getWithValidationCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
         withSourcesAmalgamation = parameters.getWithSourcesAmalgamation();
+        withTypeInfoCode = parameters.getWithTypeInfoCode();
 
         final String cppAllocator = parameters.getCommandLineArg(OptionSetCppAllocator);
         if (cppAllocator == null || cppAllocator.equals(StdAllocator))
@@ -46,6 +47,8 @@ public class CppExtensionParameters
             description.add("validationCode");
         if (withRangeCheckCode)
             description.add("rangeCheckCode");
+        if (withTypeInfoCode)
+            description.add("typeInfoCode");
         if (withSourcesAmalgamation)
             description.add("sourcesAmalgamation");
         addAllocatorDescription(description);
@@ -75,6 +78,11 @@ public class CppExtensionParameters
     public boolean getWithSqlCode()
     {
         return withSqlCode;
+    }
+
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCode;
     }
 
     public boolean getWithValidationCode()
@@ -160,6 +168,7 @@ public class CppExtensionParameters
     private final boolean withPubsubCode;
     private final boolean withServiceCode;
     private final boolean withSqlCode;
+    private final boolean withTypeInfoCode;
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
     private final boolean withSourcesAmalgamation;

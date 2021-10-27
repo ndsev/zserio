@@ -51,6 +51,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/IService.h
     zserio/ISqliteDatabase.h
     zserio/ISqliteDatabaseReader.h
+    zserio/ITypeInfo.h
     zserio/IValidationObserver.h
     zserio/OptionalHolder.h
     zserio/PackingContext.h
@@ -64,6 +65,10 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/SqliteFinalizer.h
     zserio/StringConvertUtil.h
     zserio/StringView.h
+    zserio/TypeInfo.cpp
+    zserio/TypeInfo.h
+    zserio/TypeInfoUtil.cpp
+    zserio/TypeInfoUtil.h
     zserio/Types.h
     zserio/UniquePtr.h
     zserio/ValidationSqliteUtil.h

@@ -1,6 +1,7 @@
 package zserio.extension.cpp;
 
 import zserio.ast.ZserioType;
+import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
@@ -11,6 +12,7 @@ public class UserTypeTemplateData extends CppTemplateData
         super(context);
 
         nativeType = context.getCppNativeMapper().getCppType(type);
+        schemaTypeName = ZserioTypeUtil.getFullName(type);
         packageData = new PackageTemplateData(nativeType);
     }
 
@@ -24,11 +26,17 @@ public class UserTypeTemplateData extends CppTemplateData
         return nativeType.getFullName();
     }
 
+    public String getSchemaTypeName()
+    {
+        return schemaTypeName;
+    }
+
     public PackageTemplateData getPackage()
     {
         return packageData;
     }
 
     private final CppNativeType nativeType;
+    private final String schemaTypeName;
     private final PackageTemplateData packageData;
 }

@@ -1,8 +1,12 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/StringConvertUtil.h>
 #include <zserio/CppRuntimeException.h>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
+</#if>
 <@system_includes cppSystemIncludes/>
 
 <@user_include package.path, "${name}.h"/>
@@ -19,6 +23,23 @@
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
+<#if withTypeInfoCode>
+
+template <>
+const ITypeInfo& enumTypeInfo<${fullName}>()
+{
+    <@underlying_type_info_type_arguments_var "underlyingTypeArguments" underlyingTypeInfo/>
+
+    <@item_info_array_var "items" items/>
+
+    static const ::zserio::EnumTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"),
+        <@type_info underlyingTypeInfo/>, underlyingTypeArguments, items
+    };
+
+    return typeInfo;
+}
+</#if>
 
 template <>
 size_t enumToOrdinal(${fullName} value)

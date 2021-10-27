@@ -3,6 +3,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/StringConvertUtil.h>
@@ -11,6 +12,10 @@
 #include <zserio/BitPositionUtil.h>
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
+#include <zserio/Introspectable.h>
+</#if>
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
@@ -131,6 +136,35 @@ ${name}::${name}(::zserio::PropagateAllocatorT,
     <@compound_copy_initialization compoundConstructorsData/>
 }
 
+<#if withTypeInfoCode>
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    <@template_info_template_name_var "templateName", templateInstantiation!/>
+    <@template_info_template_arguments_var "templaArguments", templateInstantiation!/>
+
+    <#list fieldList as field>
+    <@field_info_type_arguments_var field/>
+    </#list>
+    <@field_info_array_var "fields", fieldList/>
+
+    <@parameter_info_array_var "parameters", compoundParametersData.list/>
+
+    <@function_info_array_var "functions", compoundFunctionsData.list/>
+
+    static const ::zserio::UnionTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"), templateName, templateArguments,
+        fields, parameters, functions
+    };
+
+    return typeInfo;
+}
+
+::zserio::IIntrospectablePtr ${name}::introspectable()
+{
+    return nullptr;
+}
+
+</#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
 <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
 

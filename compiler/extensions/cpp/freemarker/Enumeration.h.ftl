@@ -11,6 +11,9 @@
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+</#if>
 <@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
@@ -43,6 +46,11 @@ struct EnumTraits<${fullName}>
 </#list>
     }};
 };
+<#if withTypeInfoCode>
+
+template <>
+const ::zserio::ITypeInfo& enumTypeInfo<${fullName}>();
+</#if>
 
 template <>
 size_t enumToOrdinal<${fullName}>(${fullName} value);

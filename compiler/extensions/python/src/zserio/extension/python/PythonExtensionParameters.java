@@ -3,7 +3,6 @@ package zserio.extension.python;
 import java.util.StringJoiner;
 
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
 import zserio.extension.common.ZserioExtensionException;
@@ -25,7 +24,7 @@ class PythonExtensionParameters
         withServiceCode = parameters.getWithServiceCode();
         withSqlCode = parameters.getWithSqlCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
-        withTypeInfoCode = parameters.argumentExists(OptionNameWithTypeInfoCode);
+        withTypeInfoCode = parameters.getWithTypeInfoCode();
 
         final StringJoiner description = new StringJoiner(", ");
         if (withWriterCode)
@@ -89,14 +88,6 @@ class PythonExtensionParameters
         optionPython.setArgName("outputDir");
         optionPython.setRequired(false);
         options.addOption(optionPython);
-
-        final OptionGroup schemaInfoGroup = new OptionGroup();
-        Option option = new Option(OptionNameWithTypeInfoCode, false, "enable type info in Python code");
-        schemaInfoGroup.addOption(option);
-        option = new Option(OptionNameWithoutTypeInfoCode, false, "disable type info in Python code (default)");
-        schemaInfoGroup.addOption(option);
-        schemaInfoGroup.setRequired(false);
-        options.addOptionGroup(schemaInfoGroup);
     }
 
     static boolean hasOptionPython(ExtensionParameters parameters)
@@ -105,8 +96,6 @@ class PythonExtensionParameters
     }
 
     final static String OptionNamePython = "python";
-    final static String OptionNameWithTypeInfoCode = "withTypeInfoCode";
-    final static String OptionNameWithoutTypeInfoCode = "withoutTypeInfoCode";
 
     private final String outputDir;
     private final boolean withWriterCode;

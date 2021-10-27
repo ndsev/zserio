@@ -48,6 +48,18 @@ public class CompoundFieldTemplateData
         cppTypeName = fieldNativeType.getFullName();
         cppArgumentTypeName = fieldNativeType.getArgumentTypeName();
 
+        if (fieldTypeInstantiation instanceof ArrayInstantiation)
+        {
+            final TypeInstantiation elementTypeInstantiation =
+                    ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation();
+            final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
+            typeInfo = new TypeInfoTemplateData(elementTypeInstantiation.getTypeReference(), elementNativeType);
+        }
+        else
+        {
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), fieldNativeType);
+        }
+
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
         readerName = AccessorNameFormatter.getReaderName(field);
@@ -104,6 +116,11 @@ public class CompoundFieldTemplateData
     public String getCppArgumentTypeName()
     {
         return cppArgumentTypeName;
+    }
+
+    public TypeInfoTemplateData getTypeInfo()
+    {
+        return typeInfo;
     }
 
     public String getGetterName()
@@ -746,6 +763,7 @@ public class CompoundFieldTemplateData
     private final String name;
     private final String cppTypeName;
     private final String cppArgumentTypeName;
+    private final TypeInfoTemplateData typeInfo;
     private final String getterName;
     private final String setterName;
     private final String readerName;

@@ -17,6 +17,9 @@
 #include <zserio/IValidationObserver.h>
 #include <zserio/ValidationSqliteUtil.h>
 </#if>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+</#if>
 <@type_includes types.inplaceOptionalHolder/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
@@ -133,6 +136,10 @@ public:
 
     ${name}(${name}&&) = delete;
     ${name}& operator=(${name}&&) = delete;
+<#if withTypeInfoCode>
+
+    static const ::zserio::ITypeInfo& typeInfo();
+</#if>
 <#if withWriterCode>
 
     void createTable();

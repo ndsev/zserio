@@ -28,6 +28,8 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(enumTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
+        underlyingTypeInfo = new TypeInfoTemplateData(enumTypeInstantiation.getTypeReference(), nativeBaseType);
+
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         bitSize = createBitSize(enumTypeInstantiation);
         baseCppTypeName = nativeBaseType.getFullName();
@@ -40,6 +42,11 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         items = new ArrayList<EnumItemData>(enumItems.size());
         for (EnumItem enumItem : enumItems)
             items.add(new EnumItemData(nativeBaseType, nativeEnumType, enumItem));
+    }
+
+    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    {
+        return underlyingTypeInfo;
     }
 
     public ArrayTraitsTemplateData getArrayTraits()
@@ -116,6 +123,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
+    private final TypeInfoTemplateData underlyingTypeInfo;
     private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final String baseCppTypeName;

@@ -7,6 +7,9 @@
 #include <zserio/AllocatorHolder.h>
 #include <zserio/IPubsub.h>
 #include <zserio/PubsubException.h>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+</#if>
 <@type_includes types.vector/>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
@@ -22,6 +25,10 @@ public:
 
     ${name}(${name}&&) = default;
     ${name}& operator=(${name}&&) = delete;
+<#if withTypeInfoCode>
+
+    static const ::zserio::ITypeInfo& typeInfo();
+</#if>
 <#if hasSubscribing>
 
     template <typename ZSERIO_MESSAGE>

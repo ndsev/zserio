@@ -8,6 +8,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "zserio/ITypeInfo.h"
+
 // This should be implemented in runtime library header.
 namespace zserio
 {
@@ -23,6 +25,14 @@ template <typename T>
 struct EnumTraits
 {
 };
+
+/**
+ * Gets type info for the given enum type.
+ *
+ * \return Enum type info.
+ */
+template <typename T>
+const ITypeInfo& enumTypeInfo();
 
 /**
  * Gets ordinal number of the given enum item.
@@ -92,7 +102,6 @@ void initPackingContext(PACKING_CONTEXT_NODE& contextNode, T value);
  */
 template <typename T>
 size_t bitSizeOf(T value);
-
 
 /**
  * Gets bit size of the given enum item when it's inside a packed array.

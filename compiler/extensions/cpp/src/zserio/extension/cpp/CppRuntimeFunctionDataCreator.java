@@ -6,6 +6,7 @@ import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
@@ -40,6 +41,26 @@ public class CppRuntimeFunctionDataCreator
             // template data can be null, this need to be handled specially in template
             return visitor.getTemplateData();
         }
+    }
+
+    public static RuntimeFunctionTemplateData createTypeInfoData(TypeReference typeReference)
+            throws ZserioExtensionException
+    {
+        final BuiltinTypeInfoSuffixVisitor visitor = new BuiltinTypeInfoSuffixVisitor();
+        typeReference.getBaseTypeReference().getType().accept(visitor);
+
+        final ZserioExtensionException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
+
+        final RuntimeFunctionTemplateData templateData = visitor.getTemplateData();
+        if (templateData == null)
+        {
+            throw new ZserioExtensionException("Cannot map type '" + typeReference.getType().getName() +
+                    "' in createTypeInfoData!");
+        }
+
+        return templateData;
     }
 
     private static RuntimeFunctionTemplateData mapDynamicBitField(DynamicBitFieldInstantiation instantiation,
@@ -148,7 +169,62 @@ public class CppRuntimeFunctionDataCreator
             }
         }
 
-        private RuntimeFunctionTemplateData templateData = null;
-        private ZserioExtensionException thrownException = null;
+        protected RuntimeFunctionTemplateData templateData = null;
+        protected ZserioExtensionException thrownException = null;
+    }
+
+    private static class BuiltinTypeInfoSuffixVisitor extends Visitor
+    {
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType type)
+        {
+            try
+            {
+                final StringBuilder suffix = new StringBuilder("Dynamic");
+                if (type.isSigned())
+                    suffix.append("Signed");
+                else
+                    suffix.append("Unsigned");
+                suffix.append("BitField");
+                templateData = new RuntimeFunctionTemplateData(suffix.toString(),
+                        CppLiteralFormatter.formatUInt8Literal(type.getMaxBitSize()));
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
+        public void visitFixedBitFieldType(FixedBitFieldType type)
+        {
+            try
+            {
+                final StringBuilder suffix = new StringBuilder("Fixed");
+                if (type.isSigned())
+                    suffix.append("Signed");
+                else
+                    suffix.append("Unsigned");
+                suffix.append("BitField");
+                templateData = new RuntimeFunctionTemplateData(suffix.toString(),
+                        CppLiteralFormatter.formatUInt8Literal(type.getBitSize()));
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
+        public void visitStdIntegerType(StdIntegerType type)
+        {
+            final StringBuilder suffix = new StringBuilder();
+            if (!type.isSigned())
+                suffix.append("U");
+            suffix.append("Int");
+            suffix.append(type.getBitSize());
+
+            templateData = new RuntimeFunctionTemplateData(suffix.toString());
+        }
     }
 }
