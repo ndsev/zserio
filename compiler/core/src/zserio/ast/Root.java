@@ -73,11 +73,16 @@ public class Root extends AstNodeBase
 
     /**
      * Checks the root node.
+     *
+     * @param withGlobalRuleIdCheck Whether to check of rule id uniqueness between all packages.
      */
-    void check()
+    void check(boolean withGlobalRuleIdCheck)
     {
-        final RuleIdUniqueChecker checker = new RuleIdUniqueChecker();
-        accept(checker);
+        if (withGlobalRuleIdCheck)
+        {
+            final RuleIdUniqueChecker checker = new RuleIdUniqueChecker(withGlobalRuleIdCheck);
+            accept(checker);
+        }
     }
 
     /**

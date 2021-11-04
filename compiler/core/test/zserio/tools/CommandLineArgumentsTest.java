@@ -289,6 +289,27 @@ public class CommandLineArgumentsTest
     }
 
     @Test
+    public void withoutGlobalRuleIdCheckDefault() throws ParseException
+    {
+        final String[] args = {};
+        assertFalse(parse(args).getWithGlobalRuleIdCheck());
+    }
+
+    @Test
+    public void withGlobalRuleIdCheck() throws ParseException
+    {
+        final String[] args = { "-withGlobalRuleIdCheck" };
+        assertTrue(parse(args).getWithGlobalRuleIdCheck());
+    }
+
+    @Test(expected=ParseException.class)
+    public void globalRuleIdCheck() throws ParseException
+    {
+        final String[] args = { "-withGlobalRuleCheck", "-withoutGlobalRuleCheck" };
+        parse(args);
+    }
+
+    @Test
     public void withoutCrossExtensionCheck() throws ParseException
     {
         final String[] args = { "-withoutCrossExtensionCheck" };

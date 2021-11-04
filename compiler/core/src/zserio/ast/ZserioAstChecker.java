@@ -16,17 +16,19 @@ public class ZserioAstChecker extends ZserioAstWalker
      * Constructor.
      *
      * @param checkUnusedTypes Whether to check for unused types.
+     * @param withGlobalRuleIdCheck Whether to check of rule id uniqueness between all packages.
      */
-    public ZserioAstChecker(boolean checkUnusedTypes)
+    public ZserioAstChecker(boolean checkUnusedTypes, boolean withGlobalRuleIdCheck)
     {
         this.checkUnusedTypes = checkUnusedTypes;
+        this.withGlobalRuleIdCheck = withGlobalRuleIdCheck;
     }
 
     @Override
     public void visitRoot(Root root)
     {
         root.visitChildren(this);
-        root.check();
+        root.check(withGlobalRuleIdCheck);
         if (checkUnusedTypes)
         {
             for (ZserioType definedType : definedTypes)
@@ -225,6 +227,7 @@ public class ZserioAstChecker extends ZserioAstWalker
     }
 
     private final boolean checkUnusedTypes;
+    private final boolean withGlobalRuleIdCheck;
 
     private final Set<String> usedTypeNames = new HashSet<String>();
     private final List<ZserioType> definedTypes = new ArrayList<ZserioType>();

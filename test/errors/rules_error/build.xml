@@ -11,7 +11,9 @@
 
     <target name="gen" depends="gen.check" unless="rules_error.zs.gen_is_uptodate">
         <testGenClean testName="rules_error"/>
-        <testGen testName="rules_error" zsFile="duplicated_id_between_packages_error.zs" ignoreErrors="true"/>
+        <testGen testName="rules_error" zsFile="duplicated_id_between_packages_error.zs" ignoreErrors="true">
+            <arg name="withGlobalRuleIdCheck"/>
+        </testGen>
         <testGen testName="rules_error" zsFile="duplicated_id_within_group_error.zs" ignoreErrors="true"/>
         <testGen testName="rules_error" zsFile="duplicated_id_within_package_error.zs" ignoreErrors="true"/>
         <testGen testName="rules_error" zsFile="id_invalid_expression_type_error.zs" ignoreErrors="true"/>

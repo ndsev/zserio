@@ -229,6 +229,9 @@ public class Package extends DocumentableAstNode
         final PackageSymbolValidator packageSymbolValidator = new PackageSymbolValidator();
         for (PackageSymbol localSymbol : localSymbols.values())
             packageSymbolValidator.validate(localSymbol.getName(), localSymbol);
+
+        final RuleIdUniqueChecker checker = new RuleIdUniqueChecker();
+        accept(checker);
     }
 
     /**

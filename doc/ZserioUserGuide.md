@@ -36,6 +36,7 @@ java -jar zserio.jar
     [-src <source directory>]
     [-v,--version]
     [-withCrossExtensionCheck|-withoutCrossExtensionCheck]
+    [-withGlobalRuleIdCheck|-withoutGlobalRuleIdCheck]
     [-withPubsubCode|-withoutPubsubCode]
     [-withRangeCheckCode|-withoutRangeCheckCode]
     [-withServiceCode|-withoutServiceCode]
@@ -124,8 +125,13 @@ Shows the version of the Zserio tool.
 
 **`-withCrossExtensionCheck|-withoutCrossExtensionCheck`**
 
-Enabled/disables cross extension check, which causes that the checking phase is executed for all available
+Enables/disables cross extension check, which causes that the checking phase is executed for all available
 extensions. By default is enabled to simplify to write portable schemas.
+
+**`-withGlobalRuleIdCheck|-withoutGlobalRuleIdCheck`**
+
+Enables/disables the checking of rule id uniqueness in zserio language between all packages (globally).
+If it is disabled, the rule id uniqueness is checked only within a package. By default is disabled.
 
 **`-withPubsubCode|-withoutPubsubCode`**
 

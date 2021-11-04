@@ -191,6 +191,16 @@ class CommandLineArguments
     }
 
     /**
+     * Gets whether to enable checking of rule id uniqueness between all packages.
+     *
+     * @return True if command line arguments enable checking of rule id uniqueness between all packages.
+     */
+    public boolean getWithGlobalRuleIdCheck()
+    {
+        return withGlobalRuleIdCheckOption;
+    }
+
+    /**
      * Gets the top level package name identifier list.
      *
      * @return List of top level package name identifier or empty list if not specified.
@@ -217,7 +227,7 @@ class CommandLineArguments
      */
     public boolean getAllowImplicitArrays()
     {
-        return allowImplicitArrays;
+        return allowImplicitArraysOption;
     }
 
     /**
@@ -354,6 +364,16 @@ class CommandLineArguments
         crossExtensionCheckGroup.setRequired(false);
         options.addOptionGroup(crossExtensionCheckGroup);
 
+        final OptionGroup globalRuleIdCheckGroup = new OptionGroup();
+        option = new Option(OptionNameWithGlobalRuleIdCheck, false,
+                "enable rule id check for uniqueness between all packages");
+        globalRuleIdCheckGroup.addOption(option);
+        option = new Option(OptionNameWithoutGlobalRuleIdCheck, false,
+                "disable rule id check for uniqueness between all packages (default)");
+        globalRuleIdCheckGroup.addOption(option);
+        globalRuleIdCheckGroup.setRequired(false);
+        options.addOptionGroup(globalRuleIdCheckGroup);
+
         option = new Option(OptionNameSetTopLevelPackage, true,
                 "force top level package prefix to all zserio packages");
         option.setArgName("packageName");
@@ -383,11 +403,12 @@ class CommandLineArguments
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
         withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
         withCrossExtensionCheckOption = !hasOption(OptionNameWithoutCrossExtensionCheck);
+        withGlobalRuleIdCheckOption = hasOption(OptionNameWithGlobalRuleIdCheck);
         final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
         topLevelPackageNameIds = (topLevelPackageName == null) ? new ArrayList<String>() :
             java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
         ignoreTimestampsOption = hasOption(OptionNameIgnoreTimestamps);
-        allowImplicitArrays = hasOption(OptionNameAllowImplicitArrays);
+        allowImplicitArraysOption = hasOption(OptionNameAllowImplicitArrays);
 
         validateOptions();
 
@@ -501,6 +522,8 @@ class CommandLineArguments
     private static final String OptionNameWithoutUnusedWarnings = "withoutUnusedWarnings";
     private static final String OptionNameWithCrossExtensionCheck = "withCrossExtensionCheck";
     private static final String OptionNameWithoutCrossExtensionCheck = "withoutCrossExtensionCheck";
+    private static final String OptionNameWithGlobalRuleIdCheck = "withGlobalRuleIdCheck";
+    private static final String OptionNameWithoutGlobalRuleIdCheck = "withoutGlobalRuleIdCheck";
     private static final String OptionNameSetTopLevelPackage = "setTopLevelPackage";
     private static final String OptionNameIgnoreTimestamps = "ignoreTimestamps";
     private static final String OptionNameAllowImplicitArrays = "allowImplicitArrays";
@@ -525,7 +548,8 @@ class CommandLineArguments
     private boolean withWriterCodeOption;
     private boolean withUnusedWarningsOption;
     private boolean withCrossExtensionCheckOption;
+    private boolean withGlobalRuleIdCheckOption;
     private List<String> topLevelPackageNameIds;
     private boolean ignoreTimestampsOption;
-    private boolean allowImplicitArrays;
+    private boolean allowImplicitArraysOption;
 }

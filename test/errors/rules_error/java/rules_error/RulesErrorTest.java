@@ -23,7 +23,7 @@ public class RulesErrorTest
         final String errors[] =
         {
             "duplicated_id_between_packages_error.zs:11:10:     Conflicting rule defined here.",
-            "package_rules.zs:13:10: Rule ID 'rule-two' is not unique (case insensitive)!"
+            "package_rules.zs:13:10: Rule ID 'rule-two' is not unique (case insensitive) between all packages!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }
@@ -34,7 +34,8 @@ public class RulesErrorTest
         final String errors[] =
         {
             "duplicated_id_within_group_error.zs:6:10:     Conflicting rule defined here.",
-            "duplicated_id_within_group_error.zs:12:10: Rule ID 'rule-one' is not unique (case insensitive)!"
+            "duplicated_id_within_group_error.zs:12:10: Rule ID 'rule-one' is not unique (case insensitive) " +
+                    "within a package!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }
@@ -45,7 +46,8 @@ public class RulesErrorTest
         final String errors[] =
         {
             "duplicated_id_within_package_error.zs:6:10:     Conflicting rule defined here.",
-            "duplicated_id_within_package_error.zs:15:10: Rule ID 'rule-ONE' is not unique (case insensitive)!"
+            "duplicated_id_within_package_error.zs:15:10: Rule ID 'rule-ONE' is not unique (case " +
+                    "insensitive) within a package!"
         };
         assertTrue(zserioErrors.isPresent(errors));
     }

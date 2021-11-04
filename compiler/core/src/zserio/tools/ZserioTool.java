@@ -193,7 +193,8 @@ public class ZserioTool
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);
 
-        final ZserioAstChecker checker = new ZserioAstChecker(commandLineArguments.getWithUnusedWarnings());
+        final ZserioAstChecker checker = new ZserioAstChecker(commandLineArguments.getWithUnusedWarnings(),
+                commandLineArguments.getWithGlobalRuleIdCheck());
         rootNode.accept(checker);
 
         return rootNode;
