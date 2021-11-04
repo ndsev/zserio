@@ -55,7 +55,7 @@
         <#list ruleGroup.rules as rule>
             <tr>
               <th scope="row">
-                <span class="anchor-group" id="${rule.symbol.htmlLink.htmlAnchor}"><@symbol_reference rule.symbol/></span>
+                <@symbol_reference rule.symbol/>
               </th>
               <td>
                 <@doc_comments_all rule.docComments, 6, false/>
