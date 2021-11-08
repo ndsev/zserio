@@ -81,10 +81,11 @@ Description:
     Shows ANTLR4 parser tree.
 
 Usage:
-    $0 [-h] [-c] [-p] [-o <dir>] [-r rule] zserio_source
+    $0 [-h] [-e] [-c] [-p] [-o <dir>] [-r rule] zserio_source
 
 Arguments:
     -h, --help      Show this help.
+    -e, --help-env  Show help for enviroment variables.
     -c, --clean     Clean output directory and exit.
     -p, --purge     Purge output directory before start.
     -o <dir>, --output-directory <dir>
@@ -97,8 +98,6 @@ Examples:
     $0 test.zs
 
 EOF
-
-    print_parser_tree_help_env
 }
 
 # Parse all command line arguments.
@@ -108,6 +107,7 @@ EOF
 # 0 - Success. Arguments have been successfully parsed.
 # 1 - Failure. Some arguments are wrong or missing.
 # 2 - Help switch is present. Arguments after help switch have not been checked.
+# 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
     local NUM_OF_ARGS=5
@@ -128,6 +128,10 @@ parse_arguments()
         case "${ARG}" in
             "-h" | "--help")
                 return 2
+                ;;
+
+            "-e" | "--help-env")
+                return 3
                 ;;
 
             "-c" | "--clean")
@@ -191,8 +195,14 @@ main()
     local SWITCH_CLEAN
     local SWITCH_PURGE
     parse_arguments PARAM_ZSERIO_SOURCE PARAM_OUT_DIR PARAM_PARSER_RULE SWITCH_CLEAN SWITCH_PURGE $@
-    if [ $? -ne 0 ] ; then
+    local PARSE_RESULT=$?
+    if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
+        return 0
+    elif [ ${PARSE_RESULT} -eq 3 ] ; then
+        print_parser_tree_help_env
+        return 0
+    elif [ ${PARSE_RESULT} -ne 0 ] ; then
         return 1
     fi
 

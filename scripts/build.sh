@@ -199,6 +199,7 @@ EOF
 # 0 - Success. Arguments have been successfully parsed.
 # 1 - Failure. Some arguments are wrong or missing.
 # 2 - Help switch is present. Arguments after help switch have not been checked.
+# 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
     local NUM_OF_ARGS=11
