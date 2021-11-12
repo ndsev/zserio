@@ -38,6 +38,13 @@ set_release_global_variables()
             return 1
         fi
 
+        # MVN to use, defaults to "mvn" if not set
+        MVN="${MVN:-mvn}"
+        if [ ! -f "`which "${MVN}"`" ] ; then
+            stderr_echo "Cannot find cmake! Set MVN environment variable."
+            return 1
+        fi
+
         # python to use, defaults to "python3" if not set
         PYTHON="${PYTHON:-python3}"
         if [ ! -f "`which "${PYTHON}"`" ] ; then
@@ -100,6 +107,7 @@ Uses the following environment variables for releasing:
     GIT    Git executable to use. Default is "git".
     CMAKE  CMake executable to use. Default is "cmake".
     ANT    Ant executable to use. Default is "ant".
+    MVN    Mvn executable to use. Default is "mvn".
     PYTHON Python executable to use. Default is "python3".
 
     ZSERIO_PYPI_DIR             ZserioPyPi project directory. Default is "../../ZserioPyPi".
@@ -153,6 +161,27 @@ make_release()
     popd > /dev/null
 
     echo "Done"
+
+    return 0
+}
+
+# Upload Zserio jar together with runtime jars to Maven central repository.
+upload_jars()
+{
+    exit_if_argc_ne $# 2
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_BUILD_DIR="$1"; shift
+
+    echo "Uploading the latest Zserio release from GitHub to Maven central repository"
+    "${ANT}" -f "${ZSERIO_PROJECT_ROOT}/build.xml" \
+            -Dzserio.build_dir="${ZSERIO_BUILD_DIR}" \
+            -Dzserio.deploy.snapshot_flag=no deploy
+    local ANT_RESULT=$?
+    if [ ${ANT_RESULT} -ne 0 ] ; then
+        stderr_echo "Ant failed with return code ${ANT_RESULT}!"
+        return 1
+    fi
+    echo
 
     return 0
 }
@@ -352,13 +381,15 @@ Description:
     Releases Zserio to release-ver directory.
 
 Usage:
-    $0 [-h] [-e] [-u]
+    $0 [-h] [-e] [-u] [-o <dir>]
 
 Arguments:
     -h, --help     Show this help.
     -e, --help-env Show help for enviroment variables.
     -u, --update-dependent-respositories
                    Update all Zserio dependent repositories after Zserio release.
+    -o <dir>, --output-directory <dir>
+                   Output directory where build and distr are located.
 
 Examples:
     $0
@@ -376,8 +407,9 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=1
+    local NUM_OF_ARGS=2
     exit_if_argc_lt $# ${NUM_OF_ARGS}
+    local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_UPDATE_OUT="$1"; shift
 
     eval ${SWITCH_UPDATE_OUT}=0
@@ -397,6 +429,11 @@ parse_arguments()
             "-u" | "--update-dependent-respositories")
                 eval ${SWITCH_UPDATE_OUT}=1
                 shift
+                ;;
+
+            "-o" | "--output-directory")
+                eval ${PARAM_OUT_DIR_OUT}="$2"
+                shift 2
                 ;;
 
             "-"*)
@@ -420,9 +457,14 @@ parse_arguments()
 # Main entry of the script to make Zserio release.
 main()
 {
+    # get the project root (the absolute path is necessary for zip)
+    local ZSERIO_PROJECT_ROOT
+    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
+
     # parse command line arguments
+    local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_UPDATE
-    parse_arguments SWITCH_UPDATE $@
+    parse_arguments PARAM_OUT_DIR SWITCH_UPDATE $@
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -440,35 +482,43 @@ main()
         return 1
     fi
 
-    # get the project root (the absolute path is necessary for zip)
-    local ZSERIO_PROJECT_ROOT
-    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
-
-    # get Zserio release directory
-    local ZSERIO_RELEASE_DIR
-    local ZSERIO_VERSION
-    get_release_dir "${ZSERIO_PROJECT_ROOT}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
-    if [ $? -ne 0 ] ; then
-        return 1
-    fi
-
     # check if we should update dependent repositories after new Zserio release instead of making a release
     if [[ ${SWITCH_UPDATE} == 0 ]] ; then
         echo "Releasing Zserio binaries."
         echo
 
-        local ZSERIO_DISTR_DIR="${ZSERIO_PROJECT_ROOT}/distr"
-
+        # get Zserio release directory
+        local ZSERIO_RELEASE_DIR
+        local ZSERIO_VERSION
+        get_release_dir "${ZSERIO_PROJECT_ROOT}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
         rm -rf "${ZSERIO_RELEASE_DIR}"
         mkdir -p "${ZSERIO_RELEASE_DIR}"
 
+        # make a release
+        local ZSERIO_DISTR_DIR="${PARAM_OUT_DIR}/distr"
         make_release "${ZSERIO_VERSION}" "${ZSERIO_DISTR_DIR}" "${ZSERIO_RELEASE_DIR}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
     else
-        echo "Updating dependent repositories after new Zserio release."
+        local ZSERIO_VERSION=`curl -s https://api.github.com/repos/ndsev/zserio/releases/latest |
+                grep tag_name | cut -d\" -f4 | cut -c2-`
+        if [ $? -ne 0 -o -z "${ZSERIO_VERSION}" ] ; then
+            stderr_echo "Failed to grep the latest Zserio version from GitHub!"
+            return 1
+        fi
+
+        echo "Updating dependent repositories after new Zserio release ${ZSERIO_VERSION}."
         echo
+
+        local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
+        upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+        if [ $? -ne 0 ] ; then
+            return 1
+        fi
 
         upload_pypi "${ZSERIO_PYPI_DIR}"
         if [ $? -ne 0 ] ; then

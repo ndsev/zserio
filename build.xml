@@ -12,16 +12,35 @@ zserio_bundle.install_dir   - Directory where to install bundled Zserio tool.
                               Default is "${zserio_install_dir}".
 zserio_extensions.build_dir - Zserio extensions build directory.
                               Default is "${zserio.build_dir}/compiler/extensions".
+zserio.deploy.snapshot_flag - Flag whether to deploy snapshot. Default is "yes".
+maven.executable            - Maven executable to use for deployment. Default is "mvn".
+gpg.executable              - GnuPG executable to use for artifact signing. Default is "gpg".
 -->
 <project name="zserio" basedir="." default="jar" >
     <property name="zserio.build_dir" value="${basedir}/build" />
     <property name="zserio.install_dir" value="${basedir}/distr" />
+    <property name="zserio.deploy_dir" value="${zserio.build_dir}/deploy"/>
+    <property name="zserio.download_dir" value="${zserio.deploy_dir}/download"/>
     <property name="zserio_bundle.build_dir" value="${zserio.build_dir}/zserio" />
     <property name="zserio_bundle.install_dir" value="${zserio.install_dir}" />
 
-    <property name="zserio_bundle.jar_file_name" value="zserio.jar"/>
+    <property name="zserio.deploy.pom_template_file" value="${basedir}/mvn/deploy_pom_template.xml"/>
+    <property name="zserio.deploy.settings_template_file" value="${basedir}/mvn/deploy_settings_template.xml"/>
+
+    <property name="zserio.deploy.pom_bundle_file" value="${zserio.deploy_dir}/pom_bundle.xml"/>
+    <property name="zserio.deploy.pom_runtime_file" value="${zserio.deploy_dir}/pom_runtime.xml"/>
+    <property name="zserio.deploy.settings_file" value="${zserio.deploy_dir}/settings.xml"/>
+
     <property name="zserio_extensions.build_dir" location="${zserio.build_dir}/compiler/extensions"/>
     <property name="zserio.jars_dir" value="${zserio.install_dir}/zserio_libs"/>
+
+    <property name="zserio_bundle.jar_file_name" value="zserio.jar"/>
+    <property name="zserio_bundle.jar_file" value="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}"/>
+
+    <property name="zserio.deploy.snapshot_flag" value="yes"/>
+
+    <property name="maven.executable" value="mvn"/>
+    <property name="gpg.executable" value="gpg"/>
 
     <!-- Zserio release version -->
     <loadfile
@@ -56,7 +75,7 @@ zserio_extensions.build_dir - Zserio extensions build directory.
     <!-- Bundled Zserio -->
     <target name="zserio_bundle.clean" depends="clean">
         <delete dir="${zserio_bundle.build_dir}/metainf"/>
-        <delete file="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}"/>
+        <delete file="${zserio_bundle.jar_file}"/>
     </target>
 
     <target name="zserio_bundle.jar" depends="install">
@@ -67,7 +86,7 @@ zserio_extensions.build_dir - Zserio extensions build directory.
         <property name="commons_cli_jar_name" value="commons-cli-1.4.jar"/>
         <property name="freemarker_jar_name" value="freemarker-2.3.28.jar"/>
         <property name="antlr_jar_name" value="antlr-4.7.2-complete.jar"/>
-        <jar destfile="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}" duplicate="preserve">
+        <jar destfile="${zserio_bundle.jar_file}" duplicate="preserve">
             <restrict>
                 <not>
                     <name name="META-INF/*"/>
@@ -96,10 +115,169 @@ zserio_extensions.build_dir - Zserio extensions build directory.
 
     <target name="zserio_bundle.install" depends="zserio_bundle.jar">
         <mkdir dir="${zserio_bundle.install_dir}"/>
-        <copy file="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}"
-            todir="${zserio_bundle.install_dir}"/>
+        <copy file="${zserio_bundle.jar_file}" todir="${zserio_bundle.install_dir}"/>
     </target>
 
     <target name="zserio_bundle.test" depends="zserio_bundle.install">
+    </target>
+
+    <target name="download_zserio">
+        <mkdir dir="${zserio.download_dir}"/>
+
+        <property name="latest_release_json_full_name" value="${zserio.download_dir}/latest_release.json"/>
+        <get src="https://api.github.com/repos/ndsev/zserio/releases/latest"
+                dest="${latest_release_json_full_name}" usetimestamp="true"/>
+
+        <loadfile encoding="UTF-8" property="latest_zserio_version" srcFile="${latest_release_json_full_name}">
+            <filterchain>
+                <striplinebreaks/>
+                <tokenfilter>
+                    <replaceregex pattern='.*"tag_name"\s*:\s*"v([0-9\.]+)".*' replace="\1"/>
+                </tokenfilter>
+            </filterchain>
+        </loadfile>
+
+        <property name="github_https_download" value="https://github.com/ndsev/zserio/releases/download"/>
+        <property name="zserio_bin_zip_name" value="zserio-${latest_zserio_version}-bin.zip"/>
+        <property name="zserio_bin_zip_full_name" value="${zserio.download_dir}/${zserio_bin_zip_name}"/>
+        <get src="${github_https_download}/v${latest_zserio_version}/${zserio_bin_zip_name}"
+                dest="${zserio_bin_zip_full_name}" usetimestamp="true"/>
+        <unzip src="${zserio_bin_zip_full_name}" dest="${zserio.download_dir}"/>
+
+        <property name="zserio_runtime_libs_zip_name" value="zserio-${latest_zserio_version}-runtime-libs.zip"/>
+        <property name="zserio_runtime_libs_zip_full_name"
+                value="${zserio.download_dir}/${zserio_runtime_libs_zip_name}"/>
+        <get src="${github_https_download}/v${latest_zserio_version}/${zserio_runtime_libs_zip_name}"
+                dest="${zserio_runtime_libs_zip_full_name}" usetimestamp="true"/>
+        <unzip src="${zserio_runtime_libs_zip_full_name}" dest="${zserio.download_dir}"/>
+
+        <condition property="zserio.deploy.version"
+                value="${latest_zserio_version}-SNAPSHOT" else="${latest_zserio_version}">
+            <equals arg1="${zserio.deploy.snapshot_flag}" arg2="yes"/>
+        </condition>
+    </target>
+
+    <target name="generate_pom_bundle">
+        <local name="pom.artifactd_id"/>
+        <local name="pom.version"/>
+        <local name="pom.name"/>
+        <local name="pom.description"/>
+        <property name="pom.artifactd_id" value="zserio"/>
+        <property name="pom.version" value="${zserio.deploy.version}"/>
+        <property name="pom.name" value="Zserio Compiler"/>
+        <property name="pom.description" value="Zserio Serialization Framework Compiler"/>
+        <copy file="${zserio.deploy.pom_template_file}" tofile="${zserio.deploy.pom_bundle_file}">
+            <filterchain>
+                <filterreader classname="org.apache.tools.ant.filters.ExpandProperties"/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="generate_pom_runtime">
+        <local name="pom.artifactd_id"/>
+        <local name="pom.version"/>
+        <local name="pom.name"/>
+        <local name="pom.description"/>
+        <property name="pom.artifactd_id" value="zserio-runtime"/>
+        <property name="pom.version" value="${zserio.deploy.version}"/>
+        <property name="pom.name" value="Zserio Runtime"/>
+        <property name="pom.description" value="Java Runtime library for Zserio Serialization Framework"/>
+        <copy file="${zserio.deploy.pom_template_file}" tofile="${zserio.deploy.pom_runtime_file}">
+            <filterchain>
+                <filterreader classname="org.apache.tools.ant.filters.ExpandProperties"/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="generate_settings">
+        <property name="zserio.deploy.repository_id" value="ossrh"/>
+        <property name="settings.repository_id" value="${zserio.deploy.repository_id}"/>
+        <copy file="${zserio.deploy.settings_template_file}" tofile="${zserio.deploy.settings_file}">
+            <filterchain>
+                <filterreader classname="org.apache.tools.ant.filters.ExpandProperties"/>
+            </filterchain>
+        </copy>
+    </target>
+
+    <target name="deploy"
+            depends="download_zserio, generate_pom_bundle, generate_pom_runtime, generate_settings">
+        <property name="zserio.deploy.release_repo_url"
+                value="https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"/>
+        <property name="zserio.deploy.snapshot_repo_url"
+                value="https://s01.oss.sonatype.org/content/repositories/snapshots"/>
+        <condition property="zserio.deploy.repo_url"
+                value="${zserio.deploy.snapshot_repo_url}" else="${zserio.deploy.release_repo_url}">
+            <equals arg1="${zserio.deploy.snapshot_flag}" arg2="yes"/>
+        </condition>
+        <echo message="Deploying zserio version '${zserio.deploy.version}' to '${zserio.deploy.repo_url}'"/>
+
+        <input message="Please enter repository user name: "
+                addproperty="zserio.deploy.user_name">
+            <handler classname="org.apache.tools.ant.input.DefaultInputHandler"/>
+        </input>
+
+        <input message="Please enter repository password: "
+                addproperty="zserio.deploy.password">
+            <handler classname="org.apache.tools.ant.input.SecureInputHandler"/>
+        </input>
+
+        <!-- sign and deploy the zserio compiler artifact -->
+        <exec executable="${maven.executable}">
+            <arg value="gpg:sign-and-deploy-file"/>
+            <arg value="--settings"/>
+            <arg value="${zserio.deploy.settings_file}"/>
+            <arg value="-Dgpg.executable=${gpg.executable}"/>
+            <arg value="-Dfile=${zserio.download_dir}/${zserio_bundle.jar_file_name}"/>
+            <arg value="-Durl=${zserio.deploy.repo_url}"/>
+            <arg value="-DrepositoryId=${zserio.deploy.repository_id}"/>
+            <arg value="-DpomFile=${zserio.deploy.pom_bundle_file}"/>
+            <arg value="-DrepositoryUsername=${zserio.deploy.user_name}"/>
+            <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
+        </exec>
+
+        <!-- sign and deploy the zserio runtime artifact -->
+        <property name="zserio.download_java_runtime_dir" value="${zserio.download_dir}/runtime_libs/java/"/>
+        <exec executable="${maven.executable}">
+            <arg value="gpg:sign-and-deploy-file"/>
+            <arg value="--settings"/>
+            <arg value="${zserio.deploy.settings_file}"/>
+            <arg value="-Dgpg.executable=${gpg.executable}"/>
+            <arg value="-Dfile=${zserio.download_java_runtime_dir}/zserio_runtime.jar"/>
+            <arg value="-Durl=${zserio.deploy.repo_url}"/>
+            <arg value="-DrepositoryId=${zserio.deploy.repository_id}"/>
+            <arg value="-DpomFile=${zserio.deploy.pom_runtime_file}"/>
+            <arg value="-DrepositoryUsername=${zserio.deploy.user_name}"/>
+            <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
+        </exec>
+
+        <!-- sign and deploy the zserio runtime sources artifact -->
+        <exec executable="${maven.executable}">
+            <arg value="gpg:sign-and-deploy-file"/>
+            <arg value="--settings"/>
+            <arg value="${zserio.deploy.settings_file}"/>
+            <arg value="-Dgpg.executable=${gpg.executable}"/>
+            <arg value="-Dfile=${zserio.download_java_runtime_dir}/zserio_runtime_sources.jar"/>
+            <arg value="-Durl=${zserio.deploy.repo_url}"/>
+            <arg value="-DrepositoryId=${zserio.deploy.repository_id}"/>
+            <arg value="-Dclassifier=sources"/>
+            <arg value="-DpomFile=${zserio.deploy.pom_runtime_file}"/>
+            <arg value="-DrepositoryUsername=${zserio.deploy.user_name}"/>
+            <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
+        </exec>
+
+        <!-- sign and deploy the zserio runtime javadoc artifact -->
+        <exec executable="${maven.executable}">
+            <arg value="gpg:sign-and-deploy-file"/>
+            <arg value="--settings"/>
+            <arg value="${zserio.deploy.settings_file}"/>
+            <arg value="-Dgpg.executable=${gpg.executable}"/>
+            <arg value="-Dfile=${zserio.download_java_runtime_dir}/zserio_runtime_javadocs.jar"/>
+            <arg value="-Durl=${zserio.deploy.repo_url}"/>
+            <arg value="-DrepositoryId=${zserio.deploy.repository_id}"/>
+            <arg value="-Dclassifier=javadoc"/>
+            <arg value="-DpomFile=${zserio.deploy.pom_runtime_file}"/>
+            <arg value="-DrepositoryUsername=${zserio.deploy.user_name}"/>
+            <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
+        </exec>
     </target>
 </project>

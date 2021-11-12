@@ -1,0 +1,9 @@
+<settings>
+    <servers>
+        <server>
+            <id>${settings.repository_id}</id>
+            <username>$${repositoryUsername}</username>
+            <password>$${repositoryPassword}</password>
+        </server>
+    </servers>
+</settings>
