@@ -630,7 +630,7 @@ main()
     # get Zserio release directory
     local ZSERIO_RELEASE_DIR
     local ZSERIO_VERSION
-    get_release_dir "${ZSERIO_PROJECT_ROOT}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
+    get_release_dir "${ZSERIO_PROJECT_ROOT}" "${PARAM_OUT_DIR}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
     if [ $? -ne 0 ] ; then
         return 1
     fi

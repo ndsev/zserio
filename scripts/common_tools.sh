@@ -514,8 +514,9 @@ get_zserio_version()
 # Get Zserio release directory and version from Zserio sources.
 get_release_dir()
 {
-    exit_if_argc_ne $# 3
+    exit_if_argc_ne $# 4
     local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_OUT_DIR="$1"; shift
     local ZSERIO_RELEASE_DIR_OUT="$1"; shift
     local ZSERIO_VERSION_OUT="$1"; shift
 
@@ -525,7 +526,7 @@ get_release_dir()
         return 1
     fi
 
-    eval ${ZSERIO_RELEASE_DIR_OUT}="'${ZSERIO_PROJECT_ROOT}/release-${ZSERIO_VERSION_GET_RELEASE_DIR}'"
+    eval ${ZSERIO_RELEASE_DIR_OUT}="'${ZSERIO_OUT_DIR}/release-${ZSERIO_VERSION_GET_RELEASE_DIR}'"
     eval ${ZSERIO_VERSION_OUT}="'${ZSERIO_VERSION_GET_RELEASE_DIR}'"
 
     return 0

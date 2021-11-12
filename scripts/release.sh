@@ -457,9 +457,8 @@ parse_arguments()
 # Main entry of the script to make Zserio release.
 main()
 {
-    # get the project root (the absolute path is necessary for zip)
-    local ZSERIO_PROJECT_ROOT
-    convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
+    # get the project root
+    local ZSERIO_PROJECT_ROOT="${SCRIPT_DIR}/.."
 
     # parse command line arguments
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
@@ -476,6 +475,9 @@ main()
         return 1
     fi
 
+    # get the output directory (the absolute path is necessary for zip)
+    convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
+
     # set global variables
     set_release_global_variables ${SWITCH_UPDATE}
     if [ $? -ne 0 ] ; then
@@ -490,7 +492,7 @@ main()
         # get Zserio release directory
         local ZSERIO_RELEASE_DIR
         local ZSERIO_VERSION
-        get_release_dir "${ZSERIO_PROJECT_ROOT}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
+        get_release_dir "${ZSERIO_PROJECT_ROOT}" "${PARAM_OUT_DIR}" ZSERIO_RELEASE_DIR ZSERIO_VERSION
         if [ $? -ne 0 ] ; then
             return 1
         fi
