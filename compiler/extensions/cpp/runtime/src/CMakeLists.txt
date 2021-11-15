@@ -47,6 +47,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/HashCodeUtil.h
     zserio/FileUtil.cpp
     zserio/FileUtil.h
+    zserio/IIntrospectable.h
+    zserio/Introspectable.h
     zserio/IPubsub.h
     zserio/IService.h
     zserio/ISqliteDatabase.h
@@ -79,6 +81,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/BitBuffer.h
     zserio/pmr/BlobBuffer.h
     zserio/pmr/HeapOptionalHolder.h
+    zserio/pmr/IIntrospectable.h
+    zserio/pmr/Introspectable.h
     zserio/pmr/Map.h
     zserio/pmr/MemoryResource.cpp
     zserio/pmr/MemoryResource.h
