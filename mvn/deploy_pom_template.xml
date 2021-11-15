@@ -3,7 +3,7 @@
     <groupId>io.github.ndsev</groupId>
     <artifactId>${pom.artifactd_id}</artifactId>
     <version>${pom.version}</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
     <name>${pom.name}</name>
     <description>${pom.description}</description>
     <url>https://github.com/ndsev/zserio</url>
