@@ -16,7 +16,7 @@ zserio.deploy.snapshot_flag - Flag whether to deploy snapshot. Default is "yes".
 maven.executable            - Maven executable to use for deployment. Default is "mvn".
 gpg.executable              - GnuPG executable to use for artifact signing. Default is "gpg".
 -->
-<project name="zserio" basedir="." default="jar" >
+<project name="zserio" basedir="." default="jar">
     <property name="zserio.build_dir" value="${basedir}/build" />
     <property name="zserio.install_dir" value="${basedir}/distr" />
     <property name="zserio.deploy_dir" value="${zserio.build_dir}/deploy"/>
@@ -34,8 +34,36 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
     <property name="zserio_extensions.build_dir" location="${zserio.build_dir}/compiler/extensions"/>
     <property name="zserio.jars_dir" value="${zserio.install_dir}/zserio_libs"/>
 
+    <property name="commons_cli_jar_name" value="commons-cli-1.4.jar"/>
+    <property name="freemarker_jar_name" value="freemarker-2.3.28.jar"/>
+    <property name="antlr_jar_name" value="antlr-4.7.2-complete.jar"/>
+
     <property name="zserio_bundle.jar_file_name" value="zserio.jar"/>
+    <property name="zserio_bundle.javadocs_jar_file_name" value="zserio_javadocs.jar"/>
+    <property name="zserio_bundle.sources_jar_file_name" value="zserio_sources.jar"/>
+
     <property name="zserio_bundle.jar_file" value="${zserio_bundle.build_dir}/${zserio_bundle.jar_file_name}"/>
+    <property name="zserio_bundle.javadocs_jar_file"
+            value="${zserio_bundle.build_dir}/${zserio_bundle.javadocs_jar_file_name}"/>
+    <property name="zserio_bundle.sources_jar_file"
+            value="${zserio_bundle.build_dir}/${zserio_bundle.sources_jar_file_name}"/>
+
+    <property name="zserio_bundle.src_dir" location="${basedir}/compiler"/>
+    <property name="zserio_bundle.javadocs_dir" value="${zserio_bundle.build_dir}/javadocs"/>
+    <uptodate property="zserio_bundle.javadocs_up_to_date">
+        <srcfiles dir= "${zserio_bundle.src_dir}" includes="**/*.java" excludes="**/runtime/**/*.java"/>
+        <mapper type="merge" to="${zserio_bundle.javadocs_dir}/index.html"/>
+    </uptodate>
+
+    <patternset id="zserio_bundle.sources_patterns">
+        <include name="**/*.java"/>
+        <exclude name="**/runtime/**/*.java"/>
+        <exclude name="**/test/**/*.java"/>
+    </patternset>
+
+    <fileset id="zserio_bundle.sources" dir="${zserio_bundle.src_dir}">
+        <patternset refid="zserio_bundle.sources_patterns"/>
+    </fileset>
 
     <property name="zserio.deploy.snapshot_flag" value="yes"/>
 
@@ -74,18 +102,35 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
 
     <!-- Bundled Zserio -->
     <target name="zserio_bundle.clean" depends="clean">
-        <delete dir="${zserio_bundle.build_dir}/metainf"/>
-        <delete file="${zserio_bundle.jar_file}"/>
+        <delete dir="${zserio_bundle.build_dir}"/>
     </target>
 
-    <target name="zserio_bundle.jar" depends="install">
+    <target name="zserio_bundle.javadocs" unless="zserio_bundle.javadocs_up_to_date">
+        <tstamp>
+            <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
+        </tstamp>
+        <javadoc packagenames="zserio.*" destdir="${zserio_bundle.javadocs_dir}"
+            failonerror="true" failonwarning="true">
+            <fileset refid="zserio_bundle.sources"/>
+            <doctitle>
+                <![CDATA[<h1>Zserio Compiler</h1><h2>Version ${zserio.version}</h2]]>
+            </doctitle>
+            <bottom>
+                <![CDATA[<i>Last updated ${timestamp}</i>]]>
+            </bottom>
+            <classpath>
+                <fileset dir="${zserio.jars_dir}">
+                  <include name="*.jar"/>
+                </fileset>
+            </classpath>
+        </javadoc>
+    </target>
+
+    <target name="zserio_bundle.jar" depends="install, zserio_bundle.javadocs">
         <mkdir dir="${zserio_bundle.build_dir}"/>
         <concat destfile="${zserio_bundle.build_dir}/metainf/services/zserio.tools.Extension">
             <fileset dir="${zserio_extensions.build_dir}" includes="**/metainf/**/*" erroronmissingdir="false"/>
         </concat>
-        <property name="commons_cli_jar_name" value="commons-cli-1.4.jar"/>
-        <property name="freemarker_jar_name" value="freemarker-2.3.28.jar"/>
-        <property name="antlr_jar_name" value="antlr-4.7.2-complete.jar"/>
         <jar destfile="${zserio_bundle.jar_file}" duplicate="preserve">
             <restrict>
                 <not>
@@ -111,11 +156,29 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
             </manifest>
             <metainf dir="${zserio_bundle.build_dir}/metainf" includes="**/*" erroronmissingdir="false"/>
         </jar>
+
+        <jar destfile="${zserio_bundle.javadocs_jar_file}">
+            <fileset dir="${zserio_bundle.javadocs_dir}">
+                <include name="**"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio.version}"/>
+            </manifest>
+        </jar>
+
+        <jar destfile="${zserio_bundle.sources_jar_file}">
+            <fileset refid="zserio_bundle.sources"/>
+            <manifest>
+                <attribute name="Implementation-Version" value="${zserio.version}"/>
+            </manifest>
+        </jar>
     </target>
 
     <target name="zserio_bundle.install" depends="zserio_bundle.jar">
         <mkdir dir="${zserio_bundle.install_dir}"/>
         <copy file="${zserio_bundle.jar_file}" todir="${zserio_bundle.install_dir}"/>
+        <copy file="${zserio_bundle.javadocs_jar_file}" todir="${zserio_bundle.install_dir}"/>
+        <copy file="${zserio_bundle.sources_jar_file}" todir="${zserio_bundle.install_dir}"/>
     </target>
 
     <target name="zserio_bundle.test" depends="zserio_bundle.install">
@@ -199,8 +262,12 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
         </copy>
     </target>
 
-    <target name="deploy"
-            depends="download_zserio, generate_pom_bundle, generate_pom_runtime, generate_settings">
+    <target name="deploy_clean">
+        <delete dir="${zserio.deploy_dir}"/>
+    </target>
+
+    <target name="deploy" depends="deploy_clean, download_zserio, generate_pom_runtime, generate_pom_bundle,
+            generate_settings">
         <property name="zserio.deploy.release_repo_url"
                 value="https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"/>
         <property name="zserio.deploy.snapshot_repo_url"
@@ -222,7 +289,7 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
         </input>
 
         <!-- sign and deploy the zserio compiler artifact -->
-        <exec executable="${maven.executable}">
+        <exec executable="${maven.executable}" failonerror="true">
             <arg value="gpg:sign-and-deploy-file"/>
             <arg value="--settings"/>
             <arg value="${zserio.deploy.settings_file}"/>
@@ -235,9 +302,39 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
             <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
         </exec>
 
+        <!-- sign and deploy the zserio compiler sources artifact -->
+        <exec executable="${maven.executable}" failonerror="true">
+            <arg value="gpg:sign-and-deploy-file"/>
+            <arg value="--settings"/>
+            <arg value="${zserio.deploy.settings_file}"/>
+            <arg value="-Dgpg.executable=${gpg.executable}"/>
+            <arg value="-Dfile=${zserio.download_dir}/${zserio_bundle.sources_jar_file_name}"/>
+            <arg value="-Durl=${zserio.deploy.repo_url}"/>
+            <arg value="-DrepositoryId=${zserio.deploy.repository_id}"/>
+            <arg value="-Dclassifier=sources"/>
+            <arg value="-DpomFile=${zserio.deploy.pom_bundle_file}"/>
+            <arg value="-DrepositoryUsername=${zserio.deploy.user_name}"/>
+            <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
+        </exec>
+
+        <!-- sign and deploy the zserio compiler javadocs artifact -->
+        <exec executable="${maven.executable}" failonerror="true">
+            <arg value="gpg:sign-and-deploy-file"/>
+            <arg value="--settings"/>
+            <arg value="${zserio.deploy.settings_file}"/>
+            <arg value="-Dgpg.executable=${gpg.executable}"/>
+            <arg value="-Dfile=${zserio.download_dir}/${zserio_bundle.javadocs_jar_file_name}"/>
+            <arg value="-Durl=${zserio.deploy.repo_url}"/>
+            <arg value="-DrepositoryId=${zserio.deploy.repository_id}"/>
+            <arg value="-Dclassifier=javadoc"/>
+            <arg value="-DpomFile=${zserio.deploy.pom_bundle_file}"/>
+            <arg value="-DrepositoryUsername=${zserio.deploy.user_name}"/>
+            <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
+        </exec>
+
         <!-- sign and deploy the zserio runtime artifact -->
         <property name="zserio.download_java_runtime_dir" value="${zserio.download_dir}/runtime_libs/java/"/>
-        <exec executable="${maven.executable}">
+        <exec executable="${maven.executable}" failonerror="true">
             <arg value="gpg:sign-and-deploy-file"/>
             <arg value="--settings"/>
             <arg value="${zserio.deploy.settings_file}"/>
@@ -251,7 +348,7 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
         </exec>
 
         <!-- sign and deploy the zserio runtime sources artifact -->
-        <exec executable="${maven.executable}">
+        <exec executable="${maven.executable}" failonerror="true">
             <arg value="gpg:sign-and-deploy-file"/>
             <arg value="--settings"/>
             <arg value="${zserio.deploy.settings_file}"/>
@@ -265,8 +362,8 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
             <arg value="-DrepositoryPassword=${zserio.deploy.password}"/>
         </exec>
 
-        <!-- sign and deploy the zserio runtime javadoc artifact -->
-        <exec executable="${maven.executable}">
+        <!-- sign and deploy the zserio runtime javadocs artifact -->
+        <exec executable="${maven.executable}" failonerror="true">
             <arg value="gpg:sign-and-deploy-file"/>
             <arg value="--settings"/>
             <arg value="${zserio.deploy.settings_file}"/>

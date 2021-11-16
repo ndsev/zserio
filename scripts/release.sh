@@ -144,8 +144,8 @@ make_release()
     pushd "${ZSERIO_RELEASE_SRC_DIR}" > /dev/null
 
     # create zip: jar
-    "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" "ant_task" \
-            "zserio_libs" "zserio.jar"
+    "${ZIP}" -rq "${ZSERIO_RELEASE_ZIP_DIR}/zserio-${ZSERIO_VERSION}-bin.zip" "ant_task" "zserio_libs" \
+            "zserio.jar" "zserio_javadocs.jar" "zserio_sources.jar"
     if [ $? -ne 0 ] ; then
         stderr_echo "Can't zip Zserio release (bin)."
         return 1
@@ -181,6 +181,10 @@ upload_jars()
         stderr_echo "Ant failed with return code ${ANT_RESULT}!"
         return 1
     fi
+    echo $'\e[1;33m'"Don't forget to check the staged repository at" \
+            "https://s01.oss.sonatype.org/#stagingRepositories!"$'\e[0m'
+    echo $'\e[1;33m'"If it is ok, push Close and Release buttons to copy artifacts to Maven Central!"$'\e[0m'
+    read -n 1 -s -r -p "Press any key to continue..."
     echo
 
     return 0

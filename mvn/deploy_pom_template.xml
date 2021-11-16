@@ -4,6 +4,7 @@
     <artifactId>${pom.artifactd_id}</artifactId>
     <version>${pom.version}</version>
     <packaging>jar</packaging>
+
     <name>${pom.name}</name>
     <description>${pom.description}</description>
     <url>https://github.com/ndsev/zserio</url>
@@ -12,12 +13,27 @@
         <license>
             <name>BSD 3-Clause License</name>
             <url>https://github.com/ndsev/zserio/blob/master/LICENSE</url>
-            <distribution>repo</distribution>
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Miki Rozloznik</name>
+            <email>mikulas.rozloznik@eccam.com</email>
+            <organization>Eccam</organization>
+            <organizationUrl>https://www.eccam.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Milan Kriz</name>
+            <email>milan.kriz@eccam.com</email>
+            <organization>Eccam</organization>
+            <organizationUrl>https://www.eccam.com</organizationUrl>
+        </developer>
+    </developers>
+
     <scm>
-        <connection>scm:git:https://github.com/ndsev/zserio.git</connection>
+        <connection>scm:git:git://github.com/ndsev/zserio.git</connection>
+        <developerConnection>scm:git:ssh://github.com:ndsev/zserio.git</developerConnection>
         <url>https://github.com/ndsev/zserio</url>
     </scm>
 </project>
