@@ -80,7 +80,7 @@ public abstract class CppNativeType
     }
 
     /**
-     * Returns a list with names of files to be included by '#include <...>'.
+     * Returns a list with names of files to be included by '#include &lt;...&gt;'.
      */
     public SortedSet<String> getSystemIncludeFiles()
     {

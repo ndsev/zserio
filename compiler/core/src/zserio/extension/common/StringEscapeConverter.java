@@ -11,7 +11,7 @@ public class StringEscapeConverter
     /**
      * Converts unicode escape sequences to hexadecimal in given string.
      *
-     * Only unicode escape sequences from interval <'\u0000', '\u00FF'> are converted.
+     * Only unicode escape sequences from interval &lt;'\u0000', '\u00FF'&gt; are converted.
      *
      * @param stringToConvert String for escape sequences conversion.
      *

@@ -5,8 +5,8 @@ import java.math.BigInteger;
 /**
  * AST node for built-in signed and unsigned dynamic bit field types.
  *
- * Dynamic bit field types (int<expr>, bit<expr>, ...) are Zserio built-in bit field types with length
- * defined by expression.
+ * Dynamic bit field types (int&lt;expr&gt;, bit&lt;expr&gt;, ...) are Zserio built-in bit field types with
+ * length defined by expression.
  */
 public class DynamicBitFieldType extends IntegerType
 {
