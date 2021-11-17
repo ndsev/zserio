@@ -22,6 +22,7 @@ public:
     virtual ~IBasicIntrospectable() {};
 
     virtual const ITypeInfo& getTypeInfo() const = 0;
+    virtual bool isArray() const = 0;
 
     virtual Ptr getField(StringView name) const = 0;
     virtual void setField(StringView name, const Ptr& value) = 0;

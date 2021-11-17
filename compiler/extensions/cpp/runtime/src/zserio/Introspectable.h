@@ -24,6 +24,7 @@ public:
     // TODO: isConst ???
 
     virtual const ITypeInfo& getTypeInfo() const override;
+    virtual bool isArray() const override;
 
     virtual IIntrospectablePtr getField(StringView name) const override;
     virtual void setField(StringView name, const IIntrospectablePtr& value) override;
@@ -62,81 +63,6 @@ private:
     const ITypeInfo& m_typeInfo;
 };
 
-// TODO[Mi-L@]: Check if multiple inheritance is ok!
-template <typename ALLOC>
-class IntrospectableAllocatorHolderBase : public IntrospectableBase<ALLOC>, public AllocatorHolder<ALLOC>
-{
-public:
-    using AllocatorHolder<ALLOC>::get_allocator;
-
-    IntrospectableAllocatorHolderBase(const ITypeInfo& typeInfo, const ALLOC& allocator) :
-            IntrospectableBase<ALLOC>(typeInfo), AllocatorHolder<ALLOC>(allocator)
-    {}
-};
-
-template <typename ALLOC, typename RAW_ARRAY, class BUILTIN_INTROSPECTABLE>
-class BasicBuiltinIntrospectableArray : public IntrospectableAllocatorHolderBase<ALLOC>
-{
-private:
-    using Base = IntrospectableAllocatorHolderBase<ALLOC>;
-    using Base::get_allocator;
-
-public:
-    BasicBuiltinIntrospectableArray(const ITypeInfo& typeInfo, const ALLOC& allocator,
-            const RAW_ARRAY& rawArray) :
-            Base(typeInfo, allocator), m_rawArray(rawArray)
-    {}
-
-    virtual size_t size() const override
-    {
-        return m_rawArray.size();
-    }
-
-    virtual IIntrospectablePtr at(size_t index) const override
-    {
-        return std::allocate_shared<BUILTIN_INTROSPECTABLE>(get_allocator(), m_rawArray.at(index));
-    }
-
-    virtual IIntrospectablePtr operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
-private:
-    const RAW_ARRAY& m_rawArray;
-};
-
-template <typename ALLOC, typename RAW_ARRAY>
-class BasicCompoundIntrospectableArray : public IntrospectableAllocatorHolderBase<ALLOC>
-{
-    using Base = IntrospectableAllocatorHolderBase<ALLOC>;
-    using Base::get_allocator;
-
-public:
-    BasicCompoundIntrospectableArray(const ITypeInfo& typeInfo, const ALLOC& allocator, RAW_ARRAY& rawArray) :
-            Base(typeInfo, allocator), m_rawArray(rawArray)
-    {}
-
-    virtual size_t size() const override
-    {
-        return m_rawArray.size();
-    }
-
-    virtual IIntrospectablePtr at(size_t index) const override
-    {
-        return m_rawArray.at(index).introspectable(get_allocator());
-    }
-
-    virtual IIntrospectablePtr operator[](size_t index) const override
-    {
-        return at(index);
-    }
-
-private:
-    const ITypeInfo& m_typeInfo;
-    RAW_ARRAY& m_rawArray;
-};
-
 template <typename ALLOC, typename T, typename = void>
 class BuiltinIntrospectableBase : public IntrospectableBase<ALLOC>
 {
@@ -158,8 +84,9 @@ private:
 };
 
 template <typename ALLOC, typename T>
-class BuiltinIntrospectableBase<ALLOC, T, typename std::enable_if<std::is_integral<T>::value>::type> :
-        public IntrospectableBase<ALLOC>
+class BuiltinIntrospectableBase<ALLOC, T,
+        typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value>::type> :
+                public IntrospectableBase<ALLOC>
 {
 private:
     using Base = IntrospectableBase<ALLOC>;
@@ -187,6 +114,7 @@ protected:
     using BuiltinIntrospectableBase<ALLOC, T>::BuiltinIntrospectableBase;
     using BuiltinIntrospectableBase<ALLOC, T>::getValue;
 
+public:
     virtual double toDouble() const override
     {
         return getValue();
@@ -207,6 +135,7 @@ protected:
     using IntegralIntrospectableBase<ALLOC, T>::IntegralIntrospectableBase;
     using IntegralIntrospectableBase<ALLOC, T>::getValue;
 
+public:
     virtual int64_t toInt() const override
     {
         return getValue();
@@ -222,9 +151,27 @@ protected:
     using IntegralIntrospectableBase<ALLOC, T>::IntegralIntrospectableBase;
     using IntegralIntrospectableBase<ALLOC, T>::getValue;
 
+public:
     virtual uint64_t toUInt() const override
     {
         return getValue();
+    }
+};
+
+template <typename ALLOC>
+class BasicBoolIntrospectable : public UnsignedIntrospectableBase<ALLOC, bool>
+{
+private:
+    using Base = UnsignedIntrospectableBase<ALLOC, bool>;
+
+public:
+    BasicBoolIntrospectable(bool value) :
+            Base(BuiltinTypeInfo::getBool(), value)
+    {}
+
+    virtual int8_t getBool() const override
+    {
+        return Base::getValue();
     }
 };
 
@@ -235,8 +182,8 @@ private:
     using Base = SignedIntrospectableBase<ALLOC, int8_t>;
 
 public:
-    explicit BasicInt8Introspectable(int8_t value) :
-            Base(BuiltinTypeInfo::getInt8(), value)
+    BasicInt8Introspectable(const ITypeInfo& typeInfo, int8_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual int8_t getInt8() const override
@@ -252,8 +199,8 @@ private:
     using Base = SignedIntrospectableBase<ALLOC, int16_t>;
 
 public:
-    explicit BasicInt16Introspectable(int16_t value):
-            Base(BuiltinTypeInfo::getInt16(), value)
+    BasicInt16Introspectable(const ITypeInfo& typeInfo, int16_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual int16_t getInt16() const override
@@ -269,8 +216,8 @@ private:
     using Base = SignedIntrospectableBase<ALLOC, int32_t>;
 
 public:
-    explicit BasicInt32Introspectable(int32_t value) :
-            Base(BuiltinTypeInfo::getInt32(), value)
+    BasicInt32Introspectable(const ITypeInfo& typeInfo, int32_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual int32_t getInt32() const override
@@ -286,8 +233,8 @@ private:
     using Base = SignedIntrospectableBase<ALLOC, int64_t>;
 
 public:
-    explicit BasicInt64Introspectable(int64_t value) :
-            Base(BuiltinTypeInfo::getInt64(), value)
+    BasicInt64Introspectable(const ITypeInfo& typeInfo, int64_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual int64_t getInt64() const override
@@ -303,8 +250,8 @@ private:
     using Base = UnsignedIntrospectableBase<ALLOC, uint8_t>;
 
 public:
-    explicit BasicUInt8Introspectable(uint8_t value) :
-            Base(BuiltinTypeInfo::getUInt8(), value)
+    BasicUInt8Introspectable(const ITypeInfo& typeInfo, uint8_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual uint8_t getUInt8() const override
@@ -320,8 +267,8 @@ private:
     using Base = UnsignedIntrospectableBase<ALLOC, uint16_t>;
 
 public:
-    explicit BasicUInt16Introspectable(uint16_t value) :
-            Base(BuiltinTypeInfo::getUInt16(), value)
+    BasicUInt16Introspectable(const ITypeInfo& typeInfo, uint16_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual uint16_t getUInt16() const override
@@ -337,8 +284,8 @@ private:
     using Base = UnsignedIntrospectableBase<ALLOC, uint32_t>;
 
 public:
-    explicit BasicUInt32Introspectable(uint32_t value) :
-            Base(BuiltinTypeInfo::getUInt32(), value)
+    BasicUInt32Introspectable(const ITypeInfo& typeInfo, uint32_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual uint32_t getUInt32() const override
@@ -354,11 +301,61 @@ private:
     using Base = UnsignedIntrospectableBase<ALLOC, uint64_t>;
 
 public:
-    explicit BasicUInt64Introspectable(uint64_t value) :
-            Base(BuiltinTypeInfo::getUInt64(), value)
+    BasicUInt64Introspectable(const ITypeInfo& typeInfo, uint64_t value) :
+            Base(typeInfo, value)
     {}
 
     virtual uint64_t getUInt64() const override
+    {
+        return Base::getValue();
+    }
+};
+
+template <typename ALLOC, typename T>
+class FloatingPointIntrospectableBase : public BuiltinIntrospectableBase<ALLOC, T>
+{
+protected:
+    static_assert(std::is_floating_point<T>::value, "T must be a floating point type!");
+
+    using BuiltinIntrospectableBase<ALLOC, T>::getValue;
+    using BuiltinIntrospectableBase<ALLOC, T>::BuiltinIntrospectableBase;
+
+public:
+    virtual double toDouble() const override
+    {
+        return getValue();
+    }
+};
+
+template <typename ALLOC>
+class BasicFloatIntrospectable : public FloatingPointIntrospectableBase<ALLOC, float>
+{
+private:
+    using Base = FloatingPointIntrospectableBase<ALLOC, float>;
+
+public:
+    BasicFloatIntrospectable(const ITypeInfo& typeInfo, float value) :
+            Base(typeInfo, value)
+    {}
+
+    virtual float getFloat() const override
+    {
+        return Base::getValue();
+    }
+};
+
+template <typename ALLOC>
+class BasicDoubleIntrospectable : public FloatingPointIntrospectableBase<ALLOC, double>
+{
+private:
+    using Base = FloatingPointIntrospectableBase<ALLOC, double>;
+
+public:
+    BasicDoubleIntrospectable(const ITypeInfo& typeInfo, double value) :
+            Base(typeInfo, value)
+    {}
+
+    virtual double getDouble() const override
     {
         return Base::getValue();
     }
@@ -402,17 +399,6 @@ public:
         return Base::getValue();
     }
 };
-
-using Int8Introspectable = BasicInt8Introspectable<std::allocator<uint8_t>>;
-using Int16Introspectable = BasicInt16Introspectable<std::allocator<uint8_t>>;
-using Int32Introspectable = BasicInt32Introspectable<std::allocator<uint8_t>>;
-using Int64Introspectable = BasicInt64Introspectable<std::allocator<uint8_t>>;
-using UInt8Introspectable = BasicUInt8Introspectable<std::allocator<uint8_t>>;
-using UInt16Introspectable = BasicUInt16Introspectable<std::allocator<uint8_t>>;
-using UInt32Introspectable = BasicUInt32Introspectable<std::allocator<uint8_t>>;
-using UInt64Introspectable = BasicUInt64Introspectable<std::allocator<uint8_t>>;
-using StringIntrospectable = BasicStringIntrospectable<std::allocator<uint8_t>>;
-using BitBufferIntrospectable = BasicBitBufferIntrospectable<std::allocator<uint8_t>>;
 
 namespace detail
 {
@@ -491,7 +477,534 @@ typename IBasicIntrospectable<ALLOC>::Ptr getFromObject(
     return nullptr;
 }
 
+template <typename ALLOC, typename T>
+struct IntrospectableTraits
+{
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, bool>
+{
+    using Type = BasicBoolIntrospectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, int8_t>
+{
+    using Type = BasicInt8Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, int16_t>
+{
+    using Type = BasicInt16Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, int32_t>
+{
+    using Type = BasicInt32Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, int64_t>
+{
+    using Type = BasicInt64Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, uint8_t>
+{
+    using Type = BasicUInt8Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, uint16_t>
+{
+    using Type = BasicUInt16Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, uint32_t>
+{
+    using Type = BasicUInt32Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, uint64_t>
+{
+    using Type = BasicUInt64Introspectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, float>
+{
+    using Type = BasicFloatIntrospectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, double>
+{
+    using Type = BasicDoubleIntrospectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, string<ALLOC>>
+{
+    using Type = BasicStringIntrospectable<ALLOC>;
+};
+
+template <typename ALLOC>
+struct IntrospectableTraits<ALLOC, BasicBitBuffer<ALLOC>>
+{
+    using Type = BasicBitBufferIntrospectable<ALLOC>;
+};
+
 } // namespace detail
+
+// TODO[Mi-L@]: Check if multiple inheritance is ok!
+template <typename ALLOC>
+class IntrospectableAllocatorHolderBase : public IntrospectableBase<ALLOC>, public AllocatorHolder<ALLOC>
+{
+public:
+    using AllocatorHolder<ALLOC>::get_allocator;
+
+    IntrospectableAllocatorHolderBase(const ITypeInfo& typeInfo, const ALLOC& allocator) :
+            IntrospectableBase<ALLOC>(typeInfo), AllocatorHolder<ALLOC>(allocator)
+    {}
+};
+
+template <typename ALLOC, typename RAW_ARRAY>
+class BasicBuiltinIntrospectableArray : public IntrospectableAllocatorHolderBase<ALLOC>
+{
+private:
+    using Base = IntrospectableAllocatorHolderBase<ALLOC>;
+    using Base::get_allocator;
+
+    using Introspectable = typename detail::IntrospectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
+
+public:
+    BasicBuiltinIntrospectableArray(const ITypeInfo& typeInfo, const ALLOC& allocator,
+            const RAW_ARRAY& rawArray) :
+            Base(typeInfo, allocator), m_rawArray(rawArray)
+    {}
+
+    virtual bool isArray() const override
+    {
+        return true;
+    }
+
+    virtual size_t size() const override
+    {
+        return m_rawArray.size();
+    }
+
+    virtual IIntrospectablePtr at(size_t index) const override
+    {
+        return std::allocate_shared<Introspectable>(get_allocator(), Base::getTypeInfo(), m_rawArray.at(index));
+    }
+
+    virtual IIntrospectablePtr operator[](size_t index) const override
+    {
+        return at(index);
+    }
+
+private:
+    const RAW_ARRAY& m_rawArray;
+};
+
+template <typename ALLOC, typename RAW_ARRAY>
+class BasicCompoundIntrospectableArray : public IntrospectableAllocatorHolderBase<ALLOC>
+{
+    using Base = IntrospectableAllocatorHolderBase<ALLOC>;
+    using Base::get_allocator;
+
+    using ElementType = typename RAW_ARRAY::value_type;
+
+public:
+    BasicCompoundIntrospectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
+            Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
+    {}
+
+    virtual bool isArray() const override
+    {
+        return true;
+    }
+
+    virtual size_t size() const override
+    {
+        return m_rawArray.size();
+    }
+
+    virtual IIntrospectablePtr at(size_t index) const override
+    {
+        return m_rawArray.at(index).introspectable(get_allocator());
+    }
+
+    virtual IIntrospectablePtr operator[](size_t index) const override
+    {
+        return at(index);
+    }
+
+private:
+    const ITypeInfo& m_typeInfo;
+    RAW_ARRAY& m_rawArray;
+};
+
+template <typename ALLOC, typename RAW_ARRAY>
+using BasicBitmaskIntrospectableArray = BasicCompoundIntrospectableArray<ALLOC, RAW_ARRAY>;
+
+template <typename ALLOC>
+class BasicIntrospectableFactory
+{
+public:
+    static IIntrospectablePtr getInt8(int8_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt8Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getInt8(), value);
+    }
+
+    static IIntrospectablePtr getInt16(int16_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getInt16(), value);
+    }
+
+    static IIntrospectablePtr getInt32(int32_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getInt32(), value);
+    }
+
+    static IIntrospectablePtr getInt64(int64_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getInt64(), value);
+    }
+
+    static IIntrospectablePtr getUInt8(uint8_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt8Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getUInt8(), value);
+    }
+
+    static IIntrospectablePtr getUInt16(uint16_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getUInt16(), value);
+    }
+
+    static IIntrospectablePtr getUInt32(uint32_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getUInt32(), value);
+    }
+
+    static IIntrospectablePtr getUInt64(uint64_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getUInt64(), value);
+    }
+
+    static IIntrospectablePtr getVarInt16(int16_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarInt16(), value);
+    }
+
+    static IIntrospectablePtr getVarInt32(int32_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarInt32(), value);
+    }
+
+    static IIntrospectablePtr getVarInt64(int64_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarInt64(), value);
+    }
+
+    static IIntrospectablePtr getVarInt(int64_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarInt(), value);
+    }
+
+    static IIntrospectablePtr getVarUInt16(uint16_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarUInt16(), value);
+    }
+
+    static IIntrospectablePtr getVarUInt32(uint32_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarUInt32(), value);
+    }
+
+    static IIntrospectablePtr getVarUInt64(uint64_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarUInt64(), value);
+    }
+
+    static IIntrospectablePtr getVarUInt(uint64_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarUInt(), value);
+    }
+
+    static IIntrospectablePtr getVarSize(uint32_t value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getVarSize(), value);
+    }
+
+    static IIntrospectablePtr getFloat16(float value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicFloatIntrospectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFloat16(), value);
+    }
+
+    static IIntrospectablePtr getFloat32(float value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicFloatIntrospectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFloat32(), value);
+    }
+
+    static IIntrospectablePtr getFloat64(double value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicDoubleIntrospectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFloat64(), value);
+    }
+
+    static IIntrospectablePtr getString(const string<RebindAlloc<ALLOC, char>>& value,
+            const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(allocator, value);
+    }
+
+    static IIntrospectablePtr getBitBuffer(const BasicBitBuffer<ALLOC>& value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicBitBufferIntrospectable<ALLOC>>(allocator, value);
+    }
+
+    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int8_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize > 8)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedSignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'int8_t' value!";
+        }
+        return std::allocate_shared<BasicInt8Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int16_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize <= 8 || bitSize > 16)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedSignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'int16_t' value!";
+        }
+        return std::allocate_shared<BasicInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int32_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize <= 16 || bitSize > 32)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedSignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'int32_t' value!";
+        }
+        return std::allocate_shared<BasicInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int64_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize <= 32 || bitSize > 64)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedSignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'int64_t' value!";
+        }
+        return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint8_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize > 8)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedUnsignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'uint8_t' value!";
+        }
+        return std::allocate_shared<BasicUInt8Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint16_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize <= 8 || bitSize > 16)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedUnsignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'uint16_t' value!";
+        }
+        return std::allocate_shared<BasicUInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint32_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize <= 16 || bitSize > 32)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedUnsignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'uint32_t' value!";
+        }
+        return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint64_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (bitSize <= 32 || bitSize > 64)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getFixedUnsignedBitField") +
+                    "- invalid bit size '" + bitSize + "' for 'uint64_t' value!";
+        }
+        return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int8_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize > 8)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicSignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'int8_t' value!";
+        }
+        return std::allocate_shared<BasicInt8Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int16_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize <= 8 || maxBitSize > 16)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicSignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'int16_t' value!";
+        }
+        return std::allocate_shared<BasicInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int32_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize <= 16 || maxBitSize > 32)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicSignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'int32_t' value!";
+        }
+        return std::allocate_shared<BasicInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int64_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize <= 32 || maxBitSize > 64)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicSignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'int16_t' value!";
+        }
+        return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint8_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize > 8)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicUnsignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'uint8_t' value!";
+        }
+        return std::allocate_shared<BasicUInt8Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint16_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize <= 8 || maxBitSize > 16)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicUnsignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'uint16_t' value!";
+        }
+        return std::allocate_shared<BasicUInt16Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint32_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize <= 16 || maxBitSize > 32)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicUnsignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'uint32_t' value!";
+        }
+        return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), value);
+    }
+
+    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint64_t value,
+            const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize <= 32 || maxBitSize > 64)
+        {
+            throw CppRuntimeException("BasicBuiltinIntrospectableFactory::getDynamicUnsignedBitField") +
+                    "- invalid max bit size '" + maxBitSize + "' for 'uint64_t' value!";
+        }
+        return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), value);
+    }
+
+    template <typename RAW_ARRAY>
+    static IIntrospectablePtr getBuiltinArray(const ITypeInfo& typeInfo, const RAW_ARRAY& rawArray,
+            const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicBuiltinIntrospectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, typeInfo, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IIntrospectablePtr getCompoundArray(const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicCompoundIntrospectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IIntrospectablePtr getBitmaskArray(const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicBitmaskIntrospectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+};
+
+using IntrospectableFactory = BasicIntrospectableFactory<std::allocator<uint8_t>>;
 
 template <typename ALLOC>
 IntrospectableBase<ALLOC>::IntrospectableBase(const ITypeInfo& typeInfo) :
@@ -506,6 +1019,12 @@ template <typename ALLOC>
 const ITypeInfo& IntrospectableBase<ALLOC>::getTypeInfo() const
 {
     return m_typeInfo;
+}
+
+template <typename ALLOC>
+bool IntrospectableBase<ALLOC>::isArray() const
+{
+    return false;
 }
 
 template <typename ALLOC>
