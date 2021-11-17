@@ -92,6 +92,7 @@ public:
     static const ITypeInfo& getVarUInt32();
     static const ITypeInfo& getVarUInt64();
     static const ITypeInfo& getVarUInt();
+    static const ITypeInfo& getVarSize();
     static const ITypeInfo& getFloat16();
     static const ITypeInfo& getFloat32();
     static const ITypeInfo& getFloat64();

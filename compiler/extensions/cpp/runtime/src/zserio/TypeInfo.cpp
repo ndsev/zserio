@@ -219,6 +219,12 @@ const ITypeInfo& BuiltinTypeInfo::getVarUInt()
     return typeInfo;
 }
 
+const ITypeInfo& BuiltinTypeInfo::getVarSize()
+{
+    static const BuiltinTypeInfo typeInfo = { "varsize"_sv, SchemaType::VARSIZE, CppType::UINT32 };
+    return typeInfo;
+}
+
 const ITypeInfo& BuiltinTypeInfo::getFloat16()
 {
     return FixedSizeBuiltinTypeInfo::getFloat16();

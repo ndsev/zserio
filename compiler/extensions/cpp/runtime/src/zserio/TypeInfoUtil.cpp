@@ -76,6 +76,7 @@ bool TypeInfoUtil::isIntegral(const SchemaType& schemaType)
     case SchemaType::VARUINT32:
     case SchemaType::VARUINT64:
     case SchemaType::VARUINT:
+    case SchemaType::VARSIZE:
     case SchemaType::FIXED_SIGNED_BITFIELD:
     case SchemaType::FIXED_UNSIGNED_BITFIELD:
     case SchemaType::DYNAMIC_SIGNED_BITFIELD:
