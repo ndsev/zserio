@@ -567,32 +567,69 @@ template <typename ALLOC>
 class IntrospectableAllocatorHolderBase : public IntrospectableBase<ALLOC>, public AllocatorHolder<ALLOC>
 {
 public:
-    using AllocatorHolder<ALLOC>::get_allocator;
-
     IntrospectableAllocatorHolderBase(const ITypeInfo& typeInfo, const ALLOC& allocator) :
             IntrospectableBase<ALLOC>(typeInfo), AllocatorHolder<ALLOC>(allocator)
     {}
 };
 
-template <typename ALLOC, typename RAW_ARRAY>
-class BasicBuiltinIntrospectableArray : public IntrospectableAllocatorHolderBase<ALLOC>
+template <typename ALLOC>
+class IntrospectableArrayBase : public IntrospectableAllocatorHolderBase<ALLOC>
 {
-private:
-    using Base = IntrospectableAllocatorHolderBase<ALLOC>;
-    using Base::get_allocator;
-
-    using Introspectable = typename detail::IntrospectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
-
 public:
-    BasicBuiltinIntrospectableArray(const ITypeInfo& typeInfo, const ALLOC& allocator,
-            const RAW_ARRAY& rawArray) :
-            Base(typeInfo, allocator), m_rawArray(rawArray)
-    {}
+    using IntrospectableAllocatorHolderBase<ALLOC>::IntrospectableAllocatorHolderBase;
+
+    using IIntrospectablePtr = typename IBasicIntrospectable<ALLOC>::Ptr;
+    using IntrospectableAllocatorHolderBase<ALLOC>::getTypeInfo;
 
     virtual bool isArray() const override
     {
         return true;
     }
+
+    virtual IIntrospectablePtr getField(StringView name) const override;
+    virtual void setField(StringView name, const IIntrospectablePtr& value) override;
+    virtual IIntrospectablePtr getParameter(StringView name) const override;
+    virtual IIntrospectablePtr callFunction(StringView name) const override;
+
+    virtual IIntrospectablePtr find(StringView path) const override;
+    virtual IIntrospectablePtr operator[](StringView path) const override;
+
+    virtual bool getBool() const override;
+    virtual int8_t getInt8() const override;
+    virtual int16_t getInt16() const override;
+    virtual int32_t getInt32() const override;
+    virtual int64_t getInt64() const override;
+    virtual uint8_t getUInt8() const override;
+    virtual uint16_t getUInt16() const override;
+    virtual uint32_t getUInt32() const override;
+    virtual uint64_t getUInt64() const override;
+    virtual float getFloat() const override;
+    virtual double getDouble() const override;
+    virtual const string<RebindAlloc<ALLOC, char>>& getString() const override;
+    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
+
+    virtual int64_t toInt() const override;
+    virtual uint64_t toUInt() const override;
+    virtual double toDouble() const override;
+    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override;
+};
+
+template <typename ALLOC, typename RAW_ARRAY>
+class BasicBuiltinIntrospectableArray : public IntrospectableArrayBase<ALLOC>
+{
+private:
+    using Base = IntrospectableArrayBase<ALLOC>;
+    using Base::get_allocator;
+
+    using Introspectable = typename detail::IntrospectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
+
+public:
+    using IIntrospectablePtr = typename IBasicIntrospectable<ALLOC>::Ptr;
+
+    BasicBuiltinIntrospectableArray(const ITypeInfo& typeInfo, const ALLOC& allocator,
+            const RAW_ARRAY& rawArray) :
+            Base(typeInfo, allocator), m_rawArray(rawArray)
+    {}
 
     virtual size_t size() const override
     {
@@ -614,22 +651,19 @@ private:
 };
 
 template <typename ALLOC, typename RAW_ARRAY>
-class BasicCompoundIntrospectableArray : public IntrospectableAllocatorHolderBase<ALLOC>
+class BasicCompoundIntrospectableArray : public IntrospectableArrayBase<ALLOC>
 {
-    using Base = IntrospectableAllocatorHolderBase<ALLOC>;
+    using Base = IntrospectableArrayBase<ALLOC>;
     using Base::get_allocator;
 
     using ElementType = typename RAW_ARRAY::value_type;
 
 public:
+    using IIntrospectablePtr = typename IBasicIntrospectable<ALLOC>::Ptr;
+
     BasicCompoundIntrospectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
             Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
     {}
-
-    virtual bool isArray() const override
-    {
-        return true;
-    }
 
     virtual size_t size() const override
     {
@@ -647,7 +681,6 @@ public:
     }
 
 private:
-    const ITypeInfo& m_typeInfo;
     RAW_ARRAY& m_rawArray;
 };
 
@@ -990,7 +1023,7 @@ public:
     }
 
     template <typename RAW_ARRAY>
-    static IIntrospectablePtr getCompoundArray(const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    static IIntrospectablePtr getCompoundArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicCompoundIntrospectableArray<ALLOC, RAW_ARRAY>>(
                 allocator, allocator, rawArray);
@@ -1185,6 +1218,144 @@ string<RebindAlloc<ALLOC, char>> IntrospectableBase<ALLOC>::toString(const ALLOC
 {
     throw CppRuntimeException("Conversion from '") + getTypeInfo().getSchemaName() +
             "' to string is not available!";
+}
+
+template <typename ALLOC>
+typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::getField(StringView) const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+void IntrospectableArrayBase<ALLOC>::setField(StringView, const typename IBasicIntrospectable<ALLOC>::Ptr&)
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::getParameter(StringView) const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::callFunction(StringView) const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::find(StringView) const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::operator[](StringView) const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+bool IntrospectableArrayBase<ALLOC>::getBool() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+int8_t IntrospectableArrayBase<ALLOC>::getInt8() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+int16_t IntrospectableArrayBase<ALLOC>::getInt16() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+int32_t IntrospectableArrayBase<ALLOC>::getInt32() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+int64_t IntrospectableArrayBase<ALLOC>::getInt64() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+uint8_t IntrospectableArrayBase<ALLOC>::getUInt8() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+uint16_t IntrospectableArrayBase<ALLOC>::getUInt16() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+uint32_t IntrospectableArrayBase<ALLOC>::getUInt32() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+uint64_t IntrospectableArrayBase<ALLOC>::getUInt64() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+float IntrospectableArrayBase<ALLOC>::getFloat() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+double IntrospectableArrayBase<ALLOC>::getDouble() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+const string<RebindAlloc<ALLOC, char>>& IntrospectableArrayBase<ALLOC>::getString() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+const BasicBitBuffer<ALLOC>& IntrospectableArrayBase<ALLOC>::getBitBuffer() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+int64_t IntrospectableArrayBase<ALLOC>::toInt() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+uint64_t IntrospectableArrayBase<ALLOC>::toUInt() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+double IntrospectableArrayBase<ALLOC>::toDouble() const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+string<RebindAlloc<ALLOC, char>> IntrospectableArrayBase<ALLOC>::toString(const ALLOC&) const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }
 
 } // namespace zserio
