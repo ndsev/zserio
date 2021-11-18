@@ -16,11 +16,6 @@ import zserio.extension.common.ZserioExtensionException;
 
 public class CppRuntimeFunctionDataCreator
 {
-    /**
-     * This function generates the suffix for Zserio C++ runtime functions based on the actual type passed.
-     *
-     * @throws ZserioExtensionException Throws in case of wrong passed Zserio type.
-     */
     public static RuntimeFunctionTemplateData createData(TypeInstantiation typeInstantiation,
             ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
     {

@@ -110,7 +110,7 @@ gpg.executable              - GnuPG executable to use for artifact signing. Defa
             <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
         </tstamp>
         <javadoc packagenames="zserio.*" destdir="${zserio_bundle.javadocs_dir}"
-            failonerror="true" failonwarning="false" useexternalfile="true">
+            failonerror="true" failonwarning="true" useexternalfile="true">
             <fileset refid="zserio_bundle.sources"/>
             <doctitle>
                 <![CDATA[<h1>Zserio Compiler</h1><h2>Version ${zserio.version}</h2]]>

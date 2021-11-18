@@ -15,6 +15,8 @@ public final class CppLiteralFormatter
     /**
      * Formats an integral value as uint8_t literal.
      *
+     * @param value Integral value to format.
+     *
      * @throws ZserioExtensionException Throws if integral value is out of range.
      *
      * @return Formatted uint8_t literal.
@@ -26,6 +28,8 @@ public final class CppLiteralFormatter
 
     /**
      * Formats a string value as C++ string literal.
+     *
+     * @param value String value to format.
      *
      * @return Formatted string literal.
      */

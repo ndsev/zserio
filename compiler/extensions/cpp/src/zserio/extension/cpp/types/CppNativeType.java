@@ -48,6 +48,8 @@ public abstract class CppNativeType
 
     /**
      * Return name of the package which contains this type.
+     *
+     * @return The name of the package which contains this type.
      */
     public PackageName getPackageName()
     {
@@ -57,6 +59,8 @@ public abstract class CppNativeType
     /**
      * Returns a string representing the C++ type that should be used when passing this type as a function
      * argument.
+     *
+     * @return The name of argument type.
      */
     public String getArgumentTypeName()
     {
@@ -73,6 +77,8 @@ public abstract class CppNativeType
      * It must also be constructible by the syntax "Type()".
      *
      * The various integral and float types return true here, all other types return false.
+     *
+     * @return true if the type is a simple type, otherwise false.
      */
     public boolean isSimpleType()
     {
@@ -81,6 +87,8 @@ public abstract class CppNativeType
 
     /**
      * Returns a list with names of files to be included by '#include &lt;...&gt;'.
+     *
+     * @return The list of system include files.
      */
     public SortedSet<String> getSystemIncludeFiles()
     {
@@ -89,6 +97,8 @@ public abstract class CppNativeType
 
     /**
      * Returns a list with names of files to be included by '#include "..."'.
+     *
+     * @return The list of user include files.
      */
     public SortedSet<String> getUserIncludeFiles()
     {
@@ -107,9 +117,6 @@ public abstract class CppNativeType
             userIncludeFiles.add(include);
     }
 
-    /**
-     * Add system and user includes from another CppNativeType.
-     */
     protected void addIncludeFiles(CppNativeType other)
     {
         for (String systemInclude : other.getSystemIncludeFiles())

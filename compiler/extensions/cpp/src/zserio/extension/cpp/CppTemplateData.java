@@ -55,17 +55,11 @@ public abstract class CppTemplateData implements IncludeCollector
         return headerUserIncludes;
     }
 
-    /**
-     * A sequence of user file names to be #included from the generated CPP (as opposed to H).
-     */
     public Iterable<String> getCppUserIncludes()
     {
         return cppUserIncludes;
     }
 
-    /**
-     * A sequence of system file names to be #included from the generated CPP (as opposed to H).
-     */
     public Iterable<String> getCppSystemIncludes()
     {
         return cppSystemIncludes;
