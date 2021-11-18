@@ -7,6 +7,7 @@
 #include "zserio/BitBuffer.h"
 #include "zserio/String.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/AnyHolder.h"
 
 namespace zserio
 {
@@ -25,7 +26,7 @@ public:
     virtual bool isArray() const = 0;
 
     virtual Ptr getField(StringView name) const = 0;
-    virtual void setField(StringView name, const Ptr& value) = 0;
+    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) = 0;
     virtual Ptr getParameter(StringView name) const = 0;
     virtual Ptr callFunction(StringView name) const = 0;
 

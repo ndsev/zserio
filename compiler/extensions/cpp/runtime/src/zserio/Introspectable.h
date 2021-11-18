@@ -21,13 +21,11 @@ public:
     explicit IntrospectableBase(const ITypeInfo& typeInfo);
     virtual ~IntrospectableBase() = 0;
 
-    // TODO: isConst ???
-
     virtual const ITypeInfo& getTypeInfo() const override;
     virtual bool isArray() const override;
 
     virtual IIntrospectablePtr getField(StringView name) const override;
-    virtual void setField(StringView name, const IIntrospectablePtr& value) override;
+    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IIntrospectablePtr getParameter(StringView name) const override;
     virtual IIntrospectablePtr callFunction(StringView name) const override;
 
@@ -587,7 +585,7 @@ public:
     }
 
     virtual IIntrospectablePtr getField(StringView name) const override;
-    virtual void setField(StringView name, const IIntrospectablePtr& value) override;
+    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IIntrospectablePtr getParameter(StringView name) const override;
     virtual IIntrospectablePtr callFunction(StringView name) const override;
 
@@ -653,6 +651,7 @@ private:
 template <typename ALLOC, typename RAW_ARRAY>
 class BasicCompoundIntrospectableArray : public IntrospectableArrayBase<ALLOC>
 {
+private:
     using Base = IntrospectableArrayBase<ALLOC>;
     using Base::get_allocator;
 
@@ -1067,7 +1066,7 @@ typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableBase<ALLOC>::getField(St
 }
 
 template <typename ALLOC>
-void IntrospectableBase<ALLOC>::setField(StringView, const typename IBasicIntrospectable<ALLOC>::Ptr&)
+void IntrospectableBase<ALLOC>::setField(StringView, const AnyHolder<ALLOC>&)
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to set!";
 }
@@ -1227,7 +1226,7 @@ typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::getFie
 }
 
 template <typename ALLOC>
-void IntrospectableArrayBase<ALLOC>::setField(StringView, const typename IBasicIntrospectable<ALLOC>::Ptr&)
+void IntrospectableArrayBase<ALLOC>::setField(StringView, const AnyHolder<ALLOC>&)
 {
     throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }
