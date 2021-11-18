@@ -358,6 +358,7 @@ public class Expression extends AstNodeBase
     /**
      * Gets all objects of given class referenced from the expression.
      *
+     * @param <T> Type of the object which should be found.
      * @param clazz Class of which object should be found.
      *
      * @return Set of objects of given class referenced from the expression.
