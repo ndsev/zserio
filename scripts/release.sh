@@ -34,14 +34,31 @@ set_release_global_variables()
         # ANT to use, defaults to "ant" if not set
         ANT="${ANT:-ant}"
         if [ ! -f "`which "${ANT}"`" ] ; then
-            stderr_echo "Cannot find cmake! Set ANT environment variable."
+            stderr_echo "Cannot find ant! Set ANT environment variable."
             return 1
         fi
 
         # MVN to use, defaults to "mvn" if not set
         MVN="${MVN:-mvn}"
         if [ ! -f "`which "${MVN}"`" ] ; then
-            stderr_echo "Cannot find cmake! Set MVN environment variable."
+            stderr_echo "Cannot find mvn! Set MVN environment variable."
+            return 1
+        fi
+
+        # GPG to use, defaults to "gpg" if not set
+        GPG="${GPG:-gpg}"
+        if [ ! -f "`which "${GPG}"`" ] ; then
+            stderr_echo "Cannot find gpg! Set GPG environment variable."
+            return 1
+        fi
+
+        # check java binary
+        if [ -n "${JAVA_HOME}" ] ; then
+            JAVA_BIN="${JAVA_HOME}/bin/java"
+        fi
+        JAVA_BIN="${JAVA_BIN:-java}"
+        if [ ! -f "`which "${JAVA_BIN}"`" ] ; then
+            stderr_echo "Cannot find java! Set JAVA_HOME or JAVA_BIN environment variable."
             return 1
         fi
 
@@ -103,12 +120,14 @@ print_release_help_env()
 {
     cat << EOF
 Uses the following environment variables for releasing:
-    ZIP    Zip executable to use. Default is "zip".
-    GIT    Git executable to use. Default is "git".
-    CMAKE  CMake executable to use. Default is "cmake".
-    ANT    Ant executable to use. Default is "ant".
-    MVN    Mvn executable to use. Default is "mvn".
-    PYTHON Python executable to use. Default is "python3".
+    ZIP      Zip executable to use. Default is "zip".
+    GIT      Git executable to use. Default is "git".
+    CMAKE    CMake executable to use. Default is "cmake".
+    ANT      Ant executable to use. Default is "ant".
+    MVN      Mvn executable to use. Default is "mvn".
+    GPG      Gpg executable to use. Default is "gpg".
+    JAVA_BIN Java executable to use. Default is "java".
+    PYTHON   Python executable to use. Default is "python3".
 
     ZSERIO_PYPI_DIR             ZserioPyPi project directory. Default is "../../ZserioPyPi".
     ZSERIO_EXTENSION_SAMPLE_DIR ZserioExtensionSample project directory. Default is "../../ZserioExtensionSample".
@@ -175,7 +194,10 @@ upload_jars()
     echo "Uploading the latest Zserio release from GitHub to Maven central repository"
     "${ANT}" -f "${ZSERIO_PROJECT_ROOT}/build.xml" \
             -Dzserio.build_dir="${ZSERIO_BUILD_DIR}" \
-            -Dzserio.deploy.snapshot_flag=no deploy
+            -Dzserio.deploy.snapshot_flag=no \
+            -Dmaven.executable="${MVN}" \
+            -Dgpg.executable="${GPG}" \
+            deploy
     local ANT_RESULT=$?
     if [ ${ANT_RESULT} -ne 0 ] ; then
         stderr_echo "Ant failed with return code ${ANT_RESULT}!"
@@ -302,10 +324,19 @@ update_tutorial_java()
 
     echo "Updating generated sources in Zserio Tutorial Java."
     echo
-    "${ANT}" -buildfile "${TUTORIAL_JAVA_DIR}/build.xml"
-    local ANT_RESULT=$?
-    if [ ${ANT_RESULT} -ne 0 ] ; then
-        stderr_echo "Ant failed with return code ${ANT_RESULT}!"
+    ${MVN} dependency:copy -Dmaven.repo.local="${TUTORIAL_JAVA_DIR}/download" \
+            -Dartifact=io.github.ndsev:zserio:LATEST \
+            -DoutputDirectory="${TUTORIAL_JAVA_DIR}" \
+            -Dmdep.stripVersion=true
+    local MVN_RESULT=$?
+    if [ ${MVN_RESULT} -ne 0 ] ; then
+        stderr_echo "Maven download failed with return code ${MVN_RESULT}!"
+        return 1
+    fi
+    "${JAVA_BIN}" -jar "${TUTORIAL_JAVA_DIR}/build/zserio.jar" -src "${TUTORIAL_JAVA_DIR}" tutorial.zs -java src
+    local ZSERIO_RESULT=$?
+    if [ ${ZSERIO_RESULT} -ne 0 ] ; then
+        stderr_echo "Zserio compilation failed with return code ${ZSERIO_RESULT}!"
         return 1
     fi
     echo
