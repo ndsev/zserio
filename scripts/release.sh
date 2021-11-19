@@ -333,7 +333,8 @@ update_tutorial_java()
         stderr_echo "Maven download failed with return code ${MVN_RESULT}!"
         return 1
     fi
-    "${JAVA_BIN}" -jar "${TUTORIAL_JAVA_DIR}/build/zserio.jar" -src "${TUTORIAL_JAVA_DIR}" tutorial.zs -java src
+    "${JAVA_BIN}" -jar "${TUTORIAL_JAVA_DIR}/build/zserio.jar" -src "${TUTORIAL_JAVA_DIR}" tutorial.zs \
+            -java "${TUTORIAL_JAVA_DIR}/src"
     local ZSERIO_RESULT=$?
     if [ ${ZSERIO_RESULT} -ne 0 ] ; then
         stderr_echo "Zserio compilation failed with return code ${ZSERIO_RESULT}!"
@@ -552,12 +553,12 @@ main()
         echo
 
         local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
-        upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+#        upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
 
-        upload_pypi "${ZSERIO_PYPI_DIR}"
+#        upload_pypi "${ZSERIO_PYPI_DIR}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
