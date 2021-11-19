@@ -553,12 +553,12 @@ main()
         echo
 
         local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
-#        upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+        upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
 
-#        upload_pypi "${ZSERIO_PYPI_DIR}"
+        upload_pypi "${ZSERIO_PYPI_DIR}"
         if [ $? -ne 0 ] ; then
             return 1
         fi
