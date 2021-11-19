@@ -36,6 +36,10 @@ public class TypesContext
                     false, false, "zserio/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBufferArrayTraits",
                     false, false, "zserio/ArrayTraits.h");
+            introspectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IntrospectableFactory",
+                    false, false, "zserio/Introspectable.h");
+            introspectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IIntrospectablePtr",
+                    false, false, "zserio/IIntrospectable.h");
         }
         else if (allocator.equals(PROPAGATING_POLYMORPHIC_ALLOCATOR))
         {
@@ -65,6 +69,10 @@ public class TypesContext
                     false, false, "zserio/pmr/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBufferArrayTraits",
                     false, false, "zserio/pmr/ArrayTraits.h");
+            introspectableFactory = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IntrospectableFactory",
+                    false, false, "zserio/pmr/Introspectable.h");
+            introspectablePtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IIntrospectablePtr",
+                    false, false, "zserio/pmr/IIntrospectable.h");
         }
         else
         {
@@ -94,6 +102,10 @@ public class TypesContext
                     true, true, "zserio/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBufferArrayTraits",
                     true, true, "zserio/ArrayTraits.h");
+            introspectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicIntrospectableFactory",
+                    true, true, "zserio/Introspectable.h");
+            introspectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicIIntrospectablePtr",
+                    true, true, "zserio/IIntrospectable.h");
         }
     }
 
@@ -202,6 +214,16 @@ public class TypesContext
         return bitBufferArrayTraits;
     }
 
+    public NativeTypeDefinition getIntrospectableFactory()
+    {
+        return introspectableFactory;
+    }
+
+    public NativeTypeDefinition getIntrospectablePtr()
+    {
+        return introspectablePtr;
+    }
+
     public static class NativeTypeDefinition
     {
         public NativeTypeDefinition(PackageName pkg, String name, boolean isTemplate,
@@ -260,6 +282,8 @@ public class TypesContext
     private final NativeTypeDefinition packingContextNode;
     private final NativeTypeDefinition stringArrayTraits;
     private final NativeTypeDefinition bitBufferArrayTraits;
+    private final NativeTypeDefinition introspectableFactory;
+    private final NativeTypeDefinition introspectablePtr;
 
     public static final AllocatorDefinition PROPAGATING_POLYMORPHIC_ALLOCATOR = new AllocatorDefinition(
             "::zserio::pmr::PropagatingPolymorphicAllocator", "zserio/pmr/PolymorphicAllocator.h", "");

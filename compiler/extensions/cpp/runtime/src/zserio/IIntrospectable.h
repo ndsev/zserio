@@ -60,6 +60,16 @@ public:
 using IIntrospectable = IBasicIntrospectable<>;
 using IIntrospectablePtr = IIntrospectable::Ptr;
 
+// TODO[Mi-L@]: Cannot be in Enums.h because of cyclic includes! But maybe better here to prevent unspecialized
+//              templates in code generated -withoutTypeInfo?
+/**
+ * Gets introspectable view for the given enum item.
+ *
+ * \return Enum introspectable view.
+ */
+template <typename T, typename ALLOC = std::allocator<uint8_t>>
+typename IBasicIntrospectable<ALLOC>::Ptr enumIntrospectable(T value, const ALLOC& allocator = ALLOC());
+
 } // namespace zserio
 
 #endif // ZSERIO_I_INTROSPECTABLE_H_INC

@@ -44,6 +44,8 @@ import zserio.extension.cpp.types.NativeCompoundType;
 import zserio.extension.cpp.types.NativeHeapOptionalHolderType;
 import zserio.extension.cpp.types.NativeInplaceOptionalHolderType;
 import zserio.extension.cpp.types.NativeIntegralType;
+import zserio.extension.cpp.types.NativeIntrospectableFactoryType;
+import zserio.extension.cpp.types.NativeIntrospectablePtrType;
 import zserio.extension.cpp.types.NativeMapType;
 import zserio.extension.cpp.types.NativePackingContextNodeType;
 import zserio.extension.cpp.types.NativeSetType;
@@ -76,6 +78,8 @@ public class CppNativeMapper
         bitBufferType = new NativeBitBufferType(typesContext, stdUInt8Type);
         blobBufferType = new NativeBlobBufferType(typesContext, stdUInt8Type);
         packingContextNodeType = new NativePackingContextNodeType(typesContext, stdUInt8Type);
+        introspectableFactoryType = new NativeIntrospectableFactoryType(typesContext, stdUInt8Type);
+        introspectablePtrType = new NativeIntrospectablePtrType(typesContext, stdUInt8Type);
     }
 
     /**
@@ -252,6 +256,16 @@ public class CppNativeMapper
     public NativePackingContextNodeType getPackingContextNodeType()
     {
         return packingContextNodeType;
+    }
+
+    public NativeIntrospectableFactoryType getIntrospectableFactoryType()
+    {
+        return introspectableFactoryType;
+    }
+
+    public NativeIntrospectablePtrType getIntrospectablePtrType()
+    {
+        return introspectablePtrType;
     }
 
     public NativeIntegralType getUInt64Type()
@@ -562,6 +576,8 @@ public class CppNativeMapper
     private final NativeBitBufferType bitBufferType;
     private final NativeBlobBufferType blobBufferType;
     private final NativePackingContextNodeType packingContextNodeType;
+    private final NativeIntrospectableFactoryType introspectableFactoryType;
+    private final NativeIntrospectablePtrType introspectablePtrType;
 
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));

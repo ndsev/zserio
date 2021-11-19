@@ -686,6 +686,39 @@ private:
 template <typename ALLOC, typename RAW_ARRAY>
 using BasicBitmaskIntrospectableArray = BasicCompoundIntrospectableArray<ALLOC, RAW_ARRAY>;
 
+template <typename ALLOC, typename RAW_ARRAY>
+class BasicEnumIntrospectableArray : public IntrospectableArrayBase<ALLOC>
+{
+private:
+    using Base = IntrospectableArrayBase<ALLOC>;
+    using Base::get_allocator;
+
+    using ElementType = typename RAW_ARRAY::value_type;
+
+public:
+    BasicEnumIntrospectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
+            Base(enumTypeInfo<ElementType>(), allocator), m_rawArray(rawArray)
+    {}
+
+    virtual size_t size() const override
+    {
+        return m_rawArray.size();
+    }
+
+    virtual IIntrospectablePtr at(size_t index) const override
+    {
+        return enumIntrospectable(m_rawArray.at(index), get_allocator());
+    }
+
+    virtual IIntrospectablePtr operator[](size_t index) const override
+    {
+        return at(index);
+    }
+
+private:
+    const RAW_ARRAY& m_rawArray;
+};
+
 template <typename ALLOC>
 class BasicIntrospectableFactory
 {
@@ -1032,6 +1065,13 @@ public:
     static IIntrospectablePtr getBitmaskArray(const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicBitmaskIntrospectableArray<ALLOC, RAW_ARRAY>>(
+                allocator, allocator, rawArray);
+    }
+
+    template <typename RAW_ARRAY>
+    static IIntrospectablePtr getEnumArray(const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicEnumIntrospectableArray<ALLOC, RAW_ARRAY>>(
                 allocator, allocator, rawArray);
     }
 };

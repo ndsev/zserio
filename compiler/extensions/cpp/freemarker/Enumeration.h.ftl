@@ -13,6 +13,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
+<@type_includes types.introspectablePtr/>
 </#if>
 <@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
@@ -50,6 +51,10 @@ struct EnumTraits<${fullName}>
 
 template <>
 const ::zserio::ITypeInfo& enumTypeInfo<${fullName}>();
+
+template <>
+${types.introspectablePtr.name} enumIntrospectable(
+        ${fullName} value, const ${types.allocator.default}& allocator);
 </#if>
 
 template <>

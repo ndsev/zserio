@@ -4,6 +4,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.CompoundType;
 import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumType;
+import zserio.ast.IntegerType;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
@@ -18,9 +19,11 @@ public class TypeInfoTemplateData
         final ZserioType baseType = typeReference.getBaseTypeReference().getType();
         final boolean hasTypeInfo = baseType instanceof CompoundType ||
                 baseType instanceof EnumType || baseType instanceof BitmaskType;
-        typeInfoGetter = hasTypeInfo ? null : mapTypeInfoGetter(typeReference);
+        typeInfoGetter = hasTypeInfo ? null : CppRuntimeFunctionDataCreator.createTypeInfoData(typeReference);
         isDynamicBitField = baseType instanceof DynamicBitFieldType;
         isEnum = baseType instanceof EnumType;
+        isBitmask = baseType instanceof BitmaskType;
+        isSigned = baseType instanceof IntegerType && ((IntegerType)baseType).isSigned();
     }
 
     public TypeInfoTemplateData(CompoundType compoundType, CppNativeType cppNativeType)
@@ -29,6 +32,8 @@ public class TypeInfoTemplateData
         typeInfoGetter = null;
         isDynamicBitField = false;
         isEnum = false;
+        isBitmask = false;
+        isSigned = false;
     }
 
     public String getCppTypeName()
@@ -36,7 +41,7 @@ public class TypeInfoTemplateData
         return cppTypeName;
     }
 
-    public String getTypeInfoGetter()
+    public RuntimeFunctionTemplateData getTypeInfoGetter()
     {
         return typeInfoGetter;
     }
@@ -51,16 +56,20 @@ public class TypeInfoTemplateData
         return isEnum;
     }
 
-    private static String mapTypeInfoGetter(TypeReference typeReference) throws ZserioExtensionException
+    public boolean getIsBitmask()
     {
-        final RuntimeFunctionTemplateData runtimeFunction =
-                CppRuntimeFunctionDataCreator.createTypeInfoData(typeReference);
-        return "get" + runtimeFunction.getSuffix() + "(" +
-                (runtimeFunction.getArg() != null ? runtimeFunction.getArg() : "")  + ")";
+        return isBitmask;
+    }
+
+    public boolean getIsSigned()
+    {
+        return isSigned;
     }
 
     private final String cppTypeName;
-    private final String typeInfoGetter;
+    private final RuntimeFunctionTemplateData typeInfoGetter;
     private final boolean isDynamicBitField;
     private final boolean isEnum;
+    private final boolean isBitmask;
+    private final boolean isSigned;
 }

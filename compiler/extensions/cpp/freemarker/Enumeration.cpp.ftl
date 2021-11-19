@@ -6,6 +6,7 @@
 #include <zserio/CppRuntimeException.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
+<@type_includes types.introspectableFactory/>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -38,6 +39,42 @@ const ITypeInfo& enumTypeInfo<${fullName}>()
     };
 
     return typeInfo;
+}
+
+template <>
+${types.introspectablePtr.name} enumIntrospectable(
+        ${fullName} value, const ${types.allocator.default}& allocator)
+{
+    class Introspectable : public ::zserio::IntrospectableBase<${types.allocator.default}>
+    {
+    public:
+        Introspectable(${fullName} value) :
+                ::zserio::IntrospectableBase<${types.allocator.default}>(enumTypeInfo<${fullName}>()),
+                m_value(value)
+        {}
+
+        virtual ${baseCppTypeName} get<#rt>
+                <#lt><#if !underlyingTypeInfo.isSigned>U</#if>Int${baseCppTypeNumBits}() const override
+        {
+            return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);
+        }
+
+        virtual <#if underlyingTypeInfo.isSigned>int64_t toInt()<#else>uint64_t toUInt()</#if> const override
+        {
+            return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);
+        }
+
+        virtual ${types.string.name} toString(
+                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        {
+            return ${types.string.name}(EnumTraits<${fullName}>::names[enumToOrdinal(m_value)], allocator);
+        }
+
+    private:
+        ${fullName} m_value;
+    };
+
+    return std::allocate_shared<Introspectable>(allocator, value);
 }
 </#if>
 

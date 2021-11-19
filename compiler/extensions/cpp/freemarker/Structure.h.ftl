@@ -16,7 +16,7 @@
 #include <zserio/AllocatorPropagatingCopy.h>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
-#include <zserio/IIntrospectable.h>
+<@type_includes types.introspectablePtr/>
 </#if>
 <@type_includes types.allocator/>
 <@type_includes types.packingContextNode/>
@@ -85,7 +85,7 @@ public:
 <#if withTypeInfoCode>
 
     static const ::zserio::ITypeInfo& typeInfo();
-    ::zserio::IIntrospectablePtr introspectable();
+    ${types.introspectablePtr.name} introspectable(const allocator_type& allocator = allocator_type());
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
 

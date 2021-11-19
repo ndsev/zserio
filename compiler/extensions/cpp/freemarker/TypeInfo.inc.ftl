@@ -1,6 +1,7 @@
 <#macro type_info typeInfo>
     <#if typeInfo.typeInfoGetter??>
-        ::zserio::BuiltinTypeInfo::${typeInfo.typeInfoGetter}<#t>
+        ::zserio::BuiltinTypeInfo::get${typeInfo.typeInfoGetter.suffix}(<#t>
+                <#if typeInfo.typeInfoGetter.arg??>${typeInfo.typeInfoGetter.arg}</#if>)<#t>
     <#else>
         <#if typeInfo.isEnum>
         ::zserio::enumTypeInfo<${typeInfo.cppTypeName}>()<#t>

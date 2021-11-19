@@ -33,6 +33,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         bitSize = createBitSize(enumTypeInstantiation);
         baseCppTypeName = nativeBaseType.getFullName();
+        baseCppTypeNumBits = nativeBaseType.getNumBits();
 
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(
@@ -62,6 +63,11 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public String getBaseCppTypeName()
     {
         return baseCppTypeName;
+    }
+
+    public int getBaseCppTypeNumBits()
+    {
+        return baseCppTypeNumBits;
     }
 
     public RuntimeFunctionTemplateData getRuntimeFunction()
@@ -127,6 +133,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final String baseCppTypeName;
+    private final int baseCppTypeNumBits;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final List<EnumItemData> items;
 }
