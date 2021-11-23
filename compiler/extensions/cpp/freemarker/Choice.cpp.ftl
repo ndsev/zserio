@@ -63,58 +63,53 @@
         </#list>
     </#if>
 </#macro>
-<#macro choice_switch memberActionMacroName needsBreak packed=false>
+<#macro choice_switch memberActionMacroName selectorExpression indent packed=false>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#local fieldIndex=0>
     <#if canUseNativeSwitch>
-    switch (${selectorExpression})
-    {
+${I}switch (${selectorExpression})
+${I}{
         <#list caseMemberList as caseMember>
             <#list caseMember.expressionList as expression>
-    case ${expression}:
+${I}case ${expression}:
             </#list>
-        <@.vars[memberActionMacroName] caseMember, packed, fieldIndex/>
+        <@.vars[memberActionMacroName] caseMember, packed, fieldIndex, indent+1/>
             <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
-            <#if needsBreak>
-        break;
-            </#if>
         </#list>
         <#if !isDefaultUnreachable>
-    default:
+${I}default:
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex/>
+        <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex, indent+1/>
                 <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
-                <#if needsBreak>
-        break;
-                </#if>
             <#else>
-        throw ::zserio::CppRuntimeException("No match in choice ${name}!");
+${I}    throw ::zserio::CppRuntimeException("No match in choice ${name}!");
             </#if>
         </#if>
-    }
+${I}}
     <#else>
-    const auto selector = ${selectorExpression};
+${I}const auto selector = ${selectorExpression};
 
         <#list caseMemberList as caseMember>
             <#if caseMember?has_next || !isDefaultUnreachable>
-    <#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
+${I}<#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
             <#else>
-    else
+${I}else
             </#if>
-    {
-        <@.vars[memberActionMacroName] caseMember, packed, fieldIndex/>
+${I}{
+        <@.vars[memberActionMacroName] caseMember, packed, fieldIndex, indent+1/>
             <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
-    }
+${I}}
         </#list>
         <#if !isDefaultUnreachable>
-    else
-    {
+${I}else
+${I}{
             <#if defaultMember??>
-        <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex/>
+        <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex, indent+1/>
                 <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
             <#else>
-        throw ::zserio::CppRuntimeException("No match in choice ${name}!");
+${I}    throw ::zserio::CppRuntimeException("No match in choice ${name}!");
             </#if>
-    }
+${I}}
         </#if>
     </#if>
 </#macro>
@@ -171,49 +166,17 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
         <@introspectable_call_function fullName, compoundFunctionsData.list/>
     </#if>
 
+<#macro choice_get_choice member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}return ::zserio::makeStringView("${member.compoundField.name}");
+    <#else>
+${I}return {};
+    </#if>
+</#macro>
         virtual ::zserio::StringView getChoice() const override
         {
-    <#if canUseNativeSwitch>
-            switch (${objectIndirectSelectorExpression})
-            {
-        <#list caseMemberList as caseMember>
-            <#list caseMember.expressionList as expression>
-            case ${expression}:
-            </#list>
-                return <#if caseMember.compoundField??>::zserio::makeStringView("${caseMember.compoundField.name}")<#else>{}</#if>;
-        </#list>
-        <#if !isDefaultUnreachable>
-            default:
-            <#if defaultMember??>
-                return <#if defaultMember.compoundField??>::zserio::makeStringView("${defaultMember.compoundField.name}")<#else>{}</#if>;
-            <#else>
-                throw ::zserio::CppRuntimeException("No match in choice ${name}!");
-            </#if>
-        </#if>
-            }
-    <#else>
-            const auto selector = ${objectIndirectSelectorExpression};
-        <#list caseMemberList as caseMember>
-            <#if caseMember?has_next || !isDefaultUnreachable>
-            <#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
-            <#else>
-            else
-            </#if>
-            {
-                return <#if caseMember.compoundField??>::zserio::makeStringView("${caseMember.compoundField.name}")<#else>{}</#if>;
-            }
-        </#list>
-        <#if !isDefaultUnreachable>
-            else
-            {
-            <#if defaultMember??>
-                return ::zserio::makeStringView("${defaultMember.compoundField.name}");
-            <#else>
-                throw <#if defaultMember.compoundField??>::zserio::makeStringView("${defaultMember.compoundField.name}")<#else>{}</#if>;
-            </#if>
-            }
-        </#if>
-    </#if>
+            <@choice_switch "choice_get_choice", selectorExpression, 3/>
         }
 
     private:
@@ -228,18 +191,20 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
 <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
 
 </#if>
-<#macro choice_initialize_children_member member packed index>
+<#macro choice_initialize_children_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_initialize_children_field member.compoundField, 2/>
+    <@compound_initialize_children_field member.compoundField, indent/>
     <#else>
-        // empty
+${I}// empty
     </#if>
+${I}break;
 </#macro>
 <#if needsChildrenInitialization>
 void ${name}::initializeChildren()
 {
     <#if fieldList?has_content>
-    <@choice_switch "choice_initialize_children_member", true/>
+    <@choice_switch "choice_initialize_children_member", selectorExpression, 1/>
     </#if>
     <@compound_initialize_children_epilog_definition compoundConstructorsData/>
 }
@@ -282,34 +247,38 @@ void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldLi
 </#list>
 }
 
-<#macro init_packing_context_member member packed index>
+<#macro init_packing_context_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_init_packing_context_field member.compoundField, index, 2/>
+    <@compound_init_packing_context_field member.compoundField, index, indent/>
     <#else>
-        // empty
+${I}// empty
     </#if>
+${I}break;
 </#macro>
 void ${name}::initPackingContext(${types.packingContextNode.name}&<#rt>
         <#lt><#if needs_packing_context_node(fieldList)> contextNode</#if>) const
 {
 <#if needs_packing_context_node(fieldList)>
-    <@choice_switch "init_packing_context_member", true, true/>
+    <@choice_switch "init_packing_context_member", selectorExpression, 1, true/>
 </#if>
 }
 
-<#macro choice_bitsizeof_member member packed index>
+<#macro choice_bitsizeof_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_bitsizeof_field member.compoundField, 2, packed, index/>
+    <@compound_bitsizeof_field member.compoundField, indent, packed, index/>
     <#else>
-        // empty
+${I}// empty
     </#if>
+${I}break;
 </#macro>
 size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const
 {
 <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    <@choice_switch "choice_bitsizeof_member", true/>
+    <@choice_switch "choice_bitsizeof_member", selectorExpression, 1/>
 
     return endBitPosition - bitPosition;
 <#else>
@@ -324,7 +293,7 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#rt>
 <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    <@choice_switch "choice_bitsizeof_member", true, true/>
+    <@choice_switch "choice_bitsizeof_member", selectorExpression, 1, true/>
 
     return endBitPosition - bitPosition;
 <#else>
@@ -333,19 +302,21 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#rt>
 }
 <#if withWriterCode>
 
-<#macro choice_initialize_offsets_member member packed index>
+<#macro choice_initialize_offsets_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_initialize_offsets_field member.compoundField, 2, packed, index/>
+    <@compound_initialize_offsets_field member.compoundField, indent, packed, index/>
     <#else>
-        // empty
+${I}// empty
     </#if>
+${I}break;
 </#macro>
 size_t ${name}::initializeOffsets(size_t bitPosition)
 {
     <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    <@choice_switch "choice_initialize_offsets_member", true/>
+    <@choice_switch "choice_initialize_offsets_member", selectorExpression, 1/>
 
     return endBitPosition;
     <#else>
@@ -360,7 +331,7 @@ size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#rt>
     <#if fieldList?has_content>
     size_t endBitPosition = bitPosition;
 
-    <@choice_switch "choice_initialize_offsets_member", true, true/>
+    <@choice_switch "choice_initialize_offsets_member", selectorExpression, 1, true/>
 
     return endBitPosition;
     <#else>
@@ -369,14 +340,15 @@ size_t ${name}::initializeOffsets(${types.packingContextNode.name}&<#rt>
 }
 </#if>
 
-<#macro choice_compare_member member packed index>
+<#macro choice_compare_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        return (!m_objectChoice.hasValue() && !other.m_objectChoice.hasValue()) ||
-                (m_objectChoice.hasValue() && other.m_objectChoice.hasValue() &&
-                m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>() == <#rt>
-                <#lt>other.m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>());
+${I}return (!m_objectChoice.hasValue() && !other.m_objectChoice.hasValue()) ||
+${I}        (m_objectChoice.hasValue() && other.m_objectChoice.hasValue() &&
+${I}        m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>() == <#rt>
+            <#lt>other.m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>());
     <#else>
-        return true; // empty
+${I}return true; // empty
     </#if>
 </#macro>
 bool ${name}::operator==(const ${name}& other) const
@@ -386,19 +358,21 @@ bool ${name}::operator==(const ${name}& other) const
 
     <@compound_parameter_comparison_with_any_holder compoundParametersData/>
     <#if fieldList?has_content>
-    <@choice_switch "choice_compare_member", false/>
+    <@choice_switch "choice_compare_member", selectorExpression, 1/>
     <#else>
     return true;
     </#if>
 }
 
-<#macro choice_hash_code_member member packed index>
+<#macro choice_hash_code_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        if (m_objectChoice.hasValue())
-            result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>());
+${I}if (m_objectChoice.hasValue())
+${I}    result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>());
     <#else>
-        // empty
+${I}// empty
     </#if>
+${I}break;
 </#macro>
 uint32_t ${name}::hashCode() const
 {
@@ -406,19 +380,21 @@ uint32_t ${name}::hashCode() const
 
     <@compound_parameter_hash_code compoundParametersData/>
     <#if fieldList?has_content>
-    <@choice_switch "choice_hash_code_member", true/>
+    <@choice_switch "choice_hash_code_member", selectorExpression, 1/>
     </#if>
 
     return result;
 }
 <#if withWriterCode>
 
-<#macro choice_write_member member packed index>
+<#macro choice_write_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        <@compound_write_field member.compoundField, name, 2, packed, index/>
+    <@compound_write_field member.compoundField, name, indent, packed, index/>
     <#else>
-        // empty
+${I}// empty
     </#if>
+${I}break;
 </#macro>
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
 void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
@@ -429,7 +405,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
     <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
 
         </#if>
-    <@choice_switch "choice_write_member", true/>
+    <@choice_switch "choice_write_member", selectorExpression, 1/>
     </#if>
 }
 
@@ -438,47 +414,49 @@ void ${name}::write(${types.packingContextNode.name}&<#rt>
         ::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>)<#t>
 {
     <#if fieldList?has_content>
-    <@choice_switch "choice_write_member", true, true/>
+    <@choice_switch "choice_write_member", selectorExpression, 1, true/>
     </#if>
 }
 </#if>
 <#if fieldList?has_content>
 
-<#macro choice_read_member member packed index>
+<#macro choice_read_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <#if needs_field_read_local_variable(member.compoundField)>
-        {
-            <@compound_read_field member.compoundField, name, 3, packed, index/>
-        }
+${I}{
+        <@compound_read_field member.compoundField, name, indent+1, packed, index/>
+${I}}
         <#else>
-        <@compound_read_field member.compoundField, name, 2, packed, index/>
+    <@compound_read_field member.compoundField, name, indent, packed, index/>
         </#if>
     <#else>
-        return ${types.anyHolder.name}(allocator);
+${I}return ${types.anyHolder.name}(allocator);
     </#if>
 </#macro>
 ${types.anyHolder.name} ${name}::readObject(::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
-    <@choice_switch "choice_read_member", false/>
+    <@choice_switch "choice_read_member", selectorExpression, 1/>
 }
 
 ${types.anyHolder.name} ${name}::readObject(${types.packingContextNode.name}&<#rt>
         <#lt><#if needs_packing_context_node(fieldList)> contextNode</#if>,
         ::zserio::BitStreamReader& in, const allocator_type& allocator)
 {
-    <@choice_switch "choice_read_member", false, true/>
+    <@choice_switch "choice_read_member", selectorExpression, 1, true/>
 }
 
-<#macro choice_copy_object member packed index>
+<#macro choice_copy_object member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-        return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name member.compoundField/>>(m_objectChoice, allocator);
+${I}return ::zserio::allocatorPropagatingCopy<<@field_cpp_type_name member.compoundField/>>(m_objectChoice, allocator);
     <#else>
-        return ${types.anyHolder.name}(allocator);
+${I}return ${types.anyHolder.name}(allocator);
     </#if>
 </#macro>
 ${types.anyHolder.name} ${name}::copyObject(const allocator_type& allocator) const
 {
-    <@choice_switch "choice_copy_object", false/>
+    <@choice_switch "choice_copy_object", selectorExpression, 1/>
 }
 </#if>
 <@namespace_end package.path/>
