@@ -17,7 +17,6 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
-import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
@@ -243,7 +242,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             this.hasImplicitParameters = hasImplicitParameters;
             this.hasExplicitParameters = hasExplicitParameters;
 
-            bitSize = createBitSize(fieldTypeInstantiation, cppSqlIndirectExpressionFormatter);
+            bitSize = BitSizeDataCreator.createData(fieldTypeInstantiation, cppSqlIndirectExpressionFormatter);
             isSimpleType = nativeFieldType.isSimpleType();
             isBoolean = fieldBaseType instanceof BooleanType;
             enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
@@ -336,7 +335,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return hasExplicitParameters;
         }
 
-        public String getBitSize()
+        public BitSizeTemplateData getBitSize()
         {
             return bitSize;
         }
@@ -570,23 +569,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isSigned;
         }
 
-        private static String createBitSize(TypeInstantiation typeInstantiation,
-                ExpressionFormatter cppSqlIndirectExpressionFormatter) throws ZserioExtensionException
-        {
-            if (typeInstantiation.getBaseType() instanceof FixedSizeType)
-            {
-                return CppLiteralFormatter.formatUInt8Literal(
-                        ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
-            }
-            else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-            {
-                return cppSqlIndirectExpressionFormatter.formatGetter(
-                        ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression());
-            }
-
-            return null;
-        }
-
         private static EnumTemplateData createEnumTemplateData(CppNativeMapper cppNativeMapper,
                 ZserioType fieldBaseType, IncludeCollector includeCollector) throws ZserioExtensionException
         {
@@ -620,7 +602,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final List<ParameterTemplateData> typeParameters;
         private final boolean hasImplicitParameters;
         private final boolean hasExplicitParameters;
-        private final String bitSize;
+        private final BitSizeTemplateData bitSize;
         private final boolean isSimpleType;
         private final boolean isBoolean;
         private final EnumTemplateData enumData;

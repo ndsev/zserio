@@ -19,7 +19,7 @@
     <#if arrayTraits.isTemplated>
             <typename ::std::underlying_type<${fullName}>::type><#t>
     </#if>
-    (<#if arrayTraits.requiresElementBitSize>${bitSize}</#if>)<#t>
+    (<#if arrayTraits.requiresElementBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
@@ -29,9 +29,9 @@ constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::valu
 template <>
 const ITypeInfo& enumTypeInfo<${fullName}>()
 {
-    <@underlying_type_info_type_arguments_var "underlyingTypeArguments" underlyingTypeInfo/>
+    <@underlying_type_info_type_arguments_var "underlyingTypeArguments", bitSize!/>
 
-    <@item_info_array_var "items" items/>
+    <@item_info_array_var "items", items/>
 
     static const ::zserio::EnumTypeInfo typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),

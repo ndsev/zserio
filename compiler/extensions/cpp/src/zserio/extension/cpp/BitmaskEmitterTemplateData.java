@@ -7,7 +7,6 @@ import java.util.List;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
@@ -28,14 +27,14 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(bitmaskTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
-        underlyingTypeInfo = new TypeInfoTemplateData(bitmaskTypeInstantiation.getTypeReference(), nativeBaseType);
+        underlyingTypeInfo = new TypeInfoTemplateData(bitmaskTypeInstantiation.getTypeReference(),
+                nativeBaseType);
 
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
-        bitSize = createBitSize(bitmaskTypeInstantiation);
+        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
+        bitSize = BitSizeDataCreator.createData(bitmaskTypeInstantiation, cppExpressionFormatter);
         baseCppTypeName = nativeBaseType.getFullName();
         baseCppTypeNumBits = nativeBaseType.getNumBits();
-
-        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(
                 bitmaskTypeInstantiation, cppExpressionFormatter);
 
@@ -59,7 +58,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         return arrayTraits;
     }
 
-    public String getBitSize()
+    public BitSizeTemplateData getBitSize()
     {
         return bitSize;
     }
@@ -130,27 +129,9 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         private final boolean isZero;
     };
 
-    private static String createBitSize(TypeInstantiation typeInstantiation) throws ZserioExtensionException
-    {
-        if (typeInstantiation.getBaseType() instanceof FixedSizeType)
-        {
-            return CppLiteralFormatter.formatUInt8Literal(
-                    ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
-        }
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-        {
-            return CppLiteralFormatter.formatUInt8Literal(
-                    ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize());
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     private final TypeInfoTemplateData underlyingTypeInfo;
     private final ArrayTraitsTemplateData arrayTraits;
-    private final String bitSize;
+    private final BitSizeTemplateData bitSize;
     private final String baseCppTypeName;
     private final int baseCppTypeNumBits;
     private final RuntimeFunctionTemplateData runtimeFunction;

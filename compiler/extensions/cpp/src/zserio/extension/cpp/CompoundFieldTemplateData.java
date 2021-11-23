@@ -14,7 +14,6 @@ import zserio.ast.CompoundType;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
-import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
@@ -88,7 +87,7 @@ public class CompoundFieldTemplateData
                 cppExpressionFormatter, cppIndirectExpressionFormatter, includeCollector, withWriterCode);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 cppExpressionFormatter);
-        bitSize = createBitSize(fieldTypeInstantiation, cppExpressionFormatter);
+        bitSize = BitSizeDataCreator.createData(fieldTypeInstantiation, cppExpressionFormatter);
         this.withWriterCode = withWriterCode;
         this.withRangeCheckCode = withRangeCheckCode;
     }
@@ -213,7 +212,7 @@ public class CompoundFieldTemplateData
         return runtimeFunction;
     }
 
-    public BitSize getBitSize()
+    public BitSizeTemplateData getBitSize()
     {
         return bitSize;
     }
@@ -485,7 +484,7 @@ public class CompoundFieldTemplateData
             elementCppTypeName = elementNativeType.getFullName();
             includeCollector.addHeaderIncludesForType(elementNativeType);
             elementBitSize = traits.getRequiresElementBitSize()
-                    ? createBitSize(elementTypeInstantiation, cppExpressionFormatter)
+                    ? BitSizeDataCreator.createData(elementTypeInstantiation, cppExpressionFormatter)
                     : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
                     cppIndirectExpressionFormatter, parentType, elementTypeInstantiation, withWriterCode);
@@ -518,7 +517,7 @@ public class CompoundFieldTemplateData
             return elementCppTypeName;
         }
 
-        public BitSize getElementBitSize()
+        public BitSizeTemplateData getElementBitSize()
         {
             return elementBitSize;
         }
@@ -548,31 +547,9 @@ public class CompoundFieldTemplateData
         private final boolean isPacked;
         private final String length;
         private final String elementCppTypeName;
-        private final BitSize elementBitSize;
+        private final BitSizeTemplateData elementBitSize;
         private final Compound elementCompound;
         private final IntegerRange elementIntegerRange;
-    }
-
-    public static class BitSize
-    {
-        public BitSize(String value, boolean isDynamicBitField)
-        {
-            this.value = value;
-            this.isDynamicBitField = isDynamicBitField;
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-
-        public boolean getIsDynamicBitField()
-        {
-            return isDynamicBitField;
-        }
-
-        private final String value;
-        private final boolean isDynamicBitField;
     }
 
     private static Optional createOptional(Field field, ZserioType baseFieldType, CompoundType parentType,
@@ -717,27 +694,6 @@ public class CompoundFieldTemplateData
                 withWriterCode);
     }
 
-    private static BitSize createBitSize(TypeInstantiation typeInstantiation,
-            ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
-    {
-        if (typeInstantiation.getBaseType() instanceof FixedSizeType)
-        {
-            final String value = CppLiteralFormatter.formatUInt8Literal(
-                    ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
-            return new BitSize(value, false);
-        }
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-        {
-            final String value = cppExpressionFormatter.formatGetter(
-                    ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression());
-            return new BitSize(value, true);
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     private static Compound createCompound(CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
             CompoundType owner, TypeInstantiation typeInstantiation, boolean withWriterCode)
@@ -782,7 +738,7 @@ public class CompoundFieldTemplateData
     private final ArrayTraitsTemplateData arrayTraits;
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
-    private final BitSize bitSize;
+    private final BitSizeTemplateData bitSize;
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;
 }

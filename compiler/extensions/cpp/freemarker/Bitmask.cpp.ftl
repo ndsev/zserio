@@ -22,19 +22,19 @@
     <#if arrayTraits.isTemplated>
             <${fullName}::underlying_type><#t>
     </#if>
-    (<#if arrayTraits.requiresElementBitSize>${bitSize}</#if>)<#t>
+    (<#if arrayTraits.requiresElementBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 ${name}::${name}(::zserio::BitStreamReader& in) :
-    m_value(readValue(in))
+        m_value(readValue(in))
 {}
 
 ${name}::${name}(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in) :
-    m_value(readValue(contextNode, in))
+        m_value(readValue(contextNode, in))
 {}
 <#if upperBound??>
 
 ${name}::${name}(underlying_type value) :
-    m_value(value)
+        m_value(value)
 {
     if (m_value > ${upperBound})
         throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") + value + "!";
@@ -44,9 +44,9 @@ ${name}::${name}(underlying_type value) :
 
 const ::zserio::ITypeInfo& ${name}::typeInfo()
 {
-    <@underlying_type_info_type_arguments_var "underlyingTypeArguments" underlyingTypeInfo/>
+    <@underlying_type_info_type_arguments_var "underlyingTypeArguments", bitSize!/>
 
-    <@item_info_array_var "values" values/>
+    <@item_info_array_var "values", values/>
 
     static const ::zserio::BitmaskTypeInfo typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),

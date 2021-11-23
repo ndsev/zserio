@@ -168,7 +168,7 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
     </#if>
     <#if compoundFunctionsData.list?has_content>
 
-        <@introspectable_call_function fullName, fieldList/>
+        <@introspectable_call_function fullName, compoundFunctionsData.list/>
     </#if>
 
         virtual ::zserio::StringView getChoice() const override

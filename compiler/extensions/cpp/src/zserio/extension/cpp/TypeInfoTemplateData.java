@@ -2,7 +2,6 @@ package zserio.extension.cpp;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.CompoundType;
-import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeReference;
@@ -20,9 +19,8 @@ public class TypeInfoTemplateData
         final boolean hasTypeInfo = baseType instanceof CompoundType ||
                 baseType instanceof EnumType || baseType instanceof BitmaskType;
         typeInfoGetter = hasTypeInfo ? null : CppRuntimeFunctionDataCreator.createTypeInfoData(typeReference);
-        isDynamicBitField = baseType instanceof DynamicBitFieldType;
         isEnum = baseType instanceof EnumType;
-        isBitmask = baseType instanceof BitmaskType;
+        isBitmask = baseType instanceof BitmaskType; // !@# to Field?
         isSigned = baseType instanceof IntegerType && ((IntegerType)baseType).isSigned();
     }
 
@@ -30,7 +28,6 @@ public class TypeInfoTemplateData
     {
         cppTypeName = cppNativeType.getFullName();
         typeInfoGetter = null;
-        isDynamicBitField = false;
         isEnum = false;
         isBitmask = false;
         isSigned = false;
@@ -44,11 +41,6 @@ public class TypeInfoTemplateData
     public RuntimeFunctionTemplateData getTypeInfoGetter()
     {
         return typeInfoGetter;
-    }
-
-    public boolean getIsDynamicBitField()
-    {
-        return isDynamicBitField;
     }
 
     public boolean getIsEnum()
@@ -68,7 +60,6 @@ public class TypeInfoTemplateData
 
     private final String cppTypeName;
     private final RuntimeFunctionTemplateData typeInfoGetter;
-    private final boolean isDynamicBitField;
     private final boolean isEnum;
     private final boolean isBitmask;
     private final boolean isSigned;

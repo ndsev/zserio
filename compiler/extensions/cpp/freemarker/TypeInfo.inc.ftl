@@ -65,12 +65,12 @@ ${I}};
     </#if>
 </#macro>
 
-<#macro underlying_type_info_type_arguments_var varName underlyingTypeInfo indent=1>
+<#macro underlying_type_info_type_arguments_var varName bitSize indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const ::std::array<::zserio::StringView, <#if underlyingTypeInfo.isDynamicBitField>1<#else>0</#if>> ${varName}<#rt>
-    <#if underlyingTypeInfo.isDynamicBitField>
+${I}static const ::std::array<::zserio::StringView, <#if bitSize?has_content && bitSize.isDynamicBitField>1<#else>0</#if>> ${varName}<#rt>
+    <#if bitSize?has_content && bitSize.isDynamicBitField>
         <#lt> = {
-        ::zserio::makeStringView("${bitSize}")
+        ::zserio::makeStringView("${bitSize.value}")
 ${I}};
     <#else>
         <#lt>;
@@ -106,26 +106,29 @@ ${I}    <#if field.offset??>::zserio::makeStringView("${field.offset.getter}")<#
 ${I}    <#if field.initializer??>::zserio::makeStringView(${field.initializer})<#else>{}</#if>, // initializer
 ${I}    <#if field.optional??>true<#else>false</#if>, // isOptional
 ${I}    <#if field.optional?? && field.optional.clause??><#rt>
-                <#lt>::zserio::makeStringView("${field.optional.clause}"}<#else>{}</#if>, // optionalClause
+                <#lt>::zserio::makeStringView("${field.optional.clause}")<#else>{}</#if>, // optionalClause
 ${I}    <#if field.constraint??>::zserio::makeStringView("${field.constraint}")<#else>{}</#if>, // constraint
 ${I}    <#if field.array??>true<#else>false</#if>, // isArray
 ${I}    <#if field.array?? && field.array.length??><#rt>
-                <#lt>::zserio::makeStringView("${field.array.length}"}<#else>{}</#if>, // arrayLength
+                <#lt>::zserio::makeStringView("${field.array.length}")<#else>{}</#if>, // arrayLength
 ${I}    <#if field.array?? && field.array.isPacked>true<#else>false</#if>, // isPacked
 ${I}    <#if field.array?? && field.array.isImplicit>true<#else>false</#if> // isImplicit
 ${I}}<#if comma>,</#if>
 </#macro>
 
 <#function field_info_type_arguments_count field>
-    <#if field.typeInfo.isDynamicBitField>
-        <#return 1/>
-    <#elseif field.array?? && field.array.elementCompound??>
-        <#return field.array.elementCompound.instantiatedParameters?size/>
+    <#if field.array??>
+        <#if field.array.elementCompound??>
+            <#return field.array.elementCompound.instantiatedParameters?size/>
+        <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
+            <#return 1/>
+        </#if>
     <#elseif field.compoud??>
         <#return field.compound.instantiatedParameters?size/>
-    <#else>
-        <#return 0/>
+    <#elseif field.bitSize?? && field.bitSize.isDynamicBitField>
+        <#return 1/>
     </#if>
+    <#return 0/>
 </#function>
 
 <#macro field_info_type_arguments_var_name field>
@@ -136,12 +139,16 @@ ${I}}<#if comma>,</#if>
     <#local count=field_info_type_arguments_count(field)>
     <#if count != 0>
     static const ::std::array<::zserio::StringView, ${count}> <@field_info_type_arguments_var_name field/> = {
-        <#if field.typeInfo.isDynamicBitField>
-        ::zserio::makeStringView("${field.bitSize.value}")
-        <#elseif field.array?? && field.array.elementCompound??>
+        <#if field.array??>
+            <#if field.array.elementCompound??>
         <@field_info_compound_type_arguments field.array.elementCompound.instantiatedParameters/>
+            <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
+        ::zserio::makeStringView("${field.array.elementBitSize}")
+            </#if>
         <#elseif field.compound??>
         <@field_info_compound_type_arguments field.compound.instantiatedParameters/>
+        <#elseif field.bitSize?? && field.bitSize.isDynamicBitField>
+        ::zserio::makeStringView("${field.bitSize.value}")
         </#if>
     };
     </#if>
@@ -216,13 +223,13 @@ ${I}    <@field_info_type_arguments_var_name field/>, // typeArguments
 ${I}    {}, // typeArguments
     </#if>
 ${I}    ::zserio::makeStringView("${field.sqlTypeData.name}"), // sqlTypeName
-${I}    <#if field.sqlConstraint??>::zserio::makeStringView("${field.sqlConstraint}")<#else>{}</#if>, // sqlConstraint
+${I}    <#if field.sqlConstraint??>::zserio::makeStringView(${field.sqlConstraint})<#else>{}</#if>, // sqlConstraint
 ${I}    <#if field.isVirtual>true<#else>false</#if>, // isVirtual
 ${I}}<#if comma>,</#if>
 </#macro>
 
 <#function column_info_type_arguments_count field>
-    <#if field.typeInfo.isDynamicBitField>
+    <#if field.bitSize?? && field.bitSize.isDynamicBitField>
         <#return 1/>
     <#else>
         <#return field.typeParameters?size/>
@@ -234,8 +241,8 @@ ${I}}<#if comma>,</#if>
     <#local count=column_info_type_arguments_count(field)>
     <#if count != 0>
 ${I}static const ::std::array<::zserio::StringView, ${count}> <@field_info_type_arguments_var_name field/> = {
-        <#if field.typeInfo.isDynamicBitField>
-${I}    ::zserio::makeStringView("${field.bitSize}")
+        <#if field.bitSize?? && field.bitSize.isDynamicBitField>
+${I}    ::zserio::makeStringView("${field.bitSize.value}")
         <#else>
         <@column_info_compound_type_arguments field.typeParameters, indent+1/>
         </#if>
