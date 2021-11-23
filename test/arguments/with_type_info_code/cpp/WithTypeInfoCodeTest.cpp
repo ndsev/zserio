@@ -1,10 +1,13 @@
 #include "gtest/gtest.h"
 
-#include "with_type_info_code/SqlDatabase.h"
-#include "with_type_info_code/SimplePubsub.h"
-#include "with_type_info_code/SimpleService.h"
+#include "with_type_info_code/type_info/SqlDatabase.h"
+#include "with_type_info_code/type_info/SimplePubsub.h"
+#include "with_type_info_code/type_info/SimpleService.h"
 
 namespace with_type_info_code
+{
+
+namespace type_info
 {
 
 class WithTypeInfoCodeTest : public ::testing::Test
@@ -28,5 +31,7 @@ TEST_F(WithTypeInfoCodeTest, checkSimplePubsub)
 TEST_F(WithTypeInfoCodeTest, checkSimpleService)
 {
 }
+
+} // namespace type_info
 
 } // namespace with_type_info_code
