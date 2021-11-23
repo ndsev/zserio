@@ -153,17 +153,17 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
         {}
     <#if fieldList?has_content>
 
-        <@introspectable_get_field fullName, fieldList/>
+        <@introspectable_get_field name, fieldList/>
 
-        <@introspectable_set_field fullName, fieldList/>
+        <@introspectable_set_field name, fieldList/>
     </#if>
     <#if compoundParametersData.list?has_content>
 
-        <@introspectable_get_parameter fullName, compoundParametersData.list/>
+        <@introspectable_get_parameter name, compoundParametersData.list/>
     </#if>
     <#if compoundFunctionsData.list?has_content>
 
-        <@introspectable_call_function fullName, compoundFunctionsData.list/>
+        <@introspectable_call_function name, compoundFunctionsData.list/>
     </#if>
 
 <#macro choice_get_choice member packed index indent>
@@ -176,7 +176,7 @@ ${I}return {};
 </#macro>
         virtual ::zserio::StringView getChoice() const override
         {
-            <@choice_switch "choice_get_choice", selectorExpression, 3/>
+            <@choice_switch "choice_get_choice", objectIndirectSelectorExpression, 3/>
         }
 
     private:

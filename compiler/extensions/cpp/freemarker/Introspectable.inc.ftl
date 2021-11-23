@@ -1,5 +1,5 @@
 <#include "TypeInfo.inc.ftl">
-<#macro introspectable_get_field fullName fieldList indent=2>
+<#macro introspectable_get_field compoundName fieldList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}virtual ${types.introspectablePtr.name} getField(::zserio::StringView name) const override
 ${I}{
@@ -16,12 +16,12 @@ ${I}    }
     </#list>
 ${I}    else
 ${I}    {
-${I}        throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${fullName}'!";
+${I}        throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}    }
 ${I}}
 </#macro>
 
-<#macro introspectable_set_field fullName fieldList indent=2>
+<#macro introspectable_set_field compoundName fieldList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}virtual void setField(::zserio::StringView name,
 ${I}        const ::zserio::AnyHolder<allocator_type>& value) override
@@ -34,12 +34,12 @@ ${I}    }
     </#list>
 ${I}    else
 ${I}    {
-${I}        throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${fullName}'!";
+${I}        throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}    }
 ${I}}
 </#macro>
 
-<#macro introspectable_get_parameter fullName parametersList indent=2>
+<#macro introspectable_get_parameter compoundName parametersList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}virtual ${types.introspectablePtr.name} getParameter(::zserio::StringView name) const override
 ${I}{
@@ -51,12 +51,12 @@ ${I}    }
     </#list>
 ${I}    else
 ${I}    {
-${I}        throw ::zserio::CppRuntimeException("Parameter '") + name + "' doesn't exist in '${fullName}'!";
+${I}        throw ::zserio::CppRuntimeException("Parameter '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}    }
 ${I}}
 </#macro>
 
-<#macro introspectable_call_function fullName functionList indent=2>
+<#macro introspectable_call_function compoundName functionList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}virtual ${types.introspectablePtr.name} callFunction(::zserio::StringView name) const override
 ${I}{
@@ -68,7 +68,7 @@ ${I}    }
     </#list>
 ${I}    else
 ${I}    {
-${I}        throw ::zserio::CppRuntimeException("Function '") + name + "' doesn't exist in '${fullName}'!";
+${I}        throw ::zserio::CppRuntimeException("Function '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}    }
 ${I}}
 </#macro>

@@ -59,8 +59,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
-        throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
-                "is not initialized!");
+        throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
 
     return *<@parameter_member_name compoundParameter.name/>;
 }
@@ -69,8 +68,7 @@ ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterNam
 ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.getterName}() const
 {
     if (!m_isInitialized)
-        throw ::zserio::CppRuntimeException("Parameter ${compoundParameter.name} of compound ${compoundName} "
-                "is not initialized!");
+        throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
 
     return <#if !compoundParameter.isSimpleType>*</#if><@parameter_member_name compoundParameter.name/>;
 }
