@@ -4,6 +4,7 @@
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "Introspectable.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/StringConvertUtil.h>
@@ -14,7 +15,7 @@
 #include <zserio/BitFieldUtil.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-#include <zserio/Introspectable.h>
+<@type_includes types.introspectableFactory/>
 </#if>
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
@@ -159,9 +160,52 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     return typeInfo;
 }
 
-::zserio::IIntrospectablePtr ${name}::introspectable()
+${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& allocator)
 {
-    return nullptr;
+    class Introspectable : public ::zserio::IntrospectableAllocatorHolderBase<allocator_type>
+    {
+    public:
+        Introspectable(${fullName}& object, const allocator_type& allocator) :
+                ::zserio::IntrospectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
+                m_object(object)
+        {}
+    <#if fieldList?has_content>
+
+        <@introspectable_get_field fullName, fieldList/>
+
+        <@introspectable_set_field fullName, fieldList/>
+    </#if>
+    <#if compoundParametersData.list?has_content>
+
+        <@introspectable_get_parameter fullName, compoundParametersData.list/>
+    </#if>
+    <#if compoundFunctionsData.list?has_content>
+
+        <@introspectable_call_function fullName, fieldList/>
+    </#if>
+
+        virtual ::zserio::StringView getChoice() const override
+        {
+    <#if fieldList?has_content>
+            switch (m_object.choiceTag())
+            {
+        <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                return ::zserio::makeStringView("${field.name}");
+        </#list>
+            default:
+                return {};
+            }
+    <#else>
+            return {};
+    </#if>
+        }
+
+    private:
+        ${fullName}& m_object;
+    };
+
+    return std::allocate_shared<Introspectable>(allocator, *this, allocator);
 }
 
 </#if>

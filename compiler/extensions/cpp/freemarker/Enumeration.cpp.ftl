@@ -67,7 +67,7 @@ ${types.introspectablePtr.name} enumIntrospectable(
         virtual ${types.string.name} toString(
                 const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
         {
-            return ${types.string.name}(EnumTraits<${fullName}>::names[enumToOrdinal(m_value)], allocator);
+            return ${types.string.name}(enumToString(m_value), allocator);
         }
 
     private:

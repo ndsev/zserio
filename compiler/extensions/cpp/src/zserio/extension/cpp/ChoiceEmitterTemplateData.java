@@ -21,9 +21,16 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
+        final ExpressionFormatter cppOwnerIndirectExpressionFormatter =
+                context.getIndirectExpressionFormatter(this, "m_owner");
+        final ExpressionFormatter cppObjectIndirectExpressionFormatter =
+                context.getIndirectExpressionFormatter(this, "m_object");
 
         final Expression expression = choiceType.getSelectorExpression();
         selectorExpression = cppExpressionFormatter.formatGetter(expression);
+
+        objectIndirectSelectorExpression = cppObjectIndirectExpressionFormatter.formatGetter(expression);
+
         // TODO[Mi-L@]: Consider using switch also on bitmask (using valueof).
         canUseNativeSwitch = expression.getExprType() != Expression.ExpressionType.BOOLEAN &&
                 expression.getExprType() != Expression.ExpressionType.BITMASK;
@@ -31,13 +38,11 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         caseMemberList = new ArrayList<CaseMember>();
         final boolean withWriterCode = context.getWithWriterCode();
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
-        final ExpressionFormatter cppIndirectExpressionFormatter =
-                context.getOwnerIndirectExpressionFormatter(this);
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
         for (ChoiceCase choiceCaseType : choiceCaseTypes)
         {
             caseMemberList.add(new CaseMember(cppNativeMapper, choiceType, choiceCaseType,
-                    cppExpressionFormatter, cppIndirectExpressionFormatter, this,
+                    cppExpressionFormatter, cppOwnerIndirectExpressionFormatter, this,
                     withWriterCode, withRangeCheckCode));
         }
 
@@ -45,7 +50,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         if (choiceDefaultType != null)
         {
             defaultMember = new DefaultMember(cppNativeMapper, choiceType, choiceDefaultType,
-                    cppExpressionFormatter, cppIndirectExpressionFormatter, this,
+                    cppExpressionFormatter, cppOwnerIndirectExpressionFormatter, this,
                     withWriterCode, withRangeCheckCode);
         }
         else
@@ -59,6 +64,11 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public String getSelectorExpression()
     {
         return selectorExpression;
+    }
+
+    public String getObjectIndirectSelectorExpression()
+    {
+        return objectIndirectSelectorExpression;
     }
 
     public boolean getCanUseNativeSwitch()
@@ -138,6 +148,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     }
 
     private final String selectorExpression;
+    private final String objectIndirectSelectorExpression;
     private final boolean canUseNativeSwitch;
     private final List<CaseMember> caseMemberList;
     private final DefaultMember defaultMember;

@@ -50,7 +50,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         final List<Field> tableFields = tableType.getFields();
         fields = new ArrayList<FieldTemplateData>(tableFields.size());
         final ExpressionFormatter cppSqlIndirectExpressionFormatter =
-                context.getSqlIndirectExpressionFormatter(this);
+                context.getIndirectExpressionFormatter(this, "row");
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
         explicitParameters = new TreeSet<ExplicitParameterTemplateData>();
         boolean hasImplicitParameters = false;

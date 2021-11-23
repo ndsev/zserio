@@ -33,6 +33,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         bitSize = createBitSize(bitmaskTypeInstantiation);
         baseCppTypeName = nativeBaseType.getFullName();
+        baseCppTypeNumBits = nativeBaseType.getNumBits();
 
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(
@@ -66,6 +67,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public String getBaseCppTypeName()
     {
         return baseCppTypeName;
+    }
+
+    public int getBaseCppTypeNumBits()
+    {
+        return baseCppTypeNumBits;
     }
 
     public RuntimeFunctionTemplateData getRuntimeFunction()
@@ -146,6 +152,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     private final ArrayTraitsTemplateData arrayTraits;
     private final String bitSize;
     private final String baseCppTypeName;
+    private final int baseCppTypeNumBits;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String upperBound;
     private final List<BitmaskValueData> values;

@@ -9,6 +9,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
+<@type_includes types.introspectableFactory/>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -53,6 +54,40 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     };
 
     return typeInfo;
+}
+
+${types.introspectablePtr.name} ${name}::introspectable(const ${types.allocator.default}& allocator)
+{
+    class Introspectable : public ::zserio::IntrospectableBase<${types.allocator.default}>
+    {
+    public:
+        Introspectable(${fullName} bitmask) :
+                ::zserio::IntrospectableBase<${types.allocator.default}>(${fullName}::typeInfo()),
+                m_bitmask(bitmask)
+        {}
+
+        <#-- bitmask is always unsigned -->
+        virtual ${baseCppTypeName} getUInt${baseCppTypeNumBits}() const override
+        {
+            return m_bitmask.getValue();
+        }
+
+        virtual uint64_t toUInt() const override
+        {
+            return m_bitmask.getValue();
+        }
+
+        virtual ${types.string.name} toString(
+                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        {
+            return m_bitmask.toString(allocator);
+        }
+
+    private:
+        ${fullName} m_bitmask;
+    };
+
+    return ::std::allocate_shared<Introspectable>(allocator, *this);
 }
 </#if>
 

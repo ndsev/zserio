@@ -111,7 +111,7 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
     {
     public:
         Introspectable(${fullName}& object, const allocator_type& allocator) :
-                ::zserio::IntrospectableAllocatorHolderBase<allocator_type>(${name}::typeInfo(), allocator),
+                ::zserio::IntrospectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
                 m_object(object)
         {}
     <#if fieldList?has_content>
@@ -120,9 +120,13 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
 
         <@introspectable_set_field fullName, fieldList/>
     </#if>
+    <#if compoundParametersData.list?has_content>
+
+        <@introspectable_get_parameter fullName, compoundParametersData.list/>
+    </#if>
     <#if compoundFunctionsData.list?has_content>
 
-        <@introspectable_call_function fullName, fieldList/>
+        <@introspectable_call_function fullName, compoundFunctionsData.list/>
     </#if>
 
     private:

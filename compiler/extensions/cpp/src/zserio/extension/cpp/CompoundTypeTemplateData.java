@@ -22,7 +22,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         final ExpressionFormatter cppIndirectExpressionFormatter =
-                context.getOwnerIndirectExpressionFormatter(this);
+                context.getIndirectExpressionFormatter(this, "m_owner");
         for (Field fieldType : fieldTypeList)
         {
             final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeMapper,

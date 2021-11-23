@@ -39,11 +39,28 @@ ${I}    }
 ${I}}
 </#macro>
 
-<#macro introspectable_call_function fullName fieldList indent=2>
+<#macro introspectable_get_parameter fullName parametersList indent=2>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}virtual ${types.introspectablePtr.name} getParameter(::zserio::StringView name) const override
+${I}{
+    <#list parametersList as parameter>
+${I}    if (name == ::zserio::makeStringView("${parameter.name}"))
+${I}    {
+${I}        return <@introspectable_create_parameter parameter/>;
+${I}    }
+    </#list>
+${I}    else
+${I}    {
+${I}        throw ::zserio::CppRuntimeException("Parameter '") + name + "' doesn't exist in '${fullName}'!";
+${I}    }
+${I}}
+</#macro>
+
+<#macro introspectable_call_function fullName functionList indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}virtual ${types.introspectablePtr.name} callFunction(::zserio::StringView name) const override
 ${I}{
-    <#list compoundFunctionsData.list as function>
+    <#list functionList as function>
 ${I}    if (name == ::zserio::makeStringView("${function.schemaName}"))
 ${I}    {
 ${I}        return <@introspectable_create_function function/>;
@@ -81,6 +98,18 @@ ${I}}
         <#else>
             m_object.${field.getterName}().introspectable(get_allocator())<#t>
         </#if>
+    </#if>
+</#macro>
+
+<#macro introspectable_create_parameter parameter>
+    <#if parameter.typeInfo.typeInfoGetter??>
+        ${types.introspectableFactory.name}::get${parameter.typeInfo.typeInfoGetter.suffix}(<#t>
+                <#if parameter.typeInfo.typeInfoGetter.arg??>${parameter.typeInfo.typeInfoGetter.arg}, </#if><#t>
+                m_object.${parameter.getterName}(), get_allocator())<#t>
+    <#elseif parameter.typeInfo.isEnum>
+        ::zserio::enumIntrospectable(m_object.${parameter.getterName}(), get_allocator())<#t>
+    <#else>
+        m_object.${parameter.getterName}().introspectable(get_allocator())<#t>
     </#if>
 </#macro>
 

@@ -36,18 +36,11 @@ final class TemplateDataContext
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
 
-    public ExpressionFormatter getOwnerIndirectExpressionFormatter(IncludeCollector includeCollector)
+    public ExpressionFormatter getIndirectExpressionFormatter(IncludeCollector includeCollector,
+            String compoundTypeAccessPrefix)
     {
-        final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppOwnerIndirectExpressionFormattingPolicy(cppNativeMapper, includeCollector);
-
-        return new ExpressionFormatter(expressionFormattingPolicy);
-    }
-
-    public ExpressionFormatter getSqlIndirectExpressionFormatter(IncludeCollector includeCollector)
-    {
-        final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppSqlIndirectExpressionFormattingPolicy(cppNativeMapper, includeCollector);
+        final ExpressionFormattingPolicy expressionFormattingPolicy = new CppIndirectExpressionFormattingPolicy(
+                    cppNativeMapper, includeCollector, compoundTypeAccessPrefix);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }

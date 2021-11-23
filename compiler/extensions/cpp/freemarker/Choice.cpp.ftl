@@ -4,6 +4,7 @@
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "Introspectable.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/StringConvertUtil.h>
@@ -14,7 +15,7 @@
 #include <zserio/BitFieldUtil.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-#include <zserio/Introspectable.h>
+<@type_includes types.introspectableFactory/>
 </#if>
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
@@ -53,45 +54,6 @@
 </#if>
 <@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
 
-<#if withTypeInfoCode>
-const ::zserio::ITypeInfo& ${name}::typeInfo()
-{
-    <@template_info_template_name_var "templateName", templateInstantiation!/>
-    <@template_info_template_arguments_var "templaArguments", templateInstantiation!/>
-
-    <#list fieldList as field>
-    <@field_info_type_arguments_var field/>
-    </#list>
-    <@field_info_array_var "fields", fieldList/>
-
-    <@parameter_info_array_var "parameters", compoundParametersData.list/>
-
-    <@function_info_array_var "functions", compoundFunctionsData.list/>
-
-    <#list caseMemberList as caseMember>
-    <@case_info_case_expressions_var caseMember caseMember?index/>
-    </#list>
-    <@case_info_array_var "cases" caseMemberList defaultMember!/>
-
-    static const ::zserio::ChoiceTypeInfo typeInfo = {
-        ::zserio::makeStringView("${schemaTypeName}"),
-        templateName, templateArguments,
-        fields, parameters, functions, ::zserio::makeStringView("${selectorExpression}"), cases
-    };
-
-    return typeInfo;
-}
-
-::zserio::IIntrospectablePtr ${name}::introspectable()
-{
-    return nullptr;
-}
-
-</#if>
-<#if needs_compound_initialization(compoundConstructorsData)>
-<@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
-
-</#if>
 <#macro choice_selector_condition expressionList>
     <#if expressionList?size == 1>
         selector == (${expressionList?first})<#t>
@@ -156,6 +118,116 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
         </#if>
     </#if>
 </#macro>
+<#if withTypeInfoCode>
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    <@template_info_template_name_var "templateName", templateInstantiation!/>
+    <@template_info_template_arguments_var "templaArguments", templateInstantiation!/>
+
+    <#list fieldList as field>
+    <@field_info_type_arguments_var field/>
+    </#list>
+    <@field_info_array_var "fields", fieldList/>
+
+    <@parameter_info_array_var "parameters", compoundParametersData.list/>
+
+    <@function_info_array_var "functions", compoundFunctionsData.list/>
+
+    <#list caseMemberList as caseMember>
+    <@case_info_case_expressions_var caseMember caseMember?index/>
+    </#list>
+    <@case_info_array_var "cases" caseMemberList defaultMember!/>
+
+    static const ::zserio::ChoiceTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"),
+        templateName, templateArguments,
+        fields, parameters, functions, ::zserio::makeStringView("${selectorExpression}"), cases
+    };
+
+    return typeInfo;
+}
+
+${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& allocator)
+{
+    class Introspectable : public ::zserio::IntrospectableAllocatorHolderBase<allocator_type>
+    {
+    public:
+        Introspectable(${fullName}& object, const allocator_type& allocator) :
+                ::zserio::IntrospectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
+                m_object(object)
+        {}
+    <#if fieldList?has_content>
+
+        <@introspectable_get_field fullName, fieldList/>
+
+        <@introspectable_set_field fullName, fieldList/>
+    </#if>
+    <#if compoundParametersData.list?has_content>
+
+        <@introspectable_get_parameter fullName, compoundParametersData.list/>
+    </#if>
+    <#if compoundFunctionsData.list?has_content>
+
+        <@introspectable_call_function fullName, fieldList/>
+    </#if>
+
+        virtual ::zserio::StringView getChoice() const override
+        {
+    <#if canUseNativeSwitch>
+            switch (${objectIndirectSelectorExpression})
+            {
+        <#list caseMemberList as caseMember>
+            <#list caseMember.expressionList as expression>
+            case ${expression}:
+            </#list>
+                return <#if caseMember.compoundField??>::zserio::makeStringView("${caseMember.compoundField.name}")<#else>{}</#if>;
+        </#list>
+        <#if !isDefaultUnreachable>
+            default:
+            <#if defaultMember??>
+                return <#if defaultMember.compoundField??>::zserio::makeStringView("${defaultMember.compoundField.name}")<#else>{}</#if>;
+            <#else>
+                throw ::zserio::CppRuntimeException("No match in choice ${name}!");
+            </#if>
+        </#if>
+            }
+    <#else>
+            const auto selector = ${objectIndirectSelectorExpression};
+        <#list caseMemberList as caseMember>
+            <#if caseMember?has_next || !isDefaultUnreachable>
+            <#if caseMember?index != 0>else </#if>if (<@choice_selector_condition caseMember.expressionList/>)
+            <#else>
+            else
+            </#if>
+            {
+                return <#if caseMember.compoundField??>::zserio::makeStringView("${caseMember.compoundField.name}")<#else>{}</#if>;
+            }
+        </#list>
+        <#if !isDefaultUnreachable>
+            else
+            {
+            <#if defaultMember??>
+                return ::zserio::makeStringView("${defaultMember.compoundField.name}");
+            <#else>
+                throw <#if defaultMember.compoundField??>::zserio::makeStringView("${defaultMember.compoundField.name}")<#else>{}</#if>;
+            </#if>
+            }
+        </#if>
+    </#if>
+        }
+
+    private:
+        ${fullName}& m_object;
+    };
+
+    return std::allocate_shared<Introspectable>(allocator, *this, allocator);
+}
+
+</#if>
+<#if needs_compound_initialization(compoundConstructorsData)>
+<@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
+
+</#if>
 <#macro choice_initialize_children_member member packed index>
     <#if member.compoundField??>
         <@compound_initialize_children_field member.compoundField, 2/>
