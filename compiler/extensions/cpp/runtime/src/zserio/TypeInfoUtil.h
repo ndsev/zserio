@@ -8,20 +8,23 @@ namespace zserio
 
 struct TypeInfoUtil
 {
-    static bool isCompound(const ITypeInfo& typeInfo);
-    static bool isCompound(const SchemaType& schemaType);
+    static bool isCompound(SchemaType schemaType);
+    static bool isCompound(CppType cppType);
 
-    static bool isFixedSize(const ITypeInfo& typeInfo);
-    static bool isFixedSize(const SchemaType& schemaType);
+    static bool hasChoice(SchemaType schemaType);
+    static bool hasChoice(CppType cppType);
 
-    static bool isIntegral(const ITypeInfo& typeInfo);
-    static bool isIntegral(const SchemaType& schemaType);
+    static bool isFixedSize(SchemaType schemaType);
+    static bool isFixedSize(CppType cppType);
 
-    static bool isSigned(const ITypeInfo& typeInfo);
-    static bool isSigned(const SchemaType& schemaType);
+    static bool isIntegral(SchemaType schemaType);
+    static bool isIntegral(CppType cppType);
 
-    static bool isFloating(const ITypeInfo& typeInfo);
-    static bool isFloating(const SchemaType& schemaType);
+    static bool isSigned(SchemaType schemaType);
+    static bool isSigned(CppType cppType);
+
+    static bool isFloating(SchemaType schemaType);
+    static bool isFloating(CppType cppType);
 };
 
 } // namespace zserio

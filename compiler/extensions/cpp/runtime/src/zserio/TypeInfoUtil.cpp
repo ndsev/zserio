@@ -3,12 +3,7 @@
 namespace zserio
 {
 
-bool TypeInfoUtil::isCompound(const ITypeInfo& typeInfo)
-{
-    return isCompound(typeInfo.getSchemaType());
-}
-
-bool TypeInfoUtil::isCompound(const SchemaType& schemaType)
+bool TypeInfoUtil::isCompound(SchemaType schemaType)
 {
     switch (schemaType)
     {
@@ -21,12 +16,44 @@ bool TypeInfoUtil::isCompound(const SchemaType& schemaType)
     }
 }
 
-bool TypeInfoUtil::isFixedSize(const ITypeInfo& typeInfo)
+bool TypeInfoUtil::isCompound(CppType cppType)
 {
-    return isFixedSize(typeInfo.getSchemaType());
+    switch (cppType)
+    {
+    case CppType::STRUCT:
+    case CppType::CHOICE:
+    case CppType::UNION:
+        return true;
+    default:
+        return false;
+    }
 }
 
-bool TypeInfoUtil::isFixedSize(const SchemaType& schemaType)
+bool TypeInfoUtil::hasChoice(SchemaType schemaType)
+{
+    switch (schemaType)
+    {
+    case SchemaType::CHOICE:
+    case SchemaType::UNION:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool TypeInfoUtil::hasChoice(CppType cppType)
+{
+    switch (cppType)
+    {
+    case CppType::CHOICE:
+    case CppType::UNION:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool TypeInfoUtil::isFixedSize(SchemaType schemaType)
 {
     switch (schemaType)
     {
@@ -50,16 +77,32 @@ bool TypeInfoUtil::isFixedSize(const SchemaType& schemaType)
     }
 }
 
-bool TypeInfoUtil::isIntegral(const ITypeInfo& typeInfo)
+bool TypeInfoUtil::isFixedSize(CppType cppType)
 {
-    return isIntegral(typeInfo.getSchemaType());
+    switch (cppType)
+    {
+    case CppType::BOOL:
+    case CppType::INT8:
+    case CppType::INT16:
+    case CppType::INT32:
+    case CppType::INT64:
+    case CppType::UINT8:
+    case CppType::UINT16:
+    case CppType::UINT32:
+    case CppType::UINT64:
+    case CppType::FLOAT:
+    case CppType::DOUBLE:
+        return true;
+    default:
+        return false;
+    }
 }
 
-bool TypeInfoUtil::isIntegral(const SchemaType& schemaType)
+bool TypeInfoUtil::isIntegral(SchemaType schemaType)
 {
     switch (schemaType)
     {
-    // TODO[Mi-L@]: What about BOOL?
+    case SchemaType::BOOL:
     case SchemaType::INT8:
     case SchemaType::INT16:
     case SchemaType::INT32:
@@ -87,12 +130,26 @@ bool TypeInfoUtil::isIntegral(const SchemaType& schemaType)
     };
 }
 
-bool TypeInfoUtil::isSigned(const ITypeInfo& typeInfo)
+bool TypeInfoUtil::isIntegral(CppType cppType)
 {
-    return isSigned(typeInfo.getSchemaType());
+    switch (cppType)
+    {
+    case CppType::BOOL:
+    case CppType::INT8:
+    case CppType::INT16:
+    case CppType::INT32:
+    case CppType::INT64:
+    case CppType::UINT8:
+    case CppType::UINT16:
+    case CppType::UINT32:
+    case CppType::UINT64:
+        return true;
+    default:
+        return false;
+    };
 }
 
-bool TypeInfoUtil::isSigned(const SchemaType& schemaType)
+bool TypeInfoUtil::isSigned(SchemaType schemaType)
 {
     switch (schemaType)
     {
@@ -112,18 +169,26 @@ bool TypeInfoUtil::isSigned(const SchemaType& schemaType)
     };
 }
 
-bool TypeInfoUtil::isFloating(const ITypeInfo& typeInfo)
+bool TypeInfoUtil::isSigned(CppType cppType)
 {
-    return isFloating(typeInfo.getSchemaType());
+    switch (cppType)
+    {
+    case CppType::INT8:
+    case CppType::INT16:
+    case CppType::INT32:
+    case CppType::INT64:
+        return true;
+    default:
+        return false;
+    };
 }
 
-bool TypeInfoUtil::isFloating(const SchemaType& schemaType)
+bool TypeInfoUtil::isFloating(CppType cppType)
 {
-    switch (schemaType)
+    switch (cppType)
     {
-    case SchemaType::FLOAT16:
-    case SchemaType::FLOAT32:
-    case SchemaType::FLOAT64:
+    case CppType::FLOAT:
+    case CppType::DOUBLE:
         return true;
     default:
         return false;

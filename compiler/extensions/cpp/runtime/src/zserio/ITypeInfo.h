@@ -207,8 +207,6 @@ struct MethodInfo
     const ITypeInfo& requestTypeInfo;
 };
 
-// TODO[Mi-L@]: enumIntrospectable cannot be in Enums.h because of cyclic includes, so maybe better to keep also
-//              enumTypeInfo separately?!
 /**
  * Gets type info for the given enum type.
  *

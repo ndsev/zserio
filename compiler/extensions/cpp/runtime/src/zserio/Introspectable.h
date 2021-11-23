@@ -16,25 +16,25 @@ template <typename ALLOC>
 class IntrospectableBase : public IBasicIntrospectable<ALLOC>
 {
 public:
-    using IIntrospectablePtr = typename IBasicIntrospectable<ALLOC>::Ptr;
-
     explicit IntrospectableBase(const ITypeInfo& typeInfo);
     virtual ~IntrospectableBase() = 0;
 
     virtual const ITypeInfo& getTypeInfo() const override;
     virtual bool isArray() const override;
 
-    virtual IIntrospectablePtr getField(StringView name) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr getField(StringView name) const override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
-    virtual IIntrospectablePtr getParameter(StringView name) const override;
-    virtual IIntrospectablePtr callFunction(StringView name) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr getParameter(StringView name) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr callFunction(StringView name) const override;
 
-    virtual IIntrospectablePtr find(StringView path) const override;
-    virtual IIntrospectablePtr operator[](StringView path) const override;
+    virtual StringView getChoice() const override;
+
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr find(StringView path) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr operator[](StringView path) const override;
 
     virtual size_t size() const override;
-    virtual IIntrospectablePtr at(size_t index) const override;
-    virtual IIntrospectablePtr operator[](size_t index) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr at(size_t index) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr operator[](size_t index) const override;
 
     // exact checked getters
     virtual bool getBool() const override;
@@ -406,7 +406,7 @@ typename IBasicIntrospectable<ALLOC>::Ptr getFieldFromObject(
         const IBasicIntrospectable<ALLOC>& object, StringView name)
 {
     const auto& typeInfo = object.getTypeInfo();
-    if (TypeInfoUtil::isCompound(typeInfo))
+    if (TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
         const auto& fields = typeInfo.getFields();
         auto fieldsIt = std::find_if(fields.begin(), fields.end(),
@@ -423,7 +423,7 @@ typename IBasicIntrospectable<ALLOC>::Ptr getParameterFromObject(
         const IBasicIntrospectable<ALLOC>& object, StringView name)
 {
     const auto& typeInfo = object.getTypeInfo();
-    if (TypeInfoUtil::isCompound(typeInfo))
+    if (TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
         const auto& parameters = typeInfo.getParameters();
         auto parametersIt = std::find_if(parameters.begin(), parameters.end(),
@@ -440,7 +440,7 @@ typename IBasicIntrospectable<ALLOC>::Ptr callFunctionInObject(
         const IBasicIntrospectable<ALLOC>& object, StringView name)
 {
     const auto& typeInfo = object.getTypeInfo();
-    if (TypeInfoUtil::isCompound(typeInfo))
+    if (TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
         const auto& functions = typeInfo.getFunctions();
         auto functionsIt = std::find_if(functions.begin(), functions.end(),
@@ -456,21 +456,26 @@ template <typename ALLOC>
 typename IBasicIntrospectable<ALLOC>::Ptr getFromObject(
         const IBasicIntrospectable<ALLOC>& object, StringView path, size_t pos)
 {
-    const size_t dotPos = path.find('.', pos);
-    const bool isLast = dotPos == StringView::npos;
-    const StringView name = path.substr(pos, dotPos == StringView::npos ? StringView::npos : dotPos - pos);
+    try
+    {
+        const size_t dotPos = path.find('.', pos);
+        const bool isLast = dotPos == StringView::npos;
+        const StringView name = path.substr(pos, dotPos == StringView::npos ? StringView::npos : dotPos - pos);
 
-    const auto field = getFieldFromObject(object, name);
-    if (field)
-        return isLast ? field : getFromObject(*field, path, dotPos + 1);
+        const auto field = getFieldFromObject(object, name);
+        if (field)
+            return isLast ? field : getFromObject(*field, path, dotPos + 1);
 
-    const auto parameter = getParameterFromObject(object, name);
-    if (parameter)
-        return isLast ? parameter : getFromObject(*parameter, path, dotPos + 1);
+        const auto parameter = getParameterFromObject(object, name);
+        if (parameter)
+            return isLast ? parameter : getFromObject(*parameter, path, dotPos + 1);
 
-    const auto functionResult = callFunctionInObject(object, name);
-    if (functionResult)
-        return isLast ? functionResult : getFromObject(*functionResult, path, dotPos + 1);
+        const auto functionResult = callFunctionInObject(object, name);
+        if (functionResult)
+            return isLast ? functionResult : getFromObject(*functionResult, path, dotPos + 1);
+    }
+    catch (const CppRuntimeException&)
+    {}
 
     return nullptr;
 }
@@ -575,8 +580,6 @@ class IntrospectableArrayBase : public IntrospectableAllocatorHolderBase<ALLOC>
 {
 public:
     using IntrospectableAllocatorHolderBase<ALLOC>::IntrospectableAllocatorHolderBase;
-
-    using IIntrospectablePtr = typename IBasicIntrospectable<ALLOC>::Ptr;
     using IntrospectableAllocatorHolderBase<ALLOC>::getTypeInfo;
 
     virtual bool isArray() const override
@@ -584,13 +587,15 @@ public:
         return true;
     }
 
-    virtual IIntrospectablePtr getField(StringView name) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr getField(StringView name) const override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
-    virtual IIntrospectablePtr getParameter(StringView name) const override;
-    virtual IIntrospectablePtr callFunction(StringView name) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr getParameter(StringView name) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr callFunction(StringView name) const override;
 
-    virtual IIntrospectablePtr find(StringView path) const override;
-    virtual IIntrospectablePtr operator[](StringView path) const override;
+    virtual StringView getChoice() const override;
+
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr find(StringView path) const override;
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr operator[](StringView path) const override;
 
     virtual bool getBool() const override;
     virtual int8_t getInt8() const override;
@@ -622,8 +627,6 @@ private:
     using Introspectable = typename detail::IntrospectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
 
 public:
-    using IIntrospectablePtr = typename IBasicIntrospectable<ALLOC>::Ptr;
-
     BasicBuiltinIntrospectableArray(const ITypeInfo& typeInfo, const ALLOC& allocator,
             const RAW_ARRAY& rawArray) :
             Base(typeInfo, allocator), m_rawArray(rawArray)
@@ -634,12 +637,12 @@ public:
         return m_rawArray.size();
     }
 
-    virtual IIntrospectablePtr at(size_t index) const override
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr at(size_t index) const override
     {
         return std::allocate_shared<Introspectable>(get_allocator(), Base::getTypeInfo(), m_rawArray.at(index));
     }
 
-    virtual IIntrospectablePtr operator[](size_t index) const override
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr operator[](size_t index) const override
     {
         return at(index);
     }
@@ -658,8 +661,6 @@ private:
     using ElementType = typename RAW_ARRAY::value_type;
 
 public:
-    using IIntrospectablePtr = typename IBasicIntrospectable<ALLOC>::Ptr;
-
     BasicCompoundIntrospectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
             Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
     {}
@@ -669,12 +670,12 @@ public:
         return m_rawArray.size();
     }
 
-    virtual IIntrospectablePtr at(size_t index) const override
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr at(size_t index) const override
     {
         return m_rawArray.at(index).introspectable(get_allocator());
     }
 
-    virtual IIntrospectablePtr operator[](size_t index) const override
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr operator[](size_t index) const override
     {
         return at(index);
     }
@@ -705,12 +706,12 @@ public:
         return m_rawArray.size();
     }
 
-    virtual IIntrospectablePtr at(size_t index) const override
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr at(size_t index) const override
     {
         return enumIntrospectable(m_rawArray.at(index), get_allocator());
     }
 
-    virtual IIntrospectablePtr operator[](size_t index) const override
+    virtual typename IBasicIntrospectable<ALLOC>::Ptr operator[](size_t index) const override
     {
         return at(index);
     }
@@ -723,139 +724,148 @@ template <typename ALLOC>
 class BasicIntrospectableFactory
 {
 public:
-    static IIntrospectablePtr getInt8(int8_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getInt8(int8_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt8Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getInt8(), value);
     }
 
-    static IIntrospectablePtr getInt16(int16_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getInt16(int16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt16Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getInt16(), value);
     }
 
-    static IIntrospectablePtr getInt32(int32_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getInt32(int32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt32Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getInt32(), value);
     }
 
-    static IIntrospectablePtr getInt64(int64_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getInt64(int64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getInt64(), value);
     }
 
-    static IIntrospectablePtr getUInt8(uint8_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getUInt8(uint8_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt8Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getUInt8(), value);
     }
 
-    static IIntrospectablePtr getUInt16(uint16_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getUInt16(uint16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt16Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getUInt16(), value);
     }
 
-    static IIntrospectablePtr getUInt32(uint32_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getUInt32(uint32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getUInt32(), value);
     }
 
-    static IIntrospectablePtr getUInt64(uint64_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getUInt64(uint64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getUInt64(), value);
     }
 
-    static IIntrospectablePtr getVarInt16(int16_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarInt16(
+            int16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt16Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarInt16(), value);
     }
 
-    static IIntrospectablePtr getVarInt32(int32_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarInt32(
+            int32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt32Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarInt32(), value);
     }
 
-    static IIntrospectablePtr getVarInt64(int64_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarInt64(
+            int64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarInt64(), value);
     }
 
-    static IIntrospectablePtr getVarInt(int64_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarInt(int64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt64Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarInt(), value);
     }
 
-    static IIntrospectablePtr getVarUInt16(uint16_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarUInt16(
+            uint16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt16Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarUInt16(), value);
     }
 
-    static IIntrospectablePtr getVarUInt32(uint32_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarUInt32(
+            uint32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarUInt32(), value);
     }
 
-    static IIntrospectablePtr getVarUInt64(uint64_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarUInt64(
+            uint64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarUInt64(), value);
     }
 
-    static IIntrospectablePtr getVarUInt(uint64_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarUInt(
+            uint64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt64Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarUInt(), value);
     }
 
-    static IIntrospectablePtr getVarSize(uint32_t value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getVarSize(
+            uint32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicUInt32Introspectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getVarSize(), value);
     }
 
-    static IIntrospectablePtr getFloat16(float value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFloat16(float value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicFloatIntrospectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getFloat16(), value);
     }
 
-    static IIntrospectablePtr getFloat32(float value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFloat32(float value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicFloatIntrospectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getFloat32(), value);
     }
 
-    static IIntrospectablePtr getFloat64(double value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFloat64(double value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicDoubleIntrospectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getFloat64(), value);
     }
 
-    static IIntrospectablePtr getString(const string<RebindAlloc<ALLOC, char>>& value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getString(
+            const string<RebindAlloc<ALLOC, char>>& value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(allocator, value);
     }
 
-    static IIntrospectablePtr getBitBuffer(const BasicBitBuffer<ALLOC>& value, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getBitBuffer(
+            const BasicBitBuffer<ALLOC>& value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicBitBufferIntrospectable<ALLOC>>(allocator, value);
     }
 
-    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int8_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedSignedBitField(
+            uint8_t bitSize, int8_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize > 8)
         {
@@ -866,8 +876,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int16_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedSignedBitField(
+            uint8_t bitSize, int16_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize <= 8 || bitSize > 16)
         {
@@ -878,8 +888,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int32_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedSignedBitField(
+            uint8_t bitSize, int32_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize <= 16 || bitSize > 32)
         {
@@ -890,8 +900,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getFixedSignedBitField(uint8_t bitSize, int64_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedSignedBitField(
+            uint8_t bitSize, int64_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize <= 32 || bitSize > 64)
         {
@@ -902,8 +912,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint8_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedUnsignedBitField(
+            uint8_t bitSize, uint8_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize > 8)
         {
@@ -914,8 +924,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint16_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedUnsignedBitField(
+            uint8_t bitSize, uint16_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize <= 8 || bitSize > 16)
         {
@@ -926,8 +936,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint32_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedUnsignedBitField(
+            uint8_t bitSize, uint32_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize <= 16 || bitSize > 32)
         {
@@ -938,8 +948,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getFixedUnsignedBitField(uint8_t bitSize, uint64_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getFixedUnsignedBitField(
+            uint8_t bitSize, uint64_t value, const ALLOC& allocator = ALLOC())
     {
         if (bitSize <= 32 || bitSize > 64)
         {
@@ -950,8 +960,8 @@ public:
                 allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int8_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicSignedBitField(
+            uint8_t maxBitSize, int8_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize > 8)
         {
@@ -962,8 +972,8 @@ public:
                 allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int16_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicSignedBitField(
+            uint8_t maxBitSize, int16_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize <= 8 || maxBitSize > 16)
         {
@@ -974,8 +984,8 @@ public:
                 allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int32_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicSignedBitField(
+            uint8_t maxBitSize, int32_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize <= 16 || maxBitSize > 32)
         {
@@ -986,8 +996,8 @@ public:
                 allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicSignedBitField(uint8_t maxBitSize, int64_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicSignedBitField(
+            uint8_t maxBitSize, int64_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize <= 32 || maxBitSize > 64)
         {
@@ -998,8 +1008,8 @@ public:
                 allocator, BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint8_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicUnsignedBitField(
+            uint8_t maxBitSize, uint8_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize > 8)
         {
@@ -1010,8 +1020,8 @@ public:
                 allocator, BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint16_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicUnsignedBitField(
+            uint8_t maxBitSize, uint16_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize <= 8 || maxBitSize > 16)
         {
@@ -1022,8 +1032,8 @@ public:
                 allocator, BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint32_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicUnsignedBitField(
+            uint8_t maxBitSize, uint32_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize <= 16 || maxBitSize > 32)
         {
@@ -1034,8 +1044,8 @@ public:
                 allocator, BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), value);
     }
 
-    static IIntrospectablePtr getDynamicUnsignedBitField(uint8_t maxBitSize, uint64_t value,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getDynamicUnsignedBitField(
+            uint8_t maxBitSize, uint64_t value, const ALLOC& allocator = ALLOC())
     {
         if (maxBitSize <= 32 || maxBitSize > 64)
         {
@@ -1047,29 +1057,32 @@ public:
     }
 
     template <typename RAW_ARRAY>
-    static IIntrospectablePtr getBuiltinArray(const ITypeInfo& typeInfo, const RAW_ARRAY& rawArray,
-            const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getBuiltinArray(
+            const ITypeInfo& typeInfo, const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicBuiltinIntrospectableArray<ALLOC, RAW_ARRAY>>(
                 allocator, typeInfo, allocator, rawArray);
     }
 
     template <typename RAW_ARRAY>
-    static IIntrospectablePtr getCompoundArray(RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getCompoundArray(
+            RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicCompoundIntrospectableArray<ALLOC, RAW_ARRAY>>(
                 allocator, allocator, rawArray);
     }
 
     template <typename RAW_ARRAY>
-    static IIntrospectablePtr getBitmaskArray(const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getBitmaskArray(
+            RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicBitmaskIntrospectableArray<ALLOC, RAW_ARRAY>>(
                 allocator, allocator, rawArray);
     }
 
     template <typename RAW_ARRAY>
-    static IIntrospectablePtr getEnumArray(const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
+    static typename IBasicIntrospectable<ALLOC>::Ptr getEnumArray(
+            const RAW_ARRAY& rawArray, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicEnumIntrospectableArray<ALLOC, RAW_ARRAY>>(
                 allocator, allocator, rawArray);
@@ -1121,6 +1134,12 @@ template <typename ALLOC>
 typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableBase<ALLOC>::callFunction(StringView) const
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no functions to call!";
+}
+
+template <typename ALLOC>
+StringView IntrospectableBase<ALLOC>::getChoice() const
+{
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is neither choice nor union!";
 }
 
 template <typename ALLOC>
@@ -1279,6 +1298,12 @@ typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::getPar
 
 template <typename ALLOC>
 typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::callFunction(StringView) const
+{
+    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+StringView IntrospectableArrayBase<ALLOC>::getChoice() const
 {
     throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }

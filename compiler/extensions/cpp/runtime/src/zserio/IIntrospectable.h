@@ -30,6 +30,8 @@ public:
     virtual Ptr getParameter(StringView name) const = 0;
     virtual Ptr callFunction(StringView name) const = 0;
 
+    virtual StringView getChoice() const = 0;
+
     virtual Ptr find(StringView path) const = 0;
     virtual Ptr operator[](StringView path) const = 0;
 
@@ -60,10 +62,11 @@ public:
 using IIntrospectable = IBasicIntrospectable<>;
 using IIntrospectablePtr = IIntrospectable::Ptr;
 
-// TODO[Mi-L@]: Cannot be in Enums.h because of cyclic includes! But maybe better here to prevent unspecialized
-//              templates in code generated -withoutTypeInfo?
 /**
  * Gets introspectable view for the given enum item.
+ *
+ * \param value Enum value to introspect.
+ * \param allocator Allocator to use for introspectable allocation.
  *
  * \return Enum introspectable view.
  */
