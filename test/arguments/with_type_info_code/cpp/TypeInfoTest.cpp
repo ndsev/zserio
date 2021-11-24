@@ -10,7 +10,7 @@ namespace with_type_info_code
 namespace type_info
 {
 
-class WithTypeInfoCodeTest : public ::testing::Test
+class TypeInfoTest : public ::testing::Test
 {
 protected:
     void checkSqlDatabase()
@@ -20,15 +20,15 @@ protected:
     }
 };
 
-TEST_F(WithTypeInfoCodeTest, checkSqlDatabase)
+TEST_F(TypeInfoTest, checkSqlDatabase)
 {
 }
 
-TEST_F(WithTypeInfoCodeTest, checkSimplePubsub)
+TEST_F(TypeInfoTest, checkSimplePubsub)
 {
 }
 
-TEST_F(WithTypeInfoCodeTest, checkSimpleService)
+TEST_F(TypeInfoTest, checkSimpleService)
 {
 }
 
