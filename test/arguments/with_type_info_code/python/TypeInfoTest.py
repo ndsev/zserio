@@ -756,7 +756,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("fts4_table", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
-        # wihtoutRowidTable
+        # withoutRowidTable
         member_info = tables[4]
         self.assertEqual("withoutRowidTable", member_info.schema_name)
         self._checkWithoutRowidTable(member_info.type_info)

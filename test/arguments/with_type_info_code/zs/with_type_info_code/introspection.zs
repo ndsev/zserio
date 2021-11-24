@@ -2,7 +2,7 @@ package with_type_info_code.introspection;
 
 const uint8 BitmaskLen = 6;
 
-bitmask bit<6> Bitmask
+bitmask bit<BitmaskLen> Bitmask
 {
     FLAG1,
     FLAG2,
@@ -11,7 +11,7 @@ bitmask bit<6> Bitmask
 
 enum int:5 SelectorEnum
 {
-    STRUCTURE = -5,
+    STRUCT = -5,
     UNION,
     BITMASK
 };
@@ -28,42 +28,67 @@ struct Child
     string name;
 };
 
-struct ParameterizedChild(uint8 param)
+struct Parameterized(uint8 param)
 {
     uint8 array[param];
 };
 
-struct Structure
+struct Struct
 {
     Empty empty;
     optional Child child;
     Child childArray[];
 align(8):
     uint8 param;
-    ParameterizedChild(param) parameterized;
+    Parameterized(param) parameterized;
     varsize len : len > 0 && len < 1000;
     uint32 offsets[len];
 offsets[@index]:
-    ParameterizedChild(param) parameterizedArray[len];
+    Parameterized(param) parameterizedArray[len];
     Bitmask bitmaskField;
     Bitmask bitmaskArray[];
+    SelectorEnum enumField;
+    packed Selector enumArray[];
     bit<param> dynamicBitField if param < 64;
+    int<param> dynamicIntField if param < 4;
+
+    function Selector getEnumField()
+    {
+        return enumField;
+    }
 };
 
 union Union
 {
     Child childArray[];
-    ParameterizedChild(5) parameterized;
-    Structure structure;
+    Parameterized(5) parameterized;
+    Struct structField;
     Bitmask bitmaskField;
+
+    function uint8 getStructFieldParam()
+    {
+        return structField.param;
+    }
 };
+
+const string EmptyString = "";
 
 choice Choice(Selector selector) on selector
 {
-    case STRUCTURE:
-        Structure structureField;
+    case STRUCT:
+        Struct structField;
     case UNION:
         Union unionField;
     case BITMASK:
         Bitmask bitmaskField;
+
+    function string getFirstChildName()
+    {
+        return selector == Selector.STRUCT ? structField.childArray[0].name : EmptyString;
+    }
+
+    function Bitmask getBitmaskFromUnion()
+    {
+        return unionField.bitmaskField;
+    }
 };

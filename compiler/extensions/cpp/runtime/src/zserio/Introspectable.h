@@ -697,7 +697,7 @@ private:
     using ElementType = typename RAW_ARRAY::value_type;
 
 public:
-    BasicEnumIntrospectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
+    BasicEnumIntrospectableArray(const ALLOC& allocator, const RAW_ARRAY& rawArray) :
             Base(enumTypeInfo<ElementType>(), allocator), m_rawArray(rawArray)
     {}
 
@@ -856,6 +856,13 @@ public:
             const string<RebindAlloc<ALLOC, char>>& value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(allocator, value);
+    }
+
+    static typename IBasicIntrospectable<ALLOC>::Ptr getString(
+            StringView value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(allocator,
+                stringViewToString(value, allocator));
     }
 
     static typename IBasicIntrospectable<ALLOC>::Ptr getBitBuffer(

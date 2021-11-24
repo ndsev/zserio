@@ -9,13 +9,14 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Choice.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Empty.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Empty.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/ParameterizedChild.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/ParameterizedChild.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/EmptyString.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Parameterized.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Parameterized.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Selector.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/SelectorEnum.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/SelectorEnum.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Structure.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Structure.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Struct.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Struct.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Union.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Union.h
 
