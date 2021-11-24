@@ -732,7 +732,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("sql_table", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
-        # tempaltedSqlTableU32
+        # templatedSqlTableU32
         member_info = tables[1]
         self.assertEqual("templatedSqlTableU32", member_info.schema_name)
         self._checkTemplatedSqlTable_uint32(member_info.type_info)
