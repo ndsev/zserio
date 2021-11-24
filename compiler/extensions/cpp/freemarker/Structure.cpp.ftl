@@ -86,7 +86,7 @@
 const ::zserio::ITypeInfo& ${name}::typeInfo()
 {
     <@template_info_template_name_var "templateName", templateInstantiation!/>
-    <@template_info_template_arguments_var "templaArguments", templateInstantiation!/>
+    <@template_info_template_arguments_var "templateArguments", templateInstantiation!/>
 
     <#list fieldList as field>
     <@field_info_type_arguments_var field/>

@@ -87,8 +87,9 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
     private final CompoundConstructorTemplateData compoundConstructorsData;
-    private final TemplateInstantiationTemplateData templateInstantiation;
 
     private final boolean needsChildrenInitialization;
     private final boolean hasFieldWithOffset;
+
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }

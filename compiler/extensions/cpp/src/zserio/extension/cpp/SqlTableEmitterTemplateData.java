@@ -83,6 +83,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         this.hasImplicitParameters = hasImplicitParameters;
         this.requiresOwnerContext = requiresOwnerContext;
         this.needsChildrenInitialization = tableType.needsChildrenInitialization();
+
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, tableType, this);
     }
 
     public Iterable<FieldTemplateData> getFields()
@@ -128,6 +130,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public boolean getIsWithoutRowId()
     {
         return isWithoutRowId;
+    }
+
+    public TemplateInstantiationTemplateData getTemplateInstantiation()
+    {
+        return templateInstantiation;
     }
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
@@ -686,4 +693,5 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     private final String virtualTableUsing;
     private final boolean needsTypesInSchema;
     private final boolean isWithoutRowId;
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }

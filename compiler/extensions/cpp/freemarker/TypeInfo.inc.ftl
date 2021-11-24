@@ -107,7 +107,7 @@ ${I}    <#if field.initializer??>::zserio::makeStringView(${field.initializer})<
 ${I}    <#if field.optional??>true<#else>false</#if>, // isOptional
 ${I}    <#if field.optional?? && field.optional.clause??><#rt>
                 <#lt>::zserio::makeStringView("${field.optional.clause}")<#else>{}</#if>, // optionalClause
-${I}    <#if field.constraint??>::zserio::makeStringView("${field.constraint}")<#else>{}</#if>, // constraint
+${I}    <#if field.constraint??>::zserio::makeStringView("${field.constraint.writeConstraint}")<#else>{}</#if>, // constraint
 ${I}    <#if field.array??>true<#else>false</#if>, // isArray
 ${I}    <#if field.array?? && field.array.length??><#rt>
                 <#lt>::zserio::makeStringView("${field.array.length}")<#else>{}</#if>, // arrayLength
@@ -293,7 +293,7 @@ ${I}}<#if comma>,</#if>
 <#macro template_info_template_arguments_var varName, templateInstantiation>
     <#if templateInstantiation?has_content>
     static const ::std::array<::zserio::TemplateArgumentInfo, ${templateInstantiation.templateArguments?size}> <#rt>
-            <#lt>templateArguments = {
+            <#lt>${varName} = {
         <#list templateInstantiation.templateArguments as templateArgument>
         <@type_info templateArgument/><#if templateArgument?has_next>,</#if>
         </#list>
