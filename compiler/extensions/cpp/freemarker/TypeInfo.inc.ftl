@@ -143,7 +143,7 @@ ${I}}<#if comma>,</#if>
             <#if field.array.elementCompound??>
         <@field_info_compound_type_arguments field.array.elementCompound.instantiatedParameters/>
             <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
-        ::zserio::makeStringView("${field.array.elementBitSize}")
+        ::zserio::makeStringView("${field.array.elementBitSize.value}")
             </#if>
         <#elseif field.compound??>
         <@field_info_compound_type_arguments field.compound.instantiatedParameters/>
