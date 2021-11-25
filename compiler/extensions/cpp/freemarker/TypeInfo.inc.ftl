@@ -123,7 +123,7 @@ ${I}}<#if comma>,</#if>
         <#elseif field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
             <#return 1/>
         </#if>
-    <#elseif field.compoud??>
+    <#elseif field.compound??>
         <#return field.compound.instantiatedParameters?size/>
     <#elseif field.bitSize?? && field.bitSize.isDynamicBitField>
         <#return 1/>
