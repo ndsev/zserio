@@ -120,7 +120,19 @@ public:
 
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator) const override
     {
-        return ::zserio::toString<RebindAlloc<ALLOC, char>>(getValue(), allocator);
+        return toStringImpl(getValue(), allocator);
+    }
+
+private:
+    template <typename U = T>
+    static string<RebindAlloc<ALLOC, char>> toStringImpl(U value, const ALLOC& allocator)
+    {
+        return ::zserio::toString<RebindAlloc<ALLOC, char>>(value, allocator);
+    }
+
+    static string<RebindAlloc<ALLOC, char>> toStringImpl(bool value, const ALLOC& allocator)
+    {
+        return string<RebindAlloc<ALLOC, char>>(value ? "true" : "false", allocator);
     }
 };
 
@@ -163,11 +175,12 @@ private:
     using Base = UnsignedIntrospectableBase<ALLOC, bool>;
 
 public:
-    BasicBoolIntrospectable(bool value) :
-            Base(BuiltinTypeInfo::getBool(), value)
+    // TODO[Mi-L@]: typeInfo here is needed due to builtin arrays, should we check that it's bool type info?
+    BasicBoolIntrospectable(const ITypeInfo& typeInfo, bool value) :
+            Base(typeInfo, value)
     {}
 
-    virtual int8_t getBool() const override
+    virtual bool getBool() const override
     {
         return Base::getValue();
     }
@@ -366,8 +379,9 @@ private:
     using Base = BuiltinIntrospectableBase<ALLOC, string<RebindAlloc<ALLOC, char>>>;
 
 public:
-    explicit BasicStringIntrospectable(const string<RebindAlloc<ALLOC, char>>& value) :
-            Base(BuiltinTypeInfo::getString(), value)
+    explicit BasicStringIntrospectable(const ITypeInfo& typeInfo,
+            const string<RebindAlloc<ALLOC, char>>& value) :
+            Base(typeInfo, value)
     {}
 
     virtual const string<RebindAlloc<ALLOC, char>>& getString() const override
@@ -388,8 +402,8 @@ private:
     using Base = BuiltinIntrospectableBase<ALLOC, BasicBitBuffer<ALLOC>>;
 
 public:
-    explicit BasicBitBufferIntrospectable(const BasicBitBuffer<ALLOC>& value) :
-            Base(BuiltinTypeInfo::getBitBuffer(), value)
+    explicit BasicBitBufferIntrospectable(const ITypeInfo& typeInfo, const BasicBitBuffer<ALLOC>& value) :
+            Base(typeInfo, value)
     {}
 
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override
@@ -552,7 +566,7 @@ struct IntrospectableTraits<ALLOC, double>
 };
 
 template <typename ALLOC>
-struct IntrospectableTraits<ALLOC, string<ALLOC>>
+struct IntrospectableTraits<ALLOC, string<RebindAlloc<ALLOC, char>>>
 {
     using Type = BasicStringIntrospectable<ALLOC>;
 };
@@ -724,6 +738,12 @@ template <typename ALLOC>
 class BasicIntrospectableFactory
 {
 public:
+    static typename IBasicIntrospectable<ALLOC>::Ptr getBool(bool value, const ALLOC& allocator = ALLOC())
+    {
+        return std::allocate_shared<BasicBoolIntrospectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getBool(), value);
+    }
+
     static typename IBasicIntrospectable<ALLOC>::Ptr getInt8(int8_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BasicInt8Introspectable<ALLOC>>(
@@ -855,20 +875,22 @@ public:
     static typename IBasicIntrospectable<ALLOC>::Ptr getString(
             const string<RebindAlloc<ALLOC, char>>& value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(allocator, value);
+        return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getString(), value);
     }
 
     static typename IBasicIntrospectable<ALLOC>::Ptr getString(
             StringView value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(allocator,
-                stringViewToString(value, allocator));
+        return std::allocate_shared<BasicStringIntrospectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getString(), stringViewToString(value, allocator));
     }
 
     static typename IBasicIntrospectable<ALLOC>::Ptr getBitBuffer(
             const BasicBitBuffer<ALLOC>& value, const ALLOC& allocator = ALLOC())
     {
-        return std::allocate_shared<BasicBitBufferIntrospectable<ALLOC>>(allocator, value);
+        return std::allocate_shared<BasicBitBufferIntrospectable<ALLOC>>(
+                allocator, BuiltinTypeInfo::getBitBuffer(), value);
     }
 
     static typename IBasicIntrospectable<ALLOC>::Ptr getFixedSignedBitField(

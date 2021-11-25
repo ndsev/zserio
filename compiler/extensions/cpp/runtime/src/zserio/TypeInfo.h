@@ -31,7 +31,7 @@ public:
      * \}
      */
 
-    virtual ~TypeInfoBase() = 0;
+    virtual ~TypeInfoBase() override = 0;
 
     virtual StringView getSchemaName() const override;
     virtual SchemaType getSchemaType() const override;
@@ -137,7 +137,7 @@ public:
     TemplatableTypeInfoBase(StringView schemaName, SchemaType schemaType, CppType cppType,
             StringView templateName, Span<const TemplateArgumentInfo> templateArguments);
 
-    virtual ~TemplatableTypeInfoBase() = 0;
+    virtual ~TemplatableTypeInfoBase() override = 0;
 
     virtual StringView getTemplateName() const override;
     virtual Span<const TemplateArgumentInfo> getTemplateArguments() const override;
@@ -155,7 +155,7 @@ public:
             Span<const FieldInfo> fields, Span<const ParameterInfo> parameters,
             Span<const FunctionInfo> functions);
 
-    virtual ~CompoundTypeInfoBase() = 0;
+    virtual ~CompoundTypeInfoBase() override = 0;
 
     virtual Span<const FieldInfo> getFields() const override;
     virtual Span<const ParameterInfo> getParameters() const override;

@@ -26,6 +26,8 @@ struct Child
 {
     uint32 id;
     string name;
+    bool hasNicknames;
+    string nicknames[] if hasNicknames;
 };
 
 struct Parameterized(uint8 param)
@@ -51,6 +53,9 @@ offsets[@index]:
     packed Selector enumArray[];
     bit<param> dynamicBitField if param < 64;
     int<param> dynamicIntField if param < 4;
+    bool boolArray[];
+    extern externField;
+    extern externArray[];
 
     function Selector getEnumField()
     {

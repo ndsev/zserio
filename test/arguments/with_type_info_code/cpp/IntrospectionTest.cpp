@@ -12,10 +12,12 @@ namespace introspection
 {
 
 using allocator_type = Choice::allocator_type;
+using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
 template <typename T>
 using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 using IIntrospectable = zserio::IBasicIntrospectable<allocator_type>;
 using AnyHolder = zserio::AnyHolder<allocator_type>;
+using BitBuffer = zserio::BasicBitBuffer<allocator_type>;
 
 using namespace zserio::literals;
 
@@ -35,7 +37,11 @@ protected:
         return Struct{
             Empty{},
             zserio::NullOpt, // child (auto optional)
-            vector_type<Child>{{{0, "zero"}, {1, "one"}, {2, "two"}}},
+            vector_type<Child>{{
+                {0, "zero", false, vector_type<string_type>{}},
+                {1, "one", true, vector_type<string_type>{{{"best"}, {"first"}}}},
+                {2, "two", false, vector_type<string_type>{}}
+            }},
             5, // param
             createParameterized(5),
             4, // len
@@ -51,7 +57,10 @@ protected:
             Selector::STRUCT,
             vector_type<SelectorEnum>{{Selector::STRUCT, SelectorEnum::UNION, Selector::BITMASK}},
             32, // dynamicBitField (bit<param>)
-            ::zserio::NullOpt // dynamicIntField (param > 4)
+            ::zserio::NullOpt, // dynamicIntField (param > 4)
+            vector_type<bool>{{true, false, true}},
+            BitBuffer{{0xAB, 0xCD}, 16},
+            vector_type<BitBuffer>{BitBuffer{{0x02}, 2}, BitBuffer{{0x01}, 1}}
         };
     }
 
@@ -69,6 +78,13 @@ protected:
         // Child childArray[];
         ASSERT_TRUE(introspectable["childArray"]->isArray());
         ASSERT_EQ(3, introspectable.getField("childArray")->size());
+        ASSERT_FALSE(introspectable["childArray"]->at(0)->find("hasNicknames")->getBool());
+        ASSERT_FALSE(introspectable["childArray"]->at(0)->find("nicknames"));
+        ASSERT_TRUE(introspectable["childArray"]->at(1)->find("hasNicknames")->getBool());
+        ASSERT_EQ("true", introspectable["childArray"]->at(1)->find("hasNicknames")->toString());
+        ASSERT_TRUE(introspectable["childArray"]->at(1)->find("nicknames")->isArray());
+        ASSERT_EQ(2, introspectable["childArray"]->at(1)->find("nicknames")->size());
+        ASSERT_EQ("first", introspectable["childArray"]->at(1)->find("nicknames")->at(1)->toString());
 
         // uint8 param;
         ASSERT_EQ(5, introspectable.getField("param")->getUInt8());
@@ -142,6 +158,25 @@ protected:
         ASSERT_EQ(nullptr, introspectable.getField("dynamicIntField"));
         ASSERT_THROW(introspectable.getParameter("dynamicIntField"), zserio::CppRuntimeException);
 
+        // bool boolArray[];
+        ASSERT_TRUE(introspectable["boolArray"]->isArray());
+        ASSERT_EQ(3, introspectable["boolArray"]->size());
+        ASSERT_FALSE(introspectable["boolArray"]->at(1)->getBool());
+        ASSERT_EQ("false", introspectable["boolArray"]->at(1)->toString());
+
+        // extern externField;
+        ASSERT_EQ(16, introspectable.getField("externField")->getBitBuffer().getBitSize());
+        ASSERT_EQ(0xAB, introspectable.getField("externField")->getBitBuffer().getBuffer()[0]);
+        ASSERT_EQ(0xCD, introspectable.getField("externField")->getBitBuffer().getBuffer()[1]);
+
+        // extern externArray[];
+        ASSERT_TRUE(introspectable["externArray"]->isArray());
+        ASSERT_EQ(2, introspectable["externArray"]->size());
+        ASSERT_EQ(2, introspectable["externArray"]->at(0)->getBitBuffer().getBitSize());
+        ASSERT_EQ(0x02, introspectable["externArray"]->at(0)->getBitBuffer().getBuffer()[0]);
+        ASSERT_EQ(1, introspectable["externArray"]->at(1)->getBitBuffer().getBitSize());
+        ASSERT_EQ(0x01, introspectable["externArray"]->at(1)->getBitBuffer().getBuffer()[0]);
+
         // function Selector getEnumField()
         ASSERT_EQ(zserio::enumToString(SelectorEnum::STRUCT),
                 introspectable.callFunction("getEnumField")->toString());
@@ -157,9 +192,10 @@ protected:
         ASSERT_THROW(introspectable.setField("nonexistent", AnyHolder(0)),
                 zserio::CppRuntimeException);
         // - optional child
-        introspectable.setField("child", AnyHolder(Child{13, "thirteen"}));
+        introspectable.setField("child", AnyHolder(Child{13, "thirteen", false, vector_type<string_type>{}}));
         ASSERT_TRUE(introspectable.getField("child"));
         ASSERT_EQ("thirteen", introspectable["child.name"]->getString());
+        ASSERT_FALSE(introspectable["child.hasNicknames"]->getBool());
     }
 };
 
