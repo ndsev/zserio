@@ -80,7 +80,7 @@ public class CompoundFieldTemplateData
 
         isSimpleType = fieldNativeType.isSimpleType();
         isBuiltinType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
-                (cppNativeMapper.getCppType(fieldBaseType) instanceof NativeBuiltinType);
+                (cppNativeMapper.getCppType(fieldTypeInstantiation) instanceof NativeBuiltinType);
         needsAllocator = !isSimpleType;
         holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
         isEnum = fieldBaseType instanceof EnumType;

@@ -465,12 +465,6 @@ final class JavaNativeMapper
         }
 
         @Override
-        public void visitDynamicBitFieldType(DynamicBitFieldType type)
-        {
-            javaTypes = mapFixedInteger(type.getMaxBitSize(), type.isSigned());
-        }
-
-        @Override
         public void visitBooleanType(BooleanType type)
         {
             javaTypes = new JavaNativeTypes(booleanType, booleanNullableType);

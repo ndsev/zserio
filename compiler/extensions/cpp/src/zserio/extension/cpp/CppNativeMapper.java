@@ -5,7 +5,6 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.DynamicBitFieldType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
@@ -281,13 +280,12 @@ public class CppNativeMapper
     private CppNativeType mapArray(ArrayInstantiation instantiation) throws ZserioExtensionException
     {
         final TypeInstantiation elementInstantiation = instantiation.getElementTypeInstantiation();
-        final ZserioType elementBaseType = elementInstantiation.getBaseType();
 
-        final CppNativeType nativeType = getCppType(elementBaseType);
+        final CppNativeType nativeType = getCppType(elementInstantiation);
         if (!(nativeType instanceof NativeArrayableType))
         {
             throw new ZserioExtensionException("Unhandled arrayable type '" +
-                    elementBaseType.getClass().getName() + "' in CppNativeMapper!");
+                    elementInstantiation.getClass().getName() + "' in CppNativeMapper!");
         }
 
         return new NativeArrayType((NativeArrayableType)nativeType, vectorType);
@@ -540,12 +538,6 @@ public class CppNativeMapper
         public void visitFixedBitFieldType(FixedBitFieldType type)
         {
             cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), type.getBitSize());
-        }
-
-        @Override
-        public void visitDynamicBitFieldType(DynamicBitFieldType type)
-        {
-            cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), type.getMaxBitSize());
         }
 
         private void mapCompoundType(CompoundType type)
