@@ -103,13 +103,53 @@ const char* convertIntToString(char buffer[24], T value)
  * \param value     Value to convert.
  * \param allocator Allocator to use for the string allocation.
  *
- * \return String representation of the given value.
+ * \return String representation of the given integral value.
  */
 template <typename ALLOC, typename T>
 zserio::string<zserio::RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLOC())
 {
     char buffer[24];
     return zserio::string<zserio::RebindAlloc<ALLOC, char>>(convertIntToString(buffer, value), allocator);
+}
+
+/**
+ * Converts bool value to boolalpha C-string ("true" or "false").
+ *
+ * \param value Value to convert.
+ *
+ * \return C-string representation of the given bool value.
+ */
+inline const char* convertBoolToString(bool value)
+{
+    return value ? "true" : "false";
+}
+
+/**
+ * Converts a boolean value to string using the given allocator. Defined for convenience.
+ *
+ * Note that in contrast to std::to_string, this behaves as STL streams with boolalpha flag and produces
+ * "true" and "false" strings.
+ *
+ * \param value Value to convert.
+ * \param allocator Allocator to use for the string allocation.
+ */
+template <typename ALLOC>
+zserio::string<zserio::RebindAlloc<ALLOC, char>> toString(bool value, const ALLOC& allocator = ALLOC())
+{
+    return zserio::string<zserio::RebindAlloc<ALLOC, char>>(convertBoolToString(value), allocator);
+}
+
+/**
+ * Converts an integral (or a boolean) value to string. Convenience wrapper to call without allocator.
+ *
+ * \param value Value to convert.
+ *
+ * \return String representation of the given value.
+ */
+template <typename T>
+zserio::string<std::allocator<char>> toString(T value)
+{
+    return toString<std::allocator<char>>(value);
 }
 
 } // namespace zserio
