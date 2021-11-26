@@ -206,7 +206,9 @@ ${I}return {};
     <#else>
 ${I}// empty
     </#if>
+    <#if canUseNativeSwitch>
 ${I}break;
+    </#if>
 </#macro>
 <#if needsChildrenInitialization>
 void ${name}::initializeChildren()
@@ -262,7 +264,9 @@ void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldLi
     <#else>
 ${I}// empty
     </#if>
+    <#if canUseNativeSwitch>
 ${I}break;
+    </#if>
 </#macro>
 void ${name}::initPackingContext(${types.packingContextNode.name}&<#rt>
         <#lt><#if needs_packing_context_node(fieldList)> contextNode</#if>) const
@@ -279,7 +283,9 @@ void ${name}::initPackingContext(${types.packingContextNode.name}&<#rt>
     <#else>
 ${I}// empty
     </#if>
+    <#if canUseNativeSwitch>
 ${I}break;
+    </#if>
 </#macro>
 size_t ${name}::bitSizeOf(size_t<#if fieldList?has_content> bitPosition</#if>) const
 {
@@ -317,7 +323,9 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}&<#rt>
     <#else>
 ${I}// empty
     </#if>
+    <#if canUseNativeSwitch>
 ${I}break;
+    </#if>
 </#macro>
 size_t ${name}::initializeOffsets(size_t bitPosition)
 {
@@ -380,7 +388,9 @@ ${I}    result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_t
     <#else>
 ${I}// empty
     </#if>
+    <#if canUseNativeSwitch>
 ${I}break;
+    </#if>
 </#macro>
 uint32_t ${name}::hashCode() const
 {
@@ -402,7 +412,9 @@ uint32_t ${name}::hashCode() const
     <#else>
 ${I}// empty
     </#if>
+    <#if canUseNativeSwitch>
 ${I}break;
+    </#if>
 </#macro>
 <#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
 void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
