@@ -21,13 +21,10 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        final ExpressionFormatter cppIndirectExpressionFormatter =
-                context.getIndirectExpressionFormatter(this, "m_owner");
         for (Field fieldType : fieldTypeList)
         {
-            final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeMapper,
-                    compoundType, fieldType, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    this, withWriterCode, withRangeCheckCode);
+            final CompoundFieldTemplateData data = new CompoundFieldTemplateData(context,
+                    compoundType, fieldType, this, withWriterCode, withRangeCheckCode);
 
             fieldList.add(data);
         }

@@ -52,7 +52,9 @@ offsets[@index]:
     SelectorEnum enumField;
     packed Selector enumArray[];
     bit<param> dynamicBitField if param < 64;
+    bit<param> dynamicBitFieldArray[];
     int<param> dynamicIntField if param < 4;
+    int<4> dynamicIntFieldArray[4] if param < 64;
     bool boolArray[];
     extern externField;
     extern externArray[];

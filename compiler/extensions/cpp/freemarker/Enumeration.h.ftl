@@ -93,11 +93,11 @@ ${fullName} read<${fullName}, ${types.packingContextNode.name}>(
 <#if withWriterCode>
 
 template <>
-void write<${fullName}>(BitStreamWriter& out, ${fullName} value);
+void write<${fullName}>(::zserio::BitStreamWriter& out, ${fullName} value);
 
 template <>
 void write<${types.packingContextNode.name}, ${fullName}>(
-        ${types.packingContextNode.name}& contextNode, BitStreamWriter& out, ${fullName} value);
+        ${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out, ${fullName} value);
 </#if>
 <@namespace_end ["zserio"]/>
 

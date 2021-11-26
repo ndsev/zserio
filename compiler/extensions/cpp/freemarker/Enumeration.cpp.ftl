@@ -67,8 +67,15 @@ ${types.introspectablePtr.name} enumIntrospectable(
         virtual ${types.string.name} toString(
                 const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
         {
-            return ${types.string.name}(enumToString(m_value), allocator);
+            return ${types.string.name}(::zserio::enumToString(m_value), allocator);
         }
+    <#if withWriterCode>
+
+        virtual void write(::zserio::BitStreamWriter& writer) override
+        {
+            ::zserio::write(writer, m_value);
+        }
+    </#if>
 
     private:
         ${fullName} m_value;
@@ -165,18 +172,18 @@ ${fullName} read(${types.packingContextNode.name}& contextNode, ::zserio::BitStr
 <#if withWriterCode>
 
 template <>
-void write(BitStreamWriter& out, ${fullName} value)
+void write(::zserio::BitStreamWriter& out, ${fullName} value)
 {
-    out.write${runtimeFunction.suffix}(enumToValue(value)<#rt>
+    out.write${runtimeFunction.suffix}(::zserio::enumToValue(value)<#rt>
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
 
 template <>
-void write(${types.packingContextNode.name}& contextNode, BitStreamWriter& out, ${fullName} value)
+void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out, ${fullName} value)
 {
     contextNode.getContext().write(
             <@enum_array_traits arrayTraits, fullName, bitSize!/>,
-            out, enumToValue(value));
+            out, ::zserio::enumToValue(value));
 }
 </#if>
 <@namespace_end ["zserio"]/>

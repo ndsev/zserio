@@ -128,6 +128,13 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
 
         <@introspectable_call_function name, compoundFunctionsData.list/>
     </#if>
+    <#if withWriterCode>
+
+        virtual void write(::zserio::BitStreamWriter& writer) override
+        {
+            m_object.write(writer);
+        }
+    </#if>
 
     private:
         ${fullName}& m_object;

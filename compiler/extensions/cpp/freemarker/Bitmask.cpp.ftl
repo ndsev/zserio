@@ -82,6 +82,13 @@ ${types.introspectablePtr.name} ${name}::introspectable(const ${types.allocator.
         {
             return m_bitmask.toString(allocator);
         }
+    <#if withWriterCode>
+
+        virtual void write(::zserio::BitStreamWriter& writer) override
+        {
+            m_bitmask.write(writer);
+        }
+    </#if>
 
     private:
         ${fullName} m_bitmask;

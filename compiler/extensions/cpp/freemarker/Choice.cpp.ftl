@@ -186,6 +186,13 @@ ${I}return {};
         {
             <@choice_switch "choice_get_choice", "choice_get_choice_no_match", objectIndirectSelectorExpression, 3/>
         }
+    <#if withWriterCode>
+
+        virtual void write(::zserio::BitStreamWriter& writer) override
+        {
+            m_object.write(writer);
+        }
+    </#if>
 
     private:
         ${fullName}& m_object;

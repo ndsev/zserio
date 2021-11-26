@@ -86,13 +86,21 @@ ${I}}
                     m_object.${field.getterName}(), get_allocator())<#t>
         <#else>
             ${types.introspectableFactory.name}::getBuiltinArray(<#t>
-                    <@type_info field.typeInfo/>, m_object.${field.getterName}(), get_allocator())<#t>
+                    <@type_info field.typeInfo/>, m_object.${field.getterName}(), <#t>
+            <#if field.array.elementObjectIndirectDynamicBitSizeValue??>
+                    static_cast<uint8_t>(${field.array.elementObjectIndirectDynamicBitSizeValue}), <#t>
+            </#if>
+                    get_allocator())<#t>
         </#if>
     <#else>
         <#if field.typeInfo.typeInfoGetter??>
             ${types.introspectableFactory.name}::get${field.typeInfo.typeInfoGetter.suffix}(<#t>
                     <#if field.typeInfo.typeInfoGetter.arg??>${field.typeInfo.typeInfoGetter.arg}, </#if><#t>
-                    m_object.${field.getterName}(), get_allocator())<#t>
+                    m_object.${field.getterName}(), <#t>
+            <#if field.objectIndirectDynamicBitSizeValue??>
+                    static_cast<uint8_t>(${field.objectIndirectDynamicBitSizeValue}), <#t>
+            </#if>
+                    get_allocator())<#t>
         <#elseif field.typeInfo.isEnum>
             ::zserio::enumIntrospectable(m_object.${field.getterName}(), get_allocator())<#t>
         <#else>

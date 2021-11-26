@@ -8,6 +8,7 @@
 #include "zserio/String.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/AnyHolder.h"
+#include "zserio/BitStreamWriter.h"
 
 namespace zserio
 {
@@ -57,6 +58,8 @@ public:
     virtual uint64_t toUInt() const = 0;
     virtual double toDouble() const = 0;
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const = 0;
+
+    virtual void write(BitStreamWriter& writer) = 0;
 };
 
 using IIntrospectable = IBasicIntrospectable<>;
