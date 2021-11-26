@@ -58,11 +58,11 @@ public class CompoundFieldTemplateData
             final TypeInstantiation elementTypeInstantiation =
                     ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation();
             final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
-            typeInfo = new TypeInfoTemplateData(elementTypeInstantiation.getTypeReference(), elementNativeType);
+            typeInfo = new TypeInfoTemplateData(elementTypeInstantiation, elementNativeType);
         }
         else
         {
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), fieldNativeType);
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, fieldNativeType);
         }
 
         getterName = AccessorNameFormatter.getGetterName(field);

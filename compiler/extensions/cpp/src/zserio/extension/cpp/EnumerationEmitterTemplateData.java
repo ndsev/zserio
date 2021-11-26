@@ -25,7 +25,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(enumTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
-        underlyingTypeInfo = new TypeInfoTemplateData(enumTypeInstantiation.getTypeReference(), nativeBaseType);
+        underlyingTypeInfo = new TypeInfoTemplateData(enumTypeInstantiation, nativeBaseType);
 
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);

@@ -43,6 +43,20 @@ public class CppRuntimeFunctionDataCreator
         }
     }
 
+    public static RuntimeFunctionTemplateData createTypeInfoData(TypeInstantiation typeInstantiation)
+            throws ZserioExtensionException
+    {
+        if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            return BuiltinTypeInfoSuffixVisitor.mapDynamicBitFieldType(
+                    (DynamicBitFieldInstantiation)typeInstantiation);
+        }
+        else
+        {
+            return createTypeInfoData(typeInstantiation.getTypeReference());
+        }
+    }
+
     public static RuntimeFunctionTemplateData createTypeInfoData(TypeReference typeReference)
             throws ZserioExtensionException
     {
@@ -176,26 +190,6 @@ public class CppRuntimeFunctionDataCreator
     private static class BuiltinTypeInfoSuffixVisitor extends Visitor
     {
         @Override
-        public void visitDynamicBitFieldType(DynamicBitFieldType type)
-        {
-            try
-            {
-                final StringBuilder suffix = new StringBuilder("Dynamic");
-                if (type.isSigned())
-                    suffix.append("Signed");
-                else
-                    suffix.append("Unsigned");
-                suffix.append("BitField");
-                templateData = new RuntimeFunctionTemplateData(suffix.toString(),
-                        CppLiteralFormatter.formatUInt8Literal(type.getMaxBitSize()));
-            }
-            catch (ZserioExtensionException exception)
-            {
-                thrownException = exception;
-            }
-        }
-
-        @Override
         public void visitFixedBitFieldType(FixedBitFieldType type)
         {
             try
@@ -225,6 +219,22 @@ public class CppRuntimeFunctionDataCreator
             suffix.append(type.getBitSize());
 
             templateData = new RuntimeFunctionTemplateData(suffix.toString());
+        }
+
+        public static RuntimeFunctionTemplateData mapDynamicBitFieldType(
+                DynamicBitFieldInstantiation instantiation) throws ZserioExtensionException
+        {
+            final DynamicBitFieldType type = instantiation.getBaseType();
+
+            final StringBuilder suffix = new StringBuilder("Dynamic");
+            if (type.isSigned())
+                suffix.append("Signed");
+            else
+                suffix.append("Unsigned");
+            suffix.append("BitField");
+
+            return new RuntimeFunctionTemplateData(suffix.toString(),
+                    CppLiteralFormatter.formatUInt8Literal(instantiation.getMaxBitSize()));
         }
     }
 }

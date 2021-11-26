@@ -45,7 +45,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), nativeFieldType);
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeFieldType);
             getterName = AccessorNameFormatter.getGetterName(field);
 
             if (fieldBaseType instanceof SqlTableType)

@@ -26,7 +26,7 @@ public class TemplateInstantiationTemplateData
         {
             final CppNativeType argumentNativeType = cppNativeMapper.getCppType(
                     templateArgument.getTypeReference());
-            this.templateArguments.add(new TypeInfoTemplateData(templateArgument.getTypeReference(),
+            this.templateArgumentTypeInfos.add(new TypeInfoTemplateData(templateArgument.getTypeReference(),
                     argumentNativeType));
             if (context.getWithTypeInfoCode())
             {
@@ -41,9 +41,9 @@ public class TemplateInstantiationTemplateData
         return templateName;
     }
 
-    public Iterable<TypeInfoTemplateData> getTemplateArguments()
+    public Iterable<TypeInfoTemplateData> getTemplateArgumentTypeInfos()
     {
-        return templateArguments;
+        return templateArgumentTypeInfos;
     }
 
     static TemplateInstantiationTemplateData create(TemplateDataContext context,
@@ -63,5 +63,5 @@ public class TemplateInstantiationTemplateData
     }
 
     private final String templateName;
-    private final List<TypeInfoTemplateData> templateArguments = new ArrayList<TypeInfoTemplateData>();
+    private final List<TypeInfoTemplateData> templateArgumentTypeInfos = new ArrayList<TypeInfoTemplateData>();
 }

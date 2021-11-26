@@ -60,7 +60,10 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             typeInfo = new TypeInfoTemplateData(message.getType(), cppNativeType);
             final String topicDefinitionStringValue = message.getTopicDefinitionExpr().getStringValue();
             if (topicDefinitionStringValue == null)
-                throw new ZserioExtensionException("Unexpected topic definition which is a non-constant string!");
+            {
+                throw new ZserioExtensionException(
+                        "Unexpected topic definition which is a non-constant string!");
+            }
             topicDefinition = CppLiteralFormatter.formatStringLiteral(topicDefinitionStringValue);
             typeFullName = cppNativeType.getFullName();
             isPublished = message.isPublished();

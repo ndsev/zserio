@@ -4,6 +4,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.CompoundType;
 import zserio.ast.EnumType;
 import zserio.ast.IntegerType;
+import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
@@ -14,14 +15,13 @@ public class TypeInfoTemplateData
     public TypeInfoTemplateData(TypeReference typeReference, CppNativeType cppNativeType)
             throws ZserioExtensionException
     {
-        cppTypeName = cppNativeType.getFullName();
-        final ZserioType baseType = typeReference.getBaseTypeReference().getType();
-        final boolean hasTypeInfo = baseType instanceof CompoundType ||
-                baseType instanceof EnumType || baseType instanceof BitmaskType;
-        typeInfoGetter = hasTypeInfo ? null : CppRuntimeFunctionDataCreator.createTypeInfoData(typeReference);
-        isEnum = baseType instanceof EnumType;
-        isBitmask = baseType instanceof BitmaskType; // !@# to Field?
-        isSigned = baseType instanceof IntegerType && ((IntegerType)baseType).isSigned();
+        this(typeReference, null, cppNativeType);
+    }
+
+    public TypeInfoTemplateData(TypeInstantiation typeInstantiation, CppNativeType cppNativeType)
+            throws ZserioExtensionException
+    {
+        this(typeInstantiation.getTypeReference(), typeInstantiation, cppNativeType);
     }
 
     public TypeInfoTemplateData(CompoundType compoundType, CppNativeType cppNativeType)
@@ -56,6 +56,30 @@ public class TypeInfoTemplateData
     public boolean getIsSigned()
     {
         return isSigned;
+    }
+
+    private TypeInfoTemplateData(TypeReference typeReference, TypeInstantiation typeInstantiation,
+            CppNativeType cppNativeType) throws ZserioExtensionException
+    {
+        cppTypeName = cppNativeType.getFullName();
+        final ZserioType baseType = typeReference.getBaseTypeReference().getType();
+        typeInfoGetter = createTypeInfoGetter(baseType, typeReference, typeInstantiation);
+        isEnum = baseType instanceof EnumType;
+        isBitmask = baseType instanceof BitmaskType;
+        isSigned = baseType instanceof IntegerType && ((IntegerType)baseType).isSigned();
+    }
+
+    private RuntimeFunctionTemplateData createTypeInfoGetter(ZserioType baseType, TypeReference typeReference,
+            TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    {
+        final boolean hasTypeInfo = baseType instanceof CompoundType ||
+                baseType instanceof EnumType || baseType instanceof BitmaskType;
+        if (hasTypeInfo)
+            return null;
+
+        return (typeInstantiation != null) ?
+                CppRuntimeFunctionDataCreator.createTypeInfoData(typeInstantiation) :
+                        CppRuntimeFunctionDataCreator.createTypeInfoData(typeReference);
     }
 
     private final String cppTypeName;

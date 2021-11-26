@@ -214,7 +214,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             cppTypeName = nativeFieldType.getFullName();
             cppArgumentTypeName = nativeFieldType.getArgumentTypeName();
 
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), nativeFieldType);
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeFieldType);
 
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = createSqlConstraint(fieldSqlConstraint);

@@ -292,10 +292,10 @@ ${I}}<#if comma>,</#if>
 
 <#macro template_info_template_arguments_var varName, templateInstantiation>
     <#if templateInstantiation?has_content>
-    static const ::std::array<::zserio::TemplateArgumentInfo, ${templateInstantiation.templateArguments?size}> <#rt>
+    static const ::std::array<::zserio::TemplateArgumentInfo, ${templateInstantiation.templateArgumentTypeInfos?size}> <#rt>
             <#lt>${varName} = {
-        <#list templateInstantiation.templateArguments as templateArgument>
-        <@type_info templateArgument/><#if templateArgument?has_next>,</#if>
+        <#list templateInstantiation.templateArgumentTypeInfos as typeInfo>
+        <@type_info typeInfo/><#if typeInfo?has_next>,</#if>
         </#list>
     };
     <#else>
