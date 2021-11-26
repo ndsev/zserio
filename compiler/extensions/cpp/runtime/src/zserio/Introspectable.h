@@ -479,7 +479,7 @@ public:
 
     virtual void write(BitStreamWriter& writer) override
     {
-        if (Base::getTypeInfo().getSchemaName() == SchemaType::FLOAT16)
+        if (Base::getTypeInfo().getSchemaType() == SchemaType::FLOAT16)
             writer.writeFloat16(Base::getValue());
         else
             writer.writeFloat32(Base::getValue());
