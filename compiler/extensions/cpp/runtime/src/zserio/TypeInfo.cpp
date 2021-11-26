@@ -264,6 +264,12 @@ const ITypeInfo& BuiltinTypeInfo::getFixedUnsignedBitField(uint8_t bitSize)
 
 const ITypeInfo& BuiltinTypeInfo::getDynamicSignedBitField(uint8_t maxBitSize)
 {
+    if (maxBitSize == 0 || maxBitSize > 64)
+    {
+        throw CppRuntimeException("BuiltinTypeInfo::getDynamicSignedBitField: Invalid max bit size '") +
+                maxBitSize + "!";
+    }
+
     if (maxBitSize <= 8)
     {
         static const BuiltinTypeInfo typeInfo = {
@@ -271,14 +277,14 @@ const ITypeInfo& BuiltinTypeInfo::getDynamicSignedBitField(uint8_t maxBitSize)
         };
         return typeInfo;
     }
-    else if(maxBitSize <= 16)
+    else if (maxBitSize <= 16)
     {
         static const BuiltinTypeInfo typeInfo = {
             "int<>"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::INT16
         };
         return typeInfo;
     }
-    else if(maxBitSize <= 32)
+    else if (maxBitSize <= 32)
     {
         static const BuiltinTypeInfo typeInfo = {
             "int<>"_sv, SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::INT32
@@ -296,6 +302,12 @@ const ITypeInfo& BuiltinTypeInfo::getDynamicSignedBitField(uint8_t maxBitSize)
 
 const ITypeInfo& BuiltinTypeInfo::getDynamicUnsignedBitField(uint8_t maxBitSize)
 {
+    if (maxBitSize == 0 || maxBitSize > 64)
+    {
+        throw CppRuntimeException("BuiltinTypeInfo::getDynamicUnsignedBitField: Invalid max bit size '") +
+                maxBitSize + "!";
+    }
+
     if (maxBitSize <= 8)
     {
         static const BuiltinTypeInfo typeInfo = {
@@ -303,14 +315,14 @@ const ITypeInfo& BuiltinTypeInfo::getDynamicUnsignedBitField(uint8_t maxBitSize)
         };
         return typeInfo;
     }
-    else if(maxBitSize <= 16)
+    else if (maxBitSize <= 16)
     {
         static const BuiltinTypeInfo typeInfo = {
             "bit<>"_sv, SchemaType::DYNAMIC_UNSIGNED_BITFIELD, CppType::UINT16
         };
         return typeInfo;
     }
-    else if(maxBitSize <= 32)
+    else if (maxBitSize <= 32)
     {
         static const BuiltinTypeInfo typeInfo = {
             "bit<>"_sv, SchemaType::DYNAMIC_UNSIGNED_BITFIELD, CppType::UINT32
@@ -412,7 +424,7 @@ const ITypeInfo& FixedSizeBuiltinTypeInfo::getFixedSignedBitField(uint8_t bitSiz
 {
     if (bitSize == 0 || bitSize > 64)
     {
-        throw CppRuntimeException("BuiltinTypeInfo::getFixedSignedBitField: Invalid bit size '") +
+        throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedSignedBitField: Invalid bit size '") +
                 bitSize + "!";
     }
 
@@ -490,7 +502,7 @@ const ITypeInfo& FixedSizeBuiltinTypeInfo::getFixedUnsignedBitField(uint8_t bitS
 {
     if (bitSize == 0 || bitSize > 64)
     {
-        throw CppRuntimeException("BuiltinTypeInfo::getFixedUnsignedBitField: Invalid bit size '") +
+        throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedUnsignedBitField: Invalid bit size '") +
                 bitSize + "!";
     }
 

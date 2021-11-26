@@ -2,8 +2,14 @@ package with_type_info_code.type_info;
 
 struct SimpleStruct
 {
+align(8):
     uint32 fieldU32;
+fieldU32:
     string fieldString;
+    bool fieldBool;
+    float16 fieldFloat16;
+    float32 fieldFloat32;
+    float64 fieldFloat64;
 };
 
 struct ComplexStruct

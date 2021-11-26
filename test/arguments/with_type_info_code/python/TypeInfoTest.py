@@ -26,7 +26,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(2, len(fields))
+        self.assertEqual(6, len(fields))
 
         # fieldU32
         member_info = fields[0]
@@ -34,9 +34,11 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("uint32", member_info.type_info.schema_name)
         self.assertEqual(int, member_info.type_info.py_type)
         self.assertFalse(member_info.type_info.attributes)
-        self.assertEqual(1, len(member_info.attributes))
+        self.assertEqual(2, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("field_u32", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.ALIGN, member_info.attributes)
+        self.assertEqual("8", member_info.attributes[MemberAttribute.ALIGN])
 
         # fieldString
         member_info = fields[1]
@@ -44,9 +46,51 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("string", member_info.type_info.schema_name)
         self.assertEqual(str, member_info.type_info.py_type)
         self.assertFalse(member_info.type_info.attributes)
-        self.assertEqual(1, len(member_info.attributes))
+        self.assertEqual(2, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("field_string", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.OFFSET, member_info.attributes)
+        self.assertEqual("self.field_u32", member_info.attributes[MemberAttribute.OFFSET])
+
+        # fieldBool
+        member_info = fields[2]
+        self.assertEqual("fieldBool", member_info.schema_name)
+        self.assertEqual("bool", member_info.type_info.schema_name)
+        self.assertEqual(bool, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_bool", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # fieldFloat16
+        member_info = fields[3]
+        self.assertEqual("fieldFloat16", member_info.schema_name)
+        self.assertEqual("float16", member_info.type_info.schema_name)
+        self.assertEqual(float, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_float16", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # fieldFloat32
+        member_info = fields[4]
+        self.assertEqual("fieldFloat32", member_info.schema_name)
+        self.assertEqual("float32", member_info.type_info.schema_name)
+        self.assertEqual(float, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_float32", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # fieldFloat64
+        member_info = fields[5]
+        self.assertEqual("fieldFloat64", member_info.schema_name)
+        self.assertEqual("float64", member_info.type_info.schema_name)
+        self.assertEqual(float, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_float64", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
     def _checkComplexStruct(self, type_info):
         self.assertEqual("with_type_info_code.type_info.ComplexStruct", type_info.schema_name)
