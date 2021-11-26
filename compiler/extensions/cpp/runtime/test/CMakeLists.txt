@@ -51,7 +51,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
     zserio/StringViewTest.cpp
-    zserio/TrackingAllocator.h
+    zserio/TypeInfoTest.cpp
     zserio/UniquePtrTest.cpp
     zserio/ValidationSqliteUtilTest.cpp
     zserio/VarSizeUtilTest.cpp
