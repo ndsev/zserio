@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
+import zserio.ast.BitmaskType;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumType;
 import zserio.ast.ParameterizedTypeInstantiation;
@@ -22,7 +23,6 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.NativeArrayableType;
-import zserio.extension.cpp.types.NativeBuiltinType;
 import zserio.extension.cpp.types.NativeIntegralType;
 
 public class CompoundFieldTemplateData
@@ -79,11 +79,11 @@ public class CompoundFieldTemplateData
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
         isSimpleType = fieldNativeType.isSimpleType();
-        isBuiltinType = !(fieldTypeInstantiation instanceof ArrayInstantiation) &&
-                (cppNativeMapper.getCppType(fieldTypeInstantiation) instanceof NativeBuiltinType);
         needsAllocator = !isSimpleType;
         holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
         isEnum = fieldBaseType instanceof EnumType;
+        final boolean isBitmask = fieldBaseType instanceof BitmaskType;
+        isBuiltinType = !isEnum && !isBitmask && isSimpleType;
 
         constraint = createConstraint(field, cppNativeMapper, cppExpressionFormatter, includeCollector);
         offset = createOffset(field, cppNativeMapper, cppExpressionFormatter,
@@ -178,11 +178,6 @@ public class CompoundFieldTemplateData
         return isSimpleType;
     }
 
-    public boolean getIsBuiltinType()
-    {
-        return isBuiltinType;
-    }
-
     public boolean getNeedsAllocator()
     {
         return needsAllocator;
@@ -196,6 +191,11 @@ public class CompoundFieldTemplateData
     public boolean getIsEnum()
     {
         return isEnum;
+    }
+
+    public boolean getIsBuiltinType()
+    {
+        return isBuiltinType;
     }
 
     public Constraint getConstraint()
@@ -759,10 +759,10 @@ public class CompoundFieldTemplateData
     private final String initializer;
     private final boolean usesAnyHolder;
     private final boolean isSimpleType;
-    private final boolean isBuiltinType;
     private final boolean needsAllocator;
     private final boolean holderNeedsAllocator;
     private final boolean isEnum;
+    private final boolean isBuiltinType;
     private final Constraint constraint;
     private final Offset offset;
     private final ArrayTraitsTemplateData arrayTraits;

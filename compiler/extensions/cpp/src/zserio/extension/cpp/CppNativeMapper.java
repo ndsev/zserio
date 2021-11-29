@@ -175,7 +175,8 @@ public class CppNativeMapper
      *
      * @throws ZserioExtensionException If the Zserio integer type cannot be mapped to any C++ integer type.
      */
-    public NativeIntegralType getCppIntegralType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    public NativeIntegralType getCppIntegralType(TypeInstantiation typeInstantiation)
+            throws ZserioExtensionException
     {
         CppNativeType nativeType = null;
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
