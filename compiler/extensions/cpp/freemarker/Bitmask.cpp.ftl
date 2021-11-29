@@ -77,6 +77,11 @@ ${types.introspectablePtr.name} ${name}::introspectable(const ${types.allocator.
             return m_bitmask.getValue();
         }
 
+        virtual double toDouble() const override
+        {
+            return toUInt();
+        }
+
         virtual ${types.string.name} toString(
                 const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
         {

@@ -64,6 +64,11 @@ ${types.introspectablePtr.name} enumIntrospectable(
             return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);
         }
 
+        virtual double toDouble() const override
+        {
+            return <#if underlyingTypeInfo.isSigned>toInt()<#else>toUInt()</#if>;
+        }
+
         virtual ${types.string.name} toString(
                 const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
         {

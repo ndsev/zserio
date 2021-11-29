@@ -172,6 +172,7 @@ protected:
         ASSERT_EQ(zserio::CppType::UINT32, introspectable.getField("len")->getTypeInfo().getCppType());
         ASSERT_EQ(4, introspectable.find("len")->getUInt32());
         ASSERT_EQ(4, introspectable.find("len")->toUInt());
+        ASSERT_EQ(4.0, introspectable.find("len")->toDouble());
         ASSERT_THROW(introspectable.find("len")->toInt(), zserio::CppRuntimeException);
         checkWriteReadBuiltin(*introspectable.find("len"),
                 [&structure](zserio::BitStreamReader& reader) {
@@ -183,6 +184,7 @@ protected:
         ASSERT_TRUE(introspectable.getField("offsets")->isArray());
         ASSERT_EQ(4, introspectable.getField("offsets")->size());
         ASSERT_NE(0, introspectable.getField("offsets")->at(0)->getUInt32()); // offset shall be initialized
+        ASSERT_NE(0, introspectable.getField("offsets")->at(0)->toDouble());
         checkWriteThrows(*introspectable.getField("offsets"));
         checkWriteReadBuiltin(*introspectable.getField("offsets")->at(0),
                 [&structure](zserio::BitStreamReader& reader) {
@@ -201,6 +203,8 @@ protected:
         //Bitmask bitmaskField;
         ASSERT_EQ(Bitmask(Bitmask::Values::FLAG1 | Bitmask::Values::FLAG2).getValue(),
                 introspectable.getField("bitmaskField")->getUInt8());
+        ASSERT_EQ(Bitmask(Bitmask::Values::FLAG1 | Bitmask::Values::FLAG2).getValue(),
+                introspectable.getField("bitmaskField")->toDouble());
         ASSERT_EQ(Bitmask(Bitmask::Values::FLAG1 | Bitmask::Values::FLAG2).toString(),
                 introspectable.getField("bitmaskField")->toString());
         checkWriteRead(*introspectable.getField("bitmaskField"), structure.getBitmaskField());
@@ -230,6 +234,7 @@ protected:
         ASSERT_FALSE(enumArrayFieldInfo.isImplicit);
         ASSERT_TRUE(introspectable["enumArray"]->isArray());
         ASSERT_EQ(zserio::enumToValue(Selector::STRUCT), introspectable["enumArray"]->at(0)->getInt8());
+        ASSERT_EQ(zserio::enumToValue(Selector::STRUCT), introspectable["enumArray"]->at(0)->toDouble());
         checkWriteThrows(*introspectable.getField("enumArray"));
         checkWriteReadEnum(*introspectable.getField("enumArray")->at(0), structure.getEnumArray()[0]);
 
@@ -248,6 +253,7 @@ protected:
         ASSERT_EQ(3, introspectable.getField("dynamicBitFieldArray")->size());
         ASSERT_EQ(10, introspectable["dynamicBitFieldArray"]->at(0)->getUInt64());
         ASSERT_EQ(20, introspectable["dynamicBitFieldArray"]->at(1)->toUInt());
+        ASSERT_EQ(20.0, introspectable["dynamicBitFieldArray"]->at(1)->toDouble());
         ASSERT_EQ("30", introspectable["dynamicBitFieldArray"]->at(2)->toString());
         checkWriteThrows(*introspectable["dynamicBitFieldArray"]);
         checkWriteReadBuiltin(*introspectable["dynamicBitFieldArray"]->at(2),
@@ -266,6 +272,7 @@ protected:
         ASSERT_THROW(introspectable["dynamicIntFieldArray"]->at(0)->toUInt(), zserio::CppRuntimeException);
         ASSERT_EQ(-3, introspectable["dynamicIntFieldArray"]->at(0)->toInt());
         ASSERT_EQ(-1, introspectable["dynamicIntFieldArray"]->at(1)->getInt8());
+        ASSERT_EQ(-1.0, introspectable["dynamicIntFieldArray"]->at(1)->toDouble());
         ASSERT_EQ("-1", introspectable["dynamicIntFieldArray"]->at(1)->toString());
         ASSERT_EQ(1, introspectable["dynamicIntFieldArray"]->at(2)->getInt8());
         checkWriteThrows(*introspectable["dynamicIntFieldArray"]);
@@ -279,6 +286,7 @@ protected:
         ASSERT_TRUE(introspectable["boolArray"]->isArray());
         ASSERT_EQ(3, introspectable["boolArray"]->size());
         ASSERT_FALSE(introspectable["boolArray"]->at(1)->getBool());
+        ASSERT_EQ(0.0, introspectable["boolArray"]->at(1)->toDouble());
         ASSERT_EQ("false", introspectable["boolArray"]->at(1)->toString());
         checkWriteThrows(*introspectable["boolArray"]);
         checkWriteReadBuiltin(*introspectable["boolArray"]->at(0),
@@ -348,8 +356,8 @@ TEST_F(IntrospectionTest, checkChoiceWithStructure)
 
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::STRUCT),
             introspectable->getParameter("selector")->getInt8());
-    ASSERT_EQ(zserio::enumToValue(SelectorEnum::STRUCT), introspectable->getParameter("selector"_sv)->toInt());
-    ASSERT_EQ(zserio::enumToString(SelectorEnum::STRUCT), introspectable->find("selector"_sv)->toString());
+    ASSERT_EQ(zserio::enumToValue(SelectorEnum::STRUCT), introspectable->getParameter("selector")->toInt());
+    ASSERT_EQ(zserio::enumToString(SelectorEnum::STRUCT), introspectable->find("selector")->toString());
 
     ASSERT_TRUE(zserio::TypeInfoUtil::hasChoice(introspectable->getTypeInfo().getCppType()));
     ASSERT_EQ("structField"_sv, introspectable->getChoice());
@@ -439,6 +447,7 @@ TEST_F(IntrospectionTest, checkChoiceWithBitmask)
 
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::BITMASK), introspectable->getParameter("selector")->getInt8());
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::BITMASK), introspectable->getParameter("selector")->toInt());
+    ASSERT_EQ(zserio::enumToValue(SelectorEnum::BITMASK), introspectable->getParameter("selector")->toDouble());
     ASSERT_EQ(zserio::enumToString(SelectorEnum::BITMASK), introspectable->find("selector")->toString());
 
     ASSERT_TRUE(zserio::TypeInfoUtil::hasChoice(introspectable->getTypeInfo().getCppType()));
