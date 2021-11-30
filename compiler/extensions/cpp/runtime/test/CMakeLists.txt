@@ -52,6 +52,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/StringConvertUtilTest.cpp
     zserio/StringViewTest.cpp
     zserio/TypeInfoTest.cpp
+    zserio/TypeInfoUtilTest.cpp
     zserio/UniquePtrTest.cpp
     zserio/ValidationSqliteUtilTest.cpp
     zserio/VarSizeUtilTest.cpp

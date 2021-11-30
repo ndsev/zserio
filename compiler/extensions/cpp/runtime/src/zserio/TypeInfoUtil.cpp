@@ -163,6 +163,9 @@ bool TypeInfoUtil::isSigned(SchemaType schemaType)
     case SchemaType::VARINT:
     case SchemaType::FIXED_SIGNED_BITFIELD:
     case SchemaType::DYNAMIC_SIGNED_BITFIELD:
+    case SchemaType::FLOAT16:
+    case SchemaType::FLOAT32:
+    case SchemaType::FLOAT64:
         return true;
     default:
         return false;
@@ -177,13 +180,28 @@ bool TypeInfoUtil::isSigned(CppType cppType)
     case CppType::INT16:
     case CppType::INT32:
     case CppType::INT64:
+    case CppType::FLOAT:
+    case CppType::DOUBLE:
         return true;
     default:
         return false;
     };
 }
 
-bool TypeInfoUtil::isFloating(CppType cppType)
+bool TypeInfoUtil::isFloatingPoint(SchemaType schemaType)
+{
+    switch (schemaType)
+    {
+    case SchemaType::FLOAT16:
+    case SchemaType::FLOAT32:
+    case SchemaType::FLOAT64:
+        return true;
+    default:
+        return false;
+    };
+}
+
+bool TypeInfoUtil::isFloatingPoint(CppType cppType)
 {
     switch (cppType)
     {
