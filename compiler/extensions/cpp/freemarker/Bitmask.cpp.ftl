@@ -61,7 +61,7 @@ ${types.introspectablePtr.name} ${name}::introspectable(const ${types.allocator.
     class Introspectable : public ::zserio::IntrospectableBase<${types.allocator.default}>
     {
     public:
-        Introspectable(${fullName} bitmask) :
+        explicit Introspectable(${fullName} bitmask) :
                 ::zserio::IntrospectableBase<${types.allocator.default}>(${fullName}::typeInfo()),
                 m_bitmask(bitmask)
         {}

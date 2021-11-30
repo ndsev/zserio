@@ -23,8 +23,8 @@ struct TypeInfoUtil
     static bool isSigned(SchemaType schemaType);
     static bool isSigned(CppType cppType);
 
-    static bool isFloating(SchemaType schemaType);
-    static bool isFloating(CppType cppType);
+    static bool isFloatingPoint(SchemaType schemaType);
+    static bool isFloatingPoint(CppType cppType);
 };
 
 } // namespace zserio

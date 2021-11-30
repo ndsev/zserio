@@ -165,7 +165,7 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
     class Introspectable : public ::zserio::IntrospectableAllocatorHolderBase<allocator_type>
     {
     public:
-        Introspectable(${fullName}& object, const allocator_type& allocator) :
+        explicit Introspectable(${fullName}& object, const allocator_type& allocator) :
                 ::zserio::IntrospectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
                 m_object(object)
         {}

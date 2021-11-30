@@ -48,7 +48,7 @@ ${types.introspectablePtr.name} enumIntrospectable(
     class Introspectable : public ::zserio::IntrospectableBase<${types.allocator.default}>
     {
     public:
-        Introspectable(${fullName} value) :
+        explicit Introspectable(${fullName} value) :
                 ::zserio::IntrospectableBase<${types.allocator.default}>(enumTypeInfo<${fullName}>()),
                 m_value(value)
         {}
