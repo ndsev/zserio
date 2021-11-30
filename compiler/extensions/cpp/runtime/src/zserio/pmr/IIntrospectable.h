@@ -9,8 +9,14 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to introspectable interface provided for convenience -
+ * using PropagatingPolymorphicAllocator<uint8_t>.
+ */
+/** \{ */
 using IIntrospectable = zserio::IIntrospectable<PropagatingPolymorphicAllocator<uint8_t>>;
 using IIntrospectablePtr = IIntrospectable::IIntrospectablePtr;
+/** \} */
 
 } // namespace pmr
 } // namespace zserio

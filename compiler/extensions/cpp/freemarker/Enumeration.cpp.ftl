@@ -49,7 +49,7 @@ ${types.introspectablePtr.name} enumIntrospectable(
     {
     public:
         explicit Introspectable(${fullName} value) :
-                ::zserio::IntrospectableBase<${types.allocator.default}>(enumTypeInfo<${fullName}>()),
+                ::zserio::IntrospectableBase<${types.allocator.default}>(::zserio::enumTypeInfo<${fullName}>()),
                 m_value(value)
         {}
 
@@ -66,7 +66,7 @@ ${types.introspectablePtr.name} enumIntrospectable(
 
         virtual double toDouble() const override
         {
-            return <#if underlyingTypeInfo.isSigned>toInt()<#else>toUInt()</#if>;
+            return static_cast<double>(<#if underlyingTypeInfo.isSigned>toInt()<#else>toUInt()</#if>);
         }
 
         virtual ${types.string.name} toString(

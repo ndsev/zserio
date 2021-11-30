@@ -200,6 +200,16 @@ public:
     template <typename ALLOC>
     void writeString(const string<ALLOC>& data)
     {
+        writeString(StringView(data));
+    }
+
+    /**
+     * Writes UTF-8 string.
+     *
+     * \param data String view to write.
+     */
+    void writeString(StringView data)
+    {
         const size_t len = data.size();
         writeVarSize(convertSizeToUInt32(len));
         for (size_t i = 0; i < len; ++i)

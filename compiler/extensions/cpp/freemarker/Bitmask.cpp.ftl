@@ -79,7 +79,7 @@ ${types.introspectablePtr.name} ${name}::introspectable(const ${types.allocator.
 
         virtual double toDouble() const override
         {
-            return toUInt();
+            return static_cast<double>(toUInt());
         }
 
         virtual ${types.string.name} toString(

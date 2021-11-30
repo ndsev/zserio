@@ -200,7 +200,7 @@ protected:
         checkWriteRead(*introspectable["parameterizedArray"]->at(2),
                 structure.getParameterizedArray()[2], structure.getParam());
 
-        //Bitmask bitmaskField;
+        // Bitmask bitmaskField;
         ASSERT_EQ(Bitmask(Bitmask::Values::FLAG1 | Bitmask::Values::FLAG2).getValue(),
                 introspectable.getField("bitmaskField")->getUInt8());
         ASSERT_EQ(Bitmask(Bitmask::Values::FLAG1 | Bitmask::Values::FLAG2).getValue(),

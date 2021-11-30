@@ -127,7 +127,7 @@ bool TypeInfoUtil::isIntegral(SchemaType schemaType)
         return true;
     default:
         return false;
-    };
+    }
 }
 
 bool TypeInfoUtil::isIntegral(CppType cppType)
@@ -146,7 +146,7 @@ bool TypeInfoUtil::isIntegral(CppType cppType)
         return true;
     default:
         return false;
-    };
+    }
 }
 
 bool TypeInfoUtil::isSigned(SchemaType schemaType)
@@ -169,7 +169,7 @@ bool TypeInfoUtil::isSigned(SchemaType schemaType)
         return true;
     default:
         return false;
-    };
+    }
 }
 
 bool TypeInfoUtil::isSigned(CppType cppType)
@@ -185,7 +185,7 @@ bool TypeInfoUtil::isSigned(CppType cppType)
         return true;
     default:
         return false;
-    };
+    }
 }
 
 bool TypeInfoUtil::isFloatingPoint(SchemaType schemaType)
@@ -198,7 +198,7 @@ bool TypeInfoUtil::isFloatingPoint(SchemaType schemaType)
         return true;
     default:
         return false;
-    };
+    }
 }
 
 bool TypeInfoUtil::isFloatingPoint(CppType cppType)

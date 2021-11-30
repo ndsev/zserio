@@ -99,8 +99,8 @@ TEST(StringConvertUtilTest, convertUInt64)
 
 TEST(StringConvertUtilTest, convertBool)
 {
-    EXPECT_EQ("true", convertBoolToString(true));
-    EXPECT_EQ("false", convertBoolToString(false));
+    EXPECT_EQ(std::string("true"), convertBoolToString(true));
+    EXPECT_EQ(std::string("false"), convertBoolToString(false));
 
     EXPECT_EQ("true", toString(true));
     EXPECT_EQ("false", toString(false));

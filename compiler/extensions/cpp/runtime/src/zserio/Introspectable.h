@@ -12,12 +12,37 @@
 namespace zserio
 {
 
+/**
+ * Base class for all introspectable implementations.
+ *
+ * Implements the find() feature and overrides all generic methods with default throw behavior.
+ */
 template <typename ALLOC>
 class IntrospectableBase : public IBasicIntrospectable<ALLOC>
 {
 public:
+    /**
+     * Constructor.
+     *
+     * \param typeInfo Type info of the introspected object.
+     */
     explicit IntrospectableBase(const ITypeInfo& typeInfo);
-    virtual ~IntrospectableBase() = 0;
+
+    /** Destructor. */
+    virtual ~IntrospectableBase() override = 0;
+
+    /**
+    * Copying and moving is disallowed!
+    * \{
+    */
+    IntrospectableBase(const IntrospectableBase&) = delete;
+    IntrospectableBase& operator=(const IntrospectableBase&) = delete;
+
+    IntrospectableBase(const IntrospectableBase&&) = delete;
+    IntrospectableBase& operator=(const IntrospectableBase&&) = delete;
+    /**
+    * \}
+    */
 
     virtual const ITypeInfo& getTypeInfo() const override;
     virtual bool isArray() const override;
@@ -48,7 +73,7 @@ public:
     virtual uint64_t getUInt64() const override;
     virtual float getFloat() const override;
     virtual double getDouble() const override;
-    virtual const string<RebindAlloc<ALLOC, char>>& getString() const override;
+    virtual StringView getString() const override;
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
     // convenience conversions
@@ -57,12 +82,16 @@ public:
     virtual double toDouble() const override;
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override;
 
+    // TODO[Mi-L@]: Do NOT override here if there will be no reflectable when -withoutWriterCode is used!
     virtual void write(zserio::BitStreamWriter& writer) override;
 
 private:
     const ITypeInfo& m_typeInfo;
 };
 
+/**
+ * Base class for all builtin introspectables.
+ */
 template <typename ALLOC, typename T, typename = void>
 class BuiltinIntrospectableBase : public IntrospectableBase<ALLOC>
 {
@@ -83,9 +112,14 @@ private:
     const T& m_value;
 };
 
+/**
+ * Specialization of the BuiltinIntrospectableBase base class for numeric (arithmetic) types.
+ *
+ * Hold the value instead of reference.
+ */
 template <typename ALLOC, typename T>
 class BuiltinIntrospectableBase<ALLOC, T,
-        typename std::enable_if<std::is_integral<T>::value || std::is_floating_point<T>::value>::type> :
+        typename std::enable_if<std::is_arithmetic<T>::value || std::is_same<T, StringView>::value>::type> :
                 public IntrospectableBase<ALLOC>
 {
 private:
@@ -105,6 +139,14 @@ private:
     T m_value;
 };
 
+/**
+ * Base class for integral introspectables.
+ *
+ * Implements toString() and toDouble() conversions, implements write() for all integral builtin types.
+ *
+ * Hold dynamic bit size even though it has sense only for dynamic bit fields (otherwise it's always set to 0).
+ * This solution was chosen for simplicity.
+ */
 template <typename ALLOC, typename T>
 class IntegralIntrospectableBase : public BuiltinIntrospectableBase<ALLOC, T>
 {
@@ -120,7 +162,7 @@ public:
 
     virtual double toDouble() const override
     {
-        return Base::getValue();
+        return static_cast<double>(Base::getValue());
     }
 
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator) const override
@@ -128,7 +170,7 @@ public:
         return ::zserio::toString<RebindAlloc<ALLOC, char>>(Base::getValue(), allocator);
     }
 
-    virtual void write(BitStreamWriter& writer)
+    virtual void write(BitStreamWriter& writer) override
     {
         const ITypeInfo& typeInfo = Base::getTypeInfo();
         switch (typeInfo.getSchemaType())
@@ -260,6 +302,11 @@ private:
     uint8_t m_dynamicBitSize;
 };
 
+/**
+ * Base class for signed integral introspectables.
+ *
+ * Implements toInt() conversion.
+ */
 template <typename ALLOC, typename T>
 class SignedIntrospectableBase : public IntegralIntrospectableBase<ALLOC, T>
 {
@@ -276,6 +323,11 @@ public:
     }
 };
 
+/**
+ * Base class for unsigned integral introspectables.
+ *
+ * Implements toUInt() conversion.
+ */
 template <typename ALLOC, typename T>
 class UnsignedIntrospectableBase : public IntegralIntrospectableBase<ALLOC, T>
 {
@@ -292,6 +344,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of bool type.
+ */
 template <typename ALLOC>
 class BoolIntrospectable : public UnsignedIntrospectableBase<ALLOC, bool>
 {
@@ -309,6 +364,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of int8_t type.
+ */
 template <typename ALLOC>
 class Int8Introspectable : public SignedIntrospectableBase<ALLOC, int8_t>
 {
@@ -326,6 +384,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of int16_t type.
+ */
 template <typename ALLOC>
 class Int16Introspectable : public SignedIntrospectableBase<ALLOC, int16_t>
 {
@@ -343,6 +404,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of int32_t type.
+ */
 template <typename ALLOC>
 class Int32Introspectable : public SignedIntrospectableBase<ALLOC, int32_t>
 {
@@ -360,6 +424,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of int64_t type.
+ */
 template <typename ALLOC>
 class Int64Introspectable : public SignedIntrospectableBase<ALLOC, int64_t>
 {
@@ -377,6 +444,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of uint8_t type.
+ */
 template <typename ALLOC>
 class UInt8Introspectable : public UnsignedIntrospectableBase<ALLOC, uint8_t>
 {
@@ -394,6 +464,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of uint16_t type.
+ */
 template <typename ALLOC>
 class UInt16Introspectable : public UnsignedIntrospectableBase<ALLOC, uint16_t>
 {
@@ -411,6 +484,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of uint32_t type.
+ */
 template <typename ALLOC>
 class UInt32Introspectable : public UnsignedIntrospectableBase<ALLOC, uint32_t>
 {
@@ -428,6 +504,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of uint64_t type.
+ */
 template <typename ALLOC>
 class UInt64Introspectable : public UnsignedIntrospectableBase<ALLOC, uint64_t>
 {
@@ -445,6 +524,9 @@ public:
     }
 };
 
+/**
+ * Base class for floating point introspectables.
+ */
 template <typename ALLOC, typename T>
 class FloatingPointIntrospectableBase : public BuiltinIntrospectableBase<ALLOC, T>
 {
@@ -457,10 +539,13 @@ protected:
 public:
     virtual double toDouble() const override
     {
-        return getValue();
+        return static_cast<double>(getValue());
     }
 };
 
+/**
+ * Introspectable for values of float type.
+ */
 template <typename ALLOC>
 class FloatIntrospectable : public FloatingPointIntrospectableBase<ALLOC, float>
 {
@@ -486,6 +571,9 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of double type.
+ */
 template <typename ALLOC>
 class DoubleIntrospectable : public FloatingPointIntrospectableBase<ALLOC, double>
 {
@@ -508,34 +596,39 @@ public:
     }
 };
 
+/**
+ * Introspectable for values of string type.
+ */
 template <typename ALLOC>
-class StringIntrospectable : public BuiltinIntrospectableBase<ALLOC, string<RebindAlloc<ALLOC, char>>>
+class StringIntrospectable : public BuiltinIntrospectableBase<ALLOC, StringView>
 {
 private:
-    using Base = BuiltinIntrospectableBase<ALLOC, string<RebindAlloc<ALLOC, char>>>;
+    using Base = BuiltinIntrospectableBase<ALLOC, StringView>;
 
 public:
-    explicit StringIntrospectable(const ITypeInfo& typeInfo,
-            const string<RebindAlloc<ALLOC, char>>& value) :
+    explicit StringIntrospectable(const ITypeInfo& typeInfo, StringView value) :
             Base(typeInfo, value)
     {}
 
-    virtual const string<RebindAlloc<ALLOC, char>>& getString() const override
+    virtual StringView getString() const override
     {
         return Base::getValue();
     }
 
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator) const override
     {
-        return string<RebindAlloc<ALLOC, char>>(getString(), allocator);
+        return stringViewToString(getString(), allocator);
     }
 
-    virtual void write(BitStreamWriter& writer)
+    virtual void write(BitStreamWriter& writer) override
     {
         writer.writeString(Base::getValue());
     }
 };
 
+/**
+ * Introspectable for values of bit buffer type.
+ */
 template <typename ALLOC>
 class BitBufferIntrospectable : public BuiltinIntrospectableBase<ALLOC, BasicBitBuffer<ALLOC>>
 {
@@ -552,7 +645,7 @@ public:
         return Base::getValue();
     }
 
-    virtual void write(BitStreamWriter& writer)
+    virtual void write(BitStreamWriter& writer) override
     {
         writer.writeBitBuffer(Base::getValue());
     }
@@ -726,6 +819,9 @@ struct IntrospectableTraits<ALLOC, BasicBitBuffer<ALLOC>>
 } // namespace detail
 
 // TODO[Mi-L@]: Check if multiple inheritance is ok!
+/**
+ * Base class for introspectable which needs to hold an allocator.
+ */
 template <typename ALLOC>
 class IntrospectableAllocatorHolderBase : public IntrospectableBase<ALLOC>, public AllocatorHolder<ALLOC>
 {
@@ -735,6 +831,11 @@ public:
     {}
 };
 
+/**
+ * Base class for arrays introspectables.
+ *
+ * Overrides all generic methods with default throw behaviour.
+ */
 template <typename ALLOC>
 class IntrospectableArrayBase : public IntrospectableAllocatorHolderBase<ALLOC>
 {
@@ -754,9 +855,6 @@ public:
 
     virtual StringView getChoice() const override;
 
-    virtual typename IBasicIntrospectable<ALLOC>::Ptr find(StringView path) const override;
-    virtual typename IBasicIntrospectable<ALLOC>::Ptr operator[](StringView path) const override;
-
     virtual bool getBool() const override;
     virtual int8_t getInt8() const override;
     virtual int16_t getInt16() const override;
@@ -768,7 +866,7 @@ public:
     virtual uint64_t getUInt64() const override;
     virtual float getFloat() const override;
     virtual double getDouble() const override;
-    virtual const string<RebindAlloc<ALLOC, char>>& getString() const override;
+    virtual StringView getString() const override;
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
     virtual int64_t toInt() const override;
@@ -779,6 +877,9 @@ public:
     virtual void write(BitStreamWriter& writer) override;
 };
 
+/**
+ * Introspetable for arrays of builtin types (except integral types).
+ */
 template <typename ALLOC, typename RAW_ARRAY>
 class BuiltinIntrospectableArray : public IntrospectableArrayBase<ALLOC>
 {
@@ -814,6 +915,12 @@ private:
     const RAW_ARRAY& m_rawArray;
 };
 
+/**
+ * Introspectable for arrays of builtin integral types.
+ *
+ * Holds dynamic bit size even for types where it has no sense (in that case it's 0).
+ * This solution was chosen for simplicity.
+ */
 template <typename ALLOC, typename RAW_ARRAY>
 class IntegralIntrospectableArray : public IntrospectableArrayBase<ALLOC>
 {
@@ -850,6 +957,9 @@ private:
     uint8_t m_dynamicBitSize;
 };
 
+/**
+ * Introspectable for arrays of compound types.
+ */
 template <typename ALLOC, typename RAW_ARRAY>
 class CompoundIntrospectableArray : public IntrospectableArrayBase<ALLOC>
 {
@@ -882,9 +992,11 @@ private:
     RAW_ARRAY& m_rawArray;
 };
 
+/** Introspectable for arrays of bitmask types. */
 template <typename ALLOC, typename RAW_ARRAY>
 using BitmaskIntrospectableArray = CompoundIntrospectableArray<ALLOC, RAW_ARRAY>;
 
+/** Introspectable for arrays of enum types. */
 template <typename ALLOC, typename RAW_ARRAY>
 class EnumIntrospectableArray : public IntrospectableArrayBase<ALLOC>
 {
@@ -917,6 +1029,11 @@ private:
     const RAW_ARRAY& m_rawArray;
 };
 
+/**
+ * Factory used to make it easier to create introspectable instances.
+ *
+ * Creates introspectables for all builtin types and for arrays.
+ */
 template <typename ALLOC>
 class BasicIntrospectableFactory
 {
@@ -1066,7 +1183,7 @@ public:
             StringView value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<StringIntrospectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getString(), stringViewToString(value, allocator));
+                allocator, BuiltinTypeInfo::getString(), value);
     }
 
     static typename IBasicIntrospectable<ALLOC>::Ptr getBitBuffer(
@@ -1335,6 +1452,7 @@ public:
     }
 };
 
+/** Typedef to the introspectable factroy provided for convenience - using default std::allocator<uint8_t>. */
 using IntrospectableFactory = BasicIntrospectableFactory<std::allocator<uint8_t>>;
 
 template <typename ALLOC>
@@ -1485,7 +1603,7 @@ double IntrospectableBase<ALLOC>::getDouble() const
 }
 
 template <typename ALLOC>
-const string<RebindAlloc<ALLOC, char>>& IntrospectableBase<ALLOC>::getString() const
+StringView IntrospectableBase<ALLOC>::getString() const
 {
     throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not string type!";
 }
@@ -1562,18 +1680,6 @@ StringView IntrospectableArrayBase<ALLOC>::getChoice() const
 }
 
 template <typename ALLOC>
-typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::find(StringView) const
-{
-    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
-}
-
-template <typename ALLOC>
-typename IBasicIntrospectable<ALLOC>::Ptr IntrospectableArrayBase<ALLOC>::operator[](StringView) const
-{
-    throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
-}
-
-template <typename ALLOC>
 bool IntrospectableArrayBase<ALLOC>::getBool() const
 {
     throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
@@ -1640,7 +1746,7 @@ double IntrospectableArrayBase<ALLOC>::getDouble() const
 }
 
 template <typename ALLOC>
-const string<RebindAlloc<ALLOC, char>>& IntrospectableArrayBase<ALLOC>::getString() const
+StringView IntrospectableArrayBase<ALLOC>::getString() const
 {
     throw CppRuntimeException("Introspectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }

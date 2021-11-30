@@ -9,6 +9,10 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to the introspectable factroy provided for convenience -
+ * using default PropagatingPolymorphicAllocator<uint8_t>.
+ */
 using IntrospectableFactory = BasicIntrospectableFactory<PropagatingPolymorphicAllocator<uint8_t>>;
 
 } // namespace pmr
