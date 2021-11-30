@@ -20,6 +20,8 @@ function(compiler_get_warnings_setup VARNAME)
                 "-Wno-global-constructors"
                 "-Wno-covered-switch-default"
                 "-Wno-missing-noreturn"
+                "-Wno-switch-enum"
+                "-fcomment-block-commands=copydoc"
         )
         string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP_LIST}")
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
@@ -33,7 +35,6 @@ function(compiler_get_test_warnings_setup VARNAME)
     compiler_get_warnings_setup(WARNINGS_SETUP)
     if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         set(WARNINGS_SETUP_LIST
-                "-Wno-switch-enum"
                 "-Wno-float-equal"
                 "-Wno-unused-private-field"
                 "-Wno-reserved-id-macro"
