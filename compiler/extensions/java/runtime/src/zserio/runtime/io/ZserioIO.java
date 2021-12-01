@@ -48,7 +48,7 @@ public final class ZserioIO
         }
         catch (final IOException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
     }
 
@@ -71,27 +71,27 @@ public final class ZserioIO
         }
         catch (final SecurityException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final NoSuchMethodException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final IllegalArgumentException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final InstantiationException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final IllegalAccessException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final InvocationTargetException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
     }
 
@@ -132,19 +132,19 @@ public final class ZserioIO
         }
         catch (final IllegalArgumentException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final InstantiationException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final IllegalAccessException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
         catch (final InvocationTargetException exc)
         {
-            throw new ZserioError("ZserioIO: " + exc);
+            throw new ZserioError("ZserioIO: " + exc, exc);
         }
     }
 
