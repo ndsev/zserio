@@ -80,7 +80,7 @@ public:
         class Reflectable : public ReflectableBase<std::allocator<uint8_t>>
         {
         public:
-            Reflectable(DummyBitmask bitmask) :
+            explicit Reflectable(DummyBitmask bitmask) :
                     ReflectableBase<std::allocator<uint8_t>>(DummyBitmask::typeInfo()),
                     m_bitmask(bitmask)
             {}
@@ -154,7 +154,7 @@ public:
     using allocator_type = std::allocator<uint8_t>;
 
     explicit DummyChild(uint32_t value) : m_value(value) {}
-    explicit DummyChild(BitStreamReader& in) : m_value(in.readBits(31)) {}
+    explicit DummyChild(BitStreamReader& in) : m_value(readValue(in)) {}
 
     static const ITypeInfo& typeInfo()
     {
@@ -212,7 +212,7 @@ public:
         class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
         {
         public:
-            Reflectable(DummyChild& object, const allocator_type& allocator) :
+            explicit Reflectable(DummyChild& object, const allocator_type& allocator) :
                     ReflectableAllocatorHolderBase<allocator_type>(DummyChild::typeInfo(), allocator),
                     m_object(object)
             {}
@@ -312,6 +312,11 @@ public:
     }
 
 private:
+    uint32_t readValue(BitStreamReader& in)
+    {
+        return in.readBits(31);
+    }
+
     uint32_t m_value;
 };
 
@@ -321,7 +326,7 @@ public:
     using allocator_type = std::allocator<uint8_t>;
 
     explicit DummyParent(DummyChild dummyChild) : m_dummyChild(dummyChild) {}
-    explicit DummyParent(BitStreamReader& in) : m_dummyChild(in) {}
+    explicit DummyParent(BitStreamReader& in) : m_dummyChild(readDummyChild(in)) {}
 
     static const ITypeInfo& typeInfo()
     {
@@ -363,7 +368,7 @@ public:
         class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
         {
         public:
-            Reflectable(DummyParent& object, const allocator_type& allocator) :
+            explicit Reflectable(DummyParent& object, const allocator_type& allocator) :
                     ReflectableAllocatorHolderBase<allocator_type>(DummyParent::typeInfo(), allocator),
                     m_object(object)
             {}
@@ -430,6 +435,11 @@ public:
     }
 
 private:
+    DummyChild readDummyChild(BitStreamReader& in)
+    {
+        return DummyChild(in);
+    }
+
     DummyChild m_dummyChild;
 };
 
@@ -512,7 +522,7 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
     class Reflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
-        Reflectable(DummyEnum value) :
+        explicit Reflectable(DummyEnum value) :
                 ReflectableBase<std::allocator<uint8_t>>(enumTypeInfo<DummyEnum>()),
                 m_value(value)
         {}
