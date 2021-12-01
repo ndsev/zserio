@@ -13,7 +13,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
-<@type_includes types.introspectablePtr/>
+<@type_includes types.reflectablePtr/>
 </#if>
 <@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
@@ -53,7 +53,7 @@ template <>
 const ::zserio::ITypeInfo& enumTypeInfo<${fullName}>();
 
 template <>
-${types.introspectablePtr.name} enumIntrospectable(
+${types.reflectablePtr.name} enumReflectable(
         ${fullName} value, const ${types.allocator.default}& allocator);
 </#if>
 

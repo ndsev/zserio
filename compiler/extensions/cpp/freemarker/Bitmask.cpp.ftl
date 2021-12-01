@@ -9,7 +9,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-<@type_includes types.introspectableFactory/>
+<@type_includes types.reflectableFactory/>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -56,13 +56,13 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     return typeInfo;
 }
 
-${types.introspectablePtr.name} ${name}::introspectable(const ${types.allocator.default}& allocator)
+${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.default}& allocator)
 {
-    class Introspectable : public ::zserio::IntrospectableBase<${types.allocator.default}>
+    class Reflectable : public ::zserio::ReflectableBase<${types.allocator.default}>
     {
     public:
-        explicit Introspectable(${fullName} bitmask) :
-                ::zserio::IntrospectableBase<${types.allocator.default}>(${fullName}::typeInfo()),
+        explicit Reflectable(${fullName} bitmask) :
+                ::zserio::ReflectableBase<${types.allocator.default}>(${fullName}::typeInfo()),
                 m_bitmask(bitmask)
         {}
 
@@ -99,7 +99,7 @@ ${types.introspectablePtr.name} ${name}::introspectable(const ${types.allocator.
         ${fullName} m_bitmask;
     };
 
-    return ::std::allocate_shared<Introspectable>(allocator, *this);
+    return ::std::allocate_shared<Reflectable>(allocator, *this);
 }
 </#if>
 

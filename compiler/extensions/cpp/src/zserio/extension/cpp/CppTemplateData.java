@@ -168,8 +168,8 @@ public abstract class CppTemplateData implements IncludeCollector
             bitBuffer = new TypeTemplateData(nativeMapper.getBitBufferType());
             blobBuffer = new TypeTemplateData(nativeMapper.getBlobBufferType());
             packingContextNode = new TypeTemplateData(nativeMapper.getPackingContextNodeType());
-            introspectableFactory = new TypeTemplateData(nativeMapper.getIntrospectableFactoryType());
-            introspectablePtr = new TypeTemplateData(nativeMapper.getIntrospectablePtrType());
+            reflectableFactory = new TypeTemplateData(nativeMapper.getReflectableFactoryType());
+            reflectablePtr = new TypeTemplateData(nativeMapper.getReflectablePtrType());
         }
 
         public AllocatorTemplateData getAllocator()
@@ -232,14 +232,14 @@ public abstract class CppTemplateData implements IncludeCollector
             return packingContextNode;
         }
 
-        public TypeTemplateData getIntrospectableFactory()
+        public TypeTemplateData getReflectableFactory()
         {
-            return introspectableFactory;
+            return reflectableFactory;
         }
 
-        public TypeTemplateData getIntrospectablePtr()
+        public TypeTemplateData getReflectablePtr()
         {
-            return introspectablePtr;
+            return reflectablePtr;
         }
 
         public static class AllocatorTemplateData
@@ -339,8 +339,8 @@ public abstract class CppTemplateData implements IncludeCollector
         private final TypeTemplateData bitBuffer;
         private final TypeTemplateData blobBuffer;
         private final TypeTemplateData packingContextNode;
-        private final TypeTemplateData introspectableFactory;
-        private final TypeTemplateData introspectablePtr;
+        private final TypeTemplateData reflectableFactory;
+        private final TypeTemplateData reflectablePtr;
     }
 
     private final String generatorDescription;

@@ -1,4 +1,4 @@
-package with_type_info_code.introspection;
+package with_type_info_code.reflection;
 
 const uint8 BitmaskLen = 6;
 

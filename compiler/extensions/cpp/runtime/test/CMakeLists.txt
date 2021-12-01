@@ -42,7 +42,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/HashCodeUtilTest.cpp
     zserio/HeapOptionalHolderTest.cpp
     zserio/InplaceOptionalHolderTest.cpp
-    zserio/IntrospectableTest.cpp
+    zserio/ReflectableTest.cpp
     zserio/FileUtilTest.cpp
     zserio/MemoryResourceTest.cpp
     zserio/NewDeleteResourceTest.cpp

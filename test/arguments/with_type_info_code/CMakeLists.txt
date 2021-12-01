@@ -1,24 +1,24 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Bitmask.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Bitmask.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/BitmaskLen.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Child.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Child.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Choice.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Choice.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Empty.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Empty.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/EmptyString.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Parameterized.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Parameterized.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Selector.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/SelectorEnum.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/SelectorEnum.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Struct.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Struct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Union.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/introspection/Union.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Bitmask.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Bitmask.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/BitmaskLen.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Child.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Child.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Choice.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Choice.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Empty.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Empty.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/EmptyString.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Parameterized.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Parameterized.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Selector.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/SelectorEnum.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/SelectorEnum.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Struct.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Struct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Union.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Union.h
 
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ComplexStruct.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ComplexStruct.h
@@ -73,7 +73,7 @@ zserio_add_library(TARGET with_type_info_code_zs
 target_include_directories(with_type_info_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    cpp/IntrospectionTest.cpp
+    cpp/ReflectionTest.cpp
     cpp/TypeInfoTest.cpp
 )
 

@@ -4,7 +4,7 @@
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
 <#include "TypeInfo.inc.ftl">
-<#include "Introspectable.inc.ftl">
+<#include "Reflectable.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/StringConvertUtil.h>
@@ -15,7 +15,7 @@
 #include <zserio/BitFieldUtil.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-<@type_includes types.introspectableFactory/>
+<@type_includes types.reflectableFactory/>
 </#if>
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
@@ -105,28 +105,28 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     return typeInfo;
 }
 
-${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& allocator)
+${types.reflectablePtr.name} ${name}::reflectable(const allocator_type& allocator)
 {
-    class Introspectable : public ::zserio::IntrospectableAllocatorHolderBase<allocator_type>
+    class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
     {
     public:
-        explicit Introspectable(${fullName}& object, const allocator_type& allocator) :
-                ::zserio::IntrospectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
+        explicit Reflectable(${fullName}& object, const allocator_type& allocator) :
+                ::zserio::ReflectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
                 m_object(object)
         {}
     <#if fieldList?has_content>
 
-        <@introspectable_get_field name, fieldList/>
+        <@reflectable_get_field name, fieldList/>
 
-        <@introspectable_set_field name, fieldList/>
+        <@reflectable_set_field name, fieldList/>
     </#if>
     <#if compoundParametersData.list?has_content>
 
-        <@introspectable_get_parameter name, compoundParametersData.list/>
+        <@reflectable_get_parameter name, compoundParametersData.list/>
     </#if>
     <#if compoundFunctionsData.list?has_content>
 
-        <@introspectable_call_function name, compoundFunctionsData.list/>
+        <@reflectable_call_function name, compoundFunctionsData.list/>
     </#if>
     <#if withWriterCode>
 
@@ -140,7 +140,7 @@ ${types.introspectablePtr.name} ${name}::introspectable(const allocator_type& al
         ${fullName}& m_object;
     };
 
-    return std::allocate_shared<Introspectable>(allocator, *this, allocator);
+    return std::allocate_shared<Reflectable>(allocator, *this, allocator);
 }
 
 </#if>

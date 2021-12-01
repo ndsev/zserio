@@ -11,7 +11,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
-<@type_includes types.introspectablePtr/>
+<@type_includes types.reflectablePtr/>
 </#if>
 <@type_includes types.string/>
 <@type_includes types.packingContextNode/>
@@ -59,7 +59,7 @@ public:
 <#if withTypeInfoCode>
 
     static const ::zserio::ITypeInfo& typeInfo();
-    ${types.introspectablePtr.name} introspectable(const ${types.allocator.default}& allocator = ${types.allocator.default}());
+    ${types.reflectablePtr.name} reflectable(const ${types.allocator.default}& allocator = ${types.allocator.default}());
 </#if>
 
     constexpr explicit operator underlying_type() const

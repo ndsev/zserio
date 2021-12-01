@@ -6,7 +6,7 @@
 #include <zserio/CppRuntimeException.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-<@type_includes types.introspectableFactory/>
+<@type_includes types.reflectableFactory/>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -42,14 +42,14 @@ const ITypeInfo& enumTypeInfo<${fullName}>()
 }
 
 template <>
-${types.introspectablePtr.name} enumIntrospectable(
+${types.reflectablePtr.name} enumReflectable(
         ${fullName} value, const ${types.allocator.default}& allocator)
 {
-    class Introspectable : public ::zserio::IntrospectableBase<${types.allocator.default}>
+    class Reflectable : public ::zserio::ReflectableBase<${types.allocator.default}>
     {
     public:
-        explicit Introspectable(${fullName} value) :
-                ::zserio::IntrospectableBase<${types.allocator.default}>(::zserio::enumTypeInfo<${fullName}>()),
+        explicit Reflectable(${fullName} value) :
+                ::zserio::ReflectableBase<${types.allocator.default}>(::zserio::enumTypeInfo<${fullName}>()),
                 m_value(value)
         {}
 
@@ -86,7 +86,7 @@ ${types.introspectablePtr.name} enumIntrospectable(
         ${fullName} m_value;
     };
 
-    return std::allocate_shared<Introspectable>(allocator, value);
+    return std::allocate_shared<Reflectable>(allocator, value);
 }
 </#if>
 
