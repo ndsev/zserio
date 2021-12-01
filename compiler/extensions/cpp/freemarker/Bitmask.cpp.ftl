@@ -9,7 +9,9 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
+    <#if withWriterCode>
 <@type_includes types.reflectableFactory/>
+    </#if>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -55,6 +57,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 
     return typeInfo;
 }
+    <#if withWriterCode>
 
 ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.default}& allocator)
 {
@@ -87,13 +90,11 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
         {
             return m_bitmask.toString(allocator);
         }
-    <#if withWriterCode>
 
         virtual void write(::zserio::BitStreamWriter& writer) override
         {
             m_bitmask.write(writer);
         }
-    </#if>
 
     private:
         ${fullName} m_bitmask;
@@ -101,6 +102,7 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
 
     return ::std::allocate_shared<Reflectable>(allocator, *this);
 }
+    </#if>
 </#if>
 
 void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode)

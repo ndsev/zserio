@@ -82,9 +82,6 @@ public:
     virtual double toDouble() const override;
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override;
 
-    // TODO[Mi-L@]: Do NOT override here if there will be no reflectable when -withoutWriterCode is used!
-    virtual void write(zserio::BitStreamWriter& writer) override;
-
 private:
     const ITypeInfo& m_typeInfo;
 };
@@ -818,7 +815,6 @@ struct ReflectableTraits<ALLOC, BasicBitBuffer<ALLOC>>
 
 } // namespace detail
 
-// TODO[Mi-L@]: Check if multiple inheritance is ok!
 /**
  * Base class for reflectable which needs to hold an allocator.
  */
@@ -1640,13 +1636,6 @@ string<RebindAlloc<ALLOC, char>> ReflectableBase<ALLOC>::toString(const ALLOC&) 
 {
     throw CppRuntimeException("Conversion from '") + getTypeInfo().getSchemaName() +
             "' to string is not available!";
-}
-
-template <typename ALLOC>
-void ReflectableBase<ALLOC>::write(BitStreamWriter&)
-{
-    throw CppRuntimeException("Cannot write '") + getTypeInfo().getSchemaName() + "'! " +
-            "Ensure that -withWriterCode option is used!";
 }
 
 template <typename ALLOC>

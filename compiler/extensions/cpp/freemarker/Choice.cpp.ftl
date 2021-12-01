@@ -15,7 +15,9 @@
 #include <zserio/BitFieldUtil.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
+    <#if withWriterCode>
 <@type_includes types.reflectableFactory/>
+    </#if>
 </#if>
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
@@ -146,6 +148,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     return typeInfo;
 }
 
+    <#if withWriterCode>
 ${types.reflectablePtr.name} ${name}::reflectable(const allocator_type& allocator)
 {
     class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
@@ -186,13 +189,11 @@ ${I}return {};
         {
             <@choice_switch "choice_get_choice", "choice_get_choice_no_match", objectIndirectSelectorExpression, 3/>
         }
-    <#if withWriterCode>
 
         virtual void write(::zserio::BitStreamWriter& writer) override
         {
             m_object.write(writer);
         }
-    </#if>
 
     private:
         ${fullName}& m_object;
@@ -201,6 +202,7 @@ ${I}return {};
     return std::allocate_shared<Reflectable>(allocator, *this, allocator);
 }
 
+    </#if>
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
 <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>

@@ -13,7 +13,9 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
+    <#if withWriterCode>
 <@type_includes types.reflectablePtr/>
+    </#if>
 </#if>
 <@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
@@ -51,10 +53,12 @@ struct EnumTraits<${fullName}>
 
 template <>
 const ::zserio::ITypeInfo& enumTypeInfo<${fullName}>();
+    <#if withWriterCode>
 
 template <>
 ${types.reflectablePtr.name} enumReflectable(
         ${fullName} value, const ${types.allocator.default}& allocator);
+    </#if>
 </#if>
 
 template <>

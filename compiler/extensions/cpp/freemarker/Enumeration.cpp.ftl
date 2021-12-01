@@ -6,7 +6,9 @@
 #include <zserio/CppRuntimeException.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
+    <#if withWriterCode>
 <@type_includes types.reflectableFactory/>
+    </#if>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -40,6 +42,7 @@ const ITypeInfo& enumTypeInfo<${fullName}>()
 
     return typeInfo;
 }
+    <#if withWriterCode>
 
 template <>
 ${types.reflectablePtr.name} enumReflectable(
@@ -74,13 +77,11 @@ ${types.reflectablePtr.name} enumReflectable(
         {
             return ${types.string.name}(::zserio::enumToString(m_value), allocator);
         }
-    <#if withWriterCode>
 
         virtual void write(::zserio::BitStreamWriter& writer) override
         {
             ::zserio::write(writer, m_value);
         }
-    </#if>
 
     private:
         ${fullName} m_value;
@@ -88,6 +89,7 @@ ${types.reflectablePtr.name} enumReflectable(
 
     return std::allocate_shared<Reflectable>(allocator, value);
 }
+    </#if>
 </#if>
 
 template <>

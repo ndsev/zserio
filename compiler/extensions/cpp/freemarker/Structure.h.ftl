@@ -16,7 +16,9 @@
 #include <zserio/AllocatorPropagatingCopy.h>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
+    <#if withWriterCode>
 <@type_includes types.reflectablePtr/>
+    </#if>
 </#if>
 <@type_includes types.allocator/>
 <@type_includes types.packingContextNode/>
@@ -85,7 +87,9 @@ public:
 <#if withTypeInfoCode>
 
     static const ::zserio::ITypeInfo& typeInfo();
+    <#if withWriterCode>
     ${types.reflectablePtr.name} reflectable(const allocator_type& allocator = allocator_type());
+    </#if>
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
 
