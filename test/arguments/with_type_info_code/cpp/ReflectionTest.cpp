@@ -56,7 +56,7 @@ protected:
             vector_type<Bitmask>{{Bitmask::Values::FLAG1, Bitmask::Values::FLAG2 | Bitmask::Values::FLAG3}},
             Selector::STRUCT,
             vector_type<SelectorEnum>{{Selector::STRUCT, SelectorEnum::UNION, Selector::BITMASK}},
-            31, // dynamicBitField (bit<param>)
+            static_cast<uint64_t>(31), // dynamicBitField (bit<param>)
             vector_type<uint64_t>{{10, 20, 30}},
             ::zserio::NullOpt, // dynamicIntField (param > 4)
             vector_type<int8_t>{{-3, -1, 1, 3}},

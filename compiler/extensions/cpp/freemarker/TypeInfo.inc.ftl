@@ -308,7 +308,7 @@ ${I}}<#if comma>,</#if>
     static const ::std::array<::zserio::TemplateArgumentInfo, ${templateInstantiation.templateArgumentTypeInfos?size}> <#rt>
             <#lt>${varName} = {
         <#list templateInstantiation.templateArgumentTypeInfos as typeInfo>
-        <@type_info typeInfo/><#if typeInfo?has_next>,</#if>
+        ::zserio::TemplateArgumentInfo{<@type_info typeInfo/>}<#if typeInfo?has_next>,</#if>
         </#list>
     };
     <#else>
