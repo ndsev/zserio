@@ -12,7 +12,7 @@ namespace zserio
 {
 
 /**
- * Constant used to diferentiate between spans of dynamic and static extent.
+ * Constant used to differentiate between spans of dynamic and static extent.
  */
 constexpr std::size_t dynamic_extent = std::numeric_limits<std::size_t>::max();
 

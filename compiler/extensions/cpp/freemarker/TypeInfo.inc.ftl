@@ -11,9 +11,22 @@
     </#if>
 </#macro>
 
+<#macro info_array_type infoType infoListSize>
+    <#if infoListSize != 0>
+        ::std::array<${infoType}, ${infoListSize}><#t>
+    <#else>
+<#--
+We have to use Span instead of empty std::array, because MSVC complains that the infoType class doesn't have
+user declared default constructor.
+See https://developercommunity.visualstudio.com/t/Empty-std::array-constructor-requires-on/382468.
+-->
+        ::zserio::Span<${infoType}><#t>
+    </#if>
+</#macro>
+
 <#macro field_info_array_var varName fieldList indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const ::std::array<::zserio::FieldInfo, ${fieldList?size}> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::FieldInfo", fieldList?size/> ${varName}<#rt>
     <#if fieldList?has_content>
         <#lt> = {
         <#list fieldList as field>
@@ -27,7 +40,7 @@ ${I}};
 
 <#macro parameter_info_array_var varName parameterList indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const ::std::array<::zserio::ParameterInfo, ${parameterList?size}> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::ParameterInfo", parameterList?size/> ${varName}<#rt>
     <#if parameterList?has_content>
         <#lt> = {
         <#list parameterList as parameter>
@@ -41,7 +54,7 @@ ${I}};
 
 <#macro function_info_array_var varName functionList indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const ::std::array<::zserio::FunctionInfo, ${functionList?size}> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::FunctionInfo", functionList?size/> ${varName}<#rt>
     <#if functionList?has_content>
         <#lt> = {
         <#list functionList as function>
@@ -55,7 +68,7 @@ ${I}};
 
 <#macro case_info_array_var varName caseMemberList defaultMember indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const ::std::array<::zserio::CaseInfo, ${caseMemberList?size + (defaultMember?has_content)?then(1, 0)}> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::CaseInfo", caseMemberList?size + (defaultMember?has_content)?then(1, 0)/> ${varName}<#rt>
     <#if caseMemberList?has_content || defaultMember?has_content>
         <#lt> = {
         <@case_info_array caseMemberList, defaultMember, indent+1/>
@@ -67,7 +80,7 @@ ${I}};
 
 <#macro underlying_type_info_type_arguments_var varName bitSize indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const ::std::array<::zserio::StringView, <#if bitSize?has_content && bitSize.isDynamicBitField>1<#else>0</#if>> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::StringView", (bitSize?has_content && bitSize.isDynamicBitField)?then(1, 0)/> ${varName}<#rt>
     <#if bitSize?has_content && bitSize.isDynamicBitField>
         <#lt> = {
         ::zserio::makeStringView("${bitSize.value}")
@@ -79,7 +92,7 @@ ${I}};
 
 <#macro item_info_array_var varName items indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const ::std::array<::zserio::ItemInfo, ${items?size}> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::ItemInfo", items?size/> ${varName}<#rt>
     <#if items?has_content>
         <#lt> = {
         <#list items as item>
@@ -299,6 +312,7 @@ ${I}}<#if comma>,</#if>
         </#list>
     };
     <#else>
-    static const ::std::array<::zserio::TemplateArgumentInfo, 0> templateArguments;
+    <#-- See comment in info_array_type macro.  -->
+    static const ::zserio::Span<::zserio::TemplateArgumentInfo> templateArguments;
     </#if>
 </#macro>

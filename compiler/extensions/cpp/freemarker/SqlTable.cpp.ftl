@@ -62,7 +62,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     <#list fields as field>
     <@column_info_type_arguments_var field/>
     </#list>
-    static const ::std::array<::zserio::ColumnInfo, ${fields?size}> columns<#rt>
+    static const <@info_array_type "::zserio::ColumnInfo", fields?size/> columns<#rt>
     <#if fields?has_content>
         <#lt> = {
         <#list fields as field>

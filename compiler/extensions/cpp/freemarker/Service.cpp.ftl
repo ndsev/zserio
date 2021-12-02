@@ -18,7 +18,7 @@
 <#if withTypeInfoCode>
 const ::zserio::ITypeInfo& typeInfo()
 {
-    static const ::std::array<::zserio::MethodInfo, ${methodList?size}> methods<#rt>
+    static const <@info_array_type "::zserio::MethodInfo", methodList?size/> methods<#rt>
     <#if methodList?has_content>
         <#lt> = {
         <#list methodList as method>

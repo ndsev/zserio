@@ -50,7 +50,7 @@ ${name}::${name}(::zserio::IPubsub& pubsub, const ${types.allocator.default}& al
 
 const ::zserio::ITypeInfo& ${name}::typeInfo()
 {
-    static const ::std::array<::zserio::MessageInfo, ${messageList?size}> messages<#rt>
+    static const <@info_array_type "::zserio::MessageInfo", messageList?size/> messages<#rt>
     <#if messageList?has_content>
         <#lt> = {
         <#list messageList as message>

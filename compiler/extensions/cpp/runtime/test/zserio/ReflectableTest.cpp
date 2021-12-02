@@ -59,7 +59,7 @@ public:
 
     static const ITypeInfo& typeInfo()
     {
-        static const std::array<StringView, 0> underlyingTypeArguments;
+        static const Span<StringView> underlyingTypeArguments;
 
         static const std::array<ItemInfo, 3> values = {
             ItemInfo{ makeStringView("CREATE"), makeStringView("UINT8_C(1)") },
@@ -159,7 +159,7 @@ public:
     static const ITypeInfo& typeInfo()
     {
         static const StringView templateName;
-        static const std::array<TemplateArgumentInfo, 0> templateArguments;
+        static const Span<TemplateArgumentInfo> templateArguments;
 
         static const std::array<FieldInfo, 1> fields = {
             FieldInfo{
@@ -331,7 +331,7 @@ public:
     static const ITypeInfo& typeInfo()
     {
         static const StringView templateName;
-        static const std::array<TemplateArgumentInfo, 0> templateArguments;
+        static const Span<TemplateArgumentInfo> templateArguments;
 
         static const std::array<FieldInfo, 1> fields = {
             FieldInfo{
@@ -351,9 +351,9 @@ public:
             }
         };
 
-        static const std::array<ParameterInfo, 0> parameters;
+        static const Span<ParameterInfo> parameters;
 
-        static const std::array<FunctionInfo, 0> functions;
+        static const Span<FunctionInfo> functions;
 
         static const StructTypeInfo typeInfo = {
             makeStringView("DummyParent"), templateName, templateArguments,
@@ -500,7 +500,7 @@ inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
 template <>
 const ITypeInfo& enumTypeInfo<DummyEnum>()
 {
-    static const std::array<StringView, 0> underlyingTypeArguments;
+    static const Span<StringView> underlyingTypeArguments;
 
     static const std::array<ItemInfo, 3> items = {
         ItemInfo{ makeStringView("VALUE1"), makeStringView("INT8_C(-1)") },
