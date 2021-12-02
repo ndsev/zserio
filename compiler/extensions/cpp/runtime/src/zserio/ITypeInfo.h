@@ -10,69 +10,69 @@ namespace zserio
 /** Enumeration which specifies C++ type used in type information. */
 enum class CppType
 {
-    BOOL,
-    INT8,
-    INT16,
-    INT32,
-    INT64,
-    UINT8,
-    UINT16,
-    UINT32,
-    UINT64,
-    FLOAT,
-    DOUBLE,
-    STRING,
-    BIT_BUFFER,
-    ENUM,
-    BITMASK,
-    STRUCT,
-    CHOICE,
-    UNION,
-    SQL_TABLE,
-    SQL_DATABASE,
-    SERVICE,
-    PUBSUB
+    BOOL, /**< C++ bool type */
+    INT8, /**< C++ int8_t type */
+    INT16, /**< C++ int16_t type */
+    INT32, /**< C++ int32_t type */
+    INT64, /**< C++ int64_t type */
+    UINT8, /**< C++ uint8_t type */
+    UINT16, /**< C++ uint16_t type */
+    UINT32, /**< C++ int32_t type */
+    UINT64, /**< C++ int64_t type */
+    FLOAT, /**< C++ float type */
+    DOUBLE, /**< C++ double type */
+    STRING, /**< C++ std::string type */
+    BIT_BUFFER, /**< C++ zserio::BitBuffer type */
+    ENUM, /**< C++ enumeration generated from zserio enumeration type */
+    BITMASK, /**< C++ object generated from zserio bitmask type */
+    STRUCT, /**< C++ object generated from zserio structure type */
+    CHOICE, /**< C++ object generated from zserio choice type */
+    UNION, /**< C++ object generated from zserio union type */
+    SQL_TABLE, /**< C++ object generated from zserio SQL table type */
+    SQL_DATABASE, /**< C++ object generated from zserio SQL database type */
+    SERVICE, /**< C++ object generated from zserio service type */
+    PUBSUB /**< C++ object generated from zserio pubsub type */
 };
 
 /** Enumeration which specifies zserio type used in type information. */
 enum class SchemaType
 {
-    BOOL,
-    INT8,
-    INT16,
-    INT32,
-    INT64,
-    UINT8,
-    UINT16,
-    UINT32,
-    UINT64,
-    VARINT16,
-    VARINT32,
-    VARINT64,
-    VARINT,
-    VARUINT16,
-    VARUINT32,
-    VARUINT64,
-    VARUINT,
-    VARSIZE,
-    FIXED_SIGNED_BITFIELD,
-    FIXED_UNSIGNED_BITFIELD,
-    DYNAMIC_SIGNED_BITFIELD,
-    DYNAMIC_UNSIGNED_BITFIELD,
-    FLOAT16,
-    FLOAT32,
-    FLOAT64,
-    STRING,
-    EXTERN,
-    ENUM,
-    BITMASK,
-    STRUCT,
-    CHOICE,
-    UNION,
-    SQL_TABLE,
-    SQL_DATABASE,
-    SERVICE,
-    PUBSUB
+    BOOL, /**< zserio bool type */
+    INT8, /**< zserio int8 type */
+    INT16, /**< zserio int16 type */
+    INT32, /**< zserio int32 type */
+    INT64, /**< zserio int64 type */
+    UINT8, /**< zserio uint8 type */
+    UINT16, /**< zserio uint16 type */
+    UINT32, /**< zserio uint32 type */
+    UINT64, /**< zserio uint64 type */
+    VARINT16, /**< zserio varint16 type */
+    VARINT32, /**< zserio varint32 type */
+    VARINT64, /**< zserio varint64 type */
+    VARINT, /**< zserio varint type */
+    VARUINT16, /**< zserio varuint16 type */
+    VARUINT32, /**< zserio varuint32 type */
+    VARUINT64, /**< zserio varuint64 type */
+    VARUINT, /**< zserio varuint type */
+    VARSIZE, /**< zserio varsize type */
+    FIXED_SIGNED_BITFIELD, /**< zserio fixed signed bitfield type */
+    FIXED_UNSIGNED_BITFIELD, /**< zserio fixed unsigned bitfield type */
+    DYNAMIC_SIGNED_BITFIELD, /**< zserio dynamic signed bitfield type */
+    DYNAMIC_UNSIGNED_BITFIELD, /**< zserio dynamic unsigned bitfield type */
+    FLOAT16, /**< zserio float16 type */
+    FLOAT32, /**< zserio float32 type */
+    FLOAT64, /**< zserio float64 type */
+    STRING, /**< zserio string type */
+    EXTERN, /**< zserio extern type */
+    ENUM, /**< zserio enumeration type */
+    BITMASK, /**< zserio bitmask type */
+    STRUCT, /**< zserio structure type */
+    CHOICE, /**< zserio choice type */
+    UNION, /**< zserio union type */
+    SQL_TABLE, /**< zserio SQL table type */
+    SQL_DATABASE, /**< zserio SQL database type */
+    SERVICE, /**< zserio service type */
+    PUBSUB /**< zserio pubsub type */
 };
 
 struct FieldInfo;
