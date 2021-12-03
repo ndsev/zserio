@@ -138,6 +138,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_sql_table_field/Test32.cpp
     ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_sql_table_field/Test32.h
 
+    ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_struct_array_field/InstantiateTypeAsStructArrayField.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_struct_array_field/InstantiateTypeAsStructArrayField.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_struct_array_field/Test32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_struct_array_field/Test32.h
+
     ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_struct_field/InstantiateTypeAsStructField.cpp
     ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_struct_field/InstantiateTypeAsStructField.h
     ${ZSERIO_GEN_DIR}/templates/instantiate_type_as_struct_field/Test32.cpp
@@ -424,6 +429,7 @@ add_test_sources(
     cpp/InstantiateTypeAsParameterTest.cpp
     cpp/InstantiateTypeAsSqlDatabaseFieldTest.cpp
     cpp/InstantiateTypeAsSqlTableFieldTest.cpp
+    cpp/InstantiateTypeAsStructArrayFieldTest.cpp
     cpp/InstantiateTypeAsStructFieldTest.cpp
     cpp/InstantiateTypeAsTemplateArgumentTest.cpp
     cpp/InstantiateTypeImportedAsStructFieldTest.cpp

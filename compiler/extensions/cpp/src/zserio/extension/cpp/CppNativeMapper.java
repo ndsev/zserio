@@ -495,29 +495,7 @@ public class CppNativeMapper
         @Override
         public void visitSubtype(Subtype type)
         {
-            try
-            {
-                final CppNativeType nativeTargetType =
-                        CppNativeMapper.this.getCppType(type.getTypeReference());
-                final PackageName packageName = type.getPackage().getPackageName();
-                final String name = type.getName();
-                final String includeFileName = getIncludePath(packageName, name);
-                if (nativeTargetType instanceof NativeArrayableType)
-                {
-                    cppType = new NativeUserArrayableType(packageName, name, includeFileName,
-                            nativeTargetType.isSimpleType(),
-                            ((NativeArrayableType)nativeTargetType).getArrayTraits());
-                }
-                else
-                {
-                    cppType = new NativeUserType(packageName, name, includeFileName,
-                            nativeTargetType.isSimpleType());
-                }
-            }
-            catch (ZserioExtensionException exception)
-            {
-                thrownException = exception;
-            }
+            mapAliasType(type, type.getTypeReference());
         }
 
         @Override
@@ -529,10 +507,7 @@ public class CppNativeMapper
         @Override
         public void visitInstantiateType(InstantiateType type)
         {
-            final PackageName packageName = type.getPackage().getPackageName();
-            final String name = type.getName(); // note that name is same as the referenced type name
-            final String includeFileName = getIncludePath(packageName, name);
-            cppType = new NativeUserType(packageName, name, includeFileName, false);
+            mapAliasType(type, type.getTypeReference());
         }
 
         @Override
@@ -547,6 +522,32 @@ public class CppNativeMapper
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeCompoundType(packageName, name, includeFileName);
+        }
+
+        private void mapAliasType(ZserioType aliasType, TypeReference referencedType)
+        {
+            try
+            {
+                final CppNativeType nativeReferencedType = CppNativeMapper.this.getCppType(referencedType);
+                final PackageName packageName = aliasType.getPackage().getPackageName();
+                final String name = aliasType.getName();
+                final String includeFileName = getIncludePath(packageName, name);
+                if (nativeReferencedType instanceof NativeArrayableType)
+                {
+                    cppType = new NativeUserArrayableType(packageName, name, includeFileName,
+                            nativeReferencedType.isSimpleType(),
+                            ((NativeArrayableType)nativeReferencedType).getArrayTraits());
+                }
+                else
+                {
+                    cppType = new NativeUserType(packageName, name, includeFileName,
+                            nativeReferencedType.isSimpleType());
+                }
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         private CppNativeType cppType = null;

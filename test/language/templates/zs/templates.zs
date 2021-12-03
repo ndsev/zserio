@@ -20,6 +20,7 @@ import templates.instantiate_type_as_choice_field.*;
 import templates.instantiate_type_as_parameter.*;
 import templates.instantiate_type_as_sql_database_field.*;
 import templates.instantiate_type_as_sql_table_field.*;
+import templates.instantiate_type_as_struct_array_field.*;
 import templates.instantiate_type_as_struct_field.*;
 import templates.instantiate_type_as_template_argument.*;
 import templates.instantiate_type_imported_as_struct_field.*;
