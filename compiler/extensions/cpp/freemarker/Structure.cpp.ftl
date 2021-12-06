@@ -3,6 +3,8 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
+<#include "TypeInfo.inc.ftl">
+<#include "Reflectable.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/StringConvertUtil.h>
@@ -11,6 +13,12 @@
 #include <zserio/BitPositionUtil.h>
 #include <zserio/BitSizeOfCalculator.h>
 #include <zserio/BitFieldUtil.h>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
+    <#if withWriterCode>
+<@type_includes types.reflectableFactory/>
+    </#if>
+</#if>
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
@@ -76,6 +84,70 @@
 </#if>
 <@compound_allocator_propagating_copy_constructor_definition compoundConstructorsData/>
 
+<#if withTypeInfoCode>
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    <@template_info_template_name_var "templateName", templateInstantiation!/>
+    <@template_info_template_arguments_var "templateArguments", templateInstantiation!/>
+
+    <#list fieldList as field>
+    <@field_info_type_arguments_var field/>
+    </#list>
+    <@field_info_array_var "fields", fieldList/>
+
+    <@parameter_info_array_var "parameters", compoundParametersData.list/>
+
+    <@function_info_array_var "functions", compoundFunctionsData.list/>
+
+    static const ::zserio::StructTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"), templateName, templateArguments,
+        fields, parameters, functions
+    };
+
+    return typeInfo;
+}
+
+    <#if withWriterCode>
+${types.reflectablePtr.name} ${name}::reflectable(const allocator_type& allocator)
+{
+    class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
+    {
+    public:
+        explicit Reflectable(${fullName}& object, const allocator_type& allocator) :
+                ::zserio::ReflectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
+                m_object(object)
+        {}
+    <#if fieldList?has_content>
+
+        <@reflectable_get_field name, fieldList/>
+
+        <@reflectable_set_field name, fieldList/>
+    </#if>
+    <#if compoundParametersData.list?has_content>
+
+        <@reflectable_get_parameter name, compoundParametersData.list/>
+    </#if>
+    <#if compoundFunctionsData.list?has_content>
+
+        <@reflectable_call_function name, compoundFunctionsData.list/>
+    </#if>
+    <#if withWriterCode>
+
+        virtual void write(::zserio::BitStreamWriter& writer) override
+        {
+            m_object.write(writer);
+        }
+    </#if>
+
+    private:
+        ${fullName}& m_object;
+    };
+
+    return std::allocate_shared<Reflectable>(allocator, *this, allocator);
+}
+
+    </#if>
+</#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
 <@compound_initialize_definition compoundConstructorsData, needsChildrenInitialization/>
 

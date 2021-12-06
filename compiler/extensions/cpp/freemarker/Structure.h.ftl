@@ -14,6 +14,12 @@
 #include <zserio/BitStreamWriter.h>
 #include <zserio/PreWriteAction.h>
 #include <zserio/AllocatorPropagatingCopy.h>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+    <#if withWriterCode>
+<@type_includes types.reflectablePtr/>
+    </#if>
+</#if>
 <@type_includes types.allocator/>
 <@type_includes types.packingContextNode/>
 <#if has_optional_field(fieldList)>
@@ -78,6 +84,13 @@ public:
 </#if>
 
     <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
+<#if withTypeInfoCode>
+
+    static const ::zserio::ITypeInfo& typeInfo();
+    <#if withWriterCode>
+    ${types.reflectablePtr.name} reflectable(const allocator_type& allocator = allocator_type());
+    </#if>
+</#if>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>
 
     <#if needs_compound_initialization(compoundConstructorsData)>

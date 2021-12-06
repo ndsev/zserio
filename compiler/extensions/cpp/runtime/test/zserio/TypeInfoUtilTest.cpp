@@ -1,0 +1,386 @@
+#include "gtest/gtest.h"
+
+#include "zserio/TypeInfoUtil.h"
+
+namespace zserio
+{
+
+TEST(TypeInfoUtilTest, isCompound)
+{
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::BOOL));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::INT8));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::INT16));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::INT32));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::UINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARINT));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARUINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARUINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARUINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARUINT));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::VARSIZE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::FIXED_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::FIXED_UNSIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::DYNAMIC_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::DYNAMIC_UNSIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::FLOAT16));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::FLOAT32));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::FLOAT64));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::EXTERN));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::BITMASK));
+    ASSERT_EQ(true, TypeInfoUtil::isCompound(SchemaType::STRUCT));
+    ASSERT_EQ(true, TypeInfoUtil::isCompound(SchemaType::CHOICE));
+    ASSERT_EQ(true, TypeInfoUtil::isCompound(SchemaType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(SchemaType::PUBSUB));
+
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::BOOL));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::INT8));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::INT16));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::INT32));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::UINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::FLOAT));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::DOUBLE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::BIT_BUFFER));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::BITMASK));
+    ASSERT_EQ(true, TypeInfoUtil::isCompound(CppType::STRUCT));
+    ASSERT_EQ(true, TypeInfoUtil::isCompound(CppType::CHOICE));
+    ASSERT_EQ(true, TypeInfoUtil::isCompound(CppType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isCompound(CppType::PUBSUB));
+}
+
+TEST(TypeInfoUtilTest, hasChoice)
+{
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::BOOL));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::INT8));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::INT16));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::INT32));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::UINT64));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARINT16));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARINT32));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARINT64));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARINT));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARUINT16));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARUINT32));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARUINT64));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARUINT));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::VARSIZE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::FIXED_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::FIXED_UNSIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::DYNAMIC_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::DYNAMIC_UNSIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::FLOAT16));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::FLOAT32));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::FLOAT64));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::EXTERN));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::STRUCT));
+    ASSERT_EQ(true, TypeInfoUtil::hasChoice(SchemaType::CHOICE));
+    ASSERT_EQ(true, TypeInfoUtil::hasChoice(SchemaType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(SchemaType::PUBSUB));
+
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::BOOL));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::INT8));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::INT16));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::INT32));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::UINT64));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::FLOAT));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::DOUBLE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::BIT_BUFFER));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::STRUCT));
+    ASSERT_EQ(true, TypeInfoUtil::hasChoice(CppType::CHOICE));
+    ASSERT_EQ(true, TypeInfoUtil::hasChoice(CppType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::hasChoice(CppType::PUBSUB));
+}
+
+TEST(TypeInfoUtilTest, isFixedSize)
+{
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::BOOL));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::INT8));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::INT16));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::INT32));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::INT64));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::UINT8));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::UINT16));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::UINT32));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::UINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARINT));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARUINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARUINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARUINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARUINT));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::VARSIZE));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::FIXED_SIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::FIXED_UNSIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::DYNAMIC_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::DYNAMIC_UNSIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::FLOAT16));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::FLOAT32));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(SchemaType::FLOAT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::EXTERN));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(SchemaType::PUBSUB));
+
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::BOOL));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::INT8));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::INT16));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::INT32));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::INT64));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::UINT8));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::UINT16));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::UINT32));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::UINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::FLOAT));
+    ASSERT_EQ(true, TypeInfoUtil::isFixedSize(CppType::DOUBLE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::BIT_BUFFER));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFixedSize(CppType::PUBSUB));
+}
+
+TEST(TypeInfoUtilTest, isIntegral)
+{
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::BOOL));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::INT8));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::INT16));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::INT32));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::INT64));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::UINT8));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::UINT16));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::UINT32));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::UINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARINT16));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARINT32));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARINT));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARUINT16));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARUINT32));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARUINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARUINT));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::VARSIZE));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::FIXED_SIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::FIXED_UNSIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::DYNAMIC_SIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(SchemaType::DYNAMIC_UNSIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::FLOAT16));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::FLOAT32));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::FLOAT64));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::EXTERN));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(SchemaType::PUBSUB));
+
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::BOOL));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::INT8));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::INT16));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::INT32));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::INT64));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::UINT8));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::UINT16));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::UINT32));
+    ASSERT_EQ(true, TypeInfoUtil::isIntegral(CppType::UINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::FLOAT));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::DOUBLE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::BIT_BUFFER));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isIntegral(CppType::PUBSUB));
+}
+
+TEST(TypeInfoUtilTest, isSigned)
+{
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::BOOL));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::INT8));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::INT16));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::INT32));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::UINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::VARINT16));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::VARINT32));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::VARINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::VARINT));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::VARUINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::VARUINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::VARUINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::VARUINT));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::VARSIZE));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::FIXED_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::FIXED_UNSIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::DYNAMIC_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::DYNAMIC_UNSIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::FLOAT16));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::FLOAT32));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(SchemaType::FLOAT64));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::EXTERN));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(SchemaType::PUBSUB));
+
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::BOOL));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(CppType::INT8));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(CppType::INT16));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(CppType::INT32));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(CppType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::UINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(CppType::FLOAT));
+    ASSERT_EQ(true, TypeInfoUtil::isSigned(CppType::DOUBLE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::BIT_BUFFER));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isSigned(CppType::PUBSUB));
+}
+
+TEST(TypeInfoUtilTest, isFloatingPoint)
+{
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::BOOL));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::INT8));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::INT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::INT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::UINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARINT));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARUINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARUINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARUINT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARUINT));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::VARSIZE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::FIXED_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::FIXED_UNSIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::DYNAMIC_SIGNED_BITFIELD));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::DYNAMIC_UNSIGNED_BITFIELD));
+    ASSERT_EQ(true, TypeInfoUtil::isFloatingPoint(SchemaType::FLOAT16));
+    ASSERT_EQ(true, TypeInfoUtil::isFloatingPoint(SchemaType::FLOAT32));
+    ASSERT_EQ(true, TypeInfoUtil::isFloatingPoint(SchemaType::FLOAT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::EXTERN));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(SchemaType::PUBSUB));
+
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::BOOL));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::INT8));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::INT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::INT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::INT64));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::UINT8));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::UINT16));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::UINT32));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::UINT64));
+    ASSERT_EQ(true, TypeInfoUtil::isFloatingPoint(CppType::FLOAT));
+    ASSERT_EQ(true, TypeInfoUtil::isFloatingPoint(CppType::DOUBLE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::STRING));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::BIT_BUFFER));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::ENUM));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::BITMASK));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::STRUCT));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::CHOICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::UNION));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::SQL_TABLE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::SQL_DATABASE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::SERVICE));
+    ASSERT_EQ(false, TypeInfoUtil::isFloatingPoint(CppType::PUBSUB));
+}
+
+} // namespace zserio

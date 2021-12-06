@@ -47,10 +47,13 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/HashCodeUtil.h
     zserio/FileUtil.cpp
     zserio/FileUtil.h
+    zserio/IReflectable.h
+    zserio/Reflectable.h
     zserio/IPubsub.h
     zserio/IService.h
     zserio/ISqliteDatabase.h
     zserio/ISqliteDatabaseReader.h
+    zserio/ITypeInfo.h
     zserio/IValidationObserver.h
     zserio/OptionalHolder.h
     zserio/PackingContext.h
@@ -64,6 +67,10 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/SqliteFinalizer.h
     zserio/StringConvertUtil.h
     zserio/StringView.h
+    zserio/TypeInfo.cpp
+    zserio/TypeInfo.h
+    zserio/TypeInfoUtil.cpp
+    zserio/TypeInfoUtil.h
     zserio/Types.h
     zserio/UniquePtr.h
     zserio/ValidationSqliteUtil.h
@@ -74,6 +81,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/BitBuffer.h
     zserio/pmr/BlobBuffer.h
     zserio/pmr/HeapOptionalHolder.h
+    zserio/pmr/IReflectable.h
+    zserio/pmr/Reflectable.h
     zserio/pmr/Map.h
     zserio/pmr/MemoryResource.cpp
     zserio/pmr/MemoryResource.h
@@ -97,4 +106,3 @@ add_library(${PROJECT_NAME} STATIC ${ZSERIO_CPP_RUNTIME_LIB_SRCS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-

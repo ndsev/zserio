@@ -1,9 +1,13 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
 
+</#if>
 <@user_include package.path, "${name}.h"/>
 <@user_includes cppUserIncludes, false/>
 <@namespace_begin package.path/>
@@ -16,7 +20,7 @@ template <typename ZSERIO_MESSAGE>
 class ${name}OnRaw : public ::zserio::IPubsub::OnTopicCallback
 {
 public:
-    explicit ${name}OnRaw(const std::shared_ptr<${name}::${name}Callback<ZSERIO_MESSAGE>>& callback,
+    explicit ${name}OnRaw(const ::std::shared_ptr<${name}::${name}Callback<ZSERIO_MESSAGE>>& callback,
             const ${types.allocator.default}& allocator) :
             m_callback(callback), m_allocator(allocator)
     {}
@@ -30,7 +34,7 @@ public:
     }
 
 private:
-    std::shared_ptr<${name}::${name}Callback<ZSERIO_MESSAGE>> m_callback;
+    ::std::shared_ptr<${name}::${name}Callback<ZSERIO_MESSAGE>> m_callback;
     ${types.allocator.default} m_allocator;
 };
 
@@ -42,6 +46,28 @@ ${name}::${name}(::zserio::IPubsub& pubsub, const ${types.allocator.default}& al
         m_pubsub(pubsub)
 {
 }
+<#if withTypeInfoCode>
+
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    static const <@info_array_type "::zserio::MessageInfo", messageList?size/> messages<#rt>
+    <#if messageList?has_content>
+        <#lt> = {
+        <#list messageList as message>
+        <@message_info message message?has_next/>
+        </#list>
+    };
+    <#else>
+        <#lt>;
+    </#if>
+
+    static const ::zserio::PubsubTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"), messages
+    };
+
+    return typeInfo;
+}
+</#if>
 <#list messageList as message>
     <#if message.isPublished>
 
@@ -53,7 +79,7 @@ void ${name}::publish${message.name?cap_first}(${message.typeFullName}& message,
     <#if message.isSubscribed>
 
 ::zserio::IPubsub::SubscriptionId ${name}::subscribe${message.name?cap_first}(
-        const std::shared_ptr<${name}Callback<${message.typeFullName}>>& callback,
+        const ::std::shared_ptr<${name}Callback<${message.typeFullName}>>& callback,
         void* context)
 {
     const auto& onRawCallback = ::std::allocate_shared<${name}OnRaw<${message.typeFullName}>>(

@@ -56,7 +56,7 @@ class TypeInfo:
           * denotes that the type has an underlying type (e.g. enum or bitmask),
             the value is a TypeInfo of the underlying type
 
-        * `(TypeAttribute.UDNERLYING_TYPE_ARGUMENTS, ['5'])`
+        * `(TypeAttribute.UNDERLYING_TYPE_ARGUMENTS, ['5'])`
 
           * keeps type arguments of the underlying type when it is a dynamic bit field
 
@@ -219,7 +219,7 @@ class MemberInfo:
           * keeps type arguments for parameterized types or dynamic bit fields, the value contains list of
             strings containing particular arguments expressions
 
-        * `(MemberAttribute.ALING, '8')`
+        * `(MemberAttribute.ALIGN, '8')`
 
           * denotes that the member field has an alignment, the value contains the alignment expression
 

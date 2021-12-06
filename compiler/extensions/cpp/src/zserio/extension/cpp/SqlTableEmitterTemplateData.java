@@ -49,7 +49,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         final List<Field> tableFields = tableType.getFields();
         fields = new ArrayList<FieldTemplateData>(tableFields.size());
         final ExpressionFormatter cppSqlIndirectExpressionFormatter =
-                context.getSqlIndirectExpressionFormatter(this);
+                context.getIndirectExpressionFormatter(this, "row");
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
         explicitParameters = new TreeSet<ExplicitParameterTemplateData>();
         boolean hasImplicitParameters = false;
@@ -83,6 +83,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         this.hasImplicitParameters = hasImplicitParameters;
         this.requiresOwnerContext = requiresOwnerContext;
         this.needsChildrenInitialization = tableType.needsChildrenInitialization();
+
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, tableType, this);
     }
 
     public Iterable<FieldTemplateData> getFields()
@@ -128,6 +130,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public boolean getIsWithoutRowId()
     {
         return isWithoutRowId;
+    }
+
+    public TemplateInstantiationTemplateData getTemplateInstantiation()
+    {
+        return templateInstantiation;
     }
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
@@ -206,6 +213,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             name = field.getName();
             cppTypeName = nativeFieldType.getFullName();
             cppArgumentTypeName = nativeFieldType.getArgumentTypeName();
+
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeFieldType);
+
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = createSqlConstraint(fieldSqlConstraint);
             isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
@@ -239,6 +249,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             this.hasImplicitParameters = hasImplicitParameters;
             this.hasExplicitParameters = hasExplicitParameters;
 
+            bitSize = BitSizeDataCreator.createData(fieldTypeInstantiation, cppSqlIndirectExpressionFormatter);
             isSimpleType = nativeFieldType.isSimpleType();
             isBoolean = fieldBaseType instanceof BooleanType;
             enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
@@ -269,6 +280,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getCppArgumentTypeName()
         {
             return cppArgumentTypeName;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public String getSqlConstraint()
@@ -324,6 +340,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public boolean getHasExplicitParameters()
         {
             return hasExplicitParameters;
+        }
+
+        public BitSizeTemplateData getBitSize()
+        {
+            return bitSize;
         }
 
         public boolean getIsSimpleType()
@@ -576,6 +597,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String name;
         private final String cppTypeName;
         private final String cppArgumentTypeName;
+        private final TypeInfoTemplateData typeInfo;
         private final String sqlConstraint;
         private final boolean isNotNull;
         private final boolean isPrimaryKey;
@@ -587,12 +609,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final List<ParameterTemplateData> typeParameters;
         private final boolean hasImplicitParameters;
         private final boolean hasExplicitParameters;
+        private final BitSizeTemplateData bitSize;
+        private final boolean isSimpleType;
         private final boolean isBoolean;
         private final EnumTemplateData enumData;
         private final BitmaskTemplateData bitmaskData;
         private final SqlTypeTemplateData sqlTypeData;
         private final SqlRangeCheckData sqlRangeCheckData;
-        private final boolean isSimpleType;
         private final boolean needsChildrenInitialization;
     }
 
@@ -670,4 +693,5 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     private final String virtualTableUsing;
     private final boolean needsTypesInSchema;
     private final boolean isWithoutRowId;
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }

@@ -3,8 +3,8 @@ package zserio.extension.cpp;
 import java.util.List;
 import java.util.ArrayList;
 import zserio.ast.ServiceType;
+import zserio.ast.CompoundType;
 import zserio.ast.ServiceMethod;
-import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
@@ -48,11 +48,15 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         {
             name = method.getName();
 
-            final ZserioType responseType = method.getResponseType();
-            responseTypeFullName = typeMapper.getCppType(responseType).getFullName();
+            final CompoundType responseType = method.getResponseType();
+            final CppNativeType cppResponseType = typeMapper.getCppType(responseType);
+            responseTypeInfo = new TypeInfoTemplateData(responseType, cppResponseType);
+            responseTypeFullName = cppResponseType.getFullName();
 
-            final ZserioType requestType = method.getRequestType();
-            requestTypeFullName = typeMapper.getCppType(requestType).getFullName();
+            final CompoundType requestType = method.getRequestType();
+            final CppNativeType cppRequestType = typeMapper.getCppType(requestType);
+            requestTypeInfo = new TypeInfoTemplateData(responseType, cppRequestType);
+            requestTypeFullName = cppRequestType.getFullName();
         }
 
         public String getName()
@@ -60,9 +64,19 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
+        public TypeInfoTemplateData getResponseTypeInfo()
+        {
+            return responseTypeInfo;
+        }
+
         public String getResponseTypeFullName()
         {
             return responseTypeFullName;
+        }
+
+        public TypeInfoTemplateData getRequestTypeInfo()
+        {
+            return requestTypeInfo;
         }
 
         public String getRequestTypeFullName()
@@ -71,7 +85,9 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
+        private final TypeInfoTemplateData responseTypeInfo;
         private final String responseTypeFullName;
+        private final TypeInfoTemplateData requestTypeInfo;
         private final String requestTypeFullName;
     }
 

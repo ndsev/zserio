@@ -21,13 +21,10 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        final ExpressionFormatter cppIndirectExpressionFormatter =
-                context.getOwnerIndirectExpressionFormatter(this);
         for (Field fieldType : fieldTypeList)
         {
-            final CompoundFieldTemplateData data = new CompoundFieldTemplateData(cppNativeMapper,
-                    compoundType, fieldType, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    this, withWriterCode, withRangeCheckCode);
+            final CompoundFieldTemplateData data = new CompoundFieldTemplateData(context,
+                    compoundType, fieldType, this, withWriterCode, withRangeCheckCode);
 
             fieldList.add(data);
         }
@@ -44,6 +41,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
 
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
+
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
     }
 
     public Iterable<CompoundFieldTemplateData> getFieldList()
@@ -76,6 +75,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return hasFieldWithOffset;
     }
 
+    public TemplateInstantiationTemplateData getTemplateInstantiation()
+    {
+        return templateInstantiation;
+    }
+
     private final List<CompoundFieldTemplateData> fieldList;
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
@@ -83,4 +87,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
 
     private final boolean needsChildrenInitialization;
     private final boolean hasFieldWithOffset;
+
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }

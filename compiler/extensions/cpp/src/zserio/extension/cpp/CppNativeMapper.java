@@ -5,7 +5,6 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.DynamicBitFieldType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
@@ -44,6 +43,8 @@ import zserio.extension.cpp.types.NativeCompoundType;
 import zserio.extension.cpp.types.NativeHeapOptionalHolderType;
 import zserio.extension.cpp.types.NativeInplaceOptionalHolderType;
 import zserio.extension.cpp.types.NativeIntegralType;
+import zserio.extension.cpp.types.NativeReflectableFactoryType;
+import zserio.extension.cpp.types.NativeReflectablePtrType;
 import zserio.extension.cpp.types.NativeMapType;
 import zserio.extension.cpp.types.NativePackingContextNodeType;
 import zserio.extension.cpp.types.NativeSetType;
@@ -76,6 +77,8 @@ public class CppNativeMapper
         bitBufferType = new NativeBitBufferType(typesContext, stdUInt8Type);
         blobBufferType = new NativeBlobBufferType(typesContext, stdUInt8Type);
         packingContextNodeType = new NativePackingContextNodeType(typesContext, stdUInt8Type);
+        reflectableFactoryType = new NativeReflectableFactoryType(typesContext, stdUInt8Type);
+        reflectablePtrType = new NativeReflectablePtrType(typesContext, stdUInt8Type);
     }
 
     /**
@@ -172,7 +175,8 @@ public class CppNativeMapper
      *
      * @throws ZserioExtensionException If the Zserio integer type cannot be mapped to any C++ integer type.
      */
-    public NativeIntegralType getCppIntegralType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    public NativeIntegralType getCppIntegralType(TypeInstantiation typeInstantiation)
+            throws ZserioExtensionException
     {
         CppNativeType nativeType = null;
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
@@ -254,6 +258,16 @@ public class CppNativeMapper
         return packingContextNodeType;
     }
 
+    public NativeReflectableFactoryType getReflectableFactoryType()
+    {
+        return reflectableFactoryType;
+    }
+
+    public NativeReflectablePtrType getReflectablePtrType()
+    {
+        return reflectablePtrType;
+    }
+
     public NativeIntegralType getUInt64Type()
     {
         return stdUInt64Type;
@@ -267,13 +281,12 @@ public class CppNativeMapper
     private CppNativeType mapArray(ArrayInstantiation instantiation) throws ZserioExtensionException
     {
         final TypeInstantiation elementInstantiation = instantiation.getElementTypeInstantiation();
-        final ZserioType elementBaseType = elementInstantiation.getBaseType();
 
-        final CppNativeType nativeType = getCppType(elementBaseType);
+        final CppNativeType nativeType = getCppType(elementInstantiation);
         if (!(nativeType instanceof NativeArrayableType))
         {
             throw new ZserioExtensionException("Unhandled arrayable type '" +
-                    elementBaseType.getClass().getName() + "' in CppNativeMapper!");
+                    elementInstantiation.getClass().getName() + "' in CppNativeMapper!");
         }
 
         return new NativeArrayType((NativeArrayableType)nativeType, vectorType);
@@ -482,29 +495,7 @@ public class CppNativeMapper
         @Override
         public void visitSubtype(Subtype type)
         {
-            try
-            {
-                final CppNativeType nativeTargetType =
-                        CppNativeMapper.this.getCppType(type.getTypeReference());
-                final PackageName packageName = type.getPackage().getPackageName();
-                final String name = type.getName();
-                final String includeFileName = getIncludePath(packageName, name);
-                if (nativeTargetType instanceof NativeArrayableType)
-                {
-                    cppType = new NativeUserArrayableType(packageName, name, includeFileName,
-                            nativeTargetType.isSimpleType(),
-                            ((NativeArrayableType)nativeTargetType).getArrayTraits());
-                }
-                else
-                {
-                    cppType = new NativeUserType(packageName, name, includeFileName,
-                            nativeTargetType.isSimpleType());
-                }
-            }
-            catch (ZserioExtensionException exception)
-            {
-                thrownException = exception;
-            }
+            mapAliasType(type, type.getTypeReference());
         }
 
         @Override
@@ -516,10 +507,7 @@ public class CppNativeMapper
         @Override
         public void visitInstantiateType(InstantiateType type)
         {
-            final PackageName packageName = type.getPackage().getPackageName();
-            final String name = type.getName(); // note that name is same as the referenced type name
-            final String includeFileName = getIncludePath(packageName, name);
-            cppType = new NativeUserType(packageName, name, includeFileName, false);
+            mapAliasType(type, type.getTypeReference());
         }
 
         @Override
@@ -528,18 +516,38 @@ public class CppNativeMapper
             cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), type.getBitSize());
         }
 
-        @Override
-        public void visitDynamicBitFieldType(DynamicBitFieldType type)
-        {
-            cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), type.getMaxBitSize());
-        }
-
         private void mapCompoundType(CompoundType type)
         {
             final PackageName packageName = type.getPackage().getPackageName();
             final String name = type.getName();
             final String includeFileName = getIncludePath(packageName, name);
             cppType = new NativeCompoundType(packageName, name, includeFileName);
+        }
+
+        private void mapAliasType(ZserioType aliasType, TypeReference referencedType)
+        {
+            try
+            {
+                final CppNativeType nativeReferencedType = CppNativeMapper.this.getCppType(referencedType);
+                final PackageName packageName = aliasType.getPackage().getPackageName();
+                final String name = aliasType.getName();
+                final String includeFileName = getIncludePath(packageName, name);
+                if (nativeReferencedType instanceof NativeArrayableType)
+                {
+                    cppType = new NativeUserArrayableType(packageName, name, includeFileName,
+                            nativeReferencedType.isSimpleType(),
+                            ((NativeArrayableType)nativeReferencedType).getArrayTraits());
+                }
+                else
+                {
+                    cppType = new NativeUserType(packageName, name, includeFileName,
+                            nativeReferencedType.isSimpleType());
+                }
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
         }
 
         private CppNativeType cppType = null;
@@ -562,6 +570,8 @@ public class CppNativeMapper
     private final NativeBitBufferType bitBufferType;
     private final NativeBlobBufferType blobBufferType;
     private final NativePackingContextNodeType packingContextNodeType;
+    private final NativeReflectableFactoryType reflectableFactoryType;
+    private final NativeReflectablePtrType reflectablePtrType;
 
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));

@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.Parameter;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
@@ -40,12 +41,14 @@ public class CompoundParameterTemplateData
         public CompoundParameter(CppNativeMapper cppNativeMapper, Parameter parameter,
                 IncludeCollector includeCollector) throws ZserioExtensionException
         {
-            final CppNativeType cppNativeType = cppNativeMapper.getCppType(parameter.getTypeReference());
+            final TypeReference parameterTypeReference = parameter.getTypeReference();
+            final CppNativeType cppNativeType = cppNativeMapper.getCppType(parameterTypeReference);
             includeCollector.addHeaderIncludesForType(cppNativeType);
 
             name = parameter.getName();
             cppTypeName = cppNativeType.getFullName();
             cppArgumentTypeName = cppNativeType.getArgumentTypeName();
+            typeInfo = new TypeInfoTemplateData(parameterTypeReference, cppNativeType);
             getterName = AccessorNameFormatter.getGetterName(parameter);
             isSimpleType = cppNativeType.isSimpleType();
         }
@@ -65,6 +68,11 @@ public class CompoundParameterTemplateData
             return cppArgumentTypeName;
         }
 
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
+        }
+
         public String getGetterName()
         {
             return getterName;
@@ -78,6 +86,7 @@ public class CompoundParameterTemplateData
         private final String name;
         private final String cppTypeName;
         private final String cppArgumentTypeName;
+        private final TypeInfoTemplateData typeInfo;
         private final String getterName;
         private final boolean isSimpleType;
     }

@@ -7,6 +7,8 @@
 namespace zserio
 {
 
+using allocator_type = std::allocator<uint8_t>;
+
 TEST(StringConvertUtilTest, convertInt8)
 {
     using type = int8_t;
@@ -14,6 +16,8 @@ TEST(StringConvertUtilTest, convertInt8)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
 }
 
 TEST(StringConvertUtilTest, convertUInt8)
@@ -23,6 +27,8 @@ TEST(StringConvertUtilTest, convertUInt8)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
 }
 
 TEST(StringConvertUtilTest, convertInt16)
@@ -32,6 +38,8 @@ TEST(StringConvertUtilTest, convertInt16)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
 }
 
 TEST(StringConvertUtilTest, convertUInt16)
@@ -41,6 +49,8 @@ TEST(StringConvertUtilTest, convertUInt16)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
 }
 
 TEST(StringConvertUtilTest, convertInt32)
@@ -50,6 +60,8 @@ TEST(StringConvertUtilTest, convertInt32)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
 }
 
 TEST(StringConvertUtilTest, convertUInt32)
@@ -59,6 +71,8 @@ TEST(StringConvertUtilTest, convertUInt32)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
 }
 
 TEST(StringConvertUtilTest, convertInt64)
@@ -68,6 +82,8 @@ TEST(StringConvertUtilTest, convertInt64)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
 }
 
 TEST(StringConvertUtilTest, convertUInt64)
@@ -77,6 +93,17 @@ TEST(StringConvertUtilTest, convertUInt64)
     char buffer[24];
     const char* valueInString = convertIntToString(buffer, value);
     EXPECT_EQ(std::to_string(value), valueInString);
+
+    EXPECT_EQ(std::to_string(value), toString(value));
+}
+
+TEST(StringConvertUtilTest, convertBool)
+{
+    EXPECT_EQ(std::string("true"), convertBoolToString(true));
+    EXPECT_EQ(std::string("false"), convertBoolToString(false));
+
+    EXPECT_EQ("true", toString(true));
+    EXPECT_EQ("false", toString(false));
 }
 
 } // namespace zserio

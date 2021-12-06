@@ -39,6 +39,11 @@ public class NativeIntegralType extends NativeBuiltinType
         return isSigned;
     }
 
+    public int getNumBits()
+    {
+        return numBits;
+    }
+
     public String formatLiteral(BigInteger value) throws ZserioExtensionException
     {
         checkRange(value);

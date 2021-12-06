@@ -9,6 +9,12 @@
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+    <#if withWriterCode>
+<@type_includes types.reflectablePtr/>
+    </#if>
+</#if>
 <@type_includes types.string/>
 <@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
@@ -52,6 +58,13 @@ public:
 
     ${name}(${name}&&) = default;
     ${name}& operator=(${name}&&) = default;
+<#if withTypeInfoCode>
+
+    static const ::zserio::ITypeInfo& typeInfo();
+    <#if withWriterCode>
+    ${types.reflectablePtr.name} reflectable(const ${types.allocator.default}& allocator = ${types.allocator.default}());
+    </#if>
+</#if>
 
     constexpr explicit operator underlying_type() const
     {

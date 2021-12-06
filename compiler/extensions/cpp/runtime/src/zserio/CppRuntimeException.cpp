@@ -1,7 +1,7 @@
 #include <string.h>
 #include <algorithm>
 
-#include "CppRuntimeException.h"
+#include "zserio/CppRuntimeException.h"
 
 namespace zserio
 {

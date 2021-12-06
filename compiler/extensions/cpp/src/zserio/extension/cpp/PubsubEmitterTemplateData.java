@@ -7,6 +7,7 @@ import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.cpp.types.CppNativeType;
 
 public class PubsubEmitterTemplateData extends UserTypeTemplateData
 {
@@ -55,11 +56,16 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
                 PubsubMessage message) throws ZserioExtensionException
         {
             name = message.getName();
+            final CppNativeType cppNativeType = cppNativeMapper.getCppType(message.getType());
+            typeInfo = new TypeInfoTemplateData(message.getType(), cppNativeType);
             final String topicDefinitionStringValue = message.getTopicDefinitionExpr().getStringValue();
             if (topicDefinitionStringValue == null)
-                throw new ZserioExtensionException("Unexpected topic definition which is a non-constant string!");
+            {
+                throw new ZserioExtensionException(
+                        "Unexpected topic definition which is a non-constant string!");
+            }
             topicDefinition = CppLiteralFormatter.formatStringLiteral(topicDefinitionStringValue);
-            typeFullName = cppNativeMapper.getCppType(message.getType()).getFullName();
+            typeFullName = cppNativeType.getFullName();
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }
@@ -67,6 +73,11 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public String getTopicDefinition()
@@ -90,6 +101,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
+        private final TypeInfoTemplateData typeInfo;
         private final String topicDefinition;
         private final String typeFullName;
         private final boolean isPublished;

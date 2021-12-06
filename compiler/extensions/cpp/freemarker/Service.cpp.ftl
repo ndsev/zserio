@@ -1,8 +1,12 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
+</#if>
 <@type_includes types.vector/>
 <@type_includes types.blobBuffer/>
 
@@ -11,6 +15,28 @@
 <@namespace_begin package.path/>
 <@namespace_begin [name]/>
 
+<#if withTypeInfoCode>
+const ::zserio::ITypeInfo& typeInfo()
+{
+    static const <@info_array_type "::zserio::MethodInfo", methodList?size/> methods<#rt>
+    <#if methodList?has_content>
+        <#lt> = {
+        <#list methodList as method>
+        <@method_info method method?has_next/>
+        </#list>
+    };
+    <#else>
+        <#lt>;
+    </#if>
+
+    static const ::zserio::ServiceTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"), methods
+    };
+
+    return typeInfo;
+}
+
+</#if>
 Service::Service(const allocator_type& allocator) :
         ::zserio::AllocatorHolder<${types.allocator.default}>(allocator)
 {}

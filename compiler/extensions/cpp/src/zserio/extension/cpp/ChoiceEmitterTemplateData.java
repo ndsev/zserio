@@ -19,11 +19,15 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         super(context, choiceType);
 
-        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
+        final ExpressionFormatter cppObjectIndirectExpressionFormatter =
+                context.getIndirectExpressionFormatter(this, "m_object");
 
         final Expression expression = choiceType.getSelectorExpression();
         selectorExpression = cppExpressionFormatter.formatGetter(expression);
+
+        objectIndirectSelectorExpression = cppObjectIndirectExpressionFormatter.formatGetter(expression);
+
         // TODO[Mi-L@]: Consider using switch also on bitmask (using valueof).
         canUseNativeSwitch = expression.getExprType() != Expression.ExpressionType.BOOLEAN &&
                 expression.getExprType() != Expression.ExpressionType.BITMASK;
@@ -31,22 +35,18 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
         caseMemberList = new ArrayList<CaseMember>();
         final boolean withWriterCode = context.getWithWriterCode();
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
-        final ExpressionFormatter cppIndirectExpressionFormatter =
-                context.getOwnerIndirectExpressionFormatter(this);
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
         for (ChoiceCase choiceCaseType : choiceCaseTypes)
         {
-            caseMemberList.add(new CaseMember(cppNativeMapper, choiceType, choiceCaseType,
-                    cppExpressionFormatter, cppIndirectExpressionFormatter, this,
-                    withWriterCode, withRangeCheckCode));
+            caseMemberList.add(new CaseMember(
+                    context, choiceType, choiceCaseType, this, withWriterCode, withRangeCheckCode));
         }
 
         final ChoiceDefault choiceDefaultType = choiceType.getChoiceDefault();
         if (choiceDefaultType != null)
         {
-            defaultMember = new DefaultMember(cppNativeMapper, choiceType, choiceDefaultType,
-                    cppExpressionFormatter, cppIndirectExpressionFormatter, this,
-                    withWriterCode, withRangeCheckCode);
+            defaultMember = new DefaultMember(
+                    context, choiceType, choiceDefaultType, this, withWriterCode, withRangeCheckCode);
         }
         else
         {
@@ -59,6 +59,11 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public String getSelectorExpression()
     {
         return selectorExpression;
+    }
+
+    public String getObjectIndirectSelectorExpression()
+    {
+        return objectIndirectSelectorExpression;
     }
 
     public boolean getCanUseNativeSwitch()
@@ -83,21 +88,20 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
     public static class CaseMember
     {
-        public CaseMember(CppNativeMapper cppNativeMapper, ChoiceType choiceType,
-                ChoiceCase choiceCaseType, ExpressionFormatter cppExpressionFormatter,
-                ExpressionFormatter cppIndirectExpressionFormatter, IncludeCollector includeCollector,
+        public CaseMember(TemplateDataContext context, ChoiceType choiceType,
+                ChoiceCase choiceCaseType, IncludeCollector includeCollector,
                 boolean withWriterCode, boolean withRangeCheckCode) throws ZserioExtensionException
         {
+            final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
+
             expressionList = new ArrayList<String>();
             final Iterable<ChoiceCaseExpression> caseExpressions = choiceCaseType.getExpressions();
             for (ChoiceCaseExpression caseExpression : caseExpressions)
                 expressionList.add(cppExpressionFormatter.formatGetter(caseExpression.getExpression()));
 
             final Field fieldType = choiceCaseType.getField();
-            compoundField = (fieldType != null) ? new CompoundFieldTemplateData(cppNativeMapper,
-                    choiceType, fieldType, cppExpressionFormatter,
-                    cppIndirectExpressionFormatter, includeCollector,
-                    withWriterCode, withRangeCheckCode) : null;
+            compoundField = (fieldType != null) ? new CompoundFieldTemplateData(context,
+                    choiceType, fieldType, includeCollector, withWriterCode, withRangeCheckCode) : null;
         }
 
         public List<String> getExpressionList()
@@ -116,17 +120,16 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 
     public static class DefaultMember
     {
-        public DefaultMember(CppNativeMapper cppNativeMapper,
+        public DefaultMember(TemplateDataContext context,
                 ChoiceType choiceType, ChoiceDefault choiceDefaultType,
-                ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
                 IncludeCollector includeCollector, boolean withWriterCode,
                 boolean withRangeCheckCode) throws ZserioExtensionException
         {
             final Field fieldType = choiceDefaultType.getField();
-            compoundField = (fieldType != null) ? new CompoundFieldTemplateData(
-                    cppNativeMapper, choiceType, fieldType, cppExpressionFormatter,
-                    cppIndirectExpressionFormatter, includeCollector,
-                    withWriterCode, withRangeCheckCode) : null;
+            compoundField = (fieldType != null)
+                    ? new CompoundFieldTemplateData(context, choiceType, fieldType, includeCollector,
+                            withWriterCode, withRangeCheckCode)
+                    : null;
         }
 
         public CompoundFieldTemplateData getCompoundField()
@@ -138,6 +141,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     }
 
     private final String selectorExpression;
+    private final String objectIndirectSelectorExpression;
     private final boolean canUseNativeSwitch;
     private final List<CaseMember> caseMemberList;
     private final DefaultMember defaultMember;

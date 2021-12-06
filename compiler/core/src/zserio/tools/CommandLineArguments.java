@@ -101,16 +101,6 @@ class CommandLineArguments
     }
 
     /**
-     * Gets whether the range check code option is enabled.
-     *
-     * @return True if command line arguments enable range check code option.
-     */
-    public boolean getWithRangeCheckCode()
-    {
-        return withRangeCheckCodeOption;
-    }
-
-    /**
      * Gets whether the Pub/Sub code option is enabled.
      *
      * @return True if command line arguments enable Pub/Sub code option.
@@ -118,6 +108,16 @@ class CommandLineArguments
     public boolean getWithPubsubCode()
     {
         return withPubsubCodeOption;
+    }
+
+    /**
+     * Gets whether the range check code option is enabled.
+     *
+     * @return True if command line arguments enable range check code option.
+     */
+    public boolean getWithRangeCheckCode()
+    {
+        return withRangeCheckCodeOption;
     }
 
     /**
@@ -148,6 +148,16 @@ class CommandLineArguments
     public boolean getWithSqlCode()
     {
         return withSqlCodeOption;
+    }
+
+    /**
+     * Gets whether the type info code option is enabled.
+     *
+     * @return True if command line arguments enable type info code option.
+     */
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCodeOption;
     }
 
     /**
@@ -285,6 +295,14 @@ class CommandLineArguments
         option.setRequired(false);
         options.addOption(option);
 
+        final OptionGroup pubsubCodeGroup = new OptionGroup();
+        option = new Option(OptionNameWithPubsubCode, false, "enable code for Zserio Pub/Sub (default)");
+        pubsubCodeGroup.addOption(option);
+        option = new Option(OptionNameWithoutPubsubCode, false, "disable code for Zserio Pub/Sub");
+        pubsubCodeGroup.addOption(option);
+        pubsubCodeGroup.setRequired(false);
+        options.addOptionGroup(pubsubCodeGroup);
+
         final OptionGroup rangeCheckCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithRangeCheckCode, false,
                 "enable code for integer range checking for field and parameter setters");
@@ -294,14 +312,6 @@ class CommandLineArguments
         rangeCheckCodeGroup.addOption(option);
         rangeCheckCodeGroup.setRequired(false);
         options.addOptionGroup(rangeCheckCodeGroup);
-
-        final OptionGroup pubsubCodeGroup = new OptionGroup();
-        option = new Option(OptionNameWithPubsubCode, false, "enable code for Zserio Pub/Sub (default)");
-        pubsubCodeGroup.addOption(option);
-        option = new Option(OptionNameWithoutPubsubCode, false, "disable code for Zserio Pub/Sub");
-        pubsubCodeGroup.addOption(option);
-        pubsubCodeGroup.setRequired(false);
-        options.addOptionGroup(pubsubCodeGroup);
 
         final OptionGroup serviceCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithServiceCode, false, "enable code for Zserio services (default)");
@@ -329,6 +339,14 @@ class CommandLineArguments
         sqlCodeGroup.addOption(option);
         sqlCodeGroup.setRequired(false);
         options.addOptionGroup(sqlCodeGroup);
+
+        final OptionGroup typeInfoGroup = new OptionGroup();
+        option = new Option(OptionNameWithTypeInfoCode, false, "enable type info code");
+        typeInfoGroup.addOption(option);
+        option = new Option(OptionNameWithoutTypeInfoCode, false, "disable type info code (default)");
+        typeInfoGroup.addOption(option);
+        typeInfoGroup.setRequired(false);
+        options.addOptionGroup(typeInfoGroup);
 
         final OptionGroup validationCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithValidationCode, false, "enable validation code");
@@ -394,11 +412,12 @@ class CommandLineArguments
         srcPathName = getOptionValue(OptionNameSource);
         helpOption = hasOption(OptionNameHelpShort);
         versionOption = hasOption(OptionNameVersionShort);
-        withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withPubsubCodeOption = !hasOption(OptionNameWithoutPubsubCode);
+        withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withServiceCodeOption = !hasOption(OptionNameWithoutServiceCode);
         withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
+        withTypeInfoCodeOption = hasOption(OptionNameWithTypeInfoCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
         withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
@@ -504,16 +523,18 @@ class CommandLineArguments
     private static final String OptionNameHelpShort = "h";
     private static final String OptionNameSource = "src";
     private static final String OptionNameVersionShort = "v";
-    private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
-    private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
     private static final String OptionNameWithPubsubCode = "withPubsubCode";
     private static final String OptionNameWithoutPubsubCode = "withoutPubsubCode";
+    private static final String OptionNameWithRangeCheckCode = "withRangeCheckCode";
+    private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
     private static final String OptionNameWithServiceCode = "withServiceCode";
     private static final String OptionNameWithoutServiceCode = "withoutServiceCode";
     private static final String OptionNameWithSourcesAmalgamation = "withSourcesAmalgamation";
     private static final String OptionNameWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
     private static final String OptionNameWithSqlCode = "withSqlCode";
     private static final String OptionNameWithoutSqlCode = "withoutSqlCode";
+    private final static String OptionNameWithTypeInfoCode = "withTypeInfoCode";
+    private final static String OptionNameWithoutTypeInfoCode = "withoutTypeInfoCode";
     private static final String OptionNameWithValidationCode = "withValidationCode";
     private static final String OptionNameWithoutValidationCode = "withoutValidationCode";
     private static final String OptionNameWithWriterCode = "withWriterCode";
@@ -539,11 +560,12 @@ class CommandLineArguments
     private boolean helpOption;
     private String  srcPathName;
     private boolean versionOption;
-    private boolean withRangeCheckCodeOption;
     private boolean withPubsubCodeOption;
+    private boolean withRangeCheckCodeOption;
     private boolean withServiceCodeOption;
     private boolean withSourcesAmalgamationOption;
     private boolean withSqlCodeOption;
+    private boolean withTypeInfoCodeOption;
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
     private boolean withUnusedWarningsOption;

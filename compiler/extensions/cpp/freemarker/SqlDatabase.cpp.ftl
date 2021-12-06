@@ -1,11 +1,15 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 <#if withValidationCode>
     <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
 </#if>
 
 #include <zserio/SqliteException.h>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
+</#if>
 <#if withValidationCode>
 #include <zserio/ValidationSqliteUtil.h>
 </#if>
@@ -44,7 +48,7 @@ ${name}::${name}(const ${types.string.name}& dbFileName, const TRelocationMap& t
             ${types.string.name} attachedDbName =
                     ::zserio::stringViewToString(databaseName(), get_allocator_ref()) + "_" + tableName;
             attachDatabase(fileName, attachedDbName);
-            attachedDbIt = dbFileNameToAttachedDbNameMap.emplace(fileName, std::move(attachedDbName)).first;
+            attachedDbIt = dbFileNameToAttachedDbNameMap.emplace(fileName, ::std::move(attachedDbName)).first;
         }
         m_tableToAttachedDbNameRelocationMap.emplace(
                 ${types.string.name}(tableName, get_allocator_ref()),
@@ -75,12 +79,28 @@ ${name}::~${name}()
 {
     detachDatabases();
 }
+<#if withTypeInfoCode>
+
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    static const std::array<::zserio::TableInfo, ${fields?size}> tables = {
+    <#list fields as field>
+        <@table_info field field?has_next/>
+    </#list>
+    };
+
+    static const ::zserio::SqlDatabaseTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"), tables
+    };
+
+    return typeInfo;
+}
+</#if>
 
 ::zserio::SqliteConnection& ${name}::connection() noexcept
 {
     return m_db;
 }
-
 <#list fields as field>
 
 ${field.cppTypeName}& ${name}::${field.getterName}() noexcept

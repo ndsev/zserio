@@ -118,6 +118,16 @@ public class ExtensionParameters
     }
 
     /**
+     * Gets the type info code flag.
+     *
+     * @return True if type info code is enabled.
+     */
+    public boolean getWithTypeInfoCode()
+    {
+        return commandLineArguments.getWithTypeInfoCode();
+    }
+
+    /**
      * Gets the include validation flag.
      *
      * @return True if validation code is enabled.

@@ -21,6 +21,7 @@ public abstract class CppTemplateData implements IncludeCollector
 
         withWriterCode = context.getWithWriterCode();
         withValidationCode = context.getWithValidationCode();
+        withTypeInfoCode = context.getWithTypeInfoCode();
 
         headerSystemIncludes = new TreeSet<String>();
         headerUserIncludes = new TreeSet<String>();
@@ -43,6 +44,11 @@ public abstract class CppTemplateData implements IncludeCollector
     public boolean getWithValidationCode()
     {
         return withValidationCode;
+    }
+
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCode;
     }
 
     public Iterable<String> getHeaderSystemIncludes()
@@ -156,6 +162,8 @@ public abstract class CppTemplateData implements IncludeCollector
             bitBuffer = new TypeTemplateData(nativeMapper.getBitBufferType());
             blobBuffer = new TypeTemplateData(nativeMapper.getBlobBufferType());
             packingContextNode = new TypeTemplateData(nativeMapper.getPackingContextNodeType());
+            reflectableFactory = new TypeTemplateData(nativeMapper.getReflectableFactoryType());
+            reflectablePtr = new TypeTemplateData(nativeMapper.getReflectablePtrType());
         }
 
         public AllocatorTemplateData getAllocator()
@@ -216,6 +224,16 @@ public abstract class CppTemplateData implements IncludeCollector
         public TypeTemplateData getPackingContextNode()
         {
             return packingContextNode;
+        }
+
+        public TypeTemplateData getReflectableFactory()
+        {
+            return reflectableFactory;
+        }
+
+        public TypeTemplateData getReflectablePtr()
+        {
+            return reflectablePtr;
         }
 
         public static class AllocatorTemplateData
@@ -315,12 +333,15 @@ public abstract class CppTemplateData implements IncludeCollector
         private final TypeTemplateData bitBuffer;
         private final TypeTemplateData blobBuffer;
         private final TypeTemplateData packingContextNode;
+        private final TypeTemplateData reflectableFactory;
+        private final TypeTemplateData reflectablePtr;
     }
 
     private final String generatorDescription;
 
     private final boolean withWriterCode;
     private final boolean withValidationCode;
+    private final boolean withTypeInfoCode;
 
     private final TreeSet<String> headerSystemIncludes;
     private final TreeSet<String> headerUserIncludes;

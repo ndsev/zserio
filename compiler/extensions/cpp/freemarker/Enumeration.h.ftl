@@ -11,6 +11,12 @@
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+    <#if withWriterCode>
+<@type_includes types.reflectablePtr/>
+    </#if>
+</#if>
 <@type_includes types.packingContextNode/>
 <@system_includes headerSystemIncludes/>
 <@user_includes headerUserIncludes/>
@@ -43,6 +49,17 @@ struct EnumTraits<${fullName}>
 </#list>
     }};
 };
+<#if withTypeInfoCode>
+
+template <>
+const ::zserio::ITypeInfo& enumTypeInfo<${fullName}>();
+    <#if withWriterCode>
+
+template <>
+${types.reflectablePtr.name} enumReflectable(
+        ${fullName} value, const ${types.allocator.default}& allocator);
+    </#if>
+</#if>
 
 template <>
 size_t enumToOrdinal<${fullName}>(${fullName} value);
@@ -80,11 +97,11 @@ ${fullName} read<${fullName}, ${types.packingContextNode.name}>(
 <#if withWriterCode>
 
 template <>
-void write<${fullName}>(BitStreamWriter& out, ${fullName} value);
+void write<${fullName}>(::zserio::BitStreamWriter& out, ${fullName} value);
 
 template <>
 void write<${types.packingContextNode.name}, ${fullName}>(
-        ${types.packingContextNode.name}& contextNode, BitStreamWriter& out, ${fullName} value);
+        ${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out, ${fullName} value);
 </#if>
 <@namespace_end ["zserio"]/>
 

@@ -1,5 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/CppRuntimeException.h>
@@ -12,6 +13,9 @@
     </#if>
 #include <zserio/BitStreamWriter.h>
 <@type_includes types.bitBuffer/>
+</#if>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
 </#if>
 <#if withValidationCode>
     <#assign hasValidatableField=sql_table_has_validatable_field(fields)/>
@@ -49,6 +53,51 @@ ${name}::${name}(::zserio::SqliteConnection& db, ::zserio::StringView tableName,
 {
 }
 
+<#if withTypeInfoCode>
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    <@template_info_template_name_var "templateName", templateInstantiation!/>
+    <@template_info_template_arguments_var "templateArguments", templateInstantiation!/>
+
+    <#list fields as field>
+    <@column_info_type_arguments_var field/>
+    </#list>
+    static const <@info_array_type "::zserio::ColumnInfo", fields?size/> columns<#rt>
+    <#if fields?has_content>
+        <#lt> = {
+        <#list fields as field>
+        <@column_info field field?has_next/>
+        </#list>
+    };
+    <#else>
+        <#lt>;
+    </#if>
+
+    static const ::zserio::StringView sqlConstraint<#rt>
+    <#if sqlConstraint??>
+        <#lt> = ::zserio::makeStringView(${sqlConstraint});
+    <#else>
+        <#lt>;
+    </#if>
+
+    static const ::zserio::StringView virtualTableUsing<#rt>
+    <#if virtualTableUsing??>
+        <#lt> = ::zserio::makeStringView("${virtualTableUsing}");
+    <#else>
+        <#lt>;
+    </#if>
+
+    static const bool isWithoutRowId = <#if isWithoutRowId>true<#else>false</#if>;
+
+    static const ::zserio::SqlTableTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"), templateName, templateArguments,
+        columns, sqlConstraint, virtualTableUsing, isWithoutRowId
+    };
+
+    return typeInfo;
+}
+
+</#if>
 <#if withWriterCode>
 void ${name}::createTable()
 {
@@ -280,7 +329,7 @@ bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
         </#if>
         sqlQuery += " FROM ";
         appendTableNameToQuery(sqlQuery);
-        std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
+        ::std::unique_ptr<sqlite3_stmt, ::zserio::SqliteFinalizer> statement(m_db.prepareStatement(sqlQuery));
         int result = SQLITE_OK;
         bool continueTableValidation = true;
         while ((result = sqlite3_step(statement.get())) == SQLITE_ROW && continueTableValidation)
@@ -595,8 +644,8 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
             const <@vector_type_name types.string.name/>& rowKeyValuesHolder)
 {
     <@vector_type_name "::zserio::StringView"/> rowKeyValues{get_allocator_ref()};
-    std::transform(rowKeyValuesHolder.begin(), rowKeyValuesHolder.end(),
-            std::back_inserter(rowKeyValues),
+    ::std::transform(rowKeyValuesHolder.begin(), rowKeyValuesHolder.end(),
+            ::std::back_inserter(rowKeyValues),
             [](const ${types.string.name}& message) -> ::zserio::StringView { return message; });
     return rowKeyValues;
 }

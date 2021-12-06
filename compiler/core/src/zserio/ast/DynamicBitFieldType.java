@@ -61,17 +61,7 @@ public class DynamicBitFieldType extends IntegerType
         return isSigned;
     }
 
-    /**
-     * Gets the maximal number of bits used by this dynamic bit field.
-     *
-     * @return Maximal number of bits used by this dynamic bit field.
-     */
-    public int getMaxBitSize()
-    {
-        return MAX_DYNAMIC_BIT_FIELD_BIT_SIZE;
-    }
-
-    private static final int MAX_DYNAMIC_BIT_FIELD_BIT_SIZE = 64;
+    static final int MAX_DYNAMIC_BIT_FIELD_BIT_SIZE = 64;
 
     private final boolean isSigned;
     private final BigInteger upperBound;

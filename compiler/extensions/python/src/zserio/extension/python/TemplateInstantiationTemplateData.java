@@ -7,6 +7,7 @@ import java.util.List;
 import zserio.ast.TemplateArgument;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioTemplatableType;
+import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
@@ -19,7 +20,7 @@ public class TemplateInstantiationTemplateData
             List<TemplateArgument> templateArguments, ImportCollector importCollector)
                     throws ZserioExtensionException
     {
-        templateName = template.getName();
+        templateName = ZserioTypeUtil.getFullName(template);
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         for (TemplateArgument templateArgument : templateArguments)
         {

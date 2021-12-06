@@ -1,8 +1,15 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/StringConvertUtil.h>
 #include <zserio/CppRuntimeException.h>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
+    <#if withWriterCode>
+<@type_includes types.reflectableFactory/>
+    </#if>
+</#if>
 <@system_includes cppSystemIncludes/>
 
 <@user_include package.path, "${name}.h"/>
@@ -14,11 +21,76 @@
     <#if arrayTraits.isTemplated>
             <typename ::std::underlying_type<${fullName}>::type><#t>
     </#if>
-    (<#if arrayTraits.requiresElementBitSize>${bitSize}</#if>)<#t>
+    (<#if arrayTraits.requiresElementBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;
 constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::values;
+<#if withTypeInfoCode>
+
+template <>
+const ITypeInfo& enumTypeInfo<${fullName}>()
+{
+    <@underlying_type_info_type_arguments_var "underlyingTypeArguments", bitSize!/>
+
+    <@item_info_array_var "items", items/>
+
+    static const ::zserio::EnumTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"),
+        <@type_info underlyingTypeInfo/>, underlyingTypeArguments, items
+    };
+
+    return typeInfo;
+}
+    <#if withWriterCode>
+
+template <>
+${types.reflectablePtr.name} enumReflectable(
+        ${fullName} value, const ${types.allocator.default}& allocator)
+{
+    class Reflectable : public ::zserio::ReflectableBase<${types.allocator.default}>
+    {
+    public:
+        explicit Reflectable(${fullName} value) :
+                ::zserio::ReflectableBase<${types.allocator.default}>(::zserio::enumTypeInfo<${fullName}>()),
+                m_value(value)
+        {}
+
+        virtual ${baseCppTypeName} get<#rt>
+                <#lt><#if !underlyingTypeInfo.isSigned>U</#if>Int${baseCppTypeNumBits}() const override
+        {
+            return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);
+        }
+
+        virtual <#if underlyingTypeInfo.isSigned>int64_t toInt()<#else>uint64_t toUInt()</#if> const override
+        {
+            return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);
+        }
+
+        virtual double toDouble() const override
+        {
+            return static_cast<double>(<#if underlyingTypeInfo.isSigned>toInt()<#else>toUInt()</#if>);
+        }
+
+        virtual ${types.string.name} toString(
+                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        {
+            return ${types.string.name}(::zserio::enumToString(m_value), allocator);
+        }
+
+        virtual void write(::zserio::BitStreamWriter& writer) override
+        {
+            ::zserio::write(writer, m_value);
+        }
+
+    private:
+        ${fullName} m_value;
+    };
+
+    return std::allocate_shared<Reflectable>(allocator, value);
+}
+    </#if>
+</#if>
 
 template <>
 size_t enumToOrdinal(${fullName} value)
@@ -107,18 +179,18 @@ ${fullName} read(${types.packingContextNode.name}& contextNode, ::zserio::BitStr
 <#if withWriterCode>
 
 template <>
-void write(BitStreamWriter& out, ${fullName} value)
+void write(::zserio::BitStreamWriter& out, ${fullName} value)
 {
-    out.write${runtimeFunction.suffix}(enumToValue(value)<#rt>
+    out.write${runtimeFunction.suffix}(::zserio::enumToValue(value)<#rt>
             <#lt><#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }
 
 template <>
-void write(${types.packingContextNode.name}& contextNode, BitStreamWriter& out, ${fullName} value)
+void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out, ${fullName} value)
 {
     contextNode.getContext().write(
             <@enum_array_traits arrayTraits, fullName, bitSize!/>,
-            out, enumToValue(value));
+            out, ::zserio::enumToValue(value));
 }
 </#if>
 <@namespace_end ["zserio"]/>

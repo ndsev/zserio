@@ -44,6 +44,7 @@ public class CompoundFunctionTemplateData
                 final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
                 includeCollector.addHeaderIncludesForType(nativeStringViewType);
                 returnTypeName = nativeStringViewType.getFullName();
+                returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, nativeStringViewType);
 
                 if (function.getResultExpression().getStringValue() != null)
                 {
@@ -62,16 +63,23 @@ public class CompoundFunctionTemplateData
                 final CppNativeType returnNativeType = cppNativeMapper.getCppType(returnTypeReference);
                 includeCollector.addHeaderIncludesForType(returnNativeType);
                 returnTypeName = returnNativeType.getArgumentTypeName();
+                returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, returnNativeType);
                 resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
                 isSimpleReturnType = returnNativeType.isSimpleType();
             }
 
+            schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
         }
 
         public String getReturnTypeName()
         {
             return returnTypeName;
+        }
+
+        public TypeInfoTemplateData getReturnTypeInfo()
+        {
+            return returnTypeInfo;
         }
 
         public String getResultExpression()
@@ -84,14 +92,21 @@ public class CompoundFunctionTemplateData
             return isSimpleReturnType;
         }
 
+        public String getSchemaName()
+        {
+            return schemaName;
+        }
+
         public String getName()
         {
             return name;
         }
 
         private final String returnTypeName;
+        private final TypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
         private final boolean isSimpleReturnType;
+        private final String schemaName;
         private final String name;
     }
 

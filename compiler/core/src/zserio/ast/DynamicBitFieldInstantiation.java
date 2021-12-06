@@ -121,16 +121,19 @@ public class DynamicBitFieldInstantiation extends TypeInstantiation
             if (lengthValue != null)
             {
                 maxBitSize = lengthValue.intValue();
-                if (maxBitSize < 1 || maxBitSize > type.getMaxBitSize())
+                if (maxBitSize < 1 || maxBitSize > DynamicBitFieldType.MAX_DYNAMIC_BIT_FIELD_BIT_SIZE)
+                {
                     throw new ParserException(lengthExpression, "Invalid length '" + maxBitSize +
                             "' for the dynamic bit field. Length must be within range [1," +
-                            type.getMaxBitSize() + "]!");
+                            DynamicBitFieldType.MAX_DYNAMIC_BIT_FIELD_BIT_SIZE + "]!");
+                }
             }
             else
             {
                 final BigInteger upperBound = lengthExpression.getIntegerUpperBound();
-                maxBitSize = (upperBound.compareTo(BigInteger.valueOf(type.getMaxBitSize())) > 0) ?
-                        type.getMaxBitSize() : upperBound.intValue();
+                maxBitSize = (upperBound.compareTo(BigInteger.valueOf(
+                        DynamicBitFieldType.MAX_DYNAMIC_BIT_FIELD_BIT_SIZE)) > 0) ?
+                                DynamicBitFieldType.MAX_DYNAMIC_BIT_FIELD_BIT_SIZE : upperBound.intValue();
             }
 
             // evaluate upper and lower bounds

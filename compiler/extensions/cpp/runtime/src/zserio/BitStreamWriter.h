@@ -200,13 +200,15 @@ public:
     template <typename ALLOC>
     void writeString(const string<ALLOC>& data)
     {
-        const size_t len = data.size();
-        writeVarSize(convertSizeToUInt32(len));
-        for (size_t i = 0; i < len; ++i)
-        {
-            writeBits(static_cast<uint8_t>(data[i]), 8);
-        }
+        writeString(StringView(data));
     }
+
+    /**
+     * Writes UTF-8 string.
+     *
+     * \param data String view to write.
+     */
+    void writeString(StringView data);
 
     /**
      * Writes bool as a single bit.

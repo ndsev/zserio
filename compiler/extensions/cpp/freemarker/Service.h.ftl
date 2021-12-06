@@ -8,10 +8,17 @@
 #include <zserio/IService.h>
 #include <zserio/AllocatorHolder.h>
 #include <zserio/ServiceException.h>
+<#if withTypeInfoCode>
+#include <zserio/ITypeInfo.h>
+</#if>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 <@namespace_begin [name]/>
 
+<#if withTypeInfoCode>
+const ::zserio::ITypeInfo& typeInfo();
+
+</#if>
 class Service : public ::zserio::IService, public ::zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:

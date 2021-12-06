@@ -801,10 +801,10 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
         <#else>
             <@array_typedef_name field/>
         </#if>
-                    (std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>), <#t>
+                    (::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>), <#t>
                     <@array_traits field/>)<#t>
     <#else>
-        std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>)<#t>
+        ::std::forward<ZSERIO_T_${field.name}>(<@field_argument_name field/>)<#t>
     </#if>
 </#macro>
 
@@ -822,7 +822,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
         <@array_typedef_name field/>(std::move(<@field_argument_name field/>), <#t>
                 <@array_traits field/>)<#t>
     <#else>
-        std::move(<@field_argument_name field/>)<#t>
+        ::std::move(<@field_argument_name field/>)<#t>
     </#if>
 </#macro>
 

@@ -9,6 +9,10 @@ noExplicitConstructor:*/src/zserio/OptionalHolder.h:546
 
 unusedStructMember:*/src/zserio/BitStreamReader.h:55
 unusedStructMember:*/src/zserio/BitStreamReader.h:56
+unusedStructMember:*/src/zserio/ITypeInfo.h:362
+unusedStructMember:*/src/zserio/ITypeInfo.h:384
+unusedStructMember:*/src/zserio/ITypeInfo.h:411
+unusedStructMember:*/src/zserio/ITypeInfo.h:412
 
 // gtest asserts are converted to normal asserts using cppcheck's config googletest.cfg
 assertWithSideEffect:*/test/*

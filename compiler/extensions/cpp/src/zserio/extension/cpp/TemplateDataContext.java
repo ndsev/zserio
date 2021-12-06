@@ -13,6 +13,7 @@ final class TemplateDataContext
         withWriterCode = cppParameters.getWithWriterCode();
         withRangeCheckCode = cppParameters.getWithRangeCheckCode();
         withValidationCode = cppParameters.getWithValidationCode();
+        withTypeInfoCode = cppParameters.getWithTypeInfoCode();
 
         generatorDescription =
                 "/**\n" +
@@ -35,18 +36,11 @@ final class TemplateDataContext
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
 
-    public ExpressionFormatter getOwnerIndirectExpressionFormatter(IncludeCollector includeCollector)
+    public ExpressionFormatter getIndirectExpressionFormatter(IncludeCollector includeCollector,
+            String compoundTypeAccessPrefix)
     {
-        final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppOwnerIndirectExpressionFormattingPolicy(cppNativeMapper, includeCollector);
-
-        return new ExpressionFormatter(expressionFormattingPolicy);
-    }
-
-    public ExpressionFormatter getSqlIndirectExpressionFormatter(IncludeCollector includeCollector)
-    {
-        final ExpressionFormattingPolicy expressionFormattingPolicy =
-                new CppSqlIndirectExpressionFormattingPolicy(cppNativeMapper, includeCollector);
+        final ExpressionFormattingPolicy expressionFormattingPolicy = new CppIndirectExpressionFormattingPolicy(
+                    cppNativeMapper, includeCollector, compoundTypeAccessPrefix);
 
         return new ExpressionFormatter(expressionFormattingPolicy);
     }
@@ -59,6 +53,11 @@ final class TemplateDataContext
     public boolean getWithRangeCheckCode()
     {
         return withRangeCheckCode;
+    }
+
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCode;
     }
 
     public boolean getWithValidationCode()
@@ -82,6 +81,7 @@ final class TemplateDataContext
 
     private final boolean withWriterCode;
     private final boolean withRangeCheckCode;
+    private final boolean withTypeInfoCode;
     private final boolean withValidationCode;
     private final String generatorDescription;
 }

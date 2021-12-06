@@ -1,10 +1,17 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@file_header generatorDescription/>
 
 #include <zserio/HashCodeUtil.h>
 #include <zserio/StringConvertUtil.h>
 <#if upperBound??>
 #include <zserio/CppRuntimeException.h>
+</#if>
+<#if withTypeInfoCode>
+#include <zserio/TypeInfo.h>
+    <#if withWriterCode>
+<@type_includes types.reflectableFactory/>
+    </#if>
 </#if>
 <@system_includes cppSystemIncludes/>
 
@@ -17,23 +24,85 @@
     <#if arrayTraits.isTemplated>
             <${fullName}::underlying_type><#t>
     </#if>
-    (<#if arrayTraits.requiresElementBitSize>${bitSize}</#if>)<#t>
+    (<#if arrayTraits.requiresElementBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 ${name}::${name}(::zserio::BitStreamReader& in) :
-    m_value(readValue(in))
+        m_value(readValue(in))
 {}
 
 ${name}::${name}(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in) :
-    m_value(readValue(contextNode, in))
+        m_value(readValue(contextNode, in))
 {}
 <#if upperBound??>
 
 ${name}::${name}(underlying_type value) :
-    m_value(value)
+        m_value(value)
 {
     if (m_value > ${upperBound})
         throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") + value + "!";
 }
+</#if>
+<#if withTypeInfoCode>
+
+const ::zserio::ITypeInfo& ${name}::typeInfo()
+{
+    <@underlying_type_info_type_arguments_var "underlyingTypeArguments", bitSize!/>
+
+    <@item_info_array_var "values", values/>
+
+    static const ::zserio::BitmaskTypeInfo typeInfo = {
+        ::zserio::makeStringView("${schemaTypeName}"),
+        <@type_info underlyingTypeInfo/>, underlyingTypeArguments, values
+    };
+
+    return typeInfo;
+}
+    <#if withWriterCode>
+
+${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.default}& allocator)
+{
+    class Reflectable : public ::zserio::ReflectableBase<${types.allocator.default}>
+    {
+    public:
+        explicit Reflectable(${fullName} bitmask) :
+                ::zserio::ReflectableBase<${types.allocator.default}>(${fullName}::typeInfo()),
+                m_bitmask(bitmask)
+        {}
+
+        <#-- bitmask is always unsigned -->
+        virtual ${baseCppTypeName} getUInt${baseCppTypeNumBits}() const override
+        {
+            return m_bitmask.getValue();
+        }
+
+        virtual uint64_t toUInt() const override
+        {
+            return m_bitmask.getValue();
+        }
+
+        virtual double toDouble() const override
+        {
+            return static_cast<double>(toUInt());
+        }
+
+        virtual ${types.string.name} toString(
+                const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
+        {
+            return m_bitmask.toString(allocator);
+        }
+
+        virtual void write(::zserio::BitStreamWriter& writer) override
+        {
+            m_bitmask.write(writer);
+        }
+
+    private:
+        ${fullName} m_bitmask;
+    };
+
+    return ::std::allocate_shared<Reflectable>(allocator, *this);
+}
+    </#if>
 </#if>
 
 void ${name}::createPackingContext(${types.packingContextNode.name}& contextNode)

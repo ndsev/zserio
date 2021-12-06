@@ -42,6 +42,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/HashCodeUtilTest.cpp
     zserio/HeapOptionalHolderTest.cpp
     zserio/InplaceOptionalHolderTest.cpp
+    zserio/ReflectableTest.cpp
     zserio/FileUtilTest.cpp
     zserio/MemoryResourceTest.cpp
     zserio/NewDeleteResourceTest.cpp
@@ -51,7 +52,8 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
     zserio/StringViewTest.cpp
-    zserio/TrackingAllocator.h
+    zserio/TypeInfoTest.cpp
+    zserio/TypeInfoUtilTest.cpp
     zserio/UniquePtrTest.cpp
     zserio/ValidationSqliteUtilTest.cpp
     zserio/VarSizeUtilTest.cpp

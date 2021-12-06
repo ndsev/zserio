@@ -7,7 +7,6 @@ import java.util.List;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
@@ -28,11 +27,13 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(bitmaskTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
-        arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
-        bitSize = createBitSize(bitmaskTypeInstantiation);
-        baseCppTypeName = nativeBaseType.getFullName();
+        underlyingTypeInfo = new TypeInfoTemplateData(bitmaskTypeInstantiation, nativeBaseType);
 
+        arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
+        bitSize = BitSizeDataCreator.createData(bitmaskTypeInstantiation, cppExpressionFormatter);
+        baseCppTypeName = nativeBaseType.getFullName();
+        baseCppTypeNumBits = nativeBaseType.getNumBits();
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(
                 bitmaskTypeInstantiation, cppExpressionFormatter);
 
@@ -46,12 +47,17 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             values.add(new BitmaskValueData(nativeBaseType, bitmaskValue));
     }
 
+    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    {
+        return underlyingTypeInfo;
+    }
+
     public ArrayTraitsTemplateData getArrayTraits()
     {
         return arrayTraits;
     }
 
-    public String getBitSize()
+    public BitSizeTemplateData getBitSize()
     {
         return bitSize;
     }
@@ -59,6 +65,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public String getBaseCppTypeName()
     {
         return baseCppTypeName;
+    }
+
+    public int getBaseCppTypeNumBits()
+    {
+        return baseCppTypeNumBits;
     }
 
     public RuntimeFunctionTemplateData getRuntimeFunction()
@@ -117,27 +128,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         private final boolean isZero;
     };
 
-    private static String createBitSize(TypeInstantiation typeInstantiation) throws ZserioExtensionException
-    {
-        if (typeInstantiation.getBaseType() instanceof FixedSizeType)
-        {
-            return CppLiteralFormatter.formatUInt8Literal(
-                    ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
-        }
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-        {
-            return CppLiteralFormatter.formatUInt8Literal(
-                    ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize());
-        }
-        else
-        {
-            return null;
-        }
-    }
-
+    private final TypeInfoTemplateData underlyingTypeInfo;
     private final ArrayTraitsTemplateData arrayTraits;
-    private final String bitSize;
+    private final BitSizeTemplateData bitSize;
     private final String baseCppTypeName;
+    private final int baseCppTypeNumBits;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String upperBound;
     private final List<BitmaskValueData> values;
