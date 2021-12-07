@@ -321,23 +321,23 @@ public:
         case SchemaType::UINT64:
             return 64;
         case SchemaType::VARINT16:
-            return zserio::bitSizeOfVarInt16(Base::getValue());
+            return zserio::bitSizeOfVarInt16(static_cast<int16_t>(Base::getValue()));
         case SchemaType::VARINT32:
-            return zserio::bitSizeOfVarInt32(Base::getValue());
+            return zserio::bitSizeOfVarInt32(static_cast<int32_t>(Base::getValue()));
         case SchemaType::VARINT64:
-            return zserio::bitSizeOfVarInt64(Base::getValue());
+            return zserio::bitSizeOfVarInt64(static_cast<int64_t>(Base::getValue()));
         case SchemaType::VARINT:
-            return zserio::bitSizeOfVarInt(Base::getValue());
+            return zserio::bitSizeOfVarInt(static_cast<int64_t>(Base::getValue()));
         case SchemaType::VARUINT16:
-            return zserio::bitSizeOfVarUInt16(Base::getValue());
+            return zserio::bitSizeOfVarUInt16(static_cast<uint16_t>(Base::getValue()));
         case SchemaType::VARUINT32:
-            return zserio::bitSizeOfVarUInt32(Base::getValue());
+            return zserio::bitSizeOfVarUInt32(static_cast<uint32_t>(Base::getValue()));
         case SchemaType::VARUINT64:
-            return zserio::bitSizeOfVarUInt64(Base::getValue());
+            return zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(Base::getValue()));
         case SchemaType::VARUINT:
-            return zserio::bitSizeOfVarUInt(Base::getValue());
+            return zserio::bitSizeOfVarUInt(static_cast<uint64_t>(Base::getValue()));
         case SchemaType::VARSIZE:
-            return zserio::bitSizeOfVarSize(Base::getValue());
+            return zserio::bitSizeOfVarSize(static_cast<uint32_t>(Base::getValue()));
         case SchemaType::FIXED_SIGNED_BITFIELD:
             return typeInfo.getBitSize();
         case SchemaType::FIXED_UNSIGNED_BITFIELD:
