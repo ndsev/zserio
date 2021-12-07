@@ -160,10 +160,13 @@ public abstract class CppTemplateData implements IncludeCollector
             final NativeSetType setType = nativeMapper.getSetType();
             set = new TemplatedTypeTemplateData(setType, setType.needsAllocatorArgument());
             bitBuffer = new TypeTemplateData(nativeMapper.getBitBufferType());
-            blobBuffer = new TypeTemplateData(nativeMapper.getBlobBufferType());
             packingContextNode = new TypeTemplateData(nativeMapper.getPackingContextNodeType());
             reflectableFactory = new TypeTemplateData(nativeMapper.getReflectableFactoryType());
             reflectablePtr = new TypeTemplateData(nativeMapper.getReflectablePtrType());
+            service = new TypeTemplateData(nativeMapper.getServiceType());
+            serviceClient = new TypeTemplateData(nativeMapper.getServiceClientType());
+            responseDataPtr = new TypeTemplateData(nativeMapper.getResponseDataPtrType());
+            requestData = new TypeTemplateData(nativeMapper.getRequestDataType());
         }
 
         public AllocatorTemplateData getAllocator()
@@ -216,11 +219,6 @@ public abstract class CppTemplateData implements IncludeCollector
             return bitBuffer;
         }
 
-        public TypeTemplateData getBlobBuffer()
-        {
-            return blobBuffer;
-        }
-
         public TypeTemplateData getPackingContextNode()
         {
             return packingContextNode;
@@ -234,6 +232,26 @@ public abstract class CppTemplateData implements IncludeCollector
         public TypeTemplateData getReflectablePtr()
         {
             return reflectablePtr;
+        }
+
+        public TypeTemplateData getService()
+        {
+            return service;
+        }
+
+        public TypeTemplateData getServiceClient()
+        {
+            return serviceClient;
+        }
+
+        public TypeTemplateData getResponseDataPtr()
+        {
+            return responseDataPtr;
+        }
+
+        public TypeTemplateData getRequestData()
+        {
+            return requestData;
         }
 
         public static class AllocatorTemplateData
@@ -331,10 +349,13 @@ public abstract class CppTemplateData implements IncludeCollector
         private final TemplatedTypeTemplateData map;
         private final TemplatedTypeTemplateData set;
         private final TypeTemplateData bitBuffer;
-        private final TypeTemplateData blobBuffer;
         private final TypeTemplateData packingContextNode;
         private final TypeTemplateData reflectableFactory;
         private final TypeTemplateData reflectablePtr;
+        private final TypeTemplateData service;
+        private final TypeTemplateData serviceClient;
+        private final TypeTemplateData responseDataPtr;
+        private final TypeTemplateData requestData;
     }
 
     private final String generatorDescription;

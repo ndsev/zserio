@@ -28,8 +28,6 @@ public class TypesContext
                     true, false, "zserio/OptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBuffer",
                     false, false, "zserio/BitBuffer.h");
-            blobBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BlobBuffer",
-                    true, false, "zserio/BlobBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "PackingContextNode",
                     false, false, "zserio/PackingContext.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "StringArrayTraits",
@@ -40,6 +38,14 @@ public class TypesContext
                     false, false, "zserio/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IReflectablePtr",
                     false, false, "zserio/IReflectable.h");
+            service = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IService",
+                    false, false, "zserio/IService.h");
+            serviceClient = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IServiceClient",
+                    false, false, "zserio/IService.h");
+            responseDataPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IResponseDataPtr",
+                    false, false, "zserio/IService.h");
+            requestData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "RequestData",
+                    false, false, "zserio/IService.h");
         }
         else if (allocator.equals(PROPAGATING_POLYMORPHIC_ALLOCATOR))
         {
@@ -61,8 +67,6 @@ public class TypesContext
                     true, false, "zserio/pmr/HeapOptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBuffer",
                     false, false, "zserio/pmr/BitBuffer.h");
-            blobBuffer = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BlobBuffer",
-                    false, false, "zserio/pmr/BlobBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "PackingContextNode",
                     false, false, "zserio/pmr/PackingContext.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "StringArrayTraits",
@@ -73,6 +77,14 @@ public class TypesContext
                     false, false, "zserio/pmr/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IReflectablePtr",
                     false, false, "zserio/pmr/IReflectable.h");
+            service = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IService",
+                    false, false, "zserio/pmr/IService.h");
+            serviceClient = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IServiceClient",
+                    false, false, "zserio/pmr/IService.h");
+            responseDataPtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IResponseDataPtr",
+                    false, false, "zserio/pmr/IService.h");
+            requestData = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "RequestData",
+                    false, false, "zserio/pmr/IService.h");
         }
         else
         {
@@ -94,8 +106,6 @@ public class TypesContext
                     true, true, "zserio/OptionalHolder.h");
             bitBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBuffer",
                     true, true, "zserio/BitBuffer.h");
-            blobBuffer = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BlobBuffer",
-                    true, true, "zserio/BlobBuffer.h");
             packingContextNode = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicPackingContextNode",
                     true, true, "zserio/Array.h");
             stringArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicStringArrayTraits",
@@ -104,8 +114,16 @@ public class TypesContext
                     true, true, "zserio/ArrayTraits.h");
             reflectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicReflectableFactory",
                     true, true, "zserio/Reflectable.h");
-            reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicIReflectablePtr",
+            reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicReflectablePtr",
                     true, true, "zserio/IReflectable.h");
+            service = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicService",
+                    true, true, "zserio/IService.h");
+            serviceClient = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicServiceClient",
+                    true, true, "zserio/IService.h");
+            responseDataPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicResponseDataPtr",
+                    true, true, "zserio/IService.h");
+            requestData = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicRequestData",
+                    true, true, "zserio/IService.h");
         }
     }
 
@@ -194,11 +212,6 @@ public class TypesContext
         return bitBuffer;
     }
 
-    public NativeTypeDefinition getBlobBuffer()
-    {
-        return blobBuffer;
-    }
-
     public NativeTypeDefinition getPackingContextNode()
     {
         return packingContextNode;
@@ -222,6 +235,26 @@ public class TypesContext
     public NativeTypeDefinition getReflectablePtr()
     {
         return reflectablePtr;
+    }
+
+    public NativeTypeDefinition getService()
+    {
+        return service;
+    }
+
+    public NativeTypeDefinition getServiceClient()
+    {
+        return serviceClient;
+    }
+
+    public NativeTypeDefinition getResponseDataPtr()
+    {
+        return responseDataPtr;
+    }
+
+    public NativeTypeDefinition getRequestData()
+    {
+        return requestData;
     }
 
     public static class NativeTypeDefinition
@@ -278,12 +311,15 @@ public class TypesContext
     private final NativeTypeDefinition anyHolder;
     private final NativeTypeDefinition uniquePtr;
     private final NativeTypeDefinition bitBuffer;
-    private final NativeTypeDefinition blobBuffer;
     private final NativeTypeDefinition packingContextNode;
     private final NativeTypeDefinition stringArrayTraits;
     private final NativeTypeDefinition bitBufferArrayTraits;
     private final NativeTypeDefinition reflectableFactory;
     private final NativeTypeDefinition reflectablePtr;
+    private final NativeTypeDefinition service;
+    private final NativeTypeDefinition serviceClient;
+    private final NativeTypeDefinition responseDataPtr;
+    private final NativeTypeDefinition requestData;
 
     public static final AllocatorDefinition PROPAGATING_POLYMORPHIC_ALLOCATOR = new AllocatorDefinition(
             "::zserio::pmr::PropagatingPolymorphicAllocator", "zserio/pmr/PolymorphicAllocator.h", "");

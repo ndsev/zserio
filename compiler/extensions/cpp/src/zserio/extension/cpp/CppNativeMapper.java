@@ -37,7 +37,6 @@ import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.NativeArrayableType;
 import zserio.extension.cpp.types.NativeBitBufferType;
 import zserio.extension.cpp.types.NativeBitFieldArrayTraits;
-import zserio.extension.cpp.types.NativeBlobBufferType;
 import zserio.extension.cpp.types.NativeBuiltinType;
 import zserio.extension.cpp.types.NativeCompoundType;
 import zserio.extension.cpp.types.NativeHeapOptionalHolderType;
@@ -45,6 +44,10 @@ import zserio.extension.cpp.types.NativeInplaceOptionalHolderType;
 import zserio.extension.cpp.types.NativeIntegralType;
 import zserio.extension.cpp.types.NativeReflectableFactoryType;
 import zserio.extension.cpp.types.NativeReflectablePtrType;
+import zserio.extension.cpp.types.NativeRequestDataType;
+import zserio.extension.cpp.types.NativeResponseDataPtrType;
+import zserio.extension.cpp.types.NativeServiceClientType;
+import zserio.extension.cpp.types.NativeServiceType;
 import zserio.extension.cpp.types.NativeMapType;
 import zserio.extension.cpp.types.NativePackingContextNodeType;
 import zserio.extension.cpp.types.NativeSetType;
@@ -75,10 +78,13 @@ public class CppNativeMapper
         mapType = new NativeMapType(typesContext);
         setType = new NativeSetType(typesContext);
         bitBufferType = new NativeBitBufferType(typesContext, stdUInt8Type);
-        blobBufferType = new NativeBlobBufferType(typesContext, stdUInt8Type);
         packingContextNodeType = new NativePackingContextNodeType(typesContext, stdUInt8Type);
         reflectableFactoryType = new NativeReflectableFactoryType(typesContext, stdUInt8Type);
         reflectablePtrType = new NativeReflectablePtrType(typesContext, stdUInt8Type);
+        serviceType = new NativeServiceType(typesContext, stdUInt8Type);
+        serviceClientType = new NativeServiceClientType(typesContext, stdUInt8Type);
+        responseDataPtrType = new NativeResponseDataPtrType(typesContext, stdUInt8Type);
+        requestDataType = new NativeRequestDataType(typesContext, stdUInt8Type);
     }
 
     /**
@@ -248,11 +254,6 @@ public class CppNativeMapper
         return bitBufferType;
     }
 
-    public NativeBlobBufferType getBlobBufferType()
-    {
-        return blobBufferType;
-    }
-
     public NativePackingContextNodeType getPackingContextNodeType()
     {
         return packingContextNodeType;
@@ -266,6 +267,26 @@ public class CppNativeMapper
     public NativeReflectablePtrType getReflectablePtrType()
     {
         return reflectablePtrType;
+    }
+
+    public NativeServiceType getServiceType()
+    {
+        return serviceType;
+    }
+
+    public NativeServiceClientType getServiceClientType()
+    {
+        return serviceClientType;
+    }
+
+    public NativeResponseDataPtrType getResponseDataPtrType()
+    {
+        return responseDataPtrType;
+    }
+
+    public NativeRequestDataType getRequestDataType()
+    {
+        return requestDataType;
     }
 
     public NativeIntegralType getUInt64Type()
@@ -568,10 +589,13 @@ public class CppNativeMapper
     private final NativeMapType mapType;
     private final NativeSetType setType;
     private final NativeBitBufferType bitBufferType;
-    private final NativeBlobBufferType blobBufferType;
     private final NativePackingContextNodeType packingContextNodeType;
     private final NativeReflectableFactoryType reflectableFactoryType;
     private final NativeReflectablePtrType reflectablePtrType;
+    private final NativeServiceType serviceType;
+    private final NativeServiceClientType serviceClientType;
+    private final NativeResponseDataPtrType responseDataPtrType;
+    private final NativeRequestDataType requestDataType;
 
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));

@@ -4,6 +4,10 @@
 #include "gtest/gtest.h"
 
 #include "zserio/ServiceException.h"
+#include "zserio/RebindAlloc.h"
+
+#include "LocalServiceClient.h"
+
 #include "service_types/simple_service/SimpleService.h"
 
 using namespace zserio::literals;
@@ -14,6 +18,7 @@ namespace simple_service
 {
 
 using allocator_type = SimpleService::Client::allocator_type;
+using LocalServiceClient = utils::LocalServiceClient<allocator_type>;
 
 namespace
 {
@@ -42,8 +47,10 @@ class SimpleServiceTest : public ::testing::Test
 {
 public:
     SimpleServiceTest()
-    :   client(service),
+    :   localServiceClient(service),
+        client(localServiceClient),
         movedService(createService()),
+        movedLocalServiceClient(movedService),
         movedClient(createClient())
     {}
 
@@ -59,14 +66,16 @@ private:
     SimpleService::Client createClient()
     {
         // cannot be const because we need to move-construct it
-        SimpleService::Client createdClient(movedService);
+        SimpleService::Client createdClient(movedLocalServiceClient);
         return createdClient;
     }
 
 protected:
     SimpleServiceImpl service;
+    LocalServiceClient localServiceClient;
     SimpleService::Client client;
     SimpleServiceImpl movedService;
+    LocalServiceClient movedLocalServiceClient;
     SimpleService::Client movedClient;
 };
 
@@ -101,8 +110,7 @@ TEST_F(SimpleServiceTest, powerOfTwo)
 
 TEST_F(SimpleServiceTest, invalidServiceMethod)
 {
-    zserio::BlobBuffer<allocator_type> responseData;
-    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}, responseData), zserio::ServiceException);
+    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}), zserio::ServiceException);
 }
 
 TEST_F(SimpleServiceTest, callWithContext)

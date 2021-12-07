@@ -4,9 +4,11 @@
 
 #include "gtest/gtest.h"
 
-#include "service_types/complex_types_service/ComplexTypesService.h"
-
 #include "zserio/RebindAlloc.h"
+
+#include "LocalServiceClient.h"
+
+#include "service_types/complex_types_service/ComplexTypesService.h"
 
 using namespace zserio::literals;
 
@@ -18,6 +20,7 @@ namespace complex_types_service
 using allocator_type = ComplexTypesService::Client::allocator_type;
 template <typename T>
 using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using LocalServiceClient = utils::LocalServiceClient<allocator_type>;
 
 namespace
 {
@@ -112,7 +115,7 @@ class ComplexTypesServiceTest : public ::testing::Test
 {
 public:
     ComplexTypesServiceTest()
-    :   client(service)
+    :   localServiceClient(service), client(localServiceClient)
     {
         for (size_t i = 0; i < 3; ++i)
         {
@@ -127,6 +130,7 @@ public:
 
 protected:
     ComplexTypesServiceImpl service;
+    LocalServiceClient localServiceClient;
     ComplexTypesService::Client client;
 
     // note that conversion is slightly inaccurate and therefore this values are carefully choosen
@@ -223,8 +227,7 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
 
 TEST_F(ComplexTypesServiceTest, invalidServiceMethod)
 {
-    zserio::BlobBuffer<allocator_type> responseData;
-    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}, responseData), zserio::ServiceException);
+    ASSERT_THROW(service.callMethod("nonexistentMethod"_sv, {}), zserio::ServiceException);
 }
 
 } // namespace complex_types_service

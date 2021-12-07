@@ -5,7 +5,7 @@
 
 #include <array>
 #include <zserio/Types.h>
-#include <zserio/IService.h>
+<@type_includes types.service/>
 #include <zserio/AllocatorHolder.h>
 #include <zserio/ServiceException.h>
 <#if withTypeInfoCode>
@@ -19,7 +19,9 @@
 const ::zserio::ITypeInfo& typeInfo();
 
 </#if>
-class Service : public ::zserio::IService, public ::zserio::AllocatorHolder<${types.allocator.default}>
+class Service :
+        public ${types.service.name},
+        public ::zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:
     Service(const allocator_type& allocator = allocator_type());
@@ -31,8 +33,9 @@ public:
     Service(Service&&) = default;
     Service& operator=(Service&&) = delete;
 
-    virtual void callMethod(::zserio::StringView methodName, ::zserio::Span<const uint8_t> requestData,
-            ::zserio::IBlobBuffer& responseData, void* context = nullptr) override;
+    virtual ${types.responseDataPtr.name} callMethod(
+            ::zserio::StringView methodName, ::zserio::Span<const uint8_t> requestData,
+            void* context = nullptr) override;
 
     static ::zserio::StringView serviceFullName() noexcept;
     static const ::std::array<::zserio::StringView, ${methodList?size}>& methodNames() noexcept;
@@ -45,8 +48,8 @@ private:
 </#list>
 
 <#list methodList as method>
-    void ${method.name}Method(::zserio::Span<const uint8_t> requestData, ::zserio::IBlobBuffer& responseData,
-            void* context);
+    ${types.responseDataPtr.name} ${method.name}Method(
+            ::zserio::Span<const uint8_t> requestData, void* context);
 </#list>
 </#if>
 };
@@ -54,7 +57,7 @@ private:
 class Client : public ::zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:
-    explicit Client(::zserio::IService& service, const allocator_type& allocator = allocator_type());
+    explicit Client(${types.serviceClient.name}& service, const allocator_type& allocator = allocator_type());
     ~Client() = default;
 
     Client(const Client&) = delete;
@@ -69,7 +72,7 @@ public:
 </#list>
 
 private:
-    ::zserio::IService& m_service;
+    ${types.serviceClient.name}& m_service;
 };
 <@namespace_end [name]/>
 <@namespace_end package.path/>
