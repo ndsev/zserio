@@ -9,7 +9,7 @@ namespace zserio
 namespace pmr
 {
 
-using BitBuffer = zserio::BasicBitBuffer<PropagatingPolymorphicAllocator<uint8_t>>;
+using BitBuffer = BasicBitBuffer<PropagatingPolymorphicAllocator<uint8_t>>;
 
 } // namespace pmr
 } // namespace zserio

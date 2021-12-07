@@ -34,7 +34,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/BitStreamReader.h
     zserio/BitStreamWriter.cpp
     zserio/BitStreamWriter.h
-    zserio/BlobBuffer.h
     zserio/BuildInOperators.cpp
     zserio/BuildInOperators.h
     zserio/ConstraintException.h
@@ -79,10 +78,9 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/AnyHolder.h
     zserio/pmr/ArrayTraits.h
     zserio/pmr/BitBuffer.h
-    zserio/pmr/BlobBuffer.h
     zserio/pmr/HeapOptionalHolder.h
     zserio/pmr/IReflectable.h
-    zserio/pmr/Reflectable.h
+    zserio/pmr/IService.h
     zserio/pmr/Map.h
     zserio/pmr/MemoryResource.cpp
     zserio/pmr/MemoryResource.h
@@ -90,6 +88,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/pmr/NewDeleteResource.h
     zserio/pmr/PackingContext.h
     zserio/pmr/PolymorphicAllocator.h
+    zserio/pmr/Reflectable.h
     zserio/pmr/Set.h
     zserio/pmr/String.h
     zserio/pmr/UniquePtr.h

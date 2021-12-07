@@ -4,18 +4,22 @@
 #include "zserio/IReflectable.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
+// needed to have proper typedefs
+#include "zserio/pmr/AnyHolder.h"
+#include "zserio/pmr/String.h"
+#include "zserio/pmr/BitBuffer.h"
+
 namespace zserio
 {
 namespace pmr
 {
 
 /**
- * Typedef to reflectable interface provided for convenience -
- * using PropagatingPolymorphicAllocator<uint8_t>.
+ * Typedef to reflectable interface provided for convenience - using PropagatingPolymorphicAllocator<uint8_t>.
  */
 /** \{ */
-using IReflectable = zserio::IReflectable<PropagatingPolymorphicAllocator<uint8_t>>;
-using IReflectablePtr = IReflectable::IReflectablePtr;
+using IReflectable = IBasicReflectable<PropagatingPolymorphicAllocator<uint8_t>>;
+using IReflectablePtr = IBasicReflectablePtr<PropagatingPolymorphicAllocator<uint8_t>>;
 /** \} */
 
 } // namespace pmr

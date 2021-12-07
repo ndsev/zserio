@@ -10,8 +10,7 @@ namespace pmr
 {
 
 /**
- * Typedef to the reflectable factroy provided for convenience -
- * using default PropagatingPolymorphicAllocator<uint8_t>.
+ * Typedef to the reflectable factroy provided for convenience - using PropagatingPolymorphicAllocator<uint8_t>.
  */
 using ReflectableFactory = BasicReflectableFactory<PropagatingPolymorphicAllocator<uint8_t>>;
 

@@ -342,10 +342,14 @@ public:
     virtual size_t bitSizeOf(size_t bitPosition = 0) const = 0;
 };
 
+/** Typedef to reflectable smart pointer needed for convenience in generated code. */
+template <typename ALLOC = std::allocator<uint8_t>>
+using IBasicReflectablePtr = typename IBasicReflectable<ALLOC>::Ptr;
+
 /** Typedef to reflectable interface provided for convenience - using default std::allocator<uint8_t>. */
 /** \{ */
 using IReflectable = IBasicReflectable<>;
-using IReflectablePtr = IReflectable::Ptr;
+using IReflectablePtr = IBasicReflectablePtr<>;
 /** \} */
 
 /**
@@ -357,7 +361,7 @@ using IReflectablePtr = IReflectable::Ptr;
  * \return Enum reflectable view.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>>
-typename IBasicReflectable<ALLOC>::Ptr enumReflectable(T value, const ALLOC& allocator = ALLOC());
+IBasicReflectablePtr<ALLOC> enumReflectable(T value, const ALLOC& allocator = ALLOC());
 
 } // namespace zserio
 
