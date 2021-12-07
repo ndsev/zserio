@@ -8,6 +8,7 @@
 #include "zserio/BitBuffer.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/VarSizeUtil.h"
+#include "zserio/StringView.h"
 
 namespace zserio
 {
@@ -94,6 +95,15 @@ size_t bitSizeOfVarUInt(uint64_t value);
 size_t bitSizeOfVarSize(uint32_t value);
 
 /**
+ * Calculates bit size of the string view.
+ *
+ * \param stringValue String view for which to calculate bit size.
+ *
+ * \return Bit size of the given string view.
+ */
+size_t bitSizeOfString(StringView stringValue);
+
+/**
  * Calculates bit size of the string.
  *
  * \param stringValue String for which to calculate bit size.
@@ -101,12 +111,9 @@ size_t bitSizeOfVarSize(uint32_t value);
  * \return Bit size of the given string.
  */
 template <typename ALLOC>
-size_t bitSizeOfString(const std::basic_string<char, std::char_traits<char>, ALLOC>& stringValue)
+size_t bitSizeOfString(const string<ALLOC>& stringValue)
 {
-    const size_t stringSize = stringValue.size();
-
-    // the string consists of varsize for size followed by the UTF-8 encoded string
-    return bitSizeOfVarSize(convertSizeToUInt32(stringSize)) + bytesToBits(stringSize);
+    return bitSizeOfString(StringView(stringValue));
 }
 
 /**

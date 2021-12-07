@@ -80,9 +80,12 @@ protected:
         zserio::BitBuffer bitBuffer(1024 * 8);
         zserio::BitStreamWriter writer(bitBuffer);
         reflectable.write(writer);
+        const size_t bitSizeOf = reflectable.bitSizeOf();
+        ASSERT_EQ(bitSizeOf, writer.getBitPosition());
 
         zserio::BitStreamReader reader(bitBuffer);
         checker(reader);
+        ASSERT_EQ(bitSizeOf, reader.getBitPosition());
     }
 
     template <typename T, typename ...ARGS>
@@ -91,10 +94,13 @@ protected:
         zserio::BitBuffer bitBuffer(1024 * 8);
         zserio::BitStreamWriter writer(bitBuffer);
         reflectable.write(writer);
+        const size_t bitSizeOf = reflectable.bitSizeOf();
+        ASSERT_EQ(bitSizeOf, writer.getBitPosition());
 
         zserio::BitStreamReader reader(bitBuffer);
         const T readObject{reader, args...};
         ASSERT_EQ(originalObject, readObject);
+        ASSERT_EQ(bitSizeOf, reader.getBitPosition());
     }
 
     template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
@@ -103,9 +109,12 @@ protected:
         zserio::BitBuffer bitBuffer(64);
         zserio::BitStreamWriter writer(bitBuffer);
         reflectable.write(writer);
+        const size_t bitSizeOf = reflectable.bitSizeOf();
+        ASSERT_EQ(bitSizeOf, writer.getBitPosition());
 
         zserio::BitStreamReader reader(bitBuffer);
         ASSERT_EQ(enumValue, zserio::read<T>(reader));
+        ASSERT_EQ(bitSizeOf, reader.getBitPosition());
     }
 
     void checkStructReflectable(IReflectable& reflectable, const Struct& structure)

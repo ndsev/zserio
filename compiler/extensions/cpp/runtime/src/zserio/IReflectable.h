@@ -327,6 +327,19 @@ public:
      * \throw CppRuntimeException When the reflected object is an array.
      */
     virtual void write(BitStreamWriter& writer) = 0;
+
+    /**
+     * Gets the number of bits needed for serialization of the reflected object.
+     *
+     * \note Works for all reflectable types except arrays!
+     *
+     * \param bitPosition The bit stream position to be used for calculation.
+     *
+     * \throw CppRuntimeException When the reflected object is an array.
+     *
+     * \return The size of the serialized reflected object in bits.
+     */
+    virtual size_t bitSizeOf(size_t bitPosition = 0) const = 0;
 };
 
 /** Typedef to reflectable interface provided for convenience - using default std::allocator<uint8_t>. */

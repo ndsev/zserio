@@ -195,6 +195,11 @@ ${I}return {};
             m_object.write(writer);
         }
 
+        virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+        {
+            return m_object.bitSizeOf(bitPosition);
+        }
+
     private:
         ${fullName}& m_object;
     };

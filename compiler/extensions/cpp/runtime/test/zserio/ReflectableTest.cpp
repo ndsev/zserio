@@ -111,6 +111,11 @@ public:
                 m_bitmask.write(writer);
             }
 
+            virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+            {
+                return m_bitmask.bitSizeOf(bitPosition);
+            }
+
         private:
             DummyBitmask m_bitmask;
         };
@@ -126,6 +131,11 @@ public:
     void write(BitStreamWriter& out, PreWriteAction = ALL_PRE_WRITE_ACTIONS) const
     {
         out.writeBits(m_value, UINT8_C(8));
+    }
+
+    size_t bitSizeOf(size_t) const
+    {
+        return UINT8_C(8);
     }
 
 private:
@@ -279,6 +289,11 @@ public:
                 m_object.write(writer);
             }
 
+            virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
         private:
             DummyChild& m_object;
         };
@@ -309,6 +324,11 @@ public:
     void write(BitStreamWriter& writer, PreWriteAction = ALL_PRE_WRITE_ACTIONS)
     {
         writer.writeBits(m_value, 31);
+    }
+
+    size_t bitSizeOf(size_t) const
+    {
+        return 31;
     }
 
 private:
@@ -402,6 +422,11 @@ public:
                 m_object.write(writer);
             }
 
+            virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
         private:
             DummyParent& m_object;
         };
@@ -432,6 +457,11 @@ public:
     void write(BitStreamWriter& out, PreWriteAction = ALL_PRE_WRITE_ACTIONS)
     {
         m_dummyChild.write(out);
+    }
+
+    size_t bitSizeOf(size_t bitPosition = 0) const
+    {
+        return m_dummyChild.bitSizeOf(bitPosition);
     }
 
 private:
@@ -498,6 +528,12 @@ inline void write<DummyEnum>(BitStreamWriter& out, DummyEnum value)
 }
 
 template <>
+inline size_t bitSizeOf<DummyEnum>(DummyEnum)
+{
+    return INT8_C(8);
+}
+
+template <>
 const ITypeInfo& enumTypeInfo<DummyEnum>()
 {
     static const Span<StringView> underlyingTypeArguments;
@@ -551,6 +587,11 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
         virtual void write(BitStreamWriter& writer) override
         {
             zserio::write(writer, m_value);
+        }
+
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return zserio::bitSizeOf(m_value);
         }
 
     private:
@@ -610,9 +651,12 @@ protected:
         BitBuffer bitBuffer(bitBufferSize);
         BitStreamWriter writer(bitBuffer);
         reflectable->write(writer);
+        const size_t bitSizeOfValue = reflectable->bitSizeOf();
+        ASSERT_EQ(bitSizeOfValue, writer.getBitPosition());
 
         BitStreamReader reader(bitBuffer);
         ASSERT_EQ(value, readFunc(reader));
+        ASSERT_EQ(bitSizeOfValue, reader.getBitPosition());
     }
 
     void checkNonArray(const IReflectablePtr& reflectable)

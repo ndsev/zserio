@@ -177,4 +177,12 @@ size_t bitSizeOfVarSize(uint32_t value)
     return bitSizeOfVarIntImpl(value, VarSizeMaxValues, VarSizeMaxNumValues, "varsize");
 }
 
+size_t bitSizeOfString(StringView stringValue)
+{
+    const size_t stringSize = stringValue.size();
+
+    // the string consists of varsize for size followed by the UTF-8 encoded string
+    return bitSizeOfVarSize(convertSizeToUInt32(stringSize)) + bytesToBits(stringSize);
+}
+
 } // namespace zserio

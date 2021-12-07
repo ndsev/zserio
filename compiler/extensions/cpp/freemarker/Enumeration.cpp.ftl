@@ -83,6 +83,11 @@ ${types.reflectablePtr.name} enumReflectable(
             ::zserio::write(writer, m_value);
         }
 
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return ::zserio::bitSizeOf(m_value);
+        }
+
     private:
         ${fullName} m_value;
     };

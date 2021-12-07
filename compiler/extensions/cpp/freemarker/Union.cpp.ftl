@@ -203,13 +203,16 @@ ${types.reflectablePtr.name} ${name}::reflectable(const allocator_type& allocato
             return {};
     </#if>
         }
-    <#if withWriterCode>
 
         virtual void write(::zserio::BitStreamWriter& writer) override
         {
             m_object.write(writer);
         }
-    </#if>
+
+        virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+        {
+            return m_object.bitSizeOf(bitPosition);
+        }
 
     private:
         ${fullName}& m_object;
