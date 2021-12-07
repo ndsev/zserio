@@ -136,7 +136,6 @@ size_t ${name}::bitSizeOf(${types.packingContextNode.name}& contextNode, size_t)
             <@bitmask_array_traits arrayTraits, fullName, bitSize!/>,
             m_value);
 }
-
 <#if withWriterCode>
 
 size_t ${name}::initializeOffsets(size_t bitPosition) const

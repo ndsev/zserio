@@ -70,6 +70,7 @@ public:
     {
         return m_value;
     }
+
     constexpr underlying_type getValue() const
     {
         return m_value;

@@ -592,6 +592,7 @@ void ${compoundName}::<@element_children_initializer_name field.name/>::initiali
         </#if>
         <#if needs_field_element_factory(field)>
     <@declare_element_factory compoundName, field/>
+
             <#if field.array.elementCompound??>
                 <#if needs_field_initialization(field.array.elementCompound)>
     <@declare_element_initializer compoundName, field/>

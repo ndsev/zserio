@@ -50,6 +50,7 @@
     </#if>
 </#macro>
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization"/>
+
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
 
 <#macro union_copy_constructor_definition compounConstructorsData withAlloc>
