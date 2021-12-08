@@ -116,7 +116,7 @@ ${I}    {}, // typeArguments
     </#if>
 ${I}    <#if field.alignmentValue??>::zserio::makeStringView("${field.alignmentValue}")<#else>{}</#if>, // alignment
 ${I}    <#if field.offset??>::zserio::makeStringView("${field.offset.getter}")<#else>{}</#if>, // offset
-${I}    <#if field.initializer??>::zserio::makeStringView(${field.initializer})<#else>{}</#if>, // initializer
+${I}    <#if field.initializer??>::zserio::makeStringView("${field.initializer}")<#else>{}</#if>, // initializer
 ${I}    <#if field.optional??>true<#else>false</#if>, // isOptional
 ${I}    <#if field.optional?? && field.optional.clause??><#rt>
                 <#lt>::zserio::makeStringView("${field.optional.clause}")<#else>{}</#if>, // optionalClause
