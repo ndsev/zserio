@@ -160,7 +160,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public UnaryExpressionFormatting getFunctionCall(Expression expr)
     {
-        return new UnaryExpressionFormatting(getAccessPrefix(), "()");
+        return new UnaryExpressionFormatting(expr.op1().isMostLeftId() ? getAccessPrefix() : "", "()");
     }
 
     @Override
