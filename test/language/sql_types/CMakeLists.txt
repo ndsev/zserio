@@ -4,6 +4,8 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesDb.h
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTable.cpp
     ${ZSERIO_GEN_DIR}/sql_types/SqlTypesTable.h
+    ${ZSERIO_GEN_DIR}/sql_types/TestBitmask.cpp
+    ${ZSERIO_GEN_DIR}/sql_types/TestBitmask.h
     ${ZSERIO_GEN_DIR}/sql_types/TestChoice.cpp
     ${ZSERIO_GEN_DIR}/sql_types/TestChoice.h
     ${ZSERIO_GEN_DIR}/sql_types/TestEnum.cpp
