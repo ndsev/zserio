@@ -6,6 +6,7 @@ import java.util.List;
 import zserio.ast.CompoundType;
 import zserio.ast.TypeReference;
 import zserio.ast.Function;
+import zserio.ast.StringType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -39,16 +40,26 @@ public class CompoundFunctionTemplateData
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
             isConstStringReturnType = function.getResultExpression().getStringValue() != null;
-            if (isConstStringReturnType)
+            if (returnTypeReference.getBaseTypeReference().getType() instanceof StringType)
             {
+                // we have to return strings as StringView because we are not able to find out whether
+                // the expression always leads to some field or whether it contains any string constant
+                // (the expression can contain e.g. another function call, constant, etc.)
                 final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
                 includeCollector.addHeaderIncludesForType(nativeStringViewType);
                 returnTypeName = nativeStringViewType.getFullName();
                 returnArgumentTypeName = nativeStringViewType.getArgumentTypeName();
                 returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, nativeStringViewType);
 
-                resultExpression = nativeStringViewType.formatLiteral(
-                        function.getResultExpression().getStringValue());
+                if (isConstStringReturnType)
+                {
+                    resultExpression = nativeStringViewType.formatLiteral(
+                            function.getResultExpression().getStringValue());
+                }
+                else
+                {
+                    resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
+                }
 
                 isSimpleReturnType = nativeStringViewType.isSimpleType();
             }
