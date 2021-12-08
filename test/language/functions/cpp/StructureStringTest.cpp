@@ -19,7 +19,7 @@ TEST(FunctionsStructureStringTest, getPoolConst)
 TEST(FunctionsStructureStringTest, getPoolFiled)
 {
     TestStructure testStructure;
-    ASSERT_EQ("POOL_FIELD"_sv, testStructure.funcGetPoolField());
+    ASSERT_EQ("POOL_FIELD", testStructure.funcGetPoolField());
 }
 
 TEST(FunctionsStructureStringTest, getConst)
@@ -31,7 +31,7 @@ TEST(FunctionsStructureStringTest, getConst)
 TEST(FunctionsStructureStringTest, getField)
 {
     TestStructure testStructure;
-    ASSERT_EQ("FIELD"_sv, testStructure.funcGetField());
+    ASSERT_EQ("FIELD", testStructure.funcGetField());
 }
 
 } // namespace structure_string

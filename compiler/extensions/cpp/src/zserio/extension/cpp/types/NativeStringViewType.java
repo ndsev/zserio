@@ -8,7 +8,8 @@ public class NativeStringViewType extends CppNativeType
 {
     public NativeStringViewType()
     {
-        super(ZSERIO_PACKAGE_NAME, "StringView");
+        // note that we use StringView for constant strings and thus it's a simple type
+        super(ZSERIO_PACKAGE_NAME, "StringView", true);
         addSystemIncludeFile("zserio/StringView.h");
     }
 

@@ -6,7 +6,6 @@ import java.util.List;
 import zserio.ast.CompoundType;
 import zserio.ast.TypeReference;
 import zserio.ast.Function;
-import zserio.ast.StringType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -39,30 +38,26 @@ public class CompoundFunctionTemplateData
                         throws ZserioExtensionException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
-            if (returnTypeReference.getBaseTypeReference().getType() instanceof StringType)
+            isConstStringReturnType = function.getResultExpression().getStringValue() != null;
+            if (isConstStringReturnType)
             {
                 final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
                 includeCollector.addHeaderIncludesForType(nativeStringViewType);
                 returnTypeName = nativeStringViewType.getFullName();
+                returnArgumentTypeName = nativeStringViewType.getArgumentTypeName();
                 returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, nativeStringViewType);
 
-                if (function.getResultExpression().getStringValue() != null)
-                {
-                    // it's a constant string
-                    resultExpression = nativeStringViewType.formatLiteral(
-                            function.getResultExpression().getStringValue());
-                }
-                else
-                {
-                    resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
-                }
+                resultExpression = nativeStringViewType.formatLiteral(
+                        function.getResultExpression().getStringValue());
+
                 isSimpleReturnType = nativeStringViewType.isSimpleType();
             }
             else
             {
                 final CppNativeType returnNativeType = cppNativeMapper.getCppType(returnTypeReference);
                 includeCollector.addHeaderIncludesForType(returnNativeType);
-                returnTypeName = returnNativeType.getArgumentTypeName();
+                returnTypeName = returnNativeType.getFullName();
+                returnArgumentTypeName = returnNativeType.getArgumentTypeName();
                 returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, returnNativeType);
                 resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
                 isSimpleReturnType = returnNativeType.isSimpleType();
@@ -77,6 +72,11 @@ public class CompoundFunctionTemplateData
             return returnTypeName;
         }
 
+        public String getReturnArgumentTypeName()
+        {
+            return returnArgumentTypeName;
+        }
+
         public TypeInfoTemplateData getReturnTypeInfo()
         {
             return returnTypeInfo;
@@ -85,6 +85,11 @@ public class CompoundFunctionTemplateData
         public String getResultExpression()
         {
             return resultExpression;
+        }
+
+        public boolean getIsConstStringReturnType()
+        {
+            return isConstStringReturnType;
         }
 
         public boolean getIsSimpleReturnType()
@@ -103,8 +108,10 @@ public class CompoundFunctionTemplateData
         }
 
         private final String returnTypeName;
+        private final String returnArgumentTypeName;
         private final TypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
+        private final boolean isConstStringReturnType;
         private final boolean isSimpleReturnType;
         private final String schemaName;
         private final String name;
