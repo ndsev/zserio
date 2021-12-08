@@ -45,7 +45,8 @@ private:
         const auto& reflectable = responseData->getReflectable();
         if (reflectable)
         {
-            std::vector<uint8_t, ALLOC> responseBytes((reflectable->bitSizeOf() + 7) / 8, get_allocator_ref());
+            std::vector<uint8_t, ALLOC> responseBytes(
+                    (reflectable->bitSizeOf() + 7) / 8, 0, get_allocator_ref());
             zserio::BitStreamWriter writer(responseBytes);
             reflectable->write(writer);
             return responseBytes;
