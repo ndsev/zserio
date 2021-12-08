@@ -1117,117 +1117,117 @@ public:
     static IBasicReflectablePtr<ALLOC> getBool(bool value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<BoolReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getBool(), value, 0);
+                allocator, BuiltinTypeInfo::getBool(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getInt8(int8_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int8Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getInt8(), value, 0);
+                allocator, BuiltinTypeInfo::getInt8(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getInt16(int16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getInt16(), value, 0);
+                allocator, BuiltinTypeInfo::getInt16(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getInt32(int32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getInt32(), value, 0);
+                allocator, BuiltinTypeInfo::getInt32(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getInt64(int64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getInt64(), value, 0);
+                allocator, BuiltinTypeInfo::getInt64(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt8(uint8_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt8Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getUInt8(), value, 0);
+                allocator, BuiltinTypeInfo::getUInt8(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt16(uint16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getUInt16(), value, 0);
+                allocator, BuiltinTypeInfo::getUInt16(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt32(uint32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getUInt32(), value, 0);
+                allocator, BuiltinTypeInfo::getUInt32(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getUInt64(uint64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getUInt64(), value, 0);
+                allocator, BuiltinTypeInfo::getUInt64(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt16(
             int16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarInt16(), value, 0);
+                allocator, BuiltinTypeInfo::getVarInt16(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt32(
             int32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarInt32(), value, 0);
+                allocator, BuiltinTypeInfo::getVarInt32(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt64(
             int64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarInt64(), value, 0);
+                allocator, BuiltinTypeInfo::getVarInt64(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarInt(int64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<Int64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarInt(), value, 0);
+                allocator, BuiltinTypeInfo::getVarInt(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt16(
             uint16_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarUInt16(), value, 0);
+                allocator, BuiltinTypeInfo::getVarUInt16(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt32(
             uint32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarUInt32(), value, 0);
+                allocator, BuiltinTypeInfo::getVarUInt32(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt64(
             uint64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarUInt64(), value, 0);
+                allocator, BuiltinTypeInfo::getVarUInt64(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarUInt(
             uint64_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarUInt(), value, 0);
+                allocator, BuiltinTypeInfo::getVarUInt(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getVarSize(
             uint32_t value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<UInt32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getVarSize(), value, 0);
+                allocator, BuiltinTypeInfo::getVarSize(), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFloat16(float value, const ALLOC& allocator = ALLOC())
@@ -1278,7 +1278,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'int8_t' value!";
         }
         return std::allocate_shared<Int8Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
@@ -1290,7 +1290,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'int16_t' value!";
         }
         return std::allocate_shared<Int16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
@@ -1302,7 +1302,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'int32_t' value!";
         }
         return std::allocate_shared<Int32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFixedSignedBitField(
@@ -1314,7 +1314,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'int64_t' value!";
         }
         return std::allocate_shared<Int64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
@@ -1326,7 +1326,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'uint8_t' value!";
         }
         return std::allocate_shared<UInt8Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
@@ -1338,7 +1338,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'uint16_t' value!";
         }
         return std::allocate_shared<UInt16Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
@@ -1350,7 +1350,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'uint32_t' value!";
         }
         return std::allocate_shared<UInt32Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getFixedUnsignedBitField(
@@ -1362,7 +1362,7 @@ public:
                     " - invalid bit size '" + bitSize + "' for 'uint64_t' value!";
         }
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, 0);
+                allocator, BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
     }
 
     static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
@@ -1483,7 +1483,7 @@ public:
         }
 
         return std::allocate_shared<IntegralReflectableArray<ALLOC, RAW_ARRAY>>(
-                allocator, typeInfo, allocator, rawArray, 0);
+                allocator, typeInfo, allocator, rawArray, static_cast<uint8_t>(0));
     }
 
     template <typename RAW_ARRAY,

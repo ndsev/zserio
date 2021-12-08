@@ -142,13 +142,14 @@ protected:
         checkWriteRead(*reflectable["childArray"]->at(1), structure.getChildArray()[1]);
         checkWriteReadBuiltin(*reflectable["childArray"]->at(1)->getField("name"),
                 [&structure](zserio::BitStreamReader& reader) {
-                    ASSERT_EQ(structure.getChildArray()[1].getName(), reader.readString());
+                    ASSERT_EQ(structure.getChildArray()[1].getName(), reader.readString<allocator_type>());
                 }
         );
         checkWriteThrows(*reflectable["childArray"]->at(1)->getField("nicknames"));
         checkWriteReadBuiltin(*reflectable["childArray"]->at(1)->getField("nicknames")->at(1),
                 [&structure](zserio::BitStreamReader& reader) {
-                    ASSERT_EQ(structure.getChildArray()[1].getNicknames()[1], reader.readString());
+                    ASSERT_EQ(structure.getChildArray()[1].getNicknames()[1],
+                            reader.readString<allocator_type>());
                 }
         );
 
@@ -310,7 +311,7 @@ protected:
         ASSERT_EQ(0xCD, reflectable.getField("externField")->getBitBuffer().getBuffer()[1]);
         checkWriteReadBuiltin(*reflectable.getField("externField"),
                 [&structure](zserio::BitStreamReader& reader) {
-                    ASSERT_EQ(structure.getExternField(), reader.readBitBuffer());
+                    ASSERT_EQ(structure.getExternField(), reader.readBitBuffer<allocator_type>());
                 }
         );
 
@@ -324,7 +325,7 @@ protected:
         checkWriteThrows(*reflectable["externArray"]);
         checkWriteReadBuiltin(*reflectable.getField("externArray")->at(0),
                 [&structure](zserio::BitStreamReader& reader) {
-                    ASSERT_EQ(structure.getExternArray()[0], reader.readBitBuffer());
+                    ASSERT_EQ(structure.getExternArray()[0], reader.readBitBuffer<allocator_type>());
                 }
         );
 
