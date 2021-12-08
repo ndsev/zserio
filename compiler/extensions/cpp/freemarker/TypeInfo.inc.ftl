@@ -108,7 +108,11 @@ ${I}};
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}::zserio::FieldInfo{
 ${I}    ::zserio::makeStringView("${field.name}"), // schemaName
+    <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
+${I}    <@field_info_recursive_type_info_var_name field/>, // typeInfo
+    <#else>
 ${I}    <@type_info field.typeInfo/>, // typeInfo
+    </#if>
     <#if field_info_type_arguments_count(field) != 0>
 ${I}    <@field_info_type_arguments_var_name field/>, // typeArguments
     <#else>
@@ -128,6 +132,17 @@ ${I}    <#if field.array?? && field.array.length??><#rt>
 ${I}    <#if field.array?? && field.array.isPacked>true<#else>false</#if>, // isPacked
 ${I}    <#if field.array?? && field.array.isImplicit>true<#else>false</#if> // isImplicit
 ${I}}<#if comma>,</#if>
+</#macro>
+
+<#macro field_info_recursive_type_info_var_name field>
+    ${field.name}RecursiveTypeInfo<#t>
+</#macro>
+
+<#macro field_info_recursive_type_info_var field>
+    <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
+    static const ::zserio::RecursiveTypeInfo <@field_info_recursive_type_info_var_name field/>(
+            &${field.typeInfo.cppTypeName}::typeInfo);
+    </#if>
 </#macro>
 
 <#function field_info_type_arguments_count field>

@@ -10,6 +10,8 @@ fieldU32:
     float16 fieldFloat16;
     float32 fieldFloat32;
     float64 fieldFloat64;
+    optional SimpleStruct fieldRecursion;
+    SimpleStruct arrayRecursion[];
 };
 
 struct ComplexStruct
@@ -30,6 +32,20 @@ struct ComplexStruct
 struct ParameterizedStruct(SimpleStruct simple)
 {
     uint8 array[simple.fieldU32];
+};
+
+union RecursiveUnion
+{
+    uint32 fieldU32;
+    RecursiveUnion recursive[];
+};
+
+choice RecursiveChoice(bool param1, bool param2) on param1
+{
+    case true:
+        RecursiveChoice(param2, false) recursive[];
+    case false:
+        uint32 fieldU32;
 };
 
 subtype uint16 EnumUnderlyingType;
@@ -93,6 +109,8 @@ struct WithTypeInfoCode
     SubtypedSimpleStruct simpleStruct;
     ComplexStruct complexStruct;
     ParameterizedStruct(simpleStruct) parameterizedStruct;
+    RecursiveUnion recursiveUnion;
+    RecursiveChoice(true, false) recursiveChoice;
     TestEnum selector;
     SimpleChoice(selector) simpleChoice;
     TemplatedStruct<uint32> templatedStruct;
@@ -121,7 +139,7 @@ sql_table Fts4Table using fts4
     string searchTags;
 };
 
-sql_table WithoutRowidTable
+sql_table WithoutRowIdTable
 {
     uint32 pk1 sql "NOT NULL";
     uint32 pk2 sql "NOT NULL";
@@ -138,7 +156,7 @@ sql_database SqlDatabase
     TemplatedSqlTable<uint32> templatedSqlTableU32;
     TemplatedSqlTableU8 templatedSqlTableU8;
     Fts4Table fts4Table;
-    WithoutRowidTable withoutRowidTable;
+    WithoutRowIdTable withoutRowIdTable;
 };
 
 pubsub SimplePubsub

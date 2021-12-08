@@ -1,7 +1,8 @@
 import unittest
 import enum
 
-from zserio.typeinfo import TypeInfo, MemberInfo, CaseInfo, ItemInfo, TypeAttribute, MemberAttribute
+from zserio.typeinfo import (TypeInfo, RecursiveTypeInfo, MemberInfo, CaseInfo, ItemInfo, TypeAttribute,
+                             MemberAttribute)
 
 class TypeInfoTest(unittest.TestCase):
     class DummyType:
@@ -10,6 +11,15 @@ class TypeInfoTest(unittest.TestCase):
     class DummyEnum(enum.Enum):
         ONE = 1
         TWO = 2
+
+    class RecursiveType:
+        @staticmethod
+        def type_info():
+            return TypeInfo("schema_name", TypeInfoTest.RecursiveType,
+                attributes={TypeAttribute.FIELDS : [
+                    MemberInfo("recursive", RecursiveTypeInfo(TypeInfoTest.RecursiveType.type_info)),
+                ]}
+            )
 
     def test_type_info(self):
         type_info_1 = TypeInfo("schema_name", TypeInfoTest.DummyType)
@@ -44,6 +54,16 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIsNone(member_2.attributes[MemberAttribute.OPTIONAL])
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_2.attributes)
         self.assertEqual("member_2_prop_name", member_2.attributes[MemberAttribute.PROPERTY_NAME])
+
+    def test_recursive_type_info(self):
+        type_info = TypeInfoTest.RecursiveType.type_info()
+        recursive_type_info = type_info.attributes[TypeAttribute.FIELDS][0].type_info
+
+        self.assertEqual(type_info.schema_name, recursive_type_info.schema_name)
+        self.assertEqual(type_info.py_type, recursive_type_info.py_type)
+        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
+                         len(recursive_type_info.attributes[TypeAttribute.FIELDS]))
+
 
     def test_member_info(self):
         member_info = MemberInfo("schema_name", TypeInfo("uint32", int), attributes={

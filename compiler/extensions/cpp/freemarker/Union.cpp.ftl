@@ -147,6 +147,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     <@template_info_template_arguments_var "templateArguments", templateInstantiation!/>
 
     <#list fieldList as field>
+    <@field_info_recursive_type_info_var field/>
     <@field_info_type_arguments_var field/>
     </#list>
     <@field_info_array_var "fields", fieldList/>

@@ -9,6 +9,40 @@ using namespace zserio::literals;
 namespace zserio
 {
 
+namespace
+{
+
+class RecursiveObject
+{
+public:
+    static const ITypeInfo& typeInfo()
+    {
+        static const RecursiveTypeInfo recursiveTypeInfo(&RecursiveObject::typeInfo);
+        static const std::array<FieldInfo, 1> fields = {
+            FieldInfo{
+                "recursive"_sv,
+                recursiveTypeInfo,
+                {},
+                {},
+                {},
+                {},
+                true, // isOptional
+                {},
+                {},
+                false,
+                {},
+                false,
+                false
+            }
+        };
+
+        static const StructTypeInfo structTypeInfo("RecursiveObject"_sv, ""_sv, {}, fields, {}, {});
+        return structTypeInfo;
+    }
+};
+
+} // namespace
+
 class TypeInfoTest : public ::testing::Test
 {
 protected:
@@ -38,7 +72,7 @@ protected:
         ASSERT_THROW(typeInfo.getColumns(), CppRuntimeException);
         ASSERT_THROW(typeInfo.getSqlConstraint(), CppRuntimeException);
         ASSERT_THROW(typeInfo.getVirtualTableUsing(), CppRuntimeException);
-        ASSERT_THROW(typeInfo.isWithoutRowid(), CppRuntimeException);
+        ASSERT_THROW(typeInfo.isWithoutRowId(), CppRuntimeException);
 
         ASSERT_THROW(typeInfo.getTables(), CppRuntimeException);
 
@@ -219,7 +253,7 @@ TEST_F(TypeInfoTest, structTypeInfo)
     ASSERT_THROW(structTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(structTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(structTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(structTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(structTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_THROW(structTypeInfo.getTables(), CppRuntimeException);
 
@@ -254,7 +288,7 @@ TEST_F(TypeInfoTest, unionTypeInfo)
     ASSERT_THROW(unionTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(unionTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(unionTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(unionTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(unionTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_THROW(unionTypeInfo.getTables(), CppRuntimeException);
 
@@ -289,7 +323,7 @@ TEST_F(TypeInfoTest, choiceTypeInfo)
     ASSERT_THROW(choiceTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(choiceTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(choiceTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(choiceTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(choiceTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_THROW(choiceTypeInfo.getTables(), CppRuntimeException);
 
@@ -324,7 +358,7 @@ TEST_F(TypeInfoTest, sqlTableTypeInfo)
     ASSERT_EQ(0, sqlTableTypeInfo.getColumns().size());
     ASSERT_EQ(""_sv, sqlTableTypeInfo.getSqlConstraint());
     ASSERT_EQ(""_sv, sqlTableTypeInfo.getVirtualTableUsing());
-    ASSERT_EQ(false, sqlTableTypeInfo.isWithoutRowid());
+    ASSERT_EQ(false, sqlTableTypeInfo.isWithoutRowId());
 
     ASSERT_THROW(sqlTableTypeInfo.getTables(), CppRuntimeException);
 
@@ -359,7 +393,7 @@ TEST_F(TypeInfoTest, sqlDatabaseTypeInfo)
     ASSERT_THROW(sqlDatabaseTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(sqlDatabaseTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(sqlDatabaseTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(sqlDatabaseTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(sqlDatabaseTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_EQ(0, sqlDatabaseTypeInfo.getTables().size());
 
@@ -395,7 +429,7 @@ TEST_F(TypeInfoTest, enumTypeInfo)
     ASSERT_THROW(enumTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(enumTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(enumTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(enumTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(enumTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_THROW(enumTypeInfo.getTables(), CppRuntimeException);
 
@@ -431,7 +465,7 @@ TEST_F(TypeInfoTest, bitmaskTypeInfo)
     ASSERT_THROW(bitmaskTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(bitmaskTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(bitmaskTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(bitmaskTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(bitmaskTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_THROW(bitmaskTypeInfo.getTables(), CppRuntimeException);
 
@@ -466,7 +500,7 @@ TEST_F(TypeInfoTest, pubsubTypeInfo)
     ASSERT_THROW(pubsubTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(pubsubTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(pubsubTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(pubsubTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(pubsubTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_THROW(pubsubTypeInfo.getTables(), CppRuntimeException);
 
@@ -501,7 +535,7 @@ TEST_F(TypeInfoTest, serviceTypeInfo)
     ASSERT_THROW(serviceTypeInfo.getColumns(), CppRuntimeException);
     ASSERT_THROW(serviceTypeInfo.getSqlConstraint(), CppRuntimeException);
     ASSERT_THROW(serviceTypeInfo.getVirtualTableUsing(), CppRuntimeException);
-    ASSERT_THROW(serviceTypeInfo.isWithoutRowid(), CppRuntimeException);
+    ASSERT_THROW(serviceTypeInfo.isWithoutRowId(), CppRuntimeException);
 
     ASSERT_THROW(serviceTypeInfo.getTables(), CppRuntimeException);
 
@@ -511,6 +545,43 @@ TEST_F(TypeInfoTest, serviceTypeInfo)
     ASSERT_THROW(serviceTypeInfo.getMessages(), CppRuntimeException);
 
     ASSERT_EQ(0, serviceTypeInfo.getMethods().size());
+}
+
+TEST_F(TypeInfoTest, recursiveTypeInfo)
+{
+    const ITypeInfo& typeInfo = RecursiveObject::typeInfo();
+    const ITypeInfo& recursiveTypeInfo = typeInfo.getFields()[0].typeInfo;
+
+    ASSERT_EQ(typeInfo.getSchemaName(), recursiveTypeInfo.getSchemaName());
+    ASSERT_EQ(typeInfo.getSchemaType(), recursiveTypeInfo.getSchemaType());
+    ASSERT_EQ(typeInfo.getCppType(), recursiveTypeInfo.getCppType());
+    ASSERT_THROW(recursiveTypeInfo.getBitSize(), CppRuntimeException);
+
+    ASSERT_EQ(&typeInfo.getFields()[0], &recursiveTypeInfo.getFields()[0]);
+    ASSERT_EQ(0, recursiveTypeInfo.getParameters().size());
+    ASSERT_EQ(0, recursiveTypeInfo.getFunctions().size());
+
+    ASSERT_THROW(recursiveTypeInfo.getSelector(), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.getCases(), CppRuntimeException);
+
+    ASSERT_THROW(recursiveTypeInfo.getUnderlyingType(), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.getUnderlyingTypeArguments(), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.getEnumItems(), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.getBitmaskValues(), CppRuntimeException);
+
+    ASSERT_THROW(recursiveTypeInfo.getColumns(), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.getSqlConstraint(), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.getVirtualTableUsing(), CppRuntimeException);
+    ASSERT_THROW(recursiveTypeInfo.isWithoutRowId(), CppRuntimeException);
+
+    ASSERT_THROW(recursiveTypeInfo.getTables(), CppRuntimeException);
+
+    ASSERT_EQ(typeInfo.getTemplateName(), recursiveTypeInfo.getTemplateName());
+    ASSERT_EQ(0, recursiveTypeInfo.getTemplateArguments().size());
+
+    ASSERT_THROW(recursiveTypeInfo.getMessages(), CppRuntimeException);
+
+    ASSERT_THROW(recursiveTypeInfo.getMethods(), CppRuntimeException);
 }
 
 } // namespace zserio

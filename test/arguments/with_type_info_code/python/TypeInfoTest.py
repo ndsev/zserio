@@ -26,7 +26,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(6, len(fields))
+        self.assertEqual(8, len(fields))
 
         # fieldU32
         member_info = fields[0]
@@ -91,6 +91,32 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(1, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("field_float64", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # fieldRecursion
+        member_info = fields[6]
+        self.assertEqual("fieldRecursion", member_info.schema_name)
+        self.assertEqual(type_info.schema_name, member_info.type_info.schema_name)
+        self.assertEqual(type_info.py_type, member_info.type_info.py_type)
+        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
+                         len(member_info.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_recursion", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
+        self.assertIsNone(member_info.attributes[MemberAttribute.OPTIONAL])
+
+        # arrayRecursion
+        member_info = fields[7]
+        self.assertEqual("arrayRecursion", member_info.schema_name)
+        self.assertEqual(type_info.schema_name, member_info.type_info.schema_name)
+        self.assertEqual(type_info.py_type, member_info.type_info.py_type)
+        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
+                         len(member_info.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("array_recursion", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
+        self.assertIsNone(member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
     def _checkComplexStruct(self, type_info):
         self.assertEqual("with_type_info_code.type_info.ComplexStruct", type_info.schema_name)
@@ -229,6 +255,106 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("array", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
         self.assertEqual("self.simple.field_u32", member_info.attributes[MemberAttribute.ARRAY_LENGTH])
+
+    def _checkRecursiveUnion(self, type_info):
+        self.assertEqual("with_type_info_code.type_info.RecursiveUnion", type_info.schema_name)
+        self.assertEqual(self.api.RecursiveUnion, type_info.py_type)
+        self.assertEqual(1, len(type_info.attributes))
+        self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
+        fields = type_info.attributes[TypeAttribute.FIELDS]
+        self.assertEqual(2, len(fields))
+
+        # fieldU32
+        member_info = fields[0]
+        self.assertEqual("uint32", member_info.type_info.schema_name)
+        self.assertEqual(int, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_u32", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # recursive
+        member_info = fields[1]
+        self.assertEqual("recursive", member_info.schema_name)
+        self.assertEqual(type_info.schema_name, member_info.type_info.schema_name)
+        self.assertEqual(type_info.py_type, member_info.type_info.py_type)
+        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
+                         len(member_info.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("recursive", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
+        self.assertEqual(None, member_info.attributes[MemberAttribute.ARRAY_LENGTH])
+
+    def _checkRecursiveChoice(self, type_info):
+        self.assertEqual("with_type_info_code.type_info.RecursiveChoice", type_info.schema_name)
+        self.assertEqual(self.api.RecursiveChoice, type_info.py_type)
+        self.assertEqual(4, len(type_info.attributes))
+        self.assertIn(TypeAttribute.PARAMETERS, type_info.attributes)
+        parameters = type_info.attributes[TypeAttribute.PARAMETERS]
+        self.assertEqual(2, len(parameters))
+        self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
+        fields = type_info.attributes[TypeAttribute.FIELDS]
+        self.assertEqual(2, len(fields))
+        self.assertIn(TypeAttribute.SELECTOR, type_info.attributes)
+        self.assertEqual("self.param1", type_info.attributes[TypeAttribute.SELECTOR])
+        self.assertIn(TypeAttribute.CASES, type_info.attributes)
+        cases = type_info.attributes[TypeAttribute.CASES]
+        self.assertEqual(2, len(cases))
+
+        # param1
+        member_info = parameters[0]
+        self.assertEqual("param1", member_info.schema_name)
+        self.assertEqual("bool", member_info.type_info.schema_name)
+        self.assertEqual(bool, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("param1", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # param2
+        member_info = parameters[1]
+        self.assertEqual("param2", member_info.schema_name)
+        self.assertEqual("bool", member_info.type_info.schema_name)
+        self.assertEqual(bool, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("param2", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # case true
+        case_info = cases[0]
+        self.assertEqual(["True"], case_info.case_expressions)
+        self.assertEqual(fields[0].schema_name, case_info.field.schema_name)
+
+        # case false
+        case_info = cases[1]
+        self.assertEqual(["False"], case_info.case_expressions)
+        self.assertEqual(fields[1].schema_name, case_info.field.schema_name)
+
+        # recursive
+        member_info = fields[0]
+        self.assertEqual("recursive", member_info.schema_name)
+        self.assertEqual(type_info.schema_name, member_info.type_info.schema_name)
+        self.assertEqual(type_info.py_type, member_info.type_info.py_type)
+        self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
+                         len(member_info.type_info.attributes[TypeAttribute.FIELDS]))
+        self.assertEqual(3, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("recursive", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
+        self.assertEqual(None, member_info.attributes[MemberAttribute.ARRAY_LENGTH])
+        self.assertIn(MemberAttribute.TYPE_ARGUMENTS, member_info.attributes)
+        self.assertEqual(["self.param2", "False"], member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
+
+        # fieldU32
+        member_info = fields[1]
+        self.assertEqual("uint32", member_info.type_info.schema_name)
+        self.assertEqual(int, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_u32", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
     def _checkTestEnum(self, type_info):
         self.assertEqual("with_type_info_code.type_info.TestEnum", type_info.schema_name)
@@ -492,7 +618,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(9, len(fields))
+        self.assertEqual(11, len(fields))
 
         # simpleStruct
         member_info = fields[0]
@@ -520,8 +646,26 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIn(MemberAttribute.TYPE_ARGUMENTS, member_info.attributes)
         self.assertEqual(["self.simple_struct"], member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
 
-        # selector
+        # recursiveUnion
         member_info = fields[3]
+        self.assertEqual("recursiveUnion", member_info.schema_name)
+        self._checkRecursiveUnion(member_info.type_info)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("recursive_union", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # recursiveChoice
+        member_info = fields[4]
+        self.assertEqual("recursiveChoice", member_info.schema_name)
+        self._checkRecursiveChoice(member_info.type_info)
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("recursive_choice", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.TYPE_ARGUMENTS, member_info.attributes)
+        self.assertEqual(["True", "False"], member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
+
+        # selector
+        member_info = fields[5]
         self.assertEqual("selector", member_info.schema_name)
         self._checkTestEnum(member_info.type_info)
         self.assertEqual(1, len(member_info.attributes))
@@ -529,7 +673,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("selector", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
         # simpleChoice
-        member_info = fields[4]
+        member_info = fields[6]
         self.assertEqual("simpleChoice", member_info.schema_name)
         self._checkSimpleChoice(member_info.type_info)
         self.assertEqual(2, len(member_info.attributes))
@@ -539,7 +683,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(["self.selector"], member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
 
         # templatedStruct
-        member_info = fields[5]
+        member_info = fields[7]
         self.assertEqual("templatedStruct", member_info.schema_name)
         self._checkTS32(member_info.type_info)
         self.assertEqual(1, len(member_info.attributes))
@@ -547,7 +691,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("templated_struct", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
         # templatedParameterizedStruct
-        member_info = fields[6]
+        member_info = fields[8]
         self.assertEqual("templatedParameterizedStruct", member_info.schema_name)
         self._checkTemplatedParameterizedStruct_TS32(member_info.type_info)
         self.assertEqual(2, len(member_info.attributes))
@@ -558,7 +702,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(["self.templated_struct"], member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
 
         # externData
-        member_info = fields[7]
+        member_info = fields[9]
         self.assertEqual("externData", member_info.schema_name)
         self.assertEqual("extern", member_info.type_info.schema_name)
         self.assertEqual(BitBuffer, member_info.type_info.py_type)
@@ -567,7 +711,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("extern_data", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
         # implicitArray
-        member_info = fields[8]
+        member_info = fields[10]
         self.assertEqual("implicitArray", member_info.schema_name)
         self.assertEqual("uint32", member_info.type_info.schema_name)
         self.assertEqual(int, member_info.type_info.py_type)
@@ -724,9 +868,9 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIn(MemberAttribute.SQL_TYPE_NAME, member_info.attributes)
         self.assertEqual("TEXT", member_info.attributes[MemberAttribute.SQL_TYPE_NAME])
 
-    def _checkWithoutRowidTable(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.WithoutRowidTable", type_info.schema_name)
-        self.assertEqual(self.api.WithoutRowidTable, type_info.py_type)
+    def _checkWithoutRowIdTable(self, type_info):
+        self.assertEqual("with_type_info_code.type_info.WithoutRowIdTable", type_info.schema_name)
+        self.assertEqual(self.api.WithoutRowIdTable, type_info.py_type)
         self.assertEqual(3, len(type_info.attributes))
         self.assertIn(TypeAttribute.WITHOUT_ROWID, type_info.attributes)
         self.assertIsNone(type_info.attributes[TypeAttribute.WITHOUT_ROWID])
@@ -800,10 +944,10 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("fts4_table", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
-        # withoutRowidTable
+        # withoutRowIdTable
         member_info = tables[4]
-        self.assertEqual("withoutRowidTable", member_info.schema_name)
-        self._checkWithoutRowidTable(member_info.type_info)
+        self.assertEqual("withoutRowIdTable", member_info.schema_name)
+        self._checkWithoutRowIdTable(member_info.type_info)
         self.assertEqual(1, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("without_rowid_table", member_info.attributes[MemberAttribute.PROPERTY_NAME])

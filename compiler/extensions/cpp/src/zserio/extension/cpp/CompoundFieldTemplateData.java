@@ -513,6 +513,7 @@ public class CompoundFieldTemplateData
                     cppOnwerIndirectExpressionFormatter, parentType, elementTypeInstantiation, withWriterCode);
             elementIntegerRange = createIntegerRange(cppNativeMapper, elementTypeInstantiation,
                     cppExpressionFormatter);
+            elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
         }
 
         public ArrayTraitsTemplateData getTraits()
@@ -560,6 +561,11 @@ public class CompoundFieldTemplateData
             return elementIntegerRange;
         }
 
+        public boolean getElementIsRecursive()
+        {
+            return elementIsRecursive;
+        }
+
         private static String createLength(ArrayInstantiation arrayInstantiation,
                 ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
         {
@@ -579,6 +585,7 @@ public class CompoundFieldTemplateData
         private final String elementObjectIndirectDynamicBitSizeValue;
         private final Compound elementCompound;
         private final IntegerRange elementIntegerRange;
+        private final boolean elementIsRecursive;
     }
 
     private static Optional createOptional(Field field, ZserioType baseFieldType, CompoundType parentType,

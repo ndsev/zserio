@@ -66,7 +66,7 @@ public:
     virtual Span<const ColumnInfo> getColumns() const override;
     virtual StringView getSqlConstraint() const override;
     virtual StringView getVirtualTableUsing() const override;
-    virtual bool isWithoutRowid() const override;
+    virtual bool isWithoutRowId() const override;
 
     virtual Span<const TableInfo> getTables() const override;
 
@@ -644,7 +644,7 @@ public:
     virtual Span<const ColumnInfo> getColumns() const override;
     virtual StringView getSqlConstraint() const override;
     virtual StringView getVirtualTableUsing() const override;
-    virtual bool isWithoutRowid() const override;
+    virtual bool isWithoutRowId() const override;
 
 private:
     Span<const ColumnInfo> m_columns;
@@ -711,6 +711,72 @@ public:
 
 private:
     Span<const MethodInfo> m_methods;
+};
+
+/**
+ * Type info for recursive types used as a wrapper around generated static typeInfo method to prevent
+ * infinite recrusion in type info definition.
+ */
+class RecursiveTypeInfo : public ITypeInfo
+{
+public:
+    /** Typedef to pointer to static typeInfo method on generated objects. */
+    using TypeInfoFunc = const ITypeInfo& (*)();
+
+    /**
+     * Constructor.
+     *
+     * \param typeInfoFunc Pointer to static typeInfo method.
+     */
+    explicit RecursiveTypeInfo(TypeInfoFunc typeInfoFunc) :
+            m_typeInfoFunc(typeInfoFunc)
+    {}
+
+    /**
+     * Copying and moving is disallowed!
+     * \{
+     */
+    RecursiveTypeInfo(const RecursiveTypeInfo&) = delete;
+    RecursiveTypeInfo& operator=(const RecursiveTypeInfo&) = delete;
+
+    RecursiveTypeInfo(const RecursiveTypeInfo&&) = delete;
+    RecursiveTypeInfo& operator=(const RecursiveTypeInfo&&) = delete;
+    /**
+     * \}
+     */
+
+    virtual StringView getSchemaName() const override;
+    virtual SchemaType getSchemaType() const override;
+    virtual CppType getCppType() const override;
+    virtual uint8_t getBitSize() const override;
+
+    virtual Span<const FieldInfo> getFields() const override;
+    virtual Span<const ParameterInfo> getParameters() const override;
+    virtual Span<const FunctionInfo> getFunctions() const override;
+
+    virtual StringView getSelector() const override;
+    virtual Span<const CaseInfo> getCases() const override;
+
+    virtual const ITypeInfo& getUnderlyingType() const override;
+    virtual Span<const StringView> getUnderlyingTypeArguments() const override;
+    virtual Span<const ItemInfo> getEnumItems() const override;
+    virtual Span<const ItemInfo> getBitmaskValues() const override;
+
+    virtual Span<const ColumnInfo> getColumns() const override;
+    virtual StringView getSqlConstraint() const override;
+    virtual StringView getVirtualTableUsing() const override;
+    virtual bool isWithoutRowId() const override;
+
+    virtual Span<const TableInfo> getTables() const override;
+
+    virtual StringView getTemplateName() const override;
+    virtual Span<const TemplateArgumentInfo> getTemplateArguments() const override;
+
+    virtual Span<const MessageInfo> getMessages() const override;
+    virtual Span<const MethodInfo> getMethods() const override;
+
+private:
+    TypeInfoFunc m_typeInfoFunc;
 };
 
 } // namespace zserio

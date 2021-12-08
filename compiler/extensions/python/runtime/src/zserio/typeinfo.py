@@ -15,7 +15,7 @@ class TypeInfo:
         """
         Type info constructor.
 
-        :param schema_name Zserio schema full type name.
+        :param schema_name: Zserio schema full type name.
         :param py_type: Reference to the generated type.
         :param attributes: List of type attributes.
         """
@@ -135,6 +135,45 @@ class TypeInfo:
 
         return self._attributes
 
+class RecursiveTypeInfo:
+    """
+    Type info for recursive types used as a wrapper around generated static type_info method to prevent
+    infinite recrusion in type info definition.
+    """
+
+    def __init__(self, type_info_func : typing.Callable[[], TypeInfo]):
+        """
+        Constructor.
+
+        :param type_info_func: Generated static type_info method to wrap.
+        """
+
+        self._type_info_func = type_info_func
+
+    @property
+    def schema_name(self) -> str:
+        """
+        See :py:attr:`TypeInfo.schema_name`.
+        """
+
+        return self._type_info_func().schema_name
+
+    @property
+    def py_type(self) -> typing.Type:
+        """
+        See :py:attr:`TypeInfo.py_type`.
+        """
+
+        return self._type_info_func().py_type
+
+    @property
+    def attributes(self) -> typing.Dict['TypeAttribute', typing.Any]:
+        """
+        See :py:attr:`TypeInfo.attributes`.
+        """
+
+        return self._type_info_func().attributes
+
 class TypeAttribute(enum.Enum):
     """
     Type attribute type to be used in TypeInfo.
@@ -166,7 +205,7 @@ class MemberInfo:
     Member info class which provides information about members of compound types.
     """
 
-    def __init__(self, schema_name: str, typeinfo: TypeInfo, *,
+    def __init__(self, schema_name: str, typeinfo: typing.Union[TypeInfo, RecursiveTypeInfo], *,
                  attributes: typing.Dict['MemberAttribute', typing.Any] = None):
         """
         Member info constructor.
@@ -191,7 +230,7 @@ class MemberInfo:
         return self._schema_name
 
     @property
-    def type_info(self) -> TypeInfo:
+    def type_info(self) -> typing.Union[TypeInfo, RecursiveTypeInfo]:
         """
         Gets type info of this member.
 

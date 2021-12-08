@@ -27,6 +27,10 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/Fts4Table.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ParameterizedStruct.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ParameterizedStruct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveChoice.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveChoice.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleChoice.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleChoice.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimplePubsub.cpp
@@ -54,8 +58,8 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TestEnum.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TS32.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TS32.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithoutRowidTable.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithoutRowidTable.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithoutRowIdTable.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithoutRowIdTable.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithTypeInfoCode.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithTypeInfoCode.h
 )

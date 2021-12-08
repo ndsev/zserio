@@ -258,7 +258,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not SQL table type.
      */
-    virtual bool isWithoutRowid() const = 0;
+    virtual bool isWithoutRowId() const = 0;
 
     // method for SQL database type
 

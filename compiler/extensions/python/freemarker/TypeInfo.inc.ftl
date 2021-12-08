@@ -1,7 +1,12 @@
 <#macro member_info_field field comma indent=3>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}zserio.typeinfo.MemberInfo(
-${I}    '${field.name}', <@type_info field.typeInfo/>,
+${I}    '${field.name}', <#rt>
+    <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
+        <#lt>zserio.typeinfo.RecursiveTypeInfo(${field.typeInfo.pythonTypeName}.type_info),
+    <#else>
+        <#lt><@type_info field.typeInfo/>,
+    </#if>
         <@member_info_field_attributes field, indent+1/><#t>
 ${I})<#if comma>,</#if>
 </#macro>

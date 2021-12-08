@@ -92,7 +92,7 @@ StringView TypeInfoBase::getVirtualTableUsing() const
     throw CppRuntimeException("Type '") + getSchemaName() + "' is not a SQL table type!";
 }
 
-bool TypeInfoBase::isWithoutRowid() const
+bool TypeInfoBase::isWithoutRowId() const
 {
     throw CppRuntimeException("Type '") + getSchemaName() + "' is not a SQL table type!";
 }
@@ -681,7 +681,7 @@ StringView SqlTableTypeInfo::getVirtualTableUsing() const
     return m_virtualTableUsing;
 }
 
-bool SqlTableTypeInfo::isWithoutRowid() const
+bool SqlTableTypeInfo::isWithoutRowId() const
 {
     return m_isWithoutRowId;
 }
@@ -752,6 +752,115 @@ ServiceTypeInfo::ServiceTypeInfo(StringView schemaName, Span<const MethodInfo> m
 Span<const MethodInfo> ServiceTypeInfo::getMethods() const
 {
     return m_methods;
+}
+
+StringView RecursiveTypeInfo::getSchemaName() const
+{
+    return m_typeInfoFunc().getSchemaName();
+}
+
+SchemaType RecursiveTypeInfo::getSchemaType() const
+{
+    return m_typeInfoFunc().getSchemaType();
+}
+
+CppType RecursiveTypeInfo::getCppType() const
+{
+    return m_typeInfoFunc().getCppType();
+}
+
+uint8_t RecursiveTypeInfo::getBitSize() const
+{
+    return m_typeInfoFunc().getBitSize();
+}
+
+Span<const FieldInfo> RecursiveTypeInfo::getFields() const
+{
+    return m_typeInfoFunc().getFields();
+}
+
+Span<const ParameterInfo> RecursiveTypeInfo::getParameters() const
+{
+    return m_typeInfoFunc().getParameters();
+}
+
+Span<const FunctionInfo> RecursiveTypeInfo::getFunctions() const
+{
+    return m_typeInfoFunc().getFunctions();
+}
+
+StringView RecursiveTypeInfo::getSelector() const
+{
+    return m_typeInfoFunc().getSelector();
+}
+
+Span<const CaseInfo> RecursiveTypeInfo::getCases() const
+{
+    return m_typeInfoFunc().getCases();
+}
+
+const ITypeInfo& RecursiveTypeInfo::getUnderlyingType() const
+{
+    return m_typeInfoFunc().getUnderlyingType();
+}
+
+Span<const StringView> RecursiveTypeInfo::getUnderlyingTypeArguments() const
+{
+    return m_typeInfoFunc().getUnderlyingTypeArguments();
+}
+
+Span<const ItemInfo> RecursiveTypeInfo::getEnumItems() const
+{
+    return m_typeInfoFunc().getEnumItems();
+}
+
+Span<const ItemInfo> RecursiveTypeInfo::getBitmaskValues() const
+{
+    return m_typeInfoFunc().getBitmaskValues();
+}
+
+Span<const ColumnInfo> RecursiveTypeInfo::getColumns() const
+{
+    return m_typeInfoFunc().getColumns();
+}
+
+StringView RecursiveTypeInfo::getSqlConstraint() const
+{
+    return m_typeInfoFunc().getSqlConstraint();
+}
+
+StringView RecursiveTypeInfo::getVirtualTableUsing() const
+{
+    return m_typeInfoFunc().getVirtualTableUsing();
+}
+
+bool RecursiveTypeInfo::isWithoutRowId() const
+{
+    return m_typeInfoFunc().isWithoutRowId();
+}
+
+Span<const TableInfo> RecursiveTypeInfo::getTables() const
+{
+    return m_typeInfoFunc().getTables();
+}
+
+StringView RecursiveTypeInfo::getTemplateName() const
+{
+    return m_typeInfoFunc().getTemplateName();
+}
+Span<const TemplateArgumentInfo> RecursiveTypeInfo::getTemplateArguments() const
+{
+    return m_typeInfoFunc().getTemplateArguments();
+}
+
+Span<const MessageInfo> RecursiveTypeInfo::getMessages() const
+{
+    return m_typeInfoFunc().getMessages();
+}
+
+Span<const MethodInfo> RecursiveTypeInfo::getMethods() const
+{
+    return m_typeInfoFunc().getMethods();
 }
 
 } // namespace zserio
