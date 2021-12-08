@@ -89,7 +89,7 @@ zserio_add_library(TARGET sql_allocation_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES_SQL_ALLOCATION}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation -withValidationCode
+    ZSERIO_OPTIONS -setCppAllocator polymorphic -withoutSourcesAmalgamation -withValidationCode -withTypeInfoCode
 )
 
 target_include_directories(sql_allocation_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
