@@ -259,9 +259,11 @@ class TypeInfoTest(unittest.TestCase):
     def _checkRecursiveUnion(self, type_info):
         self.assertEqual("with_type_info_code.type_info.RecursiveUnion", type_info.schema_name)
         self.assertEqual(self.api.RecursiveUnion, type_info.py_type)
-        self.assertEqual(1, len(type_info.attributes))
+        self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
+        self.assertIn(TypeAttribute.SELECTOR, type_info.attributes)
+        self.assertEqual(None, type_info.attributes[TypeAttribute.SELECTOR])
         self.assertEqual(2, len(fields))
 
         # fieldU32
@@ -950,7 +952,7 @@ class TypeInfoTest(unittest.TestCase):
         self._checkWithoutRowIdTable(member_info.type_info)
         self.assertEqual(1, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
-        self.assertEqual("without_rowid_table", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertEqual("without_row_id_table", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
     def _checkSimplePubsub(self, type_info):
         self.assertEqual("with_type_info_code.type_info.SimplePubsub", type_info.schema_name)
