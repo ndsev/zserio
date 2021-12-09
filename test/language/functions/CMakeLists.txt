@@ -16,6 +16,8 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/functions/structure_array_param/ChildStructure.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_array_param/ChildStructure.h
+    ${ZSERIO_GEN_DIR}/functions/structure_array_param/NotLeftMost.cpp
+    ${ZSERIO_GEN_DIR}/functions/structure_array_param/NotLeftMost.h
     ${ZSERIO_GEN_DIR}/functions/structure_array_param/ParentStructure.cpp
     ${ZSERIO_GEN_DIR}/functions/structure_array_param/ParentStructure.h
 

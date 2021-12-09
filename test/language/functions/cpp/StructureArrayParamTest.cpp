@@ -22,6 +22,11 @@ protected:
 
         for (uint8_t i = 0; i < NUM_CHILDREN; ++i)
             writer.writeBits(static_cast<uint32_t>(VALUES[i]), CHILD_BIT_SIZE);
+
+        writer.writeBits(NUM_ANOTHER_CHILDREN, 8);
+
+        for (uint8_t i = 0; i < NUM_ANOTHER_CHILDREN; ++i)
+            writer.writeBits(static_cast<uint32_t>(ANOTHER_VALUES[i]), ANOTHER_CHILD_BIT_SIZE);
     }
 
     void createParentStructure(ParentStructure& parentStructure)
@@ -35,17 +40,36 @@ protected:
             child.setValue(VALUES[i]);
             children.push_back(child);
         }
+
+        parentStructure.setNumAnotherChildren(NUM_ANOTHER_CHILDREN);
+
+        auto& anotherChildren = parentStructure.getAnotherChildren();
+        for (uint8_t i = 0; i < NUM_ANOTHER_CHILDREN; ++i)
+        {
+            ChildStructure child;
+            child.setValue(ANOTHER_VALUES[i]);
+            anotherChildren.push_back(child);
+        }
     }
 
 protected:
-    static const uint8_t    CHILD_BIT_SIZE = 19;
+    static const uint8_t CHILD_BIT_SIZE = 19;
+    static const uint8_t ANOTHER_CHILD_BIT_SIZE = 17;
 
 private:
-    static const uint8_t    NUM_CHILDREN = 2;
-    static const uint64_t   VALUES[NUM_CHILDREN];
+    static const uint8_t NUM_CHILDREN = 2;
+    static const uint64_t VALUES[NUM_CHILDREN];
+    static const uint8_t NUM_ANOTHER_CHILDREN = 2;
+    static const uint64_t ANOTHER_VALUES[NUM_ANOTHER_CHILDREN];
 };
 
 const uint64_t FunctionsStructureArrayParamTest::VALUES[FunctionsStructureArrayParamTest::NUM_CHILDREN] =
+{
+    0xAABB, 0xCCDD
+};
+
+const uint64_t FunctionsStructureArrayParamTest::ANOTHER_VALUES[
+        FunctionsStructureArrayParamTest::NUM_ANOTHER_CHILDREN] =
 {
     0xAABB, 0xCCDD
 };
@@ -56,6 +80,8 @@ TEST_F(FunctionsStructureArrayParamTest, checkParentStructure)
     createParentStructure(parentStructure);
     const uint8_t expectedChildBitSize = CHILD_BIT_SIZE;
     ASSERT_EQ(expectedChildBitSize, parentStructure.funcGetChildBitSize());
+    const uint8_t expectedAnotherChildBitSize = ANOTHER_CHILD_BIT_SIZE;
+    ASSERT_EQ(expectedAnotherChildBitSize, parentStructure.getNotLeftMost().funcGetAnotherChildBitSize());
 
     zserio::BitBuffer writtenBitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writtenWriter(writtenBitBuffer);

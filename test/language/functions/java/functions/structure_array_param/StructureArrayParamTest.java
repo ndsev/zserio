@@ -19,6 +19,7 @@ public class StructureArrayParamTest
     {
         final ParentStructure parentStructure = createParentStructure();
         assertEquals(CHILD_BIT_SIZE, parentStructure.funcGetChildBitSize());
+        assertEquals(ANOTHER_CHILD_BIT_SIZE, parentStructure.getNotLeftMost().funcGetAnotherChildBitSize());
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         parentStructure.write(writer);
@@ -36,9 +37,15 @@ public class StructureArrayParamTest
     private byte[] writeParentStructureToByteArray() throws IOException
     {
         ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeBits(NUM_CHILDREN, 8);
 
+        writer.writeBits(NUM_CHILDREN, 8);
         for (ChildStructure childStructure : CHILDREN)
+        {
+            writer.writeBigInteger(childStructure.getValue(), childStructure.getBitSize());
+        }
+
+        writer.writeBits(NUM_ANOTHER_CHILDREN, 8);
+        for (ChildStructure childStructure : ANOTHER_CHILDREN)
         {
             writer.writeBigInteger(childStructure.getValue(), childStructure.getBitSize());
         }
@@ -52,18 +59,28 @@ public class StructureArrayParamTest
     {
         final ParentStructure parentStructure = new ParentStructure();
 
+        parentStructure.setNotLeftMost(new NotLeftMost());
         parentStructure.setNumChildren(NUM_CHILDREN);
         parentStructure.setChildren(CHILDREN);
+        parentStructure.setNumAnotherChildren(NUM_ANOTHER_CHILDREN);
+        parentStructure.setAnotherChildren(ANOTHER_CHILDREN);
 
         return parentStructure;
     }
 
     private static final short CHILD_BIT_SIZE = 19;
+    private static final short ANOTHER_CHILD_BIT_SIZE = 17;
 
     private static final ChildStructure[] CHILDREN = new ChildStructure[] {
             new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xAABB)),
             new ChildStructure(CHILD_BIT_SIZE, BigInteger.valueOf(0xCCDD))
     };
 
+    private static final ChildStructure[] ANOTHER_CHILDREN = new ChildStructure[] {
+            new ChildStructure(ANOTHER_CHILD_BIT_SIZE, BigInteger.valueOf(0xAABB)),
+            new ChildStructure(ANOTHER_CHILD_BIT_SIZE, BigInteger.valueOf(0xCCDD))
+    };
+
     private static final short NUM_CHILDREN = (short)CHILDREN.length;
+    private static final short NUM_ANOTHER_CHILDREN = (short)ANOTHER_CHILDREN.length;
 }

@@ -8,10 +8,21 @@ struct ChildStructure(uint8 bitSize)
     bit<bitSize>    value;
 };
 
+struct NotLeftMost
+{
+    function uint8 getAnotherChildBitSize()
+    {
+        return 17;
+    }
+};
+
 struct ParentStructure
 {
-    uint8   numChildren;
+    NotLeftMost notLeftMost;
+    uint8 numChildren;
     ChildStructure(getChildBitSize()) children[numChildren];
+    uint8 numAnotherChildren;
+    ChildStructure(notLeftMost.getAnotherChildBitSize()) anotherChildren[numAnotherChildren];
 
     function uint8 getChildBitSize()
     {
