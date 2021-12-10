@@ -8,7 +8,6 @@ import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.PackageName;

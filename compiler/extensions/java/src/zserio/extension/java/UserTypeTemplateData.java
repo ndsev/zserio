@@ -13,7 +13,6 @@ public class UserTypeTemplateData extends JavaTemplateData
         final JavaNativeType javaNativeType = context.getJavaNativeMapper().getJavaType(type);
         packageName = JavaFullNameFormatter.getFullName(javaNativeType.getPackageName());
         name = javaNativeType.getName();
-        withWriterCode = context.getWithWriterCode();
     }
 
     public String getPackageName()
@@ -26,12 +25,6 @@ public class UserTypeTemplateData extends JavaTemplateData
         return name;
     }
 
-    public boolean getWithWriterCode()
-    {
-        return withWriterCode;
-    }
-
     private final String  packageName;
     private final String  name;
-    private final boolean withWriterCode;
 }

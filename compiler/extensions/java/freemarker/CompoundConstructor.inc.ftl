@@ -2,7 +2,7 @@
 <#macro compound_constructors compoundConstructorsData>
     <#local name=compoundConstructorsData.compoundName>
     <#local constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#local>
-    <#if compoundConstructorsData.withWriterCode>
+    <#if withWriterCode>
     public ${name}(${constructorArgumentTypeList})
     {
         <@compound_constructors_set_parameters compoundConstructorsData/>

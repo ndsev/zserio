@@ -17,13 +17,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
 
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final boolean withRangeCheckCode = context.getWithRangeCheckCode();
-        final boolean withWriterCode = context.getWithWriterCode();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
 
         compoundParametersData = new CompoundParameterTemplateData(javaNativeMapper, withRangeCheckCode,
-                withWriterCode, compoundType, javaExpressionFormatter);
-        compoundConstructorsData = new CompoundConstructorTemplateData(withWriterCode, compoundType,
-                compoundParametersData);
+                compoundType, javaExpressionFormatter);
+        compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData);
         compoundFunctionsData = new CompoundFunctionTemplateData(javaNativeMapper, compoundType,
                 javaExpressionFormatter);
 
@@ -33,8 +31,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
         {
-            fieldList.add(new CompoundFieldTemplateData(javaNativeMapper, withWriterCode,
-                    withRangeCheckCode, compoundType, fieldType, javaExpressionFormatter));
+            fieldList.add(new CompoundFieldTemplateData(javaNativeMapper, withRangeCheckCode, compoundType,
+                    fieldType, javaExpressionFormatter));
         }
     }
 

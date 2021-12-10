@@ -180,7 +180,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         <@range_check field.rangeCheckData, name/>
         <#if field.array??>
         <#assign rawArray><@field_argument_name field/></#assign>
-        objectChoice = <@array_wrapper_raw_constructor field, withWriterCode, rawArray, 4/>;
+        objectChoice = <@array_wrapper_raw_constructor field, rawArray, 4/>;
         <#else>
         objectChoice = <@field_argument_name field/>;
         </#if>

@@ -32,7 +32,7 @@ import zserio.extension.java.types.NativeRawArray;
 
 public final class CompoundFieldTemplateData
 {
-    public CompoundFieldTemplateData(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
+    public CompoundFieldTemplateData(JavaNativeMapper javaNativeMapper,
             boolean withRangeCheckCode, CompoundType parentType, Field field,
             ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
     {
@@ -79,11 +79,11 @@ public final class CompoundFieldTemplateData
         bitSize = new BitSize(fieldTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter);
         arrayableInfo = createArrayableInfo(nativeType);
-        array = createArray(nativeType, fieldTypeInstantiation, parentType, javaNativeMapper, withWriterCode,
+        array = createArray(nativeType, fieldTypeInstantiation, parentType, javaNativeMapper,
                 javaExpressionFormatter);
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 javaExpressionFormatter, javaNativeMapper);
-        compound = createCompound(javaNativeMapper, withWriterCode, javaExpressionFormatter, parentType,
+        compound = createCompound(javaNativeMapper, javaExpressionFormatter, parentType,
                 fieldTypeInstantiation);
     }
 
@@ -337,8 +337,8 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation, CompoundType parentType,
-                JavaNativeMapper javaNativeMapper, boolean withWriterCode,
+        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation,
+                CompoundType parentType, JavaNativeMapper javaNativeMapper,
                 ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
         {
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
@@ -363,7 +363,7 @@ public final class CompoundFieldTemplateData
 
             elementBitSize = new BitSize(elementTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
             isElementEnum = elementNativeType instanceof NativeEnumType;
-            elementCompound = createCompound(javaNativeMapper, withWriterCode, javaExpressionFormatter,
+            elementCompound = createCompound(javaNativeMapper, javaExpressionFormatter,
                     parentType, elementTypeInstantiation);
         }
 
@@ -480,7 +480,7 @@ public final class CompoundFieldTemplateData
             instantiatedParameters = new ArrayList<InstantiatedParameterData>(0);
         }
 
-        public Compound(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
+        public Compound(JavaNativeMapper javaNativeMapper,
                 ExpressionFormatter javaExpressionFormatter, CompoundType owner,
                 ParameterizedTypeInstantiation typeInstantiation) throws ZserioExtensionException
         {
@@ -597,7 +597,7 @@ public final class CompoundFieldTemplateData
     }
 
     private static Array createArray(JavaNativeType nativeType, TypeInstantiation typeInstantiation,
-            CompoundType parentType, JavaNativeMapper javaNativeMapper, boolean withWriterCode,
+            CompoundType parentType, JavaNativeMapper javaNativeMapper,
             ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
     {
         if (!(nativeType instanceof NativeArrayType))
@@ -611,16 +611,16 @@ public final class CompoundFieldTemplateData
         }
 
         return new Array((NativeArrayType)nativeType, (ArrayInstantiation)typeInstantiation, parentType,
-                javaNativeMapper, withWriterCode, javaExpressionFormatter);
+                javaNativeMapper, javaExpressionFormatter);
     }
 
-    private static Compound createCompound(JavaNativeMapper javaNativeMapper, boolean withWriterCode,
+    private static Compound createCompound(JavaNativeMapper javaNativeMapper,
             ExpressionFormatter javaExpressionFormatter, CompoundType owner,
             TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
         if (typeInstantiation instanceof ParameterizedTypeInstantiation)
         {
-            return new Compound(javaNativeMapper, withWriterCode, javaExpressionFormatter, owner,
+            return new Compound(javaNativeMapper, javaExpressionFormatter, owner,
                     (ParameterizedTypeInstantiation)typeInstantiation);
         }
         else if (typeInstantiation.getBaseType() instanceof CompoundType)

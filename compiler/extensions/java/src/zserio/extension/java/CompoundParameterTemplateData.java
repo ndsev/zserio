@@ -16,12 +16,11 @@ import zserio.extension.java.types.NativeLongType;
 
 public final class CompoundParameterTemplateData
 {
-    public CompoundParameterTemplateData(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-            boolean withWriterCode, CompoundType compoundType, ExpressionFormatter javaExpressionFormatter)
-                    throws ZserioExtensionException
+    public CompoundParameterTemplateData(JavaNativeMapper javaNativeMapper,
+            boolean withRangeCheckCode, CompoundType compoundType,
+            ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
     {
         compoundName = compoundType.getName();
-        this.withWriterCode = withWriterCode;
 
         final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
@@ -37,11 +36,6 @@ public final class CompoundParameterTemplateData
     public String getCompoundName()
     {
         return compoundName;
-    }
-
-    public boolean getWithWriterCode()
-    {
-        return withWriterCode;
     }
 
     public static class CompoundParameter
@@ -118,6 +112,5 @@ public final class CompoundParameterTemplateData
     }
 
     private final String                    compoundName;
-    private final boolean                   withWriterCode;
     private final List<CompoundParameter>   compoundParameterList;
 }

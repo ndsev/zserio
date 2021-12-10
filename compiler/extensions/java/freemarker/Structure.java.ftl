@@ -114,10 +114,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         }
         else
         {
-            this.<@field_member_name field/> = <@array_wrapper_raw_constructor field, withWriterCode, rawArray, 5/>;
+            this.<@field_member_name field/> = <@array_wrapper_raw_constructor field, rawArray, 5/>;
         }
             <#else>
-        this.<@field_member_name field/> = <@array_wrapper_raw_constructor field, withWriterCode, rawArray, 4/>;
+        this.<@field_member_name field/> = <@array_wrapper_raw_constructor field, rawArray, 4/>;
             </#if>
         <#else>
         this.<@field_member_name field/> = <@field_argument_name field/>;

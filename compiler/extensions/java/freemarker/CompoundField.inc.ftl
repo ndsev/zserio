@@ -34,15 +34,15 @@
     CHOICE_${field.name}<#t>
 </#macro>
 
-<#macro array_wrapper_raw_constructor field withWriterCode rawArray indent>
-    <@array_wrapper_constructor_inner field, withWriterCode, rawArray, indent/>
+<#macro array_wrapper_raw_constructor field rawArray indent>
+    <@array_wrapper_constructor_inner field, rawArray, indent/>
 </#macro>
 
-<#macro array_wrapper_read_constructor field withWriterCode indent>
-    <@array_wrapper_constructor_inner field, withWriterCode, "", indent/>
+<#macro array_wrapper_read_constructor field indent>
+    <@array_wrapper_constructor_inner field, "", indent/>
 </#macro>
 
-<#macro array_wrapper_constructor_inner field withWriterCode rawArray indent>
+<#macro array_wrapper_constructor_inner field rawArray indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 new ${field.array.wrapperJavaTypeName}(
 ${I}new ${field.array.rawHolderJavaTypeName}(<#rt>
@@ -168,7 +168,7 @@ ${I}<@field_member_name field/> = new ${field.javaTypeName}(<@compound_field_pac
         <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
         </#if>
     <#elseif field.array??>
-${I}<@field_member_name field/> = <@array_wrapper_read_constructor field, withWriterCode, indent + 2/>;
+${I}<@field_member_name field/> = <@array_wrapper_read_constructor field, indent + 2/>;
 ${I}<@compound_get_field field/>.read<@array_field_packed_suffix field, packed/>(in<#if field.array.length??>, (int)${field.array.length}</#if>);
     <#elseif field.runtimeFunction??>
 ${I}<@field_member_name field/> = <#if field.runtimeFunction.javaReadTypeName??>(${field.runtimeFunction.javaReadTypeName})</#if><#rt>
