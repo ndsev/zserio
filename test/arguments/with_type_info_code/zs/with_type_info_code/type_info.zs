@@ -3,15 +3,13 @@ package with_type_info_code.type_info;
 struct SimpleStruct
 {
 align(8):
-    uint32 fieldU32;
+    uint32 fieldU32 = 0;
 fieldU32:
-    string fieldString;
-    bool fieldBool;
-    float16 fieldFloat16;
+    string fieldString = "My" + "String";
+    bool fieldBool = false;
+    float16 fieldFloat16 = 1.0;
     float32 fieldFloat32;
-    float64 fieldFloat64;
-    optional SimpleStruct fieldRecursion;
-    SimpleStruct arrayRecursion[];
+    float64 fieldFloat64 = 2.0;
 };
 
 struct ComplexStruct
@@ -32,6 +30,13 @@ struct ComplexStruct
 struct ParameterizedStruct(SimpleStruct simple)
 {
     uint8 array[simple.fieldU32];
+};
+
+struct RecursiveStruct
+{
+    uint32 fieldU32;
+    optional RecursiveStruct fieldRecursion;
+    RecursiveStruct arrayRecursion[];
 };
 
 union RecursiveUnion
@@ -109,6 +114,7 @@ struct WithTypeInfoCode
     SubtypedSimpleStruct simpleStruct;
     ComplexStruct complexStruct;
     ParameterizedStruct(simpleStruct) parameterizedStruct;
+    RecursiveStruct recursiveStruct;
     RecursiveUnion recursiveUnion;
     RecursiveChoice(true, false) recursiveChoice;
     TestEnum selector;

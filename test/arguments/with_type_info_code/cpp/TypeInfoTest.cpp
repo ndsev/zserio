@@ -153,7 +153,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(11, fields.size());
+        ASSERT_EQ(12, fields.size());
 
         // simpleStruct
         const zserio::FieldInfo& simpleStructField = fields[0];
@@ -210,8 +210,26 @@ protected:
         ASSERT_EQ(false, parameterizedStructField.isPacked);
         ASSERT_EQ(false, parameterizedStructField.isImplicit);
 
+        // recursiveStruct
+        const zserio::FieldInfo& recursiveStructField = fields[3];
+        ASSERT_EQ("recursiveStruct"_sv, recursiveStructField.schemaName);
+
+        checkRecursiveStruct(recursiveStructField.typeInfo);
+
+        ASSERT_EQ(0, recursiveStructField.typeArguments.size());
+        ASSERT_EQ(""_sv, recursiveStructField.alignment);
+        ASSERT_EQ(""_sv, recursiveStructField.offset);
+        ASSERT_EQ(""_sv, recursiveStructField.initializer);
+        ASSERT_EQ(false, recursiveStructField.isOptional);
+        ASSERT_EQ(""_sv, recursiveStructField.optionalCondition);
+        ASSERT_EQ(""_sv, recursiveStructField.constraint);
+        ASSERT_EQ(false, recursiveStructField.isArray);
+        ASSERT_EQ(""_sv, recursiveStructField.arrayLength);
+        ASSERT_EQ(false, recursiveStructField.isPacked);
+        ASSERT_EQ(false, recursiveStructField.isImplicit);
+
         // recursiveUnion
-        const zserio::FieldInfo& recursiveUnion = fields[3];
+        const zserio::FieldInfo& recursiveUnion = fields[4];
         ASSERT_EQ("recursiveUnion"_sv, recursiveUnion.schemaName);
 
         checkRecursiveUnion(recursiveUnion.typeInfo);
@@ -229,7 +247,7 @@ protected:
         ASSERT_EQ(false, recursiveUnion.isImplicit);
 
         // recursiveChoice
-        const zserio::FieldInfo& recursiveChoice = fields[4];
+        const zserio::FieldInfo& recursiveChoice = fields[5];
         ASSERT_EQ("recursiveChoice"_sv, recursiveChoice.schemaName);
 
         checkRecursiveChoice(recursiveChoice.typeInfo);
@@ -249,7 +267,7 @@ protected:
         ASSERT_EQ(false, recursiveChoice.isImplicit);
 
         // selector
-        const zserio::FieldInfo& selectorField = fields[5];
+        const zserio::FieldInfo& selectorField = fields[6];
         ASSERT_EQ("selector"_sv, selectorField.schemaName);
 
         checkTestEnum(selectorField.typeInfo);
@@ -267,7 +285,7 @@ protected:
         ASSERT_EQ(false, selectorField.isImplicit);
 
         // simpleChoice
-        const zserio::FieldInfo& simpleChoiceField = fields[6];
+        const zserio::FieldInfo& simpleChoiceField = fields[7];
         ASSERT_EQ("simpleChoice"_sv, simpleChoiceField.schemaName);
 
         checkSimpleChoice(simpleChoiceField.typeInfo);
@@ -286,7 +304,7 @@ protected:
         ASSERT_EQ(false, simpleChoiceField.isImplicit);
 
         // templatedStruct
-        const zserio::FieldInfo& templatedStructField = fields[7];
+        const zserio::FieldInfo& templatedStructField = fields[8];
         ASSERT_EQ("templatedStruct"_sv, templatedStructField.schemaName);
 
         checkTS32(templatedStructField.typeInfo);
@@ -304,7 +322,7 @@ protected:
         ASSERT_EQ(false, templatedStructField.isImplicit);
 
         // templatedParameterizedStruct
-        const zserio::FieldInfo& templatedParameterizedStructField = fields[8];
+        const zserio::FieldInfo& templatedParameterizedStructField = fields[9];
         ASSERT_EQ("templatedParameterizedStruct"_sv, templatedParameterizedStructField.schemaName);
 
         checkTemplatedParameterizedStruct_TS32(templatedParameterizedStructField.typeInfo);
@@ -323,7 +341,7 @@ protected:
         ASSERT_EQ(false, templatedParameterizedStructField.isImplicit);
 
         // externData
-        const zserio::FieldInfo& externDataField = fields[9];
+        const zserio::FieldInfo& externDataField = fields[10];
         ASSERT_EQ("externData"_sv, externDataField.schemaName);
 
         ASSERT_EQ("extern"_sv, externDataField.typeInfo.getSchemaName());
@@ -343,7 +361,7 @@ protected:
         ASSERT_EQ(false, externDataField.isImplicit);
 
         // implicitArray
-        const zserio::FieldInfo& implicitArrayField = fields[10];
+        const zserio::FieldInfo& implicitArrayField = fields[11];
         ASSERT_EQ("implicitArray"_sv, implicitArrayField.schemaName);
 
         ASSERT_EQ("uint32"_sv, implicitArrayField.typeInfo.getSchemaName());
@@ -377,7 +395,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(8, fields.size());
+        ASSERT_EQ(6, fields.size());
 
         // fieldU32
         const zserio::FieldInfo& fieldU32Field = fields[0];
@@ -391,7 +409,7 @@ protected:
         ASSERT_EQ(0, fieldU32Field.typeArguments.size());
         ASSERT_EQ("8"_sv, fieldU32Field.alignment);
         ASSERT_EQ(""_sv, fieldU32Field.offset);
-        ASSERT_EQ(""_sv, fieldU32Field.initializer);
+        ASSERT_EQ("0"_sv, fieldU32Field.initializer);
         ASSERT_EQ(false, fieldU32Field.isOptional);
         ASSERT_EQ(""_sv, fieldU32Field.optionalCondition);
         ASSERT_EQ(""_sv, fieldU32Field.constraint);
@@ -411,7 +429,7 @@ protected:
         ASSERT_EQ(0, fieldStringField.typeArguments.size());
         ASSERT_EQ(""_sv, fieldStringField.alignment);
         ASSERT_EQ("getFieldU32()"_sv, fieldStringField.offset);
-        ASSERT_EQ(""_sv, fieldStringField.initializer);
+        ASSERT_EQ("\"MyString\""_sv, fieldStringField.initializer);
         ASSERT_EQ(false, fieldStringField.isOptional);
         ASSERT_EQ(""_sv, fieldStringField.optionalCondition);
         ASSERT_EQ(""_sv, fieldStringField.constraint);
@@ -432,7 +450,7 @@ protected:
         ASSERT_EQ(0, fieldBoolField.typeArguments.size());
         ASSERT_EQ(""_sv, fieldBoolField.alignment);
         ASSERT_EQ(""_sv, fieldBoolField.offset);
-        ASSERT_EQ(""_sv, fieldBoolField.initializer);
+        ASSERT_EQ("false"_sv, fieldBoolField.initializer);
         ASSERT_EQ(false, fieldBoolField.isOptional);
         ASSERT_EQ(""_sv, fieldBoolField.optionalCondition);
         ASSERT_EQ(""_sv, fieldBoolField.constraint);
@@ -453,7 +471,7 @@ protected:
         ASSERT_EQ(0, fieldFloat16Field.typeArguments.size());
         ASSERT_EQ(""_sv, fieldFloat16Field.alignment);
         ASSERT_EQ(""_sv, fieldFloat16Field.offset);
-        ASSERT_EQ(""_sv, fieldFloat16Field.initializer);
+        ASSERT_EQ("1.0"_sv, fieldFloat16Field.initializer);
         ASSERT_EQ(false, fieldFloat16Field.isOptional);
         ASSERT_EQ(""_sv, fieldFloat16Field.optionalCondition);
         ASSERT_EQ(""_sv, fieldFloat16Field.constraint);
@@ -495,7 +513,7 @@ protected:
         ASSERT_EQ(0, fieldFloat64Field.typeArguments.size());
         ASSERT_EQ(""_sv, fieldFloat64Field.alignment);
         ASSERT_EQ(""_sv, fieldFloat64Field.offset);
-        ASSERT_EQ(""_sv, fieldFloat64Field.initializer);
+        ASSERT_EQ("2.0"_sv, fieldFloat64Field.initializer);
         ASSERT_EQ(false, fieldFloat64Field.isOptional);
         ASSERT_EQ(""_sv, fieldFloat64Field.optionalCondition);
         ASSERT_EQ(""_sv, fieldFloat64Field.constraint);
@@ -503,48 +521,6 @@ protected:
         ASSERT_EQ(""_sv, fieldFloat64Field.arrayLength);
         ASSERT_EQ(false, fieldFloat64Field.isPacked);
         ASSERT_EQ(false, fieldFloat64Field.isImplicit);
-
-        // fieldRecursion
-        const zserio::FieldInfo& fieldRecursion = fields[6];
-        ASSERT_EQ("fieldRecursion"_sv, fieldRecursion.schemaName);
-
-        ASSERT_EQ(typeInfo.getSchemaName(), fieldRecursion.typeInfo.getSchemaName());
-        ASSERT_EQ(typeInfo.getSchemaType(), fieldRecursion.typeInfo.getSchemaType());
-        ASSERT_EQ(typeInfo.getCppType(), fieldRecursion.typeInfo.getCppType());
-        ASSERT_EQ(&typeInfo.getFields()[0], &fieldRecursion.typeInfo.getFields()[0]);
-
-        ASSERT_EQ(0, fieldRecursion.typeArguments.size());
-        ASSERT_EQ(""_sv, fieldRecursion.alignment);
-        ASSERT_EQ(""_sv, fieldRecursion.offset);
-        ASSERT_EQ(""_sv, fieldRecursion.initializer);
-        ASSERT_EQ(true, fieldRecursion.isOptional);
-        ASSERT_EQ(""_sv, fieldRecursion.optionalCondition);
-        ASSERT_EQ(""_sv, fieldRecursion.constraint);
-        ASSERT_EQ(false, fieldRecursion.isArray);
-        ASSERT_EQ(""_sv, fieldRecursion.arrayLength);
-        ASSERT_EQ(false, fieldRecursion.isPacked);
-        ASSERT_EQ(false, fieldRecursion.isImplicit);
-
-        // arrayRecursion
-        const zserio::FieldInfo& arrayRecursion = fields[7];
-        ASSERT_EQ("arrayRecursion"_sv, arrayRecursion.schemaName);
-
-        ASSERT_EQ(typeInfo.getSchemaName(), arrayRecursion.typeInfo.getSchemaName());
-        ASSERT_EQ(typeInfo.getSchemaType(), arrayRecursion.typeInfo.getSchemaType());
-        ASSERT_EQ(typeInfo.getCppType(), arrayRecursion.typeInfo.getCppType());
-        ASSERT_EQ(&typeInfo.getFields()[0], &arrayRecursion.typeInfo.getFields()[0]);
-
-        ASSERT_EQ(0, arrayRecursion.typeArguments.size());
-        ASSERT_EQ(""_sv, arrayRecursion.alignment);
-        ASSERT_EQ(""_sv, arrayRecursion.offset);
-        ASSERT_EQ(""_sv, arrayRecursion.initializer);
-        ASSERT_EQ(false, arrayRecursion.isOptional);
-        ASSERT_EQ(""_sv, arrayRecursion.optionalCondition);
-        ASSERT_EQ(""_sv, arrayRecursion.constraint);
-        ASSERT_EQ(true, arrayRecursion.isArray);
-        ASSERT_EQ(""_sv, arrayRecursion.arrayLength);
-        ASSERT_EQ(false, arrayRecursion.isPacked);
-        ASSERT_EQ(false, arrayRecursion.isImplicit);
     }
 
     void checkComplexStruct(const zserio::ITypeInfo& typeInfo)
@@ -735,6 +711,85 @@ protected:
         ASSERT_EQ("getSimple().getFieldU32()"_sv, arrayField.arrayLength);
         ASSERT_EQ(false, arrayField.isPacked);
         ASSERT_EQ(false, arrayField.isImplicit);
+    }
+
+    void checkRecursiveStruct(const zserio::ITypeInfo& typeInfo)
+    {
+        ASSERT_EQ("with_type_info_code.type_info.RecursiveStruct"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
+
+        ASSERT_EQ(0, typeInfo.getParameters().size());
+        ASSERT_EQ(0, typeInfo.getFunctions().size());
+
+        ASSERT_EQ(""_sv, typeInfo.getTemplateName());
+        ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
+
+        const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
+        ASSERT_EQ(3, fields.size());
+
+        // fieldU32
+        const zserio::FieldInfo& fieldU32Field = fields[0];
+        ASSERT_EQ("fieldU32"_sv, fieldU32Field.schemaName);
+
+        ASSERT_EQ("uint32"_sv, fieldU32Field.typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::UINT32, fieldU32Field.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::UINT32, fieldU32Field.typeInfo.getCppType());
+        ASSERT_EQ(32, fieldU32Field.typeInfo.getBitSize());
+
+        ASSERT_EQ(0, fieldU32Field.typeArguments.size());
+        ASSERT_EQ(""_sv, fieldU32Field.alignment);
+        ASSERT_EQ(""_sv, fieldU32Field.offset);
+        ASSERT_EQ(""_sv, fieldU32Field.initializer);
+        ASSERT_EQ(false, fieldU32Field.isOptional);
+        ASSERT_EQ(""_sv, fieldU32Field.optionalCondition);
+        ASSERT_EQ(""_sv, fieldU32Field.constraint);
+        ASSERT_EQ(false, fieldU32Field.isArray);
+        ASSERT_EQ(""_sv, fieldU32Field.arrayLength);
+        ASSERT_EQ(false, fieldU32Field.isPacked);
+        ASSERT_EQ(false, fieldU32Field.isImplicit);
+
+        // fieldRecursion
+        const zserio::FieldInfo& fieldRecursion = fields[1];
+        ASSERT_EQ("fieldRecursion"_sv, fieldRecursion.schemaName);
+
+        ASSERT_EQ(typeInfo.getSchemaName(), fieldRecursion.typeInfo.getSchemaName());
+        ASSERT_EQ(typeInfo.getSchemaType(), fieldRecursion.typeInfo.getSchemaType());
+        ASSERT_EQ(typeInfo.getCppType(), fieldRecursion.typeInfo.getCppType());
+        ASSERT_EQ(&typeInfo.getFields()[0], &fieldRecursion.typeInfo.getFields()[0]);
+
+        ASSERT_EQ(0, fieldRecursion.typeArguments.size());
+        ASSERT_EQ(""_sv, fieldRecursion.alignment);
+        ASSERT_EQ(""_sv, fieldRecursion.offset);
+        ASSERT_EQ(""_sv, fieldRecursion.initializer);
+        ASSERT_EQ(true, fieldRecursion.isOptional);
+        ASSERT_EQ(""_sv, fieldRecursion.optionalCondition);
+        ASSERT_EQ(""_sv, fieldRecursion.constraint);
+        ASSERT_EQ(false, fieldRecursion.isArray);
+        ASSERT_EQ(""_sv, fieldRecursion.arrayLength);
+        ASSERT_EQ(false, fieldRecursion.isPacked);
+        ASSERT_EQ(false, fieldRecursion.isImplicit);
+
+        // arrayRecursion
+        const zserio::FieldInfo& arrayRecursion = fields[2];
+        ASSERT_EQ("arrayRecursion"_sv, arrayRecursion.schemaName);
+
+        ASSERT_EQ(typeInfo.getSchemaName(), arrayRecursion.typeInfo.getSchemaName());
+        ASSERT_EQ(typeInfo.getSchemaType(), arrayRecursion.typeInfo.getSchemaType());
+        ASSERT_EQ(typeInfo.getCppType(), arrayRecursion.typeInfo.getCppType());
+        ASSERT_EQ(&typeInfo.getFields()[0], &arrayRecursion.typeInfo.getFields()[0]);
+
+        ASSERT_EQ(0, arrayRecursion.typeArguments.size());
+        ASSERT_EQ(""_sv, arrayRecursion.alignment);
+        ASSERT_EQ(""_sv, arrayRecursion.offset);
+        ASSERT_EQ(""_sv, arrayRecursion.initializer);
+        ASSERT_EQ(false, arrayRecursion.isOptional);
+        ASSERT_EQ(""_sv, arrayRecursion.optionalCondition);
+        ASSERT_EQ(""_sv, arrayRecursion.constraint);
+        ASSERT_EQ(true, arrayRecursion.isArray);
+        ASSERT_EQ(""_sv, arrayRecursion.arrayLength);
+        ASSERT_EQ(false, arrayRecursion.isPacked);
+        ASSERT_EQ(false, arrayRecursion.isImplicit);
     }
 
     void checkRecursiveUnion(const zserio::ITypeInfo& typeInfo)

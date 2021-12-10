@@ -27,10 +27,12 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/Fts4Table.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ParameterizedStruct.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ParameterizedStruct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveChoice.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveChoice.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveStruct.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveStruct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleChoice.cpp
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleChoice.h
     ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimplePubsub.cpp
