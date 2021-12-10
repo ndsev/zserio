@@ -30,16 +30,16 @@ ${I}result = zserio.hashcode.calc_hashcode(result, hash(self.<@field_member_name
     </#if>
 </#macro>
 
-<#macro compound_setter_field field withWriterCode indent>
+<#macro compound_setter_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array??>
         <#if field.optional??>
 ${I}if <@field_argument_name field/> is None:
 ${I}    self.<@field_member_name field/> = None
 ${I}else:
-${I}    self.<@field_member_name field/> = <@array_field_constructor field, withWriterCode/>
+${I}    self.<@field_member_name field/> = <@array_field_constructor field/>
         <#else>
-${I}self.<@field_member_name field/> = <@array_field_constructor field, withWriterCode/>
+${I}self.<@field_member_name field/> = <@array_field_constructor field/>
         </#if>
     <#else>
 ${I}self.<@field_member_name field/> = <@field_argument_name field/>
@@ -137,7 +137,7 @@ ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bi
     </#if>
 </#macro>
 
-<#macro compound_read_field field compoundName withWriterCode indent packed=false index=0>
+<#macro compound_read_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
@@ -145,13 +145,13 @@ ${I}if self.${field.optional.indicatorName}():
         <#else>
 ${I}if zserio_reader.read_bool():
         </#if>
-<@compound_read_field_inner field, compoundName, withWriterCode, indent + 1, packed, index/>
+<@compound_read_field_inner field, compoundName, indent + 1, packed, index/>
     <#else>
-<@compound_read_field_inner field, compoundName, withWriterCode, indent, packed, index/>
+<@compound_read_field_inner field, compoundName, indent, packed, index/>
     </#if>
 </#macro>
 
-<#macro compound_read_field_inner field compoundName withWriterCode indent packed index>
+<#macro compound_read_field_inner field compoundName indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.alignmentValue??>
 ${I}zserio_reader.alignto(${field.alignmentValue})
@@ -172,7 +172,7 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packe
         </#if>
     <#else>
         <#if field.array??>
-${I}self.<@field_member_name field/> = <@array_field_from_reader field, withWriterCode, packed/>
+${I}self.<@field_member_name field/> = <@array_field_from_reader field, packed/>
         <#elseif field.runtimeFunction??>
 ${I}self.<@field_member_name field/> = zserio_reader.read_${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
         <#else>
@@ -196,7 +196,7 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
     )<#t>
 </#macro>
 
-<#macro array_field_keyword_parameters field withWriterCode>
+<#macro array_field_keyword_parameters field>
     <#if field.array.isImplicit>, is_implicit=True<#t>
     <#elseif !field.array.length??>, is_auto=True<#t>
     </#if>
@@ -206,11 +206,11 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
     </#if>
 </#macro>
 
-<#macro array_field_from_reader field withWriterCode packed=false>
+<#macro array_field_from_reader field packed=false>
     zserio.array.Array.from_reader<@array_field_packed_suffix field, packed/>(<#t>
             <@array_field_traits_parameter field/>, zserio_reader<#t>
             <#if field.array.length??>, ${field.array.length}</#if><#t>
-            <@array_field_keyword_parameters field, withWriterCode/>)<#t>
+            <@array_field_keyword_parameters field/>)<#t>
 </#macro>
 
 <#macro array_field_packed_suffix field packed>
@@ -219,9 +219,9 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
     </#if>
 </#macro>
 
-<#macro array_field_constructor field withWriterCode>
+<#macro array_field_constructor field>
     zserio.array.Array(<@array_field_traits_parameter field/>, <#t>
-            <@field_argument_name field/><@array_field_keyword_parameters field, withWriterCode/>)<#t>
+            <@field_argument_name field/><@array_field_keyword_parameters field/>)<#t>
 </#macro>
 
 <#macro compound_field_constructor_parameters compound>

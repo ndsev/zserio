@@ -71,7 +71,7 @@ class ${name}:
             if self._choice != None:
                 raise zserio.PythonRuntimeException("Calling constructor of choice ${name} is ambiguous!")
         </#if>
-            <@compound_setter_field field, withWriterCode, 3/>
+            <@compound_setter_field field, 3/>
      </#list>
 </#if>
 
@@ -175,7 +175,7 @@ class ${name}:
     @${field.propertyName}.setter
     def ${field.propertyName}(self, <#rt>
             <#lt><@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
-        <@compound_setter_field field, withWriterCode, 2/>
+        <@compound_setter_field field, 2/>
     </#if>
 </#list>
 <#list compoundFunctionsData.list as function>
@@ -271,7 +271,7 @@ ${I}pass
 </#if>
 
 <#macro choice_read_field field indent packed index>
-    <@compound_read_field field, name, withWriterCode, indent, packed, index/>
+    <@compound_read_field field, name, indent, packed, index/>
 </#macro>
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>

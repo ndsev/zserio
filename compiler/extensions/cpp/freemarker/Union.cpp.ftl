@@ -53,10 +53,6 @@
 
 <@compound_read_constructor_definition compoundConstructorsData, "read_constructor_field_initialization", true/>
 
-<#macro union_copy_constructor_definition compounConstructorsData withAlloc>
-</#macro>
-<#macro union_move_constructor_definition compoundConstructorsData withAlloc>
-</#macro>
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 ${name}::${name}(const ${name}& other) :
         m_choiceTag(other.m_choiceTag)<#rt>

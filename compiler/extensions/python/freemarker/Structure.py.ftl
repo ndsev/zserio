@@ -32,7 +32,7 @@ class ${name}:
             <#lt>) -> None:
         <@compound_constructor_parameter_assignments compoundParametersData/>
     <#list fieldList as field>
-        <@compound_setter_field field, withWriterCode, 2/>
+        <@compound_setter_field field, 2/>
     </#list>
 
 </#if>
@@ -152,7 +152,7 @@ ${I}<#rt>
     @${field.propertyName}.setter
     def ${field.propertyName}(self, <#rt>
             <#lt><@field_argument_name field/>: <@field_annotation_argument_type_name field, name/>) -> None:
-        <@compound_setter_field field, withWriterCode, 2/>
+        <@compound_setter_field field, 2/>
     </#if>
     <#if field.optional??>
 
@@ -261,7 +261,7 @@ ${I}<#rt>
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
     <#list fieldList as field>
-        <@compound_read_field field, name, withWriterCode, 2/>
+        <@compound_read_field field, name, 2/>
         <#if field?has_next && needsReadNewLines>
 
         </#if>
@@ -278,7 +278,7 @@ ${I}<#rt>
 
     </#if>
     <#list fieldList as field>
-        <@compound_read_field field, name, withWriterCode, 2, true, field?index/>
+        <@compound_read_field field, name, 2, true, field?index/>
         <#if field?has_next>
 
         </#if>
