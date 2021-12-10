@@ -61,34 +61,34 @@ class ${name}:
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
-        fields: typing.List[zserio.typeinfo.MemberInfo] = [
+        field_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list fieldList as field>
             <@member_info_field field field?has_next/>
     </#list>
         ]
     <#if compoundParametersData.list?has_content>
-        parameters: typing.List[zserio.typeinfo.MemberInfo] = [
+        parameter_list: typing.List[zserio.typeinfo.MemberInfo] = [
         <#list compoundParametersData.list as parameter>
             <@member_info_parameter parameter parameter?has_next/>
         </#list>
         ]
     </#if>
     <#if compoundFunctionsData.list?has_content>
-        functions: typing.List[zserio.typeinfo.MemberInfo] = [
+        function_list: typing.List[zserio.typeinfo.MemberInfo] = [
         <#list compoundFunctionsData.list as function>
             <@member_info_function function function?has_next/>
         </#list>
         ]
     </#if>
-        attributes = {
-            zserio.typeinfo.TypeAttribute.FIELDS : fields<#rt>
+        attribute_list = {
+            zserio.typeinfo.TypeAttribute.FIELDS : field_list<#rt>
     <#if compoundParametersData.list?has_content>
             <#lt>,
-            zserio.typeinfo.TypeAttribute.PARAMETERS : parameters<#rt>
+            zserio.typeinfo.TypeAttribute.PARAMETERS : parameter_list<#rt>
     </#if>
     <#if compoundFunctionsData.list?has_content>
             <#lt>,
-            zserio.typeinfo.TypeAttribute.FUNCTIONS : functions<#rt>
+            zserio.typeinfo.TypeAttribute.FUNCTIONS : function_list<#rt>
     </#if>
     <#if templateInstantiation??>
             <#lt>,
@@ -97,7 +97,7 @@ class ${name}:
 
         }
 
-        return zserio.typeinfo.TypeInfo("${schemaTypeName}", ${name}, attributes=attributes)
+        return zserio.typeinfo.TypeInfo("${schemaTypeName}", ${name}, attributes=attribute_list)
 </#if>
 
 <#macro structure_compare_fields fieldList indent>

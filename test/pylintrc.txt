@@ -18,7 +18,7 @@ disable=no-else-return,
 max-line-length=112
 
 # Maximum number of lines in a module.
-max-module-lines=2000
+max-module-lines=2500
 
 [BASIC]
 

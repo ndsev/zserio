@@ -100,12 +100,12 @@ class ${name}:
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
-        fields: typing.List[zserio.typeinfo.MemberInfo] = [
+        field_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list fieldList as field>
             <@member_info_field field field?has_next/>
     </#list>
         ]
-        cases: typing.List[zserio.typeinfo.CaseInfo] = [
+        case_list: typing.List[zserio.typeinfo.CaseInfo] = [
     <#list caseMemberList as caseMember>
             <@case_info_case_member caseMember, caseMember?has_next || defaultMember??/>
     </#list>
@@ -114,27 +114,27 @@ class ${name}:
     </#if>
         ]
     <#if compoundParametersData.list?has_content>
-        parameters: typing.List[zserio.typeinfo.MemberInfo] = [
+        parameter_list: typing.List[zserio.typeinfo.MemberInfo] = [
         <#list compoundParametersData.list as parameter>
             <@member_info_parameter parameter parameter?has_next/>
         </#list>
         ]
     </#if>
     <#if compoundFunctionsData.list?has_content>
-        functions: typing.List[zserio.typeinfo.MemberInfo] = [
+        function_list: typing.List[zserio.typeinfo.MemberInfo] = [
         <#list compoundFunctionsData.list as function>
             <@member_info_function function function?has_next/>
         </#list>
         ]
     </#if>
-        attributes = {
-            zserio.typeinfo.TypeAttribute.FIELDS : fields,
-            zserio.typeinfo.TypeAttribute.CASES : cases,
+        attribute_list = {
+            zserio.typeinfo.TypeAttribute.FIELDS : field_list,
+            zserio.typeinfo.TypeAttribute.CASES : case_list,
     <#if compoundParametersData.list?has_content>
-            zserio.typeinfo.TypeAttribute.PARAMETERS : parameters,
+            zserio.typeinfo.TypeAttribute.PARAMETERS : parameter_list,
     </#if>
     <#if compoundFunctionsData.list?has_content>
-            zserio.typeinfo.TypeAttribute.FUNCTIONS : functions,
+            zserio.typeinfo.TypeAttribute.FUNCTIONS : function_list,
     </#if>
             zserio.typeinfo.TypeAttribute.SELECTOR : '${selector}'<#if templateInstantiation??>,</#if>
     <#if templateInstantiation??>
@@ -143,7 +143,7 @@ class ${name}:
     </#if>
         }
 
-        return zserio.typeinfo.TypeInfo("${schemaTypeName}", ${name}, attributes=attributes)
+        return zserio.typeinfo.TypeInfo("${schemaTypeName}", ${name}, attributes=attribute_list)
 </#if>
 
     def __eq__(self, other: object) -> bool:
