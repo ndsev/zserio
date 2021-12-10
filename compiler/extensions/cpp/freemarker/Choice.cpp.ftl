@@ -189,7 +189,11 @@ ${I}return {};
 </#macro>
         virtual ::zserio::StringView getChoice() const override
         {
+        <#if fieldList?has_content>
             <@choice_switch "choice_get_choice", "choice_get_choice_no_match", objectIndirectSelectorExpression, 3/>
+        <#else>
+            return {};
+        </#if>
         }
 
         virtual void write(::zserio::BitStreamWriter& writer) override
