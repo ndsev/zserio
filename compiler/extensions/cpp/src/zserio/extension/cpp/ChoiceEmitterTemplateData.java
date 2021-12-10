@@ -33,20 +33,16 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 expression.getExprType() != Expression.ExpressionType.BITMASK;
 
         caseMemberList = new ArrayList<CaseMember>();
-        final boolean withWriterCode = context.getWithWriterCode();
-        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         final Iterable<ChoiceCase> choiceCaseTypes = choiceType.getChoiceCases();
         for (ChoiceCase choiceCaseType : choiceCaseTypes)
         {
-            caseMemberList.add(new CaseMember(
-                    context, choiceType, choiceCaseType, this, withWriterCode, withRangeCheckCode));
+            caseMemberList.add(new CaseMember(context, choiceType, choiceCaseType, this));
         }
 
         final ChoiceDefault choiceDefaultType = choiceType.getChoiceDefault();
         if (choiceDefaultType != null)
         {
-            defaultMember = new DefaultMember(
-                    context, choiceType, choiceDefaultType, this, withWriterCode, withRangeCheckCode);
+            defaultMember = new DefaultMember(context, choiceType, choiceDefaultType, this);
         }
         else
         {
@@ -89,8 +85,7 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     public static class CaseMember
     {
         public CaseMember(TemplateDataContext context, ChoiceType choiceType,
-                ChoiceCase choiceCaseType, IncludeCollector includeCollector,
-                boolean withWriterCode, boolean withRangeCheckCode) throws ZserioExtensionException
+                ChoiceCase choiceCaseType, IncludeCollector includeCollector) throws ZserioExtensionException
         {
             final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
 
@@ -100,8 +95,8 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
                 expressionList.add(cppExpressionFormatter.formatGetter(caseExpression.getExpression()));
 
             final Field fieldType = choiceCaseType.getField();
-            compoundField = (fieldType != null) ? new CompoundFieldTemplateData(context,
-                    choiceType, fieldType, includeCollector, withWriterCode, withRangeCheckCode) : null;
+            compoundField = (fieldType != null) ?
+                    new CompoundFieldTemplateData(context, choiceType, fieldType, includeCollector) : null;
         }
 
         public List<String> getExpressionList()
@@ -122,13 +117,11 @@ public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
     {
         public DefaultMember(TemplateDataContext context,
                 ChoiceType choiceType, ChoiceDefault choiceDefaultType,
-                IncludeCollector includeCollector, boolean withWriterCode,
-                boolean withRangeCheckCode) throws ZserioExtensionException
+                IncludeCollector includeCollector) throws ZserioExtensionException
         {
             final Field fieldType = choiceDefaultType.getField();
             compoundField = (fieldType != null)
-                    ? new CompoundFieldTemplateData(context, choiceType, fieldType, includeCollector,
-                            withWriterCode, withRangeCheckCode)
+                    ? new CompoundFieldTemplateData(context, choiceType, fieldType, includeCollector)
                     : null;
         }
 

@@ -12,7 +12,7 @@ import zserio.extension.cpp.types.CppNativeType;
 public class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,
-            IncludeCollector includeCollector, boolean withWriterCode) throws ZserioExtensionException
+            IncludeCollector includeCollector) throws ZserioExtensionException
     {
         final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
@@ -22,18 +22,11 @@ public class CompoundParameterTemplateData
                     compoundParameterType, includeCollector);
             compoundParameterList.add(parameter);
         }
-
-        this.withWriterCode = withWriterCode;
     }
 
     public Iterable<CompoundParameter> getList()
     {
         return compoundParameterList;
-    }
-
-    public boolean getWithWriterCode()
-    {
-        return withWriterCode;
     }
 
     public static class CompoundParameter
@@ -92,5 +85,4 @@ public class CompoundParameterTemplateData
     }
 
     private final List<CompoundParameter> compoundParameterList;
-    private final boolean withWriterCode;
 }

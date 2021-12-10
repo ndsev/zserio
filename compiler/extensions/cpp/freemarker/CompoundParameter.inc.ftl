@@ -31,7 +31,7 @@ ${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.i
 <#macro compound_parameter_constructor_type_list compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-    <#local parameterType><#if compoundParametersData.withWriterCode && !compoundParameter.isSimpleType><#rt>
+    <#local parameterType><#if withWriterCode && !compoundParameter.isSimpleType><#rt>
         <#lt>${compoundParameter.cppTypeName}&<#else>${compoundParameter.cppArgumentTypeName}</#if></#local>
 ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
         <#if compoundParameter?has_next>
@@ -42,7 +42,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_declaration compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if compoundParametersData.withWriterCode && !compoundParameter.isSimpleType>
+        <#if withWriterCode && !compoundParameter.isSimpleType>
             <#-- non-const getter is necessary for setting of offsets -->
     ${compoundParameter.cppTypeName}& ${compoundParameter.getterName}();
         </#if>
@@ -55,7 +55,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_definition compoundName compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if compoundParametersData.withWriterCode && !compoundParameter.isSimpleType>
+        <#if withWriterCode && !compoundParameter.isSimpleType>
 ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
@@ -80,7 +80,7 @@ ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.ge
     <#-- parameters can't be const for operator=() to work and initialize() needs to update them too -->
     <#list compoundParametersData.list as compoundParameter>
     <#local parameterCppTypeName><#if compoundParameter.isSimpleType>${compoundParameter.cppArgumentTypeName}<#else><#rt>
-        <#lt><#if !compoundParametersData.withWriterCode>const </#if>${compoundParameter.cppTypeName}*</#if></#local>
+        <#lt><#if !withWriterCode>const </#if>${compoundParameter.cppTypeName}*</#if></#local>
     ${parameterCppTypeName} <@parameter_member_name compoundParameter.name/>;
     </#list>
 </#macro>

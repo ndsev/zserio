@@ -28,8 +28,7 @@ import zserio.extension.cpp.types.NativeIntegralType;
 public class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType,
-            Field field, IncludeCollector includeCollector, boolean withWriterCode,
-            boolean withRangeCheckCode) throws ZserioExtensionException
+            Field field, IncludeCollector includeCollector) throws ZserioExtensionException
     {
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
         final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
@@ -47,7 +46,7 @@ public class CompoundFieldTemplateData
         optional = (field.isOptional()) ?
                 createOptional(field, fieldBaseType, parentType, cppExpressionFormatter) : null;
         compound = createCompound(cppNativeMapper, cppExpressionFormatter, cppOwnerIndirectExpressionFormatter,
-                parentType, fieldTypeInstantiation, withWriterCode);
+                parentType, fieldTypeInstantiation);
 
         name = field.getName();
         cppTypeName = fieldNativeType.getFullName();
@@ -91,7 +90,7 @@ public class CompoundFieldTemplateData
         arrayTraits = createArrayTraits(fieldNativeType);
         array = createArray(fieldNativeType, fieldTypeInstantiation, parentType, cppNativeMapper,
                 cppExpressionFormatter, cppOwnerIndirectExpressionFormatter,
-                cppObjectIndirectExpressionFormatter, includeCollector, withWriterCode);
+                cppObjectIndirectExpressionFormatter, includeCollector);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 cppExpressionFormatter);
         bitSize = BitSizeDataCreator.createData(fieldTypeInstantiation, cppExpressionFormatter);
@@ -99,8 +98,6 @@ public class CompoundFieldTemplateData
                 ? BitSizeDataCreator.createData(
                         fieldTypeInstantiation, cppObjectIndirectExpressionFormatter).getValue()
                 : null;
-        this.withWriterCode = withWriterCode;
-        this.withRangeCheckCode = withRangeCheckCode;
     }
 
     public Optional getOptional()
@@ -233,16 +230,6 @@ public class CompoundFieldTemplateData
         return objectIndirectDynamicBitSizeValue;
     }
 
-    public boolean getWithWriterCode()
-    {
-        return withWriterCode;
-    }
-
-    public boolean getWithRangeCheckCode()
-    {
-        return withRangeCheckCode;
-    }
-
     public static class Optional
     {
         public Optional(Expression optionalClauseExpression, String resetterName, String indicatorName,
@@ -285,8 +272,7 @@ public class CompoundFieldTemplateData
     {
         public Compound(CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppIndirectExpressionFormatter, CompoundType owner,
-                ParameterizedTypeInstantiation parameterizedTypeInstantiation,
-                boolean withWriterCode) throws ZserioExtensionException
+                ParameterizedTypeInstantiation parameterizedTypeInstantiation) throws ZserioExtensionException
         {
             final CompoundType baseType = parameterizedTypeInstantiation.getBaseType();
             final List<InstantiatedParameter> parameters =
@@ -490,7 +476,7 @@ public class CompoundFieldTemplateData
                 ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppOnwerIndirectExpressionFormatter,
                 ExpressionFormatter cppObjectIndirectExpressionFormatter,
-                IncludeCollector includeCollector, boolean withWriterCode) throws ZserioExtensionException
+                IncludeCollector includeCollector) throws ZserioExtensionException
         {
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
@@ -510,7 +496,7 @@ public class CompoundFieldTemplateData
                                     cppObjectIndirectExpressionFormatter).getValue()
                             : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
-                    cppOnwerIndirectExpressionFormatter, parentType, elementTypeInstantiation, withWriterCode);
+                    cppOnwerIndirectExpressionFormatter, parentType, elementTypeInstantiation);
             elementIntegerRange = createIntegerRange(cppNativeMapper, elementTypeInstantiation,
                     cppExpressionFormatter);
             elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
@@ -714,7 +700,7 @@ public class CompoundFieldTemplateData
             CompoundType parentType, CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppOwnerIndirectExpressionFormatter,
             ExpressionFormatter cppObjectIndirectExpressionFormatter,
-            IncludeCollector includeCollector, boolean withWriterCode) throws ZserioExtensionException
+            IncludeCollector includeCollector) throws ZserioExtensionException
     {
         if (!(typeInstantiation instanceof ArrayInstantiation))
             return null;
@@ -728,18 +714,17 @@ public class CompoundFieldTemplateData
 
         return new Array((NativeArrayType)cppNativeType, (ArrayInstantiation)typeInstantiation, parentType,
                 cppNativeMapper, cppExpressionFormatter, cppOwnerIndirectExpressionFormatter,
-                cppObjectIndirectExpressionFormatter, includeCollector, withWriterCode);
+                cppObjectIndirectExpressionFormatter, includeCollector);
     }
 
     private static Compound createCompound(CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            CompoundType owner, TypeInstantiation typeInstantiation, boolean withWriterCode)
-                    throws ZserioExtensionException
+            CompoundType owner, TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
         if (typeInstantiation instanceof ParameterizedTypeInstantiation)
         {
             return new Compound(cppNativeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    owner, (ParameterizedTypeInstantiation)typeInstantiation, withWriterCode);
+                    owner, (ParameterizedTypeInstantiation)typeInstantiation);
         }
         if (typeInstantiation.getBaseType() instanceof CompoundType)
         {
@@ -777,6 +762,4 @@ public class CompoundFieldTemplateData
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final BitSizeTemplateData bitSize;
     private final String objectIndirectDynamicBitSizeValue;
-    private final boolean withWriterCode;
-    private final boolean withRangeCheckCode;
 }

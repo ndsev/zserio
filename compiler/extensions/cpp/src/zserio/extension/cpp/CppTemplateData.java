@@ -22,6 +22,7 @@ public abstract class CppTemplateData implements IncludeCollector
         withWriterCode = context.getWithWriterCode();
         withValidationCode = context.getWithValidationCode();
         withTypeInfoCode = context.getWithTypeInfoCode();
+        withRangeCheckCode = context.getWithRangeCheckCode();
 
         headerSystemIncludes = new TreeSet<String>();
         headerUserIncludes = new TreeSet<String>();
@@ -49,6 +50,11 @@ public abstract class CppTemplateData implements IncludeCollector
     public boolean getWithTypeInfoCode()
     {
         return withTypeInfoCode;
+    }
+
+    public boolean getWithRangeCheckCode()
+    {
+        return withRangeCheckCode;
     }
 
     public Iterable<String> getHeaderSystemIncludes()
@@ -363,6 +369,7 @@ public abstract class CppTemplateData implements IncludeCollector
     private final boolean withWriterCode;
     private final boolean withValidationCode;
     private final boolean withTypeInfoCode;
+    private final boolean withRangeCheckCode;
 
     private final TreeSet<String> headerSystemIncludes;
     private final TreeSet<String> headerUserIncludes;

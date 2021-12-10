@@ -277,7 +277,7 @@ ${I}}
 
 <#macro compound_check_range_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.withRangeCheckCode>
+    <#if withRangeCheckCode>
         <#if field.integerRange??>
 ${I}// check range
             <#local fieldValue><@compound_get_field field/></#local>
@@ -331,7 +331,7 @@ ${I}            lowerBound + ".." + upperBound + ">!";
             <@array_type_enum field/><#t>
     <#if field.offset?? && field.offset.containsIndex>
             , <@offset_checker_name field.name/><#t>
-            <#if field.withWriterCode>, <@offset_initializer_name field.name/></#if><#t>
+            <#if withWriterCode>, <@offset_initializer_name field.name/></#if><#t>
     </#if>
     ><#t>
 </#macro>
@@ -585,7 +585,7 @@ void ${compoundName}::<@element_children_initializer_name field.name/>::initiali
         <#if needs_field_offset_checker(field)>
     <@declare_offset_checker compoundName, field/>
 
-            <#if field.withWriterCode>
+            <#if withWriterCode>
     <@declare_offset_initializer compoundName, field/>
 
             </#if>
@@ -611,7 +611,7 @@ void ${compoundName}::<@element_children_initializer_name field.name/>::initiali
         <#if needs_field_offset_checker(field)>
 <@define_offset_checker_methods compoundName, field/>
 
-            <#if field.withWriterCode>
+            <#if withWriterCode>
 <@define_offset_initializer_methods compoundName, field/>
 
             </#if>
@@ -1087,21 +1087,21 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
 </#function>
 
 <#function needs_field_getter field>
-    <#if field.withWriterCode && !field.isSimpleType>
+    <#if withWriterCode && !field.isSimpleType>
         <#return true>
     </#if>
     <#return false>
 </#function>
 
 <#function needs_field_setter field>
-    <#if field.withWriterCode>
+    <#if withWriterCode>
         <#return true>
     </#if>
     <#return false>
 </#function>
 
 <#function needs_field_rvalue_setter field>
-    <#if field.withWriterCode && !field.isSimpleType>
+    <#if withWriterCode && !field.isSimpleType>
         <#return true>
     </#if>
     <#return false>
