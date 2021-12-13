@@ -4,7 +4,7 @@
 ${I}virtual ${types.reflectablePtr.name} getField(::zserio::StringView name) const override
 ${I}{
     <#list fieldList as field>
-${I}    <#if !field?is_first>else </#if>if (name == ::zserio::makeStringView("${field.name}"))
+${I}    if (name == ::zserio::makeStringView("${field.name}"))
 ${I}    {
         <#if field.optional??>
 ${I}        if (!m_object.${field.optional.indicatorName}())
@@ -27,9 +27,10 @@ ${I}virtual void setField(::zserio::StringView name,
 ${I}        const ::zserio::AnyHolder<allocator_type>& value) override
 ${I}{
     <#list fieldList as field>
-${I}    <#if !field?is_first>else </#if>if (name == ::zserio::makeStringView("${field.name}"))
+${I}    if (name == ::zserio::makeStringView("${field.name}"))
 ${I}    {
 ${I}        m_object.${field.setterName}(value.get<<@field_raw_cpp_type_name field/>>());
+${I}        return;
 ${I}    }
     </#list>
 ${I}    else
