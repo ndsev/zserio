@@ -211,6 +211,9 @@ include(cmake_utils)
 include(compiler_utils)
 compiler_set_pthread()
 compiler_set_static_clibs()
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "\${CMAKE_CXX_FLAGS} /bigobj")
+endif ()
 compiler_set_test_warnings()${WERROR_SETUP}${SQLITE_SETUP}
 
 # add zserio runtime library
