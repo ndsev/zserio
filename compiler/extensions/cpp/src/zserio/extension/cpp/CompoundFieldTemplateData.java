@@ -81,8 +81,7 @@ public class CompoundFieldTemplateData
         needsAllocator = !isSimpleType;
         holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
         isEnum = fieldBaseType instanceof EnumType;
-        final boolean isBitmask = fieldBaseType instanceof BitmaskType;
-        isBuiltinType = !isEnum && !isBitmask && isSimpleType;
+        isBitmask = fieldBaseType instanceof BitmaskType;
 
         constraint = createConstraint(field, cppNativeMapper, cppExpressionFormatter, includeCollector);
         offset = createOffset(field, cppNativeMapper, cppExpressionFormatter,
@@ -190,9 +189,9 @@ public class CompoundFieldTemplateData
         return isEnum;
     }
 
-    public boolean getIsBuiltinType()
+    public boolean getIsBitmask()
     {
-        return isBuiltinType;
+        return isBitmask;
     }
 
     public Constraint getConstraint()
@@ -754,7 +753,7 @@ public class CompoundFieldTemplateData
     private final boolean needsAllocator;
     private final boolean holderNeedsAllocator;
     private final boolean isEnum;
-    private final boolean isBuiltinType;
+    private final boolean isBitmask;
     private final Constraint constraint;
     private final Offset offset;
     private final ArrayTraitsTemplateData arrayTraits;
