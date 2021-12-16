@@ -1,60 +1,34 @@
 package zserio.extension.cpp.types;
 
-import java.util.Collections;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import zserio.ast.PackageName;
-import zserio.extension.cpp.CppFullNameFormatter;
 
 /**
- * C++ native type - e.g. compound type, subtype, etc.
+ * C++ native type interface.
  */
-public abstract class CppNativeType
+public interface CppNativeType
 {
-    public CppNativeType(PackageName packageName, String name)
-    {
-        this(packageName, name, packageName.isEmpty());
-    }
-
-    public CppNativeType(PackageName packageName, String name, boolean simpleType)
-    {
-        this.packageName = packageName;
-        this.name = name;
-        this.systemIncludeFiles = new TreeSet<String>();
-        this.userIncludeFiles = new TreeSet<String>();
-        this.simpleType = simpleType;
-    }
-
     /**
      * Returns the full name of the type.
      *
      * @return The name of the type including package or namespace name (if the type is contained in one).
      */
-    public String getFullName()
-    {
-        return CppFullNameFormatter.getFullName(packageName, name);
-    }
+    public String getFullName();
 
     /**
      * Returns the short name of the type.
      *
      * @return The name of the type excluding package or namespace name.
      */
-    public String getName()
-    {
-        return name;
-    }
+    public String getName();
 
     /**
      * Return name of the package which contains this type.
      *
      * @return The name of the package which contains this type.
      */
-    public PackageName getPackageName()
-    {
-        return packageName;
-    }
+    public PackageName getPackageName();
 
     /**
      * Returns a string representing the C++ type that should be used when passing this type as a function
@@ -62,13 +36,7 @@ public abstract class CppNativeType
      *
      * @return The name of argument type.
      */
-    public String getArgumentTypeName()
-    {
-        if (isSimpleType())
-            return getFullName();
-        else
-            return "const " + getFullName() + '&';
-    }
+    public String getArgumentTypeName();
 
     /**
      * Returns true iff the type is a "simple" type.
@@ -80,59 +48,19 @@ public abstract class CppNativeType
      *
      * @return true if the type is a simple type, otherwise false.
      */
-    public boolean isSimpleType()
-    {
-        return simpleType;
-    }
+    public boolean isSimpleType();
 
     /**
      * Returns a list with names of files to be included by '#include &lt;...&gt;'.
      *
      * @return The list of system include files.
      */
-    public SortedSet<String> getSystemIncludeFiles()
-    {
-        return Collections.unmodifiableSortedSet(systemIncludeFiles);
-    }
+    public SortedSet<String> getSystemIncludeFiles();
 
     /**
      * Returns a list with names of files to be included by '#include "..."'.
      *
      * @return The list of user include files.
      */
-    public SortedSet<String> getUserIncludeFiles()
-    {
-        return Collections.unmodifiableSortedSet(userIncludeFiles);
-    }
-
-    protected void addSystemIncludeFile(String include)
-    {
-        if (include != null)
-            systemIncludeFiles.add(include);
-    }
-
-    protected void addUserIncludeFile(String include)
-    {
-        if (include != null)
-            userIncludeFiles.add(include);
-    }
-
-    protected void addIncludeFiles(CppNativeType other)
-    {
-        for (String systemInclude : other.getSystemIncludeFiles())
-        {
-            addSystemIncludeFile(systemInclude);
-        }
-
-        for (String userInclude : other.getUserIncludeFiles())
-        {
-            addUserIncludeFile(userInclude);
-        }
-    }
-
-    private final PackageName packageName;
-    private final String name;
-    private final SortedSet<String> systemIncludeFiles;
-    private final SortedSet<String> userIncludeFiles;
-    private final boolean simpleType;
+    public SortedSet<String> getUserIncludeFiles();
 }

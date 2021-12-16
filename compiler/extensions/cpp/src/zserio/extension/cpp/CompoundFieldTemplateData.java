@@ -22,7 +22,7 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayType;
-import zserio.extension.cpp.types.NativeArrayableType;
+import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.NativeIntegralType;
 
 public class CompoundFieldTemplateData
@@ -690,8 +690,8 @@ public class CompoundFieldTemplateData
 
     private static ArrayTraitsTemplateData createArrayTraits(CppNativeType cppNativeType)
     {
-        if (cppNativeType instanceof NativeArrayableType)
-            return new ArrayTraitsTemplateData(((NativeArrayableType)cppNativeType).getArrayTraits());
+        if (cppNativeType instanceof CppNativeArrayableType)
+            return new ArrayTraitsTemplateData(((CppNativeArrayableType)cppNativeType).getArrayTraits());
         else
             return null;
     }

@@ -2,34 +2,36 @@ package zserio.extension.cpp.types;
 
 import zserio.ast.PackageName;
 
-public class NativeArrayTraits extends CppNativeType
+public class NativeArrayTraits extends NativeRuntimeType
 {
     public NativeArrayTraits(String name)
     {
         this(name, false);
     }
 
-    public NativeArrayTraits(String name, boolean isTemplatable)
+    public NativeArrayTraits(String name, boolean isTemplated)
     {
-        this(name, isTemplatable, false, false);
+        this(name, isTemplated, false, false);
     }
 
-    public NativeArrayTraits(String name, boolean isTemplated, boolean requiresElementBitSize,
-            boolean requiresElementFactory)
-    {
-        this(ZSERIO_PACKAGE_NAME, name, ARRAY_TRAITS_INCLUDE, isTemplated,
-                requiresElementBitSize, requiresElementFactory);
-    }
-
-    public NativeArrayTraits(PackageName packageName, String name, String includePath, boolean isTemplated,
+    public NativeArrayTraits(String name, boolean isTemplated,
             boolean requiresElementBitSize, boolean requiresElementFactory)
     {
-        super(packageName, name);
+        super(name, "zserio/ArrayTraits.h");
+
         this.isTemplated = isTemplated;
         this.requiresElementBitSize = requiresElementBitSize;
         this.requiresElementFactory = requiresElementFactory;
+    }
 
-        addSystemIncludeFile(includePath);
+    public NativeArrayTraits(PackageName packageName, String name, String systemIncludeFile,
+            boolean isTemplated, boolean requiresElementBitSize, boolean requiresElementFactory)
+    {
+        super(packageName, name, systemIncludeFile);
+
+        this.isTemplated = isTemplated;
+        this.requiresElementBitSize = requiresElementBitSize;
+        this.requiresElementFactory = requiresElementFactory;
     }
 
     public boolean isTemplated()
@@ -46,9 +48,6 @@ public class NativeArrayTraits extends CppNativeType
     {
         return requiresElementFactory;
     }
-
-    private static final PackageName ZSERIO_PACKAGE_NAME = new PackageName.Builder().addId("zserio").get();
-    private static final String ARRAY_TRAITS_INCLUDE = "zserio/ArrayTraits.h";
 
     private final boolean isTemplated;
     private final boolean requiresElementBitSize;

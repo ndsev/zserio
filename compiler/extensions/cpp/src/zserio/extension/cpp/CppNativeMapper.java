@@ -31,32 +31,19 @@ import zserio.ast.VarIntegerType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.symbols.CppNativeSymbol;
 import zserio.extension.cpp.types.CppNativeType;
-import zserio.extension.cpp.types.NativeAnyHolderType;
 import zserio.extension.cpp.types.NativeArrayTraits;
 import zserio.extension.cpp.types.NativeArrayType;
-import zserio.extension.cpp.types.NativeArrayableType;
-import zserio.extension.cpp.types.NativeBitBufferType;
+import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.NativeBitFieldArrayTraits;
 import zserio.extension.cpp.types.NativeBuiltinType;
 import zserio.extension.cpp.types.NativeCompoundType;
-import zserio.extension.cpp.types.NativeHeapOptionalHolderType;
-import zserio.extension.cpp.types.NativeInplaceOptionalHolderType;
 import zserio.extension.cpp.types.NativeIntegralType;
-import zserio.extension.cpp.types.NativeReflectableFactoryType;
-import zserio.extension.cpp.types.NativeReflectablePtrType;
-import zserio.extension.cpp.types.NativeRequestDataType;
-import zserio.extension.cpp.types.NativeResponseDataPtrType;
-import zserio.extension.cpp.types.NativeServiceClientType;
-import zserio.extension.cpp.types.NativeServiceType;
-import zserio.extension.cpp.types.NativeMapType;
-import zserio.extension.cpp.types.NativePackingContextNodeType;
-import zserio.extension.cpp.types.NativeSetType;
-import zserio.extension.cpp.types.NativeStringType;
+import zserio.extension.cpp.types.NativeRuntimeAllocArrayableType;
+import zserio.extension.cpp.types.NativeRuntimeAllocType;
+import zserio.extension.cpp.types.NativeRuntimeType;
 import zserio.extension.cpp.types.NativeStringViewType;
-import zserio.extension.cpp.types.NativeUniquePtrType;
 import zserio.extension.cpp.types.NativeUserArrayableType;
 import zserio.extension.cpp.types.NativeUserType;
-import zserio.extension.cpp.types.NativeVectorType;
 
 public class CppNativeMapper
 {
@@ -67,24 +54,35 @@ public class CppNativeMapper
      */
     public CppNativeMapper(TypesContext typesContext)
     {
-        anyHolderType = new NativeAnyHolderType(typesContext, stdUInt8Type);
-        uniquePtrType = new NativeUniquePtrType(typesContext);
-        heapOptionalHolderType = new NativeHeapOptionalHolderType(typesContext);
-        inplaceOptionalHolderType = new NativeInplaceOptionalHolderType();
+        final TypesContext.AllocatorDefinition allocatorDefinition = typesContext.getAllocatorDefinition();
+        anyHolderType = new NativeRuntimeAllocType(typesContext.getAnyHolder(), allocatorDefinition,
+                stdUInt8Type);
+        uniquePtrType = new NativeRuntimeAllocType(typesContext.getUniquePtr(), allocatorDefinition);
+        heapOptionalHolderType = new NativeRuntimeAllocType(typesContext.getHeapOptionalHolder(),
+                allocatorDefinition);
+        inplaceOptionalHolderType = new NativeRuntimeType("InplaceOptionalHolder", "zserio/OptionalHolder.h");
 
-        stringType = new NativeStringType(typesContext);
+        stringType = new NativeRuntimeAllocArrayableType(typesContext.getString(), allocatorDefinition,
+                "char", typesContext.getStringArrayTraits());
         stringViewType = new NativeStringViewType();
-        vectorType = new NativeVectorType(typesContext);
-        mapType = new NativeMapType(typesContext);
-        setType = new NativeSetType(typesContext);
-        bitBufferType = new NativeBitBufferType(typesContext, stdUInt8Type);
-        packingContextNodeType = new NativePackingContextNodeType(typesContext, stdUInt8Type);
-        reflectableFactoryType = new NativeReflectableFactoryType(typesContext, stdUInt8Type);
-        reflectablePtrType = new NativeReflectablePtrType(typesContext, stdUInt8Type);
-        serviceType = new NativeServiceType(typesContext, stdUInt8Type);
-        serviceClientType = new NativeServiceClientType(typesContext, stdUInt8Type);
-        responseDataPtrType = new NativeResponseDataPtrType(typesContext, stdUInt8Type);
-        requestDataType = new NativeRequestDataType(typesContext, stdUInt8Type);
+        vectorType = new NativeRuntimeAllocType(typesContext.getVector(), allocatorDefinition);
+        mapType = new NativeRuntimeAllocType(typesContext.getMap(), allocatorDefinition);
+        setType = new NativeRuntimeAllocType(typesContext.getSet(), allocatorDefinition);
+        bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(), allocatorDefinition,
+                stdUInt8Type, typesContext.getBitBufferArrayTraits());
+        packingContextNodeType = new NativeRuntimeAllocType(typesContext.getPackingContextNode(),
+                allocatorDefinition, stdUInt8Type);
+        reflectableFactoryType = new NativeRuntimeAllocType(typesContext.getRelectableFactory(),
+                allocatorDefinition, stdUInt8Type);
+        reflectablePtrType = new NativeRuntimeAllocType(typesContext.getReflectablePtr(), allocatorDefinition,
+                stdUInt8Type);
+        serviceType = new NativeRuntimeAllocType(typesContext.getService(), allocatorDefinition, stdUInt8Type);
+        serviceClientType = new NativeRuntimeAllocType(typesContext.getServiceClient(), allocatorDefinition,
+                stdUInt8Type);
+        responseDataPtrType = new NativeRuntimeAllocType(typesContext.getResponseDataPtr(), allocatorDefinition,
+                stdUInt8Type);
+        requestDataType = new NativeRuntimeAllocType(typesContext.getRequestData(), allocatorDefinition,
+                stdUInt8Type);
     }
 
     /**
@@ -204,27 +202,27 @@ public class CppNativeMapper
         return (NativeIntegralType)nativeType;
     }
 
-    public NativeAnyHolderType getAnyHolderType()
+    public NativeRuntimeAllocType getAnyHolderType()
     {
         return anyHolderType;
     }
 
-    public NativeUniquePtrType getUniquePtrType()
+    public NativeRuntimeAllocType getUniquePtrType()
     {
         return uniquePtrType;
     }
 
-    public NativeHeapOptionalHolderType getHeapOptionalHolderType()
+    public NativeRuntimeAllocType getHeapOptionalHolderType()
     {
         return heapOptionalHolderType;
     }
 
-    public NativeInplaceOptionalHolderType getInplaceOptionalHolderType()
+    public NativeRuntimeType getInplaceOptionalHolderType()
     {
         return inplaceOptionalHolderType;
     }
 
-    public NativeStringType getStringType()
+    public NativeRuntimeAllocArrayableType getStringType()
     {
         return stringType;
     }
@@ -234,57 +232,57 @@ public class CppNativeMapper
         return stringViewType;
     }
 
-    public NativeVectorType getVectorType()
+    public NativeRuntimeAllocType getVectorType()
     {
         return vectorType;
     }
 
-    public NativeMapType getMapType()
+    public NativeRuntimeAllocType getMapType()
     {
         return mapType;
     }
 
-    public NativeSetType getSetType()
+    public NativeRuntimeAllocType getSetType()
     {
         return setType;
     }
 
-    public NativeBitBufferType getBitBufferType()
+    public NativeRuntimeAllocArrayableType getBitBufferType()
     {
         return bitBufferType;
     }
 
-    public NativePackingContextNodeType getPackingContextNodeType()
+    public NativeRuntimeAllocType getPackingContextNodeType()
     {
         return packingContextNodeType;
     }
 
-    public NativeReflectableFactoryType getReflectableFactoryType()
+    public NativeRuntimeAllocType getReflectableFactoryType()
     {
         return reflectableFactoryType;
     }
 
-    public NativeReflectablePtrType getReflectablePtrType()
+    public NativeRuntimeAllocType getReflectablePtrType()
     {
         return reflectablePtrType;
     }
 
-    public NativeServiceType getServiceType()
+    public NativeRuntimeAllocType getServiceType()
     {
         return serviceType;
     }
 
-    public NativeServiceClientType getServiceClientType()
+    public NativeRuntimeAllocType getServiceClientType()
     {
         return serviceClientType;
     }
 
-    public NativeResponseDataPtrType getResponseDataPtrType()
+    public NativeRuntimeAllocType getResponseDataPtrType()
     {
         return responseDataPtrType;
     }
 
-    public NativeRequestDataType getRequestDataType()
+    public NativeRuntimeAllocType getRequestDataType()
     {
         return requestDataType;
     }
@@ -304,13 +302,13 @@ public class CppNativeMapper
         final TypeInstantiation elementInstantiation = instantiation.getElementTypeInstantiation();
 
         final CppNativeType nativeType = getCppType(elementInstantiation);
-        if (!(nativeType instanceof NativeArrayableType))
+        if (!(nativeType instanceof CppNativeArrayableType))
         {
             throw new ZserioExtensionException("Unhandled arrayable type '" +
                     elementInstantiation.getClass().getName() + "' in CppNativeMapper!");
         }
 
-        return new NativeArrayType((NativeArrayableType)nativeType, vectorType);
+        return new NativeArrayType((CppNativeArrayableType)nativeType, vectorType);
     }
 
     private static CppNativeType mapDynamicBitField(DynamicBitFieldInstantiation instantiation)
@@ -553,11 +551,11 @@ public class CppNativeMapper
                 final PackageName packageName = aliasType.getPackage().getPackageName();
                 final String name = aliasType.getName();
                 final String includeFileName = getIncludePath(packageName, name);
-                if (nativeReferencedType instanceof NativeArrayableType)
+                if (nativeReferencedType instanceof CppNativeArrayableType)
                 {
                     cppType = new NativeUserArrayableType(packageName, name, includeFileName,
                             nativeReferencedType.isSimpleType(),
-                            ((NativeArrayableType)nativeReferencedType).getArrayTraits());
+                            ((CppNativeArrayableType)nativeReferencedType).getArrayTraits());
                 }
                 else
                 {
@@ -578,24 +576,24 @@ public class CppNativeMapper
     private final static String INCLUDE_DIR_SEPARATOR = "/";
     private final static String HEADER_SUFFIX = ".h";
 
-    private final NativeAnyHolderType anyHolderType;
-    private final NativeUniquePtrType uniquePtrType;
-    private final NativeHeapOptionalHolderType heapOptionalHolderType;
-    private final NativeInplaceOptionalHolderType inplaceOptionalHolderType;
+    private final NativeRuntimeAllocType anyHolderType;
+    private final NativeRuntimeAllocType uniquePtrType;
+    private final NativeRuntimeAllocType heapOptionalHolderType;
+    private final NativeRuntimeType inplaceOptionalHolderType;
 
-    private final NativeStringType stringType;
+    private final NativeRuntimeAllocArrayableType stringType;
     private final NativeStringViewType stringViewType;
-    private final NativeVectorType vectorType;
-    private final NativeMapType mapType;
-    private final NativeSetType setType;
-    private final NativeBitBufferType bitBufferType;
-    private final NativePackingContextNodeType packingContextNodeType;
-    private final NativeReflectableFactoryType reflectableFactoryType;
-    private final NativeReflectablePtrType reflectablePtrType;
-    private final NativeServiceType serviceType;
-    private final NativeServiceClientType serviceClientType;
-    private final NativeResponseDataPtrType responseDataPtrType;
-    private final NativeRequestDataType requestDataType;
+    private final NativeRuntimeAllocType vectorType;
+    private final NativeRuntimeAllocType mapType;
+    private final NativeRuntimeAllocType setType;
+    private final NativeRuntimeAllocArrayableType bitBufferType;
+    private final NativeRuntimeAllocType packingContextNodeType;
+    private final NativeRuntimeAllocType reflectableFactoryType;
+    private final NativeRuntimeAllocType reflectablePtrType;
+    private final NativeRuntimeAllocType serviceType;
+    private final NativeRuntimeAllocType serviceClientType;
+    private final NativeRuntimeAllocType responseDataPtrType;
+    private final NativeRuntimeAllocType requestDataType;
 
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));

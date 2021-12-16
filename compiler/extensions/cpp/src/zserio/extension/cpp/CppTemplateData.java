@@ -7,11 +7,7 @@ import java.util.TreeSet;
 
 import zserio.ast.PackageName;
 import zserio.extension.cpp.types.CppNativeType;
-import zserio.extension.cpp.types.NativeHeapOptionalHolderType;
-import zserio.extension.cpp.types.NativeMapType;
-import zserio.extension.cpp.types.NativeSetType;
-import zserio.extension.cpp.types.NativeUniquePtrType;
-import zserio.extension.cpp.types.NativeVectorType;
+import zserio.extension.cpp.types.NativeRuntimeAllocType;
 
 public abstract class CppTemplateData implements IncludeCollector
 {
@@ -151,19 +147,18 @@ public abstract class CppTemplateData implements IncludeCollector
         {
             allocator = new AllocatorTemplateData(typesContext);
             anyHolder = new TypeTemplateData(nativeMapper.getAnyHolderType());
-            final NativeUniquePtrType uniquePtrType = nativeMapper.getUniquePtrType();
+            final NativeRuntimeAllocType uniquePtrType = nativeMapper.getUniquePtrType();
             uniquePtr = new TemplatedTypeTemplateData(uniquePtrType, uniquePtrType.needsAllocatorArgument());
-            final NativeHeapOptionalHolderType heapOptionalHolderType =
-                    nativeMapper.getHeapOptionalHolderType();
+            final NativeRuntimeAllocType heapOptionalHolderType = nativeMapper.getHeapOptionalHolderType();
             heapOptionalHolder = new TemplatedTypeTemplateData(heapOptionalHolderType,
                     heapOptionalHolderType.needsAllocatorArgument());
             inplaceOptionalHolder = new TypeTemplateData(nativeMapper.getInplaceOptionalHolderType());
             string = new TypeTemplateData(nativeMapper.getStringType());
-            final NativeVectorType vectorType = nativeMapper.getVectorType();
+            final NativeRuntimeAllocType vectorType = nativeMapper.getVectorType();
             vector = new TemplatedTypeTemplateData(vectorType, vectorType.needsAllocatorArgument());
-            final NativeMapType mapType = nativeMapper.getMapType();
+            final NativeRuntimeAllocType mapType = nativeMapper.getMapType();
             map = new TemplatedTypeTemplateData(mapType, mapType.needsAllocatorArgument());
-            final NativeSetType setType = nativeMapper.getSetType();
+            final NativeRuntimeAllocType setType = nativeMapper.getSetType();
             set = new TemplatedTypeTemplateData(setType, setType.needsAllocatorArgument());
             bitBuffer = new TypeTemplateData(nativeMapper.getBitBufferType());
             packingContextNode = new TypeTemplateData(nativeMapper.getPackingContextNodeType());
