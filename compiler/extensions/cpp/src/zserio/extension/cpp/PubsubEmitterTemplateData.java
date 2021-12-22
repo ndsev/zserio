@@ -57,7 +57,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         {
             name = message.getName();
             final CppNativeType cppNativeType = cppNativeMapper.getCppType(message.getType());
-            typeInfo = new TypeInfoTemplateData(message.getType(), cppNativeType);
+            typeInfo = new NativeTypeInfoTemplateData(cppNativeType, message.getType());
             final String topicDefinitionStringValue = message.getTopicDefinitionExpr().getStringValue();
             if (topicDefinitionStringValue == null)
             {
@@ -65,7 +65,6 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
                         "Unexpected topic definition which is a non-constant string!");
             }
             topicDefinition = CppLiteralFormatter.formatStringLiteral(topicDefinitionStringValue);
-            typeFullName = cppNativeType.getFullName();
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }
@@ -75,7 +74,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -83,11 +82,6 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         public String getTopicDefinition()
         {
             return topicDefinition;
-        }
-
-        public String getTypeFullName()
-        {
-            return typeFullName;
         }
 
         public boolean getIsPublished()
@@ -101,9 +95,8 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String topicDefinition;
-        private final String typeFullName;
         private final boolean isPublished;
         private final boolean isSubscribed;
     }

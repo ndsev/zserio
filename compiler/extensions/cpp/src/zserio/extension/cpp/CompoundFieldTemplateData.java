@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
-import zserio.ast.BitmaskType;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.EnumType;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.ChoiceType;
@@ -17,6 +15,7 @@ import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
@@ -49,20 +48,8 @@ public class CompoundFieldTemplateData
                 parentType, fieldTypeInstantiation);
 
         name = field.getName();
-        cppTypeName = fieldNativeType.getFullName();
-        cppArgumentTypeName = fieldNativeType.getArgumentTypeName();
 
-        if (fieldTypeInstantiation instanceof ArrayInstantiation)
-        {
-            final TypeInstantiation elementTypeInstantiation =
-                    ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation();
-            final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
-            typeInfo = new TypeInfoTemplateData(elementTypeInstantiation, elementNativeType);
-        }
-        else
-        {
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, fieldNativeType);
-        }
+        typeInfo = new NativeTypeInfoTemplateData(fieldNativeType, fieldTypeInstantiation);
 
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
@@ -77,11 +64,8 @@ public class CompoundFieldTemplateData
 
         usesAnyHolder = (parentType instanceof ChoiceType) || (parentType instanceof UnionType);
 
-        isSimpleType = fieldNativeType.isSimpleType();
-        needsAllocator = !isSimpleType;
+        needsAllocator = !typeInfo.getIsSimple();
         holderNeedsAllocator = usesAnyHolder || (optional != null && optional.getIsRecursive());
-        isEnum = fieldBaseType instanceof EnumType;
-        isBitmask = fieldBaseType instanceof BitmaskType;
 
         constraint = createConstraint(field, cppNativeMapper, cppExpressionFormatter, includeCollector);
         offset = createOffset(field, cppNativeMapper, cppExpressionFormatter,
@@ -92,9 +76,9 @@ public class CompoundFieldTemplateData
                 cppObjectIndirectExpressionFormatter, includeCollector);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
                 cppExpressionFormatter);
-        bitSize = BitSizeDataCreator.createData(fieldTypeInstantiation, cppExpressionFormatter);
+        bitSize = BitSizeTemplateData.create(fieldTypeInstantiation, cppExpressionFormatter);
         objectIndirectDynamicBitSizeValue = (bitSize != null && bitSize.getIsDynamicBitField())
-                ? BitSizeDataCreator.createData(
+                ? BitSizeTemplateData.create(
                         fieldTypeInstantiation, cppObjectIndirectExpressionFormatter).getValue()
                 : null;
     }
@@ -114,17 +98,7 @@ public class CompoundFieldTemplateData
         return name;
     }
 
-    public String getCppTypeName()
-    {
-        return cppTypeName;
-    }
-
-    public String getCppArgumentTypeName()
-    {
-        return cppArgumentTypeName;
-    }
-
-    public TypeInfoTemplateData getTypeInfo()
+    public NativeTypeInfoTemplateData getTypeInfo()
     {
         return typeInfo;
     }
@@ -169,11 +143,6 @@ public class CompoundFieldTemplateData
         return usesAnyHolder;
     }
 
-    public boolean getIsSimpleType()
-    {
-        return isSimpleType;
-    }
-
     public boolean getNeedsAllocator()
     {
         return needsAllocator;
@@ -182,16 +151,6 @@ public class CompoundFieldTemplateData
     public boolean getHolderNeedsAllocator()
     {
         return holderNeedsAllocator;
-    }
-
-    public boolean getIsEnum()
-    {
-        return isEnum;
-    }
-
-    public boolean getIsBitmask()
-    {
-        return isBitmask;
     }
 
     public Constraint getConstraint()
@@ -313,10 +272,10 @@ public class CompoundFieldTemplateData
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 expression = cppExpressionFormatter.formatGetter(argumentExpression);
                 indirectExpression = cppIndirectExpressionFormatter.formatGetter(argumentExpression);
-                final CppNativeType cppNativeType = cppNativeMapper.getCppType(
-                        instantiatedParameter.getParameter().getTypeReference());
-                cppTypeName = cppNativeType.getFullName();
-                isSimpleType = cppNativeType.isSimpleType();
+                final TypeReference parameterTypeReference =
+                        instantiatedParameter.getParameter().getTypeReference();
+                final CppNativeType cppNativeType = cppNativeMapper.getCppType(parameterTypeReference);
+                typeInfo = new NativeTypeInfoTemplateData(cppNativeType, parameterTypeReference);
             }
 
             public String getExpression()
@@ -329,20 +288,14 @@ public class CompoundFieldTemplateData
                 return indirectExpression;
             }
 
-            public String getCppTypeName()
+            public NativeTypeInfoTemplateData getTypeInfo()
             {
-                return cppTypeName;
-            }
-
-            public boolean getIsSimpleType()
-            {
-                return isSimpleType;
+                return typeInfo;
             }
 
             private final String expression;
             private final String indirectExpression;
-            private final String cppTypeName;
-            private final boolean isSimpleType;
+            private final NativeTypeInfoTemplateData typeInfo;
         }
 
         private final ArrayList<InstantiatedParameterData> instantiatedParameters;
@@ -427,13 +380,14 @@ public class CompoundFieldTemplateData
     public static class IntegerRange
     {
         public IntegerRange(boolean checkLowerBound, String lowerBound, String upperBound,
-                String bitFieldLength, boolean isSigned) throws ZserioExtensionException
+                NativeIntegralTypeInfoTemplateData typeInfo, String bitFieldLength)
+                        throws ZserioExtensionException
         {
             this.checkLowerBound = checkLowerBound;
             this.lowerBound = lowerBound;
             this.upperBound = upperBound;
+            this.typeInfo = typeInfo;
             this.bitFieldLength = bitFieldLength;
-            this.isSigned = isSigned;
         }
 
         public boolean getCheckLowerBound()
@@ -451,21 +405,21 @@ public class CompoundFieldTemplateData
             return upperBound;
         }
 
+        public NativeIntegralTypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
+        }
+
         public String getBitFieldLength()
         {
             return bitFieldLength;
         }
 
-        public boolean getIsSigned()
-        {
-            return isSigned;
-        }
-
-        private final String bitFieldLength;
-        private final boolean isSigned;
         private final boolean checkLowerBound;
         private final String lowerBound;
         private final String upperBound;
+        private final NativeIntegralTypeInfoTemplateData typeInfo;
+        private final String bitFieldLength;
     }
 
     public static class Array
@@ -484,14 +438,13 @@ public class CompoundFieldTemplateData
             isPacked = arrayInstantiation.isPacked();
             length = createLength(arrayInstantiation, cppExpressionFormatter);
             final CppNativeType elementNativeType = cppNativeMapper.getCppType(elementTypeInstantiation);
-            elementCppTypeName = elementNativeType.getFullName();
             includeCollector.addHeaderIncludesForType(elementNativeType);
             elementBitSize = traits.getRequiresElementBitSize()
-                    ? BitSizeDataCreator.createData(elementTypeInstantiation, cppExpressionFormatter)
+                    ? BitSizeTemplateData.create(elementTypeInstantiation, cppExpressionFormatter)
                     : null;
             elementObjectIndirectDynamicBitSizeValue =
                     (elementBitSize != null && elementBitSize.getIsDynamicBitField())
-                            ? BitSizeDataCreator.createData(elementTypeInstantiation,
+                            ? BitSizeTemplateData.create(elementTypeInstantiation,
                                     cppObjectIndirectExpressionFormatter).getValue()
                             : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
@@ -499,6 +452,7 @@ public class CompoundFieldTemplateData
             elementIntegerRange = createIntegerRange(cppNativeMapper, elementTypeInstantiation,
                     cppExpressionFormatter);
             elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
+            elementTypeInfo = new NativeTypeInfoTemplateData(elementNativeType, elementTypeInstantiation);
         }
 
         public ArrayTraitsTemplateData getTraits()
@@ -519,11 +473,6 @@ public class CompoundFieldTemplateData
         public String getLength()
         {
             return length;
-        }
-
-        public String getElementCppTypeName()
-        {
-            return elementCppTypeName;
         }
 
         public BitSizeTemplateData getElementBitSize()
@@ -551,6 +500,11 @@ public class CompoundFieldTemplateData
             return elementIsRecursive;
         }
 
+        public NativeTypeInfoTemplateData getElementTypeInfo()
+        {
+            return elementTypeInfo;
+        }
+
         private static String createLength(ArrayInstantiation arrayInstantiation,
                 ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
         {
@@ -565,12 +519,12 @@ public class CompoundFieldTemplateData
         private final boolean isImplicit;
         private final boolean isPacked;
         private final String length;
-        private final String elementCppTypeName;
         private final BitSizeTemplateData elementBitSize;
         private final String elementObjectIndirectDynamicBitSizeValue;
         private final Compound elementCompound;
         private final IntegerRange elementIntegerRange;
         private final boolean elementIsRecursive;
+        private final NativeTypeInfoTemplateData elementTypeInfo;
     }
 
     private static Optional createOptional(Field field, ZserioType baseFieldType, CompoundType parentType,
@@ -595,7 +549,6 @@ public class CompoundFieldTemplateData
 
         final String bitFieldLength = getDynamicBitFieldLength(typeInstantiation, cppExpressionFormatter);
         final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(typeInstantiation);
-        final boolean isSigned = nativeType.isSigned();
         final IntegerType typeToCheck = (IntegerType)typeInstantiation.getBaseType();
 
         final BigInteger zserioLowerBound = typeToCheck.getLowerBound(typeInstantiation);
@@ -617,8 +570,10 @@ public class CompoundFieldTemplateData
 
         final String lowerBound = nativeType.formatLiteral(zserioLowerBound);
         final String upperBound = nativeType.formatLiteral(zserioUpperBound);
+        final NativeIntegralTypeInfoTemplateData typeInfo =
+                new NativeIntegralTypeInfoTemplateData(nativeType, typeInstantiation);
 
-        return new IntegerRange(checkLowerBound, lowerBound, upperBound, bitFieldLength, isSigned);
+        return new IntegerRange(checkLowerBound, lowerBound, upperBound, typeInfo, bitFieldLength);
     }
 
     private static String getDynamicBitFieldLength(TypeInstantiation instantiation,
@@ -738,9 +693,7 @@ public class CompoundFieldTemplateData
     private final Optional optional;
     private final Compound compound;
     private final String name;
-    private final String cppTypeName;
-    private final String cppArgumentTypeName;
-    private final TypeInfoTemplateData typeInfo;
+    private final NativeTypeInfoTemplateData typeInfo;
     private final String getterName;
     private final String setterName;
     private final String readerName;
@@ -749,11 +702,8 @@ public class CompoundFieldTemplateData
     private final String alignmentValue;
     private final String initializer;
     private final boolean usesAnyHolder;
-    private final boolean isSimpleType;
     private final boolean needsAllocator;
     private final boolean holderNeedsAllocator;
-    private final boolean isEnum;
-    private final boolean isBitmask;
     private final Constraint constraint;
     private final Offset offset;
     private final ArrayTraitsTemplateData arrayTraits;

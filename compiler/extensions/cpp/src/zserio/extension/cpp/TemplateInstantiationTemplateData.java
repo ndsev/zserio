@@ -21,13 +21,14 @@ public class TemplateInstantiationTemplateData
                     throws ZserioExtensionException
     {
         templateName = ZserioTypeUtil.getFullName(template);
+        templateArgumentTypeInfos = new ArrayList<NativeTypeInfoTemplateData>();
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         for (TemplateArgument templateArgument : templateArguments)
         {
             final CppNativeType argumentNativeType = cppNativeMapper.getCppType(
                     templateArgument.getTypeReference());
-            this.templateArgumentTypeInfos.add(new TypeInfoTemplateData(templateArgument.getTypeReference(),
-                    argumentNativeType));
+            templateArgumentTypeInfos.add(new NativeTypeInfoTemplateData(
+                    argumentNativeType, templateArgument.getTypeReference()));
             if (context.getWithTypeInfoCode())
             {
                 // includes of template arguments types are needed only in typeInfo
@@ -41,7 +42,7 @@ public class TemplateInstantiationTemplateData
         return templateName;
     }
 
-    public Iterable<TypeInfoTemplateData> getTemplateArgumentTypeInfos()
+    public Iterable<NativeTypeInfoTemplateData> getTemplateArgumentTypeInfos()
     {
         return templateArgumentTypeInfos;
     }
@@ -63,5 +64,5 @@ public class TemplateInstantiationTemplateData
     }
 
     private final String templateName;
-    private final List<TypeInfoTemplateData> templateArgumentTypeInfos = new ArrayList<TypeInfoTemplateData>();
+    private final List<NativeTypeInfoTemplateData> templateArgumentTypeInfos;
 }

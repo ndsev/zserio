@@ -7,7 +7,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import zserio.ast.BitmaskType;
-import zserio.ast.BooleanType;
 import zserio.ast.CompoundType;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumType;
@@ -21,6 +20,7 @@ import zserio.ast.IntegerType;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.common.sql.SqlNativeTypeMapper;
@@ -68,10 +68,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 if (parameterTemplateData.getIsExplicit())
                 {
                     final String expression = parameterTemplateData.getExpression();
-                    final String cppTypeName = parameterTemplateData.getCppTypeName();
-                    final boolean isSimpleType = parameterTemplateData.getIsSimpleType();
-                    explicitParameters.add(new ExplicitParameterTemplateData(expression, cppTypeName,
-                            isSimpleType));
+                    final NativeTypeInfoTemplateData typeInfo = parameterTemplateData.getTypeInfo();
+                    explicitParameters.add(new ExplicitParameterTemplateData(expression, typeInfo));
                 }
                 else
                 {
@@ -139,11 +137,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
-        public ExplicitParameterTemplateData(String expression, String cppTypeName, boolean isSimpleType)
+        public ExplicitParameterTemplateData(String expression, NativeTypeInfoTemplateData typeInfo)
         {
             this.expression = expression;
-            this.cppTypeName = cppTypeName;
-            this.isSimpleType = isSimpleType;
+            this.typeInfo = typeInfo;
         }
 
         public String getExpression()
@@ -151,14 +148,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return expression;
         }
 
-        public String getCppTypeName()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return cppTypeName;
-        }
-
-        public boolean getIsSimpleType()
-        {
-            return isSimpleType;
+            return typeInfo;
         }
 
         @Override
@@ -168,7 +160,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             if (result != 0)
                 return result;
 
-            return cppTypeName.compareTo(other.cppTypeName);
+            return typeInfo.getTypeName().compareTo(other.typeInfo.getTypeName());
         }
 
         @Override
@@ -190,31 +182,28 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             int hash = HashUtil.HASH_SEED;
             hash = HashUtil.hash(hash, expression);
-            hash = HashUtil.hash(hash, cppTypeName);
+            hash = HashUtil.hash(hash, typeInfo.getTypeName());
             return hash;
         }
 
         private final String expression;
-        private final String cppTypeName;
-        private final boolean isSimpleType;
+        private final NativeTypeInfoTemplateData typeInfo;
     }
 
     public static class FieldTemplateData
     {
         public FieldTemplateData(CppNativeMapper cppNativeMapper,
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
-                SqlTableType table, Field field, IncludeCollector includeCollector) throws ZserioExtensionException
+                SqlTableType table, Field field, IncludeCollector includeCollector)
+                        throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
             final CppNativeType nativeFieldType = cppNativeMapper.getCppType(fieldTypeInstantiation);
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();
-            cppTypeName = nativeFieldType.getFullName();
-            cppArgumentTypeName = nativeFieldType.getArgumentTypeName();
 
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeFieldType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeFieldType, fieldTypeInstantiation);
 
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
             sqlConstraint = createSqlConstraint(fieldSqlConstraint);
@@ -249,20 +238,12 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             this.hasImplicitParameters = hasImplicitParameters;
             this.hasExplicitParameters = hasExplicitParameters;
 
-            bitSize = BitSizeDataCreator.createData(fieldTypeInstantiation, cppSqlIndirectExpressionFormatter);
-            isSimpleType = nativeFieldType.isSimpleType();
-            isBoolean = fieldBaseType instanceof BooleanType;
-            enumData = createEnumTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
-            bitmaskData = createBitmaskTemplateData(cppNativeMapper, fieldBaseType, includeCollector);
+            bitSize = BitSizeTemplateData.create(fieldTypeInstantiation, cppSqlIndirectExpressionFormatter);
+            final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            underlyingTypeInfo = createUnderlyingTypeInfo(cppNativeMapper, fieldBaseType, includeCollector);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
-
-            TypeInstantiation rangeCheckInstantiation = fieldTypeInstantiation;
-            if (enumData != null)
-                rangeCheckInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
-            else if (bitmaskData != null)
-                rangeCheckInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
-            sqlRangeCheckData = createRangeCheckData(cppNativeMapper, cppSqlIndirectExpressionFormatter,
-                    rangeCheckInstantiation);
+            sqlRangeCheckData = createRangeCheckData(cppNativeMapper, fieldBaseType,
+                    cppSqlIndirectExpressionFormatter, fieldTypeInstantiation);
             needsChildrenInitialization = (fieldBaseType instanceof CompoundType) &&
                     ((CompoundType)fieldBaseType).needsChildrenInitialization();
         }
@@ -272,17 +253,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public String getCppTypeName()
-        {
-            return cppTypeName;
-        }
-
-        public String getCppArgumentTypeName()
-        {
-            return cppArgumentTypeName;
-        }
-
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -347,24 +318,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return bitSize;
         }
 
-        public boolean getIsSimpleType()
+        public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
         {
-            return isSimpleType;
-        }
-
-        public boolean getIsBoolean()
-        {
-            return isBoolean;
-        }
-
-        public EnumTemplateData getEnumData()
-        {
-            return enumData;
-        }
-
-        public BitmaskTemplateData getBitmaskData()
-        {
-            return bitmaskData;
+            return underlyingTypeInfo;
         }
 
         public SqlTypeTemplateData getSqlTypeData()
@@ -390,33 +346,27 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     IncludeCollector includeCollector) throws ZserioExtensionException
             {
                 final Parameter parameter = instantiatedParameter.getParameter();
-                final CppNativeType parameterNativeType =
-                        cppNativeMapper.getCppType(parameter.getTypeReference());
+                final TypeReference parameterTypeReference = parameter.getTypeReference();
+                final CppNativeType parameterNativeType = cppNativeMapper.getCppType(parameterTypeReference);
                 includeCollector.addHeaderIncludesForType(parameterNativeType);
 
+                name = parameter.getName();
+                typeInfo = new NativeTypeInfoTemplateData(parameterNativeType, parameterTypeReference);
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
-                definitionName = parameter.getName();
-                cppTypeName = parameterNativeType.getFullName();
-                isSimpleType = parameterNativeType.isSimpleType();
                 expression = cppSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
                 requiresOwnerContext = argumentExpression.requiresOwnerContext();
                 getterName = AccessorNameFormatter.getGetterName(parameter);
             }
 
-            public String getDefinitionName()
+            public String getName()
             {
-                return definitionName;
+                return name;
             }
 
-            public String getCppTypeName()
+            public NativeTypeInfoTemplateData getTypeInfo()
             {
-                return cppTypeName;
-            }
-
-            public boolean getIsSimpleType()
-            {
-                return isSimpleType;
+                return typeInfo;
             }
 
             public boolean getIsExplicit()
@@ -439,51 +389,12 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return getterName;
             }
 
-            private final String definitionName;
-            private final String cppTypeName;
-            private final boolean isSimpleType;
+            private final String name;
+            private final NativeTypeInfoTemplateData typeInfo;
             private final boolean isExplicit;
             private final String expression;
             private final boolean requiresOwnerContext;
             private final String getterName;
-        }
-
-        public static class EnumTemplateData
-        {
-            public EnumTemplateData(CppNativeMapper cppNativeMapper, EnumType enumType,
-                    IncludeCollector includeCollector) throws ZserioExtensionException
-            {
-                final CppNativeType nativeBaseType =
-                        cppNativeMapper.getCppType(enumType.getTypeInstantiation());
-                includeCollector.addCppIncludesForType(nativeBaseType);
-                baseCppTypeName = nativeBaseType.getFullName();
-            }
-
-            public String getBaseCppTypeName()
-            {
-                return baseCppTypeName;
-            }
-
-            private final String baseCppTypeName;
-        }
-
-        public static class BitmaskTemplateData
-        {
-            public BitmaskTemplateData(CppNativeMapper cppNativeMapper, BitmaskType bitmaskType,
-                    IncludeCollector includeCollector) throws ZserioExtensionException
-            {
-                final CppNativeType nativeBaseType =
-                        cppNativeMapper.getCppType(bitmaskType.getTypeInstantiation());
-                includeCollector.addCppIncludesForType(nativeBaseType);
-                baseCppTypeName = nativeBaseType.getFullName();
-            }
-
-            public String getBaseCppTypeName()
-            {
-                return baseCppTypeName;
-            }
-
-            private final String baseCppTypeName;
         }
 
         public static class SqlTypeTemplateData
@@ -528,14 +439,14 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public static class SqlRangeCheckData
         {
             public SqlRangeCheckData(boolean checkLowerBound, String lowerBound, String upperBound,
-                    String sqlCppTypeName, String bitFieldLength, boolean isSigned) throws ZserioExtensionException
+                    NativeIntegralTypeInfoTemplateData typeInfo, String bitFieldLength)
+                            throws ZserioExtensionException
             {
                 this.checkLowerBound = checkLowerBound;
                 this.lowerBound = lowerBound;
                 this.upperBound = upperBound;
-                this.sqlCppTypeName = sqlCppTypeName;
+                this.typeInfo = typeInfo;
                 this.bitFieldLength = bitFieldLength;
-                this.isSigned = isSigned;
             }
 
             public boolean getCheckLowerBound()
@@ -553,9 +464,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return upperBound;
             }
 
-            public String getSqlCppTypeName()
+            public NativeIntegralTypeInfoTemplateData getTypeInfo()
             {
-                return sqlCppTypeName;
+                return typeInfo;
             }
 
             public String getBitFieldLength()
@@ -563,41 +474,38 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return bitFieldLength;
             }
 
-            public boolean getIsSigned()
-            {
-                return isSigned;
-            }
-
             private final boolean checkLowerBound;
             private final String lowerBound;
             private final String upperBound;
-            private final String sqlCppTypeName;
+            private final NativeIntegralTypeInfoTemplateData typeInfo;
             private final String bitFieldLength;
-            private final boolean isSigned;
         }
 
-        private static EnumTemplateData createEnumTemplateData(CppNativeMapper cppNativeMapper,
+        private static NativeTypeInfoTemplateData createUnderlyingTypeInfo(CppNativeMapper cppNativeMapper,
                 ZserioType fieldBaseType, IncludeCollector includeCollector) throws ZserioExtensionException
         {
-            if (!(fieldBaseType instanceof EnumType))
+            TypeInstantiation baseTypeInstantiation;
+            if (fieldBaseType instanceof EnumType)
+            {
+                baseTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+            }
+            else if (fieldBaseType instanceof BitmaskType)
+            {
+                baseTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
+            }
+            else
+            {
                 return null;
+            }
 
-            return new EnumTemplateData(cppNativeMapper, (EnumType)fieldBaseType, includeCollector);
-        }
+            final CppNativeType nativeBaseType = cppNativeMapper.getCppType(baseTypeInstantiation);
+            includeCollector.addCppIncludesForType(nativeBaseType);
 
-        private static BitmaskTemplateData createBitmaskTemplateData(CppNativeMapper cppNativeMapper,
-                ZserioType fieldBaseType, IncludeCollector includeCollector) throws ZserioExtensionException
-        {
-            if (!(fieldBaseType instanceof BitmaskType))
-                return null;
-
-            return new BitmaskTemplateData(cppNativeMapper, (BitmaskType)fieldBaseType, includeCollector);
+            return new NativeTypeInfoTemplateData(nativeBaseType, baseTypeInstantiation);
         }
 
         private final String name;
-        private final String cppTypeName;
-        private final String cppArgumentTypeName;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String sqlConstraint;
         private final boolean isNotNull;
         private final boolean isPrimaryKey;
@@ -610,10 +518,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final boolean hasImplicitParameters;
         private final boolean hasExplicitParameters;
         private final BitSizeTemplateData bitSize;
-        private final boolean isSimpleType;
-        private final boolean isBoolean;
-        private final EnumTemplateData enumData;
-        private final BitmaskTemplateData bitmaskData;
+        private final NativeTypeInfoTemplateData underlyingTypeInfo;
         private final SqlTypeTemplateData sqlTypeData;
         private final SqlRangeCheckData sqlRangeCheckData;
         private final boolean needsChildrenInitialization;
@@ -632,21 +537,31 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     }
 
     private static SqlRangeCheckData createRangeCheckData(CppNativeMapper cppNativeMapper,
-            ExpressionFormatter cppSqlIndirectExpressionFormatter, TypeInstantiation typeInstantiation)
-                    throws ZserioExtensionException
+            ZserioType fieldBaseType, ExpressionFormatter cppSqlIndirectExpressionFormatter,
+            TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
+        TypeInstantiation baseTypeInstantiation = typeInstantiation;
+        if (fieldBaseType instanceof EnumType)
+        {
+            baseTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+        }
+        else if (fieldBaseType instanceof BitmaskType)
+        {
+            baseTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
+        }
+
         // in SQL, don't do range check non-integer types
-        if (!(typeInstantiation.getBaseType() instanceof IntegerType))
+        if (!(baseTypeInstantiation.getBaseType() instanceof IntegerType))
             return null;
 
-        final String bitFieldLength = getDynamicBitFieldLength(typeInstantiation,
+        final String bitFieldLength = getDynamicBitFieldLength(baseTypeInstantiation,
                 cppSqlIndirectExpressionFormatter);
-        final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(typeInstantiation);
+        final NativeIntegralType nativeType = cppNativeMapper.getCppIntegralType(baseTypeInstantiation);
         final boolean isSigned = nativeType.isSigned();
-        final IntegerType typeToCheck = (IntegerType)typeInstantiation.getBaseType();
+        final IntegerType typeToCheck = (IntegerType)baseTypeInstantiation.getBaseType();
 
-        final BigInteger zserioLowerBound = typeToCheck.getLowerBound(typeInstantiation);
-        final BigInteger zserioUpperBound = typeToCheck.getUpperBound(typeInstantiation);
+        final BigInteger zserioLowerBound = typeToCheck.getLowerBound(baseTypeInstantiation);
+        final BigInteger zserioUpperBound = typeToCheck.getUpperBound(baseTypeInstantiation);
         boolean checkLowerBound = true;
         boolean checkUpperBound = true;
         // since we use sqlite_column_int64, it has no sense to test 64-bit types
@@ -666,10 +581,10 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         final String lowerBound = nativeType.formatLiteral(zserioLowerBound);
         final String upperBound = nativeType.formatLiteral(zserioUpperBound);
-        final String sqlCppTypeName = sqlNativeType.getFullName();
+        final NativeIntegralTypeInfoTemplateData typeInfo =
+                new NativeIntegralTypeInfoTemplateData(sqlNativeType, baseTypeInstantiation);
 
-        return new SqlRangeCheckData(checkLowerBound, lowerBound, upperBound, sqlCppTypeName,
-                bitFieldLength, isSigned);
+        return new SqlRangeCheckData(checkLowerBound, lowerBound, upperBound, typeInfo, bitFieldLength);
     }
 
     private static String getDynamicBitFieldLength(TypeInstantiation instantiation,

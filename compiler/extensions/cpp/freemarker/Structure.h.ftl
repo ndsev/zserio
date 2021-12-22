@@ -53,7 +53,7 @@ public:
     {
         <#list compoundConstructorsData.fieldList as field>
         <@field_member_name field/> = <#rt>
-            <#if !field.isSimpleType || field.optional??>
+            <#if !field.typeInfo.isSimple || field.optional??>
                 <#lt><@compound_setter_field_forward_value field/>;
             <#else>
                 <#lt><@compound_setter_field_value field/>;

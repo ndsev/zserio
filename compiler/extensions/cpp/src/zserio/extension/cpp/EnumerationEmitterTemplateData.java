@@ -25,13 +25,11 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(enumTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
-        underlyingTypeInfo = new TypeInfoTemplateData(enumTypeInstantiation, nativeBaseType);
+        underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, enumTypeInstantiation);
 
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        bitSize = BitSizeDataCreator.createData(enumTypeInstantiation, cppExpressionFormatter);
-        baseCppTypeName = nativeBaseType.getFullName();
-        baseCppTypeNumBits = nativeBaseType.getNumBits();
+        bitSize = BitSizeTemplateData.create(enumTypeInstantiation, cppExpressionFormatter);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
                 cppExpressionFormatter);
 
@@ -41,7 +39,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             items.add(new EnumItemData(nativeBaseType, nativeEnumType, enumItem));
     }
 
-    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    public NativeIntegralTypeInfoTemplateData getUnderlyingTypeInfo()
     {
         return underlyingTypeInfo;
     }
@@ -54,16 +52,6 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public BitSizeTemplateData getBitSize()
     {
         return bitSize;
-    }
-
-    public String getBaseCppTypeName()
-    {
-        return baseCppTypeName;
-    }
-
-    public int getBaseCppTypeNumBits()
-    {
-        return baseCppTypeNumBits;
     }
 
     public RuntimeFunctionTemplateData getRuntimeFunction()
@@ -107,11 +95,9 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final String value;
     };
 
-    private final TypeInfoTemplateData underlyingTypeInfo;
+    private final NativeIntegralTypeInfoTemplateData underlyingTypeInfo;
     private final ArrayTraitsTemplateData arrayTraits;
     private final BitSizeTemplateData bitSize;
-    private final String baseCppTypeName;
-    private final int baseCppTypeNumBits;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final List<EnumItemData> items;
 }

@@ -7,7 +7,7 @@
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-const ${cppTypeName} ${name} = ${value};
+const ${typeInfo.typeName} ${name} = ${value};
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

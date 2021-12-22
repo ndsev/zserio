@@ -42,19 +42,19 @@
 </#macro>
 
 <#macro sql_parameter_provider_return_type parameter>
-    <#if parameter.isSimpleType>
-        ${parameter.cppTypeName}<#t>
+    <#if parameter.typeInfo.isSimple>
+        ${parameter.typeInfo.typeName}<#t>
     <#else>
         <#-- non-const reference is necessary for setting of offsets -->
-        ${parameter.cppTypeName}&<#t>
+        ${parameter.typeInfo.typeName}&<#t>
     </#if>
 </#macro>
 
 <#macro sql_parameter_variable_type parameter>
-    <#if parameter.isSimpleType>
-        const ${parameter.cppTypeName}<#t>
+    <#if parameter.typeInfo.isSimple>
+        const ${parameter.typeInfo.typeName}<#t>
     <#else>
-        ${parameter.cppTypeName}&<#t>
+        ${parameter.typeInfo.typeName}&<#t>
     </#if>
 </#macro>
 
@@ -74,7 +74,7 @@
 <#function sql_table_has_validatable_field fields>
     <#list fields as field>
         <#if !field.isVirtual>
-            <#if field.sqlTypeData.isBlob || field.enumData?? || field.bitmaskData?? ||
+            <#if field.sqlTypeData.isBlob || field.typeInfo.isEnum || field.typeInfo.isBitmask ||
                     field.sqlRangeCheckData??>
                 <#return true>
             </#if>

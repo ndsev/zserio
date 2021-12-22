@@ -31,14 +31,6 @@ public interface CppNativeType
     public PackageName getPackageName();
 
     /**
-     * Returns a string representing the C++ type that should be used when passing this type as a function
-     * argument.
-     *
-     * @return The name of argument type.
-     */
-    public String getArgumentTypeName();
-
-    /**
      * Returns true iff the type is a "simple" type.
      *
      * In this context in means the type is small enough is that is should be passed by value.

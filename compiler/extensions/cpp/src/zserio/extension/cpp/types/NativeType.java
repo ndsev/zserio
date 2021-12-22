@@ -45,15 +45,6 @@ public class NativeType implements CppNativeType
     }
 
     @Override
-    public String getArgumentTypeName()
-    {
-        if (isSimpleType())
-            return getFullName();
-        else
-            return "const " + getFullName() + '&';
-    }
-
-    @Override
     public boolean isSimpleType()
     {
         return simpleType;

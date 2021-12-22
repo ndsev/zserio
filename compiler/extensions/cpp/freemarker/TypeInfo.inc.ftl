@@ -4,9 +4,9 @@
                 <#if typeInfo.typeInfoGetter.arg??>${typeInfo.typeInfoGetter.arg}</#if>)<#t>
     <#else>
         <#if typeInfo.isEnum>
-        ::zserio::enumTypeInfo<${typeInfo.cppTypeName}>()<#t>
+        ::zserio::enumTypeInfo<${typeInfo.typeName}>()<#t>
         <#else>
-        ${typeInfo.cppTypeName}::typeInfo()<#t>
+        ${typeInfo.typeName}::typeInfo()<#t>
         </#if>
     </#if>
 </#macro>
@@ -110,6 +110,8 @@ ${I}::zserio::FieldInfo{
 ${I}    ::zserio::makeStringView("${field.name}"), // schemaName
     <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
 ${I}    <@field_info_recursive_type_info_var_name field/>, // typeInfo
+    <#elseif field.array??>
+${I}    <@type_info field.array.elementTypeInfo/>, // typeInfo
     <#else>
 ${I}    <@type_info field.typeInfo/>, // typeInfo
     </#if>
@@ -139,9 +141,12 @@ ${I}}<#if comma>,</#if>
 </#macro>
 
 <#macro field_info_recursive_type_info_var field>
-    <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
+    <#if field.optional?? && field.optional.isRecursive>
     static const ::zserio::RecursiveTypeInfo <@field_info_recursive_type_info_var_name field/>(
-            &${field.typeInfo.cppTypeName}::typeInfo);
+            &${field.typeInfo.typeName}::typeInfo);
+    <#elseif field.array?? && field.array.elementIsRecursive>
+    static const ::zserio::RecursiveTypeInfo <@field_info_recursive_type_info_var_name field/>(
+            &${field.array.elementTypeInfo.typeName}::typeInfo);
     </#if>
 </#macro>
 

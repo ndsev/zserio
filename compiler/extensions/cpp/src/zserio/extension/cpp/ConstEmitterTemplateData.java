@@ -11,7 +11,8 @@ import zserio.extension.cpp.types.NativeStringViewType;
 
 public class ConstEmitterTemplateData extends CppTemplateData
 {
-    public ConstEmitterTemplateData(TemplateDataContext context, Constant constant) throws ZserioExtensionException
+    public ConstEmitterTemplateData(TemplateDataContext context, Constant constant)
+            throws ZserioExtensionException
     {
         super(context);
 
@@ -28,18 +29,21 @@ public class ConstEmitterTemplateData extends CppTemplateData
         {
             final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
             addHeaderIncludesForType(nativeStringViewType);
-            cppTypeName = nativeStringViewType.getFullName();
+            typeInfo = new NativeTypeInfoTemplateData(nativeStringViewType, constantTypeInstantation);
 
             final String stringValue = constant.getValueExpression().getStringValue();
             if (stringValue == null)
-                throw new ZserioExtensionException("Unexpected value expression which is a non-constant string!");
+            {
+                throw new ZserioExtensionException(
+                        "Unexpected value expression which is a non-constant string!");
+            }
             value = nativeStringViewType.formatLiteral(stringValue);
         }
         else
         {
             final CppNativeType nativeTargetType = cppNativeMapper.getCppType(constantTypeInstantation);
             addHeaderIncludesForType(nativeTargetType);
-            cppTypeName = nativeTargetType.getFullName();
+            typeInfo = new NativeTypeInfoTemplateData(nativeTargetType, constantTypeInstantation);
             value = cppExpressionFormatter.formatGetter(constant.getValueExpression());
         }
     }
@@ -54,9 +58,9 @@ public class ConstEmitterTemplateData extends CppTemplateData
         return name;
     }
 
-    public String getCppTypeName()
+    public NativeTypeInfoTemplateData getTypeInfo()
     {
-        return cppTypeName;
+        return typeInfo;
     }
 
     public String getValue()
@@ -66,6 +70,6 @@ public class ConstEmitterTemplateData extends CppTemplateData
 
     private final PackageTemplateData packageData;
     private final String name;
-    private final String cppTypeName;
+    private final NativeTypeInfoTemplateData typeInfo;
     private final String value;
 }

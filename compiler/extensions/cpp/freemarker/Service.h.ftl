@@ -43,7 +43,7 @@ public:
 private:
 <#if methodList?has_content>
 <#list methodList as method>
-    virtual ${method.responseTypeFullName} ${method.name}Impl(const ${method.requestTypeFullName}& request<#rt>
+    virtual ${method.responseTypeInfo.typeName} ${method.name}Impl(const ${method.requestTypeInfo.typeName}& request<#rt>
             <#lt>, void* context) = 0;
 </#list>
 
@@ -67,7 +67,7 @@ public:
     Client& operator=(Client&&) = delete;
 <#list methodList as method>
 
-    ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName}& request, <#rt>
+    ${method.responseTypeInfo.typeName} ${method.name}Method(${method.requestTypeInfo.typeName}& request, <#rt>
             <#lt>void* context = nullptr);
 </#list>
 

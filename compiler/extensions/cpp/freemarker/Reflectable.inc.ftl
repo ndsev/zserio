@@ -79,15 +79,15 @@ ${I}}
         <#if field.array.elementCompound??>
             ${types.reflectableFactory.name}::getCompoundArray(<#t>
                     m_object.${field.getterName}(), get_allocator())<#t>
-        <#elseif field.typeInfo.isBitmask>
+        <#elseif field.array.elementTypeInfo.isBitmask>
             ${types.reflectableFactory.name}::getBitmaskArray(<#t>
                     m_object.${field.getterName}(), get_allocator())<#t>
-        <#elseif field.typeInfo.isEnum>
+        <#elseif field.array.elementTypeInfo.isEnum>
             ${types.reflectableFactory.name}::getEnumArray(<#t>
                     m_object.${field.getterName}(), get_allocator())<#t>
         <#else>
             ${types.reflectableFactory.name}::getBuiltinArray(<#t>
-                    <@type_info field.typeInfo/>, m_object.${field.getterName}(), <#t>
+                    <@type_info field.array.elementTypeInfo/>, m_object.${field.getterName}(), <#t>
             <#if field.array.elementObjectIndirectDynamicBitSizeValue??>
                     static_cast<uint8_t>(${field.array.elementObjectIndirectDynamicBitSizeValue}), <#t>
             </#if>

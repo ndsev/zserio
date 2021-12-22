@@ -7,7 +7,7 @@ public class NativeIntegralType extends NativeBuiltinType
 {
     public NativeIntegralType(int numBits, boolean isSigned, NativeArrayTraits arrayTraits)
     {
-        super(getCppTypeName(numBits, isSigned), arrayTraits);
+        super(getTypeName(numBits, isSigned), arrayTraits);
         addSystemIncludeFile(STDINT_INCLUDE);
 
         this.numBits = numBits;
@@ -73,7 +73,7 @@ public class NativeIntegralType extends NativeBuiltinType
         return sb.toString();
     }
 
-    private static String getCppTypeName(int numBits, boolean isSigned)
+    private static String getTypeName(int numBits, boolean isSigned)
     {
         StringBuilder buffer = new StringBuilder();
 

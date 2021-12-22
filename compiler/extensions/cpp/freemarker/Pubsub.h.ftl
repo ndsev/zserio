@@ -42,12 +42,12 @@ public:
 <#list messageList as message>
     <#if message.isPublished>
 
-    void publish${message.name?cap_first}(${message.typeFullName}& message, void* context = nullptr);
+    void publish${message.name?cap_first}(${message.typeInfo.typeName}& message, void* context = nullptr);
     </#if>
     <#if message.isSubscribed>
 
     ::zserio::IPubsub::SubscriptionId subscribe${message.name?cap_first}(
-            const std::shared_ptr<${name}Callback<${message.typeFullName}>>& callback,
+            const std::shared_ptr<${name}Callback<${message.typeInfo.typeName}>>& callback,
             void* context = nullptr);
     </#if>
 </#list>

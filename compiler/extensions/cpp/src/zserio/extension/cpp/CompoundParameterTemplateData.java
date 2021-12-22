@@ -39,11 +39,8 @@ public class CompoundParameterTemplateData
             includeCollector.addHeaderIncludesForType(cppNativeType);
 
             name = parameter.getName();
-            cppTypeName = cppNativeType.getFullName();
-            cppArgumentTypeName = cppNativeType.getArgumentTypeName();
-            typeInfo = new TypeInfoTemplateData(parameterTypeReference, cppNativeType);
+            typeInfo = new NativeTypeInfoTemplateData(cppNativeType, parameterTypeReference);
             getterName = AccessorNameFormatter.getGetterName(parameter);
-            isSimpleType = cppNativeType.isSimpleType();
         }
 
         public String getName()
@@ -51,17 +48,7 @@ public class CompoundParameterTemplateData
             return name;
         }
 
-        public String getCppTypeName()
-        {
-            return cppTypeName;
-        }
-
-        public String getCppArgumentTypeName()
-        {
-            return cppArgumentTypeName;
-        }
-
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -71,17 +58,9 @@ public class CompoundParameterTemplateData
             return getterName;
         }
 
-        public boolean getIsSimpleType()
-        {
-            return isSimpleType;
-        }
-
         private final String name;
-        private final String cppTypeName;
-        private final String cppArgumentTypeName;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String getterName;
-        private final boolean isSimpleType;
     }
 
     private final List<CompoundParameter> compoundParameterList;

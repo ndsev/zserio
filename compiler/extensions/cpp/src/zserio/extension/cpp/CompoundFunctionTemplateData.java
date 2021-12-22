@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.TypeReference;
+import zserio.ast.ZserioType;
 import zserio.ast.Function;
 import zserio.ast.StringType;
 import zserio.extension.common.ExpressionFormatter;
@@ -39,17 +40,16 @@ public class CompoundFunctionTemplateData
                         throws ZserioExtensionException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
+            final ZserioType returnBaseType = returnTypeReference.getBaseTypeReference().getType();
             isConstStringReturnType = function.getResultExpression().getStringValue() != null;
-            if (returnTypeReference.getBaseTypeReference().getType() instanceof StringType)
+            if (returnBaseType instanceof StringType)
             {
                 // we have to return strings as StringView because we are not able to find out whether
                 // the expression always leads to some field or whether it contains any string constant
                 // (the expression can contain e.g. another function call, constant, etc.)
                 final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
                 includeCollector.addHeaderIncludesForType(nativeStringViewType);
-                returnTypeName = nativeStringViewType.getFullName();
-                returnArgumentTypeName = nativeStringViewType.getArgumentTypeName();
-                returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, nativeStringViewType);
+                returnTypeInfo = new NativeTypeInfoTemplateData(nativeStringViewType, returnTypeReference);
 
                 if (isConstStringReturnType)
                 {
@@ -60,35 +60,20 @@ public class CompoundFunctionTemplateData
                 {
                     resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
                 }
-
-                isSimpleReturnType = nativeStringViewType.isSimpleType();
             }
             else
             {
                 final CppNativeType returnNativeType = cppNativeMapper.getCppType(returnTypeReference);
                 includeCollector.addHeaderIncludesForType(returnNativeType);
-                returnTypeName = returnNativeType.getFullName();
-                returnArgumentTypeName = returnNativeType.getArgumentTypeName();
-                returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, returnNativeType);
+                returnTypeInfo = new NativeTypeInfoTemplateData(returnNativeType, returnTypeReference);
                 resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
-                isSimpleReturnType = returnNativeType.isSimpleType();
             }
 
             schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
         }
 
-        public String getReturnTypeName()
-        {
-            return returnTypeName;
-        }
-
-        public String getReturnArgumentTypeName()
-        {
-            return returnArgumentTypeName;
-        }
-
-        public TypeInfoTemplateData getReturnTypeInfo()
+        public NativeTypeInfoTemplateData getReturnTypeInfo()
         {
             return returnTypeInfo;
         }
@@ -103,11 +88,6 @@ public class CompoundFunctionTemplateData
             return isConstStringReturnType;
         }
 
-        public boolean getIsSimpleReturnType()
-        {
-            return isSimpleReturnType;
-        }
-
         public String getSchemaName()
         {
             return schemaName;
@@ -118,12 +98,9 @@ public class CompoundFunctionTemplateData
             return name;
         }
 
-        private final String returnTypeName;
-        private final String returnArgumentTypeName;
-        private final TypeInfoTemplateData returnTypeInfo;
+        private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
         private final boolean isConstStringReturnType;
-        private final boolean isSimpleReturnType;
         private final String schemaName;
         private final String name;
     }

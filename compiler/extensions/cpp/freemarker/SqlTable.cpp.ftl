@@ -164,16 +164,16 @@ bool ${name}::Reader::hasNext() const noexcept
 
 <#macro read_blob field parameterProviderVarName>
         <#list field.typeParameters as parameter>
-        <@sql_parameter_variable_type parameter/> _${parameter.definitionName} = <#rt>
+        <@sql_parameter_variable_type parameter/> _${parameter.name} = <#rt>
             <#if parameter.isExplicit>
                 <#lt>${parameterProviderVarName}.<@sql_parameter_provider_getter_name parameter/>(row);
             <#else>
                 <#lt>${parameter.expression};
             </#if>
         </#list>
-        ${field.cppTypeName} blob(reader<#rt>
+        ${field.typeInfo.typeName} blob(reader<#rt>
         <#list field.typeParameters as parameter>
-                , _${parameter.definitionName}<#t>
+                , _${parameter.name}<#t>
         </#list>
         <#lt>, get_allocator_ref());
 </#macro>
@@ -200,23 +200,23 @@ ${name}::Row ${name}::Reader::next()
         row.${field.setterName}(::std::move(blob));
     <#elseif field.sqlTypeData.isInteger>
         const int64_t intValue = sqlite3_column_int64(m_stmt.get(), ${field?index});
-        <#if field.enumData??>
-        const ${field.cppTypeName} enumValue = ::zserio::valueToEnum<${field.cppTypeName}>(static_cast<${field.enumData.baseCppTypeName}>(intValue));
+        <#if field.typeInfo.isEnum>
+        const ${field.typeInfo.typeName} enumValue = ::zserio::valueToEnum<${field.typeInfo.typeName}>(static_cast<${field.underlyingTypeInfo.typeName}>(intValue));
         row.${field.setterName}(enumValue);
-        <#elseif field.bitmaskData??>
-        const ${field.cppTypeName} bitmaskValue = ${field.cppTypeName}(static_cast<${field.bitmaskData.baseCppTypeName}>(intValue));
+        <#elseif field.typeInfo.isBitmask>
+        const ${field.typeInfo.typeName} bitmaskValue = ${field.typeInfo.typeName}(static_cast<${field.underlyingTypeInfo.typeName}>(intValue));
         row.${field.setterName}(bitmaskValue);
-        <#elseif field.isBoolean>
+        <#elseif field.typeInfo.isBoolean>
         row.${field.setterName}(intValue != 0);
         <#else>
-        row.${field.setterName}(static_cast<${field.cppTypeName}>(intValue));
+        row.${field.setterName}(static_cast<${field.typeInfo.typeName}>(intValue));
         </#if>
     <#elseif field.sqlTypeData.isReal>
         const double doubleValue = sqlite3_column_double(m_stmt.get(), ${field?index});
-        row.${field.setterName}(static_cast<${field.cppTypeName}>(doubleValue));
+        row.${field.setterName}(static_cast<${field.typeInfo.typeName}>(doubleValue));
     <#else>
         const unsigned char* textValue = sqlite3_column_text(m_stmt.get(), ${field?index});
-        row.${field.setterName}(${field.cppTypeName}(
+        row.${field.setterName}(${field.typeInfo.typeName}(
                 reinterpret_cast<const char*>(textValue), get_allocator_ref()));
     </#if>
     }
@@ -539,9 +539,9 @@ ${I}    return false;
 ${I}}
 </#macro>
 bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver&<#rt>
-        <#lt><#if field.sqlRangeCheckData?? || field.enumData??> validationObserver</#if>,
+        <#lt><#if field.sqlRangeCheckData?? || field.typeInfo.isEnum> validationObserver</#if>,
         sqlite3_stmt* statement, Row& row, bool&<#rt>
-        <#lt><#if field.sqlRangeCheckData?? || field.enumData??> continueValidation</#if>)
+        <#lt><#if field.sqlRangeCheckData?? || field.typeInfo.isEnum> continueValidation</#if>)
 {
     if (sqlite3_column_type(statement, ${field?index}) == SQLITE_NULL)
         return true;
@@ -550,15 +550,15 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
     const int64_t intValue = sqlite3_column_int64(statement, ${field?index});
                     <#if field.sqlRangeCheckData??>
     // range check
-    const ${field.sqlRangeCheckData.sqlCppTypeName} rangeCheckValue = static_cast<${field.sqlRangeCheckData.sqlCppTypeName}>(intValue);
+    const ${field.sqlRangeCheckData.typeInfo.typeName} rangeCheckValue = static_cast<${field.sqlRangeCheckData.typeInfo.typeName}>(intValue);
                         <#if field.sqlRangeCheckData.bitFieldLength??>
     try
     {
         const size_t bitFieldLength = static_cast<size_t>(${field.sqlRangeCheckData.bitFieldLength});
-        const ${field.sqlRangeCheckData.sqlCppTypeName} lowerBound = static_cast<${field.sqlRangeCheckData.sqlCppTypeName}><#rt>
-            <#lt>(::zserio::getBitFieldLowerBound(bitFieldLength, <#if field.sqlRangeCheckData.isSigned>true<#else>false</#if>));
-        const ${field.sqlRangeCheckData.sqlCppTypeName} upperBound = static_cast<${field.sqlRangeCheckData.sqlCppTypeName}><#rt>
-            <#lt>(::zserio::getBitFieldUpperBound(bitFieldLength, <#if field.sqlRangeCheckData.isSigned>true<#else>false</#if>));
+        const ${field.sqlRangeCheckData.typeInfo.typeName} lowerBound = static_cast<${field.sqlRangeCheckData.typeInfo.typeName}><#rt>
+            <#lt>(::zserio::getBitFieldLowerBound(bitFieldLength, <#if field.sqlRangeCheckData.typeInfo.isSigned>true<#else>false</#if>));
+        const ${field.sqlRangeCheckData.typeInfo.typeName} upperBound = static_cast<${field.sqlRangeCheckData.typeInfo.typeName}><#rt>
+            <#lt>(::zserio::getBitFieldUpperBound(bitFieldLength, <#if field.sqlRangeCheckData.typeInfo.isSigned>true<#else>false</#if>));
         <@range_check_field name, field, types, 2/>
     }
     catch (const ::zserio::CppRuntimeException& exception)
@@ -571,16 +571,17 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
         return false;
     }
                         <#else>
-    const ${field.sqlRangeCheckData.sqlCppTypeName} lowerBound = ${field.sqlRangeCheckData.lowerBound};
-    const ${field.sqlRangeCheckData.sqlCppTypeName} upperBound = ${field.sqlRangeCheckData.upperBound};
+    const ${field.sqlRangeCheckData.typeInfo.typeName} lowerBound = ${field.sqlRangeCheckData.lowerBound};
+    const ${field.sqlRangeCheckData.typeInfo.typeName} upperBound = ${field.sqlRangeCheckData.upperBound};
     <@range_check_field name, field, types, 1/>
                         </#if>
 
                     </#if>
-                    <#if field.enumData??>
+                    <#if field.typeInfo.isEnum>
     try
     {
-        const ${field.cppTypeName} enumValue = ::zserio::valueToEnum<${field.cppTypeName}>(static_cast<${field.enumData.baseCppTypeName}>(intValue));
+        const ${field.typeInfo.typeName} enumValue = ::zserio::valueToEnum<${field.typeInfo.typeName}>(<#rt>
+                <#lt>static_cast<${field.underlyingTypeInfo.typeName}>(intValue));
         row.${field.setterName}(enumValue);
     }
     catch (const ::zserio::CppRuntimeException&)
@@ -594,20 +595,20 @@ bool ${name}::validateField${field.name?cap_first}(::zserio::IValidationObserver
                 ::zserio::IValidationObserver::INVALID_VALUE, errorMessage);
         return false;
     }
-                    <#elseif field.bitmaskData??>
-    const ${field.cppTypeName} bitmaskValue = ${field.cppTypeName}(static_cast<${field.bitmaskData.baseCppTypeName}>(intValue));
+                    <#elseif field.typeInfo.isBitmask>
+    const ${field.typeInfo.typeName} bitmaskValue = ${field.typeInfo.typeName}(static_cast<${field.underlyingTypeInfo.typeName}>(intValue));
     row.${field.setterName}(bitmaskValue);
-                    <#elseif field.isBoolean>
+                    <#elseif field.typeInfo.isBoolean>
     row.${field.setterName}(intValue != 0);
                     <#else>
-    row.${field.setterName}(static_cast<${field.cppTypeName}>(intValue));
+    row.${field.setterName}(static_cast<${field.typeInfo.typeName}>(intValue));
                     </#if>
                 <#elseif field.sqlTypeData.isReal>
     const double doubleValue = sqlite3_column_double(statement, ${field?index});
-    row.${field.setterName}(static_cast<${field.cppTypeName}>(doubleValue));
+    row.${field.setterName}(static_cast<${field.typeInfo.typeName}>(doubleValue));
                 <#else>
     const unsigned char* textValue = sqlite3_column_text(statement, ${field?index});
-    row.${field.setterName}(${field.cppTypeName}(
+    row.${field.setterName}(${field.typeInfo.typeName}(
             reinterpret_cast<const char*>(textValue), get_allocator_ref()));
                 </#if>
 
@@ -675,20 +676,20 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     else
     {
         <#if field.sqlTypeData.isBlob>
-        ${field.cppTypeName}& blob = row.${field.getterName}();
+        ${field.typeInfo.typeName}& blob = row.${field.getterName}();
         ${types.bitBuffer.name} bitBuffer(blob.bitSizeOf(), get_allocator_ref());
         ::zserio::BitStreamWriter writer(bitBuffer);
         blob.write(writer, ::zserio::NO_PRE_WRITE_ACTION);
         result = sqlite3_bind_blob(&statement, ${field?index + 1}, bitBuffer.getBuffer(),
                 static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
         <#elseif field.sqlTypeData.isInteger>
-        const int64_t intValue = static_cast<int64_t>(row.${field.getterName}()<#if field.bitmaskData??>.getValue()</#if>);
+        const int64_t intValue = static_cast<int64_t>(row.${field.getterName}()<#if field.typeInfo.isBitmask>.getValue()</#if>);
         result = sqlite3_bind_int64(&statement, ${field?index + 1}, intValue);
         <#elseif field.sqlTypeData.isReal>
-        const ${field.cppTypeName} realValue = row.${field.getterName}();
+        const ${field.typeInfo.typeName} realValue = row.${field.getterName}();
         result = sqlite3_bind_double(&statement, ${field?index + 1}, static_cast<double>(realValue));
         <#else>
-        const ${field.cppTypeName}& stringValue = row.${field.getterName}();
+        const ${field.typeInfo.typeName}& stringValue = row.${field.getterName}();
         result = sqlite3_bind_text(&statement, ${field?index + 1}, stringValue.c_str(), -1, SQLITE_TRANSIENT);
         </#if>
     }
@@ -784,26 +785,34 @@ ${name}::Row& ${name}::Row::operator=(Row&& other)
 }
 </#if>
 <#list fields as field>
-<#if !field.isSimpleType>
+<#if !field.typeInfo.isSimple>
 
-${field.cppTypeName}& ${name}::Row::${field.getterName}()
+${field.typeInfo.typeName}& ${name}::Row::${field.getterName}()
 {
     return <@sql_field_member_name field/>.value();
 }
 </#if>
 
-${field.cppArgumentTypeName} ${name}::Row::${field.getterName}() const
+<#if !field.typeInfo.isSimple>
+const ${field.typeInfo.typeName}& ${name}::Row::${field.getterName}() const
+<#else>
+${field.typeInfo.typeName} ${name}::Row::${field.getterName}() const
+</#if>
 {
     return <@sql_field_member_name field/>.value();
 }
 
-void ${name}::Row::${field.setterName}(${field.cppArgumentTypeName} <@sql_field_argument_name field/>)
+<#if !field.typeInfo.isSimple>
+void ${name}::Row::${field.setterName}(const ${field.typeInfo.typeName}& <@sql_field_argument_name field/>)
+<#else>
+void ${name}::Row::${field.setterName}(${field.typeInfo.typeName} <@sql_field_argument_name field/>)
+</#if>
 {
     <@sql_field_member_name field/> = <@sql_field_argument_name field/>;
 }
-<#if !field.isSimpleType>
+<#if !field.typeInfo.isSimple>
 
-void ${name}::Row::${field.setterName}(${field.cppTypeName}&& <@sql_field_argument_name field/>)
+void ${name}::Row::${field.setterName}(${field.typeInfo.typeName}&& <@sql_field_argument_name field/>)
 {
     <@sql_field_member_name field/> = ::std::move(<@sql_field_argument_name field/>);
 }

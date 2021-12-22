@@ -37,7 +37,7 @@
             <#if field.optional??>
                 <#if field.holderNeedsAllocator>allocator<#else>::zserio::InPlace</#if>, <#t>
             </#if>
-            static_cast<${field.cppTypeName}>(${field.initializer})<#t>
+            static_cast<${field.typeInfo.typeName}>(${field.initializer})<#t>
             <#if field.needsAllocator>, allocator</#if><#t>
         <#else>
             <#if field.optional??>
@@ -46,7 +46,7 @@
                 <#if field.array??>
                 <@array_traits field/>, allocator<#t>
                 <#else>
-                <#if field.needsAllocator>allocator<#elseif field.isSimpleType>${field.cppTypeName}()</#if><#t>
+                <#if field.needsAllocator>allocator<#elseif field.typeInfo.isSimple>${field.typeInfo.typeName}()</#if><#t>
                 </#if>
             </#if>
         </#if>

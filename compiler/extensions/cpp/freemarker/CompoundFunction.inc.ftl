@@ -1,9 +1,13 @@
 <#macro compound_functions_declaration compoundFunctionsData>
     <#if compoundFunctionsData.list?has_content>
         <#list compoundFunctionsData.list as compoundFunction>
-    ${compoundFunction.returnArgumentTypeName} ${compoundFunction.name}() const;
-            <#if withWriterCode && !compoundFunction.isSimpleReturnType>
-    ${compoundFunction.returnTypeName}& ${compoundFunction.name}();
+            <#if compoundFunction.returnTypeInfo.isSimple>
+    ${compoundFunction.returnTypeInfo.typeName} ${compoundFunction.name}() const;
+            <#else>
+    const ${compoundFunction.returnTypeInfo.typeName}& ${compoundFunction.name}() const;
+                <#if withWriterCode>
+    ${compoundFunction.returnTypeInfo.typeName}& ${compoundFunction.name}();
+                </#if>
             </#if>
 
         </#list>
@@ -12,14 +16,18 @@
 
 <#macro compound_functions_definition compoundName compoundFunctionsData>
     <#list compoundFunctionsData.list as compoundFunction>
-${compoundFunction.returnArgumentTypeName} ${compoundName}::${compoundFunction.name}() const
+        <#if compoundFunction.returnTypeInfo.isSimple>
+${compoundFunction.returnTypeInfo.typeName} ${compoundName}::${compoundFunction.name}() const
+        <#else>
+const ${compoundFunction.returnTypeInfo.typeName}& ${compoundName}::${compoundFunction.name}() const
+        </#if>
 {
-    return <#if compoundFunction.isSimpleReturnType>static_cast<${compoundFunction.returnArgumentTypeName}>(</#if><#rt>
-            <#lt>${compoundFunction.resultExpression}<#if compoundFunction.isSimpleReturnType>)</#if>;
+    return <#if compoundFunction.returnTypeInfo.isSimple>static_cast<${compoundFunction.returnTypeInfo.typeName}>(</#if><#rt>
+            <#lt>${compoundFunction.resultExpression}<#if compoundFunction.returnTypeInfo.isSimple>)</#if>;
 }
 
-<#if withWriterCode && !compoundFunction.isSimpleReturnType>
-${compoundFunction.returnTypeName}& ${compoundName}::${compoundFunction.name}()
+<#if withWriterCode && !compoundFunction.returnTypeInfo.isSimple>
+${compoundFunction.returnTypeInfo.typeName}& ${compoundName}::${compoundFunction.name}()
 {
     return ${compoundFunction.resultExpression};
 }

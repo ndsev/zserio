@@ -1,6 +1,7 @@
 package zserio.extension.cpp;
 
 import zserio.ast.Subtype;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
@@ -12,17 +13,17 @@ public class SubtypeEmitterTemplateData extends UserTypeTemplateData
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
 
-        final CppNativeType targetNativeType =
-                cppNativeMapper.getCppType(subtype.getTypeReference());
+        final TypeReference subtypeTypeReference = subtype.getTypeReference();
+        final CppNativeType targetNativeType = cppNativeMapper.getCppType(subtypeTypeReference);
         addHeaderIncludesForType(targetNativeType);
 
-        targetCppTypeName = targetNativeType.getFullName();
+        targetTypeInfo = new NativeTypeInfoTemplateData(targetNativeType, subtypeTypeReference);
     }
 
-    public String getTargetCppTypeName()
+    public NativeTypeInfoTemplateData getTargetTypeInfo()
     {
-        return targetCppTypeName;
+        return targetTypeInfo;
     }
 
-    private final String targetCppTypeName;
+    private final NativeTypeInfoTemplateData targetTypeInfo;
 }

@@ -24,7 +24,7 @@
 class ${name}
 {
 public:
-    typedef ${baseCppTypeName} underlying_type;
+    typedef ${underlyingTypeInfo.typeName} underlying_type;
 
     enum class Values : underlying_type
     {

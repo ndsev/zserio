@@ -9,7 +9,7 @@
 <#macro compound_parameter_constructor_initializers compoundParametersData, indent, trailingComma>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-    <#local parameterNamePrefix><#if !compoundParameter.isSimpleType>&</#if></#local>
+    <#local parameterNamePrefix><#if !compoundParameter.typeInfo.isSimple>&</#if></#local>
 ${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@parameter_argument_name compoundParameter.name/>)<#if compoundParameter?has_next || trailingComma>,</#if>
     </#list>
 </#macro>
@@ -17,22 +17,31 @@ ${I}<@parameter_member_name compoundParameter.name/>(${parameterNamePrefix}<@par
 <#macro compound_parameter_initialize compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.isSimpleType>&</#if><@parameter_argument_name compoundParameter.name/>;
+${I}<@parameter_member_name compoundParameter.name/> = <#if !compoundParameter.typeInfo.isSimple>&</#if><@parameter_argument_name compoundParameter.name/>;
     </#list>
 </#macro>
 
 <#macro compound_parameter_copy_argument_list compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if !compoundParameter.isSimpleType>*(</#if>other.<@parameter_member_name compoundParameter.name/><#t>
-            <#if !compoundParameter.isSimpleType>)</#if><#if compoundParameter?has_next>, </#if><#t>
+        <#if !compoundParameter.typeInfo.isSimple>*(</#if>other.<@parameter_member_name compoundParameter.name/><#t>
+            <#if !compoundParameter.typeInfo.isSimple>)</#if><#if compoundParameter?has_next>, </#if><#t>
     </#list>
 </#macro>
 
 <#macro compound_parameter_constructor_type_list compoundParametersData, indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as compoundParameter>
-    <#local parameterType><#if withWriterCode && !compoundParameter.isSimpleType><#rt>
-        <#lt>${compoundParameter.cppTypeName}&<#else>${compoundParameter.cppArgumentTypeName}</#if></#local>
+    <#local parameterType>
+        <#if !compoundParameter.typeInfo.isSimple>
+            <#if withWriterCode>
+                ${compoundParameter.typeInfo.typeName}&<#t>
+            <#else>
+                const ${compoundParameter.typeInfo.typeName}&<#t>
+            </#if>
+        <#else>
+            ${compoundParameter.typeInfo.typeName}<#t>
+        </#if>
+    </#local>
 ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
         <#if compoundParameter?has_next>
             <#lt>,
@@ -42,11 +51,15 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_declaration compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if withWriterCode && !compoundParameter.isSimpleType>
+        <#if !compoundParameter.typeInfo.isSimple>
+            <#if withWriterCode>
             <#-- non-const getter is necessary for setting of offsets -->
-    ${compoundParameter.cppTypeName}& ${compoundParameter.getterName}();
+    ${compoundParameter.typeInfo.typeName}& ${compoundParameter.getterName}();
+            </#if>
+    const ${compoundParameter.typeInfo.typeName}& ${compoundParameter.getterName}() const;
+        <#else>
+    ${compoundParameter.typeInfo.typeName} ${compoundParameter.getterName}() const;
         </#if>
-    ${compoundParameter.cppArgumentTypeName} ${compoundParameter.getterName}() const;
     </#list>
     <#if compoundParametersData.list?has_content>
 
@@ -55,8 +68,8 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
 
 <#macro compound_parameter_accessors_definition compoundName compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-        <#if withWriterCode && !compoundParameter.isSimpleType>
-${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterName}()
+        <#if !compoundParameter.typeInfo.isSimple && withWriterCode>
+${compoundParameter.typeInfo.typeName}& ${compoundName}::${compoundParameter.getterName}()
 {
     if (!m_isInitialized)
         throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
@@ -65,12 +78,16 @@ ${compoundParameter.cppTypeName}& ${compoundName}::${compoundParameter.getterNam
 }
 
         </#if>
-${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.getterName}() const
+        <#if !compoundParameter.typeInfo.isSimple>
+const ${compoundParameter.typeInfo.typeName}& ${compoundName}::${compoundParameter.getterName}() const
+        <#else>
+${compoundParameter.typeInfo.typeName} ${compoundName}::${compoundParameter.getterName}() const
+        </#if>
 {
     if (!m_isInitialized)
         throw ::zserio::CppRuntimeException("Parameter '${compoundParameter.name}' of compound '${compoundName}' is not initialized!");
 
-    return <#if !compoundParameter.isSimpleType>*</#if><@parameter_member_name compoundParameter.name/>;
+    return <#if !compoundParameter.typeInfo.isSimple>*</#if><@parameter_member_name compoundParameter.name/>;
 }
 
     </#list>
@@ -79,8 +96,13 @@ ${compoundParameter.cppArgumentTypeName} ${compoundName}::${compoundParameter.ge
 <#macro compound_parameter_members compoundParametersData>
     <#-- parameters can't be const for operator=() to work and initialize() needs to update them too -->
     <#list compoundParametersData.list as compoundParameter>
-    <#local parameterCppTypeName><#if compoundParameter.isSimpleType>${compoundParameter.cppArgumentTypeName}<#else><#rt>
-        <#lt><#if !withWriterCode>const </#if>${compoundParameter.cppTypeName}*</#if></#local>
+    <#local parameterCppTypeName>
+        <#if compoundParameter.typeInfo.isSimple>
+            ${compoundParameter.typeInfo.typeName}<#t>
+        <#else>
+            <#if !withWriterCode>const </#if>${compoundParameter.typeInfo.typeName}*<#t>
+        </#if>
+    </#local>
     ${parameterCppTypeName} <@parameter_member_name compoundParameter.name/>;
     </#list>
 </#macro>

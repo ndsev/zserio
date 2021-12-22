@@ -50,13 +50,11 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
 
             final CompoundType responseType = method.getResponseType();
             final CppNativeType cppResponseType = typeMapper.getCppType(responseType);
-            responseTypeInfo = new TypeInfoTemplateData(responseType, cppResponseType);
-            responseTypeFullName = cppResponseType.getFullName();
+            responseTypeInfo = new NativeTypeInfoTemplateData(cppResponseType, responseType);
 
             final CompoundType requestType = method.getRequestType();
             final CppNativeType cppRequestType = typeMapper.getCppType(requestType);
-            requestTypeInfo = new TypeInfoTemplateData(responseType, cppRequestType);
-            requestTypeFullName = cppRequestType.getFullName();
+            requestTypeInfo = new NativeTypeInfoTemplateData(cppRequestType, requestType);
         }
 
         public String getName()
@@ -64,31 +62,19 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public TypeInfoTemplateData getResponseTypeInfo()
+        public NativeTypeInfoTemplateData getResponseTypeInfo()
         {
             return responseTypeInfo;
         }
 
-        public String getResponseTypeFullName()
-        {
-            return responseTypeFullName;
-        }
-
-        public TypeInfoTemplateData getRequestTypeInfo()
+        public NativeTypeInfoTemplateData getRequestTypeInfo()
         {
             return requestTypeInfo;
         }
 
-        public String getRequestTypeFullName()
-        {
-            return requestTypeFullName;
-        }
-
         private final String name;
-        private final TypeInfoTemplateData responseTypeInfo;
-        private final String responseTypeFullName;
-        private final TypeInfoTemplateData requestTypeInfo;
-        private final String requestTypeFullName;
+        private final NativeTypeInfoTemplateData responseTypeInfo;
+        private final NativeTypeInfoTemplateData requestTypeInfo;
     }
 
     private final String servicePackageName;

@@ -27,13 +27,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final NativeIntegralType nativeBaseType = cppNativeMapper.getCppIntegralType(bitmaskTypeInstantiation);
         addHeaderIncludesForType(nativeBaseType);
 
-        underlyingTypeInfo = new TypeInfoTemplateData(bitmaskTypeInstantiation, nativeBaseType);
+        underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, bitmaskTypeInstantiation);
 
         arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        bitSize = BitSizeDataCreator.createData(bitmaskTypeInstantiation, cppExpressionFormatter);
-        baseCppTypeName = nativeBaseType.getFullName();
-        baseCppTypeNumBits = nativeBaseType.getNumBits();
+        bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, cppExpressionFormatter);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(
                 bitmaskTypeInstantiation, cppExpressionFormatter);
 
@@ -47,7 +45,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             values.add(new BitmaskValueData(nativeBaseType, bitmaskValue));
     }
 
-    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    public NativeIntegralTypeInfoTemplateData getUnderlyingTypeInfo()
     {
         return underlyingTypeInfo;
     }
@@ -60,16 +58,6 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitSizeTemplateData getBitSize()
     {
         return bitSize;
-    }
-
-    public String getBaseCppTypeName()
-    {
-        return baseCppTypeName;
-    }
-
-    public int getBaseCppTypeNumBits()
-    {
-        return baseCppTypeNumBits;
     }
 
     public RuntimeFunctionTemplateData getRuntimeFunction()
@@ -128,11 +116,9 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         private final boolean isZero;
     };
 
-    private final TypeInfoTemplateData underlyingTypeInfo;
+    private final NativeIntegralTypeInfoTemplateData underlyingTypeInfo;
     private final ArrayTraitsTemplateData arrayTraits;
     private final BitSizeTemplateData bitSize;
-    private final String baseCppTypeName;
-    private final int baseCppTypeNumBits;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String upperBound;
     private final List<BitmaskValueData> values;

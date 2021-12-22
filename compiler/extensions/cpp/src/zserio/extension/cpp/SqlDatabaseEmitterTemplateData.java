@@ -44,8 +44,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             includeCollector.addHeaderIncludesForType(nativeFieldType);
 
             name = field.getName();
-            cppTypeName = nativeFieldType.getFullName();
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeFieldType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeFieldType, fieldTypeInstantiation);
             getterName = AccessorNameFormatter.getGetterName(field);
 
             if (fieldBaseType instanceof SqlTableType)
@@ -66,12 +65,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public String getCppTypeName()
-        {
-            return cppTypeName;
-        }
-
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -114,8 +108,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
-        private final String cppTypeName;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String getterName;
         private final boolean isWithoutRowIdTable;
         private final boolean hasExplicitParameters;

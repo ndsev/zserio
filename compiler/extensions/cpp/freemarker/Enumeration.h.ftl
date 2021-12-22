@@ -22,7 +22,7 @@
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-enum class ${name} : ${baseCppTypeName}
+enum class ${name} : ${underlyingTypeInfo.typeName}
 {
 <#list items as item>
     ${item.name} = ${item.value}<#if item?has_next>,</#if>
