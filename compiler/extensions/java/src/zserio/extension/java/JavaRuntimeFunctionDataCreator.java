@@ -2,10 +2,12 @@ package zserio.extension.java;
 
 import zserio.ast.BooleanType;
 import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
@@ -22,12 +24,12 @@ public class JavaRuntimeFunctionDataCreator
     {
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
-            return mapDynamicBitField(
+            return RuntimeFunctionSuffixVisitor.mapDynamicBitField(
                     (DynamicBitFieldInstantiation)typeInstantiation, javaExpressionFormatter, javaNativeMapper);
         }
         else
         {
-            final Visitor visitor = new Visitor(javaNativeMapper);
+            final RuntimeFunctionSuffixVisitor visitor = new RuntimeFunctionSuffixVisitor(javaNativeMapper);
             typeInstantiation.getBaseType().accept(visitor);
 
             final ZserioExtensionException thrownException = visitor.getThrownException();
@@ -39,25 +41,42 @@ public class JavaRuntimeFunctionDataCreator
         }
     }
 
-    private static RuntimeFunctionTemplateData mapDynamicBitField(DynamicBitFieldInstantiation instantiation,
-            ExpressionFormatter javaExpressionFormatter, JavaNativeMapper javaNativeMapper)
-                    throws ZserioExtensionException
+    public static RuntimeFunctionTemplateData createTypeInfoData(TypeInstantiation typeInstantiation)
+            throws ZserioExtensionException
     {
-        final String suffix = (instantiation.getBaseType().isSigned()) ? "SignedBits" :
-            (instantiation.getMaxBitSize() > 63) ? "BigInteger" : "Bits";
-        // this int cast is necessary because length can be bigger than integer (uint64, uint32)
-        final String arg = "(int)" + javaExpressionFormatter.formatGetter(instantiation.getLengthExpression());
-        return new RuntimeFunctionTemplateData(
-                suffix, arg, javaNativeMapper.getJavaType(instantiation).getFullName());
+        if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            return BuiltinTypeInfoSuffixVisitor.mapDynamicBitFieldType(
+                    (DynamicBitFieldInstantiation)typeInstantiation);
+        }
+        else
+        {
+            return createTypeInfoData(typeInstantiation.getTypeReference());
+        }
     }
 
-    private static class Visitor extends ZserioAstDefaultVisitor
+    public static RuntimeFunctionTemplateData createTypeInfoData(TypeReference typeReference)
+            throws ZserioExtensionException
     {
-        public Visitor(JavaNativeMapper javaNativeMapper)
+        final BuiltinTypeInfoSuffixVisitor visitor = new BuiltinTypeInfoSuffixVisitor();
+        typeReference.getBaseTypeReference().getType().accept(visitor);
+
+        final ZserioExtensionException thrownException = visitor.getThrownException();
+        if (thrownException != null)
+            throw thrownException;
+
+        final RuntimeFunctionTemplateData templateData = visitor.getTemplateData();
+        if (templateData == null)
         {
-            this.javaNativeMapper = javaNativeMapper;
+            throw new ZserioExtensionException("Cannot map type '" + typeReference.getType().getName() +
+                    "' in createTypeInfoData!");
         }
 
+        return templateData;
+    }
+
+    private static abstract class VisitorBase extends ZserioAstDefaultVisitor
+    {
         public RuntimeFunctionTemplateData getTemplateData()
         {
             return templateData;
@@ -87,18 +106,6 @@ public class JavaRuntimeFunctionDataCreator
         }
 
         @Override
-        public void visitFixedBitFieldType(FixedBitFieldType type)
-        {
-            handleFixedIntegerType(type, type.getBitSize());
-        }
-
-        @Override
-        public void visitStdIntegerType(StdIntegerType type)
-        {
-            handleFixedIntegerType(type, type.getBitSize());
-        }
-
-        @Override
         public void visitStringType(StringType type)
         {
             templateData = new RuntimeFunctionTemplateData("String");
@@ -124,6 +131,29 @@ public class JavaRuntimeFunctionDataCreator
             }
 
             templateData = new RuntimeFunctionTemplateData(suffix.toString());
+        }
+
+        protected RuntimeFunctionTemplateData templateData = null;
+        protected ZserioExtensionException thrownException = null;
+    }
+
+    private static class RuntimeFunctionSuffixVisitor extends VisitorBase
+    {
+        public RuntimeFunctionSuffixVisitor(JavaNativeMapper javaNativeMapper)
+        {
+            this.javaNativeMapper = javaNativeMapper;
+        }
+
+        @Override
+        public void visitFixedBitFieldType(FixedBitFieldType type)
+        {
+            handleFixedIntegerType(type, type.getBitSize());
+        }
+
+        @Override
+        public void visitStdIntegerType(StdIntegerType type)
+        {
+            handleFixedIntegerType(type, type.getBitSize());
         }
 
         private void handleFixedIntegerType(IntegerType type, int bitSize)
@@ -208,9 +238,69 @@ public class JavaRuntimeFunctionDataCreator
             }
         }
 
-        private final JavaNativeMapper javaNativeMapper;
+        public static RuntimeFunctionTemplateData mapDynamicBitField(DynamicBitFieldInstantiation instantiation,
+                ExpressionFormatter javaExpressionFormatter, JavaNativeMapper javaNativeMapper)
+                        throws ZserioExtensionException
+        {
+            final String suffix = (instantiation.getBaseType().isSigned()) ? "SignedBits" :
+                (instantiation.getMaxBitSize() > 63) ? "BigInteger" : "Bits";
+            // this int cast is necessary because length can be bigger than integer (uint64, uint32)
+            final String arg = "(int)" + javaExpressionFormatter.formatGetter(instantiation.getLengthExpression());
+            return new RuntimeFunctionTemplateData(
+                    suffix, arg, javaNativeMapper.getJavaType(instantiation).getFullName());
+        }
 
-        private RuntimeFunctionTemplateData templateData = null;
-        private ZserioExtensionException thrownException = null;
+        private final JavaNativeMapper javaNativeMapper;
+    }
+
+    private static class BuiltinTypeInfoSuffixVisitor extends VisitorBase
+    {
+        @Override
+        public void visitFixedBitFieldType(FixedBitFieldType type)
+        {
+            try
+            {
+                final StringBuilder suffix = new StringBuilder("Fixed");
+                if (type.isSigned())
+                    suffix.append("Signed");
+                else
+                    suffix.append("Unsigned");
+                suffix.append("BitField");
+                templateData = new RuntimeFunctionTemplateData(suffix.toString(),
+                        JavaLiteralFormatter.formatIntLiteral(type.getBitSize()));
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
+        public void visitStdIntegerType(StdIntegerType type)
+        {
+            final StringBuilder suffix = new StringBuilder();
+            if (!type.isSigned())
+                suffix.append("U");
+            suffix.append("Int");
+            suffix.append(type.getBitSize());
+
+            templateData = new RuntimeFunctionTemplateData(suffix.toString());
+        }
+
+        public static RuntimeFunctionTemplateData mapDynamicBitFieldType(
+                DynamicBitFieldInstantiation instantiation) throws ZserioExtensionException
+        {
+            final DynamicBitFieldType type = instantiation.getBaseType();
+
+            final StringBuilder suffix = new StringBuilder("Dynamic");
+            if (type.isSigned())
+                suffix.append("Signed");
+            else
+                suffix.append("Unsigned");
+            suffix.append("BitField");
+
+            return new RuntimeFunctionTemplateData(suffix.toString(),
+                    JavaLiteralFormatter.formatIntLiteral(instantiation.getMaxBitSize()));
+        }
     }
 }

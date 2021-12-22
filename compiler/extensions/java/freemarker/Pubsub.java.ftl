@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 
 public class ${name}
@@ -7,6 +8,16 @@ public class ${name}
     {
         this.pubsub = pubsub;
     }
+<#if withTypeInfoCode>
+
+    public static zserio.runtime.typeinfo.TypeInfo typeInfo()
+    {
+        return new zserio.runtime.typeinfo.TypeInfo.PubsubTypeInfo(
+                "${schemaTypeName}",
+                <@messages_info messageList/>
+        );
+    }
+</#if>
 <#list messageList as message>
     <#if message.isPublished>
 

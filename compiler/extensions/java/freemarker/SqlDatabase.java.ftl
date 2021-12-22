@@ -1,5 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#if withValidationCode>
     <#assign needsParameterProvider = sql_db_needs_parameter_provider(fields)/>
@@ -89,7 +90,18 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     {
         return connection;
     }
+<#if withTypeInfoCode>
 
+    public static zserio.runtime.typeinfo.TypeInfo typeInfo()
+    {
+        final java.util.List<zserio.runtime.typeinfo.TableInfo> tables =
+                <@tables_info fields/>
+
+        return new zserio.runtime.typeinfo.TypeInfo.SqlDatabaseTypeInfo(
+            "${schemaTypeName}", tables
+        );
+    }
+</#if>
 <#list fields as field>
 
     public ${field.javaTypeName} ${field.getterName}()

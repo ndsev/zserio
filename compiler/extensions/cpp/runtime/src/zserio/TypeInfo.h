@@ -262,12 +262,16 @@ public:
     /**
      * Gets the type information of fixed signed bit field schema type.
      *
+     * \param bitSize The bit size of the bit field.
+     *
      * \return Reference to the type information of fixed signed bit field schema type.
      */
     static const ITypeInfo& getFixedSignedBitField(uint8_t bitSize);
 
     /**
      * Gets the type information of fixed unsigned bit field schema type.
+     *
+     * \param bitSize The bit size of the bit field.
      *
      * \return Reference to the type information of fixed unsigned bit field schema type.
      */
@@ -276,12 +280,16 @@ public:
     /**
      * Gets the type information of dynamic signed bit field schema type.
      *
+     * \param maxBitSize The maximum bit size of the dynamic bit field.
+     *
      * \return Reference to the type information of dynamic signed bit field schema type.
      */
     static const ITypeInfo& getDynamicSignedBitField(uint8_t maxBitSize);
 
     /**
      * Gets the type information of dynamic unsigned bit field schema type.
+     *
+     * \param maxBitSize The maximum bit size of the dynamic bit field.
      *
      * \return Reference to the type information of dynamic unsigned bit field schema type.
      */
@@ -394,12 +402,16 @@ public:
     /**
      * Gets the type information of fixed signed bit field schema type.
      *
+     * \param bitSize The bit size of the bit field.
+     *
      * \return Reference to the type information of fixed signed bit field schema type.
      */
     static const ITypeInfo& getFixedSignedBitField(uint8_t bitSize);
 
     /**
      * Gets the type information of fixed unsigned bit field schema type.
+     *
+     * \param bitSize The bit size of the bit field.
      *
      * \return Reference to the type information of fixed unsigned bit field schema type.
      */
@@ -715,7 +727,7 @@ private:
 
 /**
  * Type info for recursive types used as a wrapper around generated static typeInfo method to prevent
- * infinite recrusion in type info definition.
+ * infinite recursion in type info definition.
  */
 class RecursiveTypeInfo : public ITypeInfo
 {

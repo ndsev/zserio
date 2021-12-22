@@ -321,10 +321,10 @@ ${I}        endBitPosition);
         </#if>
     <#elseif field.array??>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf<@array_field_packed_suffix field, packed/>(endBitPosition);
-    <#elseif field.bitSize.value??>
+    <#elseif field.bitSize??>
 ${I}endBitPosition += ${field.bitSize.value};
-    <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(<@compound_get_field field/>);
+    <#elseif field.runtimeFunction??>
+${I}endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
@@ -371,10 +371,10 @@ ${I}        endBitPosition);
         </#if>
     <#elseif field.array??>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets<@array_field_packed_suffix field, packed/>(endBitPosition);
-    <#elseif field.bitSize.value??>
+    <#elseif field.bitSize??>
 ${I}endBitPosition += ${field.bitSize.value};
-    <#elseif field.bitSize.runtimeFunction??>
-${I}endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOf${field.bitSize.runtimeFunction.suffix}(<@compound_get_field field/>);
+    <#elseif field.runtimeFunction??>
+${I}endBitPosition += zserio.runtime.BitSizeOfCalculator.getBitSizeOf${field.runtimeFunction.suffix}(<@compound_get_field field/>);
     <#elseif field.compound??>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPosition);
     <#else>

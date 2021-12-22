@@ -7,10 +7,10 @@ import java.util.List;
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.FixedSizeType;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
+import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
@@ -27,18 +27,21 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
         final TypeInstantiation bitmaskTypeInstantiation = bitmaskType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
+        final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         final NativeIntegralType nativeIntegralType =
                 javaNativeMapper.getJavaIntegralType(bitmaskTypeInstantiation);
         baseJavaTypeName = nativeIntegralType.getFullName();
+
+        underlyingTypeInfo = new TypeInfoTemplateData(bitmaskTypeInstantiation, nativeIntegralType);
 
         isLong = nativeIntegralType instanceof NativeLongType;
         isSimpleType = nativeIntegralType.isSimple();
 
         arrayableInfo = new ArrayableInfoTemplateData(nativeIntegralType);
-        bitSize = createBitSize(bitmaskType);
+        bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, javaExpressionFormatter);
 
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(bitmaskTypeInstantiation,
-                context.getJavaExpressionFormatter(), javaNativeMapper);
+                javaExpressionFormatter, javaNativeMapper);
 
         final BigInteger lowerBound = getLowerBound(bitmaskTypeInstantiation);
         this.lowerBound = lowerBound.equals(nativeIntegralType.getLowerBound()) ? null :
@@ -58,6 +61,11 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         return baseJavaTypeName;
     }
 
+    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    {
+        return underlyingTypeInfo;
+    }
+
     public boolean getIsSimpleType()
     {
         return isSimpleType;
@@ -73,7 +81,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         return arrayableInfo;
     }
 
-    public String getBitSize()
+    public BitSizeTemplateData getBitSize()
     {
         return bitSize;
     }
@@ -101,23 +109,6 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public Iterable<BitmaskValueData> getValues()
     {
         return values;
-    }
-
-    private static String createBitSize(BitmaskType enumType) throws ZserioExtensionException
-    {
-        final TypeInstantiation typeInstantiation = enumType.getTypeInstantiation();
-        final ZserioType baseType = typeInstantiation.getBaseType();
-        Integer bitSize = null;
-        if (baseType instanceof FixedSizeType)
-        {
-            bitSize = ((FixedSizeType)baseType).getBitSize();
-        }
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-        {
-            bitSize = ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize();
-        }
-
-        return (bitSize != null) ? JavaLiteralFormatter.formatIntLiteral(bitSize) : null;
     }
 
     private static BigInteger getUpperBound(TypeInstantiation typeInstantiation) throws ZserioExtensionException
@@ -173,10 +164,11 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
     }
 
     private final String baseJavaTypeName;
+    private final TypeInfoTemplateData underlyingTypeInfo;
     private final boolean isSimpleType;
     private final boolean isLong;
     private final ArrayableInfoTemplateData arrayableInfo;
-    private final String bitSize;
+    private final BitSizeTemplateData bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String lowerBound;
     private final String upperBound;

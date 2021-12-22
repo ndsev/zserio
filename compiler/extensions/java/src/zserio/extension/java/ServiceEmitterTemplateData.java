@@ -48,10 +48,14 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             name = serviceMethod.getName();
 
             final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
-            responseTypeFullName = typeMapper.getJavaType(responseTypeReference).getFullName();
+            final JavaNativeType responseNativeType = typeMapper.getJavaType(responseTypeReference);
+            responseTypeInfo = new TypeInfoTemplateData(responseTypeReference, responseNativeType);
+            responseTypeFullName = responseNativeType.getFullName();
 
             final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
-            requestTypeFullName = typeMapper.getJavaType(requestTypeReference).getFullName();
+            final JavaNativeType requestNativeType = typeMapper.getJavaType(requestTypeReference);
+            requestTypeInfo = new TypeInfoTemplateData(requestTypeReference, requestNativeType);
+            requestTypeFullName = requestNativeType.getFullName();
         }
 
         public String getName()
@@ -59,9 +63,19 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
+        public TypeInfoTemplateData getResponseTypeInfo()
+        {
+            return responseTypeInfo;
+        }
+
         public String getResponseTypeFullName()
         {
             return responseTypeFullName;
+        }
+
+        public TypeInfoTemplateData getRequestTypeInfo()
+        {
+            return requestTypeInfo;
         }
 
         public String getRequestTypeFullName()
@@ -70,7 +84,9 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
+        private final TypeInfoTemplateData responseTypeInfo;
         private final String responseTypeFullName;
+        private final TypeInfoTemplateData requestTypeInfo;
         private final String requestTypeFullName;
     }
 

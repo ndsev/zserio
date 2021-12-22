@@ -8,10 +8,8 @@ import zserio.ast.CompoundType;
 import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ArrayInstantiation;
-import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.Expression;
 import zserio.ast.Field;
-import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
@@ -52,6 +50,18 @@ public final class CompoundFieldTemplateData
         javaTypeName = nativeType.getFullName();
         javaNullableTypeName = nullableNativeType.getFullName();
 
+        if (fieldTypeInstantiation instanceof ArrayInstantiation)
+        {
+            final TypeInstantiation elementTypeInstantiation =
+                    ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation();
+            final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
+            typeInfo = new TypeInfoTemplateData(elementTypeInstantiation, elementNativeType);
+        }
+        else
+        {
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeType);
+        }
+
         getterName = AccessorNameFormatter.getGetterName(field);
         setterName = AccessorNameFormatter.getSetterName(field);
 
@@ -76,7 +86,7 @@ public final class CompoundFieldTemplateData
 
         constraint = createConstraint(field, javaExpressionFormatter);
 
-        bitSize = new BitSize(fieldTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
+        bitSize = BitSizeTemplateData.create(fieldTypeInstantiation, javaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter);
         arrayableInfo = createArrayableInfo(nativeType);
         array = createArray(nativeType, fieldTypeInstantiation, parentType, javaNativeMapper,
@@ -100,6 +110,11 @@ public final class CompoundFieldTemplateData
     public String getJavaNullableTypeName()
     {
         return javaNullableTypeName;
+    }
+
+    public TypeInfoTemplateData getTypeInfo()
+    {
+        return typeInfo;
     }
 
     public String getGetterName()
@@ -182,7 +197,7 @@ public final class CompoundFieldTemplateData
         return constraint;
     }
 
-    public BitSize getBitSize()
+    public BitSizeTemplateData getBitSize()
     {
         return bitSize;
     }
@@ -241,51 +256,6 @@ public final class CompoundFieldTemplateData
         private final String clause;
         private final String indicatorName;
         private final boolean isRecursive;
-    }
-
-    public static class BitSize
-    {
-        public BitSize(TypeInstantiation typeInstantiation, JavaNativeMapper javaNativeMapper,
-                ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
-        {
-            value = createValue(typeInstantiation, javaExpressionFormatter);
-            runtimeFunction = (value != null) ? null :
-                    JavaRuntimeFunctionDataCreator.createData(
-                            typeInstantiation, javaExpressionFormatter, javaNativeMapper);
-        }
-
-        public String getValue()
-        {
-            return value;
-        }
-
-        public RuntimeFunctionTemplateData getRuntimeFunction()
-        {
-            return runtimeFunction;
-        }
-
-        private static String createValue(TypeInstantiation typeInstantiation,
-                ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
-        {
-            String value = null;
-            if (typeInstantiation.getBaseType() instanceof FixedSizeType)
-            {
-                value = JavaLiteralFormatter.formatIntLiteral(
-                        ((FixedSizeType)typeInstantiation.getBaseType()).getBitSize());
-            }
-            else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-            {
-                final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
-                        (DynamicBitFieldInstantiation)typeInstantiation;
-                value = javaExpressionFormatter.formatGetter(
-                        dynamicBitFieldInstantiation.getLengthExpression());
-            }
-
-            return value;
-        }
-
-        private final String value;
-        private final RuntimeFunctionTemplateData runtimeFunction;
     }
 
     public static class Offset
@@ -361,10 +331,11 @@ public final class CompoundFieldTemplateData
             requiresElementClass = nativeRawArray.requiresElementClass();
             requiresParentContext = createRequiresParentContext(elementTypeInstantiation);
 
-            elementBitSize = new BitSize(elementTypeInstantiation, javaNativeMapper, javaExpressionFormatter);
+            elementBitSize = BitSizeTemplateData.create(elementTypeInstantiation, javaExpressionFormatter);
             isElementEnum = elementNativeType instanceof NativeEnumType;
             elementCompound = createCompound(javaNativeMapper, javaExpressionFormatter,
                     parentType, elementTypeInstantiation);
+            elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
         }
 
         public boolean getIsImplicit()
@@ -412,7 +383,7 @@ public final class CompoundFieldTemplateData
             return requiresParentContext;
         }
 
-        public BitSize getElementBitSize()
+        public BitSizeTemplateData getElementBitSize()
         {
             return elementBitSize;
         }
@@ -425,6 +396,11 @@ public final class CompoundFieldTemplateData
         public Compound getElementCompound()
         {
             return elementCompound;
+        }
+
+        public boolean getElementIsRecursive()
+        {
+            return elementIsRecursive;
         }
 
         private static String createLength(ArrayInstantiation arrayInstantiation,
@@ -468,9 +444,10 @@ public final class CompoundFieldTemplateData
         private final String elementJavaTypeName;
         private final boolean requiresElementClass;
         private final boolean requiresParentContext;
-        private final BitSize elementBitSize;
+        private final BitSizeTemplateData elementBitSize;
         private final boolean isElementEnum;
         private final Compound elementCompound;
+        private final boolean elementIsRecursive;
     }
 
     public static class Compound
@@ -636,6 +613,7 @@ public final class CompoundFieldTemplateData
     private final String name;
     private final String javaTypeName;
     private final String javaNullableTypeName;
+    private final TypeInfoTemplateData typeInfo;
     private final String getterName;
     private final String setterName;
     private final boolean isPackable;
@@ -652,7 +630,7 @@ public final class CompoundFieldTemplateData
     private final boolean isSimpleType;
     private final boolean isIntegralType;
     private final String constraint;
-    private final BitSize bitSize;
+    private final BitSizeTemplateData bitSize;
     private final Offset offset;
     private final ArrayableInfoTemplateData arrayableInfo;
     private final Array array;

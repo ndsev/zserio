@@ -419,8 +419,8 @@ struct MessageInfo
 struct MethodInfo
 {
     StringView schemaName; /**< service schema name */
-    const ITypeInfo& responseTypeInfo; /**< reference to type information for a service response type */
-    const ITypeInfo& requestTypeInfo; /**< reference to type information for a service request type */
+    const ITypeInfo& responseTypeInfo; /**< reference to type information for a method response type */
+    const ITypeInfo& requestTypeInfo; /**< reference to type information for a method request type */
 };
 
 /**

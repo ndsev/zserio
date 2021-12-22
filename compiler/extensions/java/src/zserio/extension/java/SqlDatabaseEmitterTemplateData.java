@@ -11,6 +11,7 @@ import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.java.types.JavaNativeType;
 
 public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
@@ -50,7 +51,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
-            javaTypeName = javaNativeMapper.getJavaType(fieldTypeInstantiation).getFullName();
+            final JavaNativeType fieldNativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
+            javaTypeName = fieldNativeType.getFullName();
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, fieldNativeType);
 
             name = field.getName();
             getterName = AccessorNameFormatter.getGetterName(field);
@@ -75,6 +78,11 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public String getJavaTypeName()
         {
             return javaTypeName;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public String getGetterName()
@@ -116,6 +124,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String javaTypeName;
+        private final TypeInfoTemplateData typeInfo;
         private final String getterName;
         private final boolean isWithoutRowIdTable;
         private final boolean hasExplicitParameters;

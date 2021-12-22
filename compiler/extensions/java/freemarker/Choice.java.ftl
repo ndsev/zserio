@@ -4,6 +4,7 @@
 <#include "CompoundFunction.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "RangeCheck.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#macro choice_selector_condition caseList>
     <#if isSelectorExpressionBigInteger>
@@ -90,6 +91,31 @@ ${I}}
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
 {
     <@compound_constructors compoundConstructorsData/>
+<#if withTypeInfoCode>
+    public static zserio.runtime.typeinfo.TypeInfo typeInfo()
+    {
+    <#list fieldList as field>
+        <@field_info_recursive_type_info_getter field/>
+    </#list>
+        final java.lang.String templateName = <@template_info_template_name templateInstantiation!/>;
+        final java.util.List<zserio.runtime.typeinfo.TypeInfo> templateArguments =
+                <@template_info_template_arguments templateInstantiation!/>
+        final java.util.List<zserio.runtime.typeinfo.FieldInfo> fields =
+                <@fields_info fieldList/>
+        final java.util.List<zserio.runtime.typeinfo.ParameterInfo> parameters =
+                <@parameters_info compoundParametersData.list/>
+        final java.util.List<zserio.runtime.typeinfo.FunctionInfo> functions =
+                <@functions_info compoundFunctionsData.list/>
+        final java.util.List<zserio.runtime.typeinfo.CaseInfo> cases =
+                <@cases_info caseMemberList, defaultMember!, isSwitchAllowed/>
+
+        return new zserio.runtime.typeinfo.TypeInfo.ChoiceTypeInfo(
+                "${schemaTypeName}", templateName, templateArguments,
+                fields, parameters, functions, "${selectorExpression}", cases
+        );
+    }
+
+</#if>
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
 <#list fieldList as field>

@@ -8,6 +8,7 @@ import zserio.ast.TypeReference;
 import zserio.ast.Function;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.java.types.JavaNativeType;
 
 public final class CompoundFunctionTemplateData
 {
@@ -34,7 +35,10 @@ public final class CompoundFunctionTemplateData
                 ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
-            returnTypeName = javaNativeMapper.getJavaType(returnTypeReference).getFullName();
+            final JavaNativeType nativeType = javaNativeMapper.getJavaType(returnTypeReference);
+            returnTypeName = nativeType.getFullName();
+            returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, nativeType);
+            schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
             resultExpression = javaExpressionFormatter.formatGetter(function.getResultExpression());
         }
@@ -42,6 +46,16 @@ public final class CompoundFunctionTemplateData
         public String getReturnTypeName()
         {
             return returnTypeName;
+        }
+
+        public TypeInfoTemplateData getReturnTypeInfo()
+        {
+            return returnTypeInfo;
+        }
+
+        public String getSchemaName()
+        {
+            return schemaName;
         }
 
         public String getName()
@@ -55,6 +69,8 @@ public final class CompoundFunctionTemplateData
         }
 
         private final String returnTypeName;
+        private final TypeInfoTemplateData returnTypeInfo;
+        private final String schemaName;
         private final String name;
         private final String resultExpression;
     }

@@ -34,6 +34,8 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
             fieldList.add(new CompoundFieldTemplateData(javaNativeMapper, withRangeCheckCode, compoundType,
                     fieldType, javaExpressionFormatter));
         }
+
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType);
     }
 
     public CompoundParameterTemplateData getCompoundParametersData()
@@ -61,9 +63,15 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return fieldList;
     }
 
+    public TemplateInstantiationTemplateData getTemplateInstantiation()
+    {
+        return templateInstantiation;
+    }
+
     private final CompoundParameterTemplateData     compoundParametersData;
     private final CompoundConstructorTemplateData   compoundConstructorsData;
     private final CompoundFunctionTemplateData      compoundFunctionsData;
     private final boolean                           hasFieldWithOffset;
     private final List<CompoundFieldTemplateData>   fieldList;
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }

@@ -1,8 +1,19 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 
 public final class ${name}
 {
+<#if withTypeInfoCode>
+    public static zserio.runtime.typeinfo.TypeInfo typeInfo()
+    {
+        return new zserio.runtime.typeinfo.TypeInfo.ServiceTypeInfo(
+                "${schemaTypeName}",
+                <@methods_info methodList/>
+        );
+    }
+
+</#if>
     public static abstract class ${name}Service implements zserio.runtime.service.ServiceInterface
     {
         public ${name}Service()

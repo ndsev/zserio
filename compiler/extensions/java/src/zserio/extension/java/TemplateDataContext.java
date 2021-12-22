@@ -24,6 +24,7 @@ final class TemplateDataContext
         withWriterCode = javaParameters.getWithWriterCode();
         withValidationCode = javaParameters.getWithValidationCode();
         withRangeCheckCode = javaParameters.getWithRangeCheckCode();
+        withTypeInfoCode = javaParameters.getWithTypeInfoCode();
 
         generatorDescription =
                 "/**\n" +
@@ -73,6 +74,11 @@ final class TemplateDataContext
         return withRangeCheckCode;
     }
 
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCode;
+    }
+
     public String getGeneratorDescription()
     {
         return generatorDescription;
@@ -85,9 +91,10 @@ final class TemplateDataContext
     private final ExpressionFormatter javaCaseExpressionFormatter;
     private final ExpressionFormatter javaSqlIndirectExpressionFormatter;
 
+    private final boolean withWriterCode;
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
-    private final boolean withWriterCode;
+    private final boolean withTypeInfoCode;
 
     private final String generatorDescription;
 }

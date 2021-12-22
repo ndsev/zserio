@@ -1,6 +1,7 @@
 <#include "FileHeader.inc.ftl">
 <#include "Sql.inc.ftl">
 <#include "RangeCheck.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#assign hasBlobField=sql_table_has_blob_field(fields)/>
 <#assign needsParameterProvider=explicitParameters?has_content/>
@@ -36,6 +37,22 @@ public class ${name}
         this.attachedDbName = attachedDbName;
         this.tableName = tableName;
     }
+<#if withTypeInfoCode>
+
+    public static zserio.runtime.typeinfo.TypeInfo typeInfo()
+    {
+        final java.lang.String templateName = <@template_info_template_name templateInstantiation!/>;
+        final java.util.List<zserio.runtime.typeinfo.TypeInfo> templateArguments =
+                <@template_info_template_arguments templateInstantiation!/>
+        final java.util.List<zserio.runtime.typeinfo.ColumnInfo> columns =
+                <@columns_info fields/>
+
+        return new zserio.runtime.typeinfo.TypeInfo.SqlTableTypeInfo(
+                "${schemaTypeName}", templateName, templateArguments,
+                columns, ${sqlConstraint!"\"\""}, "${virtualTableUsing!""}", ${isWithoutRowId?c}
+        );
+    }
+</#if>
 <#if withWriterCode>
 
     public void createTable() throws java.sql.SQLException

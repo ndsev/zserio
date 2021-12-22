@@ -3,12 +3,10 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
-import zserio.ast.FixedSizeType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.ZserioType;
+import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.NativeIntegralType;
 
@@ -24,15 +22,18 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
+        final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         final NativeIntegralType nativeIntegralType =
                 javaNativeMapper.getJavaIntegralType(enumTypeInstantiation);
         baseJavaTypeName = nativeIntegralType.getFullName();
 
+        underlyingTypeInfo = new TypeInfoTemplateData(enumTypeInstantiation, nativeIntegralType);
+
         arrayableInfo = new ArrayableInfoTemplateData(nativeIntegralType);
-        bitSize = createBitSize(enumType);
+        bitSize = BitSizeTemplateData.create(enumTypeInstantiation, javaExpressionFormatter);
 
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
-                context.getJavaExpressionFormatter(), javaNativeMapper);
+                javaExpressionFormatter, javaNativeMapper);
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
@@ -44,12 +45,17 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         return baseJavaTypeName;
     }
 
+    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    {
+        return underlyingTypeInfo;
+    }
+
     public ArrayableInfoTemplateData getArrayableInfo()
     {
         return arrayableInfo;
     }
 
-    public String getBitSize()
+    public BitSizeTemplateData getBitSize()
     {
         return bitSize;
     }
@@ -62,23 +68,6 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public Iterable<EnumItemData> getItems()
     {
         return items;
-    }
-
-    private static String createBitSize(EnumType enumType) throws ZserioExtensionException
-    {
-        final TypeInstantiation typeInstantiation = enumType.getTypeInstantiation();
-        final ZserioType baseType = typeInstantiation.getBaseType();
-        Integer bitSize = null;
-        if (baseType instanceof FixedSizeType)
-        {
-            bitSize = ((FixedSizeType)baseType).getBitSize();
-        }
-        else if (typeInstantiation instanceof DynamicBitFieldInstantiation)
-        {
-            bitSize = ((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize();
-        }
-
-        return (bitSize != null) ? JavaLiteralFormatter.formatIntLiteral(bitSize) : null;
     }
 
     public static class EnumItemData
@@ -108,8 +97,9 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     }
 
     private final String baseJavaTypeName;
-    ArrayableInfoTemplateData arrayableInfo;
-    private final String bitSize;
+    private final TypeInfoTemplateData underlyingTypeInfo;
+    private final ArrayableInfoTemplateData arrayableInfo;
+    private final BitSizeTemplateData bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final List<EnumItemData> items;
 }

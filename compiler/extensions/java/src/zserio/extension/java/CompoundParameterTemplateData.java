@@ -46,6 +46,7 @@ public final class CompoundParameterTemplateData
             name = parameter.getName();
             JavaNativeType nativeType = javaNativeMapper.getJavaType(parameter.getTypeReference());
             javaTypeName = nativeType.getFullName();
+            typeInfo = new TypeInfoTemplateData(parameter.getTypeReference(), nativeType);
             getterName = AccessorNameFormatter.getGetterName(parameter);
             isBool = nativeType instanceof NativeBooleanType;
             isLong = nativeType instanceof NativeLongType;
@@ -63,6 +64,11 @@ public final class CompoundParameterTemplateData
         public String getJavaTypeName()
         {
             return javaTypeName;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public String getGetterName()
@@ -100,15 +106,16 @@ public final class CompoundParameterTemplateData
             return isSimpleType;
         }
 
-        private final String    name;
-        private final String    javaTypeName;
-        private final String    getterName;
-        private final boolean   isBool;
-        private final boolean   isLong;
-        private final boolean   isFloat;
-        private final boolean   isDouble;
-        private final boolean   isEnum;
-        private final boolean   isSimpleType;
+        private final String name;
+        private final String javaTypeName;
+        private final TypeInfoTemplateData typeInfo;
+        private final String getterName;
+        private final boolean isBool;
+        private final boolean isLong;
+        private final boolean isFloat;
+        private final boolean isDouble;
+        private final boolean isEnum;
+        private final boolean isSimpleType;
     }
 
     private final String                    compoundName;

@@ -190,7 +190,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIn(MemberAttribute.PACKED, member_info.attributes)
         self.assertIsNone(member_info.attributes[MemberAttribute.PACKED])
         self.assertIn(MemberAttribute.TYPE_ARGUMENTS, member_info.attributes)
-        self.assertEqual(["self.simple_struct.field_u32 + self.dynamic_bit_field"],
+        self.assertEqual(["self.dynamic_bit_field * 2"],
                          member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
         self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
         self.assertEqual(None, member_info.attributes[MemberAttribute.ARRAY_LENGTH])

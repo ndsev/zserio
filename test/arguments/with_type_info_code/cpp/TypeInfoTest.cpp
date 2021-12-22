@@ -471,7 +471,7 @@ protected:
         ASSERT_EQ(0, fieldFloat16Field.typeArguments.size());
         ASSERT_EQ(""_sv, fieldFloat16Field.alignment);
         ASSERT_EQ(""_sv, fieldFloat16Field.offset);
-        ASSERT_EQ("1.0"_sv, fieldFloat16Field.initializer);
+        ASSERT_EQ("1.0f"_sv, fieldFloat16Field.initializer);
         ASSERT_EQ(false, fieldFloat16Field.isOptional);
         ASSERT_EQ(""_sv, fieldFloat16Field.optionalCondition);
         ASSERT_EQ(""_sv, fieldFloat16Field.constraint);
@@ -656,7 +656,7 @@ protected:
         ASSERT_EQ(zserio::CppType::UINT64, dynamicBitFieldArrayField.typeInfo.getCppType());
 
         ASSERT_EQ(1, dynamicBitFieldArrayField.typeArguments.size());
-        ASSERT_EQ("getSimpleStruct().getFieldU32() + getDynamicBitField()"_sv,
+        ASSERT_EQ("getDynamicBitField() * 2"_sv,
                 dynamicBitFieldArrayField.typeArguments[0]);
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.alignment);
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.offset);

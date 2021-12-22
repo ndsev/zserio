@@ -7,7 +7,7 @@ align(8):
 fieldU32:
     string fieldString = "My" + "String";
     bool fieldBool = false;
-    float16 fieldFloat16 = 1.0;
+    float16 fieldFloat16 = 1.0f;
     float32 fieldFloat32;
     float64 fieldFloat64 = 2.0;
 };
@@ -19,7 +19,7 @@ struct ComplexStruct
     int:5 arrayWithLen[array[0]] if array[0] > 0;
     optional ParameterizedStruct(simpleStruct) paramStructArray[];
     bit<simpleStruct.fieldU32> dynamicBitField;
-    packed bit<simpleStruct.fieldU32 + dynamicBitField> dynamicBitFieldArray[];
+    packed bit<dynamicBitField * 2> dynamicBitFieldArray[];
 
     function uint32 firstArrayElement()
     {

@@ -138,7 +138,7 @@ class TypeInfo:
 class RecursiveTypeInfo:
     """
     Type info for recursive types used as a wrapper around generated static type_info method to prevent
-    infinite recrusion in type info definition.
+    infinite recursion in type info definition.
     """
 
     def __init__(self, type_info_func : typing.Callable[[], TypeInfo]):
@@ -149,6 +149,7 @@ class RecursiveTypeInfo:
         """
 
         self._type_info_func = type_info_func
+        self._type_info = None
 
     @property
     def schema_name(self) -> str:
@@ -156,7 +157,7 @@ class RecursiveTypeInfo:
         See :py:attr:`TypeInfo.schema_name`.
         """
 
-        return self._type_info_func().schema_name
+        return self._get_type_info().schema_name
 
     @property
     def py_type(self) -> typing.Type:
@@ -164,7 +165,7 @@ class RecursiveTypeInfo:
         See :py:attr:`TypeInfo.py_type`.
         """
 
-        return self._type_info_func().py_type
+        return self._get_type_info().py_type
 
     @property
     def attributes(self) -> typing.Dict['TypeAttribute', typing.Any]:
@@ -172,7 +173,12 @@ class RecursiveTypeInfo:
         See :py:attr:`TypeInfo.attributes`.
         """
 
-        return self._type_info_func().attributes
+        return self._get_type_info().attributes
+
+    def _get_type_info(self):
+        if self._type_info is None:
+            self._type_info = self._type_info_func()
+        return self._type_info
 
 class TypeAttribute(enum.Enum):
     """
@@ -378,7 +384,7 @@ class CaseInfo:
         self._field = field
 
     @property
-    def case_expressions(self):
+    def case_expressions(self) -> typing.List[str]:
         """
         Gets case expressions in the choice case. An empty list denotes the default case.
 
@@ -388,7 +394,7 @@ class CaseInfo:
         return self._case_expressions
 
     @property
-    def field(self):
+    def field(self) -> typing.Optional[MemberInfo]:
         """
         Gets field associated with the choice case. Can be empty.
 
@@ -415,7 +421,7 @@ class ItemInfo:
         self._py_item = py_item
 
     @property
-    def schema_name(self):
+    def schema_name(self) -> str:
         """
         Gets name of the item as is defined in Zserio schema.
 
@@ -425,7 +431,7 @@ class ItemInfo:
         return self._schema_name
 
     @property
-    def py_item(self):
+    def py_item(self) -> typing.Any:
         """
         Gets reference to the item generated in Python.
 

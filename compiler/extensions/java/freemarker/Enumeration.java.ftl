@@ -1,9 +1,10 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#macro enum_array_traits arrayableInfo bitSize>
 new ${arrayableInfo.arrayTraits.name}(<#rt>
         <#if arrayableInfo.arrayTraits.requiresElementBitSize>
-            ${bitSize}<#t>
+            ${bitSize.value}<#t>
         </#if>
             )<#t>
 </#macro>
@@ -30,6 +31,22 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     {
         return value;
     }
+<#if withTypeInfoCode>
+
+    public static zserio.runtime.typeinfo.TypeInfo typeInfo()
+    {
+        return new zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo(
+                "${schemaTypeName}",
+                <@type_info underlyingTypeInfo/>,
+                <@underlying_type_info_type_arguments bitSize!/>,
+                java.util.Arrays.asList(
+    <#list items as item>
+                        <@item_info item.name, item.value/><#if item?has_next>,</#if>
+    </#list>
+                )
+            );
+    }
+</#if>
 
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
@@ -54,7 +71,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     public int bitSizeOf(long bitPosition)
     {
 <#if bitSize??>
-        return ${bitSize};
+        return ${bitSize.value};
 <#else>
         return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
 </#if>

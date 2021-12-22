@@ -1,9 +1,10 @@
 <#include "FileHeader.inc.ftl">
+<#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#macro bitmask_array_traits arrayableInfo bitSize>
 new ${arrayableInfo.arrayTraits.name}(<#rt>
         <#if arrayableInfo.arrayTraits.requiresElementBitSize>
-        ${bitSize}<#t>
+        ${bitSize.value}<#t>
         </#if>
         )<#t>
 </#macro>
@@ -46,6 +47,22 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
                 contextNode.getContext().read(
                         <@bitmask_array_traits arrayableInfo, bitSize!/>, in)).get();
     }
+<#if withTypeInfoCode>
+
+    public static zserio.runtime.typeinfo.TypeInfo typeInfo()
+    {
+        return new zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo(
+                "${schemaTypeName}",
+                <@type_info underlyingTypeInfo/>,
+                <@underlying_type_info_type_arguments bitSize!/>,
+                java.util.Arrays.asList(
+    <#list values as value>
+                        <@item_info value.name, value.value/><#if value?has_next>,</#if>
+    </#list>
+                )
+        );
+    }
+</#if>
 
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
@@ -70,7 +87,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public int bitSizeOf(long bitPosition)
     {
 <#if bitSize??>
-        return ${bitSize};
+        return ${bitSize.value};
 <#else>
         return zserio.runtime.BitSizeOfCalculator.getBitSizeOf${runtimeFunction.suffix}(value);
 </#if>

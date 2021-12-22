@@ -55,8 +55,9 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
                 ExpressionFormatter javaExpressionFormatter, PubsubMessage message) throws ZserioExtensionException
         {
             name = message.getName();
-            topicDefinition = javaExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             final JavaNativeType javaType = javaNativeMapper.getJavaType(message.getTypeReference());
+            typeInfo = new TypeInfoTemplateData(message.getTypeReference(), javaType);
+            topicDefinition = javaExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             typeFullName = javaType.getFullName();
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
@@ -65,6 +66,11 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         public String getName()
         {
             return name;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public String getTopicDefinition()
@@ -88,6 +94,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
+        private final TypeInfoTemplateData typeInfo;
         private final String topicDefinition;
         private final String typeFullName;
         private final boolean isPublished;

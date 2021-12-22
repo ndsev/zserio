@@ -1,0 +1,39 @@
+<project name="with_type_info_code" basedir="." default="run">
+    <testProperties testPath="arguments/with_type_info_code" testName="with_type_info_code"/>
+
+    <target name="prepare">
+        <testPrepare testName="with_type_info_code"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="with_type_info_code"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="with_type_info_code.zs.gen_is_uptodate">
+        <testGenClean testName="with_type_info_code"/>
+        <testGen testName="with_type_info_code" zsFile="with_type_info_code.zs">
+            <arg name="withTypeInfoCode"/>
+            <arg name="allowImplicitArrays"/>
+        </testGen>
+    </target>
+
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="with_type_info_code"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
+        <testCompile testName="with_type_info_code"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="with_type_info_code"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="with_type_info_code"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="with_type_info_code"/>
+    </target>
+</project>

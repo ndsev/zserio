@@ -64,6 +64,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 }
             }
         }
+
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, tableType);
     }
 
     public String getRootPackageName()
@@ -109,6 +111,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public String getSqlConstraint()
     {
         return sqlConstraint;
+    }
+
+    public TemplateInstantiationTemplateData getTemplateInstantiation()
+    {
+        return templateInstantiation;
     }
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
@@ -180,6 +187,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             name = field.getName();
             javaTypeName = nativeType.getName();
             javaTypeFullName = nativeType.getFullName();
+
+            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeType);
+
             requiresBigInt = (nativeType instanceof NativeIntegralType) ?
                     ((NativeIntegralType)nativeType).requiresBigInt() : false;
 
@@ -228,6 +238,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getJavaTypeFullName()
         {
             return javaTypeFullName;
+        }
+
+        public TypeInfoTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public boolean getRequiresBigInt()
@@ -417,6 +432,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String name;
         private final String javaTypeName;
         private final String javaTypeFullName;
+        private final TypeInfoTemplateData typeInfo;
         private final boolean requiresBigInt;
         private final boolean isVirtual;
         private final String sqlConstraint;
@@ -438,4 +454,5 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
     private final List<FieldTemplateData> fields = new ArrayList<FieldTemplateData>();
     private final SortedSet<ExplicitParameterTemplateData> explicitParameters =
             new TreeSet<ExplicitParameterTemplateData>();
+    private final TemplateInstantiationTemplateData templateInstantiation;
 }
