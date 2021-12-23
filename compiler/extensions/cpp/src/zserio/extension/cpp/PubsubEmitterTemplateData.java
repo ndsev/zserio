@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -24,7 +25,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            addHeaderIncludesForType(cppNativeMapper.getCppType(message.getType()));
+            addHeaderIncludesForType(cppNativeMapper.getCppType(message.getTypeReference()));
             final MessageTemplateData templateData = new MessageTemplateData(cppNativeMapper,
                     cppExpressionFormatter, message);
             hasPublishing |= templateData.getIsPublished();
@@ -56,8 +57,9 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
                 PubsubMessage message) throws ZserioExtensionException
         {
             name = message.getName();
-            final CppNativeType cppNativeType = cppNativeMapper.getCppType(message.getType());
-            typeInfo = new NativeTypeInfoTemplateData(cppNativeType, message.getType());
+            final TypeReference messageTypeReference = message.getTypeReference();
+            final CppNativeType cppNativeType = cppNativeMapper.getCppType(messageTypeReference);
+            typeInfo = new NativeTypeInfoTemplateData(cppNativeType, messageTypeReference);
             final String topicDefinitionStringValue = message.getTopicDefinitionExpr().getStringValue();
             if (topicDefinitionStringValue == null)
             {

@@ -48,23 +48,23 @@ public class ServiceMethod extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Gets request type of the method.
+     * Gets the reference to request method type.
      *
-     * @return Request type of this method.
+     * @return The reference to request method type.
      */
-    public CompoundType getRequestType()
+    public TypeReference getRequestTypeReference()
     {
-        return (CompoundType)requestTypeReference.getBaseTypeReference().getType();
+        return requestTypeReference;
     }
 
     /**
-     * Gets response type of the method.
+     * Gets the reference to response method type.
      *
-     * @return Response type of this method.
+     * @return The reference to response method type.
      */
-    public CompoundType getResponseType()
+    public TypeReference getResponseTypeReference()
     {
-        return (CompoundType)responseTypeReference.getBaseTypeReference().getType();
+        return responseTypeReference;
     }
 
     /**

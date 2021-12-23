@@ -3,9 +3,9 @@ package zserio.extension.python;
 import java.util.ArrayList;
 import java.util.List;
 
-import zserio.ast.CompoundType;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
 
@@ -55,16 +55,16 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
             clientMethodName = AccessorNameFormatter.getServiceClientMethodName(serviceMethod);
 
-            final CompoundType responseType = serviceMethod.getResponseType();
-            final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseType);
+            final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
+            final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseTypeReference);
             importCollector.importType(pythonResponseType);
-            responseTypeInfo = new TypeInfoTemplateData(responseType, pythonResponseType);
+            responseTypeInfo = new TypeInfoTemplateData(responseTypeReference, pythonResponseType);
             responseTypeFullName = PythonFullNameFormatter.getFullName(pythonResponseType);
 
-            final CompoundType requestType = serviceMethod.getRequestType();
-            final PythonNativeType pythonRequestType = typeMapper.getPythonType(requestType);
+            final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
+            final PythonNativeType pythonRequestType = typeMapper.getPythonType(requestTypeReference);
             importCollector.importType(pythonRequestType);
-            requestTypeInfo = new TypeInfoTemplateData(requestType, pythonRequestType);
+            requestTypeInfo = new TypeInfoTemplateData(requestTypeReference, pythonRequestType);
             requestTypeFullName = PythonFullNameFormatter.getFullName(pythonRequestType);
         }
 

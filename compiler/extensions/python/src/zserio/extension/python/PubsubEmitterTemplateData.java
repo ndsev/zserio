@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.types.PythonNativeType;
@@ -63,9 +64,10 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         {
             name = message.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
-            final PythonNativeType pythonType = pythonNativeMapper.getPythonType(message.getType());
+            final TypeReference messageTypeReference = message.getTypeReference();
+            final PythonNativeType pythonType = pythonNativeMapper.getPythonType(messageTypeReference);
             importCollector.importType(pythonType);
-            typeInfo = new TypeInfoTemplateData(message.getType(), pythonType);
+            typeInfo = new TypeInfoTemplateData(messageTypeReference, pythonType);
             topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             typeFullName = PythonFullNameFormatter.getFullName(pythonType);
             isPublished = message.isPublished();

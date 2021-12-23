@@ -3,7 +3,7 @@ package zserio.extension.cpp;
 import java.util.List;
 import java.util.ArrayList;
 import zserio.ast.ServiceType;
-import zserio.ast.CompoundType;
+import zserio.ast.TypeReference;
 import zserio.ast.ServiceMethod;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -24,8 +24,8 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         Iterable<ServiceMethod> methodList = serviceType.getMethodList();
         for (ServiceMethod method : methodList)
         {
-            addHeaderIncludesForType(cppTypeMapper.getCppType(method.getResponseType()));
-            addHeaderIncludesForType(cppTypeMapper.getCppType(method.getRequestType()));
+            addHeaderIncludesForType(cppTypeMapper.getCppType(method.getResponseTypeReference()));
+            addHeaderIncludesForType(cppTypeMapper.getCppType(method.getRequestTypeReference()));
             final MethodTemplateData templateData = new MethodTemplateData(cppTypeMapper, method);
             this.methodList.add(templateData);
         }
@@ -48,13 +48,13 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
         {
             name = method.getName();
 
-            final CompoundType responseType = method.getResponseType();
-            final CppNativeType cppResponseType = typeMapper.getCppType(responseType);
-            responseTypeInfo = new NativeTypeInfoTemplateData(cppResponseType, responseType);
+            final TypeReference responseTypeReference = method.getResponseTypeReference();
+            final CppNativeType cppResponseType = typeMapper.getCppType(responseTypeReference);
+            responseTypeInfo = new NativeTypeInfoTemplateData(cppResponseType, responseTypeReference);
 
-            final CompoundType requestType = method.getRequestType();
-            final CppNativeType cppRequestType = typeMapper.getCppType(requestType);
-            requestTypeInfo = new NativeTypeInfoTemplateData(cppRequestType, requestType);
+            final TypeReference requestTypeReference = method.getRequestTypeReference();
+            final CppNativeType cppRequestType = typeMapper.getCppType(requestTypeReference);
+            requestTypeInfo = new NativeTypeInfoTemplateData(cppRequestType, requestTypeReference);
         }
 
         public String getName()

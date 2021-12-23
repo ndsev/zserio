@@ -31,8 +31,10 @@ public class ServiceTemplateData extends PackageTemplateDataBase
                 ServiceMethod serviceMethod) throws ZserioExtensionException
         {
             symbol = SymbolTemplateDataCreator.createData(context, serviceType, serviceMethod);
-            requestSymbol = SymbolTemplateDataCreator.createData(context, serviceMethod.getRequestType());
-            responseSymbol = SymbolTemplateDataCreator.createData(context, serviceMethod.getResponseType());
+            requestSymbol = SymbolTemplateDataCreator.createData(context,
+                    serviceMethod.getRequestTypeReference());
+            responseSymbol = SymbolTemplateDataCreator.createData(context,
+                    serviceMethod.getResponseTypeReference());
             docComments = new DocCommentsTemplateData(context, serviceMethod.getDocComments());
         }
 

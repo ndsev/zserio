@@ -56,8 +56,8 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         {
             name = message.getName();
             topicDefinition = javaExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
-            final JavaNativeType pythonType = javaNativeMapper.getJavaType(message.getType());
-            typeFullName = pythonType.getFullName();
+            final JavaNativeType javaType = javaNativeMapper.getJavaType(message.getTypeReference());
+            typeFullName = javaType.getFullName();
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }

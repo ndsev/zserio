@@ -5,7 +5,7 @@ import java.util.List;
 
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
-import zserio.ast.ZserioType;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
@@ -47,11 +47,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         {
             name = serviceMethod.getName();
 
-            final ZserioType responseType = serviceMethod.getResponseType();
-            responseTypeFullName = typeMapper.getJavaType(responseType).getFullName();
+            final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
+            responseTypeFullName = typeMapper.getJavaType(responseTypeReference).getFullName();
 
-            final ZserioType requestType = serviceMethod.getRequestType();
-            requestTypeFullName = typeMapper.getJavaType(requestType).getFullName();
+            final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
+            requestTypeFullName = typeMapper.getJavaType(requestTypeReference).getFullName();
         }
 
         public String getName()

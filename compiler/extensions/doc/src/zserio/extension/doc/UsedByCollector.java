@@ -128,8 +128,8 @@ class UsedByCollector extends DefaultTreeWalker
         final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
         for (ServiceMethod method : serviceType.getMethodList())
         {
-            addTypeToUsedTypes(method.getRequestType(), usedTypes);
-            addTypeToUsedTypes(method.getResponseType(), usedTypes);
+            addTypeToUsedTypes(method.getRequestTypeReference().getType(), usedTypes);
+            addTypeToUsedTypes(method.getResponseTypeReference().getType(), usedTypes);
         }
         storeType(serviceType, usedTypes);
     }
@@ -140,7 +140,7 @@ class UsedByCollector extends DefaultTreeWalker
         final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            addTypeToUsedTypes(message.getType(), usedTypes);
+            addTypeToUsedTypes(message.getTypeReference().getType(), usedTypes);
         }
         storeType(pubsubType, usedTypes);
     }

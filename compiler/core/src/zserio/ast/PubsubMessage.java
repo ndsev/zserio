@@ -53,13 +53,13 @@ public class PubsubMessage extends DocumentableAstNode implements ScopeSymbol
     }
 
     /**
-     * Gets the message type.
+     * Gets the reference to message type.
      *
-     * @return Type of the message.
+     * @return The reference to message type.
      */
-    public CompoundType getType()
+    public TypeReference getTypeReference()
     {
-        return (CompoundType)typeReference.getBaseTypeReference().getType();
+        return typeReference;
     }
 
     /**

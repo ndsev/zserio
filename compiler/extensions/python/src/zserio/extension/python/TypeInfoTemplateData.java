@@ -39,14 +39,6 @@ public class TypeInfoTemplateData
         isDynamicBitField = baseType instanceof DynamicBitFieldType;
     }
 
-    public TypeInfoTemplateData(CompoundType compoundType, PythonNativeType nativeType)
-    {
-        schemaTypeName = ZserioTypeUtil.getFullName(compoundType);
-        pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
-        hasTypeInfo = true;
-        isDynamicBitField = false;
-    }
-
     public String getSchemaTypeName()
     {
         return schemaTypeName;

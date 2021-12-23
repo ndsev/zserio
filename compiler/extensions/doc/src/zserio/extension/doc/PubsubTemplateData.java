@@ -36,7 +36,7 @@ public class PubsubTemplateData extends PackageTemplateDataBase
             symbol = SymbolTemplateDataCreator.createData(context, pubsubType, pubsubMessage);
             final ExpressionFormatter docExpressionFormatter = context.getExpressionFormatter();
             topicDefinition = docExpressionFormatter.formatGetter(pubsubMessage.getTopicDefinitionExpr());
-            typeSymbol = SymbolTemplateDataCreator.createData(context, pubsubMessage.getType());
+            typeSymbol = SymbolTemplateDataCreator.createData(context, pubsubMessage.getTypeReference());
             docComments = new DocCommentsTemplateData(context, pubsubMessage.getDocComments());
         }
 

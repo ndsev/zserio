@@ -26,12 +26,6 @@ public class NativeTypeInfoTemplateData
         this(cppNativeType, typeReference.getBaseTypeReference().getType(), null, typeReference);
     }
 
-    public NativeTypeInfoTemplateData(CppNativeType cppNativeType, CompoundType compoundType)
-            throws ZserioExtensionException
-    {
-        this(cppNativeType, compoundType, null, null);
-    }
-
     public String getTypeName()
     {
         return typeName;
