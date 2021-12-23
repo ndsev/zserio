@@ -280,7 +280,7 @@ activate_python_virtualenv()
     fi
 
     local STANDARD_REQUIREMENTS=(
-        "coverage>=4.5.1" "sphinx-automodapi>=0.8"
+        "coverage>=4.5.1" "sphinx-automodapi==0.13"
         "astroid==2.4.2" "pylint==2.6.0" "mypy==0.790"
     )
     local APSW_REQUIREMENTS=("apsw")
