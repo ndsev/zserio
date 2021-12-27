@@ -663,6 +663,12 @@ public interface TypeInfo
          */
         public static BuiltinTypeInfo getDynamicSignedBitField(byte maxBitSize)
         {
+            if (maxBitSize <= 0 || maxBitSize > 64)
+            {
+                throw new ZserioError("BuiltinTypeInfo.getDynamicSignedBitField: Invalid max bit size '" +
+                        maxBitSize + "'!");
+            }
+
             if (maxBitSize <= 8)
                 return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.BYTE);
             else if (maxBitSize <= 16)
@@ -682,6 +688,12 @@ public interface TypeInfo
          */
         public static BuiltinTypeInfo getDynamicUnsignedBitField(byte maxBitSize)
         {
+            if (maxBitSize <= 0 || maxBitSize > 64)
+            {
+                throw new ZserioError("BuiltinTypeInfo.getDynamicUnsignedBitField: Invalid max bit size '" +
+                        maxBitSize + "'!");
+            }
+
             if (maxBitSize < 8)
                 return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BYTE);
             else if (maxBitSize < 16)
@@ -877,6 +889,12 @@ public interface TypeInfo
          */
         public static FixedSizeBuiltinTypeInfo getFixedSignedBitField(byte bitSize)
         {
+            if (bitSize <= 0 || bitSize > 64)
+            {
+                throw new ZserioError("FixedSizeBuiltinTypeInfo.getFixedSignedBitField: Invalid bit size '" +
+                        bitSize + "'!");
+            }
+
             final String schemaName = "int:" + bitSize;
             if (bitSize <= 8)
             {
@@ -893,7 +911,7 @@ public interface TypeInfo
                 return new FixedSizeBuiltinTypeInfo(
                         schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.INT, bitSize);
             }
-            else
+            else // bitSize <= 64
             {
                 return new FixedSizeBuiltinTypeInfo(
                         schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.LONG, bitSize);
@@ -909,23 +927,34 @@ public interface TypeInfo
          */
         public static FixedSizeBuiltinTypeInfo getFixedUnsignedBitField(byte bitSize)
         {
+            if (bitSize <= 0 || bitSize > 64)
+            {
+                throw new ZserioError("FixedSizeBuiltinTypeInfo.getFixedSignedBitField: Invalid bit size '" +
+                        bitSize + "'!");
+            }
+
             final String schemaName = "bit:" + bitSize;
-            if (bitSize <= 8)
+            if (bitSize < 8)
+            {
+                return new FixedSizeBuiltinTypeInfo(
+                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BYTE, bitSize);
+            }
+            else if (bitSize < 16)
             {
                 return new FixedSizeBuiltinTypeInfo(
                         schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.SHORT, bitSize);
             }
-            else if (bitSize <= 16)
+            else if (bitSize < 32)
             {
                 return new FixedSizeBuiltinTypeInfo(
                         schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.INT, bitSize);
             }
-            else if (bitSize <= 32)
+            else if (bitSize < 64)
             {
                 return new FixedSizeBuiltinTypeInfo(
                         schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.LONG, bitSize);
             }
-            else
+            else // bitSize == 64
             {
                 return new FixedSizeBuiltinTypeInfo(
                         schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BIG_INTEGER, bitSize);

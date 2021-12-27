@@ -5,6 +5,15 @@ package zserio.runtime.typeinfo;
  */
 public class MessageInfo
 {
+    /**
+     * Constructor.
+     *
+     * @param schemaName Message schema name.
+     * @param typeInfo Message type info.
+     * @param isPublished Flag whether the message is published.
+     * @param isSubscribed Flag whether the message is subscribed.
+     * @param topic Message topic definition.
+     */
     public MessageInfo(String schemaName, TypeInfo typeInfo,
             boolean isPublished, boolean isSubscribed, String topic)
     {

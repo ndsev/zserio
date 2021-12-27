@@ -267,7 +267,7 @@ const ITypeInfo& BuiltinTypeInfo::getDynamicSignedBitField(uint8_t maxBitSize)
     if (maxBitSize == 0 || maxBitSize > 64)
     {
         throw CppRuntimeException("BuiltinTypeInfo::getDynamicSignedBitField: Invalid max bit size '") +
-                maxBitSize + "!";
+                maxBitSize + "'!";
     }
 
     if (maxBitSize <= 8)
@@ -305,7 +305,7 @@ const ITypeInfo& BuiltinTypeInfo::getDynamicUnsignedBitField(uint8_t maxBitSize)
     if (maxBitSize == 0 || maxBitSize > 64)
     {
         throw CppRuntimeException("BuiltinTypeInfo::getDynamicUnsignedBitField: Invalid max bit size '") +
-                maxBitSize + "!";
+                maxBitSize + "'!";
     }
 
     if (maxBitSize <= 8)
@@ -425,7 +425,7 @@ const ITypeInfo& FixedSizeBuiltinTypeInfo::getFixedSignedBitField(uint8_t bitSiz
     if (bitSize == 0 || bitSize > 64)
     {
         throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedSignedBitField: Invalid bit size '") +
-                bitSize + "!";
+                bitSize + "'!";
     }
 
     static std::array<FixedSizeBuiltinTypeInfo, 64> bitFieldTypeInfoArray = {{
@@ -503,7 +503,7 @@ const ITypeInfo& FixedSizeBuiltinTypeInfo::getFixedUnsignedBitField(uint8_t bitS
     if (bitSize == 0 || bitSize > 64)
     {
         throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedUnsignedBitField: Invalid bit size '") +
-                bitSize + "!";
+                bitSize + "'!";
     }
 
     static std::array<FixedSizeBuiltinTypeInfo, 64> bitFieldTypeInfoArray = {{

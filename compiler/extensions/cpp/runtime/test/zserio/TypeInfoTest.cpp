@@ -46,7 +46,7 @@ public:
 class TypeInfoTest : public ::testing::Test
 {
 protected:
-    void checkBuildinTypeInfo(const ITypeInfo& typeInfo, StringView schemaName, SchemaType schemaType,
+    void checkBuiltinTypeInfo(const ITypeInfo& typeInfo, StringView schemaName, SchemaType schemaType,
             CppType cppType, uint8_t bitSize = 0)
     {
         ASSERT_EQ(schemaName, typeInfo.getSchemaName());
@@ -87,65 +87,67 @@ protected:
 
 TEST_F(TypeInfoTest, builtinTypeInfo)
 {
-    checkBuildinTypeInfo(BuiltinTypeInfo::getBool(), "bool"_sv, SchemaType::BOOL, CppType::BOOL, 1);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getBool(), "bool"_sv, SchemaType::BOOL, CppType::BOOL, 1);
 
-    checkBuildinTypeInfo(BuiltinTypeInfo::getInt8(), "int8"_sv, SchemaType::INT8, CppType::INT8, 8);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getInt16(), "int16"_sv, SchemaType::INT16, CppType::INT16, 16);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getInt32(), "int32"_sv, SchemaType::INT32, CppType::INT32, 32);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getInt64(), "int64"_sv, SchemaType::INT64, CppType::INT64, 64);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getInt8(), "int8"_sv, SchemaType::INT8, CppType::INT8, 8);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getInt16(), "int16"_sv, SchemaType::INT16, CppType::INT16, 16);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getInt32(), "int32"_sv, SchemaType::INT32, CppType::INT32, 32);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getInt64(), "int64"_sv, SchemaType::INT64, CppType::INT64, 64);
 
-    checkBuildinTypeInfo(BuiltinTypeInfo::getUInt8(), "uint8"_sv, SchemaType::UINT8, CppType::UINT8, 8);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getUInt16(), "uint16"_sv, SchemaType::UINT16, CppType::UINT16, 16);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getUInt32(), "uint32"_sv, SchemaType::UINT32, CppType::UINT32, 32);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getUInt64(), "uint64"_sv, SchemaType::UINT64, CppType::UINT64, 64);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getUInt8(), "uint8"_sv, SchemaType::UINT8, CppType::UINT8, 8);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getUInt16(), "uint16"_sv, SchemaType::UINT16, CppType::UINT16, 16);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getUInt32(), "uint32"_sv, SchemaType::UINT32, CppType::UINT32, 32);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getUInt64(), "uint64"_sv, SchemaType::UINT64, CppType::UINT64, 64);
 
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarInt16(), "varint16"_sv, SchemaType::VARINT16, CppType::INT16);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarInt32(), "varint32"_sv, SchemaType::VARINT32, CppType::INT32);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarInt64(), "varint64"_sv, SchemaType::VARINT64, CppType::INT64);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarInt(), "varint"_sv, SchemaType::VARINT, CppType::INT64);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarUInt16(), "varuint16"_sv, SchemaType::VARUINT16,
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarInt16(), "varint16"_sv, SchemaType::VARINT16, CppType::INT16);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarInt32(), "varint32"_sv, SchemaType::VARINT32, CppType::INT32);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarInt64(), "varint64"_sv, SchemaType::VARINT64, CppType::INT64);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarInt(), "varint"_sv, SchemaType::VARINT, CppType::INT64);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarUInt16(), "varuint16"_sv, SchemaType::VARUINT16,
             CppType::UINT16);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarUInt32(), "varuint32"_sv, SchemaType::VARUINT32,
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarUInt32(), "varuint32"_sv, SchemaType::VARUINT32,
             CppType::UINT32);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarUInt64(), "varuint64"_sv, SchemaType::VARUINT64,
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarUInt64(), "varuint64"_sv, SchemaType::VARUINT64,
             CppType::UINT64);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarUInt(), "varuint"_sv, SchemaType::VARUINT,
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarUInt(), "varuint"_sv, SchemaType::VARUINT,
             CppType::UINT64);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getVarSize(), "varsize"_sv, SchemaType::VARSIZE, CppType::UINT32);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getVarSize(), "varsize"_sv, SchemaType::VARSIZE, CppType::UINT32);
 
-    checkBuildinTypeInfo(BuiltinTypeInfo::getFloat16(), "float16"_sv, SchemaType::FLOAT16, CppType::FLOAT, 16);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getFloat32(), "float32"_sv, SchemaType::FLOAT32, CppType::FLOAT, 32);
-    checkBuildinTypeInfo(BuiltinTypeInfo::getFloat64(), "float64"_sv, SchemaType::FLOAT64, CppType::DOUBLE, 64);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getFloat16(), "float16"_sv, SchemaType::FLOAT16, CppType::FLOAT, 16);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getFloat32(), "float32"_sv, SchemaType::FLOAT32, CppType::FLOAT, 32);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getFloat64(), "float64"_sv, SchemaType::FLOAT64, CppType::DOUBLE, 64);
 
-    checkBuildinTypeInfo(BuiltinTypeInfo::getString(), "string"_sv, SchemaType::STRING, CppType::STRING);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getString(), "string"_sv, SchemaType::STRING, CppType::STRING);
 
-    checkBuildinTypeInfo(BuiltinTypeInfo::getBitBuffer(), "extern"_sv, SchemaType::EXTERN, CppType::BIT_BUFFER);
+    checkBuiltinTypeInfo(BuiltinTypeInfo::getBitBuffer(), "extern"_sv, SchemaType::EXTERN, CppType::BIT_BUFFER);
 
     // fixed signed bit fields
     uint8_t bitSize = 0;
     ASSERT_THROW(BuiltinTypeInfo::getFixedSignedBitField(bitSize), CppRuntimeException);
     for (++bitSize ; bitSize <= 8; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
                 std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT8, bitSize);
     }
     for (; bitSize <= 16; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
                 std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT16, bitSize);
     }
     for (; bitSize <= 32; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
                 std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT32, bitSize);
     }
     for (; bitSize <= 64; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedSignedBitField(bitSize), "int:" +
                 std::to_string(bitSize), SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT64, bitSize);
     }
     for (; bitSize < 255; ++bitSize)
+    {
         ASSERT_THROW(BuiltinTypeInfo::getFixedSignedBitField(bitSize), CppRuntimeException);
+    }
     ASSERT_THROW(BuiltinTypeInfo::getFixedSignedBitField(bitSize), CppRuntimeException);
 
     // fixed unsigned bit fields
@@ -153,26 +155,28 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     ASSERT_THROW(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), CppRuntimeException);
     for (++bitSize ; bitSize <= 8; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
                 std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT8, bitSize);
     }
     for (; bitSize <= 16; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
                 std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT16, bitSize);
     }
     for (; bitSize <= 32; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
                 std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT32, bitSize);
     }
     for (; bitSize <= 64; ++bitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), "bit:" +
                 std::to_string(bitSize), SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT64, bitSize);
     }
     for (; bitSize < 255; ++bitSize)
+    {
         ASSERT_THROW(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), CppRuntimeException);
+    }
     ASSERT_THROW(BuiltinTypeInfo::getFixedUnsignedBitField(bitSize), CppRuntimeException);
 
     // dynamic signed bit fields
@@ -180,26 +184,28 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     ASSERT_THROW(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), CppRuntimeException);
     for (++maxBitSize ; maxBitSize <= 8; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
                 SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::INT8);
     }
     for (; maxBitSize <= 16; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
                 SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::INT16);
     }
     for (; maxBitSize <= 32; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
                 SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::INT32);
     }
     for (; maxBitSize <= 64; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), "int<>",
                 SchemaType::DYNAMIC_SIGNED_BITFIELD, CppType::INT64);
     }
     for (; maxBitSize < 255; ++maxBitSize)
+    {
         ASSERT_THROW(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), CppRuntimeException);
+    }
     ASSERT_THROW(BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize), CppRuntimeException);
 
     // dynamic unsigned bit fields
@@ -207,26 +213,28 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
     ASSERT_THROW(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), CppRuntimeException);
     for (++maxBitSize ; maxBitSize <= 8; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
                 SchemaType::DYNAMIC_UNSIGNED_BITFIELD, CppType::UINT8);
     }
     for (; maxBitSize <= 16; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
                 SchemaType::DYNAMIC_UNSIGNED_BITFIELD, CppType::UINT16);
     }
     for (; maxBitSize <= 32; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
                 SchemaType::DYNAMIC_UNSIGNED_BITFIELD, CppType::UINT32);
     }
     for (; maxBitSize <= 64; ++maxBitSize)
     {
-        checkBuildinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
+        checkBuiltinTypeInfo(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), "bit<>",
                 SchemaType::DYNAMIC_UNSIGNED_BITFIELD, CppType::UINT64);
     }
     for (; maxBitSize < 255; ++maxBitSize)
+    {
         ASSERT_THROW(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), CppRuntimeException);
+    }
     ASSERT_THROW(BuiltinTypeInfo::getDynamicUnsignedBitField(maxBitSize), CppRuntimeException);
 }
 
