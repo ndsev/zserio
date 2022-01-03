@@ -156,13 +156,13 @@ ${I}new java.util.ArrayList<zserio.runtime.typeinfo.CaseInfo>();
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}java.util.Arrays.asList(
     <#list caseList as case>
-${I}        "${isSwitchAllowed?then(case.expressionForCase, case.expressionForIf)}"<#if case?has_next>,</#if>
+${I}        "${isSwitchAllowed?then(case.expressionForCase, case.expressionForIf)?j_string}"<#if case?has_next>,</#if>
     </#list>
 ${I}),
 </#macro>
 
 <#macro item_info name value>
-    new zserio.runtime.typeinfo.ItemInfo("${name}", "${value}")<#t>
+    new zserio.runtime.typeinfo.ItemInfo("${name}", "${value?j_string}")<#t>
 </#macro>
 
 <#macro underlying_type_info_type_arguments bitSize>

@@ -111,7 +111,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
         return new zserio.runtime.typeinfo.TypeInfo.ChoiceTypeInfo(
                 "${schemaTypeName}", templateName, templateArguments,
-                fields, parameters, functions, "${selectorExpression}", cases
+                fields, parameters, functions, "${selectorExpression?j_string}", cases
         );
     }
 
