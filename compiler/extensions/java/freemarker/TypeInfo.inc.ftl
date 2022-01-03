@@ -125,11 +125,11 @@ ${I}new java.util.ArrayList<zserio.runtime.typeinfo.FunctionInfo>();
 ${I}new zserio.runtime.typeinfo.FunctionInfo(
 ${I}        "${function.schemaName}", // schemaName
 ${I}        <@type_info function.returnTypeInfo/>, // typeInfo
-${I}        "${function.resultExpression}" // result expression
+${I}        "${function.resultExpression?j_string}" // result expression
 ${I})<#if comma>,</#if>
 </#macro>
 
-<#macro cases_info caseMemberList defaultMember isSwitchAllowed indent=4>
+<#macro cases_info caseMemberList defaultMember isSwitchAllowed indent=4 fieldListVarName="fieldList">
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#local fieldIndex=0>
     <#if caseMemberList?has_content || defaultMember?has_content>
@@ -137,13 +137,13 @@ ${I}java.util.Arrays.asList(
         <#list caseMemberList as caseMember>
 ${I}        new zserio.runtime.typeinfo.CaseInfo(
                     <@case_info_case_expressions caseMember.caseList, isSwitchAllowed, indent+4/>
-${I}                <#if caseMember.compoundField??>fields.get(${fieldIndex})<#local fieldIndex+=1><#else>null</#if>
+${I}                <#if caseMember.compoundField??>${fieldListVarName}.get(${fieldIndex})<#local fieldIndex+=1><#else>null</#if>
 ${I}        )<#if caseMember?has_next || defaultMember?has_content>,</#if>
         </#list>
         <#if defaultMember?has_content>
 ${I}        new zserio.runtime.typeinfo.CaseInfo(
-${I}                new java.util.ArrayList<String>(),
-${I}                <#if defaultMember.compoundField??>fields.get(${fieldIndex})<#local fieldIndex+=1><#else>null</#if>
+${I}                new java.util.ArrayList<java.lang.String>(),
+${I}                <#if defaultMember.compoundField??>${fieldListVarName}.get(${fieldIndex})<#local fieldIndex+=1><#else>null</#if>
 ${I}        )
         </#if>
 ${I});
@@ -169,7 +169,7 @@ ${I}),
     <#if bitSize?has_content && bitSize.isDynamicBitField>
     java.util.Arrays.asList("${bitSize.value?j_string}")<#t>
     <#else>
-    new java.util.ArrayList<String>()<#t>
+    new java.util.ArrayList<java.lang.String>()<#t>
     </#if>
 </#macro>
 

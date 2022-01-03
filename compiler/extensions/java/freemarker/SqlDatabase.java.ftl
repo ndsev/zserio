@@ -94,11 +94,11 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
 
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
-        final java.util.List<zserio.runtime.typeinfo.TableInfo> tables =
+        final java.util.List<zserio.runtime.typeinfo.TableInfo> tableList =
                 <@tables_info fields/>
 
         return new zserio.runtime.typeinfo.TypeInfo.SqlDatabaseTypeInfo(
-            "${schemaTypeName}", tables
+            "${schemaTypeName}", tableList
         );
     }
 </#if>

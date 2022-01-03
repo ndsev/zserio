@@ -100,18 +100,18 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         final java.lang.String templateName = <@template_info_template_name templateInstantiation!/>;
         final java.util.List<zserio.runtime.typeinfo.TypeInfo> templateArguments =
                 <@template_info_template_arguments templateInstantiation!/>
-        final java.util.List<zserio.runtime.typeinfo.FieldInfo> fields =
+        final java.util.List<zserio.runtime.typeinfo.FieldInfo> fieldList =
                 <@fields_info fieldList/>
-        final java.util.List<zserio.runtime.typeinfo.ParameterInfo> parameters =
+        final java.util.List<zserio.runtime.typeinfo.ParameterInfo> parameterList =
                 <@parameters_info compoundParametersData.list/>
-        final java.util.List<zserio.runtime.typeinfo.FunctionInfo> functions =
+        final java.util.List<zserio.runtime.typeinfo.FunctionInfo> functionList =
                 <@functions_info compoundFunctionsData.list/>
-        final java.util.List<zserio.runtime.typeinfo.CaseInfo> cases =
+        final java.util.List<zserio.runtime.typeinfo.CaseInfo> caseList =
                 <@cases_info caseMemberList, defaultMember!, isSwitchAllowed/>
 
         return new zserio.runtime.typeinfo.TypeInfo.ChoiceTypeInfo(
                 "${schemaTypeName}", templateName, templateArguments,
-                fields, parameters, functions, "${selectorExpression?j_string}", cases
+                fieldList, parameterList, functionList, "${selectorExpression?j_string}", caseList
         );
     }
 

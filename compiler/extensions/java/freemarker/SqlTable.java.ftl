@@ -44,12 +44,12 @@ public class ${name}
         final java.lang.String templateName = <@template_info_template_name templateInstantiation!/>;
         final java.util.List<zserio.runtime.typeinfo.TypeInfo> templateArguments =
                 <@template_info_template_arguments templateInstantiation!/>
-        final java.util.List<zserio.runtime.typeinfo.ColumnInfo> columns =
+        final java.util.List<zserio.runtime.typeinfo.ColumnInfo> columnList =
                 <@columns_info fields/>
 
         return new zserio.runtime.typeinfo.TypeInfo.SqlTableTypeInfo(
                 "${schemaTypeName}", templateName, templateArguments,
-                columns, ${sqlConstraint!"\"\""}, "${virtualTableUsing!""}", ${isWithoutRowId?c}
+                columnList, ${sqlConstraint!"\"\""}, "${virtualTableUsing!""}", ${isWithoutRowId?c}
         );
     }
 </#if>
