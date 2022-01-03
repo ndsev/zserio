@@ -1,0 +1,19 @@
+<FindBugsFilter>
+    <Match>
+        <!-- A prepared statement is generated from a nonconstant String. -->
+        <Bug code="SQL"/>
+        <Or>
+            <Method name="createTable"/>
+            <Method name="deleteTable"/>
+            <Method name="read"/>
+            <Method name="update"/>
+            <Method name="attachDatabase"/>
+            <Method name="createOrdinaryRowIdTable"/>
+        </Or>
+    </Match>
+    <Match>
+        <!-- The class name shadows the simple name of implemented interface -->
+        <Bug code="Nm"/>
+        <Class name="with_type_info_code.type_info.SqlDatabase"/>
+    </Match>
+</FindBugsFilter>

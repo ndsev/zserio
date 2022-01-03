@@ -31,14 +31,14 @@ ${I}        new zserio.runtime.typeinfo.TypeInfo.RecursiveTypeInfo(<#rt>
 ${I}        <@type_info field.typeInfo/>, // typeInfo
     </#if>
 ${I}        <@field_info_type_arguments field/>, // typeArguments
-${I}        "${field.alignmentValue!""}", // alignment
-${I}        "<#if field.offset??>${field.offset.getter}</#if>", // offset
+${I}        "${(field.alignmentValue!"")?j_string}", // alignment
+${I}        "<#if field.offset??>${field.offset.getter?j_string}</#if>", // offset
 ${I}        "${(field.initializer!"")?j_string}", // initializer
 ${I}        ${(field.optional??)?c}, // isOptional
-${I}        "<#if field.optional??>${field.optional.clause!""}</#if>", // optionalCondition
-${I}        "${field.constraint!""}", // constraint
+${I}        "<#if field.optional??>${(field.optional.clause!"")?j_string}</#if>", // optionalCondition
+${I}        "${(field.constraint!"")?j_string}", // constraint
 ${I}        ${(field.array??)?c}, // isArray
-${I}        <#if field.array??>"${field.array.length!""}"<#else>""</#if>, // arrayLength
+${I}        <#if field.array??>"${(field.array.length!"")?j_string}"<#else>""</#if>, // arrayLength
 ${I}        ${(field.array?? && field.array.isPacked)?c}, // isPacked
 ${I}        ${(field.array?? && field.array.isImplicit)?c} // isImplicit
 ${I})<#if comma>,</#if>
@@ -81,7 +81,7 @@ ${I}}
 <#macro field_info_compound_type_arguments parameters>
     java.util.Arrays.asList(<#t>
     <#list parameters as parameter>
-        "${parameter.expression}"<#if parameter?has_next>, </#if><#t>
+        "${parameter.expression?j_string}"<#if parameter?has_next>, </#if><#t>
     </#list>
     )<#t>
 </#macro>
@@ -167,7 +167,7 @@ ${I}),
 
 <#macro underlying_type_info_type_arguments bitSize>
     <#if bitSize?has_content && bitSize.isDynamicBitField>
-    java.util.Arrays.asList("${bitSize.value}")<#t>
+    java.util.Arrays.asList("${bitSize.value?j_string}")<#t>
     <#else>
     new java.util.ArrayList<String>()<#t>
     </#if>
@@ -217,7 +217,7 @@ ${I})<#if comma>,</#if>
 
 <#macro column_info_type_arguments field>
     <#if field.bitSize?? && field.bitSize.isDynamicBitField>
-        java.util.Arrays.asList("${field.bitSize.value}")
+        java.util.Arrays.asList("${field.bitSize.value?j_string}")
     <#elseif field.typeParameters?has_content>
         java.util.Arrays.asList(<#t>
         <#list field.typeParameters as parameter>
