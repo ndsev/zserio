@@ -25,7 +25,7 @@ class ${name}(enum.Enum):
 
     @staticmethod
     def type_info():
-        attributes = {
+        attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingType/>,
     <#if underlyingType.isDynamicBitField>
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: ['${bitSize}'],
@@ -37,7 +37,7 @@ class ${name}(enum.Enum):
             ]
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
 </#if>
 
     @staticmethod

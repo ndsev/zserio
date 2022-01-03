@@ -10,16 +10,16 @@ class ${name}:
 <#if withTypeInfoCode>
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
-        methods: typing.List[zserio.typeinfo.MemberInfo] = [
+        method_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list methodList as method>
             <@member_info_method method method?has_next/>
     </#list>
         ]
-        attributes = {
-            zserio.typeinfo.TypeAttribute.METHODS : methods
+        attribute_list = {
+            zserio.typeinfo.TypeAttribute.METHODS : method_list
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
 
 </#if>
     class Service(zserio.ServiceInterface):

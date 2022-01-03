@@ -106,12 +106,7 @@ class ${name}:
     </#list>
         ]
         case_list: typing.List[zserio.typeinfo.CaseInfo] = [
-    <#list caseMemberList as caseMember>
-            <@case_info_case_member caseMember, caseMember?has_next || defaultMember??/>
-    </#list>
-    <#if defaultMember??>
-            <@case_info_default_member defaultMember/>
-    </#if>
+            <@cases_info caseMemberList, defaultMember!/>
         ]
     <#if compoundParametersData.list?has_content>
         parameter_list: typing.List[zserio.typeinfo.MemberInfo] = [

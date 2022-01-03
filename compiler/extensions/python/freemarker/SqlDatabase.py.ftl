@@ -55,16 +55,16 @@ class ${name}:
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
-        tables: typing.List[zserio.typeinfo.MemberInfo] = [
+        table_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list fields as field>
             <@member_info_database_field field field?has_next/>
     </#list>
         ]
-        attributes = {
-            zserio.typeinfo.TypeAttribute.TABLES : tables
+        attribute_list = {
+            zserio.typeinfo.TypeAttribute.TABLES : table_list
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
 </#if>
 
     def close(self) -> None:

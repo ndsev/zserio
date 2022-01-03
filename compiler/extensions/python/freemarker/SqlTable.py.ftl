@@ -108,13 +108,13 @@ class ${name}:
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
-        columns: typing.List[zserio.typeinfo.MemberInfo] = [
+        column_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list fields as field>
             <@member_info_table_field field field?has_next/>
     </#list>
         ]
-        attributes = {
-            zserio.typeinfo.TypeAttribute.COLUMNS : columns<#rt>
+        attribute_list = {
+            zserio.typeinfo.TypeAttribute.COLUMNS : column_list<#rt>
     <#if sqlConstraint??>
             <#lt>,
             zserio.typeinfo.TypeAttribute.SQL_CONSTRAINT : ${sqlConstraint}<#rt>
@@ -134,7 +134,7 @@ class ${name}:
 
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
 </#if>
 <#if withWriterCode>
 

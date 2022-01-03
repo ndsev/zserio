@@ -13,16 +13,16 @@ class ${name}:
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
-        messages: typing.List[zserio.typeinfo.MemberInfo] = [
+        message_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list messageList as message>
             <@member_info_message message, message?has_next/>
     </#list>
         ]
-        attributes = {
-            zserio.typeinfo.TypeAttribute.MESSAGES : messages
+        attribute_list = {
+            zserio.typeinfo.TypeAttribute.MESSAGES : message_list
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attributes)
+        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
 </#if>
 <#list messageList as message>
     <#if message.isPublished>

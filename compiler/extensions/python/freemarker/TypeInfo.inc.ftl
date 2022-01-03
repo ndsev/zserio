@@ -70,30 +70,24 @@ ${I})<#if comma>,</#if>
     </#if>
 </#macro>
 
-<#macro case_info_case_member caseMember comma>
+<#macro cases_info caseMemberList defaultMember fieldListVarName="field_list">
+    <#local fieldIndex=0>
+    <#list caseMemberList as caseMember>
             zserio.typeinfo.CaseInfo(
                 [
-    <#list caseMember.expressionList as expression>
+        <#list caseMember.expressionList as expression>
                     "${expression}"<#if expression?has_next>,</#if>
-    </#list>
+        </#list>
                 ],
-    <#if caseMember.compoundField??>
-                <@member_info_field caseMember.compoundField, false, 4/>
-    <#else>
-                None
-    </#if>
-            )<#if comma>,</#if>
-</#macro>
-
-<#macro case_info_default_member defaultMember>
+                <#if caseMember.compoundField??>${fieldListVarName}[${fieldIndex}]<#local fieldIndex+=1><#else>None</#if>
+            )<#if caseMember?has_next || defaultMember?has_content>,</#if>
+    </#list>
+    <#if defaultMember?has_content>
             zserio.typeinfo.CaseInfo(
                 [],
-    <#if defaultMember.compoundField??>
-                <@member_info_field defaultMember.compoundField, false, 4/>
-    <#else>
-                None
-    </#if>
+                <#if defaultMember.compoundField??>${fieldListVarName}[${fieldIndex}]<#local fieldIndex+=1><#else>None</#if>
             )
+    </#if>
 </#macro>
 
 <#macro member_info_field_attributes field indent>
