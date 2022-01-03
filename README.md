@@ -7,7 +7,7 @@
 [![](https://img.shields.io/github/commits-since/ndsev/zserio/latest)](https://github.com/ndsev/zserio/commits/master)
 [![](https://img.shields.io/github/commit-activity/m/ndsev/zserio)](https://github.com/ndsev/zserio/commits/master)
 [![](https://img.shields.io/github/watchers/ndsev/zserio.svg)](https://GitHub.com/ndsev/zserio/watchers)
-[![](https://img.shields.io/github/forks/ndsev/zserio.svg)](https://GitHub.com/ndsev/zserio/members)
+[![](https://img.shields.io/github/forks/ndsev/zserio.svg)](https://GitHub.com/ndsev/zserio/network/members)
 [![](https://img.shields.io/github/stars/ndsev/zserio.svg?color=yellow)](https://GitHub.com/ndsev/zserio/stargazers)
 
 --------
