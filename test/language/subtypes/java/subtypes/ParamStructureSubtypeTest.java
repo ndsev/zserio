@@ -1,8 +1,7 @@
 package subtypes;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import subtypes.param_structure_subtype.ParameterizedStruct;
 import subtypes.param_structure_subtype.ParameterizedSubtypeStruct;

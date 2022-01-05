@@ -1,10 +1,9 @@
 package bitmask_types.bitmask_defined_by_constant;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,16 +25,16 @@ public class BitmaskDefinedByConstantTest
         assertTrue(permission.and(Permission.Values.WRITE).equals(Permission.Values.WRITE));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void valueConstructorUnderLowerBound()
     {
-        new Permission((long)-1);
+        assertThrows(IllegalArgumentException.class, () -> new Permission((long)-1));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void valueConstructorAboveUpperBound()
     {
-        new Permission(((long)1 << PERMISSION_BITSIZEOF));
+        assertThrows(IllegalArgumentException.class, () -> new Permission(((long)1 << PERMISSION_BITSIZEOF)));
     }
 
     @Test

@@ -1,6 +1,9 @@
 package sql_databases.simple_db;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.Connection;
@@ -14,10 +17,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
@@ -25,13 +24,13 @@ import zserio.runtime.validation.ValidationReport;
 
 public class SimpleDbTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws SQLException
     {
         FileUtil.deleteFileIfExists(dbFile);

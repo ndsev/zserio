@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.optional_bit31_range_check.OptionalBit31RangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,16 +25,16 @@ public class OptionalBit31RangeCheckTest
         checkOptionalBit31Value(OPTIONAL_BIT31_UPPER_BOUND);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void optionalBit31BelowLowerBound() throws IOException, ZserioError
     {
-        checkOptionalBit31Value(OPTIONAL_BIT31_LOWER_BOUND - 1);
+        assertThrows(ZserioError.class, () -> checkOptionalBit31Value(OPTIONAL_BIT31_LOWER_BOUND - 1));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void optionalBit31AboveUpperBound() throws IOException, ZserioError
     {
-        checkOptionalBit31Value(OPTIONAL_BIT31_UPPER_BOUND + 1);
+        assertThrows(ZserioError.class, () -> checkOptionalBit31Value(OPTIONAL_BIT31_UPPER_BOUND + 1));
     }
 
     @Test

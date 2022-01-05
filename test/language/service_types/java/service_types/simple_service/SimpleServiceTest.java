@@ -1,8 +1,7 @@
 package service_types.simple_service;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
@@ -36,10 +35,10 @@ public class SimpleServiceTest
         assertEquals(BigInteger.valueOf(4), client.powerOfTwoMethod(request).getValue());
     }
 
-    @Test(expected=ServiceException.class)
+    @Test
     public void invalidServiceMethod()
     {
-        service.callMethod("nonexistentMethod", null, null);
+        assertThrows(ServiceException.class, () -> service.callMethod("nonexistentMethod", null, null));
     }
 
     @Test

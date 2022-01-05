@@ -1,10 +1,10 @@
 package zserio.runtime;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitBuffer;
 
@@ -17,12 +17,8 @@ public class BitSizeOfCalculatorTest
         assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarInt16((short)-63));
         assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt16((short)-16383));
         assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt16((short)16383));
-    }
 
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarInt16Exception()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarInt16((short) (1 << (6 + 8)));
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarInt16((short) (1 << (6 + 8))));
     }
 
     @Test
@@ -32,12 +28,8 @@ public class BitSizeOfCalculatorTest
         assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarInt32((short)8191));
         assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarInt32((short)8192));
         assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarInt32((short)1 << 20));
-    }
 
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarInt32Exception()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarInt32(1 << (6 + 7 + 7 + 8));
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarInt32(1 << (6 + 7 + 7 + 8)));
     }
 
     @Test
@@ -52,12 +44,9 @@ public class BitSizeOfCalculatorTest
         assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt64(1L << 41));
         assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarInt64((1L << 48) - 1));
         assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarInt64(1L << 48));
-    }
 
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarInt64Exception()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarInt64(1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8));
+        assertThrows(ZserioError.class,
+                () -> BitSizeOfCalculator.getBitSizeOfVarInt64(1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));
     }
 
     @Test
@@ -66,12 +55,8 @@ public class BitSizeOfCalculatorTest
         assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt16((short)0));
         assertEquals(8, BitSizeOfCalculator.getBitSizeOfVarUInt16((short)64));
         assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt16((short)128));
-    }
 
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarUInt16Exception()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarUInt16((short)-1);
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarUInt16((short)-1));
     }
 
     @Test
@@ -81,18 +66,9 @@ public class BitSizeOfCalculatorTest
         assertEquals(16, BitSizeOfCalculator.getBitSizeOfVarUInt32(1 << 7));
         assertEquals(24, BitSizeOfCalculator.getBitSizeOfVarUInt32(1 << 14));
         assertEquals(32, BitSizeOfCalculator.getBitSizeOfVarUInt32(1 << 21));
-    }
 
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarUInt32Exception1()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarUInt32(-1);
-    }
-
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarUInt32Exception2()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarUInt32(1 << (7 + 7 + 7 + 8));
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarUInt32(-1));
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarUInt32(1 << (7 + 7 + 7 + 8)));
     }
 
     @Test
@@ -107,18 +83,10 @@ public class BitSizeOfCalculatorTest
         assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << 42));
         assertEquals(56, BitSizeOfCalculator.getBitSizeOfVarUInt64((1L << 49) - 1));
         assertEquals(64, BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << 49));
-    }
 
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarUInt64Exception1()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarUInt64(-1L);
-    }
-
-    @Test(expected=ZserioError.class)
-    public void getBitSizeOfVarUInt64Exception2()
-    {
-        BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8));
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarUInt64(-1L));
+        assertThrows(ZserioError.class,
+                () -> BitSizeOfCalculator.getBitSizeOfVarUInt64(1L << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));
     }
 
     @Test
@@ -196,16 +164,17 @@ public class BitSizeOfCalculatorTest
                 BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE)));
     }
 
-    @Test(expected = ZserioError.class)
+    @Test
     public void getBitSizeOfVarUIntNegative()
     {
-        BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.negate());
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.negate()));
     }
 
-    @Test(expected = ZserioError.class)
+    @Test
     public void getBitSizeOfVarUIntTooBig()
     {
-        BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(64));
+        assertThrows(ZserioError.class,
+                () -> BitSizeOfCalculator.getBitSizeOfVarUInt(BigInteger.ONE.shiftLeft(64)));
     }
 
     @Test
@@ -229,16 +198,16 @@ public class BitSizeOfCalculatorTest
         assertEquals(40, BitSizeOfCalculator.getBitSizeOfVarSize((1 << 31) - 1));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void getBitSizeOfVarSizeNegative()
     {
-        BitSizeOfCalculator.getBitSizeOfVarSize(-1);
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarSize(-1));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void getBitSizeOfVarSizeTooBig()
     {
-        BitSizeOfCalculator.getBitSizeOfVarSize(1 << 31);
+        assertThrows(ZserioError.class, () -> BitSizeOfCalculator.getBitSizeOfVarSize(1 << 31));
     }
 
     @Test

@@ -1,15 +1,14 @@
 package service_types.complex_types_service;
 
-import static org.junit.Assert.*;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.service.ServiceException;
 
 public class ComplexTypesServiceTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         cmykValues = new short[3][4];
@@ -107,10 +106,10 @@ public class ComplexTypesServiceTest
         }
     }
 
-    @Test(expected=ServiceException.class)
+    @Test
     public void invalidServiceMethod()
     {
-        service.callMethod("nonexistentMethod", null, null);
+        assertThrows(ServiceException.class, () -> service.callMethod("nonexistentMethod", null, null));
     }
 
     private static void convertRgbToCmyk(int r, int g, int b, Cmyk cmyk)

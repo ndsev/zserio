@@ -1,11 +1,10 @@
 package array_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import array_types.variable_array_subtyped_struct.TestStructure;
 import array_types.variable_array_subtyped_struct.VariableArray;
@@ -104,7 +103,7 @@ public class VariableArraySubtypedStructTest
         }
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongArray() throws IOException, ZserioError
     {
         final short numElements = 33;
@@ -118,7 +117,7 @@ public class VariableArraySubtypedStructTest
 
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        variableArray.write(writer);
+        assertThrows(ZserioError.class, () -> variableArray.write(writer));
         writer.close();
     }
 

@@ -1,9 +1,8 @@
 package sql_virtual_tables_error;
 
-import static org.junit.Assert.*;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -11,7 +10,7 @@ import test_utils.ZserioErrors;
 
 public class SqlVirtualTablesErrorTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void readZserioErrors() throws IOException
     {
         zserioErrors = new ZserioErrors();

@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.int8_range_check.Int8RangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;

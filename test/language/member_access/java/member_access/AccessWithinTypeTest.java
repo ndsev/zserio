@@ -1,11 +1,10 @@
 package member_access;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import member_access.access_within_type.Header;
 import member_access.access_within_type.Message;
@@ -31,7 +30,7 @@ public class AccessWithinTypeTest
         checkMessage(message, numSentences);
     }
 
-    @Test(expected=IOException.class)
+    @Test
     public void readWrongArrayLength() throws IOException, ZserioError
     {
         final int numSentences = 10;
@@ -39,9 +38,8 @@ public class AccessWithinTypeTest
         final File file = new File("test.bin");
         writeMessageToFile(file, numSentences, wrongArrayLength);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final Message message = new Message(stream);
+        assertThrows(IOException.class, () -> new Message(stream));
         stream.close();
-        checkMessage(message, numSentences);
     }
 
     @Test
@@ -59,7 +57,7 @@ public class AccessWithinTypeTest
         assertTrue(message.equals(readMessage));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongArrayLength() throws IOException, ZserioError
     {
         final int numSentences = 13;
@@ -67,7 +65,7 @@ public class AccessWithinTypeTest
         final Message message = createMessage(numSentences, wrongArrayLength);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        message.write(writer);
+        assertThrows(ZserioError.class, () -> message.write(writer));
         writer.close();
     }
 

@@ -1,6 +1,10 @@
 package sql_tables.subtyped_table;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,11 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
@@ -21,13 +20,13 @@ import sql_tables.TestDb;
 
 public class SubtypedTableTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
@@ -35,7 +34,7 @@ public class SubtypedTableTest
         database.createSchema();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws SQLException
     {
         if (database != null)

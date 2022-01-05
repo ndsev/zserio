@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.uint8_range_check.UInt8RangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,16 +25,16 @@ public class UInt8RangeCheckTest
         checkUInt8Value(UINT8_UPPER_BOUND);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void uint8BelowLowerBound() throws IOException, ZserioError
     {
-        checkUInt8Value((short)(UINT8_LOWER_BOUND - 1));
+        assertThrows(ZserioError.class, () -> checkUInt8Value((short)(UINT8_LOWER_BOUND - 1)));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void uint8AboveUpperBound() throws IOException, ZserioError
     {
-        checkUInt8Value((short)(UINT8_UPPER_BOUND + 1));
+        assertThrows(ZserioError.class, () -> checkUInt8Value((short)(UINT8_UPPER_BOUND + 1)));
     }
 
     private void checkUInt8Value(short value) throws IOException, ZserioError

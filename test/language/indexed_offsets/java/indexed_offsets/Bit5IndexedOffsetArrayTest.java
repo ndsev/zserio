@@ -1,11 +1,10 @@
 package indexed_offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import indexed_offsets.bit5_indexed_offset_array.Bit5IndexedOffsetArray;
 
@@ -30,16 +29,15 @@ public class Bit5IndexedOffsetArrayTest
         checkBit5IndexedOffsetArray(bit5IndexedOffsetArray);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
         final File file = new File("test.bin");
         writeBit5IndexedOffsetArrayToFile(file, writeWrongOffsets);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final Bit5IndexedOffsetArray bit5IndexedOffsetArray = new Bit5IndexedOffsetArray(stream);
+        assertThrows(ZserioError.class, () -> new Bit5IndexedOffsetArray(stream));
         stream.close();
-        checkBit5IndexedOffsetArray(bit5IndexedOffsetArray);
     }
 
     @Test
@@ -114,13 +112,13 @@ public class Bit5IndexedOffsetArrayTest
         checkOffsets(bit5IndexedOffsetArray, offsetShift);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffsets() throws ZserioError, IOException
     {
         final boolean createWrongOffsets = true;
         final Bit5IndexedOffsetArray bit5IndexedOffsetArray = createBit5IndexedOffsetArray(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        bit5IndexedOffsetArray.write(writer, false);
+        assertThrows(ZserioError.class, () -> bit5IndexedOffsetArray.write(writer, false));
         writer.close();
     }
 

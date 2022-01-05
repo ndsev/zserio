@@ -1,17 +1,16 @@
 package expressions_error;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import test_utils.ZserioErrors;
 
 public class ExpressionsErrorTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void readZserioErrors() throws IOException
     {
         zserioErrors = new ZserioErrors();

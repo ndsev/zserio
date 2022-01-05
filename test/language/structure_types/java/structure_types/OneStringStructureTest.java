@@ -1,13 +1,12 @@
 package structure_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.stream.FileImageOutputStream;
-
-import org.junit.Test;
 
 import structure_types.one_string_structure.OneStringStructure;
 

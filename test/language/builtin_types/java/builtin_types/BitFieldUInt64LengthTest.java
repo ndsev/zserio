@@ -1,13 +1,12 @@
 package builtin_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.BitStreamWriter;

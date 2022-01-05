@@ -1,11 +1,10 @@
 package choice_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import choice_types.function_selector_choice.Selector;
 import choice_types.function_selector_choice.TestChoice;
-
-import org.junit.Test;
 
 public class FunctionSelectorChoiceTest
 {

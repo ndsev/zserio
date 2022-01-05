@@ -1,13 +1,12 @@
 package identifiers;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.stream.FileImageOutputStream;
-
-import org.junit.Test;
 
 import identifiers.structure_name_clashing_with_java.StructureNameClashingWithJava;
 import identifiers.structure_name_clashing_with_java.Byte;

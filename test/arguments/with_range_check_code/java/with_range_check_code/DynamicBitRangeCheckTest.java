@@ -1,14 +1,13 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import with_range_check_code.dynamic_bit_range_check.DynamicBitRangeCheckCompound;
 
 import java.io.IOException;
 import java.math.BigInteger;
-
-import org.junit.Test;
-import org.junit.Ignore;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.Util;
@@ -29,18 +28,20 @@ public class DynamicBitRangeCheckTest
         checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_UPPER_BOUND));
     }
 
-    @Ignore("Range check for Big Integers are not implemented yet")
-    @Test(expected=ZserioError.class)
+    @Disabled("Range check for Big Integers are not implemented yet")
+    @Test
     public void dynamicBitBelowLowerBound() throws IOException, ZserioError
     {
-        checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_LOWER_BOUND - 1));
+        assertThrows(ZserioError.class,
+                () -> checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_LOWER_BOUND - 1)));
     }
 
-    @Ignore("Range check for Big Integers are not implemented yet")
-    @Test(expected=ZserioError.class)
+    @Disabled("Range check for Big Integers are not implemented yet")
+    @Test
     public void dynamicBitAboveUpperBound() throws IOException, ZserioError
     {
-        checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_UPPER_BOUND + 1));
+        assertThrows(ZserioError.class,
+                () -> checkDynamicBitValue(NUM_BITS, BigInteger.valueOf(DYNAMIC_BIT_UPPER_BOUND + 1)));
     }
 
     @Test
@@ -49,11 +50,12 @@ public class DynamicBitRangeCheckTest
         checkDynamicBitValue((short)64, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
     }
 
-    @Ignore("Numbits check not yet implemented for types mapped to BigInteger")
-    @Test(expected=ZserioError.class)
+    @Disabled("Numbits check not yet implemented for types mapped to BigInteger")
+    @Test
     public void numBitsAboveMax() throws IOException, ZserioError
     {
-        checkDynamicBitValue((short)65, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE));
+        assertThrows(ZserioError.class,
+                () -> checkDynamicBitValue((short)65, BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE)));
     }
 
     private void checkDynamicBitValue(short numBits, BigInteger value) throws IOException, ZserioError

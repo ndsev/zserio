@@ -1,8 +1,7 @@
 package default_values;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import default_values.structure_default_values.StructureDefaultValues;
 import default_values.structure_default_values.BasicColor;

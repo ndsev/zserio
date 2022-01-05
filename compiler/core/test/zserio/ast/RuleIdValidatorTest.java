@@ -1,6 +1,7 @@
 package zserio.ast;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 public class RuleIdValidatorTest
 {
@@ -15,34 +16,34 @@ public class RuleIdValidatorTest
         validate("VALID-123");
     }
 
-    @Test(expected=ParserException.class)
+    @Test
     public void invalidStartingWithNumber()
     {
-        validate("123-invalid");
+        assertThrows(ParserException.class, () -> validate("123-invalid"));
     }
 
-    @Test(expected=ParserException.class)
+    @Test
     public void invalidContainsSlash()
     {
-        validate("invalid-with/slash");
+        assertThrows(ParserException.class, () -> validate("invalid-with/slash"));
     }
 
-    @Test(expected=ParserException.class)
+    @Test
     public void invalidContainsApostrophe()
     {
-        validate("invalid-with'apostrophe");
+        assertThrows(ParserException.class, () -> validate("invalid-with'apostrophe"));
     }
 
-    @Test(expected=ParserException.class)
+    @Test
     public void invalidContainsAsterisk()
     {
-        validate("invalid-with*asterisk");
+        assertThrows(ParserException.class, () -> validate("invalid-with*asterisk"));
     }
 
-    @Test(expected=ParserException.class)
-    public void invalidContainsBaclslash()
+    @Test
+    public void invalidContainsBackslash()
     {
-        validate("invalid-with\\backslash");
+        assertThrows(ParserException.class, () -> validate("invalid-with\\backslash"));
     }
 
     private static void validate(String ruleId)

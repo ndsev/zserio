@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.dynamic_int_range_check.DynamicIntRangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.Util;
@@ -27,16 +26,16 @@ public class DynamicIntRangeCheckTest
         checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void dynamicIntBelowLowerBound() throws IOException, ZserioError
     {
-        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND - 1);
+        assertThrows(ZserioError.class, () -> checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_LOWER_BOUND - 1));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void dynamicIntAboveUpperBound() throws IOException, ZserioError
     {
-        checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND + 1);
+        assertThrows(ZserioError.class, () -> checkDynamicIntValue(NUM_BITS, DYNAMIC_INT_UPPER_BOUND + 1));
     }
 
     @Test
@@ -45,10 +44,10 @@ public class DynamicIntRangeCheckTest
         checkDynamicIntValue((short)64, Long.MAX_VALUE);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void numBitsAboveMax() throws IOException, ZserioError
     {
-        checkDynamicIntValue((short)65, Long.MAX_VALUE);
+        assertThrows(ZserioError.class, () -> checkDynamicIntValue((short)65, Long.MAX_VALUE));
     }
 
     private void checkDynamicIntValue(short numBits, long value) throws IOException, ZserioError

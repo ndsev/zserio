@@ -1,11 +1,10 @@
 package array_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
@@ -81,7 +80,7 @@ public class FixedArrayUInt8Test
             assertEquals(i, readUint8Array[i]);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongArray() throws IOException, ZserioError
     {
         final short[] uint8Array = new short[FIXED_ARRAY_LENGTH + 1];
@@ -91,7 +90,7 @@ public class FixedArrayUInt8Test
         FixedArray fixedArray = new FixedArray(uint8Array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        fixedArray.write(writer);
+        assertThrows(ZserioError.class, () -> fixedArray.write(writer));
         writer.close();
     }
 

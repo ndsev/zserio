@@ -1,13 +1,12 @@
 package offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
 
 import offsets.auto_array_offset.AutoArrayHolder;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
@@ -30,14 +29,14 @@ public class AutoArrayOffsetTest
         checkAutoArrayHolder(autoArrayHolder);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffset = true;
         final File file = new File("test.bin");
         writeAutoArrayHolderToFile(file, writeWrongOffset);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new AutoArrayHolder(stream);
+        assertThrows(ZserioError.class, () -> new AutoArrayHolder(stream));
         stream.close();
     }
 
@@ -107,13 +106,13 @@ public class AutoArrayOffsetTest
         checkAutoArrayHolder(autoArrayHolder, bitPosition);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffset() throws ZserioError, IOException
     {
         final boolean createWrongOffset = true;
         final AutoArrayHolder autoArrayHolder = createAutoArrayHolder(createWrongOffset);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        autoArrayHolder.write(writer, false);
+        assertThrows(ZserioError.class, () -> autoArrayHolder.write(writer, false));
         writer.close();
     }
 

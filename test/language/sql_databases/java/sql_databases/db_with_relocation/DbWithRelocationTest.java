@@ -1,6 +1,10 @@
 package sql_databases.db_with_relocation;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,11 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
@@ -28,13 +27,13 @@ import zserio.runtime.validation.ValidationReport;
 
 public class DbWithRelocationTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(europeDbFile);
@@ -49,7 +48,7 @@ public class DbWithRelocationTest
         americaDb.createSchema();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws SQLException
     {
         if (americaDb != null)

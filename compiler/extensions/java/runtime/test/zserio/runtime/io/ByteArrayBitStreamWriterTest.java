@@ -1,15 +1,15 @@
 package zserio.runtime.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-import org.junit.Test;
 
 public class ByteArrayBitStreamWriterTest
 {
@@ -162,7 +162,7 @@ public class ByteArrayBitStreamWriterTest
             int writtenTestValue = ((int)writtenData[offset / 8]) << (offset % 8);
             if (offset % 8 != 0)
                 writtenTestValue |= (0xFF & writtenData[offset / 8 + 1]) >>> (8 - (offset % 8));
-            assertEquals("offset: " + offset, testValue, writtenTestValue);
+            assertEquals(testValue, writtenTestValue, "offset: " + offset);
         }
     }
 
@@ -444,25 +444,9 @@ public class ByteArrayBitStreamWriterTest
         assertEquals(123, reader.readInt());
         assertEquals(12345678910L, reader.readLong());
 
-        try
-        {
-            writer = new ByteArrayBitStreamWriter(Integer.MAX_VALUE);
-            fail();
-        }
-        catch (final Exception e)
-        {
-            assertTrue(true);
-        }
+        assertThrows(IllegalArgumentException.class, () -> new ByteArrayBitStreamWriter(Integer.MAX_VALUE));
+        assertThrows(IllegalArgumentException.class, () -> new ByteArrayBitStreamWriter(-1));
 
-        try
-        {
-            writer = new ByteArrayBitStreamWriter(-1);
-            fail();
-        }
-        catch (final Exception e)
-        {
-            assertTrue(true);
-        }
         reader.close();
         writer.close();
     }
@@ -527,167 +511,55 @@ public class ByteArrayBitStreamWriterTest
         final int numBits[] = { -1, 0, 65 };
         for (int i = 0; i < numBits.length; ++i)
         {
-            try
-            {
-                writer.writeBits(0x1L, numBits[i]);
-                fail();
-            }
-            catch (IOException e)
-            {
-                fail();
-            }
-            catch (IllegalArgumentException e)
-            {
-                assertTrue(true);
-            }
+            final int numBitsArg = numBits[i];
+            assertThrows(IllegalArgumentException.class, () -> writer.writeBits(0x1L, numBitsArg));
         } // for numbits
     }
 
     @Test
-    public void writeBitsIllegalArgumentException()
+    public void writeBitsIllegalArgumentException() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
 
         for (int i = 1; i < 64; i++)
         {
-            long minSigned   = -(1L << (i-1));
-            long maxUnsigned =  (1L << (i  )) - 1;
+            final long minSigned   = -(1L << (i-1));
+            final long maxUnsigned =  (1L << (i  )) - 1;
 
-            long minSignedViolation   = minSigned   - 1;
-            long maxUnsignedViolation = maxUnsigned + 1;
+            final long minSignedViolation   = minSigned - 1;
+            final long maxUnsignedViolation = maxUnsigned + 1;
 
-            try
-            {
-                writer.writeSignedBits(minSigned,   i);
-                writer.writeBits(maxUnsigned, i);
-            }
-            catch (IOException e)
-            {
-                fail();
-            }
 
-            try
-            {
-                writer.writeBits(minSignedViolation, i);
-                System.out.println("unexpected succes writeBits: " + minSignedViolation + " # " + i);
-                fail();
-            }
-            catch (IOException e)
-            {
-                fail();
-            }
-            catch (IllegalArgumentException e)
-            {
-                assertTrue(true);
-            }
+            writer.writeBits(maxUnsigned, i);
+            writer.writeSignedBits(minSigned, i);
 
-            try
-            {
-                writer.writeBits(maxUnsignedViolation, i);
-                System.out.println("unexpected succes writeBits: " + maxUnsignedViolation + " # " + i);
-                fail();
-            }
-            catch (IOException e)
-            {
-                fail();
-            }
-            catch (IllegalArgumentException e)
-            {
-                assertTrue(true);
-            }
+            final int iArg = i;
+            assertThrows(IllegalArgumentException.class, () -> writer.writeSignedBits(minSignedViolation, iArg),
+                    "unexpected success writeBits: " + minSignedViolation + " # " + i);
+
+            assertThrows(IllegalArgumentException.class, () -> writer.writeBits(maxUnsignedViolation, iArg),
+                    "unexpected success writeBits: " + maxUnsignedViolation + " # " + i);
         } // for numBits
     }
 
     @Test
-    public void writeIllegalArgumentException()
+    public void writeIllegalArgumentException() throws IOException
     {
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
 
+        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedByte((short)-1));
+
+        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedShort(-1));
+
+        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedInt(-1L));
+
+        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedByte((short)(1 << 8)));
+
+        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedShort(1 << 16));
+
+        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedInt(1L << 32));
+
         // Note: no range check for writeBigInteger
-
-        try
-        {
-            writer.writeUnsignedByte((short)-1);
-            fail();
-        }
-        catch (IOException e)
-        {
-            fail();
-        }
-        catch (IllegalArgumentException e)
-        {
-            assertTrue(true);
-        }
-
-        try
-        {
-            writer.writeUnsignedShort(-1);
-            fail();
-        }
-        catch (IOException e)
-        {
-            fail();
-        }
-        catch (IllegalArgumentException e)
-        {
-            assertTrue(true);
-        }
-
-        try
-        {
-            writer.writeUnsignedInt(-1L);
-            fail();
-        }
-        catch (IOException e)
-        {
-            fail();
-        }
-        catch (IllegalArgumentException e)
-        {
-            assertTrue(true);
-        }
-
-        try
-        {
-            writer.writeUnsignedByte((short)(1 << 8));
-            fail();
-        }
-        catch (IOException e)
-        {
-            fail();
-        }
-        catch (IllegalArgumentException e)
-        {
-            assertTrue(true);
-        }
-
-        try
-        {
-            writer.writeUnsignedShort(1 << 16);
-            fail();
-        }
-        catch (IOException e)
-        {
-            fail();
-        }
-        catch (IllegalArgumentException e)
-        {
-            assertTrue(true);
-        }
-
-        try
-        {
-            writer.writeUnsignedInt(1L << 32);
-            fail();
-        }
-        catch (IOException e)
-        {
-            fail();
-        }
-        catch (IllegalArgumentException e)
-        {
-            assertTrue(true);
-        }
     }
 
     @Test

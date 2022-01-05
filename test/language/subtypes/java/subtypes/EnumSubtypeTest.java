@@ -1,8 +1,7 @@
 package subtypes;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import subtypes.enum_subtype.Color;
 import subtypes.enum_subtype.CONST_BLACK;

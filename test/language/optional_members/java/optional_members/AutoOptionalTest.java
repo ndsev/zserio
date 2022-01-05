@@ -1,13 +1,12 @@
 package optional_members;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.stream.FileImageInputStream;
-
-import org.junit.Test;
 
 import optional_members.auto_optional.Container;
 

@@ -1,12 +1,11 @@
 package choice_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Before;
-import org.junit.Test;
 
 import choice_types.empty_choice.EmptyChoice;
 
@@ -17,7 +16,7 @@ import zserio.runtime.io.ByteArrayBitStreamWriter;
 
 public class EmptyChoiceTest
 {
-    @Before
+    @BeforeEach
     public void setUp() throws IOException
     {
         if (!testFile.exists())

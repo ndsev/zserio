@@ -1,5 +1,12 @@
 package zserio.antlr;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -10,9 +17,6 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
 
 public class ZserioParserTest
 {
@@ -367,9 +371,8 @@ public class ZserioParserTest
             throw new RuntimeException(e);
         }
 
-        assertFalse("Expecting parser error!", error.isEmpty());
-        assertTrue("\"" + error + "\" does not contain \"" + errorSubstring + "\"",
-                error.contains(errorSubstring));
+        assertFalse(error.isEmpty(), "Expecting parser error!");
+        assertThat(error, containsString(errorSubstring));
     }
 
     private static void checkParseTree(String ruleName, String input, String stringTree)

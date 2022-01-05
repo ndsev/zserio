@@ -1,12 +1,11 @@
 package array_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import array_types.variable_array_struct_cast_varuint.TestStructure;
 import array_types.variable_array_struct_cast_varuint.VariableArray;
@@ -105,7 +104,7 @@ public class VariableArrayStructCastVarUIntTest
         }
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongArray() throws IOException, ZserioError
     {
         final byte numElements = 33;
@@ -119,7 +118,7 @@ public class VariableArrayStructCastVarUIntTest
 
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        variableArray.write(writer);
+        assertThrows(ZserioError.class, () -> variableArray.write(writer));
         writer.close();
     }
 

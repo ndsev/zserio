@@ -1,13 +1,12 @@
 package offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
 
 import offsets.uint64_offset.UInt64Offset;
-
-import org.junit.Test;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
@@ -27,12 +26,12 @@ public class UInt64OffsetTest
         assertEquals(OFFSET, uint64Offset.getOffset().longValue());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final BitStreamReader reader = prepareReader(true);
         final UInt64Offset uint64Offset = new UInt64Offset();
-        uint64Offset.read(reader);
+        assertThrows(ZserioError.class, () -> uint64Offset.read(reader));
     }
 
     @Test
@@ -91,14 +90,14 @@ public class UInt64OffsetTest
         assertEquals(BitPositionUtil.bitsToBytes(BIT_SIZE) + 1, writer.toByteArray().length);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffsets() throws ZserioError, IOException
     {
         final UInt64Offset uint64Offset = new UInt64Offset();
         uint64Offset.setArray(new byte[ARRAY_SIZE]);
         uint64Offset.setOffset(BigInteger.valueOf(WRONG_OFFSET));
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        uint64Offset.write(writer, false);
+        assertThrows(ZserioError.class, () -> uint64Offset.write(writer, false));
     }
 
     private BitStreamReader prepareReader(boolean wrongOffset) throws IOException

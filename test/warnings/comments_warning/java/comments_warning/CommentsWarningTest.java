@@ -1,9 +1,8 @@
 package comments_warning;
 
-import static org.junit.Assert.*;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -11,7 +10,7 @@ import test_utils.ZserioWarnings;
 
 public class CommentsWarningTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void readZserioWarnings() throws IOException
     {
         zserioWarnings = new ZserioWarnings();
@@ -73,6 +72,7 @@ public class CommentsWarningTest
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
+    @Test
     public void unusedStructCommentMultipleComments()
     {
         final String warning = "unused_struct_comment_multiple_comments.zs:5:9: "

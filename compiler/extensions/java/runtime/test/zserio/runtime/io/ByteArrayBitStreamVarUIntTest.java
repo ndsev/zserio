@@ -1,8 +1,8 @@
 package zserio.runtime.io;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -129,30 +129,30 @@ public class ByteArrayBitStreamVarUIntTest
         readWriteTest(BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE), 9);
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void writeOneAboveMaxThrows() throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeVarUInt(BigInteger.ONE.shiftLeft(64));
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.ONE.shiftLeft(64)));
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void writeMinusOneThrows() throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeVarUInt(BigInteger.valueOf(-1));
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.valueOf(-1)));
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void writeLongMinThrows() throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeVarUInt(BigInteger.valueOf(Long.MIN_VALUE));
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.valueOf(Long.MIN_VALUE)));
     }
 
     private void readWriteTest(BigInteger value, int expectedNumBytes) throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writer.writeVarUInt(value);
         assertEquals(0, writer.getBitPosition() % 8);
         assertEquals(expectedNumBytes, writer.getBytePosition());

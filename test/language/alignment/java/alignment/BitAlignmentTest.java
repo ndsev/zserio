@@ -1,11 +1,10 @@
 package alignment;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Test;
 
 import alignment.bit_alignment.BitAlignment;
 

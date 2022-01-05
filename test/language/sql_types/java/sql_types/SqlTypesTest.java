@@ -1,6 +1,10 @@
 package sql_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,23 +14,18 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
 
 public class SqlTypesTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
@@ -34,7 +33,7 @@ public class SqlTypesTest
         database.createSchema();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws SQLException
     {
         if (database != null)

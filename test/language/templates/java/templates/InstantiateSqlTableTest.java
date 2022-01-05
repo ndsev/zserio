@@ -1,6 +1,8 @@
 package templates;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,9 +12,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.List;
 import java.util.ArrayList;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
@@ -28,7 +27,7 @@ import templates.instantiate_sql_table.U32TableRow;
 
 public class InstantiateSqlTableTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();

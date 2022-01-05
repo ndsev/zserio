@@ -1,12 +1,11 @@
 package bitmask_types.varuint_bitmask;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -31,16 +30,16 @@ public class VarUIntBitmaskTest
         assertTrue(permission.and(Permission.Values.WRITE).equals(Permission.Values.WRITE));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void valueConstructorUnderLowerBound()
     {
-        new Permission(BigInteger.ONE.negate());
+        assertThrows(IllegalArgumentException.class, () -> new Permission(BigInteger.ONE.negate()));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void valueConstructorAboveUpperBound()
     {
-        new Permission(BigInteger.ONE.shiftLeft(64));
+        assertThrows(IllegalArgumentException.class, () -> new Permission(BigInteger.ONE.shiftLeft(64)));
     }
 
     @Test

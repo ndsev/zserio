@@ -1,8 +1,8 @@
 package zserio.runtime;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 public class BitPositionUtilTest
 {
@@ -26,18 +26,9 @@ public class BitPositionUtilTest
     {
         assertEquals(1, BitPositionUtil.bitsToBytes(8L));
         assertEquals(3, BitPositionUtil.bitsToBytes(24L));
-    }
 
-    @Test(expected = ZserioError.class)
-    public void bitsToBytesException1()
-    {
-        BitPositionUtil.bitsToBytes(4L);
-    }
-
-    @Test(expected = ZserioError.class)
-    public void bitsToBytesException2()
-    {
-        BitPositionUtil.bitsToBytes(9L);
+        assertThrows(ZserioError.class, () -> BitPositionUtil.bitsToBytes(4L));
+        assertThrows(ZserioError.class, () -> BitPositionUtil.bitsToBytes(9L));
     }
 
     @Test

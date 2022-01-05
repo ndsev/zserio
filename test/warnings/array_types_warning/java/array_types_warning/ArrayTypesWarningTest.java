@@ -1,9 +1,8 @@
 package array_types_warning;
 
-import static org.junit.Assert.*;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -11,7 +10,7 @@ import test_utils.ZserioWarnings;
 
 public class ArrayTypesWarningTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void readZserioWarnings() throws IOException
     {
         zserioWarnings = new ZserioWarnings();

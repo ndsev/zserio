@@ -1,9 +1,8 @@
 package identifiers_error.invalid_name;
 
-import static org.junit.Assert.*;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -11,7 +10,7 @@ import test_utils.ZserioErrors;
 
 public class InvalidNameErrorTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void readZserioErrors() throws IOException
     {
         zserioErrors = new ZserioErrors();

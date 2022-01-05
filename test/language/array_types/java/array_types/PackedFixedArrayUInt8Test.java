@@ -1,11 +1,10 @@
 package array_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
@@ -63,13 +62,13 @@ public class PackedFixedArrayUInt8Test
         checkPackedFixedArray(readPackedFixedArray);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongArray() throws IOException, ZserioError
     {
         final PackedFixedArray packedFixedArray = createWrongPackedFixedArray();
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        packedFixedArray.write(writer);
+        assertThrows(ZserioError.class, () -> packedFixedArray.write(writer));
         writer.close();
     }
 

@@ -1,14 +1,13 @@
 package choice_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 
 import javax.imageio.stream.FileImageOutputStream;
-
-import org.junit.Test;
 
 import choice_types.uint64_param_choice.UInt64ParamChoice;
 

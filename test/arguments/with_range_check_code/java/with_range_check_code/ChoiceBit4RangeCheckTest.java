@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.choice_bit4_range_check.ChoiceBit4RangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,16 +25,16 @@ public class ChoiceBit4RangeCheckTest
         checkChoiceBit4Value(BIT4_UPPER_BOUND);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void choiceBit4BelowLowerBound() throws IOException, ZserioError
     {
-        checkChoiceBit4Value((byte)(BIT4_LOWER_BOUND - 1));
+        assertThrows(ZserioError.class, () -> checkChoiceBit4Value((byte)(BIT4_LOWER_BOUND - 1)));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void choiceBit4AboveUpperBound() throws IOException, ZserioError
     {
-        checkChoiceBit4Value((byte)(BIT4_UPPER_BOUND + 1));
+        assertThrows(ZserioError.class, () -> checkChoiceBit4Value((byte)(BIT4_UPPER_BOUND + 1)));
     }
 
     private void checkChoiceBit4Value(byte value) throws IOException, ZserioError

@@ -1,10 +1,9 @@
 package without_pubsub_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
-
-import org.junit.Test;
 
 public class WithoutPubsubCodeTest
 {

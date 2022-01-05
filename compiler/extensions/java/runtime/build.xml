@@ -20,7 +20,7 @@ relational.validation           - Flag whether the support for low level validat
 spotbugs.home_dir               - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
-<project name="zserio_java_runtime" default="jar" basedir=".">
+<project name="zserio_java_runtime" default="jar" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
     <dirname property="zserio_java_runtime.base_dir" file="${ant.file.zserio_java_runtime}"/>
 
     <property name="zserio_java_runtime.zserio_root" location="${zserio_java_runtime.base_dir}/../../../.."/>
@@ -32,8 +32,6 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <property name="relational.enable" value="yes"/>
     <property name="relational.sqlite.jar_file"
         value="${zserio_java_runtime.zserio_root}/3rdparty/java/sqlite-jdbc-3.23.1.jar"/>
-    <dirname property="relational.sqlite.jar_dirname" file="${relational.sqlite.jar_file}"/>
-    <basename property="relational.sqlite.jar_filename" file="${relational.sqlite.jar_file}"/>
     <property name="relational.validation" value="yes"/>
 
     <property name="zserio_java_runtime.src_dir" location="${zserio_java_runtime.base_dir}/src"/>
@@ -61,7 +59,14 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     <property name="zserio_java_runtime.3rdparty.jar_dir"
         value="${zserio_java_runtime.3rdparty.root_dir}/java"/>
     <property name="zserio_java_runtime.3rdparty.junit.jar_file"
-        location="${zserio_java_runtime.3rdparty.jar_dir}/junit-4.10.jar"/>
+        location="${zserio_java_runtime.3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
+
+    <!-- check Ant version, minimum is 1.9.1 due to xmlns:if and xmlns:unless -->
+    <fail message="[ERROR] Ant 1.9.1+ required! Current ant is ${ant.version}.">
+        <condition>
+            <not><antversion atleast="1.9.1"/></not>
+        </condition>
+    </fail>
 
     <!-- Zserio Java extension runtime version. -->
     <loadfile
@@ -245,24 +250,23 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
 
     <target name="test.run" depends="test.spotbugs">
         <mkdir dir="${zserio_java_runtime.test.results_dir}"/>
-        <junit printsummary="no" fork="yes" dir="${zserio_java_runtime.test.classes_dir}" haltonfailure="yes">
+        <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="true"
+                dir="${zserio_java_runtime.test.build_dir}">
             <classpath>
                 <pathelement path="${zserio_java_runtime.3rdparty.junit.jar_file}"/>
                 <pathelement path="${zserio_java_runtime.jar_file}"/>
                 <pathelement path="${zserio_java_runtime.test.classes_dir}"/>
-                <fileset dir="${relational.sqlite.jar_dirname}">
-                    <include name="${relational.sqlite.jar_filename}" if="relational.validation_enabled"/>
-                </fileset>
+                <pathelement path="${relational.sqlite.jar_file}" if:true="${relational.validation_enabled}"/>
             </classpath>
-            <batchtest todir="${zserio_java_runtime.test.results_dir}">
-                <fileset dir="${zserio_java_runtime.test.src_dir}">
-                    <include name="**/*Test.java"/>
-                    <exclude name="zserio/runtime/validation/*.java" unless="relational.validation_enabled"/>
-                </fileset>
-                <formatter type="plain" usefile="false"/>
-                <formatter type="xml"/>
-            </batchtest>
-        </junit>
+            <arg line="--disable-banner"/>
+            <arg line="--scan-classpath"/>
+            <arg line="--exclude-package zserio.runtime.validation"
+                    unless:true="${relational.validation_enabled}"/>
+            <arg line="--fail-if-no-tests"/>
+            <arg line="--details tree"/>
+            <arg line="--exclude-engine junit-vintage"/>
+            <arg line="--reports-dir ${zserio_java_runtime.test.results_dir}"/>
+        </java>
     </target>
 
     <target name="test" depends="test.run">

@@ -1,11 +1,10 @@
 package constraints;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Test;
 
 import constraints.structure_constraints.BasicColor;
 import constraints.structure_constraints.StructureConstraints;
@@ -32,33 +31,33 @@ public class StructureConstraintsTest
         assertEquals(ExtendedColor.PURPLE, structureConstraints.getPurpleColor());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongBlackConstraint() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
         writeStructureConstraintsToFile(file, BasicColor.RED, BasicColor.WHITE, ExtendedColor.PURPLE);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new StructureConstraints(stream);
+        assertThrows(ZserioError.class, () -> new StructureConstraints(stream));
         stream.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongWhiteConstraint() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
         writeStructureConstraintsToFile(file, BasicColor.BLACK, BasicColor.RED, ExtendedColor.PURPLE);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new StructureConstraints(stream);
+        assertThrows(ZserioError.class, () -> new StructureConstraints(stream));
         stream.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongPurpleConstraint() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
         writeStructureConstraintsToFile(file, BasicColor.BLACK, BasicColor.WHITE, ExtendedColor.LIME);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new StructureConstraints(stream);
+        assertThrows(ZserioError.class, () -> new StructureConstraints(stream));
         stream.close();
     }
 
@@ -78,36 +77,36 @@ public class StructureConstraintsTest
         assertTrue(structureConstraints.equals(readStructureConstraints));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongBlackConstraint() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.RED, BasicColor.WHITE, true, ExtendedColor.PURPLE);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        structureConstraints.write(writer);
+        assertThrows(ZserioError.class, () -> structureConstraints.write(writer));
         writer.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongPurpleConstraint() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.BLACK, BasicColor.WHITE, true, ExtendedColor.LIME);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        structureConstraints.write(writer);
+        assertThrows(ZserioError.class, () -> structureConstraints.write(writer));
         writer.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongWhiteConstraint() throws IOException, ZserioError
     {
         final StructureConstraints structureConstraints =
                 new StructureConstraints(BasicColor.BLACK, BasicColor.RED, true, ExtendedColor.PURPLE);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        structureConstraints.write(writer);
+        assertThrows(ZserioError.class, () -> structureConstraints.write(writer));
         writer.close();
     }
 

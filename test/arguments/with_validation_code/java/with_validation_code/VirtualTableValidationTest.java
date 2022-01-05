@@ -1,16 +1,14 @@
 package with_validation_code;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
@@ -22,13 +20,13 @@ import zserio.runtime.validation.ValidationReport;
 
 public class VirtualTableValidationTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
@@ -36,7 +34,7 @@ public class VirtualTableValidationTest
         database.createSchema();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws SQLException
     {
         if (database != null)

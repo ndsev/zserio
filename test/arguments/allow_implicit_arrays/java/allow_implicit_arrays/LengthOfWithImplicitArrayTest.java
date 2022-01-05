@@ -1,8 +1,7 @@
 package allow_implicit_arrays;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import allow_implicit_arrays.lengthof_with_implicit_array.LengthOfWithImplicitArray;
 

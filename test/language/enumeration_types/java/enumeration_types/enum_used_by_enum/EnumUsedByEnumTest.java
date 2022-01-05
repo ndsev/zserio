@@ -1,8 +1,7 @@
 package enumeration_types.enum_used_by_enum;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 public class EnumUsedByEnumTest
 {

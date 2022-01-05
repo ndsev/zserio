@@ -1,10 +1,12 @@
 package zserio.tools;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import org.junit.Test;
 
 public class ExtensionVersionMatcherTest
 {

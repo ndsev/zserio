@@ -1,16 +1,15 @@
 package zserio.runtime.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
-
-import org.junit.Test;
 
 public class ByteArrayBitStreamReaderTest
 {
@@ -25,25 +24,22 @@ public class ByteArrayBitStreamReaderTest
         assertEquals(0x0A, reader.readBits(4));
         assertEquals(0x01, reader.readBits(1));
 
-        try
-        {
-            reader.readBits(1); // must throw!
-            fail("Expected exception!");
-        }
-        catch (IOException e)
-        {
-        }
+        // check eof
+        assertThrows(IOException.class, () -> reader.readBits(1));
+
         reader.close();
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void bitBufferConstructorOverflow() throws IOException
     {
         final BitBuffer bitBuffer = new BitBuffer(new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xF0}, 19);
         final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
 
         assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
-        assertEquals(0xFFFFF, reader.readBits(20)); // must throw!
+
+        assertThrows(IOException.class, () -> reader.readBits(20));
+
         reader.close();
     }
 
@@ -69,57 +65,45 @@ public class ByteArrayBitStreamReaderTest
                 assertEquals(0, reader.readBits(offset));
 
             // read magic number
-            assertEquals("offset: " + offset, testValue, reader.readBits(8));
+            assertEquals(testValue, reader.readBits(8), "offset: " + offset);
 
             // check eof
-            try
-            {
-                reader.readBits(1); // must throw!
-                fail("Expected exception, offset: " + offset + "!");
-            }
-            catch (IOException e)
-            {
-            }
+            assertThrows(IOException.class, () -> reader.readBits(1), "offset: " + offset + "!");
         }
     }
 
     /**
      * Test the exception in the protected readRange method.
-     *
-     * @throws IOException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rangeMinException() throws IOException
     {
         writeReadTest(new SampleWriteReadTest(){
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
-                reader.readBits(-1);
+                assertThrows(IllegalArgumentException.class, () -> reader.readBits(-1));
             }
         });
     }
 
     /**
      * Test the exception in the protected readRange method.
-     *
-     * @throws IOException
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void rangeMaxException() throws IOException
     {
         writeReadTest(new SampleWriteReadTest(){
             @Override
             public void read(ByteArrayBitStreamReader reader) throws IOException
             {
-                reader.readBits(65);
+                assertThrows(IllegalArgumentException.class, () -> reader.readBits(65));
             }
         });
     }
 
     /**
      * Test the bit offset getter.
-     * @throws IOException
      */
     @Test
     public void bitOffset() throws IOException
@@ -621,13 +605,15 @@ public class ByteArrayBitStreamReaderTest
         in.close();
     }
 
-    @Test(expected = IOException.class)
+    @Test
     public void readTooMuch() throws IOException
     {
         // stream containing 1 byte of data
         final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(new byte[] {0x33});
-        in.readBits(5); // 5 out of 8 bits are attempted to read. expected to just go fine
-        in.readBits(4); // 9 out of 8 bits are attempted to read. expected to throw documented exception
+        // 5 out of 8 bits are attempted to read. expected to just go fine
+        in.readBits(5);
+        // 9 out of 8 bits are attempted to read. expected to throw documented exception
+        assertThrows(IOException.class, () -> in.readBits(4));
     }
 
     @Test

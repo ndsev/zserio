@@ -1,13 +1,12 @@
 package indexed_offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import indexed_offsets.auto_indexed_offset_array.AutoIndexedOffsetArray;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
@@ -30,16 +29,15 @@ public class AutoIndexedOffsetArrayTest
         checkAutoIndexedOffsetArray(autoIndexedOffsetArray);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
         final File file = new File("test.bin");
         writeAutoIndexedOffsetArrayToFile(file, writeWrongOffsets);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final AutoIndexedOffsetArray autoIndexedOffsetArray = new AutoIndexedOffsetArray(stream);
+        assertThrows(ZserioError.class, () -> new AutoIndexedOffsetArray(stream));
         stream.close();
-        checkAutoIndexedOffsetArray(autoIndexedOffsetArray);
     }
 
     @Test
@@ -114,13 +112,13 @@ public class AutoIndexedOffsetArrayTest
         checkOffsets(autoIndexedOffsetArray, offsetShift);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffsets() throws ZserioError, IOException
     {
         final boolean createWrongOffsets = true;
         final AutoIndexedOffsetArray autoIndexedOffsetArray = createAutoIndexedOffsetArray(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        autoIndexedOffsetArray.write(writer, false);
+        assertThrows(ZserioError.class, () -> autoIndexedOffsetArray.write(writer, false));
         writer.close();
     }
 

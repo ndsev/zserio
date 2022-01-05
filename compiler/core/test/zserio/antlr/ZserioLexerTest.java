@@ -1,12 +1,13 @@
 package zserio.antlr;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.junit.jupiter.api.Test;
+
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.Token;
-
-import static org.junit.Assert.*;
-import org.junit.Test;
 
 public class ZserioLexerTest
 {
@@ -552,12 +553,12 @@ public class ZserioLexerTest
     {
         final Token token = lexer.nextToken();
         assertNotNull(token);
-        assertEquals("expecting token '" + type + ":" + lexer.getVocabulary().getSymbolicName(type) + "' - ",
-                type, token.getType());
-        assertEquals("expecting channel '" + channel + ":" + lexer.getChannelNames()[channel] + "' - ",
-                channel, token.getChannel());
+        assertEquals(type, token.getType(),
+                () -> "expecting token '" + type + ":" + lexer.getVocabulary().getSymbolicName(type) + "' - ");
+        assertEquals(channel, token.getChannel(),
+                () -> "expecting channel '" + channel + ":" + lexer.getChannelNames()[channel] + "' - ");
         if (text != null)
-            assertEquals("expecting text \"" + text + "\" - ", text, token.getText());
+            assertEquals(text, token.getText(), () -> "expecting text \"" + text + "\" - ");
     }
 
     private void checkEOF(Lexer lexer)

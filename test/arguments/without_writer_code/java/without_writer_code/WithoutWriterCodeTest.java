@@ -1,5 +1,8 @@
 package without_writer_code;
 
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -14,10 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-
-import static org.junit.Assert.*;
-
-import org.junit.Test;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.SqlDatabase;

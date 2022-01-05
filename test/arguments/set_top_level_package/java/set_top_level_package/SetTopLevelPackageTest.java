@@ -1,8 +1,7 @@
 package set_top_level_package;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import company.appl.SimpleStructure;
 import company.appl.SimpleChoice;

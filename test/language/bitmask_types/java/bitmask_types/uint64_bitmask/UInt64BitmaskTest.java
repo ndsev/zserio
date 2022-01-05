@@ -1,11 +1,10 @@
 package bitmask_types.uint64_bitmask;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -28,16 +27,17 @@ public class UInt64BitmaskTest
                 Permission.Values.write_permission));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void valueConstructorUnderLowerBound()
     {
-        new Permission(BigInteger.ONE.negate());
+        assertThrows(IllegalArgumentException.class, () -> new Permission(BigInteger.ONE.negate()));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void valueConstructorAboveUpperBound()
     {
-        new Permission(BigInteger.ONE.shiftLeft(PERMISSION_BITSIZEOF));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Permission(BigInteger.ONE.shiftLeft(PERMISSION_BITSIZEOF)));
     }
 
     @Test

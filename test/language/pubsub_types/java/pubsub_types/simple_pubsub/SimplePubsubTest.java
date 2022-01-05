@@ -1,13 +1,12 @@
 package pubsub_types.simple_pubsub;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.HashMap;
-
-import org.junit.Test;
-import org.junit.Before;
 
 import zserio.runtime.pubsub.PubsubException;
 import zserio.runtime.pubsub.PubsubCallback;
@@ -16,7 +15,7 @@ import pubsub_types.TestPubsub;
 
 public class SimplePubsubTest
 {
-    @Before
+    @BeforeEach
     public void setUp()
     {
         pubsub = new TestPubsub();
@@ -123,10 +122,10 @@ public class SimplePubsubTest
         simplePubsub.unsubscribe(id2);
     }
 
-    @Test(expected=PubsubException.class)
+    @Test
     public void unsubscribeInvalid()
     {
-        simplePubsub.unsubscribe(0);
+        assertThrows(PubsubException.class, () -> simplePubsub.unsubscribe(0));
     }
 
     private static class EmptyCallbackInt32Value implements PubsubCallback<Int32Value>

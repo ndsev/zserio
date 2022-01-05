@@ -1,11 +1,10 @@
 package union_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
@@ -25,11 +24,11 @@ public class SimpleUnionTest
         assertEquals(SimpleUnion.UNDEFINED_CHOICE, simpleUnion.choiceTag());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void emptyConstructorBitSizeOf()
     {
         SimpleUnion simpleUnion = new SimpleUnion();
-        simpleUnion.bitSizeOf();
+        assertThrows(ZserioError.class, () -> simpleUnion.bitSizeOf());
     }
 
     @Test

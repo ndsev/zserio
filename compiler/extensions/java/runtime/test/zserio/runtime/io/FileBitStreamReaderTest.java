@@ -1,17 +1,17 @@
 package zserio.runtime.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import org.junit.Test;
 
 public class FileBitStreamReaderTest
 {
-    @Test(expected = IOException.class)
+    @Test
     public void readNonexistentFile() throws IOException
     {
         final File tempFile = File.createTempFile(TempFileNamePrefix, null);
@@ -25,9 +25,8 @@ public class FileBitStreamReaderTest
         if (tempFile.exists())
             throw new IllegalArgumentException("a file that must not exist exists");
 
-        final FileBitStreamReader reader = new FileBitStreamReader(tempFile);
-        reader.close();
-        fail("opening a non-existent file succeeded");
+        assertThrows(IOException.class, () -> new FileBitStreamReader(tempFile),
+                "opening a non-existent file succeeded");
     }
 
     @Test

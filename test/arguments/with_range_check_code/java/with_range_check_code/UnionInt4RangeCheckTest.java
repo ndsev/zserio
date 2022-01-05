@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.union_int4_range_check.UnionInt4RangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,16 +25,16 @@ public class UnionInt4RangeCheckTest
         checkUnionInt4Value(INT4_UPPER_BOUND);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void unionInt4BelowLowerBound() throws IOException, ZserioError
     {
-        checkUnionInt4Value((byte)(INT4_LOWER_BOUND - 1));
+        assertThrows(ZserioError.class, () -> checkUnionInt4Value((byte)(INT4_LOWER_BOUND - 1)));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void unionInt4AboveUpperBound() throws IOException, ZserioError
     {
-        checkUnionInt4Value((byte)(INT4_UPPER_BOUND + 1));
+        assertThrows(ZserioError.class, () -> checkUnionInt4Value((byte)(INT4_UPPER_BOUND + 1)));
     }
 
     private void checkUnionInt4Value(byte value) throws IOException, ZserioError

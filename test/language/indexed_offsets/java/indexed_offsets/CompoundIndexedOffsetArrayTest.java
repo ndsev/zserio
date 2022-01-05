@@ -1,11 +1,10 @@
 package indexed_offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import indexed_offsets.compound_indexed_offset_array.Compound;
 import indexed_offsets.compound_indexed_offset_array.CompoundIndexedOffsetArray;
@@ -31,16 +30,15 @@ public class CompoundIndexedOffsetArrayTest
         checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
         final File file = new File("test.bin");
         writeCompoundIndexedOffsetArrayToFile(file, writeWrongOffsets);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final CompoundIndexedOffsetArray compoundIndexedOffsetArray = new CompoundIndexedOffsetArray(stream);
+        assertThrows(ZserioError.class, () -> new CompoundIndexedOffsetArray(stream));
         stream.close();
-        checkCompoundIndexedOffsetArray(compoundIndexedOffsetArray);
     }
 
     @Test
@@ -122,14 +120,14 @@ public class CompoundIndexedOffsetArrayTest
         checkOffsets(compoundIndexedOffsetArray, offsetShift);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffsets() throws ZserioError, IOException
     {
         final boolean createWrongOffsets = true;
         final CompoundIndexedOffsetArray compoundIndexedOffsetArray =
                 createCompoundIndexedOffsetArray(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        compoundIndexedOffsetArray.write(writer, false);
+        assertThrows(ZserioError.class, () -> compoundIndexedOffsetArray.write(writer, false));
         writer.close();
     }
 

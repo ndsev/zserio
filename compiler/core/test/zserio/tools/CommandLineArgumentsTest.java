@@ -1,12 +1,14 @@
 package zserio.tools;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+
 import org.apache.commons.cli.ParseException;
 
-import static org.junit.Assert.*;
-
 import java.util.List;
-
-import org.junit.Test;
 
 public class CommandLineArgumentsTest
 {
@@ -46,11 +48,11 @@ public class CommandLineArgumentsTest
         assertFalse(parse(args).getWithRangeCheckCode());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void rangeCheckCodeConflict() throws ParseException
     {
         final String[] args = { "-withRangeCheckCode", "-withoutRangeCheckCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -74,11 +76,11 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getWithPubsubCode());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void pubsubCodeConflict() throws ParseException
     {
         final String[] args = { "-withPubsubCode", "-withoutPubsubCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -102,11 +104,11 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getWithServiceCode());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void serviceCodeConflict() throws ParseException
     {
         final String[] args = { "-withServiceCode", "-withoutServiceCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -130,11 +132,11 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getWithSourcesAmalgamation());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void sourcesAmalgamationConflict() throws ParseException
     {
         final String[] args = { "-withSourcesAmalgamation", "-withoutSourcesAmalgamation" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -158,11 +160,11 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getWithSqlCode());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void sqlCodeConflict() throws ParseException
     {
         final String[] args = { "-withSqlCode", "-withoutSqlCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -187,11 +189,11 @@ public class CommandLineArgumentsTest
         assertFalse(parse(args).getWithValidationCode());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void validationCodeConflict() throws ParseException
     {
         final String[] args = { "-withValidationCode", "-withoutValidationCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -218,39 +220,39 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getWithWriterCode());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void writerCodeConflict() throws ParseException
     {
         final String[] args = { "-withWriterCode", "-withoutWriterCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void withoutWriterCodeWithRangeCheckCodeConflict() throws ParseException
     {
         final String[] args = { "-withoutWriterCode", "-withRangeCheckCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void withoutWriterCodeWithPubsubCodeConflict() throws ParseException
     {
         final String[] args = { "-withoutWriterCode", "-withPubsubCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void withoutWriterCodeWithServiceCodeConflict() throws ParseException
     {
         final String[] args = { "-withoutWriterCode", "-withServiceCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void withoutWriterCodeWithValidationCodeConflict() throws ParseException
     {
         final String[] args = { "-withoutWriterCode", "-withValidationCode" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -274,11 +276,11 @@ public class CommandLineArgumentsTest
         assertFalse(parse(args).getWithUnusedWarnings());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void unusedWarningsConflict() throws ParseException
     {
         final String[] args = { "-withUnusedWarnings", "-withoutUnusedWarnings" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -302,11 +304,11 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getWithGlobalRuleIdCheck());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void globalRuleIdCheck() throws ParseException
     {
         final String[] args = { "-withGlobalRuleCheck", "-withoutGlobalRuleCheck" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -323,11 +325,11 @@ public class CommandLineArgumentsTest
         assertTrue(parse(args).getWithCrossExtensionCheck());
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void crossExtensionCheck() throws ParseException
     {
         final String[] args = { "-withCrossExtensionCheck", "-withoutCrossExtensionCheck" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test
@@ -340,18 +342,18 @@ public class CommandLineArgumentsTest
         assertEquals("main", ids.get(1));
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void setTopLevelPackageWrongId() throws ParseException
     {
         final String[] args = { "-setTopLevelPackage", "top.5main" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
-    @Test(expected=ParseException.class)
+    @Test
     public void setTopLevelPackageZserioId() throws ParseException
     {
         final String[] args = { "-setTopLevelPackage", "top.zserio" };
-        parse(args);
+        assertThrows(ParseException.class, () -> parse(args));
     }
 
     @Test

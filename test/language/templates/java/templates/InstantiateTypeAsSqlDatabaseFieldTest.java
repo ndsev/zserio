@@ -1,16 +1,15 @@
 package templates;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ArrayList;
-
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
@@ -29,13 +28,13 @@ import templates.instantiate_type_as_sql_database_field.StringTableRow;
 public class InstantiateTypeAsSqlDatabaseFieldTest
 {
 
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();
     }
 
-    @Before
+    @BeforeEach
     public void setUp()
     {
         FileUtil.deleteFileIfExists(dbFile);

@@ -1,11 +1,10 @@
 package offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import offsets.optional_member_offset.OptionalMemberOffset;
 

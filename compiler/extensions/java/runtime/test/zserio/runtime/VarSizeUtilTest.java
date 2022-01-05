@@ -1,8 +1,8 @@
 package zserio.runtime;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 public class VarSizeUtilTest
 {
@@ -13,15 +13,16 @@ public class VarSizeUtilTest
         assertEquals(Integer.MAX_VALUE, VarSizeUtil.convertBitBufferSizeToInt(Integer.MAX_VALUE));
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test
     public void convertBitBufferSizeToIntMinOverflow()
     {
-        VarSizeUtil.convertBitBufferSizeToInt((long)Integer.MAX_VALUE + 1);
+        assertThrows(RuntimeException.class,
+                () -> VarSizeUtil.convertBitBufferSizeToInt((long)Integer.MAX_VALUE + 1));
     }
 
-    @Test(expected=RuntimeException.class)
+    @Test
     public void convertBitBufferSizeToIntMaxOverflow()
     {
-        VarSizeUtil.convertBitBufferSizeToInt(Long.MAX_VALUE);
+        assertThrows(RuntimeException.class, () -> VarSizeUtil.convertBitBufferSizeToInt(Long.MAX_VALUE));
     }
 }

@@ -1,13 +1,12 @@
 package constraints;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.stream.FileImageOutputStream;
-
-import org.junit.Test;
 
 import constraints.array_lengthof_constraint.ArrayLengthofConstraint;
 
@@ -30,23 +29,23 @@ public class ArrayLengthofConstraintTest
         assertEquals(CORRECT_LENGTH, arrayLengthofConstraint.getArray().length);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongLengthLess() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
         writeArrayLengthofConstraintToFile(file, WRONG_LENGTH_LESS);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new ArrayLengthofConstraint(stream);
+        assertThrows(ZserioError.class, () -> new ArrayLengthofConstraint(stream));
         stream.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongLengthGreater() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
         writeArrayLengthofConstraintToFile(file, WRONG_LENGTH_GREATER);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new ArrayLengthofConstraint(stream);
+        assertThrows(ZserioError.class, () -> new ArrayLengthofConstraint(stream));
         stream.close();
     }
 
@@ -67,7 +66,7 @@ public class ArrayLengthofConstraintTest
         assertTrue(arrayLengthofConstraint.equals(readArrayLengthofConstraint));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongLengthLess() throws IOException, ZserioError
     {
         final ArrayLengthofConstraint arrayLengthofConstraint = new ArrayLengthofConstraint();
@@ -77,11 +76,11 @@ public class ArrayLengthofConstraintTest
         arrayLengthofConstraint.setArray(array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        arrayLengthofConstraint.write(writer);
+        assertThrows(ZserioError.class, () -> arrayLengthofConstraint.write(writer));
         writer.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongLengthGreater() throws IOException, ZserioError
     {
         final ArrayLengthofConstraint arrayLengthofConstraint = new ArrayLengthofConstraint();
@@ -91,7 +90,7 @@ public class ArrayLengthofConstraintTest
         arrayLengthofConstraint.setArray(array);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        arrayLengthofConstraint.write(writer);
+        assertThrows(ZserioError.class, () -> arrayLengthofConstraint.write(writer));
         writer.close();
     }
 

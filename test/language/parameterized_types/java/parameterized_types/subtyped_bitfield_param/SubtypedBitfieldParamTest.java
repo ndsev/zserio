@@ -1,11 +1,10 @@
 package parameterized_types.subtyped_bitfield_param;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.FileBitStreamReader;
@@ -37,7 +36,7 @@ public class SubtypedBitfieldParamTest
     {
         final BitStreamReader stream = new FileBitStreamReader(file);
 
-        final SubtypedBitfieldParam subtypedBitfieldParam = 
+        final SubtypedBitfieldParam subtypedBitfieldParam =
                 subtypedBitfieldParamHolder.getSubtypedBitfieldParam();
         assertEquals(subtypedBitfieldParam.getParam(), SUBTYPED_BITFIELD_PARAM);
         assertEquals(subtypedBitfieldParam.getValue(), stream.readUnsignedShort());

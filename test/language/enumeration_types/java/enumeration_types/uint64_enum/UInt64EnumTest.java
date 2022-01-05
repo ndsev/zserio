@@ -1,11 +1,10 @@
 package enumeration_types.uint64_enum;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -68,10 +67,10 @@ public class UInt64EnumTest
         assertEquals(DarkColor.DarkGreen, darkColor);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void toEnumFailure()
     {
-        DarkColor.toEnum(BigInteger.valueOf(3));
+        assertThrows(IllegalArgumentException.class, () -> DarkColor.toEnum(BigInteger.valueOf(3)));
     }
 
     private static int UINT64_ENUM_BITSIZEOF = 64;

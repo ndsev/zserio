@@ -1,11 +1,10 @@
 package enumeration_types.varuint_enum;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -77,10 +76,10 @@ public class VarUIntEnumTest
         assertEquals(DarkColor.DARK_GREEN, darkColor);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void toEnumFailure()
     {
-        DarkColor.toEnum(new BigInteger("3"));
+        assertThrows(IllegalArgumentException.class, () -> DarkColor.toEnum(new BigInteger("3")));
     }
 
     private static int DARK_COLOR_NONE_BITSIZEOF = 8;

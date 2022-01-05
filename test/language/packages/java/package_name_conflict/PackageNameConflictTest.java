@@ -1,8 +1,7 @@
 package package_name_conflict;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;

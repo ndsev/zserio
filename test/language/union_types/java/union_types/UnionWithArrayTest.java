@@ -1,6 +1,7 @@
 package union_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +11,6 @@ import zserio.runtime.io.FileBitStreamWriter;
 
 import union_types.union_with_array.TestUnion;
 import union_types.union_with_array.Data8;
-
-import org.junit.Test;
 
 public class UnionWithArrayTest
 {

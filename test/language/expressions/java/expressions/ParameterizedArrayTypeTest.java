@@ -1,8 +1,7 @@
 package expressions;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import expressions.parameterized_array_type.ParameterizedArrayElement;
 import expressions.parameterized_array_type.ParameterizedArrayHolder;

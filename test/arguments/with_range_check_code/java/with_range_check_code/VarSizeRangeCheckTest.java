@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.varsize_range_check.VarSizeRangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,10 +25,10 @@ public class VarSizeRangeCheckTest
         checkVarSizeValue(VARSIZE_UPPER_BOUND);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void varSizeBelowLowerBound() throws IOException, ZserioError
     {
-        checkVarSizeValue(VARSIZE_LOWER_BOUND - 1);
+        assertThrows(ZserioError.class, () -> checkVarSizeValue(VARSIZE_LOWER_BOUND - 1));
     }
 
     private void checkVarSizeValue(int value) throws IOException, ZserioError

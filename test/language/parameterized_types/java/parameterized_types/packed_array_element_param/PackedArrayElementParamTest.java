@@ -1,13 +1,11 @@
 package parameterized_types.packed_array_element_param;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -77,9 +75,9 @@ public class PackedArrayElementParamTest
         final int packedBitsizeOf = database.bitSizeOf();
         final double minCompressionRatio = 0.12;
 
-        assertTrue("Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
-                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!",
-                unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf);
+        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, () ->
+                "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
+                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
     }
 
     private void checkWriteRead(int numBlocks) throws IOException, ZserioError

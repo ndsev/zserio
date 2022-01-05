@@ -1,10 +1,10 @@
 package zserio.runtime.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 public class BitBufferTest
 {
@@ -22,7 +22,7 @@ public class BitBufferTest
         assertEquals(emptyBitSize, emptyBitBuffer.getBitSize());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void bufferBitSizeConstructor()
     {
         final long bitSize = 11;
@@ -37,8 +37,7 @@ public class BitBufferTest
 
         final long outOfRangeBitSize = 9;
         final byte[] outOfRangeBuffer = new byte[1];
-        final BitBuffer outOfRangeBitBuffer = new BitBuffer(outOfRangeBuffer, outOfRangeBitSize); // throws!
-        assertEquals(outOfRangeBitSize, outOfRangeBitBuffer.getBitSize());
+        assertThrows(IllegalArgumentException.class, () -> new BitBuffer(outOfRangeBuffer, outOfRangeBitSize));
     }
 
     @Test

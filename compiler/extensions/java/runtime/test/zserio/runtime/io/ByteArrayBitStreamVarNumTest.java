@@ -1,12 +1,15 @@
 package zserio.runtime.io;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.CoreMatchers.endsWith;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 public class ByteArrayBitStreamVarNumTest
 {
@@ -20,111 +23,65 @@ public class ByteArrayBitStreamVarNumTest
                 // make sure writer is working
                 writeSentinel(writer);
 
-                try
-                {
-                    writer.writeVarUInt16((short)(((short)1) << (7 + 8)));
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
-                            e.getMessage().endsWith("' is out of range for varuint16!"));
-                }
+                IOException thrown = assertThrows(IOException.class,
+                        () -> writer.writeVarUInt16((short)(((short)1) << (7 + 8))));
+                assertThat(thrown.getMessage(), allOf(
+                        startsWith("BitSizeOfCalculator: Value '"),
+                        endsWith("' is out of range for varuint16!")));
 
-                try
-                {
-                    writer.writeVarUInt32(1 << (7 + 7 + 7 + 8));
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
-                            e.getMessage().endsWith("' is out of range for varuint32!"));
-                }
+                thrown = assertThrows(IOException.class, () -> writer.writeVarUInt32(1 << (7 + 7 + 7 + 8)));
+                assertThat(thrown.getMessage(), allOf(
+                        startsWith("BitSizeOfCalculator: Value '"),
+                        endsWith("' is out of range for varuint32!")));
 
-                try
-                {
-                    writer.writeVarUInt64(1L << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8));
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
-                            e.getMessage().endsWith("' is out of range for varuint64!"));
-                }
+                thrown = assertThrows(IOException.class,
+                        () -> writer.writeVarUInt64(1L << (7 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));
+                assertThat(thrown.getMessage(), allOf(
+                        startsWith("BitSizeOfCalculator: Value '"),
+                        endsWith("' is out of range for varuint64!")));
 
-                try
-                {
-                    writer.writeVarInt16((short)(((short)1) << (6 + 8)));
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
-                            e.getMessage().endsWith("' is out of range for varint16!"));
-                }
+                thrown = assertThrows(IOException.class,
+                        () -> writer.writeVarInt16((short)(((short)1) << (6 + 8))));
+                assertThat(thrown.getMessage(), allOf(
+                        startsWith("BitSizeOfCalculator: Value '"),
+                        endsWith("' is out of range for varint16!")));
 
-                try
-                {
-                    writer.writeVarInt32(1 << (6 + 7 + 7 + 8));
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
-                            e.getMessage().endsWith("' is out of range for varint32!"));
-                }
+                thrown = assertThrows(IOException.class, () -> writer.writeVarInt32(1 << (6 + 7 + 7 + 8)));
+                assertThat(thrown.getMessage(), allOf(
+                        startsWith("BitSizeOfCalculator: Value '"),
+                        endsWith("' is out of range for varint32!")));
 
-                try
-                {
-                    writer.writeVarInt64(1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8));
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
-                            e.getMessage().endsWith("' is out of range for varint64!"));
-                }
+                thrown = assertThrows(IOException.class,
+                        () -> writer.writeVarInt64(1L << (6 + 7 + 7 + 7 + 7 + 7 + 7 + 8)));
+                assertThat(thrown.getMessage(), allOf(
+                        startsWith("BitSizeOfCalculator: Value '"),
+                        endsWith("' is out of range for varint64!")));
 
-                try
-                {
-                    writer.writeVarSize(1 << (2 + 7 + 7 + 7 + 8));
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("BitSizeOfCalculator: Value '") &&
-                            e.getMessage().endsWith("' is out of range for varsize!"));
-                }
+                thrown = assertThrows(IOException.class, () -> writer.writeVarSize(1 << (2 + 7 + 7 + 7 + 8)));
+                assertThat(thrown.getMessage(), allOf(
+                        startsWith("BitSizeOfCalculator: Value '"),
+                        endsWith("' is out of range for varsize!")));
 
-                try
                 {
                     // overflow, 2^32 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
                     final byte[] buffer = new byte[] { (byte) 0x8F, (byte)0xFF, (byte)0xFF, (byte)0xFF,
                             (byte)0xFF };
                     final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                    reader.readVarSize();
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamReader: Read value '") &&
-                            e.getMessage().endsWith("' is out of range for varsize type!"));
+                    thrown = assertThrows(IOException.class, () -> reader.readVarSize());
+                    assertThat(thrown.getMessage(), allOf(
+                            startsWith("ByteArrayBitStreamReader: Read value '"),
+                            endsWith("' is out of range for varsize type!")));
                 }
 
-                try
                 {
                     // overflow, 2^36 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
                     final byte[] buffer = new byte[] { (byte) 0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF,
                             (byte)0xFF };
                     final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                    reader.readVarSize();
-                    fail();
-                }
-                catch (IOException e)
-                {
-                    assertTrue(e.getMessage().startsWith("ByteArrayBitStreamReader: Read value '") &&
-                            e.getMessage().endsWith("' is out of range for varsize type!"));
+                    thrown = assertThrows(IOException.class, () -> reader.readVarSize());
+                    assertThat(thrown.getMessage(), allOf(
+                            startsWith("ByteArrayBitStreamReader: Read value '"),
+                            endsWith("' is out of range for varsize type!")));
                 }
             }
 

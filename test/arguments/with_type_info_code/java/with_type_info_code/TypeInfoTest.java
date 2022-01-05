@@ -1,7 +1,7 @@
 package with_type_info_code;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
@@ -45,22 +45,22 @@ public class TypeInfoTest
         checkSimpleService(SimpleService.typeInfo());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void checkTestBitmaskUnderlyingTypeNotFixed()
     {
-        TestBitmask.typeInfo().getUnderlyingType().getBitSize();
+        assertThrows(ZserioError.class, () -> TestBitmask.typeInfo().getUnderlyingType().getBitSize());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void checkSimplePubsubIsNotTemplate()
     {
-        SimplePubsub.typeInfo().getTemplateArguments();
+        assertThrows(ZserioError.class, () -> SimplePubsub.typeInfo().getTemplateArguments());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void checkSimpleServiceIsNotTemplate()
     {
-        SimpleService.typeInfo().getTemplateName();
+        assertThrows(ZserioError.class, () -> SimpleService.typeInfo().getTemplateName());
     }
 
     private void checkSqlDatabase(TypeInfo typeInfo)

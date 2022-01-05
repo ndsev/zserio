@@ -1,11 +1,10 @@
 package constraints;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Test;
 
 import constraints.union_constraints.UnionConstraints;
 
@@ -30,25 +29,25 @@ public class UnionConstraintsTest
         assertEquals(value8, unionConstraints.getValue8());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongValue8Constraint() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
         final short value8 = VALUE8_WRONG_CONSTRAINT;
         writeUnionConstraintsToFile(file,value8);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new UnionConstraints(stream);
+        assertThrows(ZserioError.class, () -> new UnionConstraints(stream));
         stream.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongValue16Constraint() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
         final int value16 = VALUE16_WRONG_CONSTRAINT;
         writeUnionConstraintsToFile(file, value16);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new UnionConstraints(stream);
+        assertThrows(ZserioError.class, () -> new UnionConstraints(stream));
         stream.close();
     }
 
@@ -68,7 +67,7 @@ public class UnionConstraintsTest
         assertTrue(unionConstraints.equals(readUnionConstraints));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongValue8Constraint() throws IOException, ZserioError
     {
         final short value8 = VALUE8_WRONG_CONSTRAINT;
@@ -76,11 +75,11 @@ public class UnionConstraintsTest
         unionConstraints.setValue8(value8);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        unionConstraints.write(writer);
+        assertThrows(ZserioError.class, () -> unionConstraints.write(writer));
         writer.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongValue16Constraint() throws IOException, ZserioError
     {
         final short value16 = VALUE16_WRONG_CONSTRAINT;
@@ -88,7 +87,7 @@ public class UnionConstraintsTest
         unionConstraints.setValue16(value16);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        unionConstraints.write(writer);
+        assertThrows(ZserioError.class, () -> unionConstraints.write(writer));
         writer.close();
     }
 

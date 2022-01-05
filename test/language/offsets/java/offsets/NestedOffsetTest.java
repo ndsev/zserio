@@ -1,11 +1,10 @@
 package offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import offsets.nested_offset.NestedOffset;
 import offsets.nested_offset.NestedOffsetArrayStructure;
@@ -34,14 +33,14 @@ public class NestedOffsetTest
         checkNestedOffset(nestedOffset);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
         final File file = new File("test.bin");
         writeNestedOffsetToFile(file, writeWrongOffsets);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new NestedOffset(stream);
+        assertThrows(ZserioError.class, () -> new NestedOffset(stream));
         stream.close();
     }
 
@@ -111,13 +110,13 @@ public class NestedOffsetTest
         checkNestedOffset(nestedOffset);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffsets() throws ZserioError, IOException
     {
         final boolean createWrongOffsets = true;
         final NestedOffset nestedOffset = createNestedOffset(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        nestedOffset.write(writer, false);
+        assertThrows(ZserioError.class, () -> nestedOffset.write(writer, false));
         writer.close();
     }
 

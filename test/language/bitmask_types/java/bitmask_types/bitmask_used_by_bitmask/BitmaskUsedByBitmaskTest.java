@@ -1,10 +1,9 @@
 package bitmask_types.bitmask_used_by_bitmask;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,10 +25,10 @@ public class BitmaskUsedByBitmaskTest
         assertTrue(permission.and(Permission.Values.WRITE).equals(Permission.Values.WRITE));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void valueConstructorUnderLowerBound()
     {
-        new Permission((byte)-1);
+        assertThrows(IllegalArgumentException.class, () -> new Permission((byte)-1));
     }
 
     @Test

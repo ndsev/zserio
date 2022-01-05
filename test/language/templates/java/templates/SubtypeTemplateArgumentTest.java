@@ -1,8 +1,7 @@
 package templates;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import templates.subtype_template_argument.Field_uint32;
 import templates.subtype_template_argument.Compound;

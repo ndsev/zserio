@@ -1,6 +1,7 @@
 package offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
@@ -8,8 +9,6 @@ import java.io.File;
 import offsets.parameter_offset.OffsetHolder;
 import offsets.parameter_offset.Room;
 import offsets.parameter_offset.School;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamReader;
@@ -32,14 +31,14 @@ public class ParameterOffsetTest
         checkSchool(school);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffset = true;
         final File file = new File("test.bin");
         writeSchoolToFile(file, writeWrongOffset);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new School(stream);
+        assertThrows(ZserioError.class, () -> new School(stream));
         stream.close();
     }
 
@@ -109,13 +108,13 @@ public class ParameterOffsetTest
         checkSchool(school, bitPosition);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffset() throws ZserioError, IOException
     {
         final boolean createWrongOffset = true;
         final School school = createSchool(createWrongOffset);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        school.write(writer, false);
+        assertThrows(ZserioError.class, () -> school.write(writer, false));
         writer.close();
     }
 

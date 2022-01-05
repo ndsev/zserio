@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.int7_array_range_check.Int7ArrayRangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,16 +25,16 @@ public class Int7ArrayRangeCheckTest
         checkInt7ArrayValue(INT7_UPPER_BOUND);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void int7ArrayBelowLowerBound() throws IOException, ZserioError
     {
-        checkInt7ArrayValue((byte)(INT7_LOWER_BOUND - 1));
+        assertThrows(IllegalArgumentException.class, () -> checkInt7ArrayValue((byte)(INT7_LOWER_BOUND - 1)));
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void int7ArrayAboveUpperBound() throws IOException, ZserioError
     {
-        checkInt7ArrayValue((byte)(INT7_UPPER_BOUND + 1));
+        assertThrows(IllegalArgumentException.class, () -> checkInt7ArrayValue((byte)(INT7_UPPER_BOUND + 1)));
     }
 
     private void checkInt7ArrayValue(byte value) throws IOException, ZserioError

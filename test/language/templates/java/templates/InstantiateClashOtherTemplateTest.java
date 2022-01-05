@@ -1,11 +1,10 @@
 package templates;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.ZserioError;
@@ -22,7 +21,7 @@ public class InstantiateClashOtherTemplateTest
     @Test
     public void readWrite() throws IOException
     {
-        final Test_uint32_99604043 test = new Test_uint32_99604043(13); 
+        final Test_uint32_99604043 test = new Test_uint32_99604043(13);
         final InstantiateClashOtherTemplate instantiateClashOtherTemplate =
                 new InstantiateClashOtherTemplate(test);
 

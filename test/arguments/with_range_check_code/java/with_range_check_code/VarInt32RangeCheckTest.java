@@ -1,12 +1,11 @@
 package with_range_check_code;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import with_range_check_code.varint32_range_check.VarInt32RangeCheckCompound;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -26,16 +25,16 @@ public class VarInt32RangeCheckTest
         checkVarInt32Value(VARINT32_UPPER_BOUND);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void varInt32BelowLowerBound() throws IOException, ZserioError
     {
-        checkVarInt32Value(VARINT32_LOWER_BOUND - 1);
+        assertThrows(ZserioError.class, () -> checkVarInt32Value(VARINT32_LOWER_BOUND - 1));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void varInt32AboveUpperBound() throws IOException, ZserioError
     {
-        checkVarInt32Value(VARINT32_UPPER_BOUND + 1);
+        assertThrows(ZserioError.class, () -> checkVarInt32Value(VARINT32_UPPER_BOUND + 1));
     }
 
     private void checkVarInt32Value(int value) throws IOException, ZserioError

@@ -1,10 +1,9 @@
 package union_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import union_types.union_with_parameterized_field.TestUnion;
 import union_types.union_with_parameterized_field.ArrayHolder;
@@ -23,6 +22,7 @@ public class UnionWithParameterizedFieldTest
         assertEquals((short)10, testUnion.getArrayHolder().getSize());
     }
 
+    @Test
     public void readConstructor() throws ZserioError, IOException
     {
         final TestUnion testUnion = new TestUnion();

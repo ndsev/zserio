@@ -1,14 +1,13 @@
 package zserio.runtime.typeinfo;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-
-import test_util.AssertionUtil;
 import zserio.runtime.ZserioError;
 import zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo;
 import zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo;
@@ -61,8 +60,7 @@ public class TypeInfoTest
         checkBuiltinTypeInfo(BuiltinTypeInfo.getBitBuffer(), "extern", SchemaType.EXTERN, JavaType.BIT_BUFFER);
 
         // fixed signed bit fields
-        AssertionUtil.assertThrows(ZserioError.class,
-                () -> BuiltinTypeInfo.getFixedSignedBitField((byte)0));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedSignedBitField((byte)0));
         short bitSize = 1;
         for (; bitSize <= 8; ++bitSize)
         {
@@ -87,13 +85,12 @@ public class TypeInfoTest
         for (; bitSize < 255; ++bitSize)
         {
             final byte bitSizeArg = (byte)bitSize;
-            AssertionUtil.assertThrows(ZserioError.class,
-                    () -> BuiltinTypeInfo.getFixedSignedBitField(bitSizeArg));
+            assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedSignedBitField(bitSizeArg));
         }
-        AssertionUtil.assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedSignedBitField((byte)255));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedSignedBitField((byte)255));
 
         // fixed unsigned bit fields
-        AssertionUtil.assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedUnsignedBitField((byte)0));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedUnsignedBitField((byte)0));
         bitSize = 0;
         for (++bitSize ; bitSize < 8; ++bitSize)
         {
@@ -123,14 +120,12 @@ public class TypeInfoTest
         for (; bitSize < 255; ++bitSize)
         {
             byte bitSizeArg = (byte)bitSize;
-            AssertionUtil.assertThrows(ZserioError.class,
-                    () -> BuiltinTypeInfo.getFixedUnsignedBitField(bitSizeArg));
+            assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedUnsignedBitField(bitSizeArg));
         }
-        AssertionUtil.assertThrows(ZserioError.class,
-                () -> BuiltinTypeInfo.getFixedUnsignedBitField((byte)255));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getFixedUnsignedBitField((byte)255));
 
         // dynamic signed bit fields
-        AssertionUtil.assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getDynamicSignedBitField((byte)0));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getDynamicSignedBitField((byte)0));
         short maxBitSize = 1;
         for (; maxBitSize <= 8; ++maxBitSize)
         {
@@ -155,15 +150,12 @@ public class TypeInfoTest
         for (; maxBitSize < 255; ++maxBitSize)
         {
             final byte maxBitSizeArg = (byte)maxBitSize;
-            AssertionUtil.assertThrows(ZserioError.class,
-                    () -> BuiltinTypeInfo.getDynamicSignedBitField(maxBitSizeArg));
+            assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getDynamicSignedBitField(maxBitSizeArg));
         }
-        AssertionUtil.assertThrows(ZserioError.class,
-                () -> BuiltinTypeInfo.getDynamicSignedBitField((byte)255));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getDynamicSignedBitField((byte)255));
 
         // dynamic unsigned bit fields
-        AssertionUtil.assertThrows(ZserioError.class,
-                () -> BuiltinTypeInfo.getDynamicUnsignedBitField((byte)0));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getDynamicUnsignedBitField((byte)0));
         maxBitSize = 1;
         for (; maxBitSize < 8; ++maxBitSize)
         {
@@ -193,11 +185,9 @@ public class TypeInfoTest
         for (; maxBitSize < 255; ++maxBitSize)
         {
             final byte maxBitSizeArg = (byte)maxBitSize;
-            AssertionUtil.assertThrows(ZserioError.class,
-                    () -> BuiltinTypeInfo.getDynamicUnsignedBitField(maxBitSizeArg));
+            assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getDynamicUnsignedBitField(maxBitSizeArg));
         }
-        AssertionUtil.assertThrows(ZserioError.class,
-                () -> BuiltinTypeInfo.getDynamicUnsignedBitField((byte)255));
+        assertThrows(ZserioError.class, () -> BuiltinTypeInfo.getDynamicUnsignedBitField((byte)255));
     }
 
     @Test
@@ -208,33 +198,33 @@ public class TypeInfoTest
         assertEquals("", structTypeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, structTypeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, structTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getBitSize());
 
         assertEquals(0, structTypeInfo.getFields().size());
         assertEquals(0, structTypeInfo.getParameters().size());
         assertEquals(0, structTypeInfo.getFunctions().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> structTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getTables());
 
         assertEquals("", structTypeInfo.getTemplateName());
         assertEquals(0, structTypeInfo.getTemplateArguments().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> structTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> structTypeInfo.getMethods());
     }
 
     @Test
@@ -245,33 +235,33 @@ public class TypeInfoTest
         assertEquals("", unionTypeInfo.getSchemaName());
         assertEquals(SchemaType.UNION, unionTypeInfo.getSchemaType());
         assertEquals(JavaType.UNION, unionTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getBitSize());
 
         assertEquals(0, unionTypeInfo.getFields().size());
         assertEquals(0, unionTypeInfo.getParameters().size());
         assertEquals(0, unionTypeInfo.getFunctions().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getTables());
 
         assertEquals("", unionTypeInfo.getTemplateName());
         assertEquals(0, unionTypeInfo.getTemplateArguments().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> unionTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> unionTypeInfo.getMethods());
     }
 
     @Test
@@ -283,7 +273,7 @@ public class TypeInfoTest
         assertEquals("", choiceTypeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, choiceTypeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, choiceTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getBitSize());
 
         assertEquals(0, choiceTypeInfo.getFields().size());
         assertEquals(0, choiceTypeInfo.getParameters().size());
@@ -292,24 +282,24 @@ public class TypeInfoTest
         assertEquals("", choiceTypeInfo.getSelector());
         assertEquals(0, choiceTypeInfo.getCases().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getTables());
 
         assertEquals("", choiceTypeInfo.getTemplateName());
         assertEquals(0, choiceTypeInfo.getTemplateArguments().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> choiceTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> choiceTypeInfo.getMethods());
     }
 
     @Test
@@ -320,33 +310,33 @@ public class TypeInfoTest
         assertEquals("", sqlTableTypeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, sqlTableTypeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, sqlTableTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getBitSize());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getFields());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getParameters());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getFunctions());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getFields());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getParameters());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getFunctions());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getBitmaskValues());
 
         assertEquals(0, sqlTableTypeInfo.getColumns().size());
         assertEquals("", sqlTableTypeInfo.getSqlConstraint());
         assertEquals("", sqlTableTypeInfo.getVirtualTableUsing());
         assertEquals(false, sqlTableTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getTables());
 
         assertEquals("", sqlTableTypeInfo.getTemplateName());
         assertEquals(0, sqlTableTypeInfo.getTemplateArguments().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getMethods());
     }
 
     @Test
@@ -356,33 +346,33 @@ public class TypeInfoTest
         assertEquals("", sqlDatabaseTypeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_DATABASE, sqlDatabaseTypeInfo.getSchemaType());
         assertEquals(JavaType.SQL_DATABASE, sqlDatabaseTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getBitSize());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getFields());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getParameters());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getFunctions());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getFields());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getParameters());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getFunctions());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.isWithoutRowId());
 
         assertEquals(0, sqlDatabaseTypeInfo.getTables().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getTemplateName());
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getTemplateArguments());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getTemplateName());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getTemplateArguments());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getMethods());
     }
 
     @Test
@@ -394,33 +384,33 @@ public class TypeInfoTest
         assertEquals("", enumTypeInfo.getSchemaName());
         assertEquals(SchemaType.ENUM, enumTypeInfo.getSchemaType());
         assertEquals(JavaType.ENUM, enumTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getBitSize());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getFields());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getParameters());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getFunctions());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getFields());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getParameters());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getFunctions());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getCases());
 
         assertEquals(underlyingTypeInfo, enumTypeInfo.getUnderlyingType());
         assertEquals(0, enumTypeInfo.getUnderlyingTypeArguments().size());
         assertEquals(0, enumTypeInfo.getEnumItems().size());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getTables());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getTemplateName());
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getTemplateArguments());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getTemplateName());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getTemplateArguments());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> enumTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> enumTypeInfo.getMethods());
     }
 
     @Test
@@ -432,33 +422,33 @@ public class TypeInfoTest
         assertEquals("", bitmaskTypeInfo.getSchemaName());
         assertEquals(SchemaType.BITMASK, bitmaskTypeInfo.getSchemaType());
         assertEquals(JavaType.BITMASK, bitmaskTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getBitSize());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getFields());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getParameters());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getFunctions());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getFields());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getParameters());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getFunctions());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getCases());
 
         assertEquals(underlyingTypeInfo, bitmaskTypeInfo.getUnderlyingType());
         assertEquals(0, bitmaskTypeInfo.getUnderlyingTypeArguments().size());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getEnumItems());
         assertEquals(0, bitmaskTypeInfo.getBitmaskValues().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getTables());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getTemplateName());
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getTemplateArguments());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getTemplateName());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getTemplateArguments());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getMethods());
     }
 
     @Test
@@ -468,33 +458,33 @@ public class TypeInfoTest
         assertEquals("", pubsubTypeInfo.getSchemaName());
         assertEquals(SchemaType.PUBSUB, pubsubTypeInfo.getSchemaType());
         assertEquals(JavaType.PUBSUB, pubsubTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getBitSize());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getFields());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getParameters());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getFunctions());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getFields());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getParameters());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getFunctions());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getTables());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getTemplateName());
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getTemplateArguments());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getTemplateName());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getTemplateArguments());
 
         assertEquals(0, pubsubTypeInfo.getMessages().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> pubsubTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> pubsubTypeInfo.getMethods());
     }
 
     @Test
@@ -504,31 +494,31 @@ public class TypeInfoTest
         assertEquals("", serviceTypeInfo.getSchemaName());
         assertEquals(SchemaType.SERVICE, serviceTypeInfo.getSchemaType());
         assertEquals(JavaType.SERVICE, serviceTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getBitSize());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getFields());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getParameters());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getFunctions());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getFields());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getParameters());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getFunctions());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getTables());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getTemplateName());
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getTemplateArguments());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getTemplateName());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getTemplateArguments());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> serviceTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> serviceTypeInfo.getMessages());
 
         assertEquals(0, serviceTypeInfo.getMethods().size());
     }
@@ -542,33 +532,33 @@ public class TypeInfoTest
         assertEquals(typeInfo.getSchemaName(), recursiveTypeInfo.getSchemaName());
         assertEquals(typeInfo.getSchemaType(), recursiveTypeInfo.getSchemaType());
         assertEquals(typeInfo.getJavaType(), recursiveTypeInfo.getJavaType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getBitSize());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getBitSize());
 
         assertEquals(typeInfo.getFields().size(), recursiveTypeInfo.getFields().size());
         assertEquals(0, recursiveTypeInfo.getParameters().size());
         assertEquals(0, recursiveTypeInfo.getFunctions().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getCases());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getTables());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getTables());
 
         assertEquals(typeInfo.getTemplateName(), recursiveTypeInfo.getTemplateName());
         assertEquals(0, recursiveTypeInfo.getTemplateArguments().size());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> recursiveTypeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> recursiveTypeInfo.getMethods());
     }
 
     private void checkBuiltinTypeInfo(TypeInfo typeInfo,
@@ -586,33 +576,33 @@ public class TypeInfoTest
         if (bitSize > 0)
             assertEquals((byte)bitSize, typeInfo.getBitSize());
         else
-            AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getBitSize());
+            assertThrows(ZserioError.class, () -> typeInfo.getBitSize());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getFields());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getParameters());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getFunctions());
+        assertThrows(ZserioError.class, () -> typeInfo.getFields());
+        assertThrows(ZserioError.class, () -> typeInfo.getParameters());
+        assertThrows(ZserioError.class, () -> typeInfo.getFunctions());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getSelector());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getCases());
+        assertThrows(ZserioError.class, () -> typeInfo.getSelector());
+        assertThrows(ZserioError.class, () -> typeInfo.getCases());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getUnderlyingType());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getUnderlyingTypeArguments());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getEnumItems());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getBitmaskValues());
+        assertThrows(ZserioError.class, () -> typeInfo.getUnderlyingType());
+        assertThrows(ZserioError.class, () -> typeInfo.getUnderlyingTypeArguments());
+        assertThrows(ZserioError.class, () -> typeInfo.getEnumItems());
+        assertThrows(ZserioError.class, () -> typeInfo.getBitmaskValues());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getColumns());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getSqlConstraint());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getVirtualTableUsing());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.isWithoutRowId());
+        assertThrows(ZserioError.class, () -> typeInfo.getColumns());
+        assertThrows(ZserioError.class, () -> typeInfo.getSqlConstraint());
+        assertThrows(ZserioError.class, () -> typeInfo.getVirtualTableUsing());
+        assertThrows(ZserioError.class, () -> typeInfo.isWithoutRowId());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getTables());
+        assertThrows(ZserioError.class, () -> typeInfo.getTables());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getTemplateName());
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getTemplateArguments());
+        assertThrows(ZserioError.class, () -> typeInfo.getTemplateName());
+        assertThrows(ZserioError.class, () -> typeInfo.getTemplateArguments());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getMessages());
+        assertThrows(ZserioError.class, () -> typeInfo.getMessages());
 
-        AssertionUtil.assertThrows(ZserioError.class, () -> typeInfo.getMethods());
+        assertThrows(ZserioError.class, () -> typeInfo.getMethods());
     }
 
     private static class RecursiveObject

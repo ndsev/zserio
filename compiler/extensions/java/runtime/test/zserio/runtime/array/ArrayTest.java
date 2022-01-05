@@ -1,13 +1,11 @@
 package zserio.runtime.array;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import static org.junit.Assert.assertFalse;
-
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -1082,15 +1080,8 @@ public class ArrayTest
             }
             else
             {
-                try
-                {
-                    final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.IMPLICIT);
-                    readArray.read(reader);
-                    fail("Expected UnsupportedOperationException exception!");
-                }
-                catch (UnsupportedOperationException e)
-                {
-                }
+                final Array readArray = new Array(emptyRawArray, arrayTraits, ArrayType.IMPLICIT);
+                assertThrows(UnsupportedOperationException.class, () -> readArray.read(reader));
             }
         }
     }
@@ -1249,46 +1240,19 @@ public class ArrayTest
     }
 
     private static void testPackedArrayImplicit(RawArray rawArray, RawArray emptyRawArray,
-        ArrayTraits arrayTraits) throws IOException
+            ArrayTraits arrayTraits) throws IOException
     {
         final Array array = new Array(rawArray, arrayTraits, ArrayType.IMPLICIT);
-        try
-        {
-            array.bitSizeOfPacked(0);
-            fail("Expected UnsupportedOperationException exception!");
-        }
-        catch (UnsupportedOperationException e)
-        {
-        }
 
-        try
-        {
-            array.initializeOffsetsPacked(0);
-            fail("Expected UnsupportedOperationException exception!");
-        }
-        catch (UnsupportedOperationException e)
-        {
-        }
+        assertThrows(UnsupportedOperationException.class, () -> array.bitSizeOfPacked(0));
 
-        try
-        {
-            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-            array.writePacked(writer);
-            fail("Expected UnsupportedOperationException exception!");
-        }
-        catch (UnsupportedOperationException e)
-        {
-        }
+        assertThrows(UnsupportedOperationException.class, () -> array.initializeOffsetsPacked(0));
 
-        try
-        {
-            final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[]{});
-            array.readPacked(reader, rawArray.size());
-            fail("Expected UnsupportedOperationException exception!");
-        }
-        catch (UnsupportedOperationException e)
-        {
-        }
+        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        assertThrows(UnsupportedOperationException.class, () -> array.writePacked(writer));
+
+        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(new byte[]{});
+        assertThrows(UnsupportedOperationException.class, () -> array.readPacked(reader, rawArray.size()));
     }
 
     private static void testPackedArrayAligned(RawArray rawArray, RawArray emptyRawArray,

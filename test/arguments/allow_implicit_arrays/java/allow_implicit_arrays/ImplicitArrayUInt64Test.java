@@ -1,12 +1,11 @@
 package allow_implicit_arrays;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import allow_implicit_arrays.implicit_array_uint64.ImplicitArray;
 

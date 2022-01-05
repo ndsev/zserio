@@ -1,13 +1,12 @@
 package constraints;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.stream.FileImageOutputStream;
-
-import org.junit.Test;
 
 import constraints.choice_constraints.ChoiceConstraints;
 
@@ -33,7 +32,7 @@ public class ChoiceConstraintsTest
         assertEquals(value8, choiceConstraints.getValue8());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongValue8Constraint() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
@@ -41,11 +40,11 @@ public class ChoiceConstraintsTest
         final short value8 = VALUE8_WRONG_CONSTRAINT;
         writeChoiceConstraintsToFile(file, selector, value8, 0);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new ChoiceConstraints(stream, selector);
+        assertThrows(ZserioError.class, () -> new ChoiceConstraints(stream, selector));
         stream.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongValue16Constraint() throws IOException, ZserioError
     {
         final File file = new File("test.bin");
@@ -53,7 +52,7 @@ public class ChoiceConstraintsTest
         final int value16 = VALUE16_WRONG_CONSTRAINT;
         writeChoiceConstraintsToFile(file, selector, (short)0, value16);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        new ChoiceConstraints(stream, selector);
+        assertThrows(ZserioError.class, () -> new ChoiceConstraints(stream, selector));
         stream.close();
     }
 
@@ -74,7 +73,7 @@ public class ChoiceConstraintsTest
         assertTrue(choiceConstraints.equals(readChoiceConstraints));
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongValue8Constraint() throws IOException, ZserioError
     {
         final boolean selector = true;
@@ -83,11 +82,11 @@ public class ChoiceConstraintsTest
         choiceConstraints.setValue8(value8);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        choiceConstraints.write(writer);
+        assertThrows(ZserioError.class, () -> choiceConstraints.write(writer));
         writer.close();
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongValue16Constraint() throws IOException, ZserioError
     {
         final boolean selector = false;
@@ -96,7 +95,7 @@ public class ChoiceConstraintsTest
         choiceConstraints.setValue16(value16);
         final File file = new File("test.bin");
         final BitStreamWriter writer = new FileBitStreamWriter(file);
-        choiceConstraints.write(writer);
+        assertThrows(ZserioError.class, () -> choiceConstraints.write(writer));
         writer.close();
     }
 

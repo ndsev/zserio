@@ -1,17 +1,18 @@
 package sql_constraints.table_constraints;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.ArrayList;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import test_utils.FileUtil;
 import test_utils.JdbcUtil;
@@ -20,13 +21,13 @@ import sql_constraints.TestDb;
 
 public class TableConstraintsTest
 {
-    @BeforeClass
+    @BeforeAll
     public static void init()
     {
         JdbcUtil.registerJdbc();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, SQLException
     {
         FileUtil.deleteFileIfExists(file);
@@ -34,7 +35,7 @@ public class TableConstraintsTest
         database.createSchema();
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws SQLException
     {
         if (database != null)
@@ -43,9 +44,6 @@ public class TableConstraintsTest
             database = null;
         }
     }
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Test
     public void primaryKey() throws IOException, SQLException
@@ -62,10 +60,6 @@ public class TableConstraintsTest
     @Test
     public void primaryKeyWrong() throws IOException, SQLException
     {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("UNIQUE constraint failed: tableConstraintsTable.primaryKey1, " +
-                "tableConstraintsTable.primaryKey2");
-
         final TableConstraintsTable tableConstraintsTable = database.getTableConstraintsTable();
         final TableConstraintsTableRow row1 = new TableConstraintsTableRow();
         row1.setPrimaryKey1(1);
@@ -80,7 +74,11 @@ public class TableConstraintsTest
         final ArrayList<TableConstraintsTableRow> rows = new ArrayList<TableConstraintsTableRow>();
         rows.add(row1);
         rows.add(row2);
-        tableConstraintsTable.write(rows);
+        final SQLException thrown = assertThrows(SQLException.class, () -> tableConstraintsTable.write(rows));
+
+        assertThat(thrown.getMessage(), containsString(
+                "UNIQUE constraint failed: tableConstraintsTable.primaryKey1, " +
+                "tableConstraintsTable.primaryKey2"));
     }
 
     @Test
@@ -98,10 +96,6 @@ public class TableConstraintsTest
     @Test
     public void uniqueWrong() throws IOException, SQLException
     {
-        expectedException.expect(SQLException.class);
-        expectedException.expectMessage("UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, " +
-                "tableConstraintsTable.uniqueValue2");
-
         final TableConstraintsTable tableConstraintsTable = database.getTableConstraintsTable();
         final TableConstraintsTableRow row1 = new TableConstraintsTableRow();
         row1.setPrimaryKey1(1);
@@ -116,7 +110,11 @@ public class TableConstraintsTest
         final ArrayList<TableConstraintsTableRow> rows = new ArrayList<TableConstraintsTableRow>();
         rows.add(row1);
         rows.add(row2);
-        tableConstraintsTable.write(rows);
+        final SQLException thrown = assertThrows(SQLException.class, () -> tableConstraintsTable.write(rows));
+
+        assertThat(thrown.getMessage(), containsString(
+                "UNIQUE constraint failed: tableConstraintsTable.uniqueValue1, " +
+                "tableConstraintsTable.uniqueValue2"));
     }
 
     private static final String FILE_NAME = "table_constraints_test.sqlite";

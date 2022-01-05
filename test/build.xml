@@ -21,7 +21,8 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
     <property name="runtime.jar_file" location="${runtime.jar_dir}/zserio_runtime.jar"/>
 
     <property name="3rdparty.jar_dir" location="${zserio.root_dir}/3rdparty/java"/>
-    <property name="3rdparty.junit.jar_file" location="${3rdparty.jar_dir}/junit-4.10.jar"/>
+    <property name="3rdparty.junit.jar_file"
+        location="${3rdparty.jar_dir}/junit-platform-console-standalone-1.8.2.jar"/>
     <property name="3rdparty.sqlitejdbc.jar_file" location="${3rdparty.jar_dir}/sqlite-jdbc-3.23.1.jar"/>
 
     <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
@@ -217,7 +218,8 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
             <mkdir dir="${@{testName}.run_dir}"/>
             <copy file="${@{testName}.zs.log_file}" todir="${@{testName}.run_dir}"/>
             <resources/>
-            <junit printsummary="no" fork="on" haltonfailure="on" dir="${@{testName}.run_dir}">
+            <java classname="org.junit.platform.console.ConsoleLauncher" fork="true" failonerror="true"
+                dir="${@{testName}.run_dir}">
                 <classpath>
                     <pathelement location="${@{testName}.build_dir}/classes"/>
                     <pathelement location="${runtime.jar_file}"/>
@@ -225,11 +227,13 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
                     <pathelement location="${3rdparty.sqlitejdbc.jar_file}"/>
                     <pathelement location="${test_utils.jar_file}"/>
                 </classpath>
-                <batchtest>
-                    <fileset dir="${@{testName}.base_dir}/java" includes="**/*Test.java"/>
-                    <formatter type="plain" usefile="false"/>
-                </batchtest>
-            </junit>
+                <arg line="--disable-banner"/>
+                <arg line="--scan-classpath"/>
+                <arg line="--fail-if-no-tests"/>
+                <arg line="--details tree"/>
+                <arg line="--exclude-engine junit-vintage"/>
+                <arg line="--reports-dir ${@{testName}.run_dir}"/>
+            </java>
         </sequential>
     </macrodef>
 
@@ -261,19 +265,19 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
 
         <record name="${zserio_java_test.log_file}" action="stop"/>
 
-        <resourcecount property="num_tests">
-            <tokens>
-                <concat>
-                    <filterchain>
-                        <linecontainsregexp>
-                            <regexp pattern="Testcase"/>
-                        </linecontainsregexp>
-                    </filterchain>
-                    <fileset file="${zserio_java_test.log_file}"/>
-                </concat>
-            </tokens>
-        </resourcecount>
+        <loadresource property="num_tests">
+            <fileset file="${zserio_java_test.log_file}"/>
+            <filterchain>
+                <containsregex pattern=".*\s+(\d+) tests found.*" replace="\1 "/>
+                <striplinebreaks/>
+                <scriptfilter language="javascript">
+                    numList = self.getToken().trim().split(" ").map(Number);
+                    sum = numList.reduce(function(a, b) { return a+ b; }, 0);
+                    self.setToken(sum)
+                </scriptfilter>
+            </filterchain>
+        </loadresource>
 
-        <echo message="Total number of testcases: ${num_tests}"/>
+        <echo if:set="num_tests" message="Total number of testcases: ${num_tests}"/>
     </target>
 </project>

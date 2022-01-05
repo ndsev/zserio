@@ -1,11 +1,10 @@
 package alignment;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import alignment.auto_optional_member_alignment.AutoOptionalMemberAlignment;
 

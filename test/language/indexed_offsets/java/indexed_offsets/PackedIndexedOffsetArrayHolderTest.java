@@ -1,6 +1,7 @@
 package indexed_offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import indexed_offsets.packed_indexed_offset_array_holder.AutoIndexedOffsetArray;
 import indexed_offsets.packed_indexed_offset_array_holder.OffsetArray;
@@ -8,8 +9,6 @@ import indexed_offsets.packed_indexed_offset_array_holder.OffsetHolder;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -61,9 +60,9 @@ public class PackedIndexedOffsetArrayHolderTest
         final int packedBitsizeOf = autoIndexedOffsetArray.bitSizeOf();
         final double minCompressionRatio = 0.82;
 
-        assertTrue("Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
-                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!",
-                unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf);
+        assertTrue(unpackedBitsizeOf * minCompressionRatio > packedBitsizeOf, () ->
+                "Unpacked array has " + unpackedBitsizeOf + " bits, packed array has " + packedBitsizeOf +
+                " bits, " + "compression ratio is " + packedBitsizeOf * 100.0 / unpackedBitsizeOf + "%!");
     }
 
     private void checkWriteRead(int numElements) throws IOException, ZserioError

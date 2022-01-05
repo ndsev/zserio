@@ -1,12 +1,11 @@
 package array_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
 import java.math.BigInteger;
-
-import org.junit.Test;
 
 import zserio.runtime.io.FileBitStreamWriter;
 import array_types.packed_auto_array_struct_with_unpacked_field.PackedAutoArray;

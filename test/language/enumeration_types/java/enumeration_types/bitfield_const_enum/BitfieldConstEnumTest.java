@@ -1,10 +1,9 @@
 package enumeration_types.bitfield_const_enum;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-
-import org.junit.Test;
 
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
@@ -67,10 +66,10 @@ public class BitfieldConstEnumTest
         assertEquals(Color.GREEN, color);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test
     public void toEnumFailure()
     {
-        Color.toEnum((byte)1);
+        assertThrows(IllegalArgumentException.class, () -> Color.toEnum((byte)1));
     }
 
     private static int BITFIELD_ENUM_BITSIZEOF = 5;

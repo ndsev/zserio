@@ -1,13 +1,12 @@
 package parameterized_types.array_element_param;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.stream.FileImageInputStream;
-
-import org.junit.Test;
 
 public class ArrayElementParamTest
 {

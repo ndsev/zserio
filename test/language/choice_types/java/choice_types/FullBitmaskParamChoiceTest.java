@@ -1,13 +1,12 @@
 package choice_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.stream.FileImageOutputStream;
-
-import org.junit.Test;
 
 import choice_types.full_bitmask_param_choice.FullBitmaskParamChoice;
 import choice_types.full_bitmask_param_choice.Selector;

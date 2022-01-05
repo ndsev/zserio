@@ -1,11 +1,10 @@
 package offsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-
-import org.junit.Test;
 
 import offsets.bit_offset.BitOffset;
 
@@ -30,16 +29,15 @@ public class BitOffsetTest
         checkBitOffset(bitOffset);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void readWrongOffsets() throws IOException, ZserioError
     {
         final boolean writeWrongOffsets = true;
         final File file = new File("test.bin");
         writeBitOffsetToFile(file, writeWrongOffsets);
         final BitStreamReader stream = new FileBitStreamReader(file);
-        final BitOffset bitOffset = new BitOffset(stream);
+        assertThrows(ZserioError.class, () -> new BitOffset(stream));
         stream.close();
-        checkBitOffset(bitOffset);
     }
 
     @Test
@@ -112,13 +110,13 @@ public class BitOffsetTest
         checkOffsets(bitOffset, offsetShift);
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void writeWrongOffsets() throws ZserioError, IOException
     {
         final boolean createWrongOffsets = true;
         final BitOffset bitOffset = createBitOffset(createWrongOffsets);
         final BitStreamWriter writer = new ByteArrayBitStreamWriter();
-        bitOffset.write(writer, false);
+        assertThrows(ZserioError.class, () -> bitOffset.write(writer, false));
         writer.close();
     }
 

@@ -1,11 +1,10 @@
 package union_types;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.junit.Test;
 
 import union_types.union_with_parameter.TestUnion;
 
@@ -34,21 +33,15 @@ public class UnionWithParameterTest
         assertEquals(testUnion.getCase1Field(), readTestUnion.getCase1Field());
     }
 
-    @Test(expected=ZserioError.class)
+    @Test
     public void constructorWithParameterCase1Forbidden() throws ZserioError, IOException
     {
         TestUnion testUnion = new TestUnion(false);
         assertFalse(testUnion.getCase1Allowed());
         testUnion.setCase1Field(11);
         final BitStreamWriter writer = new FileBitStreamWriter(TEST_FILE);
-        try
-        {
-            testUnion.write(writer); // throw
-        }
-        finally
-        {
-            writer.close();
-        }
+        assertThrows(ZserioError.class, () -> testUnion.write(writer));
+        writer.close();
     }
 
     @Test
