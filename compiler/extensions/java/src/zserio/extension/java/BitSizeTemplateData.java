@@ -6,6 +6,9 @@ import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for bit size.
+ */
 public class BitSizeTemplateData
 {
     public BitSizeTemplateData(String value, boolean isDynamicBitField)

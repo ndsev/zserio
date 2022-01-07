@@ -4,6 +4,9 @@ import java.math.BigInteger;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java int type mapping.
+ */
 public class NativeIntType extends NativeIntegralType
 {
     public NativeIntType(boolean nullable, NativeArrayTraits arrayTraits)

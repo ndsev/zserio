@@ -13,6 +13,9 @@ import zserio.ast.SqlTableType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
+/**
+ * FreeMarker template data for SqlDatabaseEmitter.
+ */
 public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)

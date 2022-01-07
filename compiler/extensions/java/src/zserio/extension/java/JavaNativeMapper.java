@@ -52,6 +52,11 @@ import zserio.extension.java.types.NativeSqlDatabaseType;
 import zserio.extension.java.types.NativeSqlTableType;
 import zserio.extension.java.types.NativeStringType;
 
+/**
+ * Java native mapper.
+ *
+ * Provides mapping of types and symbols from Zserio package symbols to Java native types and symbols.
+ */
 final class JavaNativeMapper
 {
     public JavaNativeMapper(boolean withWriterCode)
@@ -59,15 +64,6 @@ final class JavaNativeMapper
         this.withWriterCode = withWriterCode;
     }
 
-    /**
-     * Returns a Java symbol that can hold an instance of Zserio symbol.
-     *
-     * @param symbol Zserio symbol.
-     *
-     * @return Java symbol.
-     *
-     * @throws ZserioExtensionException If the Zserio symbol cannot be mapped to any Java symbol.
-     */
     public JavaNativeSymbol getJavaSymbol(AstNode symbol) throws ZserioExtensionException
     {
         if (symbol instanceof Constant)
@@ -82,15 +78,6 @@ final class JavaNativeMapper
                     "' in JavaNativeMapper!");
     }
 
-    /**
-     * Returns a Java type that can hold an instance of the Zserio type.
-     *
-     * @param typeInstantiation Instantiation of Zserio type.
-     *
-     * @return  Java type which can hold the Zserio type.
-     *
-     * @throws ZserioExtensionException If the the Zserio type cannot be mapped to any Java type.
-     */
     public JavaNativeType getJavaType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(typeInstantiation);
@@ -104,15 +91,6 @@ final class JavaNativeMapper
         return nativeType;
     }
 
-    /**
-     * Returns a Java type that can hold an instance of referenced Zserio type.
-     *
-     * @param typeReference Reference to the Zserio type.
-     *
-     * @return  Java type which can hold referenced Zserio type.
-     *
-     * @throws ZserioExtensionException If the referenced Zserio type cannot be mapped to any Java type.
-     */
     public JavaNativeType getJavaType(TypeReference typeReference) throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(typeReference);
@@ -126,17 +104,6 @@ final class JavaNativeMapper
         return nativeType;
     }
 
-    /**
-     * Returns a Java type that can hold an instance of given Zserio type.
-     *
-     * This can be a primitive type (e.g. byte) if it suffices.
-     *
-     * @param type Zserio type.
-     *
-     * @return JavaNativeType that can hold values of the given Zserio type.
-     *
-     * @throws ZserioExtensionException If the Zserio type cannot be mapped to any Java type.
-     */
     public JavaNativeType getJavaType(ZserioType type) throws ZserioExtensionException
     {
         final JavaNativeTypes javaTypes = getJavaTypes(type);
@@ -150,19 +117,6 @@ final class JavaNativeMapper
         return nativeType;
     }
 
-    /**
-     * Return a Java integral type for given Zserio integral type.
-     *
-     * This is working exactly like getJavaType() does but it guarantees an (Zserio) IntegerType
-     * is mapped to NativeIntegralType, not only to the base JavaNativeType. Use this when the native
-     * integral interface is required.
-     *
-     * @param typeInstantiation Instantiation of Zserio Integer Type to map.
-     *
-     * @return NativeIntegralType that can hold values of the given Zserio type.
-     *
-     * @throws ZserioExtensionException If the Zserio type cannot be mapped to any Java type.
-     */
     public NativeIntegralType getJavaIntegralType(TypeInstantiation typeInstantiation)
             throws ZserioExtensionException
     {
@@ -177,18 +131,6 @@ final class JavaNativeMapper
         return (NativeIntegralType)nativeType;
     }
 
-    /**
-     * Return a Java type for given Zserio type that is suitable to be stored as an Object.
-     *
-     * In other words it never returns a primitive data type (e.g. byte), but
-     * the wrapper class (e.g. Byte).
-     *
-     * @param typeInstantiation Instantiation of Zserio type.
-     *
-     * @return JavaNativeType that is derived from Object and can hold values of the Zserio type.
-     *
-     * @throws ZserioExtensionException If the zserio type cannot be mapped to any Java type.
-     */
     public JavaNativeType getNullableJavaType(TypeInstantiation typeInstantiation)
             throws ZserioExtensionException
     {

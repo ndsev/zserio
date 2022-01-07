@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java BitBuffer type mapping.
+ */
 public class NativeBitBufferType extends NativeArrayableType
 {
     public NativeBitBufferType()

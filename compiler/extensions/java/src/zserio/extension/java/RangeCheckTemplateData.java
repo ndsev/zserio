@@ -12,6 +12,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.NativeIntegralType;
 
+/**
+ * FreeMarker template data for range checking.
+ */
 public final class RangeCheckTemplateData
 {
     public RangeCheckTemplateData(CompoundFieldTemplateData field,

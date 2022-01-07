@@ -15,7 +15,7 @@ import zserio.ast.VarIntegerType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
-/***
+/**
  * Create RuntimeFunctionTemplateData needed for generating of calls to Zserio runtime
  * (e.g. for reading and writing of built-in types).
  */

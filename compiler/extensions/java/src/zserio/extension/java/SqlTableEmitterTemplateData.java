@@ -27,6 +27,9 @@ import zserio.extension.java.types.NativeEnumType;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.tools.HashUtil;
 
+/**
+ * FreeMarker template data for SqlTableEmitter.
+ */
 public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType, String tableRowName)

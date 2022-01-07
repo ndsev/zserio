@@ -10,6 +10,9 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 import zserio.extension.java.types.NativeBooleanType;
 
+/**
+ * FreeMarker template data for SQL table rows.
+ */
 public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
 {
     public SqlTableRowEmitterTemplateData(TemplateDataContext context, SqlTableType tableType,

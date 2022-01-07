@@ -6,6 +6,9 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.symbols.JavaNativeSymbol;
 import zserio.extension.java.types.JavaNativeType;
 
+/**
+ * FreeMarker template data for ConstEmitter.
+ */
 public final class ConstEmitterTemplateData extends JavaTemplateData
 {
     public ConstEmitterTemplateData(TemplateDataContext context, Constant constant) throws ZserioExtensionException

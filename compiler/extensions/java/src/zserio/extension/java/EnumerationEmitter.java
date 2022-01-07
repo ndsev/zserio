@@ -4,6 +4,9 @@ import zserio.ast.EnumType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Enumeration emitter.
+ */
 class EnumerationEmitter extends JavaDefaultEmitter
 {
     public EnumerationEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)

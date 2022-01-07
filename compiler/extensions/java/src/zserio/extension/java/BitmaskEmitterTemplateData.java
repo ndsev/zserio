@@ -16,7 +16,7 @@ import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
 
 /**
- * The bitmask data used for FreeMarker template during bitmask file generation.
+ * FreeMarker template data for BitmaskEmitter.
  */
 public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
 {

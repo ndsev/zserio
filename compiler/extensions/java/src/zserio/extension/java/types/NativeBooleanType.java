@@ -5,6 +5,9 @@ import java.math.BigInteger;
 import zserio.ast.PackageName;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Native Java boolean type mapping.
+ */
 public class NativeBooleanType extends NativeIntegralType
 {
     public NativeBooleanType(boolean nullable)

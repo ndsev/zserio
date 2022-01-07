@@ -4,6 +4,9 @@ import zserio.ast.ServiceType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Service emitter.
+ */
 class ServiceEmitter extends JavaDefaultEmitter
 {
     public ServiceEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)

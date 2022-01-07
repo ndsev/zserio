@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java double type mapping.
+ */
 public class NativeDoubleType extends NativeArrayableType
 {
     public NativeDoubleType(boolean nullable)

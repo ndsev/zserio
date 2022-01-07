@@ -28,6 +28,9 @@ import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeLongType;
 import zserio.extension.java.types.NativeRawArray;
 
+/**
+ * FreeMarker template data for compound fields.
+ */
 public final class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(JavaNativeMapper javaNativeMapper,

@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java enumeration type mapping.
+ */
 public class NativeEnumType extends NativeArrayableType
 {
     public NativeEnumType(PackageName packageName, String name, NativeIntegralType nativeBaseType,

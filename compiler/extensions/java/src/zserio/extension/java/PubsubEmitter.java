@@ -4,6 +4,9 @@ import zserio.ast.PubsubType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Pubsub emitter.
+ */
 class PubsubEmitter extends JavaDefaultEmitter
 {
     public PubsubEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)

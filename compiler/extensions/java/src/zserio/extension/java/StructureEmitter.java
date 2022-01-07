@@ -4,6 +4,9 @@ import zserio.ast.StructureType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Structure emitter.
+ */
 class StructureEmitter extends JavaDefaultEmitter
 {
     public StructureEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)

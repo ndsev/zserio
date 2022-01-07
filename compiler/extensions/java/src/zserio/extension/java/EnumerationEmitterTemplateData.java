@@ -11,7 +11,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.NativeIntegralType;
 
 /**
- * The enum data used for FreeMarker template during enum file generation.
+ * FreeMarker template data for EnumerationEmitter.
  */
 public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 {

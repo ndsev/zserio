@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java raw array mapping.
+ */
 public class NativeRawArray extends JavaNativeType
 {
     public NativeRawArray(String rawArrayName)

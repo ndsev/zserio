@@ -3,6 +3,11 @@ package zserio.extension.java;
 import zserio.ast.PackageName;
 import zserio.extension.common.ExpressionFormatter;
 
+/**
+ * FreeMarker template data context for all emitters.
+ *
+ * Holds all parameters used by FreeMarker template data.
+ */
 final class TemplateDataContext
 {
     public TemplateDataContext(JavaExtensionParameters javaParameters, PackageName rootPackageName)

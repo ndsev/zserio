@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java array wrapper mapping.
+ */
 public class NativeArrayWrapper extends JavaNativeType
 {
     public NativeArrayWrapper()

@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java array traits mapping.
+ */
 public class NativeArrayTraits extends JavaNativeType
 {
     public NativeArrayTraits(String name)

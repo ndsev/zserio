@@ -10,6 +10,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
+/**
+ * FreeMarker template data for compound functions.
+ */
 public final class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(JavaNativeMapper javaNativeMapper, CompoundType compoundType,

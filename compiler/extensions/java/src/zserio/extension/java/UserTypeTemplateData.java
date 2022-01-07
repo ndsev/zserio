@@ -5,6 +5,9 @@ import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
+/**
+ * Base class for all user type template data for FreeMarker.
+ */
 public class UserTypeTemplateData extends JavaTemplateData
 {
     public UserTypeTemplateData(TemplateDataContext context, ZserioType type) throws ZserioExtensionException

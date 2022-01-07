@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java bitmask type mapping.
+ */
 public class NativeBitmaskType extends NativeArrayableType
 {
     public NativeBitmaskType(PackageName packageName, String name, NativeIntegralType nativeBaseType,

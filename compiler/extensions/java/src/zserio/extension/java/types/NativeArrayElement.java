@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java mapping of an array element type.
+ */
 public class NativeArrayElement extends JavaNativeType
 {
     public NativeArrayElement(String name)

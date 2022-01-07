@@ -4,6 +4,9 @@ import java.math.BigInteger;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java short type mapping.
+ */
 public class NativeShortType extends NativeIntegralType
 {
     public NativeShortType(boolean nullable, NativeArrayTraits arrayTraits)

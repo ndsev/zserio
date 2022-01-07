@@ -12,27 +12,11 @@ import zserio.extension.java.types.NativeIntType;
  */
 final class JavaLiteralFormatter
 {
-    /**
-     * Formats boolean value in Java format.
-     *
-     * @param value Boolean value to format.
-     *
-     * @return The boolean value in Java format.
-     */
     public static String formatBooleanLiteral(boolean value)
     {
         return booleanType.formatLiteral(value);
     }
 
-    /**
-     * Formats decimal integer value in Java format.
-     *
-     * @param value Integer value to format.
-     *
-     * @return The decimal integer value in Java format.
-     *
-     * @throws ZserioExtensionException Throws in case of any range error.
-     */
     public static String formatIntLiteral(int value) throws ZserioExtensionException
     {
         return intType.formatLiteral(BigInteger.valueOf(value));

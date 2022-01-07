@@ -2,6 +2,9 @@ package zserio.extension.java.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native Java float type mapping.
+ */
 public class NativeFloatType extends NativeArrayableType
 {
     public NativeFloatType(boolean nullable, NativeArrayTraits arrayTraits)

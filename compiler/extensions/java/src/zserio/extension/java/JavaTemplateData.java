@@ -1,5 +1,8 @@
 package zserio.extension.java;
 
+/**
+ * Base class for all Java template data for FreeMarker.
+ */
 public class JavaTemplateData
 {
     public JavaTemplateData(TemplateDataContext context)

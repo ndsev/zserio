@@ -9,6 +9,9 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
+/**
+ * FreeMarker template data for TypeInfo.
+ */
 public class TypeInfoTemplateData
 {
     public TypeInfoTemplateData(TypeReference typeReference, JavaNativeType javaNativeType)

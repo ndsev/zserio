@@ -14,6 +14,9 @@ import zserio.extension.java.types.NativeEnumType;
 import zserio.extension.java.types.NativeFloatType;
 import zserio.extension.java.types.NativeLongType;
 
+/**
+ * FreeMarker template data for compound parameters.
+ */
 public final class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(JavaNativeMapper javaNativeMapper,

@@ -15,6 +15,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
+/**
+ * FreeMarker template data for ChoiceEmitter.
+ */
 public final class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
     public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType)

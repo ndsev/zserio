@@ -14,6 +14,9 @@ import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Base class for all Java emitters.
+ */
 abstract class JavaDefaultEmitter extends DefaultTreeWalker
 {
     public JavaDefaultEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)

@@ -4,6 +4,9 @@ import zserio.ast.ChoiceType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Choice emitter.
+ */
 class ChoiceEmitter extends JavaDefaultEmitter
 {
     public ChoiceEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)

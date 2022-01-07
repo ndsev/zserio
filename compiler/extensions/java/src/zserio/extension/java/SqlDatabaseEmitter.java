@@ -4,6 +4,9 @@ import zserio.ast.SqlDatabaseType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * SQL database emitter.
+ */
 class SqlDatabaseEmitter extends JavaDefaultEmitter
 {
     public SqlDatabaseEmitter(OutputFileManager outputFileManager, JavaExtensionParameters javaParameters)

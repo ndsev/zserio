@@ -3,6 +3,9 @@ package zserio.extension.java;
 import zserio.ast.CompoundType;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for compound constructors.
+ */
 public final class CompoundConstructorTemplateData
 {
     public CompoundConstructorTemplateData(CompoundType compoundType,
