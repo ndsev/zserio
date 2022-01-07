@@ -4,6 +4,9 @@ import zserio.ast.Subtype;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Subtype emitter.
+ */
 public class SubtypeEmitter extends CppDefaultEmitter
 {
     public SubtypeEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

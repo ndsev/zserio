@@ -8,6 +8,9 @@ import zserio.ast.ServiceMethod;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
+/**
+ * FreeMarker template data for ServiceEmitter.
+ */
 public class ServiceEmitterTemplateData extends UserTypeTemplateData
 {
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)

@@ -4,6 +4,9 @@ import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.NativeIntegralType;
 
+/**
+ * FreeMarker template data with info about integral types.
+ */
 public class NativeIntegralTypeInfoTemplateData extends NativeTypeInfoTemplateData
 {
     public NativeIntegralTypeInfoTemplateData(NativeIntegralType nativeBaseType,

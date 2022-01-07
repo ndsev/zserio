@@ -3,6 +3,9 @@ package zserio.extension.cpp.types;
 import zserio.extension.cpp.CppFullNameFormatter;
 import zserio.extension.cpp.CppLiteralFormatter;
 
+/**
+ * Native C++ StringView type mapping.
+ */
 public class NativeStringViewType extends NativeRuntimeType
 {
     public NativeStringViewType()

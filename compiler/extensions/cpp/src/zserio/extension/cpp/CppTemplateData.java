@@ -9,6 +9,9 @@ import zserio.ast.PackageName;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeRuntimeAllocType;
 
+/**
+ * Base class for all C++ template data for FreeMarker.
+ */
 public abstract class CppTemplateData implements IncludeCollector
 {
     public CppTemplateData(TemplateDataContext context)

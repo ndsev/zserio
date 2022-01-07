@@ -5,6 +5,9 @@ import zserio.ast.ZserioTypeUtil;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
+/**
+ * Base class for all user type template data for FreeMarker.
+ */
 public class UserTypeTemplateData extends CppTemplateData
 {
     public UserTypeTemplateData(TemplateDataContext context, ZserioType type) throws ZserioExtensionException

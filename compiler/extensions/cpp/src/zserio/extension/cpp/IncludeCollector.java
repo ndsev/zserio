@@ -4,6 +4,9 @@ import java.util.Collection;
 
 import zserio.extension.cpp.types.CppNativeType;
 
+/**
+ * Interface for include collectors.
+ */
 public interface IncludeCollector
 {
     void addHeaderIncludesForType(CppNativeType nativeType);

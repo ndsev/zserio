@@ -5,6 +5,9 @@ import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
+/**
+ * FreeMarker template data for SubtypeEmitter.
+ */
 public class SubtypeEmitterTemplateData extends UserTypeTemplateData
 {
     public SubtypeEmitterTemplateData(TemplateDataContext context, Subtype subtype) throws ZserioExtensionException

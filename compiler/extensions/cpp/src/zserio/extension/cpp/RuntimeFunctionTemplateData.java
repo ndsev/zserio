@@ -1,5 +1,8 @@
 package zserio.extension.cpp;
 
+/**
+ * Template data for generating of calls to Zserio runtime (e.g. for reading and writing of built-in types).
+ */
 public class RuntimeFunctionTemplateData
 {
     RuntimeFunctionTemplateData(String suffix)

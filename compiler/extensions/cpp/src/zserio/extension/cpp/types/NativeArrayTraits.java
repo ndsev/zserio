@@ -2,6 +2,9 @@ package zserio.extension.cpp.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native C++ array traits mapping.
+ */
 public class NativeArrayTraits extends NativeRuntimeType
 {
     public NativeArrayTraits(String name)

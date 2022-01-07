@@ -1,5 +1,8 @@
 package zserio.extension.cpp.types;
 
+/**
+ * Native C++ array type mapping.
+ */
 public class NativeArrayType extends NativeRuntimeType
 {
     public NativeArrayType(CppNativeArrayableType elementType, NativeRuntimeAllocType nativeVectorType)

@@ -4,6 +4,9 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 
+/**
+ * FreeMarker template data for compound constructors.
+ */
 public class CompoundConstructorTemplateData
 {
     public CompoundConstructorTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,

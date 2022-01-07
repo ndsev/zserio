@@ -12,6 +12,9 @@ import zserio.ast.Field;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for ChoiceEmitter.
+ */
 public class ChoiceEmitterTemplateData extends CompoundTypeTemplateData
 {
     public ChoiceEmitterTemplateData(TemplateDataContext context, ChoiceType choiceType)

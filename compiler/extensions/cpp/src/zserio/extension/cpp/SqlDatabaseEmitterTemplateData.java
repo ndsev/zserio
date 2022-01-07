@@ -13,6 +13,9 @@ import zserio.ast.SqlTableType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
+/**
+ * FreeMarker template data for SqlDatabaseEmitter.
+ */
 public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)

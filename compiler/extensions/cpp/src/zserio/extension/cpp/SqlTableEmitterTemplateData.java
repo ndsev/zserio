@@ -33,6 +33,9 @@ import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeIntegralType;
 import zserio.tools.HashUtil;
 
+/**
+ * FreeMarker template data for SqlTableEmitter.
+ */
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)

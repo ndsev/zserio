@@ -4,6 +4,9 @@ import zserio.ast.BitmaskType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Bitmask emitter.
+ */
 public class BitmaskEmitter extends CppDefaultEmitter
 {
     public BitmaskEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

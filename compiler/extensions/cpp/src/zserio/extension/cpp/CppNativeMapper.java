@@ -45,13 +45,13 @@ import zserio.extension.cpp.types.NativeStringViewType;
 import zserio.extension.cpp.types.NativeUserArrayableType;
 import zserio.extension.cpp.types.NativeUserType;
 
+/**
+ * C++ native mapper.
+ *
+ * Provides mapping of types and symbols from Zserio package symbols to C++ native types and symbols.
+ */
 public class CppNativeMapper
 {
-    /**
-     * Constructor from types context.
-     *
-     * @param typesContext Types context to construct from.
-     */
     public CppNativeMapper(TypesContext typesContext)
     {
         final TypesContext.AllocatorDefinition allocatorDefinition = typesContext.getAllocatorDefinition();
@@ -85,15 +85,6 @@ public class CppNativeMapper
                 stdUInt8Type);
     }
 
-    /**
-     * Returns a C++ symbol that can hold an instance of Zserio symbol.
-     *
-     * @param symbol Zserio symbol.
-     *
-     * @return C++ symbol.
-     *
-     * @throws ZserioExtensionException If the Zserio symbol cannot be mapped to any C++ symbol.
-     */
     public CppNativeSymbol getCppSymbol(AstNode symbol) throws ZserioExtensionException
     {
         if (symbol instanceof Constant)
@@ -109,15 +100,6 @@ public class CppNativeMapper
                     "' in CppNativeMapper!");
     }
 
-    /**
-     * Returns a C++ type that can hold an instance of the Zserio type.
-     *
-     * @param typeInstantiation Instantiation of the Zserio type.
-     *
-     * @return C++ type which can hold the Zserio type.
-     *
-     * @throws ZserioExtensionException If the Zserio type cannot be mapped to any C++ type.
-     */
     public CppNativeType getCppType(TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
         if (typeInstantiation instanceof ArrayInstantiation)
@@ -129,30 +111,12 @@ public class CppNativeMapper
         return getCppType(typeInstantiation.getType());
     }
 
-    /**
-     * Returns a C++ type that can hold an instance of referenced Zserio type.
-     *
-     * @param typeReference Reference to the Zserio type.
-     *
-     * @return C++ type which can hold the Zserio type.
-     *
-     * @throws ZserioExtensionException If the Zserio type cannot be mapped to any C++ type.
-     */
     public CppNativeType getCppType(TypeReference typeReference) throws ZserioExtensionException
     {
         // don't resolve subtypes so that the subtype name (C++ typedef) will be used
         return getCppType(typeReference.getType());
     }
 
-    /**
-     * Returns a C++ type that can hold an instance of given Zserio type.
-     *
-     * @param type Zserio type for mapping to C++ type.
-     *
-     * @return C++ type which can hold a Zserio type.
-     *
-     * @throws ZserioExtensionException If the Zserio type cannot be mapped to any C++ type.
-     */
     public CppNativeType getCppType(ZserioType type) throws ZserioExtensionException
     {
         final TypeMapperVisitor visitor = new TypeMapperVisitor();
@@ -170,15 +134,6 @@ public class CppNativeMapper
         return nativeType;
     }
 
-    /**
-     * Returns a C++ integer type that can hold an instance of given Zserio integer type.
-     *
-     * @param typeInstantiation Instantiation of Zserio integer type for mapping to C++ integer type.
-     *
-     * @return C++ type which can hold a Zserio integer type.
-     *
-     * @throws ZserioExtensionException If the Zserio integer type cannot be mapped to any C++ integer type.
-     */
     public NativeIntegralType getCppIntegralType(TypeInstantiation typeInstantiation)
             throws ZserioExtensionException
     {

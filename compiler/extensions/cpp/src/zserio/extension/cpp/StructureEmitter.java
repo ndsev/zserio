@@ -4,6 +4,9 @@ import zserio.ast.StructureType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Structure emitter.
+ */
 public class StructureEmitter extends CppDefaultEmitter
 {
     public StructureEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

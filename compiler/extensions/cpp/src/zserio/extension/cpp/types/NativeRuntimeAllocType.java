@@ -3,6 +3,9 @@ package zserio.extension.cpp.types;
 import zserio.ast.PackageName;
 import zserio.extension.cpp.TypesContext;
 
+/**
+ * Native C++ runtime type mapping for types which depend on allocators.
+ */
 public class NativeRuntimeAllocType extends NativeRuntimeType
 {
     public NativeRuntimeAllocType(TypesContext.NativeTypeDefinition nativeTypeDefinition,

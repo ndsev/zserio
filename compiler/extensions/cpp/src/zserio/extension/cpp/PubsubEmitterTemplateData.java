@@ -10,6 +10,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
+/**
+ * FreeMarker template data for PubsubEmitter.
+ */
 public class PubsubEmitterTemplateData extends UserTypeTemplateData
 {
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)

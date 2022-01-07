@@ -4,6 +4,9 @@ import zserio.ast.SqlTableType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * SQL table emitter.
+ */
 public class SqlTableEmitter extends CppDefaultEmitter
 {
     public SqlTableEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

@@ -4,6 +4,9 @@ import zserio.ast.PubsubType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Pubsub emitter.
+ */
 public class PubsubEmitter extends CppDefaultEmitter
 {
     public PubsubEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

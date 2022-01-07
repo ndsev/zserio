@@ -15,6 +15,9 @@ import zserio.extension.common.FreeMarkerUtil;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Base class for all C++ emitters.
+ */
 abstract class CppDefaultEmitter extends DefaultTreeWalker
 {
     public CppDefaultEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

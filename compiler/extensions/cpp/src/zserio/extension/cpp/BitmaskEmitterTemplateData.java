@@ -14,6 +14,9 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.NativeIntegralType;
 
+/**
+ * FreeMarker template data for BitmaskEmitter.
+ */
 public class BitmaskEmitterTemplateData extends UserTypeTemplateData
 {
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)

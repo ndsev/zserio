@@ -6,6 +6,11 @@ import zserio.ast.Field;
 import zserio.ast.Function;
 import zserio.ast.Parameter;
 
+/**
+ * Accessor name formatter.
+ *
+ * Provides names of accessors (e.g. property names) as they will be generated in C++.
+ */
 public class AccessorNameFormatter
 {
     public static String getGetterName(Field field)

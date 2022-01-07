@@ -8,6 +8,9 @@ import zserio.ast.Field;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * FreeMarker template data for compound types.
+ */
 public class CompoundTypeTemplateData extends UserTypeTemplateData
 {
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)

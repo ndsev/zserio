@@ -24,6 +24,9 @@ import zserio.extension.cpp.types.NativeArrayType;
 import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.NativeIntegralType;
 
+/**
+ * FreeMarker template data for compound fields.
+ */
 public class CompoundFieldTemplateData
 {
     public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType,

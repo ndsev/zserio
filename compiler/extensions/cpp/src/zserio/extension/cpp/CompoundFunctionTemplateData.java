@@ -13,6 +13,9 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeStringViewType;
 
+/**
+ * FreeMarker template data for compound functions.
+ */
 public class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,

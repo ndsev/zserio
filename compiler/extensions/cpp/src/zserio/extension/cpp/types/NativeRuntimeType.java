@@ -2,6 +2,9 @@ package zserio.extension.cpp.types;
 
 import zserio.ast.PackageName;
 
+/**
+ * Native C++ runtime type mapping.
+ */
 public class NativeRuntimeType extends NativeType
 {
     public NativeRuntimeType(PackageName packageName, String name)

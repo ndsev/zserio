@@ -9,6 +9,9 @@ import zserio.ast.TypeReference;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 
+/**
+ * FreeMarker template data for compound parameters.
+ */
 public class CompoundParameterTemplateData
 {
     public CompoundParameterTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,

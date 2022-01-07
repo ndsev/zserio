@@ -3,6 +3,9 @@ package zserio.extension.cpp.types;
 import java.math.BigInteger;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Native C++ integral type mapping.
+ */
 public class NativeIntegralType extends NativeBuiltinType
 {
     public NativeIntegralType(int numBits, boolean isSigned, NativeArrayTraits arrayTraits)

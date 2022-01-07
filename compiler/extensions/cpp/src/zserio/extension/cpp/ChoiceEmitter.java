@@ -4,6 +4,9 @@ import zserio.ast.ChoiceType;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Choice emitter.
+ */
 public class ChoiceEmitter extends CppDefaultEmitter
 {
     public ChoiceEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

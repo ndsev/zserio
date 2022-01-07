@@ -4,6 +4,9 @@ import zserio.ast.Constant;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ZserioExtensionException;
 
+/**
+ * Emitter for constants.
+ */
 public class ConstEmitter extends CppDefaultEmitter
 {
     public ConstEmitter(OutputFileManager outputFileManager, CppExtensionParameters cppParameters)

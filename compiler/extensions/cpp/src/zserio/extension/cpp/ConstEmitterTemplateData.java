@@ -9,6 +9,9 @@ import zserio.extension.cpp.symbols.CppNativeSymbol;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeStringViewType;
 
+/**
+ * FreeMarker template data for ConstEmitter.
+ */
 public class ConstEmitterTemplateData extends CppTemplateData
 {
     public ConstEmitterTemplateData(TemplateDataContext context, Constant constant)

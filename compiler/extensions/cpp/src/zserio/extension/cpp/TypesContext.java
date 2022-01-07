@@ -2,6 +2,11 @@ package zserio.extension.cpp;
 
 import zserio.ast.PackageName;
 
+/**
+ * Keeps information about configurable types.
+ *
+ * Currently only types which depends on allocators are configurable.
+ */
 public class TypesContext
 {
     public TypesContext(AllocatorDefinition allocator)
