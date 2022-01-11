@@ -207,7 +207,7 @@ ${types.reflectablePtr.name} ${name}::reflectable(const allocator_type& allocato
             m_object.write(writer);
         }
 
-        virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+        virtual size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_object.bitSizeOf(bitPosition);
         }

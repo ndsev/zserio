@@ -1,4 +1,2 @@
 noExplicitConstructor:*/constraints/structure_bitmask_constraints/Availability.h
-
 uninitMemberVar:*/constraints/choice_constraints/ChoiceConstraints.cpp
-uninitMemberVar:*/constraints/choice_constraints/ChoiceConstraints.h

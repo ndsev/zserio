@@ -138,15 +138,15 @@ protected:
         ASSERT_TRUE(reflectable["childArray"]->at(1)->find("nicknames")->isArray());
         ASSERT_EQ(2, reflectable["childArray"]->at(1)->find("nicknames")->size());
         ASSERT_EQ("first", reflectable["childArray"]->at(1)->find("nicknames")->at(1)->toString());
-        checkWriteThrows(*reflectable["childArray"]);
-        checkWriteRead(*reflectable["childArray"]->at(1), structure.getChildArray()[1]);
-        checkWriteReadBuiltin(*reflectable["childArray"]->at(1)->getField("name"),
+        checkWriteThrows(*(reflectable["childArray"]));
+        checkWriteRead(*(reflectable["childArray"]->at(1)), structure.getChildArray()[1]);
+        checkWriteReadBuiltin(*(reflectable["childArray"]->at(1)->getField("name")),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getChildArray()[1].getName(), reader.readString<allocator_type>());
                 }
         );
-        checkWriteThrows(*reflectable["childArray"]->at(1)->getField("nicknames"));
-        checkWriteReadBuiltin(*reflectable["childArray"]->at(1)->getField("nicknames")->at(1),
+        checkWriteThrows(*(reflectable["childArray"]->at(1)->getField("nicknames")));
+        checkWriteReadBuiltin(*(reflectable["childArray"]->at(1)->getField("nicknames")->at(1)),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getChildArray()[1].getNicknames()[1],
                             reader.readString<allocator_type>());
@@ -159,7 +159,7 @@ protected:
         ASSERT_EQ("5", reflectable.getField("param")->toString());
         ASSERT_THROW(reflectable.getField("param")->toInt(), zserio::CppRuntimeException);
         ASSERT_THROW(reflectable.getField("param")->getInt8(), zserio::CppRuntimeException);
-        checkWriteReadBuiltin(*reflectable.getField("param"),
+        checkWriteReadBuiltin(*(reflectable.getField("param")),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getParam(), reader.readBits(8));
                 }
@@ -172,10 +172,10 @@ protected:
         ASSERT_TRUE(reflectable["parameterized.array"]->isArray());
         ASSERT_EQ(5, reflectable["parameterized.array"]->size());
         ASSERT_EQ(5, reflectable["parameterized.array"]->at(4)->getUInt8());
-        ASSERT_EQ(4, (*reflectable["parameterized.array"])[3]->toUInt());
-        ASSERT_THROW((*reflectable["parameterized.array"])[4]->toInt(), zserio::CppRuntimeException);
-        checkWriteThrows(*reflectable["parameterized.array"]);
-        checkWriteRead(*reflectable["parameterized"], structure.getParameterized(), structure.getParam());
+        ASSERT_EQ(4, (*(reflectable["parameterized.array"]))[3]->toUInt());
+        ASSERT_THROW((*(reflectable["parameterized.array"]))[4]->toInt(), zserio::CppRuntimeException);
+        checkWriteThrows(*(reflectable["parameterized.array"]));
+        checkWriteRead(*(reflectable["parameterized"]), structure.getParameterized(), structure.getParam());
 
         // varsize len : len > 0 && len < 1000;
         ASSERT_EQ(zserio::SchemaType::VARSIZE, reflectable.getField("len")->getTypeInfo().getSchemaType());
@@ -184,7 +184,7 @@ protected:
         ASSERT_EQ(4, reflectable.find("len")->toUInt());
         ASSERT_EQ(4.0, reflectable.find("len")->toDouble());
         ASSERT_THROW(reflectable.find("len")->toInt(), zserio::CppRuntimeException);
-        checkWriteReadBuiltin(*reflectable.find("len"),
+        checkWriteReadBuiltin(*(reflectable.find("len")),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getLen(), reader.readVarSize());
                 }
@@ -195,8 +195,8 @@ protected:
         ASSERT_EQ(4, reflectable.getField("offsets")->size());
         ASSERT_NE(0, reflectable.getField("offsets")->at(0)->getUInt32()); // offset shall be initialized
         ASSERT_NE(0, reflectable.getField("offsets")->at(0)->toDouble());
-        checkWriteThrows(*reflectable.getField("offsets"));
-        checkWriteReadBuiltin(*reflectable.getField("offsets")->at(0),
+        checkWriteThrows(*(reflectable.getField("offsets")));
+        checkWriteReadBuiltin(*(reflectable.getField("offsets")->at(0)),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getOffsets()[0], reader.readBits(32));
                 }
@@ -206,8 +206,8 @@ protected:
         ASSERT_TRUE(reflectable.getField("parameterizedArray")->isArray());
         ASSERT_EQ(4, reflectable.getField("parameterizedArray")->size());
         ASSERT_EQ("3", reflectable["parameterizedArray"]->at(2)->find("array")->at(2)->toString());
-        checkWriteThrows(*reflectable["parameterizedArray"]);
-        checkWriteRead(*reflectable["parameterizedArray"]->at(2),
+        checkWriteThrows(*(reflectable["parameterizedArray"]));
+        checkWriteRead(*(reflectable["parameterizedArray"]->at(2)),
                 structure.getParameterizedArray()[2], structure.getParam());
 
         // Bitmask bitmaskField;
@@ -217,14 +217,14 @@ protected:
                 reflectable.getField("bitmaskField")->toDouble());
         ASSERT_EQ(Bitmask(Bitmask::Values::FLAG1 | Bitmask::Values::FLAG2).toString(),
                 reflectable.getField("bitmaskField")->toString());
-        checkWriteRead(*reflectable.getField("bitmaskField"), structure.getBitmaskField());
+        checkWriteRead(*(reflectable.getField("bitmaskField")), structure.getBitmaskField());
 
         // Bitmask bitmaskArray[];
         ASSERT_TRUE(reflectable.getField("bitmaskArray")->isArray());
         ASSERT_EQ(2, reflectable.getField("bitmaskArray")->size());
         ASSERT_EQ(Bitmask(Bitmask::Values::FLAG1).getValue(), reflectable["bitmaskArray"]->at(0)->toUInt());
-        checkWriteThrows(*reflectable["bitmaskArray"]);
-        checkWriteRead(*reflectable["bitmaskArray"]->at(0), structure.getBitmaskArray()[0]);
+        checkWriteThrows(*(reflectable["bitmaskArray"]));
+        checkWriteRead(*(reflectable["bitmaskArray"]->at(0)), structure.getBitmaskArray()[0]);
 
         // SelectorEnum enumField;
         ASSERT_EQ(zserio::SchemaType::ENUM, reflectable["enumField"]->getTypeInfo().getSchemaType());
@@ -232,7 +232,7 @@ protected:
         ASSERT_EQ(zserio::enumToValue(Selector::STRUCT), reflectable.getField("enumField")->getInt8());
         ASSERT_THROW(reflectable.getField("enumField")->toUInt(), zserio::CppRuntimeException);
         ASSERT_EQ(zserio::enumToString(Selector::STRUCT), reflectable.getField("enumField")->toString());
-        checkWriteReadEnum(*reflectable.getField("enumField"), structure.getEnumField());
+        checkWriteReadEnum(*(reflectable.getField("enumField")), structure.getEnumField());
 
         // Selector enumArray[];
         ASSERT_EQ(zserio::SchemaType::ENUM, reflectable["enumArray"]->getTypeInfo().getSchemaType());
@@ -245,14 +245,14 @@ protected:
         ASSERT_TRUE(reflectable["enumArray"]->isArray());
         ASSERT_EQ(zserio::enumToValue(Selector::STRUCT), reflectable["enumArray"]->at(0)->getInt8());
         ASSERT_EQ(zserio::enumToValue(Selector::STRUCT), reflectable["enumArray"]->at(0)->toDouble());
-        checkWriteThrows(*reflectable.getField("enumArray"));
-        checkWriteReadEnum(*reflectable.getField("enumArray")->at(0), structure.getEnumArray()[0]);
+        checkWriteThrows(*(reflectable.getField("enumArray")));
+        checkWriteReadEnum(*(reflectable.getField("enumArray")->at(0)), structure.getEnumArray()[0]);
 
         // bit<param> dynamicBitField if param < 64;
         ASSERT_EQ(31, reflectable["dynamicBitField"]->toUInt());
         ASSERT_EQ(31, reflectable["dynamicBitField"]->getUInt64());
         ASSERT_THROW(reflectable["dynamicBitField"]->getUInt8(), zserio::CppRuntimeException);
-        checkWriteReadBuiltin(*reflectable["dynamicBitField"],
+        checkWriteReadBuiltin(*(reflectable["dynamicBitField"]),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getDynamicBitField(), reader.readBits64(structure.getParam()));
                 }
@@ -265,8 +265,8 @@ protected:
         ASSERT_EQ(20, reflectable["dynamicBitFieldArray"]->at(1)->toUInt());
         ASSERT_EQ(20.0, reflectable["dynamicBitFieldArray"]->at(1)->toDouble());
         ASSERT_EQ("30", reflectable["dynamicBitFieldArray"]->at(2)->toString());
-        checkWriteThrows(*reflectable["dynamicBitFieldArray"]);
-        checkWriteReadBuiltin(*reflectable["dynamicBitFieldArray"]->at(2),
+        checkWriteThrows(*(reflectable["dynamicBitFieldArray"]));
+        checkWriteReadBuiltin(*(reflectable["dynamicBitFieldArray"]->at(2)),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getDynamicBitFieldArray()[2], reader.readBits64(structure.getParam()));
                 }
@@ -285,8 +285,8 @@ protected:
         ASSERT_EQ(-1.0, reflectable["dynamicIntFieldArray"]->at(1)->toDouble());
         ASSERT_EQ("-1", reflectable["dynamicIntFieldArray"]->at(1)->toString());
         ASSERT_EQ(1, reflectable["dynamicIntFieldArray"]->at(2)->getInt8());
-        checkWriteThrows(*reflectable["dynamicIntFieldArray"]);
-        checkWriteReadBuiltin(*reflectable["dynamicIntFieldArray"]->at(0),
+        checkWriteThrows(*(reflectable["dynamicIntFieldArray"]));
+        checkWriteReadBuiltin(*(reflectable["dynamicIntFieldArray"]->at(0)),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getDynamicIntFieldArray()[0], reader.readSignedBits(4));
                 }
@@ -298,8 +298,8 @@ protected:
         ASSERT_FALSE(reflectable["boolArray"]->at(1)->getBool());
         ASSERT_EQ(0.0, reflectable["boolArray"]->at(1)->toDouble());
         ASSERT_EQ("false", reflectable["boolArray"]->at(1)->toString());
-        checkWriteThrows(*reflectable["boolArray"]);
-        checkWriteReadBuiltin(*reflectable["boolArray"]->at(0),
+        checkWriteThrows(*(reflectable["boolArray"]));
+        checkWriteReadBuiltin(*(reflectable["boolArray"]->at(0)),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getBoolArray()[0], reader.readBool());
                 }
@@ -309,7 +309,7 @@ protected:
         ASSERT_EQ(16, reflectable.getField("externField")->getBitBuffer().getBitSize());
         ASSERT_EQ(0xAB, reflectable.getField("externField")->getBitBuffer().getBuffer()[0]);
         ASSERT_EQ(0xCD, reflectable.getField("externField")->getBitBuffer().getBuffer()[1]);
-        checkWriteReadBuiltin(*reflectable.getField("externField"),
+        checkWriteReadBuiltin(*(reflectable.getField("externField")),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getExternField(), reader.readBitBuffer<allocator_type>());
                 }
@@ -322,8 +322,8 @@ protected:
         ASSERT_EQ(0x02, reflectable["externArray"]->at(0)->getBitBuffer().getBuffer()[0]);
         ASSERT_EQ(1, reflectable["externArray"]->at(1)->getBitBuffer().getBitSize());
         ASSERT_EQ(0x01, reflectable["externArray"]->at(1)->getBitBuffer().getBuffer()[0]);
-        checkWriteThrows(*reflectable["externArray"]);
-        checkWriteReadBuiltin(*reflectable.getField("externArray")->at(0),
+        checkWriteThrows(*(reflectable["externArray"]));
+        checkWriteReadBuiltin(*(reflectable.getField("externArray")->at(0)),
                 [&structure](zserio::BitStreamReader& reader) {
                     ASSERT_EQ(structure.getExternArray()[0], reader.readBitBuffer<allocator_type>());
                 }
@@ -440,7 +440,7 @@ TEST_F(ReflectionTest, checkChoiceWithUnion)
     checkStructReflectable(*structReflectable, choice.getUnionField().getStructField());
 
     // write read check on union
-    checkWriteRead(*reflectable->getField("unionField"), choice.getUnionField());
+    checkWriteRead(*(reflectable->getField("unionField")), choice.getUnionField());
 
     // write read check on choice
     checkWriteRead(*reflectable, choice, Selector::UNION);
@@ -496,7 +496,7 @@ TEST_F(ReflectionTest, checkChoiceWithBitmask)
     ASSERT_THROW(reflectable->callFunction("getBitmaskFromUnion"), zserio::CppRuntimeException);
 
     // write read check on bitmask
-    checkWriteRead(*(*reflectable)["bitmaskField"], choice.getBitmaskField());
+    checkWriteRead(*((*reflectable)["bitmaskField"]), choice.getBitmaskField());
 
     // write read check on choice
     checkWriteRead(*reflectable, choice, Selector::BITMASK);

@@ -1,7 +1,8 @@
 noExplicitConstructor:*/expressions/bitmask_type/Colors.h
-
 uninitMemberVar:*/expressions/index_operator/Element.cpp
-uninitMemberVar:*/expressions/index_operator/Element.h
-uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
-uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayHolder.cpp
 uninitMemberVar:*/expressions/parameter_type/ParameterTypeExpression.cpp
+uninitMemberVar:*/expressions/parameter_type/ParameterTypeExpression.h
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayElement.cpp
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayElement.h
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayHolder.cpp
+uninitMemberVar:*/expressions/parameterized_array_type/ParameterizedArrayHolder.h

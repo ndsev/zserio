@@ -1,10 +1,11 @@
 noExplicitConstructor:*/with_type_info_code/reflection/Bitmask.h
 noExplicitConstructor:*/with_type_info_code/type_info/TestBitmask.h
-
 uninitMemberVar:*/with_type_info_code/reflection/Parameterized.cpp
+uninitMemberVar:*/with_type_info_code/reflection/Parameterized.h
 uninitMemberVar:*/with_type_info_code/type_info/ParameterizedStruct.cpp
-uninitMemberVar:*/with_type_info_code/type_info/TemplatedParameterizedStruct_TS32.cpp
+uninitMemberVar:*/with_type_info_code/type_info/ParameterizedStruct.h
+uninitMemberVar:*/with_type_info_code/type_info/RecursiveChoice.cpp
 uninitMemberVar:*/with_type_info_code/type_info/RecursiveChoice.cpp
 uninitMemberVar:*/with_type_info_code/type_info/SimpleChoice.cpp
-
-constParameter:*/with_type_info_code/type_info/WithoutRowIdTable.cpp
+uninitMemberVar:*/with_type_info_code/type_info/TemplatedParameterizedStruct_TS32.cpp
+uninitMemberVar:*/with_type_info_code/type_info/TemplatedParameterizedStruct_TS32.h

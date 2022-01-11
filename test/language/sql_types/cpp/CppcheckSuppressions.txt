@@ -1,4 +1,2 @@
 noExplicitConstructor:*/sql_types/TestBitmask.h
-
 uninitMemberVar:*/sql_types/TestChoice.cpp
-uninitMemberVar:*/sql_types/TestChoice.h

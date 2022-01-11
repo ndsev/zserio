@@ -1,4 +1,3 @@
 uninitMemberVar:*/offsets/nested_offset/NestedOffsetChoice.cpp
-uninitMemberVar:*/offsets/nested_offset/NestedOffsetChoice.h
 uninitMemberVar:*/offsets/parameter_offset/Room.cpp
 uninitMemberVar:*/offsets/parameter_offset/Room.h

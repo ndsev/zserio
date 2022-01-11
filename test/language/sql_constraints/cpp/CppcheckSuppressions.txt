@@ -1,2 +1,0 @@
-constParameter:*/sql_constraints/field_constraints/FieldConstraintsTable.cpp
-constParameter:*/sql_constraints/table_constraints/TableConstraintsTable.cpp

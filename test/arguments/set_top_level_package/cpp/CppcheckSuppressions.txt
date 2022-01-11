@@ -1,2 +1,1 @@
 uninitMemberVar:*/company/appl/SimpleChoice.cpp
-uninitMemberVar:*/company/appl/SimpleChoice.h

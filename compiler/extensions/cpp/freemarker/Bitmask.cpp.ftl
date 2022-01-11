@@ -96,7 +96,7 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             m_bitmask.write(writer);
         }
 
-        virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+        virtual size_t bitSizeOf(size_t bitPosition) const override
         {
             return m_bitmask.bitSizeOf(bitPosition);
         }
