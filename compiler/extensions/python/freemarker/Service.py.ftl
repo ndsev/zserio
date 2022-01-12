@@ -33,7 +33,7 @@ class ${name}:
         def call_method(self, method_name: str, request_data: bytes, context: typing.Any = None) -> zserio.ServiceData:
             method = self._method_map.get(method_name)
             if not method:
-                raise zserio.ServiceException("${serviceFullName}: Method '%s' does not exist!" % method_name)
+                raise zserio.ServiceException(f"${serviceFullName}: Method '{method_name}' does not exist!")
 
             return method(request_data, context)
 

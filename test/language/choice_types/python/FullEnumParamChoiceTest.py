@@ -148,4 +148,4 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         elif selector == self.api.Selector.WHITE:
             writer.write_signed_bits(value, 32)
         else:
-            self.fail("Invalid selector: %d" % selector)
+            self.fail(f"Invalid selector: {selector}")

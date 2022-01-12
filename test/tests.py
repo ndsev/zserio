@@ -41,10 +41,7 @@ def main():
 
     sysPathBeforeTests = list(sys.path)
 
-    # load tests
-    loader = unittest.TestLoader()
-    testSuite = unittest.TestSuite()
-
+    # detect test directories
     testPattern = "*Test.py"
     if "**" in args.filter:
         testFilesPattern = os.path.join(testRoot, args.filter, testPattern)
@@ -57,8 +54,17 @@ def main():
         testDir = os.path.dirname(globResult)
         if testDir not in testDirs:
             testDirs.add(testDir)
-            loadedTests = loader.discover(testDir, pattern=testPattern, top_level_dir=testDir)
-            testSuite.addTest(loadedTests)
+
+    # sort test dirs
+    testDirs = sorted(testDirs)
+
+    # load tests
+    loader = unittest.TestLoader()
+    testSuite = unittest.TestSuite()
+    for testDir in testDirs:
+        loadedTests = loader.discover(testDir, pattern=testPattern, top_level_dir=testDir)
+        testSuite.addTest(loadedTests)
+
     runner = unittest.TextTestRunner(verbosity=args.verbosity)
     testResult = runner.run(testSuite)
     if not testResult.wasSuccessful():
@@ -87,7 +93,7 @@ def _runPylintOnAllSources(args, testDirs):
                          "too-few-public-methods, c-extension-no-member")
     pylintOptions = ["--persistent=n", "--score=n"]
     if args.pylint_rcfile_test:
-        pylintOptions.append("--rcfile=%s" % (args.pylint_rcfile_test))
+        pylintOptions.append(f"--rcfile={args.pylint_rcfile_test}")
 
     genDisableOption = ("missing-docstring, no-self-use, duplicate-code, line-too-long, "
                         "singleton-comparison, too-many-instance-attributes, too-many-arguments, "
@@ -96,12 +102,12 @@ def _runPylintOnAllSources(args, testDirs):
                         "import-self, invalid-unary-operand-type, c-extension-no-member")
     genPylintOptions = ["--persistent=n", "--score=n", "--ignore=api.py"]
     if args.pylint_rcfile:
-        genPylintOptions.append("--rcfile=%s" % (args.pylint_rcfile))
+        genPylintOptions.append(f"--rcfile={args.pylint_rcfile}")
 
     apiDisableOption = ("missing-docstring, unused-import, line-too-long")
     apiPylintOptions = ["--persistent=n", "--score=n", "--ignore-patterns=^.*\\.py(?<!^api\\.py)$"]
     if args.pylint_rcfile:
-        apiPylintOptions.append("--rcfile=%s" % (args.pylint_rcfile))
+        apiPylintOptions.append(f"--rcfile={args.pylint_rcfile}")
 
     for testDir in testDirs:
         testSources = [os.path.join(testDir, child) for child in os.listdir(testDir) if child.endswith(".py")]
@@ -144,7 +150,7 @@ def _runPylint(sources, options, disableOption=None):
     pylintOptions = list(sources)
     pylintOptions += options
     if disableOption:
-        pylintOptions.append("--disable=%s" % disableOption)
+        pylintOptions.append(f"--disable={disableOption}")
 
     if "PYLINT_EXTRA_ARGS" in os.environ:
         pylintOptions += os.environ["PYLINT_EXTRA_ARGS"].split()
@@ -168,10 +174,10 @@ def _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath):
     os.environ["MYPYPATH"] = runtimePath + os.pathsep + testutilsPath
 
     mypyCacheDir = os.path.join(TEST_ARGS["build_dir"], ".mypy_cache")
-    mypyArgs = list()
-    mypyArgs.append("--cache-dir=" + mypyCacheDir)
+    mypyArgs = []
+    mypyArgs.append(f"--cache-dir={mypyCacheDir}")
     if args.mypy_config_file:
-        mypyArgs.append("--config-file=%s" % (args.mypy_config_file))
+        mypyArgs.append(f"--config-file={args.mypy_config_file}")
     mypyArgs.append("--no-strict-optional") # Item "None" of "Optional[Blob]" has no attribute "..."
 
     for testDir in testDirs:
@@ -208,7 +214,7 @@ def _runMypyOnAllSources(args, testDirs, runtimePath, testutilsPath):
 def _loadMypyExtraArgsFile(testDir, mypyArgsForTest):
     argsFilename = os.path.join(testDir, "mypy_extra_args.txt")
     if os.path.isfile(argsFilename):
-        with open(argsFilename, 'r') as argsFile:
+        with open(argsFilename, 'r', encoding='utf-8') as argsFile:
             for argLine in argsFile:
                 arg = argLine.rstrip('\n')
                 if arg and not arg.startswith('#'):

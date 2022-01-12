@@ -35,13 +35,13 @@ class BitStreamWriter:
         """
 
         if numbits <= 0:
-            raise PythonRuntimeException("BitStreamWriter: numbits '%d' is less than 1!" % numbits)
+            raise PythonRuntimeException(f"BitStreamWriter: numbits '{numbits}' is less than 1!")
 
         min_value = 0
         max_value = (1 << numbits) - 1
         if value < min_value or value > max_value:
-            raise PythonRuntimeException("BitStreamWriter: Value '%d' is out of the range <%d,%d>!" %
-                                         (value, min_value, max_value))
+            raise PythonRuntimeException(f"BitStreamWriter: Value '{value}' is out of the range "
+                                         f"<{min_value},{max_value}>!")
 
         self._write_bits(value, numbits, signed=False)
 
@@ -56,13 +56,13 @@ class BitStreamWriter:
         """
 
         if numbits <= 0:
-            raise PythonRuntimeException("BitStreamWriter: numbits '%d' is less than 1!" % numbits)
+            raise PythonRuntimeException(f"BitStreamWriter: numbits '{numbits}' is less than 1!")
 
         min_value = -(1 << (numbits - 1))
         max_value = (1 << (numbits - 1)) - 1
         if value < min_value or value > max_value:
-            raise PythonRuntimeException("BitStreamWriter: Value '%d' is out of the range <%d,%d>!" %
-                                         (value, min_value, max_value))
+            raise PythonRuntimeException(f"BitStreamWriter: Value '{value}' is out of the range "
+                                         f"<{min_value},{max_value}>!")
 
         self._write_bits(value, numbits, signed=True)
 

@@ -221,7 +221,7 @@ class SimpleUnionTest(unittest.TestCase):
         elif choiceTag == self.api.SimpleUnion.CHOICE_CASE4_FIELD:
             writer.write_signed_bits(self.CASE4_FIELD, 8)
         else:
-            raise zserio.PythonRuntimeException("_writeSimpleUnionToStream - unknown choiceTag %d!" % choiceTag)
+            raise zserio.PythonRuntimeException(f"_writeSimpleUnionToStream - unknown choiceTag {choiceTag}!")
 
     CASE1_FIELD = 13
     CASE2_FIELD = 65535

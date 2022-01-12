@@ -29,8 +29,8 @@ class BitBuffer:
         if bitsize is None:
             bitsize = len(buffer) * 8
         elif len(buffer) * 8 < bitsize:
-            raise PythonRuntimeException("BitBuffer: Bit size %d out of range for given buffer byte "
-                                         "size %d!" % (bitsize, len(buffer)))
+            raise PythonRuntimeException(f"BitBuffer: Bit size '{bitsize}' out of range "
+                                         f"for the given buffer byte size '{len(buffer)}'!")
         self._buffer: bytes = buffer
         self._bitsize: int = bitsize
 

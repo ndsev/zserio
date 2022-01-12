@@ -147,4 +147,4 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         elif selector == self.api.Selector.Values.BLACK_AND_WHITE:
             writer.write_bits(value, 16)
         else:
-            self.fail("Invalid selector: %d" % selector)
+            self.fail(f"Invalid selector: {selector}")

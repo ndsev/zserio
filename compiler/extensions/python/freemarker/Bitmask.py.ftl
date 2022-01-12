@@ -14,7 +14,7 @@ class ${name}:
     @classmethod
     def from_value(cls: typing.Type['${name}'], value: int) -> '${name}':
         if value < ${lowerBound} or value > ${upperBound}:
-            raise zserio.PythonRuntimeException("Value for bitmask '${name}' out of bounds: %d!" % value)
+            raise zserio.PythonRuntimeException(f"Value for bitmask '${name}' out of bounds: {value}!")
 
         instance = cls()
         instance._value = value

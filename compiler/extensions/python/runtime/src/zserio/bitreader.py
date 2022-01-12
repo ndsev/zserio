@@ -407,8 +407,8 @@ class BitStreamReader:
 
         result = result << 8 | self.read_bits(8) # byte 5
         if result > VARSIZE_MAX_VALUE:
-            raise PythonRuntimeException("BitStreamReader: Read value '%d' is out of range for varsize type!" %
-                                         result)
+            raise PythonRuntimeException(f"BitStreamReader: Read value '{result}' is out of range "
+                                         "for varsize type!")
 
         return result
 

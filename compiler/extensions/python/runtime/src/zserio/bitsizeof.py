@@ -140,7 +140,7 @@ def _bitsizeof_varnum(value: int, max_values: typing.Sequence[int], varint_name:
             if abs_value <= max_value:
                 return (i + 1) * 8
 
-    raise PythonRuntimeException("bitsizeof: Value '%d' is out of range for %s!" % (value, varint_name))
+    raise PythonRuntimeException(f"bitsizeof: Value '{value}' is out of range for '{varint_name}'!")
 
 VARINT16_MAX_VALUES = [
     (1 << (6)) - 1,

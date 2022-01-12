@@ -24,7 +24,7 @@ class TestPubsub(zserio.PubsubInterface):
 
     def unsubscribe(self, subscription_id):
         if not subscription_id in self._subscriptions:
-            raise zserio.PubsubException("TestPubsub: Invalid subscription ID '%d'!" % subscription_id)
+            raise zserio.PubsubException(f"TestPubsub: Invalid subscription ID '{subscription_id}'!")
 
         self._subscriptions.pop(subscription_id)
 

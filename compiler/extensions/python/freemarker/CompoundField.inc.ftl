@@ -282,8 +282,9 @@ ${I}self.<@field_member_name field/>.write(zserio_writer<#if field.compound??>, 
     <#if field.offset??>
 ${I}# check offset
 ${I}if ${bitPositionName} != zserio.bitposition.bytes_to_bits(${field.offset.getter}):
-${I}    raise zserio.PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                        (${bitPositionName}, zserio.bitposition.bytes_to_bits(${field.offset.getter})))
+${I}    raise zserio.PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: "
+${I}                                        f"{${bitPositionName}} != "
+${I}                                        f"{zserio.bitposition.bytes_to_bits(${field.offset.getter})}!")
     </#if>
 </#macro>
 
@@ -301,8 +302,8 @@ ${I}    raise zserio.PythonRuntimeException("Constraint violated for field ${com
     <#if field.array?? && field.array.length??>
 ${I}# check array length
 ${I}if len(self.<@field_member_name field/>) != ${field.array.length}:
-${I}    raise zserio.PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: %d != %d!" %
-${I}                                        (len(self.<@field_member_name field/>), ${field.array.length}))
+${I}    raise zserio.PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: "
+${I}                                        f"{len(self.<@field_member_name field/>)} != {${field.array.length}}!")
     </#if>
 </#macro>
 
@@ -320,8 +321,9 @@ ${I}lowerbound = ${rangeCheck.lowerBound}
 ${I}upperbound = ${rangeCheck.upperBound}
         </#if>
 ${I}if self.<@field_member_name field/> < lowerbound or self.<@field_member_name field/> > upperbound:
-${I}    raise zserio.PythonRuntimeException("Value %d for field ${compoundName}.${field.name} is out of range: <%d, %d>!" %
-${I}                                        (self.<@field_member_name field/>, lowerbound, upperbound))
+${I}    raise zserio.PythonRuntimeException(f"Value {self.<@field_member_name field/>} for field "
+${I}                                        "${compoundName}.${field.name} is out of range: "
+${I}                                        f"<{lowerbound}, {upperbound}>!")
     </#if>
 </#macro>
 

@@ -112,7 +112,7 @@ def assertErrorsPresent(test, mainZsFile, expectedErrors):
     :param expectedErrors: List of expected error messages.
     """
 
-    test.assertIn(mainZsFile, test.errors, msg=("No error found for '%s'!" % mainZsFile))
+    test.assertIn(mainZsFile, test.errors, msg=f"No error found for '{mainZsFile}'!")
     errors = test.errors[mainZsFile]
     for expectedError in expectedErrors:
         test.assertIn(expectedError, errors)
@@ -175,9 +175,9 @@ def _compileZserio(zsDef, apiDir, extraArgs):
                  os.pathsep.join([zserioCore, zserioPython]),
                  "zserio.tools.ZserioTool",
                  "-python",
-                 "{pythonDir}".format(pythonDir=apiDir),
+                 f"{apiDir}", # pythonDir
                  "-src",
-                 "{sourceDir}".format(sourceDir=zsDef[0]),
+                 f"{zsDef[0]}", # apiDir
                  zsDef[1]]
     zserioCmd += extraArgs
     zserioResult = subprocess.run(zserioCmd, capture_output=True, text=True, check=False)

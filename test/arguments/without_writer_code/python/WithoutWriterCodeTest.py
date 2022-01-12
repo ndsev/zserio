@@ -271,35 +271,35 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
     def _assertMethodNotPresent(self, userType, method):
         self.assertFalse(hasattr(userType, method),
-                         msg=("Method '%s' is present in '%s'!" % (method, userType.__name__)))
+                         msg=f"Method '{method}' is present in '{userType.__name__}'!")
 
     def _assertMethodPresent(self, userType, method):
         self.assertTrue(hasattr(userType, method),
-                        msg=("Method '%s' is not present in '%s'!" % (method, userType.__name__)))
+                        msg=f"Method 'method' is not present in '${userType.__name__}'!")
 
     def _assertPropertyPresent(self, userType, prop, *, readOnly):
         self.assertTrue(
             hasattr(userType, prop),
-            msg=("Property '%s' is not present in '%s'!" % (prop, userType.__name__))
+            msg=f"Property '{prop}' is not present in '{userType.__name__}'!"
         )
         propAttr = getattr(userType, prop)
         self.assertTrue(
             isinstance(propAttr, property),
-            msg=("Attribute '%s' is not a property in '%s'!" % (prop, userType.__name__))
+            msg=f"Attribute '{prop}' is not a property in '{userType.__name__}'!"
         )
         self.assertIsNotNone(
             propAttr.fget,
-            msg=("Property '%s' getter is not set in '%s'!" % (prop, userType.__name__))
+            msg=f"Property '{prop}' getter is not set in '{userType.__name__}'!"
         )
         if readOnly:
             self.assertIsNone(
                 propAttr.fset,
-                msg=("Read-only property '%s' setter is set in '%s'!" % (prop, userType.__name__))
+                msg=f"Read-only property '{prop}' setter is set in '{userType.__name__}'!"
             )
         else:
             self.assertIsNotNone(
                 propAttr.fset,
-                msg=("Property '%s' setter is not set in '%s'!" % (prop, userType.__name__))
+                msg=f"Property '{prop}' setter is not set in '{userType.__name__}'!"
             )
 
 BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "without_writer_code.blob")

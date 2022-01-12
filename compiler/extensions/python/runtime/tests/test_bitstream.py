@@ -471,7 +471,7 @@ class BitStreamTest(unittest.TestCase):
                 reader.read_bits(bit_pos)
             for value in values:
                 self.assertEqual(value, read_method(reader, numbits),
-                                 "[numbits=%d, bit_pos=%d]" % (numbits, bit_pos))
+                                 f"[numbits={numbits}, bit_pos={bit_pos}]")
 
     def _test_impl(self, write_method, read_method, values, max_start_bit_pos):
         for bit_pos in range(max_start_bit_pos):
@@ -485,4 +485,4 @@ class BitStreamTest(unittest.TestCase):
             if bit_pos > 0:
                 reader.read_bits(bit_pos)
             for value in values:
-                self.assertEqual(value, read_method(reader), "[bit_pos=%d]" % bit_pos)
+                self.assertEqual(value, read_method(reader), f"[bit_pos={bit_pos}]")

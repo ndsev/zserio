@@ -16,19 +16,19 @@ from zserio.pubsub import PubsubInterface, PubsubException
 from zserio.serialization import (serialize, deserialize, serialize_to_bytes, deserialize_bytes,
                                   serialize_to_file, deserialize_from_file)
 
-import zserio.array as array
-import zserio.bitbuffer as bitbuffer
-import zserio.bitfield as bitfield
-import zserio.bitposition as bitposition
-import zserio.bitreader as bitreader
-import zserio.bitsizeof as bitsizeof
-import zserio.bitwriter as bitwriter
-import zserio.builtin as builtin
-import zserio.exception as exception
-import zserio.hashcode as hashcode
-import zserio.limits as limits
-import zserio.pubsub as pubsub
-import zserio.service as service
-import zserio.typeinfo as typeinfo
+from zserio import array
+from zserio import bitbuffer
+from zserio import bitfield
+from zserio import bitposition
+from zserio import bitreader
+from zserio import bitsizeof
+from zserio import bitwriter
+from zserio import builtin
+from zserio import exception
+from zserio import hashcode
+from zserio import limits
+from zserio import pubsub
+from zserio import service
+from zserio import typeinfo
 
 VERSION_STRING = "2.5.0-pre1"

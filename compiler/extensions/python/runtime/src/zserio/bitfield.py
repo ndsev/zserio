@@ -55,6 +55,6 @@ def signed_bitfield_upperbound(length: int) -> int:
 
 def _check_bitfield_length(length: int) -> None:
     if length <= 0 or length > MAX_BITFIELD_BITS:
-        raise PythonRuntimeException("bitfield: Asking for bound of bitfield with invalid length %d!" % length)
+        raise PythonRuntimeException(f"bitfield: Asking for bound of bitfield with invalid length '{length}'!")
 
 MAX_BITFIELD_BITS = 64
