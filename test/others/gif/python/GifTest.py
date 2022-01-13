@@ -14,12 +14,12 @@ class GifTest(unittest.TestCase):
         gifFile = self.api.GifFile.from_reader(reader)
 
         signatureFormat = gifFile.signature.format
-        for i in range(len(self.GIF_FILE_FORMAT)):
-            self.assertEqual(self.GIF_FILE_FORMAT[i], chr(signatureFormat[i]))
+        for i, formatChar in enumerate(self.GIF_FILE_FORMAT):
+            self.assertEqual(formatChar, chr(signatureFormat[i]))
 
         signatureVersion = gifFile.signature.version
-        for i in range(len(self.GIF_FILE_VERSION)):
-            self.assertEqual(self.GIF_FILE_VERSION[i], chr(signatureVersion[i]))
+        for i, versionChar in enumerate(self.GIF_FILE_VERSION):
+            self.assertEqual(versionChar, chr(signatureVersion[i]))
 
         screenDescriptor = gifFile.screen
         self.assertEqual(self.GIF_SCREEN_WIDTH, screenDescriptor.width)
