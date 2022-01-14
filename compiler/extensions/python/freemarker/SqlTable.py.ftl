@@ -242,7 +242,11 @@ class ${name}:
 
     @staticmethod
     def _write_row(row: '${name}.${rowAnnotationName}') -> typing.List:
-        row_in_list = list(row)
+        <#--
+        type annotation is needed to denote that row_in_list is a list of Any values, which is not clear
+        to mypy in case when all the columns are of the same type (either enum or bitmask)
+        -->
+        row_in_list : typing.List = list(row)
 
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
