@@ -49,6 +49,9 @@ public class CppExtension implements Extension
         final ReservedKeywordsClashChecker cppKeywordsClashChecker =
                 new ReservedKeywordsClashChecker("C++", CPP_KEYWORDS);
         rootNode.walk(cppKeywordsClashChecker);
+
+        final CppInnerClassesClashChecker innerClassesClashChecker = new CppInnerClassesClashChecker();
+        rootNode.walk(innerClassesClashChecker);
     }
 
     @Override

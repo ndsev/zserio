@@ -324,7 +324,7 @@ ${I}            lowerBound + ".." + upperBound + ">!";
 </#macro>
 
 <#macro array_typedef_name field>
-    ArrayType_${field.name}<#t>
+    ZserioArrayType_${field.name}<#t>
 </#macro>
 
 <#macro array_type_name field>
@@ -404,7 +404,7 @@ ${I}            lowerBound + ".." + upperBound + ">!";
 </#function>
 
 <#macro offset_checker_name fieldName>
-    OffsetChecker_${fieldName}<#t>
+    ZserioOffsetChecker_${fieldName}<#t>
 </#macro>
 
 <#macro declare_offset_checker compoundName field>
@@ -440,7 +440,7 @@ void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t ind
 </#function>
 
 <#macro offset_initializer_name fieldName>
-    OffsetInitializer_${fieldName}<#t>
+    ZserioOffsetInitializer_${fieldName}<#t>
 </#macro>
 
 <#macro declare_offset_initializer compoundName field>
@@ -474,7 +474,7 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
 </#function>
 
 <#macro element_factory_name fieldName>
-    ElementFactory_${fieldName}<#t>
+    ZserioElementFactory_${fieldName}<#t>
 </#macro>
 
 <#macro declare_element_factory compoundName field>
@@ -532,7 +532,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
 </#macro>
 
 <#macro element_initializer_name fieldName>
-    ElementInitializer_${fieldName}<#t>
+    ZserioElementInitializer_${fieldName}<#t>
 </#macro>
 
 <#macro declare_element_initializer compoundName field>
@@ -563,7 +563,7 @@ void ${compoundName}::<@element_initializer_name field.name/>::initialize(<#rt>
 </#macro>
 
 <#macro element_children_initializer_name fieldName>
-    ElementChildrenInitializer_${fieldName}<#t>
+    ZserioElementChildrenInitializer_${fieldName}<#t>
 </#macro>
 
 <#macro declare_element_children_initializer field>

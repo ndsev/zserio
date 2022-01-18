@@ -36,15 +36,10 @@
 <#if hasBlobField || withTypeInfoCode>
     <@package_imports ["zserio"]/>
 </#if>
+<#assign rowAnnotationName = "ROW_ANNOTATION"/>
+<#assign rowsClassName = "Rows"/>
 
 class ${name}:
-<#assign rowAnnotationName = "ROW_ANNOTATION"/>
-    ${rowAnnotationName} = typing.Tuple[
-    <#list fields as field>
-        ${field.typeInfo.typeFullName}<#if field?has_next>,<#else>]</#if>
-    </#list>
-
-<#assign rowsClassName = "Rows"/>
     class ${rowsClassName}:
         def __init__(self, <#rt>
                 <#lt>rows: typing.Iterator[<#if needsRowConversion>typing.Tuple<#else>'${name}.${rowAnnotationName}'</#if>]<#rt>
@@ -266,3 +261,9 @@ class ${name}:
         return row_in_list
     </#if>
 </#if>
+
+    <#-- keep the annotation at the end to prevent mypy errors when SQL table is named ROW_ANNOTATION -->
+    ${rowAnnotationName} = typing.Tuple[
+    <#list fields as field>
+        ${field.typeInfo.typeFullName}<#if field?has_next>,<#else>]</#if>
+    </#list>

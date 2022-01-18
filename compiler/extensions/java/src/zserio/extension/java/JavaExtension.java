@@ -45,6 +45,9 @@ public class JavaExtension implements Extension
         final ReservedKeywordsClashChecker javaKeywordsClashChecker =
                 new ReservedKeywordsClashChecker("Java", JAVA_KEYWORDS);
         rootNode.walk(javaKeywordsClashChecker);
+
+        final JavaInnerClassesClashChecker innerClassesClashChecker = new JavaInnerClassesClashChecker();
+        rootNode.walk(innerClassesClashChecker);
     }
 
     @Override

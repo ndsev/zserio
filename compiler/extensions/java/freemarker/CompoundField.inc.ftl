@@ -449,7 +449,7 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
 </#macro>
 
 <#macro offset_checker_name fieldName>
-    OffsetChecker_${fieldName}<#t>
+    ZserioOffsetChecker_${fieldName}<#t>
 </#macro>
 
 <#macro define_offset_checker compoundName field>
@@ -468,7 +468,7 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
 </#macro>
 
 <#macro offset_initializer_name fieldName>
-    OffsetInitializer_${fieldName}<#t>
+    ZserioOffsetInitializer_${fieldName}<#t>
 </#macro>
 
 <#macro define_offset_initializer field>
@@ -489,7 +489,7 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
 </#macro>
 
 <#macro element_factory_name fieldName>
-    ElementFactory_${fieldName}<#t>
+    ZserioElementFactory_${fieldName}<#t>
 </#macro>
 
 <#macro define_element_factory field>

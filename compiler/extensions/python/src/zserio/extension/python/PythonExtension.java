@@ -70,6 +70,9 @@ public class PythonExtension implements Extension
 
         final PythonApiClashChecker apiClashChecker = new PythonApiClashChecker();
         rootNode.walk(apiClashChecker);
+
+        final PythonInnerClassesClashChecker innerClassesClashChecker = new PythonInnerClassesClashChecker();
+        rootNode.walk(innerClassesClashChecker);
     }
 
     @Override
