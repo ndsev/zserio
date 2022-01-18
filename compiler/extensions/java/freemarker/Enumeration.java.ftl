@@ -16,12 +16,12 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     ${item.name}(${item.value})<#if item_has_next>,<#else>;</#if>
 </#list>
 
-    private ${name}(${underlyingTypeInfo.typeName} value)
+    private ${name}(${underlyingTypeInfo.typeFullName} value)
     {
         this.value = value;
     }
 
-    public ${underlyingTypeInfo.typeName} getValue()
+    public ${underlyingTypeInfo.typeFullName} getValue()
     {
         return value;
     }
@@ -135,12 +135,12 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
                         <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, in)).get());
     }
 
-    public static ${name} toEnum(${underlyingTypeInfo.typeName} value)
+    public static ${name} toEnum(${underlyingTypeInfo.typeFullName} value)
     {
-<#if underlyingTypeInfo.typeName == "long" || underlyingTypeInfo.typeName == "java.math.BigInteger">
+<#if underlyingTypeInfo.typeFullName == "long" || underlyingTypeInfo.typeFullName == "java.math.BigInteger">
     <#-- can't use switch for long and for BigInteger -->
     <#list items as item>
-        <#if underlyingTypeInfo.typeName == "java.math.BigInteger">
+        <#if underlyingTypeInfo.typeFullName == "java.math.BigInteger">
         if (value.compareTo(${item.value}) == 0)
         <#else>
         if (value == ${item.value})
@@ -163,5 +163,5 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
 </#if>
     }
 
-    private ${underlyingTypeInfo.typeName} value;
+    private ${underlyingTypeInfo.typeFullName} value;
 }

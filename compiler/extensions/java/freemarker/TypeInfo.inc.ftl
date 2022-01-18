@@ -3,7 +3,7 @@
         zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.get${typeInfo.typeInfoGetter.suffix}(<#t>
                 <#if typeInfo.typeInfoGetter.arg??>(byte)${typeInfo.typeInfoGetter.arg}</#if>)<#t>
     <#else>
-        ${typeInfo.typeName}.typeInfo()<#t>
+        ${typeInfo.typeFullName}.typeInfo()<#t>
     </#if>
 </#macro>
 
@@ -60,9 +60,9 @@ ${I}    @Override
 ${I}    public zserio.runtime.typeinfo.TypeInfo get()
 ${I}    {
         <#if field.array??>
-${I}        return ${field.array.elementTypeInfo.typeName}.typeInfo();
+${I}        return ${field.array.elementTypeInfo.typeFullName}.typeInfo();
         <#else>
-${I}        return ${field.typeInfo.typeName}.typeInfo();
+${I}        return ${field.typeInfo.typeFullName}.typeInfo();
         </#if>
 ${I}    }
 ${I}}

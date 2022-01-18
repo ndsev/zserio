@@ -10,8 +10,8 @@
         final long upperBound = zserio.runtime.Util.getBitFieldUpperBound(
                 length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
         <#else>
-        final ${rangeData.typeInfo.typeName} lowerBound = ${rangeData.lowerBound};
-        final ${rangeData.typeInfo.typeName} upperBound = ${rangeData.upperBound};
+        final ${rangeData.typeInfo.typeFullName} lowerBound = ${rangeData.lowerBound};
+        final ${rangeData.typeInfo.typeFullName} upperBound = ${rangeData.upperBound};
         </#if>
         if <#if rangeData.isTypeNullable>(<@field_argument_name rangeData.field/> != null && </#if><#rt>
             (<@field_argument_name rangeData.field/> < lowerBound<#if rangeData.checkUpperBound> || <@field_argument_name rangeData.field/> > upperBound</#if>)<#t>

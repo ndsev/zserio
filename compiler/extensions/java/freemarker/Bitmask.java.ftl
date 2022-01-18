@@ -13,10 +13,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 {
     public ${name}()
     {
-        this(<#if underlyingTypeInfo.isSimple>(${underlyingTypeInfo.typeName})0<#else>java.math.BigInteger.ZERO</#if>);
+        this(<#if underlyingTypeInfo.isSimple>(${underlyingTypeInfo.typeFullName})0<#else>java.math.BigInteger.ZERO</#if>);
     }
 
-    public ${name}(${underlyingTypeInfo.typeName} value)
+    public ${name}(${underlyingTypeInfo.typeFullName} value)
     {
 <#if lowerBound?? || checkUpperBound>
     <#if underlyingTypeInfo.isSimple>
@@ -191,7 +191,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 </#if>
 
-    public ${underlyingTypeInfo.typeName} getValue()
+    public ${underlyingTypeInfo.typeFullName} getValue()
     {
         return value;
     }
@@ -199,7 +199,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public ${name} or(${name} other)
     {
 <#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeName})(value | other.value));
+        return new ${name}((${underlyingTypeInfo.typeFullName})(value | other.value));
 <#else>
         <#-- big integer -->
         return new ${name}(value.or(other.value));
@@ -209,7 +209,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public ${name} and(${name} other)
     {
 <#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeName})(value & other.value));
+        return new ${name}((${underlyingTypeInfo.typeFullName})(value & other.value));
 <#else>
         <#-- big integer -->
         return new ${name}(value.and(other.value));
@@ -219,7 +219,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public ${name} xor(${name} other)
     {
 <#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeName})(value ^ other.value));
+        return new ${name}((${underlyingTypeInfo.typeFullName})(value ^ other.value));
 <#else>
         <#-- big integer -->
         return new ${name}(value.xor(other.value));
@@ -229,7 +229,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public ${name} not()
     {
 <#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeName})(~value<#if upperBound??> & ${upperBound}</#if>));
+        return new ${name}((${underlyingTypeInfo.typeFullName})(~value<#if upperBound??> & ${upperBound}</#if>));
 <#else>
         <#-- big integer -->
         return new ${name}(value.not().and(${upperBound}));
@@ -243,5 +243,5 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#list>
     }
 
-    private ${underlyingTypeInfo.typeName} value;
+    private ${underlyingTypeInfo.typeFullName} value;
 }

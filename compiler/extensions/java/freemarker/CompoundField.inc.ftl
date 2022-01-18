@@ -47,7 +47,7 @@
 new ${field.array.wrapperJavaTypeName}(
 ${I}new ${field.array.rawHolderJavaTypeName}(<#rt>
     <#if field.array.requiresElementClass>
-        ${field.array.elementTypeInfo.typeName}.class<#if rawArray?has_content>, </#if><#t>
+        ${field.array.elementTypeInfo.typeFullName}.class<#if rawArray?has_content>, </#if><#t>
     </#if>
     <#if rawArray?has_content>
         ${rawArray}<#t>
@@ -99,7 +99,7 @@ new ${field.typeInfo.arrayableInfo.arrayTraits.name}(<#rt>
 </#macro>
 
 <#macro compound_field_get_offset field>
-    <#if field.offset.requiresBigInt>
+    <#if field.offset.typeInfo.requiresBigInt>
         ${field.offset.getter}.longValue()<#t>
     <#else>
         ${field.offset.getter}<#t>
@@ -122,7 +122,7 @@ ${I}}
 
 <#macro compound_field_compound_ctor_params compound>
     <#list compound.instantiatedParameters as parameter>
-        <#if parameter.typeInfo.isSimple>(${parameter.typeInfo.typeName})(</#if>${parameter.expression}<#if parameter.typeInfo.isSimple>)</#if><#t>
+        <#if parameter.typeInfo.isSimple>(${parameter.typeInfo.typeFullName})(</#if>${parameter.expression}<#if parameter.typeInfo.isSimple>)</#if><#t>
         <#if parameter_has_next>, </#if><#t>
     </#list>
 </#macro>
@@ -157,14 +157,14 @@ ${I}<@field_member_name field/> = ((${field.typeInfo.arrayableInfo.arrayElement}
 ${I}        <@compound_field_packing_context_node field, index/>.getContext().read(
 ${I}                <@array_traits field/>, in)).get();
         <#elseif field.typeInfo.isEnum>
-${I}<@field_member_name field/> = ${field.typeInfo.typeName}.readEnum(<@compound_field_packing_context_node field, index/>, in);
+${I}<@field_member_name field/> = ${field.typeInfo.typeFullName}.readEnum(<@compound_field_packing_context_node field, index/>, in);
         <#else>
             <#local compoundParamsArguments>
                 <#if field.compound??><#-- can be a bitmask -->
                     <@compound_field_compound_ctor_params field.compound/>
                 </#if>
             </#local>
-${I}<@field_member_name field/> = new ${field.typeInfo.typeName}(<@compound_field_packing_context_node field, index/>, in<#rt>
+${I}<@field_member_name field/> = new ${field.typeInfo.typeFullName}(<@compound_field_packing_context_node field, index/>, in<#rt>
         <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
         </#if>
     <#elseif field.array??>
@@ -174,7 +174,7 @@ ${I}<@compound_get_field field/>.read<@array_field_packed_suffix field, packed/>
 ${I}<@field_member_name field/> = <#if field.runtimeFunction.javaReadTypeName??>(${field.runtimeFunction.javaReadTypeName})</#if><#rt>
         <#lt>in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!});
     <#elseif field.typeInfo.isEnum>
-${I}<@field_member_name field/> = ${field.typeInfo.typeName}.readEnum(in);
+${I}<@field_member_name field/> = ${field.typeInfo.typeFullName}.readEnum(in);
     <#else>
         <#-- compound or bitmask -->
         <#local compoundParamsArguments>
@@ -182,7 +182,7 @@ ${I}<@field_member_name field/> = ${field.typeInfo.typeName}.readEnum(in);
                 <@compound_field_compound_ctor_params field.compound/>
             </#if>
         </#local>
-${I}<@field_member_name field/> = new ${field.typeInfo.typeName}(in<#rt>
+${I}<@field_member_name field/> = new ${field.typeInfo.typeFullName}(in<#rt>
         <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
     </#if>
 </#macro>
@@ -351,11 +351,11 @@ ${I}}
     <@compound_align_field field, indent/>
     <#if field.offset?? && !field.offset.containsIndex>
 ${I}{
-${I}    final ${field.offset.typeName} value = <#rt>
-            <#if field.offset.requiresBigInt>
+${I}    final ${field.offset.typeInfo.typeFullName} value = <#rt>
+            <#if field.offset.typeInfo.requiresBigInt>
                 <#lt>java.math.BigInteger.valueOf(zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition));
             <#else>
-                <#lt>(${field.offset.typeName})zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition);
+                <#lt>(${field.offset.typeInfo.typeFullName})zserio.runtime.BitPositionUtil.bitsToBytes(endBitPosition);
             </#if>
 ${I}    ${field.offset.setter};
 ${I}}
@@ -415,7 +415,7 @@ ${I}        ((<@compound_get_field field/> == null) ? 0 : <@compound_get_field f
         <#if field.typeInfo.isIntegral>
         contextNode.createChild().createContext();
         <#else>
-        ${field.typeInfo.typeName}.createPackingContext(contextNode.createChild());
+        ${field.typeInfo.typeFullName}.createPackingContext(contextNode.createChild());
         </#if>
     <#else>
         contextNode.createChild();
@@ -477,11 +477,11 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
         @Override
         public void setOffset(int index, long byteOffset)
         {
-            final ${field.offset.typeName} value = <#rt>
-    <#if field.offset.requiresBigInt>
+            final ${field.offset.typeInfo.typeFullName} value = <#rt>
+    <#if field.offset.typeInfo.requiresBigInt>
                     <#lt>java.math.BigInteger.valueOf(byteOffset);
     <#else>
-                    <#lt>(${field.offset.typeName})byteOffset;
+                    <#lt>(${field.offset.typeInfo.typeFullName})byteOffset;
     </#if>
             ${field.offset.setter};
         }
@@ -499,33 +499,33 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
         </#if>
     </#local>
     private <#if !field.array.requiresParentContext>static </#if>final class <@element_factory_name field.name/> <#rt>
-        <#lt>implements zserio.runtime.array.ElementFactory<${field.array.elementTypeInfo.typeName}>
+        <#lt>implements zserio.runtime.array.ElementFactory<${field.array.elementTypeInfo.typeFullName}>
     {
         @Override
-        public ${field.array.elementTypeInfo.typeName} create(zserio.runtime.io.BitStreamReader in, int index)
+        public ${field.array.elementTypeInfo.typeFullName} create(zserio.runtime.io.BitStreamReader in, int index)
                 throws java.io.IOException
         {
     <#if field.array.elementTypeInfo.isEnum>
-            return ${field.array.elementTypeInfo.typeName}.readEnum(in);
+            return ${field.array.elementTypeInfo.typeFullName}.readEnum(in);
     <#else>
-            return new ${field.array.elementTypeInfo.typeName}(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
+            return new ${field.array.elementTypeInfo.typeFullName}(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
     </#if>
         }
 
         @Override
         public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
         {
-            ${field.array.elementTypeInfo.typeName}.createPackingContext(contextNode);
+            ${field.array.elementTypeInfo.typeFullName}.createPackingContext(contextNode);
         }
 
         @Override
-        public ${field.array.elementTypeInfo.typeName} create(zserio.runtime.array.PackingContextNode contextNode,
+        public ${field.array.elementTypeInfo.typeFullName} create(zserio.runtime.array.PackingContextNode contextNode,
                 zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
         {
     <#if field.array.elementTypeInfo.isEnum>
-            return ${field.array.elementTypeInfo.typeName}.readEnum(contextNode, in);
+            return ${field.array.elementTypeInfo.typeFullName}.readEnum(contextNode, in);
     <#else>
-            return new ${field.array.elementTypeInfo.typeName}(contextNode, in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
+            return new ${field.array.elementTypeInfo.typeFullName}(contextNode, in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
     </#if>
         }
     }

@@ -19,7 +19,6 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 import zserio.extension.java.types.NativeArrayTraits;
 import zserio.extension.java.types.NativeArrayType;
-import zserio.extension.java.types.NativeIntegralType;
 import zserio.extension.java.types.NativeRawArray;
 
 /**
@@ -197,9 +196,7 @@ public final class CompoundFieldTemplateData
             setter = javaExpressionFormatter.formatSetter(offsetExpression);
             final JavaNativeType nativeType =
                     javaNativeMapper.getJavaType(offsetExpression.getExprZserioType());
-            requiresBigInt = (nativeType instanceof NativeIntegralType) ?
-                    ((NativeIntegralType)nativeType).requiresBigInt() : false;
-            typeName = nativeType.getFullName();
+            typeInfo = new NativeTypeInfoTemplateData(nativeType);
             containsIndex = offsetExpression.containsIndex();
         }
 
@@ -213,14 +210,9 @@ public final class CompoundFieldTemplateData
             return setter;
         }
 
-        public String getTypeName()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return typeName;
-        }
-
-        public boolean getRequiresBigInt()
-        {
-            return requiresBigInt;
+            return typeInfo;
         }
 
         public boolean getContainsIndex()
@@ -230,8 +222,7 @@ public final class CompoundFieldTemplateData
 
         private final String getter;
         private final String setter;
-        private final String typeName;
-        private final boolean requiresBigInt;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final boolean containsIndex;
     }
 

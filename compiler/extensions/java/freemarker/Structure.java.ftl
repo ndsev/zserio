@@ -21,7 +21,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#assign constructorArgumentTypeList><@compound_constructor_argument_type_list compoundConstructorsData/></#assign>
     public ${name}(<#if constructorArgumentTypeList?has_content>${constructorArgumentTypeList},</#if>
     <#list fieldList as field>
-            ${field.typeInfo.typeName} <@field_argument_name field/><#if field_has_next>,<#else>)</#if>
+            ${field.typeInfo.typeFullName} <@field_argument_name field/><#if field_has_next>,<#else>)</#if>
     </#list>
     {
     <#if constructorArgumentTypeList?has_content>
@@ -112,7 +112,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
-    public ${field.typeInfo.typeName} ${field.getterName}()
+    public ${field.typeInfo.typeFullName} ${field.getterName}()
     {
     <#if field.array??>
         <#if field.optional??>
@@ -126,7 +126,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 
     <#if withWriterCode>
-    public void ${field.setterName}(${field.typeInfo.typeName} <@field_argument_name field/>)
+    public void ${field.setterName}(${field.typeInfo.typeFullName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
         <#if field.array??>
@@ -352,7 +352,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#if field.array??>
         ${field.array.wrapperJavaTypeName}<#t>
     <#else>
-        ${field.typeInfo.typeName}<#t>
+        ${field.typeInfo.typeFullName}<#t>
     </#if>
 </#macro>
 <#list fieldList as field>

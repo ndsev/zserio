@@ -145,7 +145,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             if (result != 0)
                 return result;
 
-            return typeInfo.getTypeName().compareTo(other.typeInfo.getTypeName());
+            return typeInfo.getTypeFullName().compareTo(other.typeInfo.getTypeFullName());
         }
 
         @Override
@@ -167,7 +167,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             int hash = HashUtil.HASH_SEED;
             hash = HashUtil.hash(hash, expression);
-            hash = HashUtil.hash(hash, typeInfo.getTypeName());
+            hash = HashUtil.hash(hash, typeInfo.getTypeFullName());
             return hash;
         }
 

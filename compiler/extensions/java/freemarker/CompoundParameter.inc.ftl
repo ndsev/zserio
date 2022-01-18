@@ -8,7 +8,7 @@
 
 <#macro compound_parameter_accessors compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-    public ${compoundParameter.typeInfo.typeName} ${compoundParameter.getterName}()
+    public ${compoundParameter.typeInfo.typeFullName} ${compoundParameter.getterName}()
     {
         return this.<@parameter_member_name compoundParameter/>;
     }
@@ -18,7 +18,7 @@
 
 <#macro compound_parameter_members compoundParametersData>
     <#list compoundParametersData.list as compoundParameter>
-    private final ${compoundParameter.typeInfo.typeName} <@parameter_member_name compoundParameter/>;
+    private final ${compoundParameter.typeInfo.typeFullName} <@parameter_member_name compoundParameter/>;
     </#list>
 </#macro>
 

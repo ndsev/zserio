@@ -34,14 +34,19 @@ public class NativeTypeInfoTemplateData
         this(javaNativeType, null, typeReference);
     }
 
+    public NativeTypeInfoTemplateData(JavaNativeType javaNativeType) throws ZserioExtensionException
+    {
+        this(javaNativeType, null, null);
+    }
+
+    public String getTypeFullName()
+    {
+        return typeFullName;
+    }
+
     public String getTypeName()
     {
         return typeName;
-    }
-
-    public String getTypeShortName()
-    {
-        return typeShortName;
     }
 
     public boolean getIsSimple()
@@ -84,6 +89,11 @@ public class NativeTypeInfoTemplateData
         return isIntegral;
     }
 
+    public boolean getRequiresBigInt()
+    {
+        return requiresBigInt;
+    }
+
     public ArrayableInfoTemplateData getArrayableInfo()
     {
         return arrayableInfo;
@@ -97,8 +107,8 @@ public class NativeTypeInfoTemplateData
     private NativeTypeInfoTemplateData(JavaNativeType javaNativeType, TypeInstantiation typeInstantiation,
             TypeReference typeReference) throws ZserioExtensionException
     {
-        typeName = javaNativeType.getFullName();
-        typeShortName = javaNativeType.getName();
+        typeFullName = javaNativeType.getFullName();
+        typeName = javaNativeType.getName();
         isSimple = javaNativeType.isSimple();
 
         isEnum = javaNativeType instanceof NativeEnumType;
@@ -108,6 +118,7 @@ public class NativeTypeInfoTemplateData
         isFloat = javaNativeType instanceof NativeFloatType;
         isDouble = javaNativeType instanceof NativeDoubleType;
         isIntegral = javaNativeType instanceof NativeIntegralType;
+        requiresBigInt = isIntegral ? ((NativeIntegralType)javaNativeType).requiresBigInt() : false;
 
         if (javaNativeType instanceof NativeArrayableType)
             arrayableInfo = new ArrayableInfoTemplateData((NativeArrayableType)javaNativeType);
@@ -119,7 +130,7 @@ public class NativeTypeInfoTemplateData
         final boolean isSqlTable = javaNativeType instanceof NativeSqlTableType;
         final boolean isArray = javaNativeType instanceof NativeArrayType;
         final boolean hasTypeInfo = isCompound || isSqlDatabase || isSqlTable || isEnum || isBitmask || isArray;
-        if (hasTypeInfo)
+        if (hasTypeInfo || (typeInstantiation == null && typeReference == null))
         {
             typeInfoGetter = null;
         }
@@ -131,8 +142,8 @@ public class NativeTypeInfoTemplateData
         }
     }
 
+    private final String typeFullName;
     private final String typeName;
-    private final String typeShortName;
     private final boolean isSimple;
     private final boolean isEnum;
     private final boolean isBitmask;
@@ -141,6 +152,7 @@ public class NativeTypeInfoTemplateData
     private final boolean isFloat;
     private final boolean isDouble;
     private final boolean isIntegral;
+    private final boolean requiresBigInt;
     private final ArrayableInfoTemplateData arrayableInfo;
     private final RuntimeFunctionTemplateData typeInfoGetter;
 }
