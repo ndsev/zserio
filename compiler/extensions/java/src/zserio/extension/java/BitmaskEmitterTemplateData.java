@@ -13,7 +13,6 @@ import zserio.ast.ZserioType;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.NativeIntegralType;
-import zserio.extension.java.types.NativeLongType;
 
 /**
  * FreeMarker template data for BitmaskEmitter.
@@ -30,16 +29,9 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         final NativeIntegralType nativeIntegralType =
                 javaNativeMapper.getJavaIntegralType(bitmaskTypeInstantiation);
-        baseJavaTypeName = nativeIntegralType.getFullName();
 
-        underlyingTypeInfo = new TypeInfoTemplateData(bitmaskTypeInstantiation, nativeIntegralType);
-
-        isLong = nativeIntegralType instanceof NativeLongType;
-        isSimpleType = nativeIntegralType.isSimple();
-
-        arrayableInfo = new ArrayableInfoTemplateData(nativeIntegralType);
+        underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, bitmaskTypeInstantiation);
         bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, javaExpressionFormatter);
-
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(bitmaskTypeInstantiation,
                 javaExpressionFormatter, javaNativeMapper);
 
@@ -56,29 +48,9 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
             values.add(new BitmaskValueData(nativeIntegralType, bitmaskValue));
     }
 
-    public String getBaseJavaTypeName()
-    {
-        return baseJavaTypeName;
-    }
-
-    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
     {
         return underlyingTypeInfo;
-    }
-
-    public boolean getIsSimpleType()
-    {
-        return isSimpleType;
-    }
-
-    public boolean getIsLong()
-    {
-        return isLong;
-    }
-
-    public ArrayableInfoTemplateData getArrayableInfo()
-    {
-        return arrayableInfo;
     }
 
     public BitSizeTemplateData getBitSize()
@@ -163,11 +135,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         private final boolean isZero;
     }
 
-    private final String baseJavaTypeName;
-    private final TypeInfoTemplateData underlyingTypeInfo;
-    private final boolean isSimpleType;
-    private final boolean isLong;
-    private final ArrayableInfoTemplateData arrayableInfo;
+    private final NativeTypeInfoTemplateData underlyingTypeInfo;
     private final BitSizeTemplateData bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String lowerBound;

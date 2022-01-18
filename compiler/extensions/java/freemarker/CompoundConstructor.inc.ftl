@@ -56,7 +56,7 @@
 <#macro compound_constructor_argument_type_list compoundConstructorsData>
     <#list compoundConstructorsData.compoundParametersData.list as compoundParameter>
 
-            ${compoundParameter.javaTypeName} <@parameter_argument_name compoundParameter/><#if compoundParameter_has_next>,</#if><#rt>
+            ${compoundParameter.typeInfo.typeName} <@parameter_argument_name compoundParameter/><#if compoundParameter_has_next>,</#if><#rt>
     </#list>
 </#macro>
 

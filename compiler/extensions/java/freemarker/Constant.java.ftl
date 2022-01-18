@@ -3,5 +3,5 @@
 
 public final class ${name}
 {
-    public static final ${javaTypeName} ${name} = ${value};
+    public static final ${typeInfo.typeName} ${name} = ${value};
 }

@@ -8,7 +8,6 @@ import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
-import zserio.extension.java.types.NativeBooleanType;
 
 /**
  * FreeMarker template data for SQL table rows.
@@ -56,9 +55,9 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             name = field.getName();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
-            javaTypeFullName = nativeType.getFullName();
-            javaNullableTypeFullName = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation).getFullName();
-            isBool = nativeType instanceof NativeBooleanType;
+            final JavaNativeType nullableNativeType = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
+            nullableTypeInfo = new NativeTypeInfoTemplateData(nullableNativeType, fieldTypeInstantiation);
+            typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
         }
 
         public String getName()
@@ -66,28 +65,22 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
             return name;
         }
 
-        public String getJavaTypeFullName()
+        public NativeTypeInfoTemplateData getNullableTypeInfo()
         {
-            return javaTypeFullName;
+            return nullableTypeInfo;
         }
 
-        public String getJavaNullableTypeFullName()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return javaNullableTypeFullName;
+            return typeInfo;
         }
 
-        public boolean getIsBool()
-        {
-            return isBool;
-        }
-
-        private final String    name;
-        private final String    javaTypeFullName;
-        private final String    javaNullableTypeFullName;
-        private final boolean   isBool;
+        private final String name;
+        private final NativeTypeInfoTemplateData nullableTypeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
     }
 
-    private final String                    packageName;
-    private final String                    name;
-    private final List<FieldTemplateData>   fields = new ArrayList<FieldTemplateData>();
+    private final String packageName;
+    private final String name;
+    private final List<FieldTemplateData>fields = new ArrayList<FieldTemplateData>();
 }

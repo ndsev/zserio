@@ -55,8 +55,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
             final JavaNativeType fieldNativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
-            javaTypeName = fieldNativeType.getFullName();
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, fieldNativeType);
+            typeInfo = new NativeTypeInfoTemplateData(fieldNativeType, fieldTypeInstantiation);
 
             name = field.getName();
             getterName = AccessorNameFormatter.getGetterName(field);
@@ -78,12 +77,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public String getJavaTypeName()
-        {
-            return javaTypeName;
-        }
-
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -126,8 +120,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
-        private final String javaTypeName;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String getterName;
         private final boolean isWithoutRowIdTable;
         private final boolean hasExplicitParameters;

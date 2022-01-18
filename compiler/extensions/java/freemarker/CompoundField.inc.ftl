@@ -47,7 +47,7 @@
 new ${field.array.wrapperJavaTypeName}(
 ${I}new ${field.array.rawHolderJavaTypeName}(<#rt>
     <#if field.array.requiresElementClass>
-        ${field.array.elementJavaTypeName}.class<#if rawArray?has_content>, </#if><#t>
+        ${field.array.elementTypeInfo.typeName}.class<#if rawArray?has_content>, </#if><#t>
     </#if>
     <#if rawArray?has_content>
         ${rawArray}<#t>
@@ -82,10 +82,10 @@ new ${field.array.arrayTraits.name}(<#rt>
         </#if>
         )<#t>
     <#else>
-new ${field.arrayableInfo.arrayTraits.name}(<#rt>
-        <#if field.arrayableInfo.arrayTraits.requiresElementBitSize>
+new ${field.typeInfo.arrayableInfo.arrayTraits.name}(<#rt>
+        <#if field.typeInfo.arrayableInfo.arrayTraits.requiresElementBitSize>
         (int)(${field.bitSize.value})<#t>
-        <#elseif field.arrayableInfo.arrayTraits.requiresElementFactory>
+        <#elseif field.typeInfo.arrayableInfo.arrayTraits.requiresElementFactory>
         new <@element_factory_name field.name/>()<#t>
         </#if>
         )<#t>
@@ -122,7 +122,7 @@ ${I}}
 
 <#macro compound_field_compound_ctor_params compound>
     <#list compound.instantiatedParameters as parameter>
-        <#if parameter.isSimpleType>(${parameter.javaTypeName})(</#if>${parameter.expression}<#if parameter.isSimpleType>)</#if><#t>
+        <#if parameter.typeInfo.isSimple>(${parameter.typeInfo.typeName})(</#if>${parameter.expression}<#if parameter.typeInfo.isSimple>)</#if><#t>
         <#if parameter_has_next>, </#if><#t>
     </#list>
 </#macro>
@@ -152,19 +152,19 @@ ${I}in.alignTo(${field.alignmentValue});
         <@compound_read_field_offset_check field, compoundName, indent/>
     </#if>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isIntegralType>
-${I}<@field_member_name field/> = ((${field.arrayableInfo.arrayElement})
+        <#if field.typeInfo.isIntegral>
+${I}<@field_member_name field/> = ((${field.typeInfo.arrayableInfo.arrayElement})
 ${I}        <@compound_field_packing_context_node field, index/>.getContext().read(
 ${I}                <@array_traits field/>, in)).get();
-        <#elseif field.isEnum>
-${I}<@field_member_name field/> = ${field.javaTypeName}.readEnum(<@compound_field_packing_context_node field, index/>, in);
+        <#elseif field.typeInfo.isEnum>
+${I}<@field_member_name field/> = ${field.typeInfo.typeName}.readEnum(<@compound_field_packing_context_node field, index/>, in);
         <#else>
             <#local compoundParamsArguments>
                 <#if field.compound??><#-- can be a bitmask -->
                     <@compound_field_compound_ctor_params field.compound/>
                 </#if>
             </#local>
-${I}<@field_member_name field/> = new ${field.javaTypeName}(<@compound_field_packing_context_node field, index/>, in<#rt>
+${I}<@field_member_name field/> = new ${field.typeInfo.typeName}(<@compound_field_packing_context_node field, index/>, in<#rt>
         <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
         </#if>
     <#elseif field.array??>
@@ -173,8 +173,8 @@ ${I}<@compound_get_field field/>.read<@array_field_packed_suffix field, packed/>
     <#elseif field.runtimeFunction??>
 ${I}<@field_member_name field/> = <#if field.runtimeFunction.javaReadTypeName??>(${field.runtimeFunction.javaReadTypeName})</#if><#rt>
         <#lt>in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!});
-    <#elseif field.isEnum>
-${I}<@field_member_name field/> = ${field.javaTypeName}.readEnum(in);
+    <#elseif field.typeInfo.isEnum>
+${I}<@field_member_name field/> = ${field.typeInfo.typeName}.readEnum(in);
     <#else>
         <#-- compound or bitmask -->
         <#local compoundParamsArguments>
@@ -182,7 +182,7 @@ ${I}<@field_member_name field/> = ${field.javaTypeName}.readEnum(in);
                 <@compound_field_compound_ctor_params field.compound/>
             </#if>
         </#local>
-${I}<@field_member_name field/> = new ${field.javaTypeName}(in<#rt>
+${I}<@field_member_name field/> = new ${field.typeInfo.typeName}(in<#rt>
         <#lt><#if compoundParamsArguments?has_content>, ${compoundParamsArguments}</#if>);
     </#if>
 </#macro>
@@ -228,10 +228,10 @@ ${I}out.alignTo(${field.alignmentValue});
         <@compound_write_field_offset_check field, compoundName, indent/>
     </#if>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isIntegralType>
+        <#if field.typeInfo.isIntegral>
 ${I}<@compound_field_packing_context_node field, index/>.getContext().write(
 ${I}        <@array_traits field/>, out,
-${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
 ${I}<@compound_get_field field/>.write(<@compound_field_packing_context_node field, index/>, out);
         </#if>
@@ -261,18 +261,18 @@ ${I}    throw new zserio.runtime.ConstraintError("Constraint violated at ${compo
 </#macro>
 
 <#macro compound_compare_field field>
-    <#if field.isSimpleType>
-        <#if field.isFloat>
+    <#if field.typeInfo.isSimple>
+        <#if field.typeInfo.isFloat>
             <#-- float type: compare by floatToIntBits() to get rid of SpotBugs -->
 java.lang.Float.floatToIntBits(<@compound_get_field field/>) == java.lang.Float.floatToIntBits(that.<@compound_get_field field/>)<#rt>
-        <#elseif field.isDouble>
+        <#elseif field.typeInfo.isDouble>
             <#-- double type: compare by doubleToLongBits() to get rid of SpotBugs -->
 java.lang.Double.doubleToLongBits(<@compound_get_field field/>) == java.lang.Double.doubleToLongBits(that.<@compound_get_field field/>)<#rt>
         <#else>
             <#-- simple type: compare by == -->
 <@compound_get_field field/> == that.<@compound_get_field field/><#rt>
         </#if>
-    <#elseif field.isEnum>
+    <#elseif field.typeInfo.isEnum>
         <#-- enum type: compare by getValue() and == -->
 ((<@compound_get_field field/> == null) ? that.<@compound_get_field field/> == null : <@compound_get_field field/>.getValue() == that.<@compound_get_field field/>.getValue())<#rt>
     <#else>
@@ -311,10 +311,10 @@ ${I}}
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isIntegralType>
+        <#if field.typeInfo.isIntegral>
 ${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
 ${I}        <@array_traits field/>,
-${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
 ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(<@compound_field_packing_context_node field, index/>,
 ${I}        endBitPosition);
@@ -361,10 +361,10 @@ ${I}    ${field.offset.setter};
 ${I}}
         </#if>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isIntegralType>
+        <#if field.typeInfo.isIntegral>
 ${I}endBitPosition += <@compound_field_packing_context_node field, index/>.getContext().bitSizeOf(
 ${I}        <@array_traits field/>,
-${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
         <#else>
 ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(<@compound_field_packing_context_node field, index/>,
 ${I}        endBitPosition);
@@ -384,19 +384,19 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
 
 <#macro compound_hashcode_field field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isSimpleType>
-        <#if field.isLong>
+    <#if field.typeInfo.isSimple>
+        <#if field.typeInfo.isLong>
             <#-- long type: use shifting -->
 ${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(<@compound_get_field field/> ^ (<@compound_get_field field/> >>> 32));
-        <#elseif field.isFloat>
+        <#elseif field.typeInfo.isFloat>
             <#-- float type: use floatToIntBits() -->
 ${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + java.lang.Float.floatToIntBits(<@compound_get_field field/>);
-        <#elseif field.isDouble>
+        <#elseif field.typeInfo.isDouble>
             <#-- double type: use doubleToLongBits() -->
 ${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
 ${I}        (int)(java.lang.Double.doubleToLongBits(<@compound_get_field field/>) ^
 ${I}                (java.lang.Double.doubleToLongBits(<@compound_get_field field/>) >>> 32));
-        <#elseif field.isBool>
+        <#elseif field.typeInfo.isBoolean>
             <#-- bool type: convert it to int -->
 ${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (<@compound_get_field field/> ? 1 : 0);
         <#else>
@@ -412,10 +412,10 @@ ${I}        ((<@compound_get_field field/> == null) ? 0 : <@compound_get_field f
 
 <#macro compound_create_packing_context_field field>
     <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
-        <#if field.isIntegralType>
+        <#if field.typeInfo.isIntegral>
         contextNode.createChild().createContext();
         <#else>
-        ${field.javaTypeName}.createPackingContext(contextNode.createChild());
+        ${field.typeInfo.typeName}.createPackingContext(contextNode.createChild());
         </#if>
     <#else>
         contextNode.createChild();
@@ -439,10 +439,10 @@ ${I}}
 <#macro compound_init_packing_context_field_inner field index indent>
     <#-- arrays are solved in compound_init_packing_context_field -->
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isIntegralType>
+    <#if field.typeInfo.isIntegral>
 ${I}<@compound_field_packing_context_node field, index/>.getContext().init(
 ${I}        <@array_traits field/>,
-${I}        new ${field.arrayableInfo.arrayElement}(<@compound_get_field field/>));
+${I}        new ${field.typeInfo.arrayableInfo.arrayElement}(<@compound_get_field field/>));
     <#else>
 ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_context_node field, index/>);
     </#if>
@@ -499,33 +499,33 @@ ${I}<@compound_get_field field/>.initPackingContext(<@compound_field_packing_con
         </#if>
     </#local>
     private <#if !field.array.requiresParentContext>static </#if>final class <@element_factory_name field.name/> <#rt>
-        <#lt>implements zserio.runtime.array.ElementFactory<${field.array.elementJavaTypeName}>
+        <#lt>implements zserio.runtime.array.ElementFactory<${field.array.elementTypeInfo.typeName}>
     {
         @Override
-        public ${field.array.elementJavaTypeName} create(zserio.runtime.io.BitStreamReader in, int index)
+        public ${field.array.elementTypeInfo.typeName} create(zserio.runtime.io.BitStreamReader in, int index)
                 throws java.io.IOException
         {
-    <#if field.array.isElementEnum>
-            return ${field.array.elementJavaTypeName}.readEnum(in);
+    <#if field.array.elementTypeInfo.isEnum>
+            return ${field.array.elementTypeInfo.typeName}.readEnum(in);
     <#else>
-            return new ${field.array.elementJavaTypeName}(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
+            return new ${field.array.elementTypeInfo.typeName}(in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
     </#if>
         }
-        
+
         @Override
         public void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
         {
-            ${field.array.elementJavaTypeName}.createPackingContext(contextNode);
+            ${field.array.elementTypeInfo.typeName}.createPackingContext(contextNode);
         }
-        
+
         @Override
-        public ${field.array.elementJavaTypeName} create(zserio.runtime.array.PackingContextNode contextNode,
+        public ${field.array.elementTypeInfo.typeName} create(zserio.runtime.array.PackingContextNode contextNode,
                 zserio.runtime.io.BitStreamReader in, int index) throws java.io.IOException
         {
-    <#if field.array.isElementEnum>
-            return ${field.array.elementJavaTypeName}.readEnum(contextNode, in);
+    <#if field.array.elementTypeInfo.isEnum>
+            return ${field.array.elementTypeInfo.typeName}.readEnum(contextNode, in);
     <#else>
-            return new ${field.array.elementJavaTypeName}(contextNode, in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
+            return new ${field.array.elementTypeInfo.typeName}(contextNode, in<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>);
     </#if>
         }
     }

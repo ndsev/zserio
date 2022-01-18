@@ -13,13 +13,13 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 {
     public ${name}()
     {
-        this(<#if isSimpleType>(${baseJavaTypeName})0<#else>java.math.BigInteger.ZERO</#if>);
+        this(<#if underlyingTypeInfo.isSimple>(${underlyingTypeInfo.typeName})0<#else>java.math.BigInteger.ZERO</#if>);
     }
 
-    public ${name}(${baseJavaTypeName} value)
+    public ${name}(${underlyingTypeInfo.typeName} value)
     {
 <#if lowerBound?? || checkUpperBound>
-    <#if isSimpleType>
+    <#if underlyingTypeInfo.isSimple>
         if (<#if lowerBound??>value < ${lowerBound}</#if><#rt>
                 <#lt><#if checkUpperBound><#if lowerBound??> || </#if>value > ${upperBound}</#if>)
     <#else>
@@ -43,9 +43,9 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
-        value = ((${arrayableInfo.arrayElement})
+        value = ((${underlyingTypeInfo.arrayableInfo.arrayElement})
                 contextNode.getContext().read(
-                        <@bitmask_array_traits arrayableInfo, bitSize!/>, in)).get();
+                        <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, in)).get();
     }
 <#if withTypeInfoCode>
 
@@ -73,8 +73,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
         contextNode.getContext().init(
-                <@bitmask_array_traits arrayableInfo, bitSize!/>,
-                new ${arrayableInfo.arrayElement}(value));
+                <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
+                new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 
     @Override
@@ -97,8 +97,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
         return contextNode.getContext().bitSizeOf(
-                <@bitmask_array_traits arrayableInfo, bitSize!/>,
-                new ${arrayableInfo.arrayElement}(value));
+                <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
+                new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>
 
@@ -122,7 +122,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             return false;
 
         final ${name} other${name} = (${name})other;
-        return <#if isSimpleType>value == other${name}.value<#else>value.equals(other${name}.value)</#if>;
+        return <#if underlyingTypeInfo.isSimple>value == other${name}.value<#else>value.equals(other${name}.value)</#if>;
     }
 
     @Override
@@ -130,8 +130,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     {
         int result = zserio.runtime.Util.HASH_SEED;
 
-<#if isSimpleType>
-    <#if isLong>
+<#if underlyingTypeInfo.isSimple>
+    <#if underlyingTypeInfo.isLong>
         <#-- use shifting -->
         result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(value ^ (value >>> 32));
     <#else>
@@ -160,7 +160,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     </#if>
 </#list>
 <#if zeroValueName??>
-        if (builder.length() == 0 && <#if isSimpleType>value == 0<#else>value.equals(java.math.BigInteger.ZERO)</#if>)
+        if (builder.length() == 0 && <#if underlyingTypeInfo.isSimple>value == 0<#else>value.equals(java.math.BigInteger.ZERO)</#if>)
             builder.append("${zeroValueName}");
 </#if>
 
@@ -186,20 +186,20 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
         contextNode.getContext().write(
-                <@bitmask_array_traits arrayableInfo, bitSize!/>, out,
-                new ${arrayableInfo.arrayElement}(value));
+                <@bitmask_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, out,
+                new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 </#if>
 
-    public ${baseJavaTypeName} getValue()
+    public ${underlyingTypeInfo.typeName} getValue()
     {
         return value;
     }
 
     public ${name} or(${name} other)
     {
-<#if isSimpleType>
-        return new ${name}((${baseJavaTypeName})(value | other.value));
+<#if underlyingTypeInfo.isSimple>
+        return new ${name}((${underlyingTypeInfo.typeName})(value | other.value));
 <#else>
         <#-- big integer -->
         return new ${name}(value.or(other.value));
@@ -208,8 +208,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     public ${name} and(${name} other)
     {
-<#if isSimpleType>
-        return new ${name}((${baseJavaTypeName})(value & other.value));
+<#if underlyingTypeInfo.isSimple>
+        return new ${name}((${underlyingTypeInfo.typeName})(value & other.value));
 <#else>
         <#-- big integer -->
         return new ${name}(value.and(other.value));
@@ -218,8 +218,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     public ${name} xor(${name} other)
     {
-<#if isSimpleType>
-        return new ${name}((${baseJavaTypeName})(value ^ other.value));
+<#if underlyingTypeInfo.isSimple>
+        return new ${name}((${underlyingTypeInfo.typeName})(value ^ other.value));
 <#else>
         <#-- big integer -->
         return new ${name}(value.xor(other.value));
@@ -228,8 +228,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     public ${name} not()
     {
-<#if isSimpleType>
-        return new ${name}((${baseJavaTypeName})(~value<#if upperBound??> & ${upperBound}</#if>));
+<#if underlyingTypeInfo.isSimple>
+        return new ${name}((${underlyingTypeInfo.typeName})(~value<#if upperBound??> & ${upperBound}</#if>));
 <#else>
         <#-- big integer -->
         return new ${name}(value.not().and(${upperBound}));
@@ -243,5 +243,5 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#list>
     }
 
-    private ${baseJavaTypeName} value;
+    private ${underlyingTypeInfo.typeName} value;
 }

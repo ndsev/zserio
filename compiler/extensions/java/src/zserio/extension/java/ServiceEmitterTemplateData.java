@@ -23,7 +23,8 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
         final JavaNativeType nativeServiceType = javaTypeMapper.getJavaType(serviceType);
         // keep Zserio default formatting to ensure that all languages have same name of service methods
-        servicePackageName = nativeServiceType.getPackageName().toString();
+        final String servicePackageName = nativeServiceType.getPackageName().toString();
+        serviceFullName = servicePackageName.isEmpty() ? getName() : servicePackageName + "." + getName();
 
         final Iterable<ServiceMethod> methodList = serviceType.getMethodList();
         for (ServiceMethod method : methodList)
@@ -40,7 +41,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public String getServiceFullName()
     {
-        return servicePackageName.isEmpty() ? getName() : servicePackageName + "." + getName();
+        return serviceFullName;
     }
 
     public static class MethodTemplateData
@@ -52,13 +53,11 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
             final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
             final JavaNativeType responseNativeType = typeMapper.getJavaType(responseTypeReference);
-            responseTypeInfo = new TypeInfoTemplateData(responseTypeReference, responseNativeType);
-            responseTypeFullName = responseNativeType.getFullName();
+            responseTypeInfo = new NativeTypeInfoTemplateData(responseNativeType, responseTypeReference);
 
             final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
             final JavaNativeType requestNativeType = typeMapper.getJavaType(requestTypeReference);
-            requestTypeInfo = new TypeInfoTemplateData(requestTypeReference, requestNativeType);
-            requestTypeFullName = requestNativeType.getFullName();
+            requestTypeInfo = new NativeTypeInfoTemplateData(requestNativeType, requestTypeReference);
         }
 
         public String getName()
@@ -66,33 +65,21 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public TypeInfoTemplateData getResponseTypeInfo()
+        public NativeTypeInfoTemplateData getResponseTypeInfo()
         {
             return responseTypeInfo;
         }
 
-        public String getResponseTypeFullName()
-        {
-            return responseTypeFullName;
-        }
-
-        public TypeInfoTemplateData getRequestTypeInfo()
+        public NativeTypeInfoTemplateData getRequestTypeInfo()
         {
             return requestTypeInfo;
         }
 
-        public String getRequestTypeFullName()
-        {
-            return requestTypeFullName;
-        }
-
         private final String name;
-        private final TypeInfoTemplateData responseTypeInfo;
-        private final String responseTypeFullName;
-        private final TypeInfoTemplateData requestTypeInfo;
-        private final String requestTypeFullName;
+        private final NativeTypeInfoTemplateData responseTypeInfo;
+        private final NativeTypeInfoTemplateData requestTypeInfo;
     }
 
     private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
-    private final String servicePackageName;
+    private final String serviceFullName;
 }

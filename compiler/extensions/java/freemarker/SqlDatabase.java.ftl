@@ -13,7 +13,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     {
         <#list fields as field>
             <#if field.hasExplicitParameters>
-        ${field.javaTypeName}.ParameterProvider get${field.name?cap_first}ParameterProvider();
+        ${field.typeInfo.typeName}.ParameterProvider get${field.name?cap_first}ParameterProvider();
             </#if>
         </#list>
     };
@@ -104,7 +104,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
 </#if>
 <#list fields as field>
 
-    public ${field.javaTypeName} ${field.getterName}()
+    public ${field.typeInfo.typeName} ${field.getterName}()
     {
         return this.<@sql_field_member_name field/>;
     }
@@ -199,7 +199,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     private void initTables(java.util.Map<java.lang.String, java.lang.String> tableToAttachedDbNameRelocationMap)
     {
 <#list fields as field>
-        this.<@sql_field_member_name field/> = new ${field.javaTypeName}(connection,
+        this.<@sql_field_member_name field/> = new ${field.typeInfo.typeName}(connection,
                 tableToAttachedDbNameRelocationMap.get(${field.name}_TABLE_NAME),
                 ${field.name}_TABLE_NAME);
 </#list>
@@ -272,6 +272,6 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     private final java.util.List<java.lang.String> attachedDbList;
 
 <#list fields as field>
-    private ${field.javaTypeName} <@sql_field_member_name field/>;
+    private ${field.typeInfo.typeName} <@sql_field_member_name field/>;
 </#list>
 }

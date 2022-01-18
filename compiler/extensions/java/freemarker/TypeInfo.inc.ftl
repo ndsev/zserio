@@ -3,7 +3,7 @@
         zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.get${typeInfo.typeInfoGetter.suffix}(<#t>
                 <#if typeInfo.typeInfoGetter.arg??>(byte)${typeInfo.typeInfoGetter.arg}</#if>)<#t>
     <#else>
-        ${typeInfo.javaTypeName}.typeInfo()<#t>
+        ${typeInfo.typeName}.typeInfo()<#t>
     </#if>
 </#macro>
 
@@ -27,6 +27,8 @@ ${I}        "${field.name}", // schemaName
     <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
 ${I}        new zserio.runtime.typeinfo.TypeInfo.RecursiveTypeInfo(<#rt>
                     <#lt>new <@field_info_recursive_type_info_getter_name field/>()), // typeInfo
+    <#elseif field.array??>
+${I}        <@type_info field.array.elementTypeInfo/>, // typeInfo
     <#else>
 ${I}        <@type_info field.typeInfo/>, // typeInfo
     </#if>
@@ -57,7 +59,11 @@ ${I}{
 ${I}    @Override
 ${I}    public zserio.runtime.typeinfo.TypeInfo get()
 ${I}    {
-${I}        return ${field.typeInfo.javaTypeName}.typeInfo();
+        <#if field.array??>
+${I}        return ${field.array.elementTypeInfo.typeName}.typeInfo();
+        <#else>
+${I}        return ${field.typeInfo.typeName}.typeInfo();
+        </#if>
 ${I}    }
 ${I}}
 

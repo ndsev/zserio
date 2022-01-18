@@ -63,18 +63,18 @@ public final class ${name}
         }
 <#list methodList as method>
 
-        protected abstract ${method.responseTypeFullName} ${method.name}Impl(
-                ${method.requestTypeFullName} request, java.lang.Object context);
+        protected abstract ${method.responseTypeInfo.typeName} ${method.name}Impl(
+                ${method.requestTypeInfo.typeName} request, java.lang.Object context);
 </#list>
 <#list methodList as method>
 
         private byte[] ${method.name}Method(byte[] requestData, java.lang.Object context)
                 throws zserio.runtime.ZserioError
         {
-            final ${method.requestTypeFullName} request =
-                    zserio.runtime.io.ZserioIO.read(${method.requestTypeFullName}.class, requestData);
+            final ${method.requestTypeInfo.typeName} request =
+                    zserio.runtime.io.ZserioIO.read(${method.requestTypeInfo.typeName}.class, requestData);
 
-            final ${method.responseTypeFullName} response = ${method.name}Impl(request, context);
+            final ${method.responseTypeInfo.typeName} response = ${method.name}Impl(request, context);
 
             final byte[] responseData = zserio.runtime.io.ZserioIO.write(response);
             return responseData;
@@ -99,19 +99,19 @@ public final class ${name}
         }
 <#list methodList as method>
 
-        public ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName} request,
+        public ${method.responseTypeInfo.typeName} ${method.name}Method(${method.requestTypeInfo.typeName} request,
                 java.lang.Object context) throws zserio.runtime.ZserioError
         {
             final byte[] requestData = zserio.runtime.io.ZserioIO.write(request);
 
             final byte[] responseData = service.callMethod("${method.name}", requestData, context);
 
-            final ${method.responseTypeFullName} response =
-                    zserio.runtime.io.ZserioIO.read(${method.responseTypeFullName}.class, responseData);
+            final ${method.responseTypeInfo.typeName} response =
+                    zserio.runtime.io.ZserioIO.read(${method.responseTypeInfo.typeName}.class, responseData);
             return response;
         }
 
-        public ${method.responseTypeFullName} ${method.name}Method(${method.requestTypeFullName} request)
+        public ${method.responseTypeInfo.typeName} ${method.name}Method(${method.requestTypeInfo.typeName} request)
                  throws zserio.runtime.ZserioError
         {
             return ${method.name}Method(request, null);

@@ -39,19 +39,13 @@ public final class CompoundFunctionTemplateData
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(returnTypeReference);
-            returnTypeName = nativeType.getFullName();
-            returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, nativeType);
+            returnTypeInfo = new NativeTypeInfoTemplateData(nativeType, returnTypeReference);
             schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
             resultExpression = javaExpressionFormatter.formatGetter(function.getResultExpression());
         }
 
-        public String getReturnTypeName()
-        {
-            return returnTypeName;
-        }
-
-        public TypeInfoTemplateData getReturnTypeInfo()
+        public NativeTypeInfoTemplateData getReturnTypeInfo()
         {
             return returnTypeInfo;
         }
@@ -71,8 +65,7 @@ public final class CompoundFunctionTemplateData
             return resultExpression;
         }
 
-        private final String returnTypeName;
-        private final TypeInfoTemplateData returnTypeInfo;
+        private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String schemaName;
         private final String name;
         private final String resultExpression;

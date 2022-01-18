@@ -16,14 +16,13 @@ import zserio.ast.Field;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.common.sql.SqlNativeTypeMapper;
 import zserio.extension.common.sql.types.NativeBlobType;
 import zserio.extension.common.sql.types.SqlNativeType;
 import zserio.extension.java.types.JavaNativeType;
-import zserio.extension.java.types.NativeBitmaskType;
-import zserio.extension.java.types.NativeEnumType;
 import zserio.extension.java.types.NativeIntegralType;
 import zserio.tools.HashUtil;
 
@@ -62,8 +61,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 if (parameterTemplateData.getIsExplicit())
                 {
                     final String expression = parameterTemplateData.getExpression();
-                    final String javaTypeFullName = parameterTemplateData.getJavaTypeFullName();
-                    explicitParameters.add(new ExplicitParameterTemplateData(expression, javaTypeFullName));
+                    final NativeTypeInfoTemplateData typeInfo = parameterTemplateData.getTypeInfo();
+                    explicitParameters.add(new ExplicitParameterTemplateData(expression, typeInfo));
                 }
             }
         }
@@ -123,10 +122,10 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class ExplicitParameterTemplateData implements Comparable<ExplicitParameterTemplateData>
     {
-        public ExplicitParameterTemplateData(String expression, String javaTypeFullName)
+        public ExplicitParameterTemplateData(String expression, NativeTypeInfoTemplateData typeInfo)
         {
             this.expression = expression;
-            this.javaTypeFullName = javaTypeFullName;
+            this.typeInfo = typeInfo;
         }
 
         public String getExpression()
@@ -134,9 +133,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return expression;
         }
 
-        public String getJavaTypeFullName()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return javaTypeFullName;
+            return typeInfo;
         }
 
         @Override
@@ -146,7 +145,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             if (result != 0)
                 return result;
 
-            return javaTypeFullName.compareTo(other.javaTypeFullName);
+            return typeInfo.getTypeName().compareTo(other.typeInfo.getTypeName());
         }
 
         @Override
@@ -168,12 +167,12 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             int hash = HashUtil.HASH_SEED;
             hash = HashUtil.hash(hash, expression);
-            hash = HashUtil.hash(hash, javaTypeFullName);
+            hash = HashUtil.hash(hash, typeInfo.getTypeName());
             return hash;
         }
 
         private final String expression;
-        private final String javaTypeFullName;
+        private final NativeTypeInfoTemplateData typeInfo;
     }
 
     public static class FieldTemplateData
@@ -188,10 +187,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
 
             name = field.getName();
-            javaTypeName = nativeType.getName();
-            javaTypeFullName = nativeType.getFullName();
 
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation, nativeType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
 
             requiresBigInt = (nativeType instanceof NativeIntegralType) ?
                     ((NativeIntegralType)nativeType).requiresBigInt() : false;
@@ -215,16 +212,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
             isPrimaryKey = parentType.isFieldPrimaryKey(field);
 
-            // enumerations and bitmasks are rangeable for SQL
-            enumData = createEnumTemplateData(nativeType);
-            bitmaskData = createBitmaskTemplateData(nativeType);
-            TypeInstantiation rangeCheckInstantiation = fieldTypeInstantiation;
-            if (enumData != null)
-                rangeCheckInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
-            else if (bitmaskData != null)
-                rangeCheckInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
-            rangeCheckData = new RangeCheckTemplateData(javaNativeMapper, rangeCheckInstantiation,
-                    javaExpressionFormatter);
+            underlyingTypeInfo = createUnderlyingTypeInfo(javaNativeMapper, fieldBaseType);
+            rangeCheckData = createRangeCheckTemplateData(javaNativeMapper, fieldBaseType,
+                    javaExpressionFormatter, fieldTypeInstantiation);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
 
@@ -233,17 +223,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public String getJavaTypeName()
-        {
-            return javaTypeName;
-        }
-
-        public String getJavaTypeFullName()
-        {
-            return javaTypeFullName;
-        }
-
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -278,14 +258,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return isPrimaryKey;
         }
 
-        public EnumTemplateData getEnumData()
+        public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
         {
-            return enumData;
-        }
-
-        public BitmaskTemplateData getBitmaskData()
-        {
-            return bitmaskData;
+            return underlyingTypeInfo;
         }
 
         public RangeCheckTemplateData getRangeCheckData()
@@ -308,8 +283,10 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 isExplicit = argumentExpression.isExplicitVariable();
                 expression = javaSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
                 final Parameter parameter = instantiatedParameter.getParameter();
-                definitionName = parameter.getName();
-                javaTypeFullName = javaNativeMapper.getJavaType(parameter.getTypeReference()).getFullName();
+                name = parameter.getName();
+                final TypeReference parameterTypeReference = parameter.getTypeReference();
+                final JavaNativeType parameterNativeType = javaNativeMapper.getJavaType(parameterTypeReference);
+                typeInfo = new NativeTypeInfoTemplateData(parameterNativeType, parameterTypeReference);
             }
 
             public boolean getIsExplicit()
@@ -322,64 +299,20 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return expression;
             }
 
-            public String getDefinitionName()
+            public String getName()
             {
-                return definitionName;
+                return name;
             }
 
-            public String getJavaTypeFullName()
+            public NativeTypeInfoTemplateData getTypeInfo()
             {
-                return javaTypeFullName;
+                return typeInfo;
             }
 
             private final boolean isExplicit;
             private final String expression;
-            private final String definitionName;
-            private final String javaTypeFullName;
-        }
-
-        public static class EnumTemplateData
-        {
-            public EnumTemplateData(NativeEnumType nativeEnumType)
-            {
-                baseJavaTypeName = nativeEnumType.getBaseType().getName();
-                baseJavaTypeFullName = nativeEnumType.getBaseType().getFullName();
-            }
-
-            public String getBaseJavaTypeName()
-            {
-                return baseJavaTypeName;
-            }
-
-            public String getBaseJavaTypeFullName()
-            {
-                return baseJavaTypeFullName;
-            }
-
-            private final String baseJavaTypeName;
-            private final String baseJavaTypeFullName;
-        }
-
-        public static class BitmaskTemplateData
-        {
-            public BitmaskTemplateData(NativeBitmaskType nativeBitmaskType)
-            {
-                baseJavaTypeName = nativeBitmaskType.getBaseType().getName();
-                baseJavaTypeFullName = nativeBitmaskType.getBaseType().getFullName();
-            }
-
-            public String getBaseJavaTypeName()
-            {
-                return baseJavaTypeName;
-            }
-
-            public String getBaseJavaTypeFullName()
-            {
-                return baseJavaTypeFullName;
-            }
-
-            private final String baseJavaTypeName;
-            private final String baseJavaTypeFullName;
+            private final String name;
+            private final NativeTypeInfoTemplateData typeInfo;
         }
 
         public static class SqlTypeTemplateData
@@ -414,35 +347,52 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             private final boolean isBlob;
         }
 
-        private EnumTemplateData createEnumTemplateData(JavaNativeType nativeType)
+        private NativeTypeInfoTemplateData createUnderlyingTypeInfo(JavaNativeMapper javaNativeMapper,
+                ZserioType fieldBaseType) throws ZserioExtensionException
         {
-            if (!(nativeType instanceof NativeEnumType))
+            TypeInstantiation baseTypeInstantiation;
+            if (fieldBaseType instanceof EnumType)
+            {
+                baseTypeInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+            }
+            else if (fieldBaseType instanceof BitmaskType)
+            {
+                baseTypeInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
+            }
+            else
+            {
                 return null;
+            }
 
-            return new EnumTemplateData((NativeEnumType)nativeType);
+            final JavaNativeType nativeBaseType = javaNativeMapper.getJavaType(baseTypeInstantiation);
+
+            return new NativeTypeInfoTemplateData(nativeBaseType, baseTypeInstantiation);
         }
 
-        private BitmaskTemplateData createBitmaskTemplateData(JavaNativeType nativeType)
+        private RangeCheckTemplateData createRangeCheckTemplateData(JavaNativeMapper javaNativeMapper,
+                ZserioType fieldBaseType, ExpressionFormatter javaExpressionFormatter,
+                TypeInstantiation typeInstantiation) throws ZserioExtensionException
         {
-            if (!(nativeType instanceof NativeBitmaskType))
-                return null;
+            TypeInstantiation rangeCheckInstantiation = typeInstantiation;
+            if (fieldBaseType instanceof EnumType)
+                rangeCheckInstantiation = ((EnumType)fieldBaseType).getTypeInstantiation();
+            else if (fieldBaseType instanceof BitmaskType)
+                rangeCheckInstantiation = ((BitmaskType)fieldBaseType).getTypeInstantiation();
 
-            return new BitmaskTemplateData((NativeBitmaskType)nativeType);
+            return new RangeCheckTemplateData(javaNativeMapper, rangeCheckInstantiation,
+                    javaExpressionFormatter);
         }
 
         private final List<ParameterTemplateData> typeParameters;
 
         private final String name;
-        private final String javaTypeName;
-        private final String javaTypeFullName;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final boolean requiresBigInt;
         private final boolean isVirtual;
         private final String sqlConstraint;
         private final boolean isNotNull;
         private final boolean isPrimaryKey;
-        private final EnumTemplateData enumData;
-        private final BitmaskTemplateData bitmaskData;
+        private final NativeTypeInfoTemplateData underlyingTypeInfo;
         private final RangeCheckTemplateData rangeCheckData;
         private final SqlTypeTemplateData sqlTypeData;
     }

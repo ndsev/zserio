@@ -10,8 +10,8 @@
         final long upperBound = zserio.runtime.Util.getBitFieldUpperBound(
                 length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
         <#else>
-        final ${rangeData.javaTypeName} lowerBound = ${rangeData.lowerBound};
-        final ${rangeData.javaTypeName} upperBound = ${rangeData.upperBound};
+        final ${rangeData.typeInfo.typeName} lowerBound = ${rangeData.lowerBound};
+        final ${rangeData.typeInfo.typeName} upperBound = ${rangeData.upperBound};
         </#if>
         if <#if rangeData.isTypeNullable>(<@field_argument_name rangeData.field/> != null && </#if><#rt>
             (<@field_argument_name rangeData.field/> < lowerBound<#if rangeData.checkUpperBound> || <@field_argument_name rangeData.field/> > upperBound</#if>)<#t>
@@ -29,7 +29,7 @@
     <#if rangeCheckData.sqlRangeData??>
         <#local rangeData=rangeCheckData.sqlRangeData>
         <#-- bitfields with expression are not supported in a sql_table -->
-        <#if rangeData.isBoolType>
+        <#if rangeData.typeInfo.isBoolean>
             final long lowerBound = 0;
             final long upperBound = 1;
         <#else>

@@ -16,12 +16,12 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     ${item.name}(${item.value})<#if item_has_next>,<#else>;</#if>
 </#list>
 
-    private ${name}(${baseJavaTypeName} value)
+    private ${name}(${underlyingTypeInfo.typeName} value)
     {
         this.value = value;
     }
 
-    public ${baseJavaTypeName} getValue()
+    public ${underlyingTypeInfo.typeName} getValue()
     {
         return value;
     }
@@ -57,8 +57,8 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
         contextNode.getContext().init(
-                <@enum_array_traits arrayableInfo, bitSize!/>,
-                new ${arrayableInfo.arrayElement}(value));
+                <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
+                new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 
     @Override
@@ -81,8 +81,8 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
     {
         return contextNode.getContext().bitSizeOf(
-                <@enum_array_traits arrayableInfo, bitSize!/>,
-                new ${arrayableInfo.arrayElement}(value));
+                <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>,
+                new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 <#if withWriterCode>
 
@@ -116,8 +116,8 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
             zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
         contextNode.getContext().write(
-                <@enum_array_traits arrayableInfo, bitSize!/>, out,
-                new ${arrayableInfo.arrayElement}(value));
+                <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, out,
+                new ${underlyingTypeInfo.arrayableInfo.arrayElement}(value));
     }
 
 </#if>
@@ -130,17 +130,17 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     public static ${name} readEnum(zserio.runtime.array.PackingContextNode contextNode,
             zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
-        return toEnum(((${arrayableInfo.arrayElement})
+        return toEnum(((${underlyingTypeInfo.arrayableInfo.arrayElement})
                 contextNode.getContext().read(
-                        <@enum_array_traits arrayableInfo, bitSize!/>, in)).get());
+                        <@enum_array_traits underlyingTypeInfo.arrayableInfo, bitSize!/>, in)).get());
     }
 
-    public static ${name} toEnum(${baseJavaTypeName} value)
+    public static ${name} toEnum(${underlyingTypeInfo.typeName} value)
     {
-<#if baseJavaTypeName == "long" || baseJavaTypeName == "java.math.BigInteger">
+<#if underlyingTypeInfo.typeName == "long" || underlyingTypeInfo.typeName == "java.math.BigInteger">
     <#-- can't use switch for long and for BigInteger -->
     <#list items as item>
-        <#if baseJavaTypeName == "java.math.BigInteger">
+        <#if underlyingTypeInfo.typeName == "java.math.BigInteger">
         if (value.compareTo(${item.value}) == 0)
         <#else>
         if (value == ${item.value})
@@ -163,5 +163,5 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
 </#if>
     }
 
-    private ${baseJavaTypeName} value;
+    private ${underlyingTypeInfo.typeName} value;
 }

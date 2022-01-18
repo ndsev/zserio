@@ -21,12 +21,12 @@ public class ${name}
 <#list messageList as message>
     <#if message.isPublished>
 
-    public void publish${message.name?cap_first}(${message.typeFullName} message)
+    public void publish${message.name?cap_first}(${message.typeInfo.typeName} message)
     {
         publish${message.name?cap_first}(message, null);
     }
 
-    public void publish${message.name?cap_first}(${message.typeFullName} message,
+    public void publish${message.name?cap_first}(${message.typeInfo.typeName} message,
             java.lang.Object context)
     {
         publish(${message.topicDefinition}, message, context);
@@ -35,13 +35,13 @@ public class ${name}
     <#if message.isSubscribed>
 
     public int subscribe${message.name?cap_first}(
-            zserio.runtime.pubsub.PubsubCallback<${message.typeFullName}> callback)
+            zserio.runtime.pubsub.PubsubCallback<${message.typeInfo.typeName}> callback)
     {
         return subscribe${message.name?cap_first}(callback, null);
     }
 
     public int subscribe${message.name?cap_first}(
-            zserio.runtime.pubsub.PubsubCallback<${message.typeFullName}> callback,
+            zserio.runtime.pubsub.PubsubCallback<${message.typeInfo.typeName}> callback,
             java.lang.Object context)
     {
         final zserio.runtime.pubsub.PubsubInterface.Callback onRaw =
@@ -67,11 +67,11 @@ public class ${name}
         <#if message.isSubscribed>
 
     private void onRaw${message.name?cap_first}(
-            zserio.runtime.pubsub.PubsubCallback<${message.typeFullName}> callback,
+            zserio.runtime.pubsub.PubsubCallback<${message.typeInfo.typeName}> callback,
             java.lang.String topic, byte[] data)
     {
-        final ${message.typeFullName} message = zserio.runtime.io.ZserioIO.read(
-                ${message.typeFullName}.class, data);
+        final ${message.typeInfo.typeName} message = zserio.runtime.io.ZserioIO.read(
+                ${message.typeInfo.typeName}.class, data);
         callback.invoke(topic, message);
     }
         </#if>

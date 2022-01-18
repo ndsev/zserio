@@ -21,12 +21,14 @@ public class TemplateInstantiationTemplateData
     {
         templateName = ZserioTypeUtil.getFullName(template);
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
+        templateArgumentTypeInfos = new ArrayList<NativeTypeInfoTemplateData>();
         for (TemplateArgument templateArgument : templateArguments)
         {
+            final TypeReference argumentReferencedType = templateArgument.getTypeReference();
             final JavaNativeType argumentNativeType = javaNativeMapper.getJavaType(
-                    templateArgument.getTypeReference());
-            this.templateArgumentTypeInfos.add(new TypeInfoTemplateData(templateArgument.getTypeReference(),
-                    argumentNativeType));
+                    argumentReferencedType);
+            this.templateArgumentTypeInfos.add(new NativeTypeInfoTemplateData(argumentNativeType,
+                    argumentReferencedType));
         }
     }
 
@@ -35,7 +37,7 @@ public class TemplateInstantiationTemplateData
         return templateName;
     }
 
-    public Iterable<TypeInfoTemplateData> getTemplateArgumentTypeInfos()
+    public Iterable<NativeTypeInfoTemplateData> getTemplateArgumentTypeInfos()
     {
         return templateArgumentTypeInfos;
     }
@@ -56,5 +58,5 @@ public class TemplateInstantiationTemplateData
     }
 
     private final String templateName;
-    private final List<TypeInfoTemplateData> templateArgumentTypeInfos = new ArrayList<TypeInfoTemplateData>();
+    private final List<NativeTypeInfoTemplateData> templateArgumentTypeInfos;
 }

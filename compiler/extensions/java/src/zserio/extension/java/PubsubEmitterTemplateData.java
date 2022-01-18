@@ -5,6 +5,7 @@ import java.util.List;
 
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
@@ -55,13 +56,14 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public static class MessageTemplateData
     {
         public MessageTemplateData(JavaNativeMapper javaNativeMapper,
-                ExpressionFormatter javaExpressionFormatter, PubsubMessage message) throws ZserioExtensionException
+                ExpressionFormatter javaExpressionFormatter, PubsubMessage message)
+                        throws ZserioExtensionException
         {
             name = message.getName();
-            final JavaNativeType javaType = javaNativeMapper.getJavaType(message.getTypeReference());
-            typeInfo = new TypeInfoTemplateData(message.getTypeReference(), javaType);
+            final TypeReference referencedType = message.getTypeReference();
+            final JavaNativeType javaType = javaNativeMapper.getJavaType(referencedType);
+            typeInfo = new NativeTypeInfoTemplateData(javaType, referencedType);
             topicDefinition = javaExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
-            typeFullName = javaType.getFullName();
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }
@@ -71,7 +73,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             return name;
         }
 
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -79,11 +81,6 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         public String getTopicDefinition()
         {
             return topicDefinition;
-        }
-
-        public String getTypeFullName()
-        {
-            return typeFullName;
         }
 
         public boolean getIsPublished()
@@ -97,9 +94,8 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         }
 
         private final String name;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String topicDefinition;
-        private final String typeFullName;
         private final boolean isPublished;
         private final boolean isSubscribed;
     }

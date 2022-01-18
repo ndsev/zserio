@@ -191,17 +191,17 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
 <@compound_parameter_accessors compoundParametersData/>
 <#list fieldList as field>
-    public ${field.javaTypeName} ${field.getterName}()
+    public ${field.typeInfo.typeName} ${field.getterName}()
     {
     <#if field.array??>
         return ((${field.array.wrapperJavaTypeName})objectChoice).getRawArray();
     <#else>
-        return (${field.javaNullableTypeName})objectChoice;
+        return (${field.nullableTypeInfo.typeName})objectChoice;
     </#if>
     }
 
     <#if withWriterCode>
-    public void ${field.setterName}(${field.javaTypeName} <@field_argument_name field/>)
+    public void ${field.setterName}(${field.typeInfo.typeName} <@field_argument_name field/>)
     {
         <@range_check field.rangeCheckData, name/>
         <#if field.array??>

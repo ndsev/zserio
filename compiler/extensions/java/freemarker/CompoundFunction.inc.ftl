@@ -1,11 +1,11 @@
 <#macro compound_functions compoundFunctionsData>
     <#list compoundFunctionsData.list as compoundFunction>
-    public ${compoundFunction.returnTypeName} ${compoundFunction.name}()
+    public ${compoundFunction.returnTypeInfo.typeName} ${compoundFunction.name}()
     {
-        <#if compoundFunction.returnTypeName?matches("java.math.BigInteger")>
+        <#if compoundFunction.returnTypeInfo.typeName?matches("java.math.BigInteger")>
         return ${compoundFunction.resultExpression};
         <#else>
-        return (${compoundFunction.returnTypeName})(${compoundFunction.resultExpression});
+        return (${compoundFunction.returnTypeInfo.typeName})(${compoundFunction.resultExpression});
         </#if>
     }
 

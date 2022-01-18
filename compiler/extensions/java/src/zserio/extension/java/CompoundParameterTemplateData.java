@@ -5,14 +5,10 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.Parameter;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
-import zserio.extension.java.types.NativeBooleanType;
-import zserio.extension.java.types.NativeDoubleType;
-import zserio.extension.java.types.NativeEnumType;
-import zserio.extension.java.types.NativeFloatType;
-import zserio.extension.java.types.NativeLongType;
 
 /**
  * FreeMarker template data for compound parameters.
@@ -47,16 +43,10 @@ public final class CompoundParameterTemplateData
                 throws ZserioExtensionException
         {
             name = parameter.getName();
-            JavaNativeType nativeType = javaNativeMapper.getJavaType(parameter.getTypeReference());
-            javaTypeName = nativeType.getFullName();
-            typeInfo = new TypeInfoTemplateData(parameter.getTypeReference(), nativeType);
+            final TypeReference referencedType = parameter.getTypeReference();
+            final JavaNativeType nativeType = javaNativeMapper.getJavaType(referencedType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeType, referencedType);
             getterName = AccessorNameFormatter.getGetterName(parameter);
-            isBool = nativeType instanceof NativeBooleanType;
-            isLong = nativeType instanceof NativeLongType;
-            isFloat = nativeType instanceof NativeFloatType;
-            isDouble = nativeType instanceof NativeDoubleType;
-            isEnum = nativeType instanceof NativeEnumType;
-            isSimpleType = nativeType.isSimple();
         }
 
         public String getName()
@@ -64,12 +54,7 @@ public final class CompoundParameterTemplateData
             return name;
         }
 
-        public String getJavaTypeName()
-        {
-            return javaTypeName;
-        }
-
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -79,46 +64,9 @@ public final class CompoundParameterTemplateData
             return getterName;
         }
 
-        public boolean getIsBool()
-        {
-            return isBool;
-        }
-
-        public boolean getIsLong()
-        {
-            return isLong;
-        }
-
-        public boolean getIsFloat()
-        {
-            return isFloat;
-        }
-
-        public boolean getIsDouble()
-        {
-            return isDouble;
-        }
-
-        public boolean getIsEnum()
-        {
-            return isEnum;
-        }
-
-        public boolean getIsSimpleType()
-        {
-            return isSimpleType;
-        }
-
         private final String name;
-        private final String javaTypeName;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String getterName;
-        private final boolean isBool;
-        private final boolean isLong;
-        private final boolean isFloat;
-        private final boolean isDouble;
-        private final boolean isEnum;
-        private final boolean isSimpleType;
     }
 
     private final String                    compoundName;

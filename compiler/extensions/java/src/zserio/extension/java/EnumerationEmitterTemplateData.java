@@ -25,34 +25,20 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
         final NativeIntegralType nativeIntegralType =
                 javaNativeMapper.getJavaIntegralType(enumTypeInstantiation);
-        baseJavaTypeName = nativeIntegralType.getFullName();
 
-        underlyingTypeInfo = new TypeInfoTemplateData(enumTypeInstantiation, nativeIntegralType);
-
-        arrayableInfo = new ArrayableInfoTemplateData(nativeIntegralType);
+        underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, enumTypeInstantiation);
         bitSize = BitSizeTemplateData.create(enumTypeInstantiation, javaExpressionFormatter);
-
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
                 javaExpressionFormatter, javaNativeMapper);
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())
-            items.add(new EnumItemData(javaNativeMapper, enumType, item));
+            items.add(new EnumItemData(nativeIntegralType, item));
     }
 
-    public String getBaseJavaTypeName()
-    {
-        return baseJavaTypeName;
-    }
-
-    public TypeInfoTemplateData getUnderlyingTypeInfo()
+    public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
     {
         return underlyingTypeInfo;
-    }
-
-    public ArrayableInfoTemplateData getArrayableInfo()
-    {
-        return arrayableInfo;
     }
 
     public BitSizeTemplateData getBitSize()
@@ -72,13 +58,10 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
     public static class EnumItemData
     {
-        public EnumItemData(JavaNativeMapper javaNativeMapper, EnumType enumType, EnumItem enumItem)
+        public EnumItemData(NativeIntegralType nativeIntegralType, EnumItem enumItem)
                 throws ZserioExtensionException
         {
             name = enumItem.getName();
-
-            final NativeIntegralType nativeIntegralType =
-                    javaNativeMapper.getJavaIntegralType(enumType.getTypeInstantiation());
             value = nativeIntegralType.formatLiteral(enumItem.getValue());
         }
 
@@ -96,9 +79,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         private final String value;
     }
 
-    private final String baseJavaTypeName;
-    private final TypeInfoTemplateData underlyingTypeInfo;
-    private final ArrayableInfoTemplateData arrayableInfo;
+    private final NativeTypeInfoTemplateData underlyingTypeInfo;
     private final BitSizeTemplateData bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final List<EnumItemData> items;

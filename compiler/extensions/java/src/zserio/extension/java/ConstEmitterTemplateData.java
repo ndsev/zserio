@@ -1,6 +1,7 @@
 package zserio.extension.java;
 
 import zserio.ast.Constant;
+import zserio.ast.TypeInstantiation;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.symbols.JavaNativeSymbol;
@@ -22,8 +23,9 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
         packageName = JavaFullNameFormatter.getFullName(constantNativeSymbol.getPackageName());
         name = constantNativeSymbol.getName();
 
-        final JavaNativeType nativeTargetType = javaNativeMapper.getJavaType(constant.getTypeInstantiation());
-        javaTypeName = nativeTargetType.getFullName();
+        final TypeInstantiation typeInstantiation = constant.getTypeInstantiation();
+        final JavaNativeType nativeTargetType = javaNativeMapper.getJavaType(typeInstantiation);
+        typeInfo = new NativeTypeInfoTemplateData(nativeTargetType, typeInstantiation);
 
         value = javaExpressionFormatter.formatGetter(constant.getValueExpression());
     }
@@ -38,9 +40,9 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
         return name;
     }
 
-    public String getJavaTypeName()
+    public NativeTypeInfoTemplateData getTypeInfo()
     {
-        return javaTypeName;
+        return typeInfo;
     }
 
     public String getValue()
@@ -50,6 +52,6 @@ public final class ConstEmitterTemplateData extends JavaTemplateData
 
     private final String packageName;
     private final String name;
-    private final String javaTypeName;
+    private final NativeTypeInfoTemplateData typeInfo;
     private final String value;
 }

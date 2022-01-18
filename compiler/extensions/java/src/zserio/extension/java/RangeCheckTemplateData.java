@@ -2,7 +2,6 @@ package zserio.extension.java;
 
 import java.math.BigInteger;
 
-import zserio.ast.BooleanType;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
@@ -29,7 +28,7 @@ public final class RangeCheckTemplateData
             // in setters, don't do range check if Zserio type has the same bounds as their native type
             if (commonRangeData != null && (commonRangeData.checkLowerBound || commonRangeData.checkUpperBound))
             {
-                setterRangeData = new SetterRangeData(field, commonRangeData.javaTypeName,
+                setterRangeData = new SetterRangeData(field, commonRangeData.typeInfo,
                         isTypeNullable, commonRangeData.bitFieldWithExpression, commonRangeData.lowerBound,
                         commonRangeData.checkUpperBound, commonRangeData.upperBound);
             }
@@ -55,7 +54,7 @@ public final class RangeCheckTemplateData
         if (commonRangeData != null && !commonRangeData.is64BitType &&
                 commonRangeData.bitFieldWithExpression == null)
         {
-            sqlRangeData = new SqlRangeData(commonRangeData.isBoolType, commonRangeData.lowerBound,
+            sqlRangeData = new SqlRangeData(commonRangeData.typeInfo, commonRangeData.lowerBound,
                     commonRangeData.upperBound);
         }
         else
@@ -76,16 +75,16 @@ public final class RangeCheckTemplateData
 
     public static class SqlRangeData
     {
-        public SqlRangeData(boolean isBoolType, String lowerBound, String upperBound)
+        public SqlRangeData(NativeTypeInfoTemplateData typeInfo, String lowerBound, String upperBound)
         {
-            this.isBoolType = isBoolType;
+            this.typeInfo = typeInfo;
             this.lowerBound = lowerBound;
             this.upperBound = upperBound;
         }
 
-        public boolean getIsBoolType()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return isBoolType;
+            return typeInfo;
         }
 
         public String getLowerBound()
@@ -98,19 +97,19 @@ public final class RangeCheckTemplateData
             return upperBound;
         }
 
-        private final boolean   isBoolType;
-        private final String    lowerBound;
-        private final String    upperBound;
+        private final NativeTypeInfoTemplateData typeInfo;
+        private final String lowerBound;
+        private final String upperBound;
     }
 
     public static class SetterRangeData
     {
-        public SetterRangeData(CompoundFieldTemplateData field, String javaTypeName, boolean isTypeNullable,
-                BitFieldWithExpression bitFieldWithExpression, String lowerBound, boolean checkUpperBound,
-                String upperBound)
+        public SetterRangeData(CompoundFieldTemplateData field, NativeTypeInfoTemplateData typeInfo,
+                boolean isTypeNullable, BitFieldWithExpression bitFieldWithExpression, String lowerBound,
+                boolean checkUpperBound, String upperBound)
         {
             this.field = field;
-            this.javaTypeName = javaTypeName;
+            this.typeInfo = typeInfo;
             this.isTypeNullable = isTypeNullable;
             this.bitFieldWithExpression = bitFieldWithExpression;
             this.lowerBound = lowerBound;
@@ -123,9 +122,9 @@ public final class RangeCheckTemplateData
             return field;
         }
 
-        public String getJavaTypeName()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return javaTypeName;
+            return typeInfo;
         }
 
         public boolean getIsTypeNullable()
@@ -153,13 +152,13 @@ public final class RangeCheckTemplateData
             return upperBound;
         }
 
-        private final CompoundFieldTemplateData field;
-        private final String                    javaTypeName;
-        private final boolean                   isTypeNullable;
-        private final BitFieldWithExpression    bitFieldWithExpression;
-        private final String                    lowerBound;
-        private final boolean                   checkUpperBound;
-        private final String                    upperBound;
+        private final CompoundFieldTemplateData  field;
+        private final NativeTypeInfoTemplateData typeInfo;
+        private final boolean                    isTypeNullable;
+        private final BitFieldWithExpression     bitFieldWithExpression;
+        private final String                     lowerBound;
+        private final boolean                    checkUpperBound;
+        private final String                     upperBound;
     }
 
     public static class BitFieldWithExpression
@@ -189,12 +188,11 @@ public final class RangeCheckTemplateData
 
     private static class CommonRangeData
     {
-        public CommonRangeData(String javaTypeName, boolean isBoolType, boolean is64BitType,
+        public CommonRangeData(NativeTypeInfoTemplateData typeInfo, boolean is64BitType,
                 BitFieldWithExpression bitFieldWithExpression, boolean checkLowerBound, String lowerBound,
                 boolean checkUpperBound, String upperBound)
         {
-            this.javaTypeName = javaTypeName;
-            this.isBoolType = isBoolType;
+            this.typeInfo = typeInfo;
             this.is64BitType = is64BitType;
             this.bitFieldWithExpression = bitFieldWithExpression;
             this.checkLowerBound = checkLowerBound;
@@ -203,14 +201,13 @@ public final class RangeCheckTemplateData
             this.upperBound = upperBound;
         }
 
-        private final String                    javaTypeName;
-        private final boolean                   isBoolType;
-        private final boolean                   is64BitType;
-        private final BitFieldWithExpression    bitFieldWithExpression;
-        private final boolean                   checkLowerBound;
-        private final String                    lowerBound;
-        private final boolean                   checkUpperBound;
-        private final String                    upperBound;
+        private final NativeTypeInfoTemplateData typeInfo;
+        private final boolean                    is64BitType;
+        private final BitFieldWithExpression     bitFieldWithExpression;
+        private final boolean                    checkLowerBound;
+        private final String                     lowerBound;
+        private final boolean                    checkUpperBound;
+        private final String                     upperBound;
     }
 
     private static CommonRangeData createCommonRangeData(JavaNativeMapper javaNativeMapper,
@@ -233,8 +230,8 @@ public final class RangeCheckTemplateData
         if (nativeType == null)
             return null;
 
-        final String javaTypeName = nativeType.getFullName();
-        final boolean isBoolType = (baseType instanceof BooleanType);
+        final NativeTypeInfoTemplateData typeInfo = new NativeTypeInfoTemplateData(nativeType,
+                typeInstantiation);
         final boolean is64bitType = (integerType instanceof StdIntegerType) &&
                 ((StdIntegerType)integerType).getBitSize() == 64;
         final BitFieldWithExpression bitFieldWithExpression = createBitFieldWithExpression(typeInstantiation,
@@ -254,7 +251,7 @@ public final class RangeCheckTemplateData
         final String lowerBound = nativeType.formatLiteral(zserioLowerBound);
         final String upperBound = nativeType.formatLiteral(zserioUpperBound);
 
-        return new CommonRangeData(javaTypeName, isBoolType, is64bitType, bitFieldWithExpression,
+        return new CommonRangeData(typeInfo, is64bitType, bitFieldWithExpression,
                 checkLowerBound, lowerBound, checkUpperBound, upperBound);
     }
 
