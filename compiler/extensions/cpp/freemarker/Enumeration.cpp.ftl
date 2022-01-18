@@ -130,7 +130,7 @@ ${fullName} valueToEnum(
 template <>
 void initPackingContext(${types.packingContextNode.name}& contextNode, ${fullName} value)
 {
-    contextNode.getContext().init(<@enum_array_traits arrayTraits, fullName, bitSize!/>,
+    contextNode.getContext().init(<@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
             ::zserio::enumToValue(value));
 }
 
@@ -148,7 +148,7 @@ template <>
 size_t bitSizeOf(${types.packingContextNode.name}& contextNode, ${fullName} value)
 {
     return contextNode.getContext().bitSizeOf(
-            <@enum_array_traits arrayTraits, fullName, bitSize!/>,
+            <@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
             ::zserio::enumToValue(value));
 }
 <#if withWriterCode>
@@ -179,7 +179,7 @@ template <>
 ${fullName} read(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in)
 {
     return valueToEnum<${fullName}>(contextNode.getContext().read(
-            <@enum_array_traits arrayTraits, fullName, bitSize!/>, in));
+            <@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>, in));
 }
 <#if withWriterCode>
 
@@ -194,7 +194,7 @@ template <>
 void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out, ${fullName} value)
 {
     contextNode.getContext().write(
-            <@enum_array_traits arrayTraits, fullName, bitSize!/>,
+            <@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,
             out, ::zserio::enumToValue(value));
 }
 </#if>

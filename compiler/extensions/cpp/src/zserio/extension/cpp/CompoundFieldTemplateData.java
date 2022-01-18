@@ -21,7 +21,6 @@ import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeArrayType;
-import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.NativeIntegralType;
 
 /**
@@ -73,7 +72,6 @@ public class CompoundFieldTemplateData
         constraint = createConstraint(field, cppNativeMapper, cppExpressionFormatter, includeCollector);
         offset = createOffset(field, cppNativeMapper, cppExpressionFormatter,
                 cppOwnerIndirectExpressionFormatter);
-        arrayTraits = createArrayTraits(fieldNativeType);
         array = createArray(fieldNativeType, fieldTypeInstantiation, parentType, cppNativeMapper,
                 cppExpressionFormatter, cppOwnerIndirectExpressionFormatter,
                 cppObjectIndirectExpressionFormatter, includeCollector);
@@ -164,11 +162,6 @@ public class CompoundFieldTemplateData
     public Offset getOffset()
     {
         return offset;
-    }
-
-    public ArrayTraitsTemplateData getArrayTraits()
-    {
-        return arrayTraits;
     }
 
     public Array getArray()
@@ -645,14 +638,6 @@ public class CompoundFieldTemplateData
                 cppIndirectExpressionFormatter);
     }
 
-    private static ArrayTraitsTemplateData createArrayTraits(CppNativeType cppNativeType)
-    {
-        if (cppNativeType instanceof CppNativeArrayableType)
-            return new ArrayTraitsTemplateData(((CppNativeArrayableType)cppNativeType).getArrayTraits());
-        else
-            return null;
-    }
-
     private static Array createArray(CppNativeType cppNativeType, TypeInstantiation typeInstantiation,
             CompoundType parentType, CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppOwnerIndirectExpressionFormatter,
@@ -709,7 +694,6 @@ public class CompoundFieldTemplateData
     private final boolean holderNeedsAllocator;
     private final Constraint constraint;
     private final Offset offset;
-    private final ArrayTraitsTemplateData arrayTraits;
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final BitSizeTemplateData bitSize;

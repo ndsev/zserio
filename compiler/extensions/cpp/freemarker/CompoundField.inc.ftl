@@ -346,10 +346,10 @@ ${I}            lowerBound + ".." + upperBound + ">!";
                 <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
     <#else>
-        ${field.arrayTraits.name}<#t>
-        <#if field.arrayTraits.isTemplated>
+        ${field.typeInfo.arrayTraits.name}<#t>
+        <#if field.typeInfo.arrayTraits.isTemplated>
                 <${field.typeInfo.typeName}<#t>
-                <#if field.arrayTraits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
+                <#if field.typeInfo.arrayTraits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
     </#if>
 </#macro>
@@ -366,7 +366,7 @@ ${I}            lowerBound + ".." + upperBound + ">!";
             </#if>
         </#if>
     <#else>
-        <#if field.arrayTraits.requiresElementBitSize>
+        <#if field.typeInfo.arrayTraits.requiresElementBitSize>
             <#if field.bitSize.isDynamicBitField>
                 static_cast<uint8_t>(${field.bitSize.value})<#t>
             <#else>

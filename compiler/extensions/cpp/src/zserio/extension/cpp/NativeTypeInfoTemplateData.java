@@ -9,6 +9,7 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.cpp.types.CppNativeArrayableType;
 import zserio.extension.cpp.types.CppNativeType;
 
 /**
@@ -54,6 +55,11 @@ public class NativeTypeInfoTemplateData
         return isBoolean;
     }
 
+    public ArrayTraitsTemplateData getArrayTraits()
+    {
+        return arrayTraits;
+    }
+
     public RuntimeFunctionTemplateData getTypeInfoGetter()
     {
         return typeInfoGetter;
@@ -70,6 +76,11 @@ public class NativeTypeInfoTemplateData
         isEnum = baseType instanceof EnumType;
         isBitmask = baseType instanceof BitmaskType;
         isBoolean = baseType instanceof BooleanType;
+
+        if (cppNativeType instanceof CppNativeArrayableType)
+            arrayTraits = new ArrayTraitsTemplateData(((CppNativeArrayableType)cppNativeType).getArrayTraits());
+        else
+            arrayTraits = null;
 
         final boolean isCompound = baseType instanceof CompoundType;
         final boolean isArray = baseType instanceof ArrayType;
@@ -91,5 +102,6 @@ public class NativeTypeInfoTemplateData
     private final boolean isEnum;
     private final boolean isBitmask;
     private final boolean isBoolean;
+    private final ArrayTraitsTemplateData arrayTraits;
     private final RuntimeFunctionTemplateData typeInfoGetter;
 }

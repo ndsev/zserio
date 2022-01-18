@@ -32,7 +32,6 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
         underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, bitmaskTypeInstantiation);
 
-        arrayTraits = new ArrayTraitsTemplateData(nativeBaseType.getArrayTraits());
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, cppExpressionFormatter);
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(
@@ -51,11 +50,6 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public NativeIntegralTypeInfoTemplateData getUnderlyingTypeInfo()
     {
         return underlyingTypeInfo;
-    }
-
-    public ArrayTraitsTemplateData getArrayTraits()
-    {
-        return arrayTraits;
     }
 
     public BitSizeTemplateData getBitSize()
@@ -120,7 +114,6 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     };
 
     private final NativeIntegralTypeInfoTemplateData underlyingTypeInfo;
-    private final ArrayTraitsTemplateData arrayTraits;
     private final BitSizeTemplateData bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String upperBound;
