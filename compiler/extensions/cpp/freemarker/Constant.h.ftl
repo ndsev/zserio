@@ -7,7 +7,7 @@
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-const ${typeInfo.typeName} ${name} = ${value};
+const ${typeInfo.typeFullName} ${name} = ${value};
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

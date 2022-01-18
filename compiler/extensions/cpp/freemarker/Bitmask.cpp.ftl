@@ -70,7 +70,7 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
         {}
 
         <#-- bitmask is always unsigned -->
-        virtual ${underlyingTypeInfo.typeName} getUInt${underlyingTypeInfo.typeNumBits}() const override
+        virtual ${underlyingTypeInfo.typeFullName} getUInt${underlyingTypeInfo.typeNumBits}() const override
         {
             return m_bitmask.getValue();
         }

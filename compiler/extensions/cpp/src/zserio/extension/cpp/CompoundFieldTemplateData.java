@@ -331,13 +331,10 @@ public class CompoundFieldTemplateData
             indirectGetter = cppIndirectExpressionFormatter.formatGetter(offsetExpression);
             setter = cppExpressionFormatter.formatSetter(offsetExpression);
             indirectSetter = cppIndirectExpressionFormatter.formatSetter(offsetExpression);
-            typeName = cppNativeMapper.getCppType(offsetExpression.getExprZserioType()).getFullName();
+            final ZserioType offsetExprZserioType = offsetExpression.getExprZserioType();
+            final CppNativeType nativeType = cppNativeMapper.getCppType(offsetExprZserioType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeType, offsetExprZserioType);
             containsIndex = offsetExpression.containsIndex();
-        }
-
-        public boolean getContainsIndex()
-        {
-            return containsIndex;
         }
 
         public String getGetter()
@@ -360,16 +357,21 @@ public class CompoundFieldTemplateData
             return indirectSetter;
         }
 
-        public String getTypeName()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return typeName;
+            return typeInfo;
+        }
+
+        public boolean getContainsIndex()
+        {
+            return containsIndex;
         }
 
         private final String getter;
         private final String indirectGetter;
         private final String setter;
         private final String indirectSetter;
-        private final String typeName;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final boolean containsIndex;
     }
 

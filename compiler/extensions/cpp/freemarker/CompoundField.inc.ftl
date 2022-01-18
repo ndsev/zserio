@@ -10,25 +10,25 @@
     <#if field.array??>
         <@array_typedef_name field/><#t>
     <#else>
-        ${field.typeInfo.typeName}<#t>
+        ${field.typeInfo.typeFullName}<#t>
     </#if>
 </#macro>
 
 <#macro field_raw_cpp_type_name field>
     <#if field.array??>
-        <@vector_type_name field.array.elementTypeInfo.typeName/><#t>
+        <@vector_type_name field.array.elementTypeInfo.typeFullName/><#t>
     <#else>
-        ${field.typeInfo.typeName}<#t>
+        ${field.typeInfo.typeFullName}<#t>
     </#if>
 </#macro>
 
 <#macro field_raw_cpp_argument_type_name field>
     <#if field.array??>
-        const <@vector_type_name field.array.elementTypeInfo.typeName/>&<#t>
+        const <@vector_type_name field.array.elementTypeInfo.typeFullName/>&<#t>
     <#elseif field.typeInfo.isSimple>
-        ${field.typeInfo.typeName}<#t>
+        ${field.typeInfo.typeFullName}<#t>
     <#else>
-        const ${field.typeInfo.typeName}&<#t>
+        const ${field.typeInfo.typeFullName}&<#t>
     </#if>
 </#macro>
 
@@ -151,7 +151,7 @@ ${I}return <@compound_read_field_retval field, readCommand, false/>;
 
 <#macro compound_field_compound_ctor_params compound useIndirectExpression>
     <#list compound.instantiatedParameters as parameter>
-        <#if parameter.typeInfo.isSimple>static_cast<${parameter.typeInfo.typeName}>(</#if><#t>
+        <#if parameter.typeInfo.isSimple>static_cast<${parameter.typeInfo.typeFullName}>(</#if><#t>
                 <#if useIndirectExpression>${parameter.indirectExpression}<#else>${parameter.expression}</#if><#t>
         <#if parameter.typeInfo.isSimple>)</#if><#t>
         <#if parameter?has_next>, </#if><#t>
@@ -284,7 +284,7 @@ ${I}}
 ${I}// check range
             <#local fieldValue><@compound_get_field field/></#local>
 ${I}{
-        <@compound_check_range_value fieldValue, field.name, compoundName, field.typeInfo.typeName,
+        <@compound_check_range_value fieldValue, field.name, compoundName, field.typeInfo.typeFullName,
                 field.integerRange, indent + 1/>
 ${I}}
         <#elseif field.array?? && field.array.elementIntegerRange??>
@@ -292,7 +292,7 @@ ${I}// check ranges
 ${I}for (auto it = <@compound_get_field field/>.getRawArray().begin(); <#rt>
             <#lt>it != <@compound_get_field field/>.getRawArray().end(); ++it)
 ${I}{
-        <@compound_check_range_value "*it", field.name, compoundName, field.array.elementTypeInfo.typeName,
+        <@compound_check_range_value "*it", field.name, compoundName, field.array.elementTypeInfo.typeFullName,
                 field.array.elementIntegerRange, indent + 1/>
 ${I}}
         </#if>
@@ -328,8 +328,8 @@ ${I}            lowerBound + ".." + upperBound + ">!";
 </#macro>
 
 <#macro array_type_name field>
-    ${field.typeInfo.typeName}<<#t>
-            <@vector_type_name field.array.elementTypeInfo.typeName/>, <@array_traits_type_name field/>, <#t>
+    ${field.typeInfo.typeFullName}<<#t>
+            <@vector_type_name field.array.elementTypeInfo.typeFullName/>, <@array_traits_type_name field/>, <#t>
             <@array_type_enum field/><#t>
     <#if field.offset?? && field.offset.containsIndex>
             , <@offset_checker_name field.name/><#t>
@@ -342,13 +342,13 @@ ${I}            lowerBound + ".." + upperBound + ">!";
     <#if field.array??>
         ${field.array.traits.name}<#t>
         <#if field.array.traits.isTemplated>
-                <${field.array.elementTypeInfo.typeName}<#t>
+                <${field.array.elementTypeInfo.typeFullName}<#t>
                 <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
     <#else>
         ${field.typeInfo.arrayTraits.name}<#t>
         <#if field.typeInfo.arrayTraits.isTemplated>
-                <${field.typeInfo.typeName}<#t>
+                <${field.typeInfo.typeFullName}<#t>
                 <#if field.typeInfo.arrayTraits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
     </#if>
@@ -464,7 +464,7 @@ ${compoundName}::<@offset_initializer_name field.name/>::<@offset_initializer_na
 
 void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(size_t index, size_t byteOffset) const
 {
-    const ${field.offset.typeName} value = static_cast<${field.offset.typeName}>(byteOffset);
+    const ${field.offset.typeInfo.typeFullName} value = static_cast<${field.offset.typeInfo.typeFullName}>(byteOffset);
     ${field.offset.indirectSetter};
 }
 </#macro>
@@ -483,11 +483,11 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
     public:
         explicit <@element_factory_name field.name/>(${compoundName}& owner);
 
-        void create(<@vector_type_name field.array.elementTypeInfo.typeName/>& array,
+        void create(<@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
                 ::zserio::BitStreamReader& in, size_t index) const;
 
         void create(${types.packingContextNode.name}& contextNode,
-                <@vector_type_name field.array.elementTypeInfo.typeName/>& array,
+                <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
                 ::zserio::BitStreamReader& in, size_t index) const;
 
     private:
@@ -506,7 +506,7 @@ ${compoundName}::<@element_factory_name field.name/>::<@element_factory_name fie
 {}
 
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
-        <#lt><@vector_type_name field.array.elementTypeInfo.typeName/>& array,
+        <#lt><@vector_type_name field.array.elementTypeInfo.typeFullName/>& array,
         ::zserio::BitStreamReader& in, size_t index) const
 {
     (void)index;
@@ -519,7 +519,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
 
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         <#lt>${types.packingContextNode.name}& contextNode,
-        <@vector_type_name field.array.elementTypeInfo.typeName/>& array, <#rt>
+        <@vector_type_name field.array.elementTypeInfo.typeFullName/>& array, <#rt>
         <#lt>::zserio::BitStreamReader& in, size_t index) const
 {
     (void)index;
@@ -541,7 +541,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
     public:
         explicit <@element_initializer_name field.name/>(${compoundName}& owner);
 
-    void initialize(${field.array.elementTypeInfo.typeName}& element, size_t index) const;
+    void initialize(${field.array.elementTypeInfo.typeFullName}& element, size_t index) const;
 
     private:
         ${compoundName}& m_owner;
@@ -555,7 +555,7 @@ ${compoundName}::<@element_initializer_name field.name/>::<@element_initializer_
 {}
 
 void ${compoundName}::<@element_initializer_name field.name/>::initialize(<#rt>
-        <#lt>${field.array.elementTypeInfo.typeName}& element, size_t index) const
+        <#lt>${field.array.elementTypeInfo.typeFullName}& element, size_t index) const
 {
     (void)index;
     element.initialize(<@compound_field_compound_ctor_params field.array.elementCompound, true/>);
@@ -570,13 +570,13 @@ void ${compoundName}::<@element_initializer_name field.name/>::initialize(<#rt>
     class <@element_children_initializer_name field.name/>
     {
     public:
-        void initialize(${field.array.elementTypeInfo.typeName}& element, size_t) const;
+        void initialize(${field.array.elementTypeInfo.typeFullName}& element, size_t) const;
     };
 </#macro>
 
 <#macro define_element_children_initializer_methods compoundName field>
 void ${compoundName}::<@element_children_initializer_name field.name/>::initialize(<#rt>
-        <#lt>${field.array.elementTypeInfo.typeName}& element, size_t) const
+        <#lt>${field.array.elementTypeInfo.typeFullName}& element, size_t) const
 {
     element.initializeChildren();
 }
@@ -736,8 +736,8 @@ ${I}}
     <#if field.offset?? && !field.offset.containsIndex>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}{
-${I}    const ${field.offset.typeName} value =
-${I}            static_cast<${field.offset.typeName}>(::zserio::bitsToBytes(endBitPosition));
+${I}    const ${field.offset.typeInfo.typeFullName} value =
+${I}            static_cast<${field.offset.typeInfo.typeFullName}>(::zserio::bitsToBytes(endBitPosition));
 ${I}    ${field.offset.setter};
 ${I}}
     </#if>
@@ -948,7 +948,7 @@ ${I};
         <#if !field.typeInfo.isSimple || field.optional??>
 ${I}ZSERIO_T_${field.name}&& <#t>
         <#else>
-${I}${field.typeInfo.typeName} <#t>
+${I}${field.typeInfo.typeFullName} <#t>
         </#if>
         <@field_argument_name field/><#t>
         <#if field?has_next>
@@ -960,7 +960,7 @@ ${I}${field.typeInfo.typeName} <#t>
 <#macro compound_create_packing_context_field field>
     <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
         <#if field.compound?? || field.typeInfo.isBitmask>
-    ${field.typeInfo.typeName}::createPackingContext(contextNode.createChild());
+    ${field.typeInfo.typeFullName}::createPackingContext(contextNode.createChild());
         <#else>
     contextNode.createChild().createContext();
         </#if>

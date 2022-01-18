@@ -30,9 +30,15 @@ public class NativeTypeInfoTemplateData
         this(cppNativeType, typeReference.getBaseTypeReference().getType(), null, typeReference);
     }
 
-    public String getTypeName()
+    public NativeTypeInfoTemplateData(CppNativeType cppNativeType, ZserioType baseType)
+            throws ZserioExtensionException
     {
-        return typeName;
+        this(cppNativeType, baseType, null, null);
+    }
+
+    public String getTypeFullName()
+    {
+        return typeFullName;
     }
 
     public boolean getIsSimple()
@@ -68,7 +74,7 @@ public class NativeTypeInfoTemplateData
     private NativeTypeInfoTemplateData(CppNativeType cppNativeType, ZserioType baseType,
             TypeInstantiation typeInstantiation, TypeReference typeReference) throws ZserioExtensionException
     {
-        typeName = cppNativeType.getFullName();
+        typeFullName = cppNativeType.getFullName();
         isSimple = cppNativeType.isSimple();
 
         // we suppose that zserio enum, bitmask, etc. are mapped to C++ native enum, bitmask, etc.
@@ -85,7 +91,7 @@ public class NativeTypeInfoTemplateData
         final boolean isCompound = baseType instanceof CompoundType;
         final boolean isArray = baseType instanceof ArrayType;
         final boolean hasTypeInfo = isCompound || isEnum || isBitmask || isArray;
-        if (hasTypeInfo)
+        if (hasTypeInfo || (typeInstantiation == null && typeReference == null))
         {
             typeInfoGetter = null;
         }
@@ -97,7 +103,7 @@ public class NativeTypeInfoTemplateData
         }
     }
 
-    private final String typeName;
+    private final String typeFullName;
     private final boolean isSimple;
     private final boolean isEnum;
     private final boolean isBitmask;

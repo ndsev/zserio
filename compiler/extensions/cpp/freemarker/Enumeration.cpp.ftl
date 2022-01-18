@@ -56,7 +56,7 @@ ${types.reflectablePtr.name} enumReflectable(
                 m_value(value)
         {}
 
-        virtual ${underlyingTypeInfo.typeName} get<#rt>
+        virtual ${underlyingTypeInfo.typeFullName} get<#rt>
                 <#lt><#if !underlyingTypeInfo.isSigned>U</#if>Int${underlyingTypeInfo.typeNumBits}() const override
         {
             return static_cast<typename ::std::underlying_type<${fullName}>::type>(m_value);

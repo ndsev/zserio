@@ -2,11 +2,11 @@
     <#if compoundFunctionsData.list?has_content>
         <#list compoundFunctionsData.list as compoundFunction>
             <#if compoundFunction.returnTypeInfo.isSimple>
-    ${compoundFunction.returnTypeInfo.typeName} ${compoundFunction.name}() const;
+    ${compoundFunction.returnTypeInfo.typeFullName} ${compoundFunction.name}() const;
             <#else>
-    const ${compoundFunction.returnTypeInfo.typeName}& ${compoundFunction.name}() const;
+    const ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}() const;
                 <#if withWriterCode>
-    ${compoundFunction.returnTypeInfo.typeName}& ${compoundFunction.name}();
+    ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}();
                 </#if>
             </#if>
 
@@ -17,17 +17,17 @@
 <#macro compound_functions_definition compoundName compoundFunctionsData>
     <#list compoundFunctionsData.list as compoundFunction>
         <#if compoundFunction.returnTypeInfo.isSimple>
-${compoundFunction.returnTypeInfo.typeName} ${compoundName}::${compoundFunction.name}() const
+${compoundFunction.returnTypeInfo.typeFullName} ${compoundName}::${compoundFunction.name}() const
         <#else>
-const ${compoundFunction.returnTypeInfo.typeName}& ${compoundName}::${compoundFunction.name}() const
+const ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundName}::${compoundFunction.name}() const
         </#if>
 {
-    return <#if compoundFunction.returnTypeInfo.isSimple>static_cast<${compoundFunction.returnTypeInfo.typeName}>(</#if><#rt>
+    return <#if compoundFunction.returnTypeInfo.isSimple>static_cast<${compoundFunction.returnTypeInfo.typeFullName}>(</#if><#rt>
             <#lt>${compoundFunction.resultExpression}<#if compoundFunction.returnTypeInfo.isSimple>)</#if>;
 }
 
 <#if withWriterCode && !compoundFunction.returnTypeInfo.isSimple>
-${compoundFunction.returnTypeInfo.typeName}& ${compoundName}::${compoundFunction.name}()
+${compoundFunction.returnTypeInfo.typeFullName}& ${compoundName}::${compoundFunction.name}()
 {
     return ${compoundFunction.resultExpression};
 }

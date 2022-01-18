@@ -4,9 +4,9 @@
                 <#if typeInfo.typeInfoGetter.arg??>${typeInfo.typeInfoGetter.arg}</#if>)<#t>
     <#else>
         <#if typeInfo.isEnum>
-        ::zserio::enumTypeInfo<${typeInfo.typeName}>()<#t>
+        ::zserio::enumTypeInfo<${typeInfo.typeFullName}>()<#t>
         <#else>
-        ${typeInfo.typeName}::typeInfo()<#t>
+        ${typeInfo.typeFullName}::typeInfo()<#t>
         </#if>
     </#if>
 </#macro>
@@ -143,10 +143,10 @@ ${I}}<#if comma>,</#if>
 <#macro field_info_recursive_type_info_var field>
     <#if field.optional?? && field.optional.isRecursive>
     static const ::zserio::RecursiveTypeInfo <@field_info_recursive_type_info_var_name field/>(
-            &${field.typeInfo.typeName}::typeInfo);
+            &${field.typeInfo.typeFullName}::typeInfo);
     <#elseif field.array?? && field.array.elementIsRecursive>
     static const ::zserio::RecursiveTypeInfo <@field_info_recursive_type_info_var_name field/>(
-            &${field.array.elementTypeInfo.typeName}::typeInfo);
+            &${field.array.elementTypeInfo.typeFullName}::typeInfo);
     </#if>
 </#macro>
 

@@ -24,7 +24,7 @@
 class ${name}
 {
 public:
-    typedef ${underlyingTypeInfo.typeName} underlying_type;
+    typedef ${underlyingTypeInfo.typeFullName} underlying_type;
 
     enum class Values : underlying_type
     {

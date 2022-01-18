@@ -43,18 +43,18 @@
 
 <#macro sql_parameter_provider_return_type parameter>
     <#if parameter.typeInfo.isSimple>
-        ${parameter.typeInfo.typeName}<#t>
+        ${parameter.typeInfo.typeFullName}<#t>
     <#else>
         <#-- non-const reference is necessary for setting of offsets -->
-        ${parameter.typeInfo.typeName}&<#t>
+        ${parameter.typeInfo.typeFullName}&<#t>
     </#if>
 </#macro>
 
 <#macro sql_parameter_variable_type parameter>
     <#if parameter.typeInfo.isSimple>
-        const ${parameter.typeInfo.typeName}<#t>
+        const ${parameter.typeInfo.typeFullName}<#t>
     <#else>
-        ${parameter.typeInfo.typeName}&<#t>
+        ${parameter.typeInfo.typeFullName}&<#t>
     </#if>
 </#macro>
 

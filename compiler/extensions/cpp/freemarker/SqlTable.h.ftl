@@ -64,16 +64,16 @@ public:
 </#if>
 <#list fields as field>
     <#if !field.typeInfo.isSimple>
-        ${field.typeInfo.typeName}& ${field.getterName}();
-        const ${field.typeInfo.typeName}& ${field.getterName}() const;
+        ${field.typeInfo.typeFullName}& ${field.getterName}();
+        const ${field.typeInfo.typeFullName}& ${field.getterName}() const;
     <#else>
-        ${field.typeInfo.typeName} ${field.getterName}() const;
+        ${field.typeInfo.typeFullName} ${field.getterName}() const;
     </#if>
     <#if !field.typeInfo.isSimple>
-        void ${field.setterName}(const ${field.typeInfo.typeName}& <@sql_field_argument_name field/>);
-        void ${field.setterName}(${field.typeInfo.typeName}&& <@sql_field_argument_name field/>);
+        void ${field.setterName}(const ${field.typeInfo.typeFullName}& <@sql_field_argument_name field/>);
+        void ${field.setterName}(${field.typeInfo.typeFullName}&& <@sql_field_argument_name field/>);
     <#else>
-        void ${field.setterName}(${field.typeInfo.typeName} <@sql_field_argument_name field/>);
+        void ${field.setterName}(${field.typeInfo.typeFullName} <@sql_field_argument_name field/>);
     </#if>
         void ${field.resetterName}();
         bool ${field.indicatorName}() const;
@@ -95,7 +95,7 @@ public:
 
 </#if>
 <#list fields as field>
-        ${types.inplaceOptionalHolder.name}<${field.typeInfo.typeName}> <@sql_field_member_name field/>;
+        ${types.inplaceOptionalHolder.name}<${field.typeInfo.typeFullName}> <@sql_field_member_name field/>;
 </#list>
     };
 

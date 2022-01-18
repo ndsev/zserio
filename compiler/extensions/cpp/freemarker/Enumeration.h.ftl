@@ -22,7 +22,7 @@
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-enum class ${name} : ${underlyingTypeInfo.typeName}
+enum class ${name} : ${underlyingTypeInfo.typeFullName}
 {
 <#list items as item>
     ${item.name} = ${item.value}<#if item?has_next>,</#if>

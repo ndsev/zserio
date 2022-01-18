@@ -76,17 +76,17 @@ ${types.responseDataPtr.name} Service::${method.name}Method(
         ::zserio::Span<const uint8_t> requestData, void* context)
 {
     ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
-    const ${method.requestTypeInfo.typeName} request(reader, get_allocator_ref());
+    const ${method.requestTypeInfo.typeFullName} request(reader, get_allocator_ref());
 
     class ResponseData : public ::zserio::IBasicResponseData<allocator_type>
     {
     public:
     <#if withTypeInfoCode>
-        ResponseData(${method.responseTypeInfo.typeName}&& response, const allocator_type& allocator) :
+        ResponseData(${method.responseTypeInfo.typeFullName}&& response, const allocator_type& allocator) :
                 m_response(std::move(response)), m_reflectable(m_response.reflectable(allocator))
         {}
     <#else>
-        ResponseData(${method.responseTypeInfo.typeName}&& response, const allocator_type& allocator) :
+        ResponseData(${method.responseTypeInfo.typeFullName}&& response, const allocator_type& allocator) :
                 m_responseData(response.bitSizeOf(), allocator)
         {
             ::zserio::BitStreamWriter writer(m_responseData);
@@ -114,7 +114,7 @@ ${types.responseDataPtr.name} Service::${method.name}Method(
 
     private:
     <#if withTypeInfoCode>
-        ${method.responseTypeInfo.typeName} m_response;
+        ${method.responseTypeInfo.typeFullName} m_response;
         ${types.reflectablePtr.name} m_reflectable;
     <#else>
         ${types.bitBuffer.name} m_responseData;
@@ -133,7 +133,7 @@ Client::Client(${types.serviceClient.name}& service, const allocator_type& alloc
 }
 <#list methodList as method>
 
-${method.responseTypeInfo.typeName} Client::${method.name}Method(${method.requestTypeInfo.typeName}& request, <#rt>
+${method.responseTypeInfo.typeFullName} Client::${method.name}Method(${method.requestTypeInfo.typeFullName}& request, <#rt>
         <#lt>void* context)
 {
     <#if withTypeInfoCode>
@@ -148,7 +148,7 @@ ${method.responseTypeInfo.typeName} Client::${method.name}Method(${method.reques
     auto responseData = m_service.callMethod(::zserio::makeStringView("${method.name}"), requestData, context);
 
     ::zserio::BitStreamReader reader(responseData.data(), responseData.size());
-    return ${method.responseTypeInfo.typeName}(reader, get_allocator_ref());
+    return ${method.responseTypeInfo.typeFullName}(reader, get_allocator_ref());
 }
 </#list>
 <@namespace_end [name]/>

@@ -7,7 +7,7 @@
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
-typedef ${targetTypeInfo.typeName} ${name};
+typedef ${targetTypeInfo.typeFullName} ${name};
 <@namespace_end package.path/>
 
 <@include_guard_end package.path, name/>

@@ -103,7 +103,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 }
 <#list fields as field>
 
-${field.typeInfo.typeName}& ${name}::${field.getterName}() noexcept
+${field.typeInfo.typeFullName}& ${name}::${field.getterName}() noexcept
 {
     return *<@sql_field_member_name field/>;
 }
@@ -213,7 +213,7 @@ void ${name}::initTables()
     relocationIt = m_tableToAttachedDbNameRelocationMap.find(
             ::zserio::stringViewToString(<@sql_db_table_name_getter field/>, get_allocator_ref()));
     </#if>
-    <@sql_field_member_name field/> = ::zserio::allocate_unique<${field.typeInfo.typeName}>(
+    <@sql_field_member_name field/> = ::zserio::allocate_unique<${field.typeInfo.typeFullName}>(
             get_allocator_ref(), this->m_db, <@sql_db_table_name_getter field/>,
             relocationIt != m_tableToAttachedDbNameRelocationMap.end() ? relocationIt->second : EMPTY_STR,
             get_allocator_ref());

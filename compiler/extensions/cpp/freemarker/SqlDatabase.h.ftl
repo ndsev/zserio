@@ -41,7 +41,7 @@ public:
 
         <#list fields as field>
             <#if field.hasExplicitParameters>
-        virtual ${field.typeInfo.typeName}::IParameterProvider& <@sql_db_table_parameter_provider_getter field/> = 0;
+        virtual ${field.typeInfo.typeFullName}::IParameterProvider& <@sql_db_table_parameter_provider_getter field/> = 0;
             </#if>
         </#list>
     };
@@ -73,7 +73,7 @@ public:
     ::zserio::SqliteConnection& connection() noexcept override;
 
 <#list fields as field>
-    ${field.typeInfo.typeName}& ${field.getterName}() noexcept;
+    ${field.typeInfo.typeFullName}& ${field.getterName}() noexcept;
 </#list>
 <#if withWriterCode>
 
@@ -105,7 +105,7 @@ private:
     TRelocationMap m_tableToAttachedDbNameRelocationMap;
 
 <#list fields as field>
-    <@unique_ptr_type_name field.typeInfo.typeName/> <@sql_field_member_name field/>;
+    <@unique_ptr_type_name field.typeInfo.typeFullName/> <@sql_field_member_name field/>;
 </#list>
 };
 <@namespace_end package.path/>
