@@ -509,13 +509,13 @@ public class CppNativeMapper
                 if (nativeReferencedType instanceof CppNativeArrayableType)
                 {
                     cppType = new NativeUserArrayableType(packageName, name, includeFileName,
-                            nativeReferencedType.isSimpleType(),
+                            nativeReferencedType.isSimple(),
                             ((CppNativeArrayableType)nativeReferencedType).getArrayTraits());
                 }
                 else
                 {
                     cppType = new NativeUserType(packageName, name, includeFileName,
-                            nativeReferencedType.isSimpleType());
+                            nativeReferencedType.isSimple());
                 }
             }
             catch (ZserioExtensionException exception)

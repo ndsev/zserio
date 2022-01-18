@@ -63,7 +63,7 @@ public class NativeTypeInfoTemplateData
             TypeInstantiation typeInstantiation, TypeReference typeReference) throws ZserioExtensionException
     {
         typeName = cppNativeType.getFullName();
-        isSimple = cppNativeType.isSimpleType();
+        isSimple = cppNativeType.isSimple();
 
         // we suppose that zserio enum, bitmask, etc. are mapped to C++ native enum, bitmask, etc.
         // normally, we should consult native type here (in this case we should solve subtypes as well)
