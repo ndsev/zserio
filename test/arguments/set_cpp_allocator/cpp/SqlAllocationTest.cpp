@@ -2,11 +2,11 @@
 
 #include "sql_allocation/SqlAllocationDb.h"
 
-#include "MemoryResources.h"
-#include "ValidationObservers.h"
+#include "test_utils/MemoryResources.h"
+#include "test_utils/ValidationObservers.h"
 
 using namespace zserio::literals;
-using namespace utils;
+using namespace test_utils;
 
 namespace sql_allocation
 {

@@ -10,6 +10,7 @@
 #     OPTIONS Zserio tool options.
 #     EXTRA_OPTIONS Zserio tool extra options.
 #     IGNORE_WARNINGS Whether to ignore warnings.
+#     IGNORE_ERRORS Whether to ignore errors.
 #     LOG_FILENAME Name of file where to store the zserio error log.
 cmake_minimum_required(VERSION 3.1.0)
 
@@ -32,15 +33,17 @@ execute_process(
 if (NOT ${ZSERIO_RESULT} EQUAL 0)
     message(STATUS ${ZSERIO_LOG})
     if (NOT "${LOG_FILENAME}" STREQUAL "")
-        file(WRITE ${LOG_FILENAME} ${ZSERIO_LOG})
+        file(APPEND ${LOG_FILENAME} ${ZSERIO_LOG})
     endif ()
-    message(FATAL_ERROR "Zserio tool failed!")
+    if (NOT IGNORE_ERRORS)
+        message(FATAL_ERROR "Zserio tool failed!")
+    endif ()
 endif ()
 
-if (NOT "${ZSERIO_LOG}" STREQUAL "")
+if (${ZSERIO_RESULT} EQUAL 0 AND NOT "${ZSERIO_LOG}" STREQUAL "")
     message(STATUS ${ZSERIO_LOG})
     if (NOT "${LOG_FILENAME}" STREQUAL "")
-        file(WRITE ${LOG_FILENAME} ${ZSERIO_LOG})
+        file(APPEND ${LOG_FILENAME} ${ZSERIO_LOG})
     endif ()
     if (NOT IGNORE_WARNINGS)
         message(FATAL_ERROR "Zserio tool produced some warnings!")

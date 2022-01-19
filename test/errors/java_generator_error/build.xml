@@ -1,0 +1,39 @@
+<project name="java_generator_error" basedir="." default="run">
+    <testProperties testPath="errors/java_generator_error" testName="java_generator_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="java_generator_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="java_generator_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="java_generator_error.zs.gen_is_uptodate">
+        <testGenClean testName="java_generator_error"/>
+        <testGen testName="java_generator_error" zsFile="bitmask_values_class_clash_error.zs"
+            ignoreErrors="true">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+        <testGen testName="java_generator_error" zsFile="sql_table_parameter_provider_class_clash_error.zs"
+            ignoreErrors="true">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="java_generator_error" srcPath="${java_generator_error.base_dir}/java"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="java_generator_error" srcPath="${java_generator_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="java_generator_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="java_generator_error"/>
+    </target>
+</project>

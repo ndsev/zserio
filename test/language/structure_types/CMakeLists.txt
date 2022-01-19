@@ -20,6 +20,13 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/structure_types/simple_structure/SimpleStructure.cpp
     ${ZSERIO_GEN_DIR}/structure_types/simple_structure/SimpleStructure.h
+
+    ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/ArrayType_array.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/ArrayType_array.h
+    ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetChecker_array.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetChecker_array.h
+    ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetInitializer_array.cpp
+    ${ZSERIO_GEN_DIR}/structure_types/structure_inner_classes_clashing/OffsetInitializer_array.h
 )
 
 zserio_add_library(TARGET structure_types_zs
@@ -38,6 +45,7 @@ add_test_sources(
     cpp/FieldConstructorClashingTest.cpp
     cpp/OneStringStructureTest.cpp
     cpp/SimpleStructureTest.cpp
+    cpp/StructureInnerClassesClashingTest.cpp
 )
 
 add_test_dependencies(structure_types_zs)

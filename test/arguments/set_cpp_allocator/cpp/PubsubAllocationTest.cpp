@@ -4,13 +4,13 @@
 
 #include "pubsub_allocation/GreetingPubsub.h"
 
-#include "MemoryResources.h"
-#include "TestPubsub.h"
+#include "test_utils/MemoryResources.h"
+#include "test_utils/TestPubsub.h"
 
 #include "zserio/StringView.h"
 
 using namespace zserio::literals;
-using namespace utils;
+using namespace test_utils;
 
 namespace pubsub_allocation
 {

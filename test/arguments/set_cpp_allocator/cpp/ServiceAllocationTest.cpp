@@ -2,18 +2,18 @@
 
 #include "service_allocation/GreetingService.h"
 
-#include "MemoryResources.h"
-#include "LocalServiceClient.h"
+#include "test_utils/MemoryResources.h"
+#include "test_utils/LocalServiceClient.h"
 
 using namespace zserio::literals;
-using namespace utils;
+using namespace test_utils;
 
 namespace service_allocation
 {
 
 using allocator_type = GreetingService::Client::allocator_type;
 using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
-using LocalServiceClient = utils::LocalServiceClient<allocator_type>;
+using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
 
 class ServiceAllocationTest : public ::testing::Test
 {

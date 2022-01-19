@@ -6,7 +6,7 @@
 #include "zserio/ServiceException.h"
 #include "zserio/RebindAlloc.h"
 
-#include "LocalServiceClient.h"
+#include "test_utils/LocalServiceClient.h"
 
 #include "service_types/simple_service/SimpleService.h"
 
@@ -18,7 +18,7 @@ namespace simple_service
 {
 
 using allocator_type = SimpleService::Client::allocator_type;
-using LocalServiceClient = utils::LocalServiceClient<allocator_type>;
+using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
 
 namespace
 {

@@ -40,6 +40,7 @@ endfunction()
 #   ZSERIO_CPP_DIR zserio_cpp_dir
 #   ZSERIO_OPTIONS ... (optional)
 #   IGNORE_WARNINGS ON|OFF (optional, default OFF)
+#   IGNORE_ERRORS ON|OFF (optional, default OFF)
 #   ZSERIO_LOG_FILENAME (optional)
 #
 # Only the files mentioned in OUT_FILES will be added to the static library target.
@@ -61,6 +62,7 @@ function(zserio_add_library)
             (ARG STREQUAL ZSERIO_CPP_DIR) OR
             (ARG STREQUAL ZSERIO_OPTIONS) OR
             (ARG STREQUAL IGNORE_WARNINGS) OR
+            (ARG STREQUAL IGNORE_ERRORS) OR
             (ARG STREQUAL ZSERIO_LOG_FILENAME))
             if (DEFINED VALUE_${ARG})
                 message(FATAL_ERROR "Option ${ARG} used multiple times!")
@@ -119,6 +121,7 @@ function(zserio_add_library)
             -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
             -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DEXTRA_OPTIONS="${ZSERIO_EXTRA_OPTIONS}"
             -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
+            -DIGNORE_ERRORS=${VALUE_IGNORE_ERRORS}
             -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
         COMMENT "Generating sources with Zserio from ${VALUE_MAIN_SOURCE}")

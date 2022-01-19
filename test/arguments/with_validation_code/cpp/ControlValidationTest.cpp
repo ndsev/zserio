@@ -7,9 +7,9 @@
 #include "zserio/SqliteFinalizer.h"
 
 #include "with_validation_code/control_validation/ControlValidationDb.h"
-#include "ValidationObservers.h"
+#include "test_utils/ValidationObservers.h"
 
-using namespace utils;
+using namespace test_utils;
 
 namespace with_validation_code
 {

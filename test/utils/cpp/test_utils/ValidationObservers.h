@@ -1,12 +1,12 @@
-#ifndef UTILS_VALIDATION_OBSERVERS_H_INC
-#define UTILS_VALIDATION_OBSERVERS_H_INC
+#ifndef TEST_UTILS_VALIDATION_OBSERVERS_H_INC
+#define TEST_UTILS_VALIDATION_OBSERVERS_H_INC
 
 #include <algorithm>
 #include <sstream>
 
 #include "zserio/IValidationObserver.h"
 
-namespace utils
+namespace test_utils
 {
 
 class CountingValidationObserver : public zserio::IValidationObserver
@@ -172,6 +172,6 @@ private:
     std::vector<Error> m_errors;
 };
 
-} // namespace utils
+} // namespace test_utils
 
-#endif // UTILS_VALIDATION_OBSERVERS_H_INC
+#endif // TEST_UTILS_VALIDATION_OBSERVERS_H_INC

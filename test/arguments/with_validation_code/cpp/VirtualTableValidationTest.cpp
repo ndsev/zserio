@@ -3,9 +3,9 @@
 #include "gtest/gtest.h"
 
 #include "with_validation_code/virtual_table_validation/VirtualTableValidationDb.h"
-#include "ValidationObservers.h"
+#include "test_utils/ValidationObservers.h"
 
-using namespace utils;
+using namespace test_utils;
 
 namespace with_validation_code
 {

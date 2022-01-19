@@ -6,9 +6,9 @@
 #include "zserio/SqliteFinalizer.h"
 
 #include "with_validation_code/constraint_table_validation/ConstraintTableValidationDb.h"
-#include "ValidationObservers.h"
+#include "test_utils/ValidationObservers.h"
 
-using namespace utils;
+using namespace test_utils;
 
 namespace with_validation_code
 {

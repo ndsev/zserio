@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.File;
-import java.math.BigInteger;
 
 import zserio.runtime.io.FileBitStreamWriter;
 import zserio.runtime.io.BitBuffer;

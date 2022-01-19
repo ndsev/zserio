@@ -23,6 +23,17 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/packed_array_element_param/Database.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Compound.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Compound.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementChildrenInitializer_array.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementFactory_array.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementFactory_array.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementInitializer_array.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/ElementInitializer_array.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Parent.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Parent.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.h
 
@@ -47,6 +58,7 @@ add_test_sources(
     cpp/ArrayElementParamTest.cpp
     cpp/GrandChildParamTest.cpp
     cpp/PackedArrayElementParamTest.cpp
+    cpp/ParameterizedInnerClassesClashingTest.cpp
     cpp/SimpleParamTest.cpp
     cpp/SubtypedBitfieldParamTest.cpp
 )

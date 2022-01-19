@@ -1,10 +1,10 @@
-#ifndef UTILS_LOCAL_SERVICE_CLIENT_H_INC
-#define UTILS_LOCAL_SERVICE_CLIENT_H_INC
+#ifndef TEST_UTILS_LOCAL_SERVICE_CLIENT_H_INC
+#define TEST_UTILS_LOCAL_SERVICE_CLIENT_H_INC
 
 #include "zserio/IService.h"
 #include "zserio/AllocatorHolder.h"
 
-namespace utils
+namespace test_utils
 {
 
 template <typename ALLOC>
@@ -61,6 +61,6 @@ private:
     zserio::IBasicService<ALLOC>& m_service;
 };
 
-} // namespace utils
+} // namespace test_utils
 
-#endif // UTILS_LOCAL_SERVICE_CLIENT_H_INC
+#endif // TEST_UTILS_LOCAL_SERVICE_CLIENT_H_INC

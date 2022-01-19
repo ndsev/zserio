@@ -3,11 +3,11 @@
 #include "gtest/gtest.h"
 
 #include "with_validation_code/simple_table_validation/SimpleTableValidationDb.h"
-#include "ValidationObservers.h"
+#include "test_utils/ValidationObservers.h"
 
 #include "zserio/SqliteFinalizer.h"
 
-using namespace utils;
+using namespace test_utils;
 
 namespace with_validation_code
 {

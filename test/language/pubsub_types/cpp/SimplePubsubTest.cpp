@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "TestPubsub.h"
+#include "test_utils/TestPubsub.h"
 
 #include "pubsub_types/simple_pubsub/SimplePubsubProvider.h"
 #include "pubsub_types/simple_pubsub/SimplePubsubClient.h"
@@ -10,7 +10,7 @@
 #include "zserio/RebindAlloc.h"
 
 using namespace zserio::literals;
-using namespace utils;
+using namespace test_utils;
 
 namespace pubsub_types
 {

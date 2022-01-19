@@ -1,11 +1,11 @@
-#ifndef UTILS_MEMORY_RESOURCES_H_INC
-#define UTILS_MEMORY_RESOURCES_H_INC
+#ifndef TEST_UTILS_MEMORY_RESOURCES_H_INC
+#define TEST_UTILS_MEMORY_RESOURCES_H_INC
 
 #include "zserio/Types.h"
 #include "zserio/pmr/MemoryResource.h"
 #include "zserio/CppRuntimeException.h"
 
-namespace utils
+namespace test_utils
 {
 
 class InvalidMemoryResource : public zserio::pmr::MemoryResource
@@ -154,6 +154,6 @@ private:
     zserio::pmr::MemoryResource* m_origMemoryResource;
 };
 
-} // namespace utils
+} // namespace test_utils
 
-#endif // UTILS_MEMORY_RESOURCES_H_INC
+#endif // TEST_UTILS_MEMORY_RESOURCES_H_INC

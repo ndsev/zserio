@@ -6,7 +6,7 @@
 
 #include "zserio/RebindAlloc.h"
 
-#include "LocalServiceClient.h"
+#include "test_utils/LocalServiceClient.h"
 
 #include "service_types/complex_types_service/ComplexTypesService.h"
 
@@ -20,7 +20,7 @@ namespace complex_types_service
 using allocator_type = ComplexTypesService::Client::allocator_type;
 template <typename T>
 using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
-using LocalServiceClient = utils::LocalServiceClient<allocator_type>;
+using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
 
 namespace
 {

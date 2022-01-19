@@ -1,12 +1,12 @@
-#ifndef UTILS_TEST_PUBSUB_H_INC
-#define UTILS_TEST_PUBSUB_H_INC
+#ifndef TEST_UTILS_TEST_PUBSUB_H_INC
+#define TEST_UTILS_TEST_PUBSUB_H_INC
 
 #include "zserio/AllocatorHolder.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/IPubsub.h"
 #include "zserio/PubsubException.h"
 
-namespace utils
+namespace test_utils
 {
 
 template <typename ALLOC>
@@ -65,6 +65,7 @@ private:
     map_type<SubscriptionId, Subscription> m_subscriptions;
 };
 
-} // namespace utils
+} // namespace test_utils
 
-#endif // UTILS_TEST_PUBSUB_H_INC
+#endif // TEST_UTILS_TEST_PUBSUB_H_INC
+

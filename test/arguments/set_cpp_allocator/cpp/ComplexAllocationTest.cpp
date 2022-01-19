@@ -8,10 +8,10 @@
 
 #include "complex_allocation/MainStructure.h"
 
-#include "MemoryResources.h"
+#include "test_utils/MemoryResources.h"
 
 using namespace zserio::literals;
-using namespace utils;
+using namespace test_utils;
 
 namespace complex_allocation
 {
