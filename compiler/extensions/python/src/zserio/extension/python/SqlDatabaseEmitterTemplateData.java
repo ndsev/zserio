@@ -47,8 +47,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
             name = field.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), nativeType);
-            pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
             propertyName = AccessorNameFormatter.getPropertyName(field);
             isWithoutRowIdTable = (fieldBaseType instanceof SqlTableType) ?
                     ((SqlTableType)fieldBaseType).isWithoutRowId() : false;
@@ -64,14 +63,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
             return snakeCaseName;
         }
 
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
-        }
-
-        public String getPythonTypeName()
-        {
-            return pythonTypeName;
         }
 
         public String getPropertyName()
@@ -86,8 +80,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String snakeCaseName;
-        private final TypeInfoTemplateData typeInfo;
-        private final String pythonTypeName;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String propertyName;
         private final boolean isWithoutRowIdTable;
     }

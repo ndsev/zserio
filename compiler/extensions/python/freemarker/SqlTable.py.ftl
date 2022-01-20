@@ -15,10 +15,10 @@
 <#assign hasEnumField = false/>
 <#assign hasBitmaskField = false/>
 <#list fields as field>
-    <#if field.enumData??>
+    <#if field.typeInfo.isEnum>
         <#assign hasEnumField = true/>
     </#if>
-    <#if field.bitmaskData??>
+    <#if field.typeInfo.isBitmask>
         <#assign hasBitmaskField = true/>
     </#if>
 </#list>
@@ -41,7 +41,7 @@ class ${name}:
 <#assign rowAnnotationName = "ROW_ANNOTATION"/>
     ${rowAnnotationName} = typing.Tuple[
     <#list fields as field>
-        ${field.pythonTypeName}<#if field?has_next>,<#else>]</#if>
+        ${field.typeInfo.typeFullName}<#if field?has_next>,<#else>]</#if>
     </#list>
 
 <#assign rowsClassName = "Rows"/>
@@ -68,7 +68,7 @@ class ${name}:
         <#if field.sqlTypeData.isBlob>
             if ${field.snakeCaseName}_ is not None:
                 reader = zserio.BitStreamReader(${field.snakeCaseName}_)
-                ${field.snakeCaseName}_ = ${field.pythonTypeName}.from_reader(reader<#rt>
+                ${field.snakeCaseName}_ = ${field.typeInfo.typeFullName}.from_reader(reader<#rt>
             <#list field.parameters as parameter>
                 <#if parameter.isExplicit>
                     , self._parameter_provider.<@parameter_provider_method_name parameter/>(row)<#t>
@@ -77,12 +77,12 @@ class ${name}:
                 </#if>
             </#list>
                     <#lt>)
-        <#elseif field.enumData??>
+        <#elseif field.typeInfo.isEnum>
             if ${field.snakeCaseName}_ is not None:
-                ${field.snakeCaseName}_ = ${field.enumData.pythonTypeName}(${field.snakeCaseName}_)
-        <#elseif field.bitmaskData??>
+                ${field.snakeCaseName}_ = ${field.typeInfo.typeFullName}(${field.snakeCaseName}_)
+        <#elseif field.typeInfo.isBitmask>
             if ${field.snakeCaseName}_ is not None:
-                ${field.snakeCaseName}_ = ${field.bitmaskData.pythonTypeName}.from_value(${field.snakeCaseName}_)
+                ${field.snakeCaseName}_ = ${field.typeInfo.typeFullName}.from_value(${field.snakeCaseName}_)
         </#if>
     </#list>
 
@@ -95,7 +95,7 @@ class ${name}:
     </#macro>
     class IParameterProvider:
     <#list explicitParameters as parameter>
-        def <@parameter_provider_method_name parameter/>(self, row: typing.Tuple) -> ${parameter.pythonTypeName}:
+        def <@parameter_provider_method_name parameter/>(self, row: typing.Tuple) -> ${parameter.typeInfo.typeFullName}:
             raise NotImplementedError()
     </#list>
 
@@ -134,7 +134,7 @@ class ${name}:
 
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo('${schemaTypeFullName}', ${name}, attributes=attribute_list)
 </#if>
 <#if withWriterCode>
 
@@ -251,14 +251,14 @@ class ${name}:
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
         ${field.snakeCaseName}_ = row_in_list[${field?index}]
-        if isinstance(${field.snakeCaseName}_, ${field.pythonTypeName}):
+        if isinstance(${field.snakeCaseName}_, ${field.typeInfo.typeFullName}):
             writer = zserio.BitStreamWriter()
             ${field.snakeCaseName}_.write(writer)
             row_in_list[${field?index}] = writer.byte_array
 
-            <#elseif field.enumData?? || field.bitmaskData??>
+            <#elseif field.typeInfo.isEnum || field.typeInfo.isBitmask>
         ${field.snakeCaseName}_ = row_in_list[${field?index}]
-        if isinstance(${field.snakeCaseName}_, ${field.pythonTypeName}):
+        if isinstance(${field.snakeCaseName}_, ${field.typeInfo.typeFullName}):
             row_in_list[${field?index}] = ${field.snakeCaseName}_.value
 
             </#if>

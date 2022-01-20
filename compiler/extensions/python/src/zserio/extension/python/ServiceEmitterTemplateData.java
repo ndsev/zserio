@@ -58,13 +58,13 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
             final PythonNativeType pythonResponseType = typeMapper.getPythonType(responseTypeReference);
             importCollector.importType(pythonResponseType);
-            responseTypeInfo = new TypeInfoTemplateData(responseTypeReference, pythonResponseType);
+            responseTypeInfo = new NativeTypeInfoTemplateData(pythonResponseType, responseTypeReference);
             responseTypeFullName = PythonFullNameFormatter.getFullName(pythonResponseType);
 
             final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
             final PythonNativeType pythonRequestType = typeMapper.getPythonType(requestTypeReference);
             importCollector.importType(pythonRequestType);
-            requestTypeInfo = new TypeInfoTemplateData(requestTypeReference, pythonRequestType);
+            requestTypeInfo = new NativeTypeInfoTemplateData(pythonRequestType, requestTypeReference);
             requestTypeFullName = PythonFullNameFormatter.getFullName(pythonRequestType);
         }
 
@@ -83,7 +83,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return clientMethodName;
         }
 
-        public TypeInfoTemplateData getResponseTypeInfo()
+        public NativeTypeInfoTemplateData getResponseTypeInfo()
         {
             return responseTypeInfo;
         }
@@ -93,7 +93,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return responseTypeFullName;
         }
 
-        public TypeInfoTemplateData getRequestTypeInfo()
+        public NativeTypeInfoTemplateData getRequestTypeInfo()
         {
             return requestTypeInfo;
         }
@@ -106,9 +106,9 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         private final String name;
         private final String snakeCaseName;
         private final String clientMethodName;
-        private final TypeInfoTemplateData responseTypeInfo;
+        private final NativeTypeInfoTemplateData responseTypeInfo;
         private final String responseTypeFullName;
-        private final TypeInfoTemplateData requestTypeInfo;
+        private final NativeTypeInfoTemplateData requestTypeInfo;
         private final String requestTypeFullName;
     }
 

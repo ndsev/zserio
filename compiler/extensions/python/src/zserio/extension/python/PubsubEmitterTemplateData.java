@@ -67,9 +67,8 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             final TypeReference messageTypeReference = message.getTypeReference();
             final PythonNativeType pythonType = pythonNativeMapper.getPythonType(messageTypeReference);
             importCollector.importType(pythonType);
-            typeInfo = new TypeInfoTemplateData(messageTypeReference, pythonType);
+            typeInfo = new NativeTypeInfoTemplateData(pythonType, messageTypeReference);
             topicDefinition = pythonExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
-            typeFullName = PythonFullNameFormatter.getFullName(pythonType);
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }
@@ -84,7 +83,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             return snakeCaseName;
         }
 
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
         }
@@ -92,11 +91,6 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
         public String getTopicDefinition()
         {
             return topicDefinition;
-        }
-
-        public String getTypeFullName()
-        {
-            return typeFullName;
         }
 
         public boolean getIsPublished()
@@ -111,9 +105,8 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String snakeCaseName;
-        private final TypeInfoTemplateData typeInfo;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String topicDefinition;
-        private final String typeFullName;
         private final boolean isPublished;
         private final boolean isSubscribed;
     }

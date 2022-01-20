@@ -1,7 +1,7 @@
 <#macro compound_constructor_annotated_parameters compoundParametersData indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#list compoundParametersData.list as parameter>
-${I}<@parameter_argument_name parameter/>: ${parameter.pythonTypeName}<#rt>
+${I}<@parameter_argument_name parameter/>: ${parameter.typeInfo.typeFullName}<#rt>
         <#if parameter_has_next>
             <#lt>,
         </#if>
@@ -16,7 +16,7 @@ ${I}<@parameter_argument_name parameter/>: ${parameter.pythonTypeName}<#rt>
 
 <#macro compound_constructor_parameter_assignments compoundParametersData>
     <#list compoundParametersData.list as parameter>
-        self.<@parameter_member_name parameter/>: ${parameter.pythonTypeName} = <@parameter_argument_name parameter/>
+        self.<@parameter_member_name parameter/>: ${parameter.typeInfo.typeFullName} = <@parameter_argument_name parameter/>
     </#list>
 </#macro>
 

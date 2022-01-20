@@ -64,7 +64,7 @@ class ${name}:
             zserio.typeinfo.TypeAttribute.TABLES : table_list
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo('${schemaTypeFullName}', ${name}, attributes=attribute_list)
 </#if>
 
     def close(self) -> None:
@@ -78,7 +78,7 @@ class ${name}:
         _${field.snakeCaseName}_<#t>
     </#macro>
     @property
-    def ${field.propertyName}(self) -> ${field.pythonTypeName}:
+    def ${field.propertyName}(self) -> ${field.typeInfo.typeFullName}:
         return self.<@field_member_name field/>
 </#list>
 
@@ -128,7 +128,7 @@ class ${name}:
 
     def _init_tables(self, table_name_to_attached_db_name_map: typing.Dict[str, str]) -> None:
 <#list fields as field>
-        self.<@field_member_name field/> = ${field.pythonTypeName}(
+        self.<@field_member_name field/> = ${field.typeInfo.typeFullName}(
             self._connection, self.<@table_name_constant field/>, table_name_to_attached_db_name_map.get(self.<@table_name_constant field/>))
 </#list>
 

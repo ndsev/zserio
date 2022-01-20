@@ -3,5 +3,5 @@
 </#macro>
 
 <#macro array_traits_create_field field>
-    zserio.array.${field.arrayTraits.name}(<#if field.arrayTraits.requiresElementBitSize>${field.bitSize.value}</#if>)<#t>
+    zserio.array.${field.typeInfo.arrayTraits.name}(<#if field.typeInfo.arrayTraits.requiresElementBitSize>${field.bitSize.value}</#if>)<#t>
 </#macro>

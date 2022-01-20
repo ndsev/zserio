@@ -19,7 +19,7 @@ class ${name}:
             zserio.typeinfo.TypeAttribute.METHODS : method_list
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo('${schemaTypeFullName}', ${name}, attributes=attribute_list)
 
 </#if>
     class Service(zserio.ServiceInterface):
@@ -46,15 +46,15 @@ class ${name}:
             return self._METHOD_NAMES
 <#list methodList as method>
 
-        def _${method.snakeCaseName}_impl(self, request: ${method.requestTypeFullName}, <#rt>
-                <#lt>context: typing.Any = None) -> ${method.responseTypeFullName}:
+        def _${method.snakeCaseName}_impl(self, request: ${method.requestTypeInfo.typeFullName}, <#rt>
+                <#lt>context: typing.Any = None) -> ${method.responseTypeInfo.typeFullName}:
             raise NotImplementedError()
 </#list>
 <#list methodList as method>
 
         def _${method.snakeCaseName}_method(self, request_data: bytes, context: typing.Any) -> zserio.ServiceData:
             reader = zserio.BitStreamReader(request_data)
-            request = ${method.requestTypeFullName}.from_reader(reader)
+            request = ${method.requestTypeInfo.typeFullName}.from_reader(reader)
 
             return zserio.ServiceData(self._${method.snakeCaseName}_impl(request, context))
 </#list>
@@ -71,11 +71,11 @@ class ${name}:
             self._service_client = service_client
 <#list methodList as method>
 
-        def ${method.clientMethodName}(self, request: ${method.requestTypeFullName}, <#rt>
-                <#lt>context: typing.Any = None) -> ${method.responseTypeFullName}:
+        def ${method.clientMethodName}(self, request: ${method.requestTypeInfo.typeFullName}, <#rt>
+                <#lt>context: typing.Any = None) -> ${method.responseTypeInfo.typeFullName}:
             response_data = self._service_client.call_method("${method.name}", zserio.ServiceData(request), context)
             reader = zserio.BitStreamReader(response_data)
-            response = ${method.responseTypeFullName}.from_reader(reader)
+            response = ${method.responseTypeInfo.typeFullName}.from_reader(reader)
 
             return response
 </#list>

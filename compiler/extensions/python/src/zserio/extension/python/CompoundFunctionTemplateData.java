@@ -43,8 +43,7 @@ public final class CompoundFunctionTemplateData
 
             schemaName = function.getName();
             functionName = AccessorNameFormatter.getFunctionName(function);
-            returnPythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
-            returnTypeInfo = new TypeInfoTemplateData(returnTypeReference, nativeType);
+            returnTypeInfo = new NativeTypeInfoTemplateData(nativeType, returnTypeReference);
             final ExpressionFormatter pythonExpressionFormatter =
                     context.getPythonExpressionFormatter(importCollector);
             resultExpression = pythonExpressionFormatter.formatGetter(function.getResultExpression());
@@ -60,12 +59,7 @@ public final class CompoundFunctionTemplateData
             return functionName;
         }
 
-        public String getReturnPythonTypeName()
-        {
-            return returnPythonTypeName;
-        }
-
-        public TypeInfoTemplateData getReturnTypeInfo()
+        public NativeTypeInfoTemplateData getReturnTypeInfo()
         {
             return returnTypeInfo;
         }
@@ -77,8 +71,7 @@ public final class CompoundFunctionTemplateData
 
         private final String schemaName;
         private final String functionName;
-        private final String returnPythonTypeName;
-        private final TypeInfoTemplateData returnTypeInfo;
+        private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
     }
 

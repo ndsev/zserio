@@ -2,10 +2,18 @@
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}zserio.typeinfo.MemberInfo(
 ${I}    '${field.name}', <#rt>
-    <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
-        <#lt>zserio.typeinfo.RecursiveTypeInfo(${field.typeInfo.pythonTypeName}.type_info),
+    <#if field.array??>
+        <#if field.array.elementIsRecursive>
+            <#lt>zserio.typeinfo.RecursiveTypeInfo(${field.array.elementTypeInfo.typeFullName}.type_info),
+        <#else>
+            <#lt><@type_info field.array.elementTypeInfo/>,
+        </#if>
     <#else>
-        <#lt><@type_info field.typeInfo/>,
+        <#if field.optional?? && field.optional.isRecursive>
+            <#lt>zserio.typeinfo.RecursiveTypeInfo(${field.typeInfo.typeFullName}.type_info),
+        <#else>
+            <#lt><@type_info field.typeInfo/>,
+        </#if>
     </#if>
         <@member_info_field_attributes field, indent+1/><#t>
 ${I})<#if comma>,</#if>
@@ -56,17 +64,17 @@ ${I})<#if comma>,</#if>
 <#macro type_info_template_instantiation_attributes templateInstantiation>
             zserio.typeinfo.TypeAttribute.TEMPLATE_NAME : '${templateInstantiation.templateName}',
             zserio.typeinfo.TypeAttribute.TEMPLATE_ARGUMENTS : [<#rt>
-        <#list templateInstantiation.templateArguments as templateArgument>
-                <@type_info templateArgument/><#if templateArgument?has_next>, </#if><#t>
+        <#list templateInstantiation.templateArgumentTypeInfos as templateArgumentTypeInfo>
+                <@type_info templateArgumentTypeInfo/><#if templateArgumentTypeInfo?has_next>, </#if><#t>
         </#list>
                 ]<#t>
 </#macro>
 
 <#macro type_info typeInfo>
     <#if typeInfo.hasTypeInfo>
-        ${typeInfo.pythonTypeName}.type_info()<#t>
+        ${typeInfo.typeFullName}.type_info()<#t>
     <#else>
-        zserio.typeinfo.TypeInfo('${typeInfo.schemaTypeName}', ${typeInfo.pythonTypeName})<#t>
+        zserio.typeinfo.TypeInfo('${typeInfo.schemaTypeFullName}', ${typeInfo.typeFullName})<#t>
     </#if>
 </#macro>
 
@@ -107,7 +115,7 @@ ${I})<#if comma>,</#if>
         </#if>
         <#if field.array.elementCompound??>
             <#local typeArguments><@member_info_compound_type_arguments field.array.elementCompound/></#local>
-        <#elseif field.typeInfo.isDynamicBitField>
+        <#elseif field.array.elementTypeInfo.isDynamicBitField>
             <#local typeArguments="['${field.array.elementBitSize.value}']">
         </#if>
     <#else>

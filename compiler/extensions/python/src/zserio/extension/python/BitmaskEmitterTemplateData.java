@@ -31,12 +31,11 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final TypeInstantiation bitmaskTypeInstantiation = bitmaskType.getTypeInstantiation();
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(bitmaskTypeInstantiation);
-
-        underlyingType = new TypeInfoTemplateData(bitmaskTypeInstantiation.getTypeReference(), nativeType);
         if (getWithTypeInfoCode())
             importType(nativeType);
 
-        arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
+        underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeType, bitmaskTypeInstantiation);
+
         bitSize = createBitSize(bitmaskTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
@@ -52,14 +51,9 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
             values.add(new BitmaskValueData(bitmaskValue));
     }
 
-    public TypeInfoTemplateData getUnderlyingType()
+    public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
     {
-        return underlyingType;
-    }
-
-    public ArrayTraitsTemplateData getArrayTraits()
-    {
-        return arrayTraits;
+        return underlyingTypeInfo;
     }
 
     public String getBitSize()
@@ -163,8 +157,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
-    private final TypeInfoTemplateData underlyingType;
-    private final ArrayTraitsTemplateData arrayTraits;
+    private final NativeTypeInfoTemplateData underlyingTypeInfo;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final String lowerBound;

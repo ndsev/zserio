@@ -29,12 +29,10 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(enumTypeInstantiation);
-
-        underlyingType = new TypeInfoTemplateData(enumTypeInstantiation.getTypeReference(), nativeType);
         if (getWithTypeInfoCode())
             importType(nativeType);
 
-        arrayTraits = new ArrayTraitsTemplateData(nativeType.getArrayTraits());
+        underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeType, enumTypeInstantiation);
         bitSize = createBitSize(enumTypeInstantiation);
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
@@ -47,14 +45,9 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             items.add(new EnumItemData(enumItem));
     }
 
-    public TypeInfoTemplateData getUnderlyingType()
+    public NativeTypeInfoTemplateData getUnderlyingTypeInfo()
     {
-        return underlyingType;
-    }
-
-    public ArrayTraitsTemplateData getArrayTraits()
-    {
-        return arrayTraits;
+        return underlyingTypeInfo;
     }
 
     public String getBitSize()
@@ -119,8 +112,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
         }
     }
 
-    private final TypeInfoTemplateData underlyingType;
-    private final ArrayTraitsTemplateData arrayTraits;
+    private final NativeTypeInfoTemplateData underlyingTypeInfo;
     private final String bitSize;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final List<EnumItemData> items;

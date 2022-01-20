@@ -22,17 +22,17 @@ class ${name}:
             zserio.typeinfo.TypeAttribute.MESSAGES : message_list
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo('${schemaTypeFullName}', ${name}, attributes=attribute_list)
 </#if>
 <#list messageList as message>
     <#if message.isPublished>
 
-    def publish_${message.snakeCaseName}(self, message: ${message.typeFullName}, context: typing.Any = None) -> None:
+    def publish_${message.snakeCaseName}(self, message: ${message.typeInfo.typeFullName}, context: typing.Any = None) -> None:
         self._publish(${message.topicDefinition}, message, context)
     </#if>
     <#if message.isSubscribed>
 
-    def subscribe_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeFullName}], None], context: typing.Any = None) -> int:
+    def subscribe_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeInfo.typeFullName}], None], context: typing.Any = None) -> int:
         def on_raw(topic: str, data: bytes) -> None:
             self._on_raw_${message.snakeCaseName}(callback, topic, data)
         return self._pubsub.subscribe(${message.topicDefinition}, on_raw, context)
@@ -45,9 +45,9 @@ class ${name}:
     <#list messageList as message>
         <#if message.isSubscribed>
 
-    def _on_raw_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeFullName}], None], topic: str, data: bytes) -> None:
+    def _on_raw_${message.snakeCaseName}(self, callback: typing.Callable[[str, ${message.typeInfo.typeFullName}], None], topic: str, data: bytes) -> None:
         reader = zserio.BitStreamReader(data)
-        message = ${message.typeFullName}.from_reader(reader)
+        message = ${message.typeInfo.typeFullName}.from_reader(reader)
         callback(topic, message)
         </#if>
     </#list>

@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import zserio.ast.BitmaskType;
 import zserio.ast.DynamicBitFieldInstantiation;
-import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
 import zserio.ast.FixedSizeType;
@@ -17,7 +15,7 @@ import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.SqlConstraint;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
-import zserio.ast.ZserioType;
+import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.common.sql.SqlNativeTypeMapper;
@@ -108,7 +106,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public ExplicitParameterTemplateData(ParameterTemplateData parameterTemplateData)
         {
             expression = parameterTemplateData.getExpression();
-            pythonTypeName = parameterTemplateData.getPythonTypeName();
+            typeInfo = parameterTemplateData.getTypeInfo();
         }
 
         public String getExpression()
@@ -116,9 +114,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return expression;
         }
 
-        public String getPythonTypeName()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
-            return pythonTypeName;
+            return typeInfo;
         }
 
         @Override
@@ -128,7 +126,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             if (result != 0)
                 return result;
 
-            return pythonTypeName.compareTo(other.pythonTypeName);
+            return typeInfo.getTypeFullName().compareTo(other.typeInfo.getTypeFullName());
         }
 
         @Override
@@ -150,13 +148,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         {
             int hash = HashUtil.HASH_SEED;
             hash = HashUtil.hash(hash, expression);
-            hash = HashUtil.hash(hash, pythonTypeName);
+            hash = HashUtil.hash(hash, typeInfo.getTypeFullName());
 
             return hash;
         }
 
         private final String expression;
-        private final String pythonTypeName;
+        private final NativeTypeInfoTemplateData typeInfo;
     }
 
     public static class FieldTemplateData
@@ -168,14 +166,12 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-            final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
             final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
             importCollector.importType(nativeType);
 
             name = field.getName();
             snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
-            pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
-            typeInfo = new TypeInfoTemplateData(fieldTypeInstantiation.getTypeReference(), nativeType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
 
             isVirtual = field.isVirtual();
             parameters = new ArrayList<ParameterTemplateData>();
@@ -198,8 +194,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
             bitSize = createBitSize(fieldTypeInstantiation, pythonSqlIndirectExpressionFormatter);
-            enumData = (fieldBaseType instanceof EnumType) ? new EnumTemplateData(nativeType) : null;
-            bitmaskData = (fieldBaseType instanceof BitmaskType) ? new BitmaskTemplateData(nativeType) : null;
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
 
@@ -213,14 +207,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return snakeCaseName;
         }
 
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
-        }
-
-        public String getPythonTypeName()
-        {
-            return pythonTypeName;
         }
 
         public boolean getIsVirtual()
@@ -243,49 +232,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return bitSize;
         }
 
-        public EnumTemplateData getEnumData()
-        {
-            return enumData;
-        }
-
-        public BitmaskTemplateData getBitmaskData()
-        {
-            return bitmaskData;
-        }
-
         public SqlTypeTemplateData getSqlTypeData()
         {
             return sqlTypeData;
-        }
-
-        public static class EnumTemplateData
-        {
-            public EnumTemplateData(PythonNativeType enumNativeType)
-            {
-                pythonTypeName = PythonFullNameFormatter.getFullName(enumNativeType);
-            }
-
-            public String getPythonTypeName()
-            {
-                return pythonTypeName;
-            }
-
-            private final String pythonTypeName;
-        }
-
-        public static class BitmaskTemplateData
-        {
-            public BitmaskTemplateData(PythonNativeType bitmaskNativeType)
-            {
-                pythonTypeName = PythonFullNameFormatter.getFullName(bitmaskNativeType);
-            }
-
-            public String getPythonTypeName()
-            {
-                return pythonTypeName;
-            }
-
-            private final String pythonTypeName;
         }
 
         public static class SqlTypeTemplateData
@@ -321,20 +270,21 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                             throws ZserioExtensionException
             {
                 final Parameter parameter = instantiatedParameter.getParameter();
+                final TypeReference referencedType = parameter.getTypeReference();
                 final PythonNativeType parameterNativeType =
-                        pythonNativeMapper.getPythonType(parameter.getTypeReference());
+                        pythonNativeMapper.getPythonType(referencedType);
                 importCollector.importType(parameterNativeType);
 
-                pythonTypeName = PythonFullNameFormatter.getFullName(parameterNativeType);
+                typeInfo = new NativeTypeInfoTemplateData(parameterNativeType, referencedType);
 
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
                 expression = pythonSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
             }
 
-            public String getPythonTypeName()
+            public NativeTypeInfoTemplateData getTypeInfo()
             {
-                return pythonTypeName;
+                return typeInfo;
             }
 
             public boolean getIsExplicit()
@@ -347,7 +297,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return expression;
             }
 
-            private final String pythonTypeName;
+            private final NativeTypeInfoTemplateData typeInfo;
             private final boolean isExplicit;
             private final String expression;
         }
@@ -374,15 +324,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         private final String name;
         private final String snakeCaseName;
-        private final TypeInfoTemplateData typeInfo;
-        private final String pythonTypeName;
-
+        private final NativeTypeInfoTemplateData typeInfo;
         private final boolean isVirtual;
         private final List<ParameterTemplateData> parameters;
         private final String sqlConstraint;
         private final String bitSize;
-        private final EnumTemplateData enumData;
-        private final BitmaskTemplateData bitmaskData;
         private final SqlTypeTemplateData sqlTypeData;
     }
 

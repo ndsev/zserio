@@ -20,14 +20,14 @@ class ${name}(enum.Enum):
     def from_reader_packed(cls: typing.Type['${name}'],
                            context_node: zserio.array.PackingContextNode,
                            reader: zserio.BitStreamReader) -> '${name}':
-        return cls(context_node.context.read(<@array_traits_create arrayTraits, bitSize!/>, reader))
+        return cls(context_node.context.read(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, reader))
 <#if withTypeInfoCode>
 
     @staticmethod
     def type_info():
         attribute_list = {
-            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingType/>,
-    <#if underlyingType.isDynamicBitField>
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingTypeInfo/>,
+    <#if underlyingTypeInfo.isDynamicBitField>
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: ['${bitSize}'],
     </#if>
             zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
@@ -37,7 +37,7 @@ class ${name}(enum.Enum):
             ]
         }
 
-        return zserio.typeinfo.TypeInfo('${schemaTypeName}', ${name}, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo('${schemaTypeFullName}', ${name}, attributes=attribute_list)
 </#if>
 
     @staticmethod
@@ -45,7 +45,7 @@ class ${name}(enum.Enum):
         context_node.create_context()
 
     def init_packing_context(self, context_node: zserio.array.PackingContextNode) -> None:
-        context_node.context.init(<@array_traits_create arrayTraits, bitSize!/>,
+        context_node.context.init(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                   self.value)
 
     def bitsizeof(self, _bitposition: int = 0) -> int:
@@ -57,7 +57,7 @@ class ${name}(enum.Enum):
 
     def bitsizeof_packed(self, context_node: zserio.array.PackingContextNode,
                          _bitposition: int) -> int:
-        return context_node.context.bitsizeof(<@array_traits_create arrayTraits, bitSize!/>,
+        return context_node.context.bitsizeof(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>,
                                               self.value)
 <#if withWriterCode>
 
@@ -75,5 +75,5 @@ class ${name}(enum.Enum):
 
     def write_packed(self, context_node: zserio.array.PackingContextNode,
                      writer: zserio.BitStreamWriter) -> None:
-        context_node.context.write(<@array_traits_create arrayTraits, bitSize!/>, writer, self.value)
+        context_node.context.write(<@array_traits_create underlyingTypeInfo.arrayTraits, bitSize!/>, writer, self.value)
 </#if>

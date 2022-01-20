@@ -22,14 +22,16 @@ public class TemplateInstantiationTemplateData
     {
         templateName = ZserioTypeUtil.getFullName(template);
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
+        templateArgumentTypeInfos = new ArrayList<NativeTypeInfoTemplateData>();
         for (TemplateArgument templateArgument : templateArguments)
         {
-            this.templateArguments.add(new TypeInfoTemplateData(context, templateArgument.getTypeReference()));
+            final TypeReference argumentTypeReference = templateArgument.getTypeReference();
+            final PythonNativeType argumentNativeType = pythonNativeMapper.getPythonType(argumentTypeReference);
+            templateArgumentTypeInfos.add(new NativeTypeInfoTemplateData(argumentNativeType,
+                    argumentTypeReference));
             if (context.getWithTypeInfoCode())
             {
                 // imports of template arguments types are needed only in type_info
-                final PythonNativeType argumentNativeType = pythonNativeMapper.getPythonType(
-                        templateArgument.getTypeReference());
                 importCollector.importType(argumentNativeType);
             }
         }
@@ -40,9 +42,9 @@ public class TemplateInstantiationTemplateData
         return templateName;
     }
 
-    public Iterable<TypeInfoTemplateData> getTemplateArguments()
+    public Iterable<NativeTypeInfoTemplateData> getTemplateArgumentTypeInfos()
     {
-        return templateArguments;
+        return templateArgumentTypeInfos;
     }
 
     static TemplateInstantiationTemplateData create(TemplateDataContext context,
@@ -61,5 +63,5 @@ public class TemplateInstantiationTemplateData
     }
 
     private final String templateName;
-    private final List<TypeInfoTemplateData> templateArguments = new ArrayList<TypeInfoTemplateData>();
+    private final List<NativeTypeInfoTemplateData> templateArgumentTypeInfos;
 }

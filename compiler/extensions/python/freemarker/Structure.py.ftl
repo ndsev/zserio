@@ -22,8 +22,8 @@ class ${name}:
         <#elseif field.optional??>
             None<#t>
         <#else>
-            <#if field.isBuiltinType>
-            ${field.pythonTypeName}()<#t>
+            <#if field.typeInfo.isBuiltin>
+            ${field.typeInfo.typeFullName}()<#t>
             <#else>
             None<#t>
             </#if>
@@ -97,7 +97,7 @@ class ${name}:
 
         }
 
-        return zserio.typeinfo.TypeInfo("${schemaTypeName}", ${name}, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo("${schemaTypeFullName}", ${name}, attributes=attribute_list)
 </#if>
 
 <#macro structure_compare_fields fieldList indent>
@@ -139,7 +139,7 @@ ${I}<#rt>
 <#list compoundParametersData.list as parameter>
 
     @property
-    def ${parameter.propertyName}(self) -> ${parameter.pythonTypeName}:
+    def ${parameter.propertyName}(self) -> ${parameter.typeInfo.typeFullName}:
         <@compound_parameter_accessor parameter/>
 </#list>
 <#list fieldList as field>
@@ -162,7 +162,7 @@ ${I}<#rt>
 </#list>
 <#list compoundFunctionsData.list as function>
 
-    def ${function.functionName}(self) -> ${function.returnPythonTypeName}:
+    def ${function.functionName}(self) -> ${function.returnTypeInfo.typeFullName}:
         return ${function.resultExpression}
 </#list>
 

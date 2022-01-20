@@ -42,8 +42,7 @@ public final class CompoundParameterTemplateData
             final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(
                     parameterTypeReference);
             importCollector.importType(nativeType);
-            typeInfo = new TypeInfoTemplateData(parameterTypeReference, nativeType);
-            pythonTypeName = PythonFullNameFormatter.getFullName(nativeType);
+            typeInfo = new NativeTypeInfoTemplateData(nativeType, parameterTypeReference);
             propertyName = AccessorNameFormatter.getPropertyName(parameter);
         }
 
@@ -57,14 +56,9 @@ public final class CompoundParameterTemplateData
             return snakeCaseName;
         }
 
-        public TypeInfoTemplateData getTypeInfo()
+        public NativeTypeInfoTemplateData getTypeInfo()
         {
             return typeInfo;
-        }
-
-        public String getPythonTypeName()
-        {
-            return pythonTypeName;
         }
 
         public String getPropertyName()
@@ -74,8 +68,7 @@ public final class CompoundParameterTemplateData
 
         private final String name;
         private final String snakeCaseName;
-        private final TypeInfoTemplateData typeInfo;
-        private final String pythonTypeName;
+        private final NativeTypeInfoTemplateData typeInfo;
         private final String propertyName;
     }
 

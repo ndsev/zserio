@@ -16,7 +16,7 @@ public class UserTypeTemplateData extends PythonTemplateData
 
         final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(type);
         name = nativeType.getName();
-        schemaTypeName = ZserioTypeUtil.getFullName(type);
+        schemaTypeFullName = ZserioTypeUtil.getFullName(type);
     }
 
     public String getName()
@@ -24,11 +24,11 @@ public class UserTypeTemplateData extends PythonTemplateData
         return name;
     }
 
-    public String getSchemaTypeName()
+    public String getSchemaTypeFullName()
     {
-        return schemaTypeName;
+        return schemaTypeFullName;
     }
 
     private final String name;
-    private final String schemaTypeName;
+    private final String schemaTypeFullName;
 }

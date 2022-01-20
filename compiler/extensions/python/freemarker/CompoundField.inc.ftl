@@ -64,7 +64,7 @@ ${I}if self.${field.optional.indicatorName}():
     <#local I>${""?left_pad(indent * 4)}</#local>
     <@compound_align_field field, indent/>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType>
+        <#if field.typeInfo.isBuiltin>
 ${I}end_bitposition += <@compound_field_packing_context_node field, index/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
@@ -117,7 +117,7 @@ ${I}value = zserio.bitposition.bits_to_bytes(end_bitposition)
 ${I}${field.offset.setter}
     </#if>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType>
+        <#if field.typeInfo.isBuiltin>
 ${I}end_bitposition += <@compound_field_packing_context_node field, index/>.context.bitsizeof(<#rt>
         <#lt><@array_traits_create_field field/>, self.<@field_member_name field/>)
         <#else>
@@ -161,12 +161,12 @@ ${I}zserio_reader.alignto(8)
         <@compound_check_offset_field field, compoundName, "zserio_reader.bitposition", indent/>
     </#if>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType>
+        <#if field.typeInfo.isBuiltin>
 ${I}self.<@field_member_name field/> = <@compound_field_packing_context_node field, index/>.context.read(<#rt>
         <#lt><@array_traits_create_field field/>, zserio_reader)
         <#else>
             <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
-${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader_packed(<#rt>
+${I}self.<@field_member_name field/> = ${field.typeInfo.typeFullName}.from_reader_packed(<#rt>
         <@compound_field_packing_context_node field, index/>, <#t>
         <#lt>zserio_reader<#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
         </#if>
@@ -177,7 +177,7 @@ ${I}self.<@field_member_name field/> = <@array_field_from_reader field, packed/>
 ${I}self.<@field_member_name field/> = zserio_reader.read_${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!})
         <#else>
             <#local fromReaderArguments><#if field.compound??><@compound_field_constructor_parameters field.compound/></#if></#local>
-${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zserio_reader<#rt>
+${I}self.<@field_member_name field/> = ${field.typeInfo.typeFullName}.from_reader(zserio_reader<#rt>
         <#lt><#if fromReaderArguments?has_content>, ${fromReaderArguments}</#if>)
         </#if>
     </#if>
@@ -185,13 +185,13 @@ ${I}self.<@field_member_name field/> = ${field.pythonTypeName}.from_reader(zseri
 </#macro>
 
 <#macro array_field_traits_parameter field>
-    zserio.array.${field.array.traits.name}(<#t>
-        <#if field.array.traits.requiresElementBitSize>
+    zserio.array.${field.typeInfo.arrayTraits.name}(<#t>
+        <#if field.typeInfo.arrayTraits.requiresElementBitSize>
             ${field.array.elementBitSize.value}<#t>
-        <#elseif field.array.traits.requiresElementCreator>
+        <#elseif field.typeInfo.arrayTraits.requiresElementCreator>
             self.<@element_creator_name field/>, <#t>
             self.<@packed_element_creator_name field/>, <#t>
-            ${field.array.elementPythonTypeName}.create_packing_context<#t>
+            ${field.array.elementTypeInfo.typeFullName}.create_packing_context<#t>
         </#if>
     )<#t>
 </#macro>
@@ -260,7 +260,7 @@ ${I}zserio_writer.alignto(8)
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed && field.isPackable && !field.array??>
-        <#if field.isBuiltinType>
+        <#if field.typeInfo.isBuiltin>
 ${I}<@compound_field_packing_context_node field, index/>.context.write(<@array_traits_create_field field/>, <#rt>
         <#lt>zserio_writer, self.<@field_member_name field/>)
         <#else>
@@ -332,12 +332,12 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
         <#if field.optional.isRecursive>
         typing.Optional['${compoundName}']<#t>
         <#else>
-        typing.Optional[${field.pythonTypeName}]<#t>
+        typing.Optional[${field.typeInfo.typeFullName}]<#t>
         </#if>
-    <#elseif field.isBuiltinType || field.array??>
-        ${field.pythonTypeName}<#t>
+    <#elseif field.typeInfo.isBuiltin || field.array??>
+        ${field.typeInfo.typeFullName}<#t>
     <#else>
-        typing.Union[${field.pythonTypeName}, None]<#t>
+        typing.Union[${field.typeInfo.typeFullName}, None]<#t>
     </#if>
 </#macro>
 
@@ -358,7 +358,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
     <#if fieldArray.elementIsRecursive>
         typing.List['${compoundName}']<#t>
     <#else>
-        typing.List[${fieldArray.elementPythonTypeName}]<#t>
+        typing.List[${fieldArray.elementTypeInfo.typeFullName}]<#t>
     </#if>
 </#macro>
 
@@ -366,7 +366,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
     <#if field.array??>
         typing.Union[<@field_annotation_array_argument_type_name field.array, compoundName/>, None]<#t>
     <#else>
-        typing.Union[${field.pythonTypeName}, None]<#t>
+        typing.Union[${field.typeInfo.typeFullName}, None]<#t>
     </#if>
 </#macro>
 
@@ -404,7 +404,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
 </#macro>
 
 <#macro define_element_creator field compoundName>
-   <#if field.array?? && field.array.traits.requiresElementCreator>
+   <#if field.array?? && field.typeInfo.arrayTraits.requiresElementCreator>
         <#local usesElementCreatorIndex = false/>
         <#local extraConstructorArguments>
             <#if field.array.elementCompound??>
@@ -422,12 +422,12 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
         <#if field.array.elementIsRecursive>
             <#lt>'${compoundName}':
         <#else>
-            <#lt>${field.array.elementPythonTypeName}:
+            <#lt>${field.array.elementTypeInfo.typeFullName}:
         </#if>
         <#if !usesElementCreatorIndex>
         del zserio_index
         </#if>
-        return ${field.array.elementPythonTypeName}.from_reader(zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
+        return ${field.array.elementTypeInfo.typeFullName}.from_reader(zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
 
     def <@packed_element_creator_name field/>(
             self, zserio_context_node: zserio.array.PackingContextNode,
@@ -435,12 +435,12 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
         <#if field.array.elementIsRecursive>
             <#lt>'${compoundName}':
         <#else>
-            <#lt>${field.array.elementPythonTypeName}:
+            <#lt>${field.array.elementTypeInfo.typeFullName}:
         </#if>
         <#if !usesElementCreatorIndex>
         del zserio_index
         </#if>
-        return ${field.array.elementPythonTypeName}.from_reader_packed(zserio_context_node, zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
+        return ${field.array.elementTypeInfo.typeFullName}.from_reader_packed(zserio_context_node, zserio_reader<#if extraConstructorArguments?has_content>, ${extraConstructorArguments}</#if>)
     </#if>
 </#macro>
 
@@ -454,10 +454,10 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
 
 <#macro compound_create_packing_context_field field>
     <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
-        <#if field.isBuiltinType>
+        <#if field.typeInfo.isBuiltin>
         zserio_context_node.create_child().create_context()
         <#else>
-        ${field.pythonTypeName}.create_packing_context(zserio_context_node.create_child())
+        ${field.typeInfo.typeFullName}.create_packing_context(zserio_context_node.create_child())
         </#if>
     <#else>
         zserio_context_node.create_child()
@@ -478,7 +478,7 @@ ${I}if self.${field.optional.indicatorName}():
 
 <#macro compound_init_packing_context_field_inner field index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.isBuiltinType>
+    <#if field.typeInfo.isBuiltin>
 ${I}<@compound_field_packing_context_node field, index/>.context.init(<@array_traits_create_field field/>, <#rt>
         <#lt>self.<@field_member_name field/>)
     <#else>

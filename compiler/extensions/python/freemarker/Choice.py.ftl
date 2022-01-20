@@ -138,7 +138,7 @@ class ${name}:
     </#if>
         }
 
-        return zserio.typeinfo.TypeInfo("${schemaTypeName}", ${name}, attributes=attribute_list)
+        return zserio.typeinfo.TypeInfo("${schemaTypeFullName}", ${name}, attributes=attribute_list)
 </#if>
 
     def __eq__(self, other: object) -> bool:
@@ -157,7 +157,7 @@ class ${name}:
 <#list compoundParametersData.list as parameter>
 
     @property
-    def ${parameter.propertyName}(self) -> ${parameter.pythonTypeName}:
+    def ${parameter.propertyName}(self) -> ${parameter.typeInfo.typeFullName}:
         <@compound_parameter_accessor parameter/>
 </#list>
 <#list fieldList as field>
@@ -175,7 +175,7 @@ class ${name}:
 </#list>
 <#list compoundFunctionsData.list as function>
 
-    def ${function.functionName}(self) -> ${function.returnPythonTypeName}:
+    def ${function.functionName}(self) -> ${function.returnTypeInfo.typeFullName}:
         return ${function.resultExpression}
 </#list>
 
