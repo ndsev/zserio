@@ -30,7 +30,7 @@ TEST_F(CppGeneratorErrorTest, bitmaskValuesClassClash)
 TEST_F(CppGeneratorErrorTest, sqlTableIParameterProviderClassClash)
 {
     ASSERT_TRUE(zserioErrors.isPresent(
-            "sql_table_provider_class_clash_error.zs:3:11: "
+            "sql_table_provider_class_clash_error.zs:4:11: "
             "Class name 'IParameterProvider' generated for SQL table clashes with its inner class "
             "'IParameterProvider' generated in C++ code."));
 }
