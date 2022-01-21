@@ -28,9 +28,9 @@ zserio_add_library(TARGET bitmask_values_class_clash_error_zs
     IGNORE_ERRORS ON
 )
 
-zserio_add_library(TARGET sql_table_i_parameter_provider_class_clash_error_zs
+zserio_add_library(TARGET sql_table_provider_class_clash_error_zs
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/zs
-    MAIN_SOURCE sql_table_i_parameter_provider_class_clash_error.zs
+    MAIN_SOURCE sql_table_provider_class_clash_error.zs
     OUT_DIR ${ZSERIO_GEN_DIR}
     OUT_FILES EMPTY
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
@@ -66,7 +66,7 @@ zserio_add_library(TARGET sql_table_row_class_clash_error_zs
 
 add_test_dependencies(wrong_set_cpp_allocator_error_zs)
 add_test_dependencies(bitmask_values_class_clash_error_zs)
-add_test_dependencies(sql_table_i_parameter_provider_class_clash_error_zs)
+add_test_dependencies(sql_table_provider_class_clash_error_zs)
 add_test_dependencies(sql_table_reader_class_clash_error_zs)
 add_test_dependencies(sql_table_row_class_clash_error_zs)
 
