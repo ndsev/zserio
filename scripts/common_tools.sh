@@ -325,7 +325,7 @@ install_python_apsw()
 
     pushd "${PYTHON_VIRTUALENV_ROOT}" > /dev/null
     if [ ! -d "${PYTHON_VIRTUALENV_ROOT}/apsw" ] ; then
-        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.24.0-r1
+        git clone --depth 1 https://github.com/rogerbinns/apsw.git -b 3.37.0-r1
         if [ $? -ne 0 ] ; then
             stderr_echo "Failed to clone apsw repository!"
             popd > /dev/null
