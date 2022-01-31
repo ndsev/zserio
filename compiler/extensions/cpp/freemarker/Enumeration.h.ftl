@@ -13,7 +13,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
-    <#if withWriterCode>
+    <#if withReflectionCode>
 <@type_includes types.reflectablePtr/>
     </#if>
 </#if>
@@ -53,7 +53,7 @@ struct EnumTraits<${fullName}>
 
 template <>
 const ::zserio::ITypeInfo& enumTypeInfo<${fullName}>();
-    <#if withWriterCode>
+    <#if withReflectionCode>
 
 template <>
 ${types.reflectablePtr.name} enumReflectable(

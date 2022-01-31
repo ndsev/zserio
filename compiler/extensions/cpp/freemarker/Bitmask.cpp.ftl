@@ -9,7 +9,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-    <#if withWriterCode>
+    <#if withReflectionCode>
 <@type_includes types.reflectableFactory/>
     </#if>
 </#if>
@@ -57,7 +57,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 
     return typeInfo;
 }
-    <#if withWriterCode>
+    <#if withReflectionCode>
 
 ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.default}& allocator)
 {

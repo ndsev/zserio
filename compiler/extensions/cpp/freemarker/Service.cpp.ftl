@@ -81,7 +81,7 @@ ${types.responseDataPtr.name} Service::${method.name}Method(
     class ResponseData : public ::zserio::IBasicResponseData<allocator_type>
     {
     public:
-    <#if withTypeInfoCode>
+    <#if withReflectionCode>
         ResponseData(${method.responseTypeInfo.typeFullName}&& response, const allocator_type& allocator) :
                 m_response(std::move(response)), m_reflectable(m_response.reflectable(allocator))
         {}
@@ -96,7 +96,7 @@ ${types.responseDataPtr.name} Service::${method.name}Method(
 
         virtual ${types.reflectablePtr.name} getReflectable() override
         {
-    <#if withTypeInfoCode>
+    <#if withReflectionCode>
             return m_reflectable;
     <#else>
             return nullptr;
@@ -105,7 +105,7 @@ ${types.responseDataPtr.name} Service::${method.name}Method(
 
         virtual ::zserio::Span<const uint8_t> getData() const override
         {
-    <#if withTypeInfoCode>
+    <#if withReflectionCode>
             return {};
     <#else>
             return ::zserio::Span<const uint8_t>(m_responseData.getBuffer(), m_responseData.getByteSize());
@@ -113,7 +113,7 @@ ${types.responseDataPtr.name} Service::${method.name}Method(
         }
 
     private:
-    <#if withTypeInfoCode>
+    <#if withReflectionCode>
         ${method.responseTypeInfo.typeFullName} m_response;
         ${types.reflectablePtr.name} m_reflectable;
     <#else>
@@ -136,7 +136,7 @@ Client::Client(${types.serviceClient.name}& service, const allocator_type& alloc
 ${method.responseTypeInfo.typeFullName} Client::${method.name}Method(${method.requestTypeInfo.typeFullName}& request, <#rt>
         <#lt>void* context)
 {
-    <#if withTypeInfoCode>
+    <#if withReflectionCode>
     const ${types.requestData.name} requestData(request.reflectable(get_allocator_ref()));
     <#else>
     ${types.bitBuffer.name} requestBitBuffer(request.bitSizeOf(), get_allocator_ref());

@@ -11,7 +11,7 @@
 </#if>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
-    <#if withWriterCode>
+    <#if withReflectionCode>
 <@type_includes types.reflectablePtr/>
     </#if>
 </#if>
@@ -61,7 +61,7 @@ public:
 <#if withTypeInfoCode>
 
     static const ::zserio::ITypeInfo& typeInfo();
-    <#if withWriterCode>
+    <#if withReflectionCode>
     ${types.reflectablePtr.name} reflectable(const ${types.allocator.default}& allocator = ${types.allocator.default}());
     </#if>
 </#if>

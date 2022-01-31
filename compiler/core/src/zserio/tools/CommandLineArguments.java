@@ -131,16 +131,6 @@ class CommandLineArguments
     }
 
     /**
-     * Gets whether the sources amalgamation option is enabled.
-     *
-     * @return True if sources amalgamation is enabled.
-     */
-    public boolean getWithSourcesAmalgamation()
-    {
-        return withSourcesAmalgamationOption;
-    }
-
-    /**
      * Gets whether the SQL code option is enabled.
      *
      * @return True if command line arguments enable SQL code option.
@@ -321,16 +311,6 @@ class CommandLineArguments
         serviceCodeGroup.setRequired(false);
         options.addOptionGroup(serviceCodeGroup);
 
-        final OptionGroup sourcesAmalgamationGroup = new OptionGroup();
-        option = new Option(OptionNameWithSourcesAmalgamation, false,
-                            "enable amalgamation of generated C++ sources (default)");
-        sourcesAmalgamationGroup.addOption(option);
-        option = new Option(OptionNameWithoutSourcesAmalgamation, false,
-                            "disable amalgamation of generated C++ sources");
-        sourcesAmalgamationGroup.addOption(option);
-        sourcesAmalgamationGroup.setRequired(false);
-        options.addOptionGroup(sourcesAmalgamationGroup);
-
         final OptionGroup sqlCodeGroup = new OptionGroup();
         option = new Option(OptionNameWithSqlCode, false,
                 "enable code for relational (SQLite) parts (default)");
@@ -415,7 +395,6 @@ class CommandLineArguments
         withPubsubCodeOption = !hasOption(OptionNameWithoutPubsubCode);
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
         withServiceCodeOption = !hasOption(OptionNameWithoutServiceCode);
-        withSourcesAmalgamationOption = !hasOption(OptionNameWithoutSourcesAmalgamation);
         withSqlCodeOption = !hasOption(OptionNameWithoutSqlCode);
         withTypeInfoCodeOption = hasOption(OptionNameWithTypeInfoCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
@@ -529,8 +508,6 @@ class CommandLineArguments
     private static final String OptionNameWithoutRangeCheckCode = "withoutRangeCheckCode";
     private static final String OptionNameWithServiceCode = "withServiceCode";
     private static final String OptionNameWithoutServiceCode = "withoutServiceCode";
-    private static final String OptionNameWithSourcesAmalgamation = "withSourcesAmalgamation";
-    private static final String OptionNameWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
     private static final String OptionNameWithSqlCode = "withSqlCode";
     private static final String OptionNameWithoutSqlCode = "withoutSqlCode";
     private final static String OptionNameWithTypeInfoCode = "withTypeInfoCode";
@@ -563,7 +540,6 @@ class CommandLineArguments
     private boolean withPubsubCodeOption;
     private boolean withRangeCheckCodeOption;
     private boolean withServiceCodeOption;
-    private boolean withSourcesAmalgamationOption;
     private boolean withSqlCodeOption;
     private boolean withTypeInfoCodeOption;
     private boolean withValidationCodeOption;

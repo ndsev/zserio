@@ -39,6 +39,7 @@ java -jar zserio.jar
     [-withGlobalRuleIdCheck|-withoutGlobalRuleIdCheck]
     [-withPubsubCode|-withoutPubsubCode]
     [-withRangeCheckCode|-withoutRangeCheckCode]
+    [-withReflectionCode|-withoutReflectionCode]
     [-withServiceCode|-withoutServiceCode]
     [-withSourcesAmalgamation|-withoutSourcesAmalgamation]
     [-withSqlCode|-withoutSqlCode]
@@ -143,6 +144,14 @@ enabled only when writer code is enabled (see `-withWriterCode` option).
 Enables/disables code for range checking for fields and parameters (integer types only). By default is disabled.
 Note that range checking can be enabled only when writer code is enabled (see `-withWriterCode` option).
 
+**`-withReflectionCode|-withoutReflectionCode`**
+
+Enables/disables generation of reflection code. By default is disabled. Note that reflection code can be
+enabled only when generation of type information code is enabled (see `-withTypeInfoCode` option) and when
+writer code is enabled (see `-withWriterCode` option).
+
+> This parameter is currently supported by C++ generator only.
+
 **`-withServiceCode|-withoutServiceCode`**
 
 Enables/disables generation of code for Service Types. By default is enabled, but note that services can be
@@ -172,8 +181,6 @@ executable is a part of the Graphviz package which can be downloaded from
 
 Enables/disables generation of type information code. By default is disabled.
 
-> This parameter is currently supported by Python generator only.
-
 **`-withUnusedWarnings|-withoutUnusedWarnings`**
 
 Enables/disables warnings for unused types. By default is disabled.
@@ -186,8 +193,8 @@ enabled only when writer code is enabled (see `-withWriterCode` option).
 
 **`-withWriterCode|-withoutWriterCode`**
 
-Enables/disables generation of the C++ and Java API writing interface extension. This extension allows
-writing data to the bit stream or to the SQLite database. By default is enabled.
+Enables/disables generation of the API writing interface extension. This extension allows writing data to the
+bit stream or to the SQLite database. By default is enabled.
 
 **`-xml`**
 

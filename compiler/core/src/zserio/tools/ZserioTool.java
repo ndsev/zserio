@@ -157,7 +157,7 @@ public class ZserioTool
     private void process() throws Exception
     {
         final Root rootNode = parse();
-        final ExtensionParameters parameters = new ExtensionParameters(commandLineArguments,
+        final ExtensionParameters parameters = new ZserioExtensionParameters(commandLineArguments,
                 inputFileManager.getLastModifiedTime(), resourceManager.getLastModifiedTime());
         extensionManager.callExtensions(rootNode, parameters);
         ZserioToolPrinter.printMessage("Done");

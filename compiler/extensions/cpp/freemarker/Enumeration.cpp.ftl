@@ -6,7 +6,7 @@
 #include <zserio/CppRuntimeException.h>
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
-    <#if withWriterCode>
+    <#if withReflectionCode>
 <@type_includes types.reflectableFactory/>
     </#if>
 </#if>
@@ -42,7 +42,7 @@ const ITypeInfo& enumTypeInfo<${fullName}>()
 
     return typeInfo;
 }
-    <#if withWriterCode>
+    <#if withReflectionCode>
 
 template <>
 ${types.reflectablePtr.name} enumReflectable(

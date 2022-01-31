@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import with_type_info_code.type_info.SqlDatabase;
-import with_type_info_code.type_info.SimplePubsub;
-import with_type_info_code.type_info.SimpleService;
-import with_type_info_code.type_info.TestBitmask;
+import with_type_info_code.SqlDatabase;
+import with_type_info_code.SimplePubsub;
+import with_type_info_code.SimpleService;
+import with_type_info_code.TestBitmask;
 
 import zserio.runtime.typeinfo.TypeInfo;
 import zserio.runtime.typeinfo.SchemaType;
@@ -25,7 +25,7 @@ import zserio.runtime.typeinfo.MethodInfo;
 
 import zserio.runtime.ZserioError;
 
-public class TypeInfoTest
+public class WithTypeInfoCodeTest
 {
     @Test
     public void checkSqlDatabase()
@@ -65,7 +65,7 @@ public class TypeInfoTest
 
     private void checkSqlDatabase(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.SqlDatabase", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.SqlDatabase", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_DATABASE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_DATABASE, typeInfo.getJavaType());
 
@@ -100,7 +100,7 @@ public class TypeInfoTest
 
     private void checkSqlTable(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.SqlTable", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.SqlTable", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
 
@@ -144,7 +144,7 @@ public class TypeInfoTest
 
     private void checkTemplatedSqlTable_uint32(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.TemplatedSqlTable_uint32", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.TemplatedSqlTable_uint32", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
 
@@ -152,7 +152,7 @@ public class TypeInfoTest
         assertEquals("", typeInfo.getVirtualTableUsing());
         assertFalse(typeInfo.isWithoutRowId());
 
-        assertEquals("with_type_info_code.type_info.TemplatedSqlTable", typeInfo.getTemplateName());
+        assertEquals("with_type_info_code.TemplatedSqlTable", typeInfo.getTemplateName());
         final List<TypeInfo> templateArgs = typeInfo.getTemplateArguments();
         assertEquals(1, templateArgs.size());
         final TypeInfo templateArg0Info = templateArgs.get(0);
@@ -190,7 +190,7 @@ public class TypeInfoTest
 
     private void checkTemplatedSqlTableU8(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.TemplatedSqlTableU8", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.TemplatedSqlTableU8", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
 
@@ -198,7 +198,7 @@ public class TypeInfoTest
         assertEquals("", typeInfo.getVirtualTableUsing());
         assertFalse(typeInfo.isWithoutRowId());
 
-        assertEquals("with_type_info_code.type_info.TemplatedSqlTable", typeInfo.getTemplateName());
+        assertEquals("with_type_info_code.TemplatedSqlTable", typeInfo.getTemplateName());
         final List<TypeInfo> templateArgs = typeInfo.getTemplateArguments();
         assertEquals(1, templateArgs.size());
         final TypeInfo templateArg0Info = templateArgs.get(0);
@@ -236,7 +236,7 @@ public class TypeInfoTest
 
     private void checkFts4Table(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.Fts4Table", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.Fts4Table", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
 
@@ -280,7 +280,7 @@ public class TypeInfoTest
 
     private void checkWithoutRowIdTable(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.WithoutRowIdTable", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.WithoutRowIdTable", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
 
@@ -325,7 +325,7 @@ public class TypeInfoTest
 
     private void checkWithTypeInfoCode(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.WithTypeInfoCode", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.WithTypeInfoCode", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
 
@@ -567,7 +567,7 @@ public class TypeInfoTest
 
     private void checkSimpleStruct(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.SimpleStruct", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.SimpleStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
 
@@ -708,7 +708,7 @@ public class TypeInfoTest
 
     private void checkComplexStruct(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.ComplexStruct", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.ComplexStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
 
@@ -855,7 +855,7 @@ public class TypeInfoTest
 
     private void checkParameterizedStruct(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.ParameterizedStruct", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.ParameterizedStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
 
@@ -898,7 +898,7 @@ public class TypeInfoTest
 
     private void checkRecursiveStruct(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.RecursiveStruct", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.RecursiveStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
 
@@ -977,7 +977,7 @@ public class TypeInfoTest
 
     private void checkRecursiveUnion(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.RecursiveUnion", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.RecursiveUnion", typeInfo.getSchemaName());
         assertEquals(SchemaType.UNION, typeInfo.getSchemaType());
         assertEquals(JavaType.UNION, typeInfo.getJavaType());
 
@@ -1029,7 +1029,7 @@ public class TypeInfoTest
 
     private void checkRecursiveChoice(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.RecursiveChoice", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.RecursiveChoice", typeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, typeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, typeInfo.getJavaType());
 
@@ -1102,7 +1102,7 @@ public class TypeInfoTest
 
     private void checkTestEnum(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.TestEnum", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.TestEnum", typeInfo.getSchemaName());
         assertEquals(SchemaType.ENUM, typeInfo.getSchemaType());
         assertEquals(JavaType.ENUM, typeInfo.getJavaType());
 
@@ -1133,7 +1133,7 @@ public class TypeInfoTest
 
     private void checkSimpleChoice(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.SimpleChoice", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.SimpleChoice", typeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, typeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, typeInfo.getJavaType());
 
@@ -1224,7 +1224,7 @@ public class TypeInfoTest
 
     private void checkSimpleUnion(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.SimpleUnion", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.SimpleUnion", typeInfo.getSchemaName());
         assertEquals(SchemaType.UNION, typeInfo.getSchemaType());
         assertEquals(JavaType.UNION, typeInfo.getJavaType());
 
@@ -1286,7 +1286,7 @@ public class TypeInfoTest
 
     private void checkTestBitmask(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.TestBitmask", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.TestBitmask", typeInfo.getSchemaName());
         assertEquals(SchemaType.BITMASK, typeInfo.getSchemaType());
         assertEquals(JavaType.BITMASK, typeInfo.getJavaType());
 
@@ -1317,14 +1317,14 @@ public class TypeInfoTest
 
     private void checkTS32(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.TS32", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.TS32", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
 
         assertEquals(0, typeInfo.getParameters().size());
         assertEquals(0, typeInfo.getFunctions().size());
 
-        assertEquals("with_type_info_code.type_info.TemplatedStruct", typeInfo.getTemplateName());
+        assertEquals("with_type_info_code.TemplatedStruct", typeInfo.getTemplateName());
 
         assertEquals(1, typeInfo.getTemplateArguments().size());
 
@@ -1361,7 +1361,7 @@ public class TypeInfoTest
 
     private void checkTemplatedParameterizedStruct_TS32(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.TemplatedParameterizedStruct_TS32",
+        assertEquals("with_type_info_code.TemplatedParameterizedStruct_TS32",
                 typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
@@ -1373,7 +1373,7 @@ public class TypeInfoTest
 
         assertEquals(0, typeInfo.getFunctions().size());
 
-        assertEquals("with_type_info_code.type_info.TemplatedParameterizedStruct", typeInfo.getTemplateName());
+        assertEquals("with_type_info_code.TemplatedParameterizedStruct", typeInfo.getTemplateName());
 
         assertEquals(1, typeInfo.getTemplateArguments().size());
 
@@ -1407,7 +1407,7 @@ public class TypeInfoTest
 
     private void checkSimplePubsub(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.SimplePubsub", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.SimplePubsub", typeInfo.getSchemaName());
         assertEquals(SchemaType.PUBSUB, typeInfo.getSchemaType());
         assertEquals(JavaType.PUBSUB, typeInfo.getJavaType());
 
@@ -1433,7 +1433,7 @@ public class TypeInfoTest
 
     private void checkSimpleService(TypeInfo typeInfo)
     {
-        assertEquals("with_type_info_code.type_info.SimpleService", typeInfo.getSchemaName());
+        assertEquals("with_type_info_code.SimpleService", typeInfo.getSchemaName());
         assertEquals(SchemaType.SERVICE, typeInfo.getSchemaType());
         assertEquals(JavaType.SERVICE, typeInfo.getJavaType());
 

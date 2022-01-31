@@ -3,26 +3,10 @@ package zserio.tools;
 import java.util.List;
 
 /**
- * The class which handles all parameters for Zserio extensions.
+ * The interface which handles all parameters for Zserio extensions.
  */
-public class ExtensionParameters
+public interface ExtensionParameters
 {
-    /**
-     * Constructor from command line arguments and Zserio parser.
-     *
-     * @param commandLineArguments Command line arguments to construct from.
-     * @param lastModifiedSourceTime Last modified timestamp of last modified Zserio source.
-     * @param lastModifiedResourceTime Last modified timestamp of last modified Zserio resource (e.g. jar file).
-     */
-    public ExtensionParameters(CommandLineArguments commandLineArguments, long lastModifiedSourceTime,
-            long lastModifiedResourceTime)
-    {
-        this.commandLineArguments = commandLineArguments;
-        this.lastModifiedTime = (lastModifiedSourceTime == 0L || lastModifiedResourceTime == 0L)
-                ? 0L
-                : Math.max(lastModifiedSourceTime, lastModifiedResourceTime);
-    }
-
     /**
      * Checks if given command line argument exists.
      *
@@ -30,10 +14,7 @@ public class ExtensionParameters
      *
      * @return true if command line argument is present, false if not.
      */
-    public boolean argumentExists(String argumentName)
-    {
-        return commandLineArguments.hasOption(argumentName);
-    }
+    public boolean argumentExists(String argumentName);
 
     /**
      * This method returns the value of a specific command line argument.
@@ -42,141 +23,89 @@ public class ExtensionParameters
      *
      * @return Returns the value of the argument to a given command line argument.
      */
-    public String getCommandLineArg(String argumentName)
-    {
-        return commandLineArguments.getOptionValue(argumentName);
-    }
+    public String getCommandLineArg(String argumentName);
 
     /**
      * Gets the file name of the initial Zserio file.
      *
      * @return The file name of the initial Zserio file.
      */
-    public String getFileName()
-    {
-        return commandLineArguments.getInputFileName();
-    }
+    public String getFileName();
 
     /**
      * Gets the pathname to Zserio source files.
      *
      * @return The pathname to Zserio source files.
      */
-    public String getPathName()
-    {
-        return commandLineArguments.getSrcPathName();
-    }
+    public String getPathName();
 
     /**
      * Gets the range check code flag.
      *
      * @return True if range checking is enabled.
      */
-    public boolean getWithRangeCheckCode()
-    {
-        return commandLineArguments.getWithRangeCheckCode();
-    }
+    public boolean getWithRangeCheckCode();
 
     /**
      * Gets the Pub/Sub code flag.
      *
      * @return True when generation of pub/sub code is enabled.
      */
-    public boolean getWithPubsubCode()
-    {
-        return commandLineArguments.getWithPubsubCode();
-    }
+    public boolean getWithPubsubCode();
 
     /**
      * Gets the service code flag.
      *
      * @return True when generation of service code is enabled.
      */
-    public boolean getWithServiceCode()
-    {
-        return commandLineArguments.getWithServiceCode();
-    }
-
-    /**
-     * Gets the sources amalgamation flag.
-     *
-     * @return True if amalgamated sources should be generated.
-     */
-    public boolean getWithSourcesAmalgamation()
-    {
-        return commandLineArguments.getWithSourcesAmalgamation();
-    }
+    public boolean getWithServiceCode();
 
     /**
      * Gets the SQL commands code flag.
      *
      * @return True if code for SQL commands is enabled.
      */
-    public boolean getWithSqlCode()
-    {
-        return commandLineArguments.getWithSqlCode();
-    }
+    public boolean getWithSqlCode();
 
     /**
      * Gets the type info code flag.
      *
      * @return True if type info code is enabled.
      */
-    public boolean getWithTypeInfoCode()
-    {
-        return commandLineArguments.getWithTypeInfoCode();
-    }
+    public boolean getWithTypeInfoCode();
 
     /**
      * Gets the include validation flag.
      *
      * @return True if validation code is enabled.
      */
-    public boolean getWithValidationCode()
-    {
-        return commandLineArguments.getWithValidationCode();
-    }
+    public boolean getWithValidationCode();
 
     /**
      * Gets the writer code flag.
      *
      * @return True if writer code is enabled.
      */
-    public boolean getWithWriterCode()
-    {
-        return commandLineArguments.getWithWriterCode();
-    }
+    public boolean getWithWriterCode();
 
     /**
      * Gets the list of top level package names ids.
      *
      * @return The list of top level package names ids or empty list if no top level package name is specified.
      */
-    public List<String> getTopLevelPackageNameIds()
-    {
-        return commandLineArguments.getTopLevelPackageNameIds();
-    }
+    public List<String> getTopLevelPackageNameIds();
 
     /**
      * Gets whether to ignore timestamps and thus always regenerate output.
      *
      * @return True if timestamps should be ignored.
      */
-    public boolean getIgnoreTimestamps()
-    {
-        return commandLineArguments.getIgnoreTimestamps();
-    }
+    public boolean getIgnoreTimestamps();
 
     /**
      * Gets last modified timestamp of last modified Zserio source.
      *
      * @return Last modified timestamp (in milliseconds since epoch).
      */
-    public long getLastModifiedTime()
-    {
-        return lastModifiedTime;
-    }
-
-    private final CommandLineArguments commandLineArguments;
-    private final long lastModifiedTime;
+    public long getLastModifiedTime();
 }

@@ -1,16 +1,13 @@
 #include "gtest/gtest.h"
 
-#include "with_type_info_code/reflection/Choice.h"
+#include "with_reflection_code/Choice.h"
 
 #include "zserio/StringView.h"
 #include "zserio/TypeInfoUtil.h"
 
 using namespace zserio::literals;
 
-namespace with_type_info_code
-{
-
-namespace reflection
+namespace with_reflection_code
 {
 
 using allocator_type = Choice::allocator_type;
@@ -21,7 +18,7 @@ using IReflectable = zserio::IBasicReflectable<allocator_type>;
 using AnyHolder = zserio::AnyHolder<allocator_type>;
 using BitBuffer = zserio::BasicBitBuffer<allocator_type>;
 
-class ReflectionTest : public ::testing::Test
+class WithReflectionCodeTest : public ::testing::Test
 {
 protected:
     static Parameterized createParameterized(uint8_t param)
@@ -119,10 +116,10 @@ protected:
 
     void checkStructReflectable(IReflectable& reflectable, const Struct& structure)
     {
-        ASSERT_EQ("with_type_info_code.reflection.Struct"_sv, reflectable.getTypeInfo().getSchemaName());
+        ASSERT_EQ("with_reflection_code.Struct"_sv, reflectable.getTypeInfo().getSchemaName());
 
         // Empty empty;
-        ASSERT_EQ("with_type_info_code.reflection.Empty"_sv,
+        ASSERT_EQ("with_reflection_code.Empty"_sv,
                 reflectable.getField("empty")->getTypeInfo().getSchemaName());
 
         // optional Child child;
@@ -354,7 +351,7 @@ protected:
     }
 };
 
-TEST_F(ReflectionTest, checkChoiceWithStructure)
+TEST_F(WithReflectionCodeTest, checkChoiceWithStructure)
 {
     Choice choice;
     choice.setStructField(createStruct());
@@ -362,7 +359,7 @@ TEST_F(ReflectionTest, checkChoiceWithStructure)
     choice.initializeOffsets(0);
 
     auto reflectable = choice.reflectable();
-    ASSERT_EQ("with_type_info_code.reflection.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
+    ASSERT_EQ("with_reflection_code.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::STRUCT),
             reflectable->getParameter("selector")->getInt8());
@@ -374,7 +371,7 @@ TEST_F(ReflectionTest, checkChoiceWithStructure)
 
     auto structReflectable = reflectable->getField(reflectable->getChoice());
     ASSERT_TRUE(structReflectable);
-    ASSERT_EQ("with_type_info_code.reflection.Struct"_sv,
+    ASSERT_EQ("with_reflection_code.Struct"_sv,
             structReflectable->getTypeInfo().getSchemaName());
 
     // existing array element somewhere within the structField
@@ -402,7 +399,7 @@ TEST_F(ReflectionTest, checkChoiceWithStructure)
     checkWriteRead(*reflectable, choice, Selector::STRUCT);
 }
 
-TEST_F(ReflectionTest, checkChoiceWithUnion)
+TEST_F(WithReflectionCodeTest, checkChoiceWithUnion)
 {
     Choice choice;
     Union unionField;
@@ -412,7 +409,7 @@ TEST_F(ReflectionTest, checkChoiceWithUnion)
     choice.initializeOffsets(0);
 
     auto reflectable = choice.reflectable();
-    ASSERT_EQ("with_type_info_code.reflection.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
+    ASSERT_EQ("with_reflection_code.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::UNION), reflectable->getParameter("selector")->getInt8());
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::UNION), reflectable->getParameter("selector")->toInt());
@@ -421,7 +418,7 @@ TEST_F(ReflectionTest, checkChoiceWithUnion)
     ASSERT_TRUE(zserio::TypeInfoUtil::hasChoice(reflectable->getTypeInfo().getCppType()));
     ASSERT_EQ("unionField"_sv, reflectable->getChoice());
 
-    ASSERT_EQ("with_type_info_code.reflection.Union"_sv,
+    ASSERT_EQ("with_reflection_code.Union"_sv,
             reflectable->getField(reflectable->getChoice())->getTypeInfo().getSchemaName());
 
     // non-present choices
@@ -446,14 +443,14 @@ TEST_F(ReflectionTest, checkChoiceWithUnion)
     checkWriteRead(*reflectable, choice, Selector::UNION);
 }
 
-TEST_F(ReflectionTest, checkChoiceWithBitmask)
+TEST_F(WithReflectionCodeTest, checkChoiceWithBitmask)
 {
     Choice choice;
     choice.setBitmaskField(Bitmask::Values::FLAG3);
     choice.initialize(Selector::BITMASK);
 
     auto reflectable = choice.reflectable();
-    ASSERT_EQ("with_type_info_code.reflection.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
+    ASSERT_EQ("with_reflection_code.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
 
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::BITMASK), reflectable->getParameter("selector")->getInt8());
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::BITMASK), reflectable->getParameter("selector")->toInt());
@@ -502,6 +499,4 @@ TEST_F(ReflectionTest, checkChoiceWithBitmask)
     checkWriteRead(*reflectable, choice, Selector::BITMASK);
 }
 
-} // namespace reflection
-
-} // namespace with_type_info_code
+} // namespace with_reflection_code

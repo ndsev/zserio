@@ -3,6 +3,7 @@ package zserio.extension.cpp;
 import java.util.StringJoiner;
 
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 
 import zserio.extension.common.ZserioExtensionException;
@@ -25,8 +26,9 @@ public class CppExtensionParameters
         withSqlCode = parameters.getWithSqlCode();
         withValidationCode = parameters.getWithValidationCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
-        withSourcesAmalgamation = parameters.getWithSourcesAmalgamation();
         withTypeInfoCode = parameters.getWithTypeInfoCode();
+        withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
+        withSourcesAmalgamation = !parameters.argumentExists(OptionWithoutSourcesAmalgamation);
 
         final String cppAllocator = parameters.getCommandLineArg(OptionSetCppAllocator);
         if (cppAllocator == null || cppAllocator.equals(StdAllocator))
@@ -49,6 +51,8 @@ public class CppExtensionParameters
             description.add("rangeCheckCode");
         if (withTypeInfoCode)
             description.add("typeInfoCode");
+        if (withReflectionCode)
+            description.add("reflectionCode");
         if (withSourcesAmalgamation)
             description.add("sourcesAmalgamation");
         addAllocatorDescription(description);
@@ -80,11 +84,6 @@ public class CppExtensionParameters
         return withSqlCode;
     }
 
-    public boolean getWithTypeInfoCode()
-    {
-        return withTypeInfoCode;
-    }
-
     public boolean getWithValidationCode()
     {
         return withValidationCode;
@@ -93,6 +92,16 @@ public class CppExtensionParameters
     public boolean getWithRangeCheckCode()
     {
         return withRangeCheckCode;
+    }
+
+    public boolean getWithTypeInfoCode()
+    {
+        return withTypeInfoCode;
+    }
+
+    public boolean getWithReflectionCode()
+    {
+        return withReflectionCode;
     }
 
     public boolean getWithSourcesAmalgamation()
@@ -122,6 +131,24 @@ public class CppExtensionParameters
         option.setArgName("allocator");
         option.setRequired(false);
         options.addOption(option);
+
+        final OptionGroup reflectionGroup = new OptionGroup();
+        option = new Option(OptionWithReflectionCode, false, "enable reflection code");
+        reflectionGroup.addOption(option);
+        option = new Option(OptionWithoutReflectionCode, false, "disable reflection code (default)");
+        reflectionGroup.addOption(option);
+        reflectionGroup.setRequired(false);
+        options.addOptionGroup(reflectionGroup);
+
+        final OptionGroup sourcesAmalgamationGroup = new OptionGroup();
+        option = new Option(OptionWithSourcesAmalgamation, false,
+                            "enable amalgamation of generated C++ sources (default)");
+        sourcesAmalgamationGroup.addOption(option);
+        option = new Option(OptionWithoutSourcesAmalgamation, false,
+                            "disable amalgamation of generated C++ sources");
+        sourcesAmalgamationGroup.addOption(option);
+        sourcesAmalgamationGroup.setRequired(false);
+        options.addOptionGroup(sourcesAmalgamationGroup);
     }
 
     static boolean hasOptionCpp(ExtensionParameters parameters)
@@ -137,6 +164,21 @@ public class CppExtensionParameters
         {
             throw new ZserioExtensionException("The specified option '" + OptionSetCppAllocator + "' has "
                     + "unknown allocator '" + cppAllocator + "'!");
+        }
+
+        final boolean withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
+        if (withReflectionCode)
+        {
+            if (parameters.getWithWriterCode() == false)
+            {
+                throw new ZserioExtensionException("The specified option '" + OptionWithReflectionCode +
+                        "' needs enabled writing interface code ('withoutWriterCode')!");
+            }
+            if (parameters.getWithTypeInfoCode() == false)
+            {
+                throw new ZserioExtensionException("The specified option '" + OptionWithReflectionCode +
+                        "' needs enabled type info code ('withTypeInfoCode')!");
+            }
         }
     }
 
@@ -159,6 +201,10 @@ public class CppExtensionParameters
 
     private final static String OptionCpp = "cpp";
     private final static String OptionSetCppAllocator = "setCppAllocator";
+    private final static String OptionWithoutReflectionCode = "withoutReflectionCode";
+    private static final String OptionWithReflectionCode = "withReflectionCode";
+    private static final String OptionWithSourcesAmalgamation = "withSourcesAmalgamation";
+    private static final String OptionWithoutSourcesAmalgamation = "withoutSourcesAmalgamation";
 
     private final static String StdAllocator = "std";
     private final static String PolymorphicAllocator = "polymorphic";
@@ -169,6 +215,7 @@ public class CppExtensionParameters
     private final boolean withServiceCode;
     private final boolean withSqlCode;
     private final boolean withTypeInfoCode;
+    private final boolean withReflectionCode;
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
     private final boolean withSourcesAmalgamation;

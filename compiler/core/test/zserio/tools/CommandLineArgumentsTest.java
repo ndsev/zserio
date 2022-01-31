@@ -112,34 +112,6 @@ public class CommandLineArgumentsTest
     }
 
     @Test
-    public void withSourcesAmalgamation() throws ParseException
-    {
-        final String[] args = { "-withSourcesAmalgamation" };
-        assertTrue(parse(args).getWithSourcesAmalgamation());
-    }
-
-    @Test
-    public void withoutSourcesAmalgamation() throws ParseException
-    {
-        final String[] args = { "-withoutSourcesAmalgamation" };
-        assertFalse(parse(args).getWithSourcesAmalgamation());
-    }
-
-    @Test
-    public void withSourcesAmalgamationDefault() throws ParseException
-    {
-        final String[] args = {};
-        assertTrue(parse(args).getWithSourcesAmalgamation());
-    }
-
-    @Test
-    public void sourcesAmalgamationConflict() throws ParseException
-    {
-        final String[] args = { "-withSourcesAmalgamation", "-withoutSourcesAmalgamation" };
-        assertThrows(ParseException.class, () -> parse(args));
-    }
-
-    @Test
     public void withSqlCode() throws ParseException
     {
         final String[] args = { "-withSqlCode" };
@@ -164,6 +136,35 @@ public class CommandLineArgumentsTest
     public void sqlCodeConflict() throws ParseException
     {
         final String[] args = { "-withSqlCode", "-withoutSqlCode" };
+        assertThrows(ParseException.class, () -> parse(args));
+    }
+
+    @Test
+    public void withTypeInfoCode() throws ParseException
+    {
+        final String[] args = { "-withTypeInfoCode" };
+        CommandLineArguments parsedArgs = parse(args);
+        assertTrue(parsedArgs.getWithTypeInfoCode());
+    }
+
+    @Test
+    public void withoutTypeInfoCode() throws ParseException
+    {
+        final String[] args = { "-withoutTypeInfoCode" };
+        assertFalse(parse(args).getWithTypeInfoCode());
+    }
+
+    @Test
+    public void withTypeInfoCodeDefault() throws ParseException
+    {
+        final String[] args = {};
+        assertFalse(parse(args).getWithTypeInfoCode());
+    }
+
+    @Test
+    public void typeInfoCodeConflict() throws ParseException
+    {
+        final String[] args = { "-withTypeInfoCode", "-withoutTypeInfoCode" };
         assertThrows(ParseException.class, () -> parse(args));
     }
 
@@ -256,6 +257,13 @@ public class CommandLineArgumentsTest
     }
 
     @Test
+    public void withoutWriterCodeWithReflectionCodeConflict() throws ParseException
+    {
+        final String[] args = { "-withoutWriterCode", "-withReflectionCode" };
+        assertThrows(ParseException.class, () -> parse(args));
+    }
+
+    @Test
     public void withUnusedWarnings() throws ParseException
     {
         final String[] args = { "-withUnusedWarnings" };
@@ -291,27 +299,6 @@ public class CommandLineArgumentsTest
     }
 
     @Test
-    public void withoutGlobalRuleIdCheckDefault() throws ParseException
-    {
-        final String[] args = {};
-        assertFalse(parse(args).getWithGlobalRuleIdCheck());
-    }
-
-    @Test
-    public void withGlobalRuleIdCheck() throws ParseException
-    {
-        final String[] args = { "-withGlobalRuleIdCheck" };
-        assertTrue(parse(args).getWithGlobalRuleIdCheck());
-    }
-
-    @Test
-    public void globalRuleIdCheck() throws ParseException
-    {
-        final String[] args = { "-withGlobalRuleCheck", "-withoutGlobalRuleCheck" };
-        assertThrows(ParseException.class, () -> parse(args));
-    }
-
-    @Test
     public void withoutCrossExtensionCheck() throws ParseException
     {
         final String[] args = { "-withoutCrossExtensionCheck" };
@@ -329,6 +316,27 @@ public class CommandLineArgumentsTest
     public void crossExtensionCheck() throws ParseException
     {
         final String[] args = { "-withCrossExtensionCheck", "-withoutCrossExtensionCheck" };
+        assertThrows(ParseException.class, () -> parse(args));
+    }
+
+    @Test
+    public void withoutGlobalRuleIdCheckDefault() throws ParseException
+    {
+        final String[] args = {};
+        assertFalse(parse(args).getWithGlobalRuleIdCheck());
+    }
+
+    @Test
+    public void withGlobalRuleIdCheck() throws ParseException
+    {
+        final String[] args = { "-withGlobalRuleIdCheck" };
+        assertTrue(parse(args).getWithGlobalRuleIdCheck());
+    }
+
+    @Test
+    public void globalRuleIdCheck() throws ParseException
+    {
+        final String[] args = { "-withGlobalRuleCheck", "-withoutGlobalRuleCheck" };
         assertThrows(ParseException.class, () -> parse(args));
     }
 

@@ -1,23 +1,20 @@
 #include "gtest/gtest.h"
 
-#include "with_type_info_code/type_info/SqlDatabase.h"
-#include "with_type_info_code/type_info/SimplePubsub.h"
-#include "with_type_info_code/type_info/SimpleService.h"
+#include "with_type_info_code/SqlDatabase.h"
+#include "with_type_info_code/SimplePubsub.h"
+#include "with_type_info_code/SimpleService.h"
 
 using namespace zserio::literals;
 
 namespace with_type_info_code
 {
 
-namespace type_info
-{
-
-class TypeInfoTest : public ::testing::Test
+class WithTypeInfoCodeTest : public ::testing::Test
 {
 protected:
     void checkSqlDatabase(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.SqlDatabase"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.SqlDatabase"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::SQL_DATABASE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::SQL_DATABASE, typeInfo.getCppType());
 
@@ -52,7 +49,7 @@ protected:
 
     void checkSqlTable(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.SqlTable"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.SqlTable"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::SQL_TABLE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::SQL_TABLE, typeInfo.getCppType());
 
@@ -96,7 +93,7 @@ protected:
 
     void checkTemplatedSqlTable_uint32(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.TemplatedSqlTable_uint32"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.TemplatedSqlTable_uint32"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::SQL_TABLE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::SQL_TABLE, typeInfo.getCppType());
 
@@ -104,7 +101,7 @@ protected:
         ASSERT_EQ(""_sv, typeInfo.getVirtualTableUsing());
         ASSERT_EQ(false, typeInfo.isWithoutRowId());
 
-        ASSERT_EQ("with_type_info_code.type_info.TemplatedSqlTable"_sv, typeInfo.getTemplateName());
+        ASSERT_EQ("with_type_info_code.TemplatedSqlTable"_sv, typeInfo.getTemplateName());
         const zserio::Span<const zserio::TemplateArgumentInfo> templateArgs = typeInfo.getTemplateArguments();
         ASSERT_EQ(1, templateArgs.size());
         const zserio::ITypeInfo& templateArg0Info = templateArgs[0].typeInfo;
@@ -142,7 +139,7 @@ protected:
 
     void checkWithTypeInfoCode(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.WithTypeInfoCode"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.WithTypeInfoCode"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
 
@@ -384,7 +381,7 @@ protected:
 
     void checkSimpleStruct(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.SimpleStruct"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.SimpleStruct"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
 
@@ -525,7 +522,7 @@ protected:
 
     void checkComplexStruct(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.ComplexStruct"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.ComplexStruct"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
 
@@ -672,7 +669,7 @@ protected:
 
     void checkParameterizedStruct(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.ParameterizedStruct"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.ParameterizedStruct"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
 
@@ -715,7 +712,7 @@ protected:
 
     void checkRecursiveStruct(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.RecursiveStruct"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.RecursiveStruct"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
 
@@ -794,7 +791,7 @@ protected:
 
     void checkRecursiveUnion(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.RecursiveUnion"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.RecursiveUnion"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::UNION, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::UNION, typeInfo.getCppType());
 
@@ -846,7 +843,7 @@ protected:
 
     void checkRecursiveChoice(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.RecursiveChoice"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.RecursiveChoice"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::CHOICE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::CHOICE, typeInfo.getCppType());
 
@@ -919,7 +916,7 @@ protected:
 
     void checkTestEnum(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.TestEnum"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.TestEnum"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::ENUM, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::ENUM, typeInfo.getCppType());
 
@@ -950,7 +947,7 @@ protected:
 
     void checkSimpleChoice(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.SimpleChoice"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.SimpleChoice"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::CHOICE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::CHOICE, typeInfo.getCppType());
 
@@ -1024,13 +1021,13 @@ protected:
         // case One
         const zserio::CaseInfo& case0 = cases[0];
         ASSERT_EQ(1, case0.caseExpressions.size());
-        ASSERT_EQ("::with_type_info_code::type_info::TestEnum::One"_sv, case0.caseExpressions[0]);
+        ASSERT_EQ("::with_type_info_code::TestEnum::One"_sv, case0.caseExpressions[0]);
         ASSERT_EQ(nullptr, case0.field);
 
         // case TWO
         const zserio::CaseInfo& case1 = cases[1];
         ASSERT_EQ(1, case1.caseExpressions.size());
-        ASSERT_EQ("::with_type_info_code::type_info::TestEnum::TWO"_sv, case1.caseExpressions[0]);
+        ASSERT_EQ("::with_type_info_code::TestEnum::TWO"_sv, case1.caseExpressions[0]);
         ASSERT_EQ(&fieldTwoField, case1.field);
 
         // default
@@ -1041,7 +1038,7 @@ protected:
 
     void checkSimpleUnion(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.SimpleUnion"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.SimpleUnion"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::UNION, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::UNION, typeInfo.getCppType());
 
@@ -1103,7 +1100,7 @@ protected:
 
     void checkTestBitmask(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.TestBitmask"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.TestBitmask"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::BITMASK, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::BITMASK, typeInfo.getCppType());
 
@@ -1135,14 +1132,14 @@ protected:
 
     void checkTS32(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.TS32"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.TS32"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
 
         ASSERT_EQ(0, typeInfo.getParameters().size());
         ASSERT_EQ(0, typeInfo.getFunctions().size());
 
-        ASSERT_EQ("with_type_info_code.type_info.TemplatedStruct"_sv, typeInfo.getTemplateName());
+        ASSERT_EQ("with_type_info_code.TemplatedStruct"_sv, typeInfo.getTemplateName());
 
         ASSERT_EQ(1, typeInfo.getTemplateArguments().size());
 
@@ -1179,7 +1176,7 @@ protected:
 
     void checkTemplatedParameterizedStruct_TS32(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.TemplatedParameterizedStruct_TS32"_sv,
+        ASSERT_EQ("with_type_info_code.TemplatedParameterizedStruct_TS32"_sv,
                 typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::STRUCT, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::STRUCT, typeInfo.getCppType());
@@ -1191,7 +1188,7 @@ protected:
 
         ASSERT_EQ(0, typeInfo.getFunctions().size());
 
-        ASSERT_EQ("with_type_info_code.type_info.TemplatedParameterizedStruct"_sv, typeInfo.getTemplateName());
+        ASSERT_EQ("with_type_info_code.TemplatedParameterizedStruct"_sv, typeInfo.getTemplateName());
 
         ASSERT_EQ(1, typeInfo.getTemplateArguments().size());
 
@@ -1225,7 +1222,7 @@ protected:
 
     void checkTemplatedSqlTableU8(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.TemplatedSqlTableU8"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.TemplatedSqlTableU8"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::SQL_TABLE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::SQL_TABLE, typeInfo.getCppType());
 
@@ -1233,7 +1230,7 @@ protected:
         ASSERT_EQ(""_sv, typeInfo.getVirtualTableUsing());
         ASSERT_EQ(false, typeInfo.isWithoutRowId());
 
-        ASSERT_EQ("with_type_info_code.type_info.TemplatedSqlTable"_sv, typeInfo.getTemplateName());
+        ASSERT_EQ("with_type_info_code.TemplatedSqlTable"_sv, typeInfo.getTemplateName());
         const zserio::Span<const zserio::TemplateArgumentInfo> templateArgs = typeInfo.getTemplateArguments();
         ASSERT_EQ(1, templateArgs.size());
         const zserio::ITypeInfo& templateArg0Info = templateArgs[0].typeInfo;
@@ -1271,7 +1268,7 @@ protected:
 
     void checkFts4Table(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.Fts4Table"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.Fts4Table"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::SQL_TABLE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::SQL_TABLE, typeInfo.getCppType());
 
@@ -1315,7 +1312,7 @@ protected:
 
     void checkWithoutRowIdTable(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.WithoutRowIdTable"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.WithoutRowIdTable"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::SQL_TABLE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::SQL_TABLE, typeInfo.getCppType());
 
@@ -1360,7 +1357,7 @@ protected:
 
     void checkSimplePubsub(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.SimplePubsub"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.SimplePubsub"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::PUBSUB, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::PUBSUB, typeInfo.getCppType());
 
@@ -1389,7 +1386,7 @@ protected:
 
     void checkSimpleService(const zserio::ITypeInfo& typeInfo)
     {
-        ASSERT_EQ("with_type_info_code.type_info.SimpleService"_sv, typeInfo.getSchemaName());
+        ASSERT_EQ("with_type_info_code.SimpleService"_sv, typeInfo.getSchemaName());
         ASSERT_EQ(zserio::SchemaType::SERVICE, typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::SERVICE, typeInfo.getCppType());
 
@@ -1408,21 +1405,19 @@ protected:
     }
 };
 
-TEST_F(TypeInfoTest, checkSqlDatabase)
+TEST_F(WithTypeInfoCodeTest, checkSqlDatabase)
 {
     checkSqlDatabase(SqlDatabase::typeInfo());
 }
 
-TEST_F(TypeInfoTest, checkSimplePubsub)
+TEST_F(WithTypeInfoCodeTest, checkSimplePubsub)
 {
     checkSimplePubsub(SimplePubsub::typeInfo());
 }
 
-TEST_F(TypeInfoTest, checkSimpleService)
+TEST_F(WithTypeInfoCodeTest, checkSimpleService)
 {
     checkSimpleService(SimpleService::typeInfo());
 }
-
-} // namespace type_info
 
 } // namespace with_type_info_code

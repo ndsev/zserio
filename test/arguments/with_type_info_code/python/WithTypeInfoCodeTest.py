@@ -5,11 +5,11 @@ from zserio import BitBuffer
 
 from testutils import getZserioApi
 
-class TypeInfoTest(unittest.TestCase):
+class WithTypeInfoCodeTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.api = getZserioApi(__file__, "with_type_info_code.zs",
-                               extraArgs=["-withTypeInfoCode", "-allowImplicitArrays"]).type_info
+                               extraArgs=["-withTypeInfoCode", "-allowImplicitArrays"])
 
     def testSqlDatabase(self):
         self._checkSqlDatabase(self.api.SqlDatabase.type_info())
@@ -21,7 +21,7 @@ class TypeInfoTest(unittest.TestCase):
         self._checkSimpleService(self.api.SimpleService.type_info())
 
     def _checkSimpleStruct(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.SimpleStruct", type_info.schema_name)
+        self.assertEqual("with_type_info_code.SimpleStruct", type_info.schema_name)
         self.assertEqual(self.api.SimpleStruct, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
@@ -103,7 +103,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("2.0", member_info.attributes[MemberAttribute.INITIALIZER])
 
     def _checkComplexStruct(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.ComplexStruct", type_info.schema_name)
+        self.assertEqual("with_type_info_code.ComplexStruct", type_info.schema_name)
         self.assertEqual(self.api.ComplexStruct, type_info.py_type)
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
@@ -210,7 +210,7 @@ class TypeInfoTest(unittest.TestCase):
 
 
     def _checkParameterizedStruct(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.ParameterizedStruct", type_info.schema_name)
+        self.assertEqual("with_type_info_code.ParameterizedStruct", type_info.schema_name)
         self.assertEqual(self.api.ParameterizedStruct, type_info.py_type)
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.PARAMETERS, type_info.attributes)
@@ -241,7 +241,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("self.simple.field_u32", member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
     def _checkRecursiveStruct(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.RecursiveStruct", type_info.schema_name)
+        self.assertEqual("with_type_info_code.RecursiveStruct", type_info.schema_name)
         self.assertEqual(self.api.RecursiveStruct, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
@@ -285,7 +285,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIsNone(member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
     def _checkRecursiveUnion(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.RecursiveUnion", type_info.schema_name)
+        self.assertEqual("with_type_info_code.RecursiveUnion", type_info.schema_name)
         self.assertEqual(self.api.RecursiveUnion, type_info.py_type)
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
@@ -317,7 +317,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(None, member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
     def _checkRecursiveChoice(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.RecursiveChoice", type_info.schema_name)
+        self.assertEqual("with_type_info_code.RecursiveChoice", type_info.schema_name)
         self.assertEqual(self.api.RecursiveChoice, type_info.py_type)
         self.assertEqual(4, len(type_info.attributes))
         self.assertIn(TypeAttribute.PARAMETERS, type_info.attributes)
@@ -387,12 +387,12 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("field_u32", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
     def _checkTestEnum(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.TestEnum", type_info.schema_name)
+        self.assertEqual("with_type_info_code.TestEnum", type_info.schema_name)
         self.assertEqual(self.api.TestEnum, type_info.py_type)
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.UNDERLYING_TYPE, type_info.attributes)
         underlying_info = type_info.attributes[TypeAttribute.UNDERLYING_TYPE]
-        self.assertEqual("with_type_info_code.type_info.EnumUnderlyingType", underlying_info.schema_name)
+        self.assertEqual("with_type_info_code.EnumUnderlyingType", underlying_info.schema_name)
         self.assertEqual(int, underlying_info.py_type)
         self.assertFalse(underlying_info.attributes)
         self.assertIn(TypeAttribute.ENUM_ITEMS, type_info.attributes)
@@ -415,7 +415,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(self.api.TestEnum.ITEM_THREE, item_info.py_item)
 
     def _checkTestBitmask(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.TestBitmask", type_info.schema_name)
+        self.assertEqual("with_type_info_code.TestBitmask", type_info.schema_name)
         self.assertEqual(self.api.TestBitmask, type_info.py_type)
         self.assertEqual(3, len(type_info.attributes))
         self.assertIn(TypeAttribute.UNDERLYING_TYPE, type_info.attributes)
@@ -446,7 +446,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual(self.api.TestBitmask.Values.COLOR_BLUE, item_info.py_item)
 
     def _checkSimpleUnion(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.SimpleUnion", type_info.schema_name)
+        self.assertEqual("with_type_info_code.SimpleUnion", type_info.schema_name)
         self.assertEqual(self.api.SimpleUnion, type_info.py_type)
         self.assertEqual(3, len(type_info.attributes))
         self.assertIn(TypeAttribute.SELECTOR, type_info.attributes)
@@ -488,7 +488,7 @@ class TypeInfoTest(unittest.TestCase):
                          member_info.attributes[MemberAttribute.FUNCTION_RESULT])
 
     def _checkSimpleChoice(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.SimpleChoice", type_info.schema_name)
+        self.assertEqual("with_type_info_code.SimpleChoice", type_info.schema_name)
         self.assertEqual(self.api.SimpleChoice, type_info.py_type)
         self.assertEqual(5, len(type_info.attributes))
         self.assertIn(TypeAttribute.PARAMETERS, type_info.attributes)
@@ -516,12 +516,12 @@ class TypeInfoTest(unittest.TestCase):
 
         # case One
         case_info = cases[0]
-        self.assertEqual(["with_type_info_code.type_info.test_enum.TestEnum.ONE"], case_info.case_expressions)
+        self.assertEqual(["with_type_info_code.test_enum.TestEnum.ONE"], case_info.case_expressions)
         self.assertIsNone(case_info.field)
 
         # case TWO
         case_info = cases[1]
-        self.assertEqual(["with_type_info_code.type_info.test_enum.TestEnum.TWO"], case_info.case_expressions)
+        self.assertEqual(["with_type_info_code.test_enum.TestEnum.TWO"], case_info.case_expressions)
         self.assertIsNotNone(case_info.field)
         self.assertEqual("fieldTwo", case_info.field.schema_name)
         self._checkSimpleUnion(case_info.field.type_info)
@@ -573,11 +573,11 @@ class TypeInfoTest(unittest.TestCase):
                          member_info.attributes[MemberAttribute.FUNCTION_RESULT])
 
     def _checkTS32(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.TS32", type_info.schema_name)
+        self.assertEqual("with_type_info_code.TS32", type_info.schema_name)
         self.assertEqual(self.api.TS32, type_info.py_type)
         self.assertEqual(3, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.type_info.TemplatedStruct",
+        self.assertEqual("with_type_info_code.TemplatedStruct",
                          type_info.attributes[TypeAttribute.TEMPLATE_NAME])
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
@@ -602,12 +602,12 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("field", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
     def _checkTemplatedParameterizedStruct_TS32(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.TemplatedParameterizedStruct_TS32",
+        self.assertEqual("with_type_info_code.TemplatedParameterizedStruct_TS32",
                          type_info.schema_name)
         self.assertEqual(self.api.TemplatedParameterizedStruct_TS32, type_info.py_type)
         self.assertEqual(4, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.type_info.TemplatedParameterizedStruct",
+        self.assertEqual("with_type_info_code.TemplatedParameterizedStruct",
                          type_info.attributes[TypeAttribute.TEMPLATE_NAME])
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
@@ -643,7 +643,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("self.param.field", member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
     def _checkWithTypeInfoCode(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.WithTypeInfoCode", type_info.schema_name)
+        self.assertEqual("with_type_info_code.WithTypeInfoCode", type_info.schema_name)
         self.assertEqual(self.api.WithTypeInfoCode, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
@@ -763,7 +763,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertIsNone(member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
     def _checkSqlTable(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.SqlTable", type_info.schema_name)
+        self.assertEqual("with_type_info_code.SqlTable", type_info.schema_name)
         self.assertEqual(self.api.SqlTable, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.COLUMNS, type_info.attributes)
@@ -793,11 +793,11 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("TEXT", member_info.attributes[MemberAttribute.SQL_TYPE_NAME])
 
     def _checkTemplatedSqlTable_uint32(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.TemplatedSqlTable_uint32", type_info.schema_name)
+        self.assertEqual("with_type_info_code.TemplatedSqlTable_uint32", type_info.schema_name)
         self.assertEqual(self.api.TemplatedSqlTable_uint32, type_info.py_type)
         self.assertEqual(4, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.type_info.TemplatedSqlTable",
+        self.assertEqual("with_type_info_code.TemplatedSqlTable",
                          type_info.attributes[TypeAttribute.TEMPLATE_NAME])
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
@@ -834,11 +834,11 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("BLOB", member_info.attributes[MemberAttribute.SQL_TYPE_NAME])
 
     def _checkTemplatedSqlTableU8(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.TemplatedSqlTableU8", type_info.schema_name)
+        self.assertEqual("with_type_info_code.TemplatedSqlTableU8", type_info.schema_name)
         self.assertEqual(self.api.TemplatedSqlTableU8, type_info.py_type)
         self.assertEqual(4, len(type_info.attributes))
         self.assertIn(TypeAttribute.TEMPLATE_NAME, type_info.attributes)
-        self.assertEqual("with_type_info_code.type_info.TemplatedSqlTable",
+        self.assertEqual("with_type_info_code.TemplatedSqlTable",
                          type_info.attributes[TypeAttribute.TEMPLATE_NAME])
         self.assertIn(TypeAttribute.TEMPLATE_ARGUMENTS, type_info.attributes)
         template_args = type_info.attributes[TypeAttribute.TEMPLATE_ARGUMENTS]
@@ -875,7 +875,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("BLOB", member_info.attributes[MemberAttribute.SQL_TYPE_NAME])
 
     def _checkFts4Table(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.Fts4Table", type_info.schema_name)
+        self.assertEqual("with_type_info_code.Fts4Table", type_info.schema_name)
         self.assertEqual(self.api.Fts4Table, type_info.py_type)
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.VIRTUAL_TABLE_USING, type_info.attributes)
@@ -907,7 +907,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("TEXT", member_info.attributes[MemberAttribute.SQL_TYPE_NAME])
 
     def _checkWithoutRowIdTable(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.WithoutRowIdTable", type_info.schema_name)
+        self.assertEqual("with_type_info_code.WithoutRowIdTable", type_info.schema_name)
         self.assertEqual(self.api.WithoutRowIdTable, type_info.py_type)
         self.assertEqual(3, len(type_info.attributes))
         self.assertIn(TypeAttribute.WITHOUT_ROWID, type_info.attributes)
@@ -943,7 +943,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("NOT NULL", member_info.attributes[MemberAttribute.SQL_CONSTRAINT])
 
     def _checkSqlDatabase(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.SqlDatabase", type_info.schema_name)
+        self.assertEqual("with_type_info_code.SqlDatabase", type_info.schema_name)
         self.assertEqual(self.api.SqlDatabase, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.TABLES, type_info.attributes)
@@ -991,7 +991,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("without_row_id_table", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
     def _checkSimplePubsub(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.SimplePubsub", type_info.schema_name)
+        self.assertEqual("with_type_info_code.SimplePubsub", type_info.schema_name)
         self.assertEqual(self.api.SimplePubsub, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.MESSAGES, type_info.attributes)
@@ -1019,7 +1019,7 @@ class TypeInfoTest(unittest.TestCase):
         self.assertEqual("subscribe_sub_simple_struct", member_info.attributes[MemberAttribute.SUBSCRIBE])
 
     def _checkSimpleService(self, type_info):
-        self.assertEqual("with_type_info_code.type_info.SimpleService", type_info.schema_name)
+        self.assertEqual("with_type_info_code.SimpleService", type_info.schema_name)
         self.assertEqual(self.api.SimpleService, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.METHODS, type_info.attributes)

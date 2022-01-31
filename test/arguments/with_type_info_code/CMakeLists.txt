@@ -1,69 +1,49 @@
 set(ZSERIO_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 set(ZSERIO_GENERATED_SOURCES
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Bitmask.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Bitmask.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/BitmaskLen.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Child.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Child.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Choice.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Choice.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Empty.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Empty.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/EmptyString.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Parameterized.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Parameterized.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Selector.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/SelectorEnum.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/SelectorEnum.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Struct.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Struct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Union.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/reflection/Union.h
-
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ComplexStruct.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ComplexStruct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/EnumUnderlyingType.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/Fts4Table.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/Fts4Table.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ParameterizedStruct.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/ParameterizedStruct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveChoice.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveChoice.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveStruct.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveStruct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/RecursiveUnion.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleChoice.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleChoice.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimplePubsub.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimplePubsub.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleService.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleService.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleStruct.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleStruct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleUnion.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SimpleUnion.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SqlDatabase.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SqlDatabase.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SqlTable.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SqlTable.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/SubtypedSimpleStruct.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TemplatedParameterizedStruct_TS32.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TemplatedParameterizedStruct_TS32.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TemplatedSqlTableU8.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TemplatedSqlTableU8.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TemplatedSqlTable_uint32.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TemplatedSqlTable_uint32.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TestBitmask.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TestBitmask.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TestEnum.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TestEnum.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TS32.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/TS32.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithoutRowIdTable.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithoutRowIdTable.h
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithTypeInfoCode.cpp
-    ${ZSERIO_GEN_DIR}/with_type_info_code/type_info/WithTypeInfoCode.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/ComplexStruct.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/ComplexStruct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/EnumUnderlyingType.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/Fts4Table.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/Fts4Table.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/ParameterizedStruct.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/ParameterizedStruct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/RecursiveChoice.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/RecursiveChoice.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/RecursiveStruct.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/RecursiveStruct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/RecursiveUnion.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/RecursiveUnion.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleChoice.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleChoice.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimplePubsub.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimplePubsub.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleService.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleService.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleStruct.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleStruct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleUnion.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SimpleUnion.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SqlDatabase.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SqlDatabase.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SqlTable.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SqlTable.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/SubtypedSimpleStruct.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TemplatedParameterizedStruct_TS32.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TemplatedParameterizedStruct_TS32.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TemplatedSqlTableU8.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TemplatedSqlTableU8.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TemplatedSqlTable_uint32.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TemplatedSqlTable_uint32.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TestBitmask.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TestBitmask.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TestEnum.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TestEnum.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TS32.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/TS32.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/WithoutRowIdTable.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/WithoutRowIdTable.h
+    ${ZSERIO_GEN_DIR}/with_type_info_code/WithTypeInfoCode.cpp
+    ${ZSERIO_GEN_DIR}/with_type_info_code/WithTypeInfoCode.h
 )
 
 zserio_add_library(TARGET with_type_info_code_zs
@@ -79,8 +59,7 @@ zserio_add_library(TARGET with_type_info_code_zs
 target_include_directories(with_type_info_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
-    cpp/ReflectionTest.cpp
-    cpp/TypeInfoTest.cpp
+    cpp/WithTypeInfoCodeTest.cpp
 )
 
 add_test_dependencies(with_type_info_code_zs)
