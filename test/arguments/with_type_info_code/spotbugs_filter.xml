@@ -15,6 +15,6 @@
     <Match>
         <!-- The class name shadows the simple name of implemented interface -->
         <Bug code="Nm"/>
-        <Class name="with_type_info_code.type_info.SqlDatabase"/>
+        <Class name="with_type_info_code.SqlDatabase"/>
     </Match>
 </FindBugsFilter>
