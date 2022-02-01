@@ -119,7 +119,7 @@ You can find the detailed quick start tutorial in their respective repositories:
 - [Java Tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial)
 - [Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial)
 
-Or try [Interactie Zserio Compiler](https://share.streamlit.io/zserio-streamlit/zserio-streamlit/interactive_zserio.py) based on [Streamlit](https://streamlit.io)
+Or try [Interactive Zserio Compiler](https://share.streamlit.io/zserio-streamlit/zserio-streamlit/interactive_zserio.py) based on [Streamlit](https://streamlit.io).
 
 ## Features overview
 
