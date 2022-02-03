@@ -27,7 +27,7 @@ public:
     /**
      * Gets reflectable representing the response.
      *
-     * Null when -withoutTypeInfo is used.
+     * Null when -withoutReflectionCode is used.
      *
      * \return Reflectable response or null.
      */
@@ -36,9 +36,9 @@ public:
     /**
      * Gets response data.
      *
-     * Empty when -withTypeInfo is used.
+     * Lazy initialized from reflectable when -withReflectionCode is used or already kept otherwise.
      *
-     * \return Response data or empty span.
+     * \return Response data.
      */
     virtual Span<const uint8_t> getData() const = 0;
 };
@@ -84,27 +84,34 @@ class BasicRequestData
 {
 public:
     /**
-     * Constructor from reflectable, used when -withTypeInfo is used.
+     * Constructor from reflectable, used when -withReflectableCode is used.
      *
-     * Reflectable created from zserio request object.
+     * \param reflectable Reflectable created from zserio request object.
+     * \param allocator Allocator to use for data allocation.
      */
-    explicit BasicRequestData(const IBasicReflectablePtr<ALLOC>& reflectable) :
-            m_reflectable(reflectable)
+    explicit BasicRequestData(const IBasicReflectablePtr<ALLOC>& reflectable,
+                              const ALLOC& allocator = ALLOC()) :
+            m_reflectable(reflectable), m_data(allocator)
     {}
 
     /**
-     * Constructor from bit buffer, used when -withoutTypeInfo is used.
+     * Constructor from bit buffer r-value, used when -withoutReflectableCode is used.
      *
      * \param bitBuffer Serialized request data as bit buffer.
+     * \param allocator Allocator to use for data allocation
      */
-    explicit BasicRequestData(const BasicBitBuffer<ALLOC>& bitBuffer) :
-            m_data(bitBuffer.getBuffer(), bitBuffer.getByteSize())
-    {}
+    template <typename ZSERIO_OBJECT>
+    explicit BasicRequestData(ZSERIO_OBJECT& object, const ALLOC& allocator = ALLOC()) :
+            m_data(object.bitSizeOf(), allocator)
+    {
+        BitStreamWriter writer(m_data);
+        object.write(writer);
+    }
 
     /**
      * Gets reflectable.
      *
-     * Null when -withoutTypeInfo is used.
+     * Null when -withoutReflectionCode is used.
      *
      * \return Reflectable to use as request data or null.
      */
@@ -116,18 +123,25 @@ public:
     /**
      * Gets request data.
      *
-     * Empty when -withTypeInfo is used.
+     * Lazy initialized from reflectable when -withReflectionCode is used or already kept otherwise.
      *
      * \return Request data or empty span.
      */
     Span<const uint8_t> getData() const
     {
-        return m_data;
+        if (m_reflectable && m_data.getBitSize() == 0)
+        {
+            // lazy initialization
+            m_data = BitBuffer(m_reflectable->bitSizeOf(), m_data.get_allocator());
+            BitStreamWriter writer(m_data);
+            m_reflectable->write(writer);
+        }
+        return { m_data.getBuffer(), m_data.getByteSize() };
     }
 
 private:
-    Span<const uint8_t> m_data;
     IBasicReflectablePtr<ALLOC> m_reflectable;
+    mutable BasicBitBuffer<ALLOC> m_data;
 };
 
 /**
