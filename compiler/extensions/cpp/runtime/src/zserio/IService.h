@@ -97,15 +97,15 @@ public:
     /**
      * Constructor from bit buffer r-value, used when -withoutReflectableCode is used.
      *
-     * \param bitBuffer Serialized request data as bit buffer.
+     * \param request Reference to request zserio object.
      * \param allocator Allocator to use for data allocation
      */
     template <typename ZSERIO_OBJECT>
-    explicit BasicRequestData(ZSERIO_OBJECT& object, const ALLOC& allocator = ALLOC()) :
-            m_data(object.bitSizeOf(), allocator)
+    explicit BasicRequestData(ZSERIO_OBJECT& request, const ALLOC& allocator = ALLOC()) :
+            m_data(request.bitSizeOf(), allocator)
     {
         BitStreamWriter writer(m_data);
-        object.write(writer);
+        request.write(writer);
     }
 
     /**
@@ -132,7 +132,7 @@ public:
         if (m_reflectable && m_data.getBitSize() == 0)
         {
             // lazy initialization
-            m_data = BitBuffer(m_reflectable->bitSizeOf(), m_data.get_allocator());
+            m_data = BasicBitBuffer<ALLOC>(m_reflectable->bitSizeOf(), m_data.get_allocator());
             BitStreamWriter writer(m_data);
             m_reflectable->write(writer);
         }
