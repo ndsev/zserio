@@ -241,17 +241,17 @@ TEST(BitBufferTest, getByteSize)
     ASSERT_EQ(byteSize, bitBuffer.getByteSize());
 }
 
-TEST(BitBufferTest, getData)
+TEST(BitBufferTest, getBytes)
 {
     const size_t bitSize = 11;
     const std::vector<uint8_t> buffer = {0xAB, 0xC0};
     const BitBuffer bitBuffer(buffer, bitSize);
 
-    Span<const uint8_t> data = bitBuffer.getData();
-    ASSERT_EQ(buffer.size(), data.size());
+    const std::vector<uint8_t>& bytes = bitBuffer.getBytes();
+    ASSERT_EQ(buffer.size(), bytes.size());
     for (size_t i = 0; i < buffer.size(); ++i)
     {
-        ASSERT_EQ(buffer[i], data[i]);
+        ASSERT_EQ(buffer[i], bytes[i]);
     }
 }
 

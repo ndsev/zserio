@@ -9,7 +9,6 @@
 #include "zserio/Types.h"
 #include "zserio/HashCodeUtil.h"
 #include "zserio/CppRuntimeException.h"
-#include "zserio/Span.h"
 
 namespace zserio
 {
@@ -162,11 +161,11 @@ public:
     size_t getByteSize() const;
 
     /**
-     * Convenience getter for underlying data buffer.
+     * Convenience getter for the underlying buffer.
      *
-     * \return Span pointing to the underlying data buffer.
+     * \return Reference to the underlying vector of bytes.
      */
-    Span<const uint8_t> getData() const;
+    const std::vector<uint8_t, ALLOC>& getBytes() const;
 
 private:
     uint8_t getMaskedLastByte() const;
@@ -312,7 +311,7 @@ size_t BasicBitBuffer<ALLOC>::getByteSize() const
 }
 
 template <typename ALLOC>
-Span<const uint8_t> BasicBitBuffer<ALLOC>::getData() const
+const std::vector<uint8_t, ALLOC>& BasicBitBuffer<ALLOC>::getBytes() const
 {
     return m_buffer;
 }
