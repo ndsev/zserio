@@ -16,6 +16,7 @@ import zserio.ast.Constant;
 import zserio.ast.EnumType;
 import zserio.ast.Field;
 import zserio.ast.InstantiateType;
+import zserio.ast.Parameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
@@ -213,11 +214,16 @@ class UsedByCollector extends DefaultTreeWalker
     private Set<AstNode> getUsedTypesForCompoundType(CompoundType compoundType)
     {
         final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
+
+        for (Parameter parameter : compoundType.getTypeParameters())
+            addTypeToUsedTypes(parameter.getTypeReference().getType(), usedTypes);
+
         for (Field field : compoundType.getFields())
         {
             TypeInstantiation instantiation = field.getTypeInstantiation();
             if (instantiation instanceof ArrayInstantiation)
                 instantiation = ((ArrayInstantiation)instantiation).getElementTypeInstantiation();
+
             addTypeToUsedTypes(instantiation.getType(), usedTypes);
         }
 
