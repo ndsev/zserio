@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import test_utils.ZserioWarnings;
 
-public class FunctionsWarningTest
+public class ChoiceTypesWarningTest
 {
     @BeforeAll
     public static void readZserioWarnings() throws IOException
@@ -17,21 +17,17 @@ public class FunctionsWarningTest
     }
 
     @Test
-    public void optionalReferencesInFunction()
+    public void optionalReferencesInSelector()
     {
-        String warning = "optional_references_in_function.zs:11:16: Function " +
-                "'suspicionFunction' contains reference to optional field 'additionalValue'.";
-        assertTrue(zserioWarnings.isPresent(warning));
-
-        warning = "optional_references_in_function.zs:16:16: Function " +
-                "'autoSuspicionFunction' contains reference to optional field 'autoAdditionalValue'.";
+        final String warning = "optional_references_in_selector.zs:8:41: Choice 'TestChoice' selector " +
+                "contains reference to optional field 'numBits'.";
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
     @Test
     public void checkNumberOfWarnings()
     {
-        final int expectedNumberOfWarnings = 2;
+        final int expectedNumberOfWarnings = 1;
         assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
     }
 

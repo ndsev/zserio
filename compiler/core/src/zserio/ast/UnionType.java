@@ -61,7 +61,9 @@ public class UnionType extends CompoundType
     void check()
     {
         super.check();
-        checkTableFields();
+
+        checkSymbolNames();
+        checkSqlTableFields();
     }
 
     @Override

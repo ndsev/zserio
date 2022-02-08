@@ -542,7 +542,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(6, fields.size());
+        ASSERT_EQ(7, fields.size());
 
         // simpleStruct
         const zserio::FieldInfo& simpleStructField = fields[0];
@@ -554,7 +554,7 @@ protected:
         ASSERT_EQ(""_sv, simpleStructField.alignment);
         ASSERT_EQ(""_sv, simpleStructField.offset);
         ASSERT_EQ(""_sv, simpleStructField.initializer);
-        ASSERT_EQ(true, simpleStructField.isOptional);
+        ASSERT_EQ(false, simpleStructField.isOptional);
         ASSERT_EQ(""_sv, simpleStructField.optionalCondition);
         ASSERT_EQ(""_sv, simpleStructField.constraint);
         ASSERT_EQ(false, simpleStructField.isArray);
@@ -562,8 +562,26 @@ protected:
         ASSERT_EQ(false, simpleStructField.isPacked);
         ASSERT_EQ(false, simpleStructField.isImplicit);
 
+        // optionalSimpleStruct
+        const zserio::FieldInfo& optionalSimpleStructField = fields[1];
+        ASSERT_EQ("optionalSimpleStruct"_sv, optionalSimpleStructField.schemaName);
+
+        checkSimpleStruct(optionalSimpleStructField.typeInfo);
+
+        ASSERT_EQ(0, optionalSimpleStructField.typeArguments.size());
+        ASSERT_EQ(""_sv, optionalSimpleStructField.alignment);
+        ASSERT_EQ(""_sv, optionalSimpleStructField.offset);
+        ASSERT_EQ(""_sv, optionalSimpleStructField.initializer);
+        ASSERT_EQ(true, optionalSimpleStructField.isOptional);
+        ASSERT_EQ(""_sv, optionalSimpleStructField.optionalCondition);
+        ASSERT_EQ(""_sv, optionalSimpleStructField.constraint);
+        ASSERT_EQ(false, optionalSimpleStructField.isArray);
+        ASSERT_EQ(""_sv, optionalSimpleStructField.arrayLength);
+        ASSERT_EQ(false, optionalSimpleStructField.isPacked);
+        ASSERT_EQ(false, optionalSimpleStructField.isImplicit);
+
         // array
-        const zserio::FieldInfo& arrayField = fields[1];
+        const zserio::FieldInfo& arrayField = fields[2];
         ASSERT_EQ("array"_sv, arrayField.schemaName);
 
         ASSERT_EQ("uint32"_sv, arrayField.typeInfo.getSchemaName());
@@ -584,7 +602,7 @@ protected:
         ASSERT_EQ(false, arrayField.isImplicit);
 
         // arrayWithLen
-        const zserio::FieldInfo& arrayWithLenField = fields[2];
+        const zserio::FieldInfo& arrayWithLenField = fields[3];
         ASSERT_EQ("arrayWithLen"_sv, arrayWithLenField.schemaName);
 
         ASSERT_EQ("int:5"_sv, arrayWithLenField.typeInfo.getSchemaName());
@@ -605,7 +623,7 @@ protected:
         ASSERT_EQ(false, arrayWithLenField.isImplicit);
 
         // paramStructArray
-        const zserio::FieldInfo& paramStructArrayField = fields[3];
+        const zserio::FieldInfo& paramStructArrayField = fields[4];
         ASSERT_EQ("paramStructArray"_sv, paramStructArrayField.schemaName);
 
         checkParameterizedStruct(paramStructArrayField.typeInfo);
@@ -624,7 +642,7 @@ protected:
         ASSERT_EQ(false, paramStructArrayField.isImplicit);
 
         // dynamicBitField
-        const zserio::FieldInfo& dynamicBitFieldField = fields[4];
+        const zserio::FieldInfo& dynamicBitFieldField = fields[5];
         ASSERT_EQ("dynamicBitField"_sv, dynamicBitFieldField.schemaName);
 
         ASSERT_EQ("bit<>"_sv, dynamicBitFieldField.typeInfo.getSchemaName());
@@ -645,7 +663,7 @@ protected:
         ASSERT_EQ(false, dynamicBitFieldField.isImplicit);
 
         // dynamicBitFieldArray
-        const zserio::FieldInfo& dynamicBitFieldArrayField = fields[5];
+        const zserio::FieldInfo& dynamicBitFieldArrayField = fields[6];
         ASSERT_EQ("dynamicBitFieldArray"_sv, dynamicBitFieldArrayField.schemaName);
 
         ASSERT_EQ("bit<>"_sv, dynamicBitFieldArrayField.typeInfo.getSchemaName());

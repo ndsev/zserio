@@ -2,8 +2,10 @@ package zserio.ast;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import zserio.antlr.ZserioParser;
@@ -125,24 +127,6 @@ public class Expression extends AstNodeBase
                     operand3.accept(visitor);
             }
         }
-    }
-
-    @Override
-    public String toString()
-    {
-        final StringBuilder stringBuilder = new StringBuilder(text);
-        if (operand1 != null)
-        {
-            stringBuilder.append(operand1.toString());
-            if (operand2 != null)
-            {
-                stringBuilder.append(operand2.toString());
-                if (operand3 != null)
-                    stringBuilder.append(operand3.toString());
-            }
-        }
-
-        return stringBuilder.toString();
     }
 
     /**
@@ -370,6 +354,27 @@ public class Expression extends AstNodeBase
         addReferencedSymbolObject(referencedSymbolObjects, clazz);
 
         return referencedSymbolObjects;
+    }
+
+    /**
+     * Gets all optional Field objects referenced from the expression.
+     *
+     * List of AST nodes which correspond to the dot expression prefix is returned to each Field object.
+     *
+     * Example:
+     *
+     * 'compoundOuter.compoundInner.fieldChild' will return 'fieldChild' together with AST node list
+     * [compoundOuter, compoundInner].
+     *
+     * @return Map of optional Field objects referenced from the expression.
+     */
+    public Map<Field, List<AstNode>> getReferencedOptionalFields()
+    {
+        // LinkedHashSet is used intentionally to guarantee insert order
+        final Map<Field, List<AstNode>> referencedOptionalFields = new LinkedHashMap<Field, List<AstNode>>();
+        addReferencedOptionalField(referencedOptionalFields, new ArrayList<AstNode>());
+
+        return referencedOptionalFields;
     }
 
     /**
@@ -731,19 +736,31 @@ public class Expression extends AstNodeBase
         final int firstIdIndex = topLevelPackageIds.size();
         if (firstIdIndex >= templateArgumentPackageIds.size())
             throw new InternalError("Mismatch of package name and top level package name!");
-        Expression operand1 = new Expression(getLocation(), pkg, ZserioParser.ID,
-                templateArgumentPackageIds.get(firstIdIndex), ExpressionFlag.IS_DOT_LEFT_OPERAND_ID, null, null,
-                null);
-        final List<String> expressionIds = new ArrayList<String>(templateArgumentPackageIds);
+
+        final List<String> expressionIds = new ArrayList<String>();
+        expressionIds.addAll(
+                templateArgumentPackageIds.subList(firstIdIndex, templateArgumentPackageIds.size()));
         expressionIds.add(templateArgumentName);
-        for (int i = firstIdIndex + 1; i < expressionIds.size(); i++)
+
+        return createDotExpression(expressionIds);
+    }
+
+    private Expression createDotExpression(List<String> expressionIds)
+    {
+        Expression operand1 = null;
+        if (!expressionIds.isEmpty())
         {
-            final Expression operand2 = new Expression(getLocation(), pkg, ZserioParser.ID,
-                    expressionIds.get(i), ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID, null, null, null);
-            final Expression dotOperand = new Expression(getLocation(), pkg, ZserioParser.DOT, ".",
-                    (i + 1 == expressionIds.size()) ? ExpressionFlag.IS_TOP_LEVEL_DOT : ExpressionFlag.NONE,
-                    operand1, operand2, null);
-            operand1 = dotOperand;
+            operand1 = new Expression(getLocation(), pkg, ZserioParser.ID, expressionIds.get(0),
+                    ExpressionFlag.IS_DOT_LEFT_OPERAND_ID, null, null, null);
+            for (int i = 1; i < expressionIds.size(); i++)
+            {
+                final Expression operand2 = new Expression(getLocation(), pkg, ZserioParser.ID,
+                        expressionIds.get(i), ExpressionFlag.IS_DOT_RIGHT_OPERAND_ID, null, null, null);
+                final Expression dotOperand = new Expression(getLocation(), pkg, ZserioParser.DOT, ".",
+                        (i + 1 == expressionIds.size()) ? ExpressionFlag.IS_TOP_LEVEL_DOT : ExpressionFlag.NONE,
+                        operand1, operand2, null);
+                operand1 = dotOperand;
+            }
         }
 
         return operand1;
@@ -764,6 +781,43 @@ public class Expression extends AstNodeBase
                 operand2.addReferencedSymbolObject(referencedObjectList, elementClass);
                 if (operand3 != null)
                     operand3.addReferencedSymbolObject(referencedObjectList, elementClass);
+            }
+        }
+    }
+
+    private void addReferencedOptionalField(Map<Field, List<AstNode>> referencedOptionalFields,
+            ArrayList<AstNode> currentSymbolObjects)
+    {
+        if (type == ZserioParser.ID)
+        {
+            // this is a leaf
+            if (symbolObject != null)
+            {
+                if (symbolObject instanceof Field)
+                {
+                    final Field field = (Field)symbolObject;
+                    if (field.isOptional())
+                        referencedOptionalFields.put(field, new ArrayList<AstNode>(currentSymbolObjects));
+                }
+                currentSymbolObjects.add(symbolObject);
+            }
+        }
+
+        if (operand1 != null)
+        {
+            if (type != ZserioParser.DOT)
+                currentSymbolObjects.clear();
+            operand1.addReferencedOptionalField(referencedOptionalFields, currentSymbolObjects);
+            if (operand2 != null)
+            {
+                if (type != ZserioParser.DOT)
+                    currentSymbolObjects.clear();
+                operand2.addReferencedOptionalField(referencedOptionalFields, currentSymbolObjects);
+                if (operand3 != null)
+                {
+                    currentSymbolObjects.clear(); // dot operator is not ternary
+                    operand3.addReferencedOptionalField(referencedOptionalFields, currentSymbolObjects);
+                }
             }
         }
     }

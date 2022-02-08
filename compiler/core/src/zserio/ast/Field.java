@@ -1,8 +1,13 @@
 package zserio.ast;
 
 import java.math.BigInteger;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
+import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST node for compound fields.
@@ -301,6 +306,9 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                 throw new ParserException(constraintExpr, "Constraint expression for field '" +
                         getName() + "' is not boolean!");
         }
+
+        // check optional references (should be at the end to check correct expression types at first)
+        checkOptionalReferences();
     }
 
     /**
@@ -370,6 +378,121 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                 }
             }
         }
+    }
+
+    private void checkOptionalReferences()
+    {
+        checkOptionalReferencesInOffset();
+        checkOptionalReferencesInTypeArguments();
+        checkOptionalReferencesInConstraint();
+        checkOptionalReferencesInArrayLength();
+        checkOptionalReferencesInBitfieldLength();
+    }
+
+    private void checkOptionalReferencesInOffset()
+    {
+        if (offsetExpr != null)
+            checkOptionalReferencesInExpression(offsetExpr, "offset");
+    }
+
+    private void checkOptionalReferencesInTypeArguments()
+    {
+        TypeInstantiation fieldTypeInstantiation = typeInstantiation;
+        if (fieldTypeInstantiation instanceof ArrayInstantiation)
+            fieldTypeInstantiation = ((ArrayInstantiation)fieldTypeInstantiation).getElementTypeInstantiation();
+
+        if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
+        {
+            final Iterable<InstantiatedParameter> instantiatedParameters =
+                    ((ParameterizedTypeInstantiation)fieldTypeInstantiation).getInstantiatedParameters();
+            for (InstantiatedParameter instantiatedParameter : instantiatedParameters)
+            {
+                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
+                checkOptionalReferencesInExpression(argumentExpression, "type arguments");
+            }
+        }
+    }
+
+    private void checkOptionalReferencesInConstraint()
+    {
+        if (constraintExpr != null)
+            checkOptionalReferencesInExpression(constraintExpr, "constraint");
+    }
+
+    private void checkOptionalReferencesInArrayLength()
+    {
+        if (typeInstantiation instanceof ArrayInstantiation)
+        {
+            final Expression lengthExpr = ((ArrayInstantiation)typeInstantiation).getLengthExpression();
+            if (lengthExpr != null)
+                checkOptionalReferencesInExpression(lengthExpr, "array length");
+        }
+    }
+
+    private void checkOptionalReferencesInBitfieldLength()
+    {
+        if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            final Expression lengthExpr =
+                    ((DynamicBitFieldInstantiation)typeInstantiation).getLengthExpression();
+            checkOptionalReferencesInExpression(lengthExpr, "dynamic bitfield length");
+        }
+    }
+
+    private void checkOptionalReferencesInExpression(Expression expr, String exprName)
+    {
+        // in case of ternary operator, we are not able to check correctness => such warning should be
+        // enabled explicitly by command line
+        if (!expr.containsTernaryOperator())
+        {
+            final Map<Field, List<AstNode>> referencedOptionalFields = expr.getReferencedOptionalFields();
+            final Set<Field> fieldsWithDifferentOptional =
+                    getFieldsWithDifferentOptional(referencedOptionalFields);
+            for (Field fieldWithDifferentOptional : fieldsWithDifferentOptional)
+            {
+                if (optionalClauseExpr == null)
+                {
+                    ZserioToolPrinter.printWarning(this, "Field '" + name + "' is not optional " +
+                            "and contains reference to optional field '" +
+                            fieldWithDifferentOptional.getName() + "' in " + exprName + ".");
+                }
+                else
+                {
+                    ZserioToolPrinter.printWarning(this, "Field '" + name + "' has different optional " +
+                            "condition than field '"+ fieldWithDifferentOptional.getName() +
+                            "' referenced in " + exprName + ".");
+                }
+            }
+        }
+    }
+
+    private Set<Field> getFieldsWithDifferentOptional(Map<Field, List<AstNode>> referencedOptionalFields)
+    {
+        final Set<Field> fieldsWithDifferentOptional = new LinkedHashSet<Field>();
+        for (Map.Entry<Field, List<AstNode>> referencedOptionalField : referencedOptionalFields.entrySet())
+        {
+            if (haveFieldsDifferentOptional(referencedOptionalField.getKey(),
+                    referencedOptionalField.getValue()))
+                fieldsWithDifferentOptional.add(referencedOptionalField.getKey());
+        }
+
+        return fieldsWithDifferentOptional;
+    }
+
+    private boolean haveFieldsDifferentOptional(Field referencedOptionalField,
+            List<AstNode> referencedDotPrefix)
+    {
+        // check references to itself (could happen for constraints for example)
+        if (equals(referencedOptionalField) && referencedDotPrefix.isEmpty())
+            return false;
+
+        // check expressions using comparison formatter
+        if (optionalClauseExpr != null && referencedOptionalField.optionalClauseExpr != null &&
+                ExpressionComparator.equals(optionalClauseExpr, referencedOptionalField.optionalClauseExpr,
+                        referencedDotPrefix))
+            return false;
+
+        return true;
     }
 
     private Field(AstLocation location, TypeInstantiation typeInstantiation, String name,

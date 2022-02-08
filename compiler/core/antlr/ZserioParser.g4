@@ -118,7 +118,7 @@ fieldArrayRange
     ;
 
 fieldInitializer
-    :   ASSIGN expression
+    :   ASSIGN expression // constant expression
     ;
 
 fieldOptionalClause
@@ -147,7 +147,7 @@ choiceCases
     ;
 
 choiceCase
-    :   CASE expression COLON
+    :   CASE expression COLON // constant expression
     ;
 
 choiceDefault

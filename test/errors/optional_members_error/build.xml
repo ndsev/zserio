@@ -21,10 +21,6 @@
             ignoreErrors="true"/>
         <testGen testName="optional_members_error" zsFile="none_boolean_expression_error.zs"
             ignoreErrors="true"/>
-        <testGen testName="optional_members_error" zsFile="none_optional_with_auto_optional_params_error.zs"
-            ignoreErrors="true"/>
-        <testGen testName="optional_members_error" zsFile="none_optional_with_optional_params_error.zs"
-            ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

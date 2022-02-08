@@ -56,21 +56,5 @@ public class OptionalMembersErrorTest
         assertTrue(zserioErrors.isPresent(error));
     }
 
-    @Test
-    public void noneOptionalMemberWithAutoOptionalParams()
-    {
-        final String error = "none_optional_with_auto_optional_params_error.zs:20:33: " +
-                "Parameterized field 'blackTones' is not optional but uses optional parameters!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
-    @Test
-    public void noneOptionalMemberWithOptionalParams()
-    {
-        final String error = "none_optional_with_optional_params_error.zs:20:33: " +
-                "Parameterized field 'blackTones' is not optional but uses optional parameters!";
-        assertTrue(zserioErrors.isPresent(error));
-    }
-
     private static ZserioErrors zserioErrors;
 }

@@ -80,17 +80,8 @@ public class Function extends DocumentableAstNode implements ScopeSymbol
         // check result expression type
         ExpressionUtil.checkExpressionType(resultExpression, returnTypeReference);
 
-        // check usage of unconditional optional fields (this is considered as a warning)
-        if (!resultExpression.containsFunctionCall() && !resultExpression.containsTernaryOperator())
-        {
-            final Set<Field> referencedFields = resultExpression.getReferencedSymbolObjects(Field.class);
-            for (Field referencedField : referencedFields)
-            {
-                if (referencedField.isOptional())
-                    ZserioToolPrinter.printWarning(resultExpression, "Function '" + name + "' contains " +
-                            "unconditional optional fields.");
-            }
-        }
+        // check usage of optional fields (this is considered as a warning)
+        checkOptionalReferencesInFunction();
     }
 
     /**
@@ -111,6 +102,21 @@ public class Function extends DocumentableAstNode implements ScopeSymbol
 
         return new Function(getLocation(), instantiatedReturnTypeReference, name,
                 instantiatedResultExpression, getDocComments());
+    }
+
+    private void checkOptionalReferencesInFunction()
+    {
+        // in case of ternary operator, we are not able to check correctness => such warning should be
+        // enabled explicitly by command line
+        if (!resultExpression.containsTernaryOperator())
+        {
+            final Set<Field> referencedFields = resultExpression.getReferencedOptionalFields().keySet();
+            for (Field referencedField : referencedFields)
+            {
+                ZserioToolPrinter.printWarning(resultExpression, "Function '" + name + "' contains " +
+                        "reference to optional field '" + referencedField.getName() + "'.");
+            }
+        }
     }
 
     private final TypeReference returnTypeReference;

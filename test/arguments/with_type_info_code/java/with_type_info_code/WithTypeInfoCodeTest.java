@@ -728,7 +728,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(6, fields.size());
+        assertEquals(7, fields.size());
 
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
@@ -740,7 +740,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", simpleStructField.getAlignment());
         assertEquals("", simpleStructField.getOffset());
         assertEquals("", simpleStructField.getInitializer());
-        assertTrue(simpleStructField.isOptional());
+        assertFalse(simpleStructField.isOptional());
         assertEquals("", simpleStructField.getOptionalCondition());
         assertEquals("", simpleStructField.getConstraint());
         assertFalse(simpleStructField.isArray());
@@ -748,8 +748,26 @@ public class WithTypeInfoCodeTest
         assertFalse(simpleStructField.isPacked());
         assertFalse(simpleStructField.isImplicit());
 
+        // optionalSimpleStruct
+        final FieldInfo optionalSimpleStructField = fields.get(1);
+        assertEquals("optionalSimpleStruct", optionalSimpleStructField.getSchemaName());
+
+        checkSimpleStruct(optionalSimpleStructField.getTypeInfo());
+
+        assertEquals(0, optionalSimpleStructField.getTypeArguments().size());
+        assertEquals("", optionalSimpleStructField.getAlignment());
+        assertEquals("", optionalSimpleStructField.getOffset());
+        assertEquals("", optionalSimpleStructField.getInitializer());
+        assertTrue(optionalSimpleStructField.isOptional());
+        assertEquals("", optionalSimpleStructField.getOptionalCondition());
+        assertEquals("", optionalSimpleStructField.getConstraint());
+        assertFalse(optionalSimpleStructField.isArray());
+        assertEquals("", optionalSimpleStructField.getArrayLength());
+        assertFalse(optionalSimpleStructField.isPacked());
+        assertFalse(optionalSimpleStructField.isImplicit());
+
         // array
-        final FieldInfo arrayField = fields.get(1);
+        final FieldInfo arrayField = fields.get(2);
         assertEquals("array", arrayField.getSchemaName());
 
         assertEquals("uint32", arrayField.getTypeInfo().getSchemaName());
@@ -770,7 +788,7 @@ public class WithTypeInfoCodeTest
         assertFalse(arrayField.isImplicit());
 
         // arrayWithLen
-        final FieldInfo arrayWithLenField = fields.get(2);
+        final FieldInfo arrayWithLenField = fields.get(3);
         assertEquals("arrayWithLen", arrayWithLenField.getSchemaName());
 
         assertEquals("int:5", arrayWithLenField.getTypeInfo().getSchemaName());
@@ -791,7 +809,7 @@ public class WithTypeInfoCodeTest
         assertFalse(arrayWithLenField.isImplicit());
 
         // paramStructArray
-        final FieldInfo paramStructArrayField = fields.get(3);
+        final FieldInfo paramStructArrayField = fields.get(4);
         assertEquals("paramStructArray", paramStructArrayField.getSchemaName());
 
         checkParameterizedStruct(paramStructArrayField.getTypeInfo());
@@ -810,7 +828,7 @@ public class WithTypeInfoCodeTest
         assertFalse(paramStructArrayField.isImplicit());
 
         // dynamicBitField
-        final FieldInfo dynamicBitFieldField = fields.get(4);
+        final FieldInfo dynamicBitFieldField = fields.get(5);
         assertEquals("dynamicBitField", dynamicBitFieldField.getSchemaName());
 
         assertEquals("bit<>", dynamicBitFieldField.getTypeInfo().getSchemaName());
@@ -831,7 +849,7 @@ public class WithTypeInfoCodeTest
         assertFalse(dynamicBitFieldField.isImplicit());
 
         // dynamicBitFieldArray
-        final FieldInfo dynamicBitFieldArrayField = fields.get(5);
+        final FieldInfo dynamicBitFieldArrayField = fields.get(6);
         assertEquals("dynamicBitFieldArray", dynamicBitFieldArrayField.getSchemaName());
 
         assertEquals("bit<>", dynamicBitFieldArrayField.getTypeInfo().getSchemaName());

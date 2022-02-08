@@ -20,16 +20,3 @@ choice EnumParamChoice(Selector selector) on selector
     case GREY:
         Grey grey;
 };
-
-// The following is just to kill not_used warning.
-sql_table NotUsedTable
-{
-    int32                       id  sql "PRIMARY KEY NOT NULL";
-    Selector                    selector;
-    EnumParamChoice(selector)   enumParamChoice;
-};
-
-sql_database NotUsedDatabase
-{
-    NotUsedTable    notUsedTable;
-};

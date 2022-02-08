@@ -1,12 +1,7 @@
 package zserio.ast;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
-import zserio.tools.ZserioToolPrinter;
 
 /**
  * AST node for Structure types.
@@ -66,16 +61,11 @@ public class StructureType extends CompoundType
     @Override
     void check()
     {
-        // evaluates common compound type
         super.check();
 
-        // check that no field is SQL table
-        checkTableFields();
+        checkSymbolNames();
+        checkSqlTableFields();
 
-        // check optional clause of all fields
-        checkOptionalFields();
-
-        // check implicit arrays
         checkImplicitArrays();
     }
 
@@ -105,58 +95,6 @@ public class StructureType extends CompoundType
         return true;
     }
 
-    private void checkOptionalFields()
-    {
-        for (Field field : getFields())
-            checkOptionalField(field);
-    }
-
-    private static void checkOptionalField(Field field)
-    {
-        final Set<Field> referencedFields = getReferencedParameterFields(field);
-
-        // find out parameter which is optional field
-        boolean hasDifferentReferencedOptionals = false;
-        Field referencedOptionalField = null;
-        for (Field referencedField : referencedFields)
-        {
-            if (referencedField.isOptional())
-            {
-                if (referencedOptionalField == null)
-                {
-                    referencedOptionalField = referencedField;
-                }
-                else
-                {
-                    if (haveFieldsDifferentOptionals(referencedField, referencedOptionalField))
-                        hasDifferentReferencedOptionals = true;
-                }
-            }
-        }
-
-        if (referencedOptionalField != null)
-        {
-            // there is at least one parameter which is optional field
-            if (!field.isOptional())
-            {
-                // but this field is not optional => ERROR
-                throw new ParserException(field, "Parameterized field '" + field.getName() +
-                        "' is not optional but uses optional parameters!");
-            }
-            else
-            {
-                if (hasDifferentReferencedOptionals ||
-                        haveFieldsDifferentOptionals(field, referencedOptionalField))
-                {
-                    // there are at least two parameters which are field and which have different optional
-                    // clauses OR optional clause of parameter is not the same as optional clause of field
-                    ZserioToolPrinter.printWarning(field, "Parameterized field '" + field.getName() +
-                            "' has different optional clause than parameters.");
-                }
-            }
-        }
-    }
-
     private void checkImplicitArrays()
     {
         // once first unconditional implicit array is found, all following fields must provide an alternative
@@ -180,34 +118,5 @@ public class StructureType extends CompoundType
                 }
             }
         }
-    }
-
-    private static Set<Field> getReferencedParameterFields(Field field)
-    {
-        final Set<Field> referencedFields = new HashSet<Field>();
-        final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
-        if (fieldTypeInstantiation instanceof ParameterizedTypeInstantiation)
-        {
-            final Iterable<InstantiatedParameter> instantiatedParameters =
-                    ((ParameterizedTypeInstantiation)fieldTypeInstantiation).getInstantiatedParameters();
-            for (InstantiatedParameter instantiatedParameter : instantiatedParameters)
-            {
-                final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
-                referencedFields.addAll(argumentExpression.getReferencedSymbolObjects(Field.class));
-            }
-        }
-
-        return referencedFields;
-    }
-
-    private static boolean haveFieldsDifferentOptionals(Field field1, Field field2)
-    {
-        final Expression optionalClause1 = field1.getOptionalClauseExpr();
-        final Expression optionalClause2 = field2.getOptionalClauseExpr();
-        if (optionalClause1 != null && optionalClause2 != null &&
-                optionalClause1.toString().equals(optionalClause2.toString()))
-            return false;
-
-        return true;
     }
 }

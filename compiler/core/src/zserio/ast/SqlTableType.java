@@ -132,7 +132,10 @@ public class SqlTableType extends CompoundType
     void check()
     {
         super.check();
-        checkTableFields();
+
+        checkSqlSymbolNames();
+        checkSqlTableFields();
+
         checkExplicitParameters();
 
         if (!isVirtual())
@@ -145,14 +148,6 @@ public class SqlTableType extends CompoundType
         {
             checkVirtualTableFields();
         }
-    }
-
-    @Override
-    void checkSymbolNames()
-    {
-        SqlIdentifierValidator validator = new SqlIdentifierValidator();
-        for (Field tableField : getFields())
-            validator.validateSymbol(tableField.getName(), tableField);
     }
 
     private boolean isVirtual()

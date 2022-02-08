@@ -16,7 +16,7 @@ struct MainStructure
     AllocationUnion             unionField;
 
     AllocationStruct            structField;
-    AllocationStructOptional    structOptionalField : lengthof(structOptionalField.names) > 0;
+    AllocationStructOptional    structOptionalField;
 
     extern                      externalField;
     extern                      externalArray[] : lengthof(externalArray) > 0;

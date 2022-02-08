@@ -14,7 +14,8 @@ fieldU32:
 
 struct ComplexStruct
 {
-    optional SimpleStruct simpleStruct;
+    SimpleStruct simpleStruct;
+    optional SimpleStruct optionalSimpleStruct;
     uint32 array[] : lengthof(array) > 0;
     int:5 arrayWithLen[array[0]] if array[0] > 0;
     optional ParameterizedStruct(simpleStruct) paramStructArray[];

@@ -35,27 +35,10 @@ public class SqlDatabaseType extends CompoundType
     @Override
     void check()
     {
-        // evaluates common compound type
         super.check();
 
-        // check if all fields are SQL tables
-        for (Field databaseField : getFields())
-        {
-            final ZserioType fieldBaseType = databaseField.getTypeInstantiation().getBaseType();
-            if (!(fieldBaseType instanceof SqlTableType))
-            {
-                throw new ParserException(databaseField,
-                        "Field '" + databaseField.getName() + "' is not a sql table!");
-            }
-        }
-    }
-
-    @Override
-    void checkSymbolNames()
-    {
-        SqlIdentifierValidator validator = new SqlIdentifierValidator();
-        for (Field databaseField : getFields())
-            validator.validateSymbol(databaseField.getName(), databaseField);
+        checkSqlSymbolNames();
+        checkNonSqlTableFields();
     }
 
     @Override

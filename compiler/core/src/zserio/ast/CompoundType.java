@@ -122,15 +122,13 @@ public abstract class CompoundType extends TemplatableType
     {
         for (Field field : fields)
         {
-            final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-            ZserioType fieldBaseType = typeInstantiation.getBaseType();
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                final TypeInstantiation elementInstantiation = arrayInstantiation.getElementTypeInstantiation();
-                fieldBaseType = elementInstantiation.getBaseType();
+                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
             }
 
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
@@ -155,16 +153,13 @@ public abstract class CompoundType extends TemplatableType
         {
             if (field.isPackable())
             {
-                final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-                ZserioType fieldBaseType = typeInstantiation.getBaseType();
+                TypeInstantiation typeInstantiation = field.getTypeInstantiation();
                 if (typeInstantiation instanceof ArrayInstantiation)
                 {
-                    final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                    final TypeInstantiation elementInstantiation =
-                            arrayInstantiation.getElementTypeInstantiation();
-                    fieldBaseType = elementInstantiation.getBaseType();
+                    typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
                 }
 
+                final ZserioType fieldBaseType = typeInstantiation.getBaseType();
                 if (fieldBaseType instanceof CompoundType)
                 {
                     final CompoundType childCompoundType = (CompoundType)fieldBaseType;
@@ -195,15 +190,13 @@ public abstract class CompoundType extends TemplatableType
             if (field.getOffsetExpr() != null)
                 return true;
 
-            final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-            ZserioType fieldBaseType = typeInstantiation.getBaseType();
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                final TypeInstantiation elementInstantiation = arrayInstantiation.getElementTypeInstantiation();
-                fieldBaseType = elementInstantiation.getBaseType();
+                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
             }
 
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;
@@ -221,38 +214,14 @@ public abstract class CompoundType extends TemplatableType
      */
     void check()
     {
-        checkSymbolNames();
         checkDirectRecursion();
         checkIndirectRecursion(this, this);
     }
 
     /**
-     * Checks if no field is SQL table.
+     * Checks validity of symbol names for none-SQL compound types.
      */
-    void checkTableFields()
-    {
-        // check if fields are not sql tables
-        for (Field field : fields)
-        {
-            final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-            ZserioType fieldBaseType = typeInstantiation.getBaseType();
-            if (typeInstantiation instanceof ArrayInstantiation)
-            {
-                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                final TypeInstantiation elementInstantiation = arrayInstantiation.getElementTypeInstantiation();
-                fieldBaseType = elementInstantiation.getBaseType();
-            }
-
-            if (fieldBaseType instanceof SqlTableType)
-                throw new ParserException(field, "Field '" + field.getName() +
-                        "' cannot be a sql table!");
-        }
-    }
-
-    /**
-     * Checks validity of symbol names for most compound types. Can be overridden by descendants.
-     */
-    void checkSymbolNames()
+    protected void checkSymbolNames()
     {
         // parameters and fields cannot clash (difference only in case of the first letter is still clash!)
         ScopeSymbolValidator validator = new ScopeSymbolValidator();
@@ -265,6 +234,50 @@ public abstract class CompoundType extends TemplatableType
         validator = new ScopeSymbolValidator();
         for (Function function : functions)
             validator.validate(function.getName(), function);
+    }
+
+    /**
+     * Checks validity of symbol names for SQL compound types.
+     */
+    protected void checkSqlSymbolNames()
+    {
+        final SqlIdentifierValidator validator = new SqlIdentifierValidator();
+        for (Field field : fields)
+            validator.validateSymbol(field.getName(), field);
+    }
+
+    /**
+     * Checks if no field is SQL table.
+     */
+    protected void checkSqlTableFields()
+    {
+        for (Field field : fields)
+        {
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+            if (typeInstantiation instanceof ArrayInstantiation)
+                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
+
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
+            if (fieldBaseType instanceof SqlTableType)
+                throw new ParserException(field, "Field '" + field.getName() + "' cannot be a sql table!");
+        }
+    }
+
+    /**
+     * Checks if all fields are SQL tables.
+     */
+    protected void checkNonSqlTableFields()
+    {
+        for (Field field : fields)
+        {
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
+            if (typeInstantiation instanceof ArrayInstantiation)
+                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
+
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
+            if (!(fieldBaseType instanceof SqlTableType))
+                throw new ParserException(field, "Field '" + field.getName() + "' is not a sql table!");
+        }
     }
 
     protected boolean hasBranchWithoutImplicitArray()
@@ -315,15 +328,13 @@ public abstract class CompoundType extends TemplatableType
             {
                 stackedException.pushMessage(field.getLocation(), "    implicit array is used here");
 
-                final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-                ZserioType fieldBaseType = typeInstantiation.getBaseType();
-
+                TypeInstantiation typeInstantiation = field.getTypeInstantiation();
                 if (typeInstantiation instanceof ArrayInstantiation)
                 {
-                    final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                    fieldBaseType = arrayInstantiation.getElementTypeInstantiation().getBaseType();
+                    typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
                 }
 
+                final ZserioType fieldBaseType = typeInstantiation.getBaseType();
                 if (fieldBaseType instanceof CompoundType)
                 {
                     final CompoundType childCompoundType = (CompoundType)fieldBaseType;
@@ -431,15 +442,13 @@ public abstract class CompoundType extends TemplatableType
     {
         for (Field field : inner.fields)
         {
-            final TypeInstantiation typeInstantiation = field.getTypeInstantiation();
-            ZserioType fieldBaseType = typeInstantiation.getBaseType();
+            TypeInstantiation typeInstantiation = field.getTypeInstantiation();
             if (typeInstantiation instanceof ArrayInstantiation)
             {
-                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)typeInstantiation;
-                final TypeInstantiation elementInstantiation = arrayInstantiation.getElementTypeInstantiation();
-                fieldBaseType = elementInstantiation.getBaseType();
+                typeInstantiation = ((ArrayInstantiation)typeInstantiation).getElementTypeInstantiation();
             }
 
+            final ZserioType fieldBaseType = typeInstantiation.getBaseType();
             if (fieldBaseType instanceof CompoundType)
             {
                 final CompoundType childCompoundType = (CompoundType)fieldBaseType;

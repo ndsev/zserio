@@ -164,7 +164,9 @@ public class ChoiceType extends CompoundType
     void check()
     {
         super.check();
-        checkTableFields();
+
+        checkSymbolNames();
+        checkSqlTableFields();
 
         isChoiceDefaultUnreachable = checkUnreachableDefault();
         checkSelectorType();
@@ -172,6 +174,8 @@ public class ChoiceType extends CompoundType
         checkEnumerationCases();
         checkBitmaskCases();
         checkDuplicatedCases();
+
+        checkOptionalReferencesInSelector();
     }
 
     @Override
@@ -286,7 +290,7 @@ public class ChoiceType extends CompoundType
                     final Expression newExpression = newCaseExpression.getExpression();
                     final boolean equals = newExpression.getIntegerValue() != null
                             ? newExpression.getIntegerValue().equals(caseExpression.getIntegerValue())
-                            : newExpression.toString().equals(caseExpression.toString());
+                            : ExpressionComparator.equals(newExpression, caseExpression);
                     if (equals)
                     {
                         final ParserStackedException stackedException = new ParserStackedException(
@@ -363,6 +367,21 @@ public class ChoiceType extends CompoundType
                                     "' has case with different bitmask type than selector!");
                     }
                 }
+            }
+        }
+    }
+
+    private void checkOptionalReferencesInSelector()
+    {
+        // in case of ternary operator, we are not able to check correctness => such warning should be
+        // enabled explicitly by command line
+        if (!selectorExpression.containsTernaryOperator())
+        {
+            final Set<Field> referencedFields = selectorExpression.getReferencedOptionalFields().keySet();
+            for (Field referencedField : referencedFields)
+            {
+                ZserioToolPrinter.printWarning(selectorExpression, "Choice '" + getName() + "' selector " +
+                        "contains reference to optional field '" + referencedField.getName() + "'.");
             }
         }
     }

@@ -108,7 +108,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(6, len(fields))
+        self.assertEqual(7, len(fields))
         self.assertIn(TypeAttribute.FUNCTIONS, type_info.attributes)
         functions = type_info.attributes[TypeAttribute.FUNCTIONS]
         self.assertEqual(1, len(functions))
@@ -117,14 +117,22 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         member_info = fields[0]
         self.assertEqual("simpleStruct", member_info.schema_name)
         self._checkSimpleStruct(member_info.type_info)
-        self.assertEqual(2, len(member_info.attributes))
+        self.assertEqual(1, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("simple_struct", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+
+        # optionalSimpleStruct
+        member_info = fields[1]
+        self.assertEqual("optionalSimpleStruct", member_info.schema_name)
+        self._checkSimpleStruct(member_info.type_info)
+        self.assertEqual(2, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("optional_simple_struct", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
         self.assertIsNone(member_info.attributes[MemberAttribute.OPTIONAL])
 
         # array
-        member_info = fields[1]
+        member_info = fields[2]
         self.assertEqual("array", member_info.schema_name)
         self.assertEqual("uint32", member_info.type_info.schema_name)
         self.assertEqual(int, member_info.type_info.py_type)
@@ -138,7 +146,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("len(self.array) > 0", member_info.attributes[MemberAttribute.CONSTRAINT])
 
         # arrayWithLen
-        member_info = fields[2]
+        member_info = fields[3]
         self.assertEqual("arrayWithLen", member_info.schema_name)
         self.assertEqual("int:5", member_info.type_info.schema_name)
         self.assertEqual(int, member_info.type_info.py_type)
@@ -152,7 +160,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("self.array[0] > 0", member_info.attributes[MemberAttribute.OPTIONAL])
 
         # paramStructArray
-        member_info = fields[3]
+        member_info = fields[4]
         self.assertEqual("paramStructArray", member_info.schema_name)
         self._checkParameterizedStruct(member_info.type_info)
         self.assertEqual(4, len(member_info.attributes))
@@ -166,7 +174,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(None, member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
         # dynamicBitField
-        member_info = fields[4]
+        member_info = fields[5]
         self.assertEqual("dynamicBitField", member_info.schema_name)
         self.assertEqual("bit", member_info.type_info.schema_name)
         self.assertEqual(int, member_info.type_info.py_type)
@@ -179,7 +187,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
                          member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
 
         # dynamicBitFieldArray
-        member_info = fields[5]
+        member_info = fields[6]
         self.assertEqual("dynamicBitFieldArray", member_info.schema_name)
         self.assertEqual("bit", member_info.type_info.schema_name)
         self.assertEqual(int, member_info.type_info.py_type)
