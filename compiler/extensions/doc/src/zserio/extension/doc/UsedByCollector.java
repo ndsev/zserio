@@ -26,7 +26,9 @@ import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
 import zserio.ast.StructureType;
 import zserio.ast.Subtype;
+import zserio.ast.TemplateArgument;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioTemplatableType;
 import zserio.ast.ZserioType;
@@ -68,13 +70,13 @@ class UsedByCollector extends DefaultTreeWalker
     @Override
     public void beginConst(Constant constant)
     {
-        storeType(constant, constant.getTypeInstantiation().getType());
+        storeType(constant, constant.getTypeInstantiation().getTypeReference());
     }
 
     @Override
     public void beginSubtype(Subtype subtype)
     {
-        storeType(subtype, subtype.getTypeReference().getType());
+        storeType(subtype, subtype.getTypeReference());
     }
 
     @Override
@@ -86,11 +88,7 @@ class UsedByCollector extends DefaultTreeWalker
     @Override
     public void beginChoice(ChoiceType choiceType)
     {
-        final Set<AstNode> usedTypes = getUsedTypesForCompoundType(choiceType);
-        final ZserioType selectorZserioType = choiceType.getSelectorExpression().getExprZserioType();
-        if (selectorZserioType != null)
-            addTypeToUsedTypes(selectorZserioType, usedTypes);
-        storeType(choiceType, usedTypes);
+        storeType(choiceType, getUsedTypesForCompoundType(choiceType));
     }
 
     @Override
@@ -102,13 +100,13 @@ class UsedByCollector extends DefaultTreeWalker
     @Override
     public void beginEnumeration(EnumType enumType)
     {
-        storeType(enumType, enumType.getTypeInstantiation().getType());
+        storeType(enumType, enumType.getTypeInstantiation().getTypeReference());
     }
 
     @Override
     public void beginBitmask(BitmaskType bitmaskType)
     {
-        storeType(bitmaskType, bitmaskType.getTypeInstantiation().getType());
+        storeType(bitmaskType, bitmaskType.getTypeInstantiation().getTypeReference());
     }
 
     @Override
@@ -129,8 +127,8 @@ class UsedByCollector extends DefaultTreeWalker
         final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
         for (ServiceMethod method : serviceType.getMethodList())
         {
-            addTypeToUsedTypes(method.getRequestTypeReference().getType(), usedTypes);
-            addTypeToUsedTypes(method.getResponseTypeReference().getType(), usedTypes);
+            addTypeToUsedTypes(method.getRequestTypeReference(), usedTypes);
+            addTypeToUsedTypes(method.getResponseTypeReference(), usedTypes);
         }
         storeType(serviceType, usedTypes);
     }
@@ -141,7 +139,7 @@ class UsedByCollector extends DefaultTreeWalker
         final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            addTypeToUsedTypes(message.getTypeReference().getType(), usedTypes);
+            addTypeToUsedTypes(message.getTypeReference(), usedTypes);
         }
         storeType(pubsubType, usedTypes);
     }
@@ -149,7 +147,7 @@ class UsedByCollector extends DefaultTreeWalker
     @Override
     public void beginInstantiateType(InstantiateType instantiateType)
     {
-        storeType(instantiateType, instantiateType.getTypeReference().getType());
+        storeType(instantiateType, instantiateType.getTypeReference());
     }
 
     public Set<AstNode> getCollaboratingNodes()
@@ -205,10 +203,14 @@ class UsedByCollector extends DefaultTreeWalker
         return Collections.unmodifiableSet(usedByTypesSet);
     }
 
-    private static void addTypeToUsedTypes(AstNode usedType, Set<AstNode> usedTypes)
+    private static void addTypeToUsedTypes(TypeReference usedTypeReference, Set<AstNode> usedTypes)
     {
+        final ZserioType usedType = usedTypeReference.getType();
         if (!(usedType instanceof BuiltInType))
             usedTypes.add(usedType);
+
+        for (TemplateArgument templateArgument : usedTypeReference.getTemplateArguments())
+            addTypeToUsedTypes(templateArgument.getTypeReference(), usedTypes);
     }
 
     private Set<AstNode> getUsedTypesForCompoundType(CompoundType compoundType)
@@ -216,7 +218,7 @@ class UsedByCollector extends DefaultTreeWalker
         final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
 
         for (Parameter parameter : compoundType.getTypeParameters())
-            addTypeToUsedTypes(parameter.getTypeReference().getType(), usedTypes);
+            addTypeToUsedTypes(parameter.getTypeReference(), usedTypes);
 
         for (Field field : compoundType.getFields())
         {
@@ -224,16 +226,16 @@ class UsedByCollector extends DefaultTreeWalker
             if (instantiation instanceof ArrayInstantiation)
                 instantiation = ((ArrayInstantiation)instantiation).getElementTypeInstantiation();
 
-            addTypeToUsedTypes(instantiation.getType(), usedTypes);
+            addTypeToUsedTypes(instantiation.getTypeReference(), usedTypes);
         }
 
         return usedTypes;
     }
 
-    private void storeType(AstNode node, ZserioType unresolvedUsedType)
+    private void storeType(AstNode node, TypeReference usedTypeReference)
     {
         final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
-        addTypeToUsedTypes(unresolvedUsedType, usedTypes);
+        addTypeToUsedTypes(usedTypeReference, usedTypes);
         storeType(node, usedTypes);
     }
 
