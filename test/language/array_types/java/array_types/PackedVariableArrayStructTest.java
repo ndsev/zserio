@@ -13,6 +13,7 @@ import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.FileBitStreamReader;
 import zserio.runtime.io.FileBitStreamWriter;
+import array_types.packed_variable_array_struct.Empty;
 import array_types.packed_variable_array_struct.PackedVariableArray;
 import array_types.packed_variable_array_struct.TestBitmask;
 import array_types.packed_variable_array_struct.TestChoice;
@@ -153,9 +154,16 @@ public class PackedVariableArrayStructTest
                 BigInteger.valueOf(10),
                 BigInteger.valueOf(13),
                 BigInteger.valueOf(16)};
+        final Empty empties[] = new Empty[] {
+                new Empty(),
+                new Empty(),
+                new Empty(),
+                new Empty(),
+                new Empty(),
+                new Empty()};
 
         return new TestStructure(index, name, data, testChoice, testUnion, testEnum, testBitmask, testOptional,
-                testDynamicBitfield, values.length, values, values);
+                testDynamicBitfield, values.length, values, values, empties);
     }
 
     private static final String BLOB_NAME_BASE = "packed_variable_array_struct_";

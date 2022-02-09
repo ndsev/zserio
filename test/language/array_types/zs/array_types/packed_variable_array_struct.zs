@@ -46,6 +46,10 @@ bitmask bit<BITS_PER_BYTE> TestBitmask
 
 subtype bit:15 Bit15;
 
+struct Empty
+{
+};
+
 struct TestStructure
 {
     uint32          id;
@@ -60,6 +64,7 @@ struct TestStructure
     varsize         numValues;
     varuint         unpackedValues[numValues];
     packed varuint  packedValues[numValues];
+    packed Empty    packedEmpties[numValues];
 
     function bit:5 length()
     {

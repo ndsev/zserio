@@ -36,10 +36,15 @@ union UnionWithPackableField
     TestEnum field2;
 };
 
+struct EmptyStruct
+{
+};
+
 struct PackedArrayStructHasNoPackableField
 {
-    packed StructWithPackable array1[];
-    packed UnionWithPackableField array2[];
-    packed StructWithPackableArray array3[];
-    packed StructWithoutPackable array4[];
+    packed StructWithPackable array1[]; // no warning
+    packed UnionWithPackableField array2[]; // no warning
+    packed StructWithPackableArray array3[]; // no warning
+    packed StructWithoutPackable array4[]; // warning!
+    packed EmptyStruct array5[]; // unpackable but no warning by default because it is empty
 };

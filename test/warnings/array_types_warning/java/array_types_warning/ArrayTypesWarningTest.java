@@ -27,7 +27,7 @@ public class ArrayTypesWarningTest
     @Test
     public void packedArrayStructHasNoPackableField()
     {
-        final String warning = "packed_array_struct_has_no_packable_field.zs:44:12: " +
+        final String warning = "packed_array_struct_has_no_packable_field.zs:48:12: " +
                 "'StructWithoutPackable' doesn't contain any packable field!";
         assertTrue(zserioWarnings.isPresent(warning));
     }

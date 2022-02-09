@@ -50,26 +50,28 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/packed_fixed_array_uint8/PackedFixedArray.h
     ${ZSERIO_GEN_DIR}/array_types/packed_fixed_array_uint8/PackedFixedArray.cpp
 
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestPackedArray.h
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/PackedVariableArray.h
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Value32.h
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/PackedVariableArray.cpp
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestStructure.cpp
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestChoice.h
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestStructure.h
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnion.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Bit15.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/BITS_PER_BYTE.h
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Value32.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Empty.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Empty.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/PackedVariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/PackedVariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnpackedArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnpackedArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestStructure.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestStructure.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestBitmask.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestEnum.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestBitmask.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestChoice.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestChoice.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestEnum.h
-    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnpackedArray.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnion.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestUnion.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestPackedArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/TestPackedArray.h
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Value32.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct/Value32.h
 
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct_recursion/PackedVariableArray.h
     ${ZSERIO_GEN_DIR}/array_types/packed_variable_array_struct_recursion/PackedVariableArray.cpp

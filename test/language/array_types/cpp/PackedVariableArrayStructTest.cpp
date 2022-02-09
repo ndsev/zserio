@@ -54,6 +54,8 @@ protected:
         testStructure.setNumValues(static_cast<uint32_t>(values.size()));
         testStructure.setUnpackedValues(values);
         testStructure.setPackedValues(values);
+        vector_type<Empty> empties(values.size());
+        testStructure.setPackedEmpties(empties);
 
         return testStructure;
     }

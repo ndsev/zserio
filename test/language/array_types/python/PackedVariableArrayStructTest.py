@@ -102,11 +102,13 @@ class PackedVariableArrayStructTest(unittest.TestCase):
         testDynamicBitfield = index % 3
         values = list(range(1, 18, 3))
         numValues = len(values)
+        empties = [self.api.Empty()] * numValues
 
         return self.api.TestStructure(id_=index, name_=name, data_=data, test_choice_=testChoice,
                                       test_union_=testUnion, test_enum_=testEnum, test_bitmask_=testBitmask,
                                       test_optional_=testOptional, test_dynamic_bitfield_=testDynamicBitfield,
-                                      num_values_=numValues, unpacked_values_=values, packed_values_=values)
+                                      num_values_=numValues, unpacked_values_=values, packed_values_=values,
+                                      packed_empties_=empties)
 
     BLOB_NAME_BASE = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_variable_array_struct_")
     VARIABLE_ARRAY_LENGTH1 = 25

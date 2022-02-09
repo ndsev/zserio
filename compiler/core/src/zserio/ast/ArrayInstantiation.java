@@ -171,10 +171,16 @@ public class ArrayInstantiation extends TypeInstantiation
 
             if (elementBaseType instanceof CompoundType)
             {
-                if (!((CompoundType)elementBaseType).hasPackableField())
+                final CompoundType elementCompoundType = (CompoundType)elementBaseType;
+                if (!elementCompoundType.hasPackableField())
                 {
-                    printInstantiationWarning(currentTemplateInstantiation,
-                            "'" + elementBaseType.getName() + "' doesn't contain any packable field!");
+                    // in case of empty structures, we are not able to check correctness => such warning should
+                    // be enabled explicitly by command line
+                    if (!elementCompoundType.getFields().isEmpty())
+                    {
+                        printInstantiationWarning(currentTemplateInstantiation,
+                                "'" + elementBaseType.getName() + "' doesn't contain any packable field!");
+                    }
                 }
             }
             else if (!(isSimpleTypePackable(elementBaseType)))
