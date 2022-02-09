@@ -113,7 +113,7 @@ test_gen()
         return 1
     fi
 
-    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 35 files"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -150,7 +150,7 @@ test_gen()
         return 1
     fi
 
-    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 35 files"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -194,7 +194,7 @@ test_gen()
         return 1
     fi
 
-    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 35 files"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -248,7 +248,7 @@ test_gen()
         return 1
     fi
 
-    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 35 files"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -292,7 +292,7 @@ test_gen()
         return 1
     fi
 
-    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 35 files"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -330,7 +330,7 @@ test_gen()
         return 1
     fi
 
-    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 35 files"
     if [ $? -ne 0 ] ; then
         return 1
     fi
@@ -368,7 +368,7 @@ test_gen()
         return 1
     fi
 
-    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 34 files"
+    check "${TEST_OUT_DIR}" "${DOC_GENERATOR}" "Generated 35 files"
     if [ $? -ne 0 ] ; then
         return 1
     fi
