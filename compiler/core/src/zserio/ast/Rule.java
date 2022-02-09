@@ -46,6 +46,16 @@ public class Rule extends DocumentableAstNode
     }
 
     /**
+     * Gets rule ID expression. Use getRuleId() for the evaluated string value if no expression is needed.
+     *
+     * @return Rule ID expression.
+     */
+    public Expression getRuleIdExpression()
+    {
+        return ruleIdExpression;
+    }
+
+    /**
      * Evaluates the rule.
      */
     void evaluate()

@@ -9,17 +9,28 @@ import java.util.Set;
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
+import zserio.ast.BitmaskValue;
 import zserio.ast.BuiltInType;
+import zserio.ast.ChoiceCase;
+import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
+import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
+import zserio.ast.Expression;
 import zserio.ast.Field;
+import zserio.ast.Function;
 import zserio.ast.InstantiateType;
 import zserio.ast.Parameter;
+import zserio.ast.ParameterizedTypeInstantiation;
+import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.PubsubMessage;
 import zserio.ast.PubsubType;
 import zserio.ast.Root;
+import zserio.ast.Rule;
+import zserio.ast.RuleGroup;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.SqlDatabaseType;
@@ -31,7 +42,6 @@ import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.UnionType;
 import zserio.ast.ZserioTemplatableType;
-import zserio.ast.ZserioType;
 import zserio.extension.common.DefaultTreeWalker;
 
 /**
@@ -56,7 +66,7 @@ class UsedByCollector extends DefaultTreeWalker
     @Override
     public void endRoot(Root root)
     {
-        for (AstNode node : usedByTypeMap.keySet())
+        for (AstNode node : usedBySymbolsMap.keySet())
         {
             final ZserioTemplatableType templatable =
                     (node instanceof ZserioTemplatableType) ? ((ZserioTemplatableType)node) : null;
@@ -70,84 +80,125 @@ class UsedByCollector extends DefaultTreeWalker
     @Override
     public void beginConst(Constant constant)
     {
-        storeType(constant, constant.getTypeInstantiation().getTypeReference());
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
+        addSymbol(constant.getTypeInstantiation().getTypeReference(), usedSymbols);
+        addSymbolsUsedInExpression(constant.getValueExpression(), usedSymbols);
+        storeSymbol(constant, usedSymbols);
+    }
+
+    @Override
+    public void beginRuleGroup(RuleGroup ruleGroup)
+    {
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
+        for (Rule rule : ruleGroup.getRules())
+            addSymbolsUsedInExpression(rule.getRuleIdExpression(), usedSymbols);
+        storeSymbol(ruleGroup, usedSymbols);
     }
 
     @Override
     public void beginSubtype(Subtype subtype)
     {
-        storeType(subtype, subtype.getTypeReference());
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
+        addSymbol(subtype.getTypeReference(), usedSymbols);
+        storeSymbol(subtype, usedSymbols);
     }
 
     @Override
     public void beginStructure(StructureType structureType)
     {
-        storeType(structureType, getUsedTypesForCompoundType(structureType));
+        storeSymbol(structureType, getUsedSymbolsForCompoundType(structureType));
     }
 
     @Override
     public void beginChoice(ChoiceType choiceType)
     {
-        storeType(choiceType, getUsedTypesForCompoundType(choiceType));
+        final Set<AstNode> usedSymbols = getUsedSymbolsForCompoundType(choiceType);
+        addSymbolsUsedInExpression(choiceType.getSelectorExpression(), usedSymbols);
+        for (ChoiceCase choiceCase : choiceType.getChoiceCases())
+        {
+            for (ChoiceCaseExpression caseExpression : choiceCase.getExpressions())
+                addSymbolsUsedInExpression(caseExpression.getExpression(), usedSymbols);
+        }
+        storeSymbol(choiceType, usedSymbols);
     }
 
     @Override
     public void beginUnion(UnionType unionType)
     {
-        storeType(unionType, getUsedTypesForCompoundType(unionType));
+        storeSymbol(unionType, getUsedSymbolsForCompoundType(unionType));
     }
 
     @Override
     public void beginEnumeration(EnumType enumType)
     {
-        storeType(enumType, enumType.getTypeInstantiation().getTypeReference());
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
+        addSymbol(enumType.getTypeInstantiation().getTypeReference(), usedSymbols);
+        for (EnumItem item : enumType.getItems())
+        {
+            if (item.getValueExpression() != null)
+                addSymbolsUsedInExpression(item.getValueExpression(), usedSymbols);
+        }
+        storeSymbol(enumType, usedSymbols);
     }
 
     @Override
     public void beginBitmask(BitmaskType bitmaskType)
     {
-        storeType(bitmaskType, bitmaskType.getTypeInstantiation().getTypeReference());
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
+        addSymbol(bitmaskType.getTypeInstantiation().getTypeReference(), usedSymbols);
+        for (BitmaskValue value: bitmaskType.getValues())
+        {
+            if (value.getValueExpression() != null)
+                addSymbolsUsedInExpression(value.getValueExpression(), usedSymbols);
+        }
+        storeSymbol(bitmaskType, usedSymbols);
     }
 
     @Override
     public void beginSqlTable(SqlTableType sqlTableType)
     {
-        storeType(sqlTableType, getUsedTypesForCompoundType(sqlTableType));
+        final Set<AstNode> usedSymbols = getUsedSymbolsForCompoundType(sqlTableType);
+        if (sqlTableType.getSqlConstraint() != null)
+            addSymbolsUsedInExpression(sqlTableType.getSqlConstraint().getConstraintExpr(), usedSymbols);
+        storeSymbol(sqlTableType, usedSymbols);
     }
 
     @Override
     public void beginSqlDatabase(SqlDatabaseType sqlDatabaseType)
     {
-        storeType(sqlDatabaseType, getUsedTypesForCompoundType(sqlDatabaseType));
+        storeSymbol(sqlDatabaseType, getUsedSymbolsForCompoundType(sqlDatabaseType));
     }
 
     @Override
     public void beginService(ServiceType serviceType)
     {
-        final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
         for (ServiceMethod method : serviceType.getMethodList())
         {
-            addTypeToUsedTypes(method.getRequestTypeReference(), usedTypes);
-            addTypeToUsedTypes(method.getResponseTypeReference(), usedTypes);
+            addSymbol(method.getRequestTypeReference(), usedSymbols);
+            addSymbol(method.getResponseTypeReference(), usedSymbols);
         }
-        storeType(serviceType, usedTypes);
+        storeSymbol(serviceType, usedSymbols);
     }
 
     @Override
     public void beginPubsub(PubsubType pubsubType)
     {
-        final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
         for (PubsubMessage message : pubsubType.getMessageList())
         {
-            addTypeToUsedTypes(message.getTypeReference(), usedTypes);
+            addSymbol(message.getTypeReference(), usedSymbols);
+            addSymbolsUsedInExpression(message.getTopicDefinitionExpr(), usedSymbols);
         }
-        storeType(pubsubType, usedTypes);
+        storeSymbol(pubsubType, usedSymbols);
     }
 
     @Override
     public void beginInstantiateType(InstantiateType instantiateType)
     {
-        storeType(instantiateType, instantiateType.getTypeReference());
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
+        addSymbol(instantiateType.getTypeReference(), usedSymbols);
+        storeSymbol(instantiateType, usedSymbols);
     }
 
     public Set<AstNode> getCollaboratingNodes()
@@ -155,121 +206,169 @@ class UsedByCollector extends DefaultTreeWalker
         return collaboratingNodes;
     }
 
-    public Set<AstNode> getUsedTypes(AstNode type)
+    public Set<AstNode> getUsedSymbols(AstNode type)
     {
         if (type instanceof ZserioTemplatableType)
         {
             final ZserioTemplatableType templatable = (ZserioTemplatableType)type;
             if (!templatable.getTemplateParameters().isEmpty())
             {
-                return getUsedTypesForTemplate(templatable);
+                return getUsedSymbolsForTemplate(templatable);
             }
         }
 
-        final Set<AstNode> usedTypes = usedTypeMap.get(type);
-        return (usedTypes != null) ? Collections.unmodifiableSet(usedTypes) : EMPTY_USED_SET;
+        final Set<AstNode> usedSymbols = usedSymbolsMap.get(type);
+        return (usedSymbols != null) ? Collections.unmodifiableSet(usedSymbols) : EMPTY_USED_SET;
     }
 
-    public Set<AstNode> getUsedByTypes(AstNode type)
+    public Set<AstNode> getUsedBySymbols(AstNode type)
     {
         if (type instanceof ZserioTemplatableType)
         {
             final ZserioTemplatableType templatable = (ZserioTemplatableType)type;
             if (!templatable.getTemplateParameters().isEmpty())
             {
-                return getUsedByTypesForTemplate(templatable);
+                return getUsedBySymbolsForTemplate(templatable);
             }
         }
 
-        final Set<AstNode> usedByTypes = usedByTypeMap.get(type);
-        return (usedByTypes != null) ? Collections.unmodifiableSet(usedByTypes) : EMPTY_USED_SET;
+        final Set<AstNode> usedBySymbols = usedBySymbolsMap.get(type);
+        return (usedBySymbols != null) ? Collections.unmodifiableSet(usedBySymbols) : EMPTY_USED_SET;
     }
 
-    private Set<AstNode> getUsedTypesForTemplate(ZserioTemplatableType template)
+    private Set<AstNode> getUsedSymbolsForTemplate(ZserioTemplatableType template)
     {
-        final Set<AstNode> usedTypesSet = new LinkedHashSet<AstNode>();
+        final Set<AstNode> usedSymbolsSet = new LinkedHashSet<AstNode>();
         for (ZserioTemplatableType instantiation : template.getInstantiations())
-            usedTypesSet.addAll(getUsedTypes(instantiation));
+            usedSymbolsSet.addAll(getUsedSymbols(instantiation));
 
-        return Collections.unmodifiableSet(usedTypesSet);
+        return Collections.unmodifiableSet(usedSymbolsSet);
     }
 
-    private Set<AstNode> getUsedByTypesForTemplate(ZserioTemplatableType template)
+    private Set<AstNode> getUsedBySymbolsForTemplate(ZserioTemplatableType template)
     {
-        final Set<AstNode> usedByTypesSet = new LinkedHashSet<AstNode>();
+        final Set<AstNode> usedBySymbolsSet = new LinkedHashSet<AstNode>();
         for (ZserioTemplatableType instantiation : template.getInstantiations())
-            usedByTypesSet.addAll(getUsedByTypes(instantiation));
+            usedBySymbolsSet.addAll(getUsedBySymbols(instantiation));
 
-        return Collections.unmodifiableSet(usedByTypesSet);
+        return Collections.unmodifiableSet(usedBySymbolsSet);
     }
 
-    private static void addTypeToUsedTypes(TypeReference usedTypeReference, Set<AstNode> usedTypes)
+    private Set<AstNode> getUsedSymbolsForCompoundType(CompoundType compoundType)
     {
-        final ZserioType usedType = usedTypeReference.getType();
-        if (!(usedType instanceof BuiltInType))
-            usedTypes.add(usedType);
-
-        for (TemplateArgument templateArgument : usedTypeReference.getTemplateArguments())
-            addTypeToUsedTypes(templateArgument.getTypeReference(), usedTypes);
-    }
-
-    private Set<AstNode> getUsedTypesForCompoundType(CompoundType compoundType)
-    {
-        final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
+        final Set<AstNode> usedSymbols = new LinkedHashSet<AstNode>();
 
         for (Parameter parameter : compoundType.getTypeParameters())
-            addTypeToUsedTypes(parameter.getTypeReference(), usedTypes);
+            addSymbol(parameter.getTypeReference(), usedSymbols);
 
         for (Field field : compoundType.getFields())
         {
             TypeInstantiation instantiation = field.getTypeInstantiation();
             if (instantiation instanceof ArrayInstantiation)
-                instantiation = ((ArrayInstantiation)instantiation).getElementTypeInstantiation();
+            {
+                final ArrayInstantiation arrayInstantiation = (ArrayInstantiation)instantiation;
+                if (arrayInstantiation.getLengthExpression() != null)
+                    addSymbolsUsedInExpression(arrayInstantiation.getLengthExpression(), usedSymbols);
 
-            addTypeToUsedTypes(instantiation.getTypeReference(), usedTypes);
+                instantiation = ((ArrayInstantiation)instantiation).getElementTypeInstantiation();
+            }
+
+            if (instantiation instanceof DynamicBitFieldInstantiation)
+            {
+                final DynamicBitFieldInstantiation dynamicBitFieldInstantiation =
+                        (DynamicBitFieldInstantiation)instantiation;
+                addSymbolsUsedInExpression(dynamicBitFieldInstantiation.getLengthExpression(), usedSymbols);
+            }
+
+            if (instantiation instanceof ParameterizedTypeInstantiation)
+            {
+                final ParameterizedTypeInstantiation parameterizedInstantiation =
+                        (ParameterizedTypeInstantiation)instantiation;
+                for (InstantiatedParameter param : parameterizedInstantiation.getInstantiatedParameters())
+                    addSymbolsUsedInExpression(param.getArgumentExpression(), usedSymbols);
+            }
+
+            addSymbol(instantiation.getTypeReference(), usedSymbols);
+
+            if (field.getAlignmentExpr() != null)
+                addSymbolsUsedInExpression(field.getAlignmentExpr(), usedSymbols);
+            if (field.getOffsetExpr() != null)
+                addSymbolsUsedInExpression(field.getOffsetExpr(), usedSymbols);
+            if (field.getInitializerExpr() != null)
+                addSymbolsUsedInExpression(field.getInitializerExpr(), usedSymbols);
+            if (field.getOptionalClauseExpr() != null)
+                addSymbolsUsedInExpression(field.getOptionalClauseExpr(), usedSymbols);
+            if (field.getConstraintExpr() != null)
+                addSymbolsUsedInExpression(field.getConstraintExpr(), usedSymbols);
+
+            // only for SQL table fields
+            if (field.getSqlConstraint() != null)
+                addSymbolsUsedInExpression(field.getSqlConstraint().getConstraintExpr(), usedSymbols);
         }
 
-        return usedTypes;
+        for (Function function : compoundType.getFunctions())
+            addSymbolsUsedInExpression(function.getResultExpression(), usedSymbols);
+
+        return usedSymbols;
     }
 
-    private void storeType(AstNode node, TypeReference usedTypeReference)
+    private static void addSymbolsUsedInExpression(Expression expression, Set<AstNode> usedSymbols)
     {
-        final Set<AstNode> usedTypes = new LinkedHashSet<AstNode>();
-        addTypeToUsedTypes(usedTypeReference, usedTypes);
-        storeType(node, usedTypes);
+        for (Constant usedConstant : expression.getReferencedSymbolObjects(Constant.class))
+            addUserSymbol(usedConstant, usedSymbols);
+
+        for (EnumType usedBitmask : expression.getReferencedSymbolObjects(EnumType.class))
+            addUserSymbol(usedBitmask, usedSymbols);
+
+        for (BitmaskType usedBitmask : expression.getReferencedSymbolObjects(BitmaskType.class))
+            addUserSymbol(usedBitmask, usedSymbols);
     }
 
-    private void storeType(AstNode node, Set<AstNode> usedTypes)
+    private static void addSymbol(TypeReference usedSymbolReference, Set<AstNode> usedSymbols)
     {
-        usedTypeMap.put(node, usedTypes);
+        addUserSymbol(usedSymbolReference.getType(), usedSymbols);
+
+        for (TemplateArgument templateArgument : usedSymbolReference.getTemplateArguments())
+            addSymbol(templateArgument.getTypeReference(), usedSymbols);
+    }
+
+    private static void addUserSymbol(AstNode usedSymbol, Set<AstNode> usedSymbols)
+    {
+        if (!(usedSymbol instanceof BuiltInType))
+            usedSymbols.add(usedSymbol);
+    }
+
+    private void storeSymbol(AstNode node, Set<AstNode> usedSymbols)
+    {
+        usedSymbolsMap.put(node, usedSymbols);
         boolean isEmpty = true;
-        for (AstNode usedType : usedTypes)
+        for (AstNode usedSymbol : usedSymbols)
         {
-            final Set<AstNode> usedByTypeSet = createUsedByTypeSet(usedType);
-            usedByTypeSet.add(node);
+            final Set<AstNode> usedBySymbolsSet = createUsedBySymbolsSet(usedSymbol);
+            usedBySymbolsSet.add(node);
             isEmpty = false;
         }
 
         if (!isEmpty)
-            createUsedByTypeSet(node);
+            createUsedBySymbolsSet(node);
     }
 
-    private Set<AstNode> createUsedByTypeSet(AstNode node)
+    private Set<AstNode> createUsedBySymbolsSet(AstNode node)
     {
-        Set<AstNode> usedByTypeSet = usedByTypeMap.get(node);
-        if (usedByTypeSet == null)
+        Set<AstNode> usedBySymbolsSet = usedBySymbolsMap.get(node);
+        if (usedBySymbolsSet == null)
         {
-            usedByTypeSet = new LinkedHashSet<AstNode>();
-            usedByTypeMap.put(node, usedByTypeSet);
+            usedBySymbolsSet = new LinkedHashSet<AstNode>();
+            usedBySymbolsMap.put(node, usedBySymbolsSet);
         }
 
-        return usedByTypeSet;
+        return usedBySymbolsSet;
     }
 
     private static final Set<AstNode> EMPTY_USED_SET =
             Collections.unmodifiableSet(new LinkedHashSet<AstNode>());
 
-    private final Map<AstNode, Set<AstNode>> usedByTypeMap = new HashMap<AstNode, Set<AstNode>>();
-    private final Map<AstNode, Set<AstNode>> usedTypeMap = new HashMap<AstNode, Set<AstNode>>();
+    private final Map<AstNode, Set<AstNode>> usedBySymbolsMap = new HashMap<AstNode, Set<AstNode>>();
+    private final Map<AstNode, Set<AstNode>> usedSymbolsMap = new HashMap<AstNode, Set<AstNode>>();
     private final Set<AstNode> collaboratingNodes = new LinkedHashSet<AstNode>();
 }

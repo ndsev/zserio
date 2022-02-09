@@ -59,7 +59,7 @@ class SymbolCollaborationDotEmitter
             AstNode node) throws ZserioExtensionException
     {
         final SymbolCollaborationDotTemplateData templateData = new SymbolCollaborationDotTemplateData(context,
-                node, usedByCollector.getUsedTypes(node), usedByCollector.getUsedByTypes(node));
+                node, usedByCollector.getUsedSymbols(node), usedByCollector.getUsedBySymbols(node));
         final String dotHtmlLink = getDotSymbolCollaborationHtmlLink(node,
                 DocDirectories.SYMBOL_COLLABORATION_DIRECTORY);
         final String outputDir = docParameters.getOutputDir();

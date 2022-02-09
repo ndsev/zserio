@@ -26,7 +26,7 @@ public class PackageTemplateDataBase extends ContentTemplateDataBase
                         context.getSymbolCollaborationDirectory()) : null;
 
         usedBySymbols = new TreeSet<SymbolTemplateData>();
-        for (AstNode usedByNode : usedByCollector.getUsedByTypes(astNode))
+        for (AstNode usedByNode : usedByCollector.getUsedBySymbols(astNode))
         {
             usedBySymbols.add(
                     SymbolTemplateDataCreator.createTemplateInstantiationReferenceData(context, usedByNode));
