@@ -22,7 +22,7 @@ def main():
     argParser.add_argument("--release_dir")
     argParser.add_argument("--java")
     argParser.add_argument("--verbosity", type=int)
-    argParser.add_argument("--filter")
+    argParser.add_argument("--filter", help="comma separated list of filters")
     argParser.add_argument("--pylint_rcfile")
     argParser.add_argument("--pylint_rcfile_test")
     argParser.add_argument("--mypy_config_file")
@@ -43,17 +43,19 @@ def main():
 
     # detect test directories
     testPattern = "*Test.py"
-    if "**" in args.filter:
-        testFilesPattern = os.path.join(testRoot, args.filter, testPattern)
-    else:
-        testFilesPattern = os.path.join(testRoot, args.filter, "**", testPattern)
-
-    testFiles = glob.glob(testFilesPattern, recursive=True)
     testDirs = set()
-    for globResult in testFiles:
-        testDir = os.path.dirname(globResult)
-        if testDir not in testDirs:
-            testDirs.add(testDir)
+
+    for testFilter in args.filter.split(","):
+        if testFilter.endswith("**"):
+            testFilesPattern = os.path.join(testRoot, testFilter, testPattern)
+        else:
+            testFilesPattern = os.path.join(testRoot, testFilter, "**", testPattern)
+
+        testFiles = glob.glob(testFilesPattern, recursive=True)
+        for globResult in testFiles:
+            testDir = os.path.dirname(globResult)
+            if testDir not in testDirs:
+                testDirs.add(testDir)
 
     # sort test dirs
     testDirs = sorted(testDirs)

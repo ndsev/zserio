@@ -4,10 +4,10 @@ Ant build.xml for Zserio Java extension tests.
 
 The following properties can be set:
 
-zserio.release_dir         - Directory where to find Zserio release to test. Default is "../distr".
-zserio_java_test.build_dir - Directory where to put generated files. Default is "../build/test/java".
-zserio_java_test.filter    - Test filter (supports glob patterns). Default is "**".
-spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs is not run.
+zserio.release_dir           - Directory where to find Zserio release to test. Default is "../distr".
+zserio_java_test.build_dir   - Directory where to put generated files. Default is "../build/test/java".
+zserio_java_test.test_suites - Test suites. Default is "**".
+spotbugs.home_dir            - Location of the spotbugs tool. If not set, spotbugs is not run.
 
 -->
 <project name="zserio_java_test" basedir="." default="run" xmlns:if="ant:if" xmlns:unless="ant:unless">
@@ -27,7 +27,15 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
 
     <property name="zserio_java_test.build_dir" location="${zserio.root_dir}/build/test/java"/>
     <property name="zserio_java_test.log_file" location="${zserio_java_test.build_dir}/test_log.txt"/>
-    <property name="zserio_java_test.filter" value="**"/>
+    <property name="zserio_java_test.test_suites" value="**"/>
+
+    <loadresource property="zserio_java_test.test_suites_filter">
+        <propertyresource name="zserio_java_test.test_suites"/>
+        <filterchain>
+            <replacestring from="," to="/**/build.xml,"/>
+            <suffixlines suffix="/**/build.xml"/>
+        </filterchain>
+    </loadresource>
 
     <property environment="env"/>
     <condition property="zserio.extra_args" value="${env.ZSERIO_EXTRA_ARGS}" else="">
@@ -246,13 +254,13 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
 
     <target name="clean" depends="test_utils.clean">
         <subant target="clean" inheritall="true">
-            <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
+            <fileset dir="." includes="${zserio_java_test.test_suites_filter}" excludes="build.xml,utils/**"/>
         </subant>
     </target>
 
     <target name="gen">
         <subant target="gen" inheritall="true">
-            <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
+            <fileset dir="." includes="${zserio_java_test.test_suites_filter}" excludes="build.xml,utils/**"/>
         </subant>
     </target>
 
@@ -260,7 +268,7 @@ spotbugs.home_dir          - Location of the spotbugs tool. If not set, spotbugs
         <record name="${zserio_java_test.log_file}" action="start"/>
 
         <subant target="run" inheritall="true">
-            <fileset dir="." includes="${zserio_java_test.filter}/**/build.xml" excludes="build.xml,utils/**"/>
+            <fileset dir="." includes="${zserio_java_test.test_suites_filter}" excludes="build.xml,utils/**"/>
         </subant>
 
         <record name="${zserio_java_test.log_file}" action="stop"/>

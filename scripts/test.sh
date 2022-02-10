@@ -3,6 +3,51 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_test_tools.sh"
 
+
+# Gets test suites matching the provided patterns.
+get_test_suites()
+{
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local PATTERNS=("${MSYS_WORKAROUND_TEMP[@]}")
+    local TEST_SUITES_OUT="$1"; shift
+
+    local STARTING_POINT="./test"
+    local FIND_EXPRESSION=("!" "-ipath" "${STARTING_POINT}/utils/*")
+    for i in ${!PATTERNS[@]} ; do
+        FIND_EXPRESSION+=("(")
+    done
+    for i in ${!PATTERNS[@]} ; do
+        local PATTERN="${PATTERNS[$i]}"
+        if [[ $PATTERN == "i:"* ]] ; then
+            PATTERN="${PATTERN#i:}"
+            if [ $i -gt 0 ] ; then
+                FIND_EXPRESSION+=("-o")
+            fi
+            FIND_EXPRESSION+=("-ipath" "${STARTING_POINT}/${PATTERN}")
+        elif [[ $PATTERN == "x:"* ]] ; then
+            PATTERN="${PATTERN#x:}"
+            if [ $i -gt 0 ] ; then
+                FIND_EXPRESSION+=("-a")
+            fi
+            FIND_EXPRESSION+=("!" "-ipath" "${STARTING_POINT}/${PATTERN}")
+        else
+            stderr_echo "Unexpected test pattern!"
+            return 1
+        fi
+        FIND_EXPRESSION+=(")")
+    done
+
+    local TEST_SUITES_ARR=(
+        $(${FIND} ${STARTING_POINT} -mindepth 2 -maxdepth 2 -type d "${FIND_EXPRESSION[@]}" | sort)
+    )
+
+    for i in ${!TEST_SUITES_ARR[@]} ; do
+        eval ${TEST_SUITES_OUT}[$i]="${TEST_SUITES_ARR[$i]#${STARTING_POINT}/}"
+    done
+
+    return 0
+}
+
 # Run Zserio C++ tests
 test_cpp()
 {
@@ -14,7 +59,8 @@ test_cpp()
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local CPP_TARGETS=("${MSYS_WORKAROUND_TEMP[@]}")
     local SWITCH_CLEAN="$1"; shift
-    local SWITCH_TEST_NAME="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local MESSAGE="Zserio C++ tests"
     echo "STARTING - ${MESSAGE}"
@@ -25,12 +71,16 @@ test_cpp()
         return 1
     fi
 
-    local CPP_TEST_NAME="${SWITCH_TEST_NAME}"
-    if [[ "${CPP_TEST_NAME}" == "" ]]; then
-        CPP_TEST_NAME="*"
-    fi
+    local TEST_SUITES_LIST=""
+    for i in ${!TEST_SUITES[@]} ; do
+        if [ ${i} -gt 0 ] ; then
+            TEST_SUITES_LIST+=";"
+        fi
+        TEST_SUITES_LIST+="${TEST_SUITES[i]}"
+    done
+
     local CMAKE_ARGS=("-DZSERIO_RELEASE_ROOT=${UNPACKED_ZSERIO_RELEASE_DIR}"
-                      "-DZSERIO_TEST_NAME=${CPP_TEST_NAME}")
+                      "-DZSERIO_TEST_SUITES=${TEST_SUITES_LIST}")
     local CTEST_ARGS=()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         local CPP_TARGET="clean"
@@ -56,15 +106,22 @@ test_java()
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local SWITCH_CLEAN="$1"; shift
-    local SWITCH_TEST_NAME="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
+
+    local TEST_FILTER=""
+    for i in ${!TEST_SUITES[@]} ; do
+        if [ $i -gt 0 ] ; then
+            TEST_FILTER+=","
+        fi
+        TEST_FILTER+="${TEST_SUITES[$i]}"
+    done
 
     local MESSAGE="Zserio Java tests"
     echo "STARTING - ${MESSAGE}"
     local ANT_ARGS=("-Dzserio.release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                     "-Dzserio_java_test.build_dir=${TEST_OUT_DIR}/java")
-    if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
-        ANT_ARGS+=("-Dzserio_java_test.filter=${SWITCH_TEST_NAME}")
-    fi
+    ANT_ARGS+=("-Dzserio_java_test.test_suites=${TEST_FILTER}")
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         local JAVA_TARGET="clean"
     else
@@ -90,7 +147,8 @@ test_python()
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local SWITCH_CLEAN="$1"; shift
-    local SWITCH_TEST_NAME="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local MESSAGE="Zserio Python tests"
     echo "STARTING - ${MESSAGE}"
@@ -103,12 +161,18 @@ test_python()
     if [[ ${SWITCH_CLEAN} == 1 ]] ; then
         rm -rf "${TEST_OUT_DIR}/python"
     else
+        local TEST_FILTER=""
+        for i in ${!TEST_SUITES[@]} ; do
+            if [ $i -gt 0 ] ; then
+                TEST_FILTER+=","
+            fi
+            TEST_FILTER+="${TEST_SUITES[$i]}"
+        done
+
         local TEST_ARGS=("--release_dir=${UNPACKED_ZSERIO_RELEASE_DIR}"
                          "--build_dir=${TEST_OUT_DIR}/python"
                          "--java=${JAVA_BIN}")
-        if [[ ${SWITCH_TEST_NAME} != "" ]] ; then
-            TEST_ARGS+=("--filter=${SWITCH_TEST_NAME}")
-        fi
+        TEST_ARGS+=("--filter=${TEST_FILTER}")
         local TEST_FILE="${TEST_SRC_DIR}/tests.py"
         local PYLINT_RCFILE="${TEST_SRC_DIR}/pylintrc.txt"
         local PYLINT_RCFILE_FOR_TESTS="${TEST_SRC_DIR}/pylintrc_test.txt"
@@ -147,7 +211,8 @@ test_xml()
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local SWITCH_CLEAN="$1"; shift
-    local SWITCH_TEST_NAME="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local MESSAGE="Zserio XML tests"
     echo "STARTING - ${MESSAGE}"
@@ -158,15 +223,16 @@ test_xml()
         rm -rf "${TEST_XML_OUT_DIR}"
     else
         local TOTAL_NUMBER_OF_TESTS=0
-        local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}" -path '*/zs' ! -path '*errors*'`
-        for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
-            local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
-            for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
-                local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
-                local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
-                local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
-                local TEST_XML_OUT_ZS_DIR="${TEST_XML_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
-                if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
+        for TEST_SUITE in ${TEST_SUITES[@]} ; do
+            local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}/${TEST_SUITE}" -path '*/zs' ! -path '*errors*'`
+            for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
+                local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
+                for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
+                    local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
+                    local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
+                    local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
+                    local TEST_XML_OUT_ZS_DIR="${TEST_XML_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
+
                     local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/xml_options.txt"
                     local SWITCH_WERROR=1
                     local SWITCH_XMLLINT=1
@@ -200,7 +266,7 @@ test_xml()
                     fi
 
                     TOTAL_NUMBER_OF_TESTS=$((TOTAL_NUMBER_OF_TESTS+1))
-                fi
+                done
             done
         done
         echo "Total number of tests: ${TOTAL_NUMBER_OF_TESTS}"
@@ -219,7 +285,8 @@ test_doc()
     local TEST_SRC_DIR="$1"; shift
     local TEST_OUT_DIR="$1"; shift
     local SWITCH_CLEAN="$1"; shift
-    local SWITCH_TEST_NAME="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local MESSAGE="Zserio documentation tests"
     echo "STARTING - ${MESSAGE}"
@@ -230,15 +297,16 @@ test_doc()
         rm -rf "${TEST_DOC_OUT_DIR}"
     else
         local TOTAL_NUMBER_OF_TESTS=0
-        local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}" -path '*/zs' ! -path '*errors*'`
-        for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
-            local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
-            for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
-                local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
-                local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
-                local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
-                local TEST_DOC_OUT_ZS_DIR="${TEST_DOC_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
-                if [[ "${SWITCH_TEST_NAME}" == "" || "${TEST_SUBDIR}" == "${SWITCH_TEST_NAME}"* ]] ; then
+        for TEST_SUITE in ${TEST_SUITES[@]} ; do
+            local TEST_ZS_DIRS=`"${FIND}" "${TEST_SRC_DIR}/${TEST_SUITE}" -path '*/zs' ! -path '*errors*'`
+            for TEST_ZS_DIR in ${TEST_ZS_DIRS} ; do
+                local MAIN_ZS_FILES=`"${FIND}" "${TEST_ZS_DIR}" -maxdepth 1 -type f`
+                for MAIN_ZS_FILE in ${MAIN_ZS_FILES} ; do
+                    local MAIN_ZS_FILE_NAME="${MAIN_ZS_FILE#${TEST_ZS_DIR}/}"
+                    local TEST_ZS_RELDIR="${TEST_ZS_DIR#${TEST_SRC_DIR}/}"
+                    local TEST_SUBDIR="${TEST_ZS_RELDIR%/zs}"
+                    local TEST_DOC_OUT_ZS_DIR="${TEST_DOC_OUT_DIR}/${TEST_SUBDIR}/${MAIN_ZS_FILE_NAME%.zs}"
+
                     local OPTIONS_FILE="${TEST_SRC_DIR}/${TEST_SUBDIR}/doc_options.txt"
                     local SWITCH_WERROR=1
                     local ZSERIO_ARGS=("-doc" "${TEST_DOC_OUT_ZS_DIR}"
@@ -273,7 +341,7 @@ test_doc()
                     fi
 
                     TOTAL_NUMBER_OF_TESTS=$((TOTAL_NUMBER_OF_TESTS+1))
-                fi
+                done
             done
         done
         echo "Total number of tests: ${TOTAL_NUMBER_OF_TESTS}"
@@ -299,14 +367,15 @@ test()
     local PARAM_XML="$1"; shift
     local PARAM_DOC="$1"; shift
     local SWITCH_CLEAN="$1"; shift
-    local SWITCH_TEST_NAME="$1"; shift
+    local MSYS_WORKAROUND_TEMP=("${!1}"); shift
+    local TEST_SUITES=("${MSYS_WORKAROUND_TEMP[@]}")
 
     local TEST_SRC_DIR="${ZSERIO_PROJECT_ROOT}/test"
 
     # run Zserio C++ tests
     if [[ ${#CPP_TARGETS[@]} != 0 ]] ; then
         test_cpp "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" \
-            CPP_TARGETS[@] ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
+            CPP_TARGETS[@] ${SWITCH_CLEAN} TEST_SUITES[@]
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -315,7 +384,7 @@ test()
     # run Zserio Java tests
     if [[ ${PARAM_JAVA} != 0 ]] ; then
         test_java "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
-            "${SWITCH_TEST_NAME}"
+            TEST_SUITES[@]
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -324,7 +393,7 @@ test()
     # run Zserio Python tests
     if [[ ${PARAM_PYTHON} != 0 ]]; then
         test_python "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" \
-            "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
+            "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} TEST_SUITES[@]
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -333,7 +402,7 @@ test()
     # run Zserio XML tests
     if [[ ${PARAM_XML} != 0 ]]; then
         test_xml "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
-            "${SWITCH_TEST_NAME}"
+            TEST_SUITES[@]
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -342,7 +411,7 @@ test()
     # run Zserio documentation tests
     if [[ ${PARAM_DOC} != 0 ]]; then
         test_doc "${UNPACKED_ZSERIO_RELEASE_DIR}" "${TEST_SRC_DIR}" "${TEST_OUT_DIR}" ${SWITCH_CLEAN} \
-            "${SWITCH_TEST_NAME}"
+            TEST_SUITES[@]
         if [ $? -ne 0 ] ; then
             return 1
         fi
@@ -359,7 +428,7 @@ Description:
     Runs Zserio tests on Zserio release compiled in release-ver directory.
 
 Usage:
-    $0 [-h] [-e] [-c] [-p] [-o <dir>] [-t <name>] package...
+    $0 [-h] [-e] [-c] [-p] [-o <dir>] [-i <pattern>]... [-x <pattern>]... package...
 
 Arguments:
     -h, --help            Show this help.
@@ -368,8 +437,10 @@ Arguments:
     -p, --purge           Purge test build directory.
     -o <dir>, --output-directory <dir>
                           Output directory where tests will be run.
-    -t <name>, --test-name <name>
-                          Run only specified test.
+    -i <pattern>, --include <pattern>
+                          Include tests matching the specified pattern. Can be specified multiple times.
+    -x <pattern>, --exclude <pattern>
+                          Exclude tests matching the specified pattern. Can be specified multiple times.
     package               Specify the package to test.
 
 Package can be a combination of:
@@ -392,7 +463,8 @@ Package can be a combination of:
 
 Examples:
     $0 java cpp-linux64-gcc
-    $0 -t language/sql_tables cpp-linux64-gcc
+    $0 cpp-linux64-gcc -i language/sql_tables
+    $0 python -i lan* -x *sql_tables*
     $0 all-linux64-gcc
 
 EOF
@@ -408,7 +480,7 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 8
+    exit_if_argc_lt $# 9
     local PARAM_CPP_TARGET_ARRAY_OUT="$1"; shift
     local PARAM_JAVA_OUT="$1"; shift
     local PARAM_PYTHON_OUT="$1"; shift
@@ -417,7 +489,7 @@ parse_arguments()
     local PARAM_OUT_DIR_OUT="$1"; shift
     local SWITCH_CLEAN_OUT="$1"; shift
     local SWITCH_PURGE_OUT="$1"; shift
-    local SWITCH_TEST_NAME_OUT="$1"; shift
+    local SWITCH_TEST_SUITES_ARRAY_OUT="$1"; shift
 
     eval ${PARAM_JAVA_OUT}=0
     eval ${PARAM_PYTHON_OUT}=0
@@ -425,9 +497,9 @@ parse_arguments()
     eval ${PARAM_DOC_OUT}=0
     eval ${SWITCH_CLEAN_OUT}=0
     eval ${SWITCH_PURGE_OUT}=0
-    eval ${SWITCH_TEST_NAME_OUT}=""
 
     local NUM_PARAMS=0
+    local NUM_PATTERNS=0
     local PARAM_ARRAY=()
     local ARG="$1"
     while [ -n "${ARG}" ] ; do
@@ -455,15 +527,29 @@ parse_arguments()
                 shift 2
                 ;;
 
-            "-t" | "--test-name")
+            "-i" | "--include")
                 shift
                 local ARG="$1"
                 if [ -z "${ARG}" ] ; then
-                    stderr_echo "Test name is not set!"
+                    stderr_echo "Test include pattern is not set!"
                     echo
                     return 1
                 fi
-                eval ${SWITCH_TEST_NAME_OUT}="${ARG}"
+                eval ${SWITCH_TEST_SUITES_ARRAY_OUT}[${NUM_PATTERNS}]="i:${ARG}"
+                NUM_PATTERNS=$((NUM_PATTERNS + 1))
+                shift
+                ;;
+
+            "-x" | "--exclude")
+                shift
+                local ARG="$1"
+                if [ -z "${ARG}" ] ; then
+                    stderr_echo "Test exclude pattern is not set!"
+                    echo
+                    return 1
+                fi
+                eval ${SWITCH_TEST_SUITES_ARRAY_OUT}[${NUM_PATTERNS}]="x:${ARG}"
+                NUM_PATTERNS=$((NUM_PATTERNS + 1))
                 shift
                 ;;
 
@@ -552,9 +638,9 @@ main()
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_CLEAN
     local SWITCH_PURGE
-    local SWITCH_TEST_NAME
+    local SWITCH_TEST_PATTERN_ARRAY=()
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_OUT_DIR \
-                    SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_NAME $@
+                    SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_PATTERN_ARRAY $@
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -647,10 +733,22 @@ main()
         return 1
     fi
 
+    # get test suites to run
+    TEST_SUITES=()
+    get_test_suites SWITCH_TEST_PATTERN_ARRAY[@] TEST_SUITES
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+
+    if [ ${#TEST_SUITES[@]} -eq 0 ] ; then
+        echo "No test suites found."
+        return 0
+    fi
+
     # run test
     test "${UNPACKED_ZSERIO_RELEASE_DIR}" "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${TEST_OUT_DIR}" \
          PARAM_CPP_TARGET_ARRAY[@] ${PARAM_JAVA} ${PARAM_PYTHON} ${PARAM_XML} ${PARAM_DOC} \
-         ${SWITCH_CLEAN} "${SWITCH_TEST_NAME}"
+         ${SWITCH_CLEAN} TEST_SUITES[@]
     if [ $? -ne 0 ] ; then
         return 1
     fi

@@ -17,7 +17,7 @@ set(SANITIZERS_ENABLED OFF CACHE BOOL "Whether the compiler sanitizers are enabl
 
 set(ZSERIO_PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(ZSERIO_RELEASE_ROOT "${ZSERIO_PROJECT_ROOT}/distr" CACHE PATH "Root directory of Zserio release binaries.")
-set(ZSERIO_TEST_NAME "*" CACHE STRING "Example test name to run. Empty means all example tests.")
+set(ZSERIO_TEST_SUITES "**" CACHE STRING "List of test suites to run. Default is '**'.")
 
 # cmake helpers
 set(CMAKE_MODULE_PATH ${ZSERIO_PROJECT_ROOT}/cmake)
@@ -73,16 +73,19 @@ function(add_test_dependencies)
     endforeach ()
 endfunction()
 
-# add all test cases
-file(GLOB_RECURSE SUBPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${ZSERIO_TEST_NAME}/CMakeLists.txt")
-foreach(subproject ${SUBPROJECTS})
-    get_filename_component(subdirectory ${subproject} DIRECTORY)
-    add_subdirectory(${subdirectory})
+# add all test suites
+foreach(TEST_SUITE ${ZSERIO_TEST_SUITES})
+    file(GLOB_RECURSE SUBPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${TEST_SUITE}/CMakeLists.txt")
+    foreach(subproject ${SUBPROJECTS})
+        get_filename_component(subdirectory ${subproject} DIRECTORY)
+        add_subdirectory(${subdirectory})
+    endforeach()
 endforeach()
 
 if (NOT TEST_SOURCES_LIST)
     if (NOT TEST_DEPENDENCIES_LIST)
-        message(FATAL_ERROR "Test filter '${ZSERIO_TEST_NAME}' doesn't match any test!")
+        message(STATUS "Test suites doesn't match any test!")
+        return()
     endif ()
 
     set(EMPTY_TEST_HELPER_CONTENT
