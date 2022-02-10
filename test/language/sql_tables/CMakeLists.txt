@@ -83,7 +83,7 @@ zserio_add_library(TARGET sql_tables_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    IGNORE_WARNINGS ON
+    EXPECTED_WARNINGS 1
 )
 
 target_include_directories(sql_tables_zs SYSTEM PRIVATE ${SQLITE_INCDIR})

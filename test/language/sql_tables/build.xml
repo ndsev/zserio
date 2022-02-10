@@ -16,7 +16,7 @@
 
     <target name="gen.checkWarnings" depends="gen">
         <!-- without_pk_table.zs fires a valid warning -->
-        <testGenCheckWarnings testName="sql_tables" maxWarnings="1"/>
+        <testGenCheckWarnings testName="sql_tables" expectedWarnings="1"/>
     </target>
 
     <target name="compile" depends="gen.checkWarnings">

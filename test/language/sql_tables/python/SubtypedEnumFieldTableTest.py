@@ -6,7 +6,7 @@ from testutils import getZserioApi, getApiDir
 class SubtypedEnumFieldTableTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_tables.zs")
+        cls.api = getZserioApi(__file__, "sql_tables.zs", expectedWarnings=1)
         cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)),
                                      "subtyped_enum_field_table_test.sqlite")
 

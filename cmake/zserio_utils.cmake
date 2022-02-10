@@ -39,7 +39,7 @@ endfunction()
 #   ZSERIO_CORE_DIR zserio_core_dir
 #   ZSERIO_CPP_DIR zserio_cpp_dir
 #   ZSERIO_OPTIONS ... (optional)
-#   IGNORE_WARNINGS ON|OFF (optional, default OFF)
+#   EXPECTED_WARNINGS num_warnings (optional, default 0)
 #   IGNORE_ERRORS ON|OFF (optional, default OFF)
 #   ZSERIO_LOG_FILENAME (optional)
 #
@@ -61,7 +61,7 @@ function(zserio_add_library)
             (ARG STREQUAL ZSERIO_CORE_DIR) OR
             (ARG STREQUAL ZSERIO_CPP_DIR) OR
             (ARG STREQUAL ZSERIO_OPTIONS) OR
-            (ARG STREQUAL IGNORE_WARNINGS) OR
+            (ARG STREQUAL EXPECTED_WARNINGS) OR
             (ARG STREQUAL IGNORE_ERRORS) OR
             (ARG STREQUAL ZSERIO_LOG_FILENAME))
             if (DEFINED VALUE_${ARG})
@@ -85,6 +85,14 @@ function(zserio_add_library)
             message(FATAL_ERROR "Argument ${ARG} requires exactly one value!")
         endif ()
     endforeach ()
+
+    # defaults
+    if (NOT DEFINED VALUE_EXPECTED_WARNINGS)
+        set(VALUE_EXPECTED_WARNINGS 0)
+    endif ()
+    if (NOT DEFINED VALUE_IGNORE_ERRORS)
+        set(VALUE_IGNORE_ERRORS OFF)
+    endif ()
 
     # create ALL_SOURCES list with full paths
     foreach (SOURCE ${VALUE_SOURCES})
@@ -120,7 +128,7 @@ function(zserio_add_library)
             -DCORE_DIR=${VALUE_ZSERIO_CORE_DIR} -DCPP_DIR=${VALUE_ZSERIO_CPP_DIR} -DOUT_DIR=${VALUE_OUT_DIR}
             -DSOURCE_DIR=${VALUE_SOURCE_DIR} -DMAIN_SOURCE=${VALUE_MAIN_SOURCE}
             -DOPTIONS="${VALUE_ZSERIO_OPTIONS}" -DEXTRA_OPTIONS="${ZSERIO_EXTRA_OPTIONS}"
-            -DIGNORE_WARNINGS=${VALUE_IGNORE_WARNINGS}
+            -DEXPECTED_WARNINGS=${VALUE_EXPECTED_WARNINGS}
             -DIGNORE_ERRORS=${VALUE_IGNORE_ERRORS}
             -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake

@@ -6,7 +6,7 @@ from testutils import getZserioApi, getApiDir
 class BlobFieldWithChildrenInitializationTableTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "sql_tables.zs")
+        cls.api = getZserioApi(__file__, "sql_tables.zs", expectedWarnings=1)
         cls._fileName = os.path.join(getApiDir(os.path.dirname(__file__)),
                                      "blob_field_with_children_initialization_table_test.sqlite")
 

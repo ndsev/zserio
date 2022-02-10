@@ -15,9 +15,10 @@ TEST_ARGS["release_dir"] = os.path.join(TEST_ARGS["zserio_root_dir"], "distr")
 TEST_ARGS["java"] = "java"
 
 # set containing all compiled main zs files to prevent multiple compilations of the same zserio sources
-COMPILED_ZS_SET = set() # contains zs definition tuples: (zsDir, mainZsFile)
+COMPILED_ZS = {} # keys are zs definition tuples: (zsDir, mainZsFile), value is zserio tool error log
 
-def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPackage=None, extraArgs=None):
+def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevelPackage=None, extraArgs=None,
+                 expectedWarnings=0):
     """
     Compiles given zserio source and gets Zserio API.
 
@@ -27,6 +28,7 @@ def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPac
     :param hasApi: Whether the api.py is supposed to be generated. Default is True.
     :param topLevelPackage: Top level package. By default it's guessed from the mainZsFile.
     :param extraArgs: Extra arguments to zserio compiler.
+    :param expectedWarnings: Number of expected zserio warnings to check.
     :returns: Generated python API if available, None otherwise.
     """
     testDir = os.path.dirname(testFile) # current test directory
@@ -34,9 +36,11 @@ def getZserioApi(testFile, mainZsFile, hasPackage=True, hasApi=True, topLevelPac
     apiDir = getApiDir(testDir)
 
     zsDef = (zsDir, mainZsFile)
-    if zsDef not in COMPILED_ZS_SET:
-        COMPILED_ZS_SET.add(zsDef)
-        _compileZserio(zsDef, apiDir, _processExtraArgs(extraArgs))
+    if zsDef not in COMPILED_ZS:
+        zserioResult = _compileZserio(zsDef, apiDir, _processExtraArgs(extraArgs))
+        COMPILED_ZS[zsDef] = zserioResult.stderr
+
+    _checkExpectedWarnings(COMPILED_ZS[zsDef], expectedWarnings)
 
     apiModule = "api"
     if hasPackage:
@@ -163,6 +167,7 @@ def _compileZserio(zsDef, apiDir, extraArgs):
     :param zsDef: Tuple defining the zs source to compile (zsDir, mainZsFile).
     :param apiDir: Output directory for the generated API.
     :param extraArgs: Extra arguments to zserio compiler.
+    :returns: CompletedProcess containing zserio result.
 
     :raises Exception: When zserio tool fails.
     """
@@ -170,15 +175,17 @@ def _compileZserio(zsDef, apiDir, extraArgs):
     zserioLibsDir = os.path.join(TEST_ARGS["release_dir"], "zserio_libs")
     zserioCore = os.path.join(zserioLibsDir, "zserio_core.jar")
     zserioPython = os.path.join(zserioLibsDir, "zserio_python.jar")
-    zserioCmd = [TEST_ARGS["java"],
-                 "-cp",
-                 os.pathsep.join([zserioCore, zserioPython]),
-                 "zserio.tools.ZserioTool",
-                 "-python",
-                 f"{apiDir}", # pythonDir
-                 "-src",
-                 f"{zsDef[0]}", # apiDir
-                 zsDef[1]]
+    zserioCmd = [
+        TEST_ARGS["java"],
+        "-cp",
+        os.pathsep.join([zserioCore, zserioPython]),
+        "zserio.tools.ZserioTool",
+        "-python",
+        f"{apiDir}", # pythonDir
+        "-src",
+        f"{zsDef[0]}", # apiDir
+        zsDef[1]
+    ]
     zserioCmd += extraArgs
     zserioResult = subprocess.run(zserioCmd, capture_output=True, text=True, check=False)
     if zserioResult.stdout:
@@ -187,6 +194,21 @@ def _compileZserio(zsDef, apiDir, extraArgs):
         print(zserioResult.stderr)
     if zserioResult.returncode != 0:
         raise ZserioCompilerError(zserioResult.stderr)
+    return zserioResult
+
+def _checkExpectedWarnings(zserioLog, expectedWarnings):
+    """
+    Checks that the zserio tool log contains expected number of warnings.
+
+    :zserioLog: Zserio tool error log to check.
+    :expectedWarnings: Number of expected zserio warnings.
+    """
+
+    content = zserioLog if zserioLog is not None else ""
+    numWarnings = content.count("[WARNING]")
+
+    if numWarnings != expectedWarnings:
+        raise Exception(f"Zserio tool produced {numWarnings} warnings (expected {expectedWarnings})!")
 
 def _importModule(path, modulePath):
     """

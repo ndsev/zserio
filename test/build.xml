@@ -139,12 +139,12 @@ spotbugs.home_dir            - Location of the spotbugs tool. If not set, spotbu
 
     <macrodef name="testGenCheckWarnings">
         <attribute name="testName"/>
-        <attribute name="maxWarnings" default="0"/>
+        <attribute name="expectedWarnings" default="0"/>
         <sequential>
             <fail message="[ERROR] Zserio tool produced some warnings. See ${@{testName}.zs.log_file}!">
                 <condition>
                     <!-- get number of warnings in the log file -->
-                    <resourcecount when="greater" count="@{maxWarnings}">
+                    <resourcecount when="ne" count="@{expectedWarnings}">
                         <tokens>
                             <concat>
                                 <filterchain>
