@@ -12,6 +12,16 @@
 
 --------
 
+```c++
+struct Employee
+{
+    uint8   age;
+    string  name;
+    uint16  salary;
+    Role    role;
+};
+```
+
 No time to read? Go to the [Quick Start](#quick-start) or [download latest release](https://github.com/ndsev/zserio/releases/latest).
 
 In for the numbers? Head over to [benchmarks](benchmarks/README.md).
@@ -21,6 +31,17 @@ Questions? Check the [FAQs](doc/FAQ.md).
 More documentation? Go to the [Documentation](#documentation).
 
 ------
+## Language support
+
+At the moment the following code generators are available
+- [C++ Generator](compiler/extensions/cpp/README.md)
+- [Java Generator](compiler/extensions/java/README.md)
+- [Python Generator](compiler/extensions/python/README.md)
+
+In addition to these, zserio provides specialized text generators for documentation and export
+- [Doc Generator](compiler/extensions/doc/README.md)
+- [XML Generator](compiler/extensions/xml/README.md)
+
 
 ## Serialization framework
 
@@ -43,14 +64,8 @@ what writers will be able to fill in.
 Although it does not have a wire format, we have added some convenience keywords lately that encapsulate some
 functionality. You can find more information on [Zserio Invisibles](doc/ZserioInvisibles.md).
 
-At the moment the following extensions are available
-- [C++ Generator](compiler/extensions/cpp/README.md)
-- [Java Generator](compiler/extensions/java/README.md)
-- [Python Generator](compiler/extensions/python/README.md)
-- [Doc Generator](compiler/extensions/doc/README.md)
-- [XML Generator](compiler/extensions/xml/README.md)
 
-## Quick introduction
+## Introduction
 
 As we have stated earlier, zserio does not have any wire format. So basically: what you see is what you get
 (please note that zserio uses network byte order in the serialized stream, but the generated code does take
