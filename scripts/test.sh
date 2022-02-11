@@ -7,11 +7,12 @@ source "${SCRIPT_DIR}/common_test_tools.sh"
 # Gets test suites matching the provided patterns.
 get_test_suites()
 {
+    local ZSERIO_PROJECT_ROOT="$1"; shift
     local MSYS_WORKAROUND_TEMP=("${!1}"); shift
     local PATTERNS=("${MSYS_WORKAROUND_TEMP[@]}")
     local TEST_SUITES_OUT="$1"; shift
 
-    local STARTING_POINT="./test"
+    local STARTING_POINT="${ZSERIO_PROJECT_ROOT}/test"
     local FIND_EXPRESSION=("!" "-ipath" "${STARTING_POINT}/utils/*")
     for i in ${!PATTERNS[@]} ; do
         FIND_EXPRESSION+=("(")
@@ -639,8 +640,9 @@ main()
     local SWITCH_CLEAN
     local SWITCH_PURGE
     local SWITCH_TEST_PATTERN_ARRAY=()
+    # note that "$@" must have qoutes to prevent expansion of include/exclude patterns
     parse_arguments PARAM_CPP_TARGET_ARRAY PARAM_JAVA PARAM_PYTHON PARAM_XML PARAM_DOC PARAM_OUT_DIR \
-                    SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_PATTERN_ARRAY $@
+                    SWITCH_CLEAN SWITCH_PURGE SWITCH_TEST_PATTERN_ARRAY "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -734,8 +736,8 @@ main()
     fi
 
     # get test suites to run
-    TEST_SUITES=()
-    get_test_suites SWITCH_TEST_PATTERN_ARRAY[@] TEST_SUITES
+    local TEST_SUITES=()
+    get_test_suites "${ZSERIO_PROJECT_ROOT}" SWITCH_TEST_PATTERN_ARRAY[@] TEST_SUITES
     if [ $? -ne 0 ] ; then
         return 1
     fi
