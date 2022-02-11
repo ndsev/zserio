@@ -1,7 +1,6 @@
 package zserio.ast;
 
 import java.math.BigInteger;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -384,6 +383,7 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
     {
         checkOptionalReferencesInOffset();
         checkOptionalReferencesInTypeArguments();
+        checkOptionalReferencesInOptionalClause();
         checkOptionalReferencesInConstraint();
         checkOptionalReferencesInArrayLength();
         checkOptionalReferencesInBitfieldLength();
@@ -409,6 +409,53 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 checkOptionalReferencesInExpression(argumentExpression, "type arguments");
+            }
+        }
+    }
+
+    private void checkOptionalReferencesInOptionalClause()
+    {
+        if (optionalClauseExpr != null)
+        {
+            // in case of ternary operator, we are not able to check correctness => such warning should be
+            // enabled explicitly by command line
+            if (!optionalClauseExpr.containsTernaryOperator())
+            {
+                final Map<Field, Expression.OptionalFieldInfo> referencedOptionalFields =
+                        optionalClauseExpr.getReferencedOptionalFields();
+                for (Map.Entry<Field, Expression.OptionalFieldInfo> referencedOptionalEntry :
+                        referencedOptionalFields.entrySet())
+                {
+                    final Field referencedOptionalField = referencedOptionalEntry.getKey();
+                    final Expression referencedOptionalClauseExpr = referencedOptionalField.optionalClauseExpr;
+                    if (referencedOptionalClauseExpr == null)
+                    {
+                        ZserioToolPrinter.printWarning(this, "Field '" + name + "' contains reference to " +
+                                "auto optional field '" + referencedOptionalField.getName() +
+                                "' in optional clause.");
+                    }
+                    else
+                    {
+                        // check expressions using comparison formatter
+                        final List<Expression> leftAndExprs =
+                                referencedOptionalEntry.getValue().getLeftAndExprs();
+                        boolean found = false;
+                        for (Expression leftAndExpr : leftAndExprs)
+                        {
+                            if (ExpressionComparator.equals(leftAndExpr, referencedOptionalClauseExpr))
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found)
+                        {
+                            ZserioToolPrinter.printWarning(this, "Field '" + name + "' does not have left " +
+                                    "'and' condition of optional field '"+ referencedOptionalField.getName() +
+                                    "' referenced in optional clause.");
+                        }
+                    }
+                }
             }
         }
     }
@@ -445,38 +492,31 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
         // enabled explicitly by command line
         if (!expr.containsTernaryOperator())
         {
-            final Map<Field, List<AstNode>> referencedOptionalFields = expr.getReferencedOptionalFields();
-            final Set<Field> fieldsWithDifferentOptional =
-                    getFieldsWithDifferentOptional(referencedOptionalFields);
-            for (Field fieldWithDifferentOptional : fieldsWithDifferentOptional)
+            final Map<Field, Expression.OptionalFieldInfo> referencedOptionalFields =
+                    expr.getReferencedOptionalFields();
+
+            for (Map.Entry<Field, Expression.OptionalFieldInfo> referencedOptionalEntry :
+                    referencedOptionalFields.entrySet())
             {
-                if (optionalClauseExpr == null)
+                final Field referencedOptionalField = referencedOptionalEntry.getKey();
+                final List<AstNode> referencedDotPrefix = referencedOptionalEntry.getValue().getDotPrefix();
+                if (haveFieldsDifferentOptional(referencedOptionalField, referencedDotPrefix))
                 {
-                    ZserioToolPrinter.printWarning(this, "Field '" + name + "' is not optional " +
-                            "and contains reference to optional field '" +
-                            fieldWithDifferentOptional.getName() + "' in " + exprName + ".");
-                }
-                else
-                {
-                    ZserioToolPrinter.printWarning(this, "Field '" + name + "' has different optional " +
-                            "condition than field '"+ fieldWithDifferentOptional.getName() +
-                            "' referenced in " + exprName + ".");
+                    if (optionalClauseExpr == null)
+                    {
+                        ZserioToolPrinter.printWarning(this, "Field '" + name + "' is not optional " +
+                                "and contains reference to optional field '" +
+                                referencedOptionalField.getName() + "' in " + exprName + ".");
+                    }
+                    else
+                    {
+                        ZserioToolPrinter.printWarning(this, "Field '" + name + "' has different optional " +
+                                "condition than field '"+ referencedOptionalField.getName() +
+                                "' referenced in " + exprName + ".");
+                    }
                 }
             }
         }
-    }
-
-    private Set<Field> getFieldsWithDifferentOptional(Map<Field, List<AstNode>> referencedOptionalFields)
-    {
-        final Set<Field> fieldsWithDifferentOptional = new LinkedHashSet<Field>();
-        for (Map.Entry<Field, List<AstNode>> referencedOptionalField : referencedOptionalFields.entrySet())
-        {
-            if (haveFieldsDifferentOptional(referencedOptionalField.getKey(),
-                    referencedOptionalField.getValue()))
-                fieldsWithDifferentOptional.add(referencedOptionalField.getKey());
-        }
-
-        return fieldsWithDifferentOptional;
     }
 
     private boolean haveFieldsDifferentOptional(Field referencedOptionalField,

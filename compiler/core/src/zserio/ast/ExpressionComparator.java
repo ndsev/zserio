@@ -3,6 +3,7 @@ package zserio.ast;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.antlr.ZserioParser;
 import zserio.ast.AstNode;
 import zserio.ast.Expression;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
@@ -49,7 +50,9 @@ class ExpressionComparator
                     new ComparisonExpressionFormattingPolicy(new ArrayList<AstNode>()));
             final ExpressionFormatter expressionFormatter2 = new ExpressionFormatter(
                     new ComparisonExpressionFormattingPolicy(dotPrefix2));
-            if (expressionFormatter1.formatGetter(expr1).equals(expressionFormatter2.formatGetter(expr2)))
+            final String formattedExpr1 = expressionFormatter1.formatGetter(removeParentheses(expr1));
+            final String formattedExpr2 = expressionFormatter2.formatGetter(removeParentheses(expr2));
+            if (formattedExpr1.equals(formattedExpr2))
                 return true;
         }
         catch (ZserioExtensionException e)
@@ -58,6 +61,15 @@ class ExpressionComparator
         }
 
         return false;
+    }
+
+    private static Expression removeParentheses(Expression expr)
+    {
+        Expression currentExpr = expr;
+        while (currentExpr.getType() == ZserioParser.LPAREN)
+            currentExpr = currentExpr.op1();
+
+        return currentExpr;
     }
 
     private static class ComparisonExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy

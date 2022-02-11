@@ -75,6 +75,23 @@ public class OptionalMembersWarningTest
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
+
+    @Test
+    public void optionalReferencesInOptionalClause()
+    {
+        String warning = "optional_references_in_optional_clause.zs:14:11: Field 'value7' does not have left " +
+                "'and' condition of optional field 'value1' referenced in optional clause.";
+        assertTrue(zserioWarnings.isPresent(warning));
+
+        warning = "optional_references_in_optional_clause.zs:15:11: Field 'value8' does not have left " +
+                "'and' condition of optional field 'value1' referenced in optional clause.";
+        assertTrue(zserioWarnings.isPresent(warning));
+
+        warning = "optional_references_in_optional_clause.zs:16:11: Field 'value9' does not have left " +
+                "'and' condition of optional field 'value1' referenced in optional clause.";
+        assertTrue(zserioWarnings.isPresent(warning));
+    }
+
     @Test
     public void optionalReferencesInTypeArguments()
     {
@@ -129,7 +146,7 @@ public class OptionalMembersWarningTest
     @Test
     public void checkNumberOfWarnings()
     {
-        final int expectedNumberOfWarnings = 21;
+        final int expectedNumberOfWarnings = 24;
         assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
     }
 

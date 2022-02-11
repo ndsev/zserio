@@ -357,22 +357,75 @@ public class Expression extends AstNodeBase
     }
 
     /**
+     * Optional field information returned from the getReferencedOptionalFields() method.
+     */
+    public final static class OptionalFieldInfo
+    {
+        /**
+         * Constructor.
+         *
+         * @param dotPrefix Dot prefix to construct from.
+         * @param leftAndExprs Left 'and' expressions to construct from.
+         */
+        public OptionalFieldInfo(List<AstNode> dotPrefix, List<Expression> leftAndExprs)
+        {
+            this.dotPrefix = dotPrefix;
+            this.leftAndExprs = leftAndExprs;
+        }
+
+        /**
+         * Gets the dot prefix.
+         *
+         * The dot prefix is a list of AST nodes which correspond to the dot expression prefix
+         * of corresponded optional Field object.
+         *
+         * Example:
+         *
+         * "compoundOuter.compoundInner.optionalField" will return AST node list
+         * [compoundOuter, compoundInner] for optional field 'optionalField'.
+         *
+         * @return Dot prefix or empty list.
+         */
+        public List<AstNode> getDotPrefix()
+        {
+            return dotPrefix;
+        }
+
+        /**
+         * Gets the left 'and' expressions.
+         *
+         * Example:
+         *
+         * "value == 0 && (hasOptionalField == true) && optionalField == 0" will return expressions
+         * ["value == 0 && (hasOptionalField == true)", "value == 0", (hasOptionalField == true)"]
+         * for optional field 'optionalField'.
+         *
+         * @return Left 'and' expression or null.
+         */
+        public List<Expression> getLeftAndExprs()
+        {
+            return leftAndExprs;
+        }
+
+        private final List<AstNode> dotPrefix;
+        private final List<Expression> leftAndExprs;
+    }
+
+    /**
      * Gets all optional Field objects referenced from the expression.
      *
-     * List of AST nodes which correspond to the dot expression prefix is returned to each Field object.
-     *
-     * Example:
-     *
-     * 'compoundOuter.compoundInner.fieldChild' will return 'fieldChild' together with AST node list
-     * [compoundOuter, compoundInner].
+     * Method returns as well additional information about each referenced optional Field. This info
+     * is stored in OptionalFieldInfo object in map value.
      *
      * @return Map of optional Field objects referenced from the expression.
      */
-    public Map<Field, List<AstNode>> getReferencedOptionalFields()
+    public Map<Field, OptionalFieldInfo> getReferencedOptionalFields()
     {
         // LinkedHashSet is used intentionally to guarantee insert order
-        final Map<Field, List<AstNode>> referencedOptionalFields = new LinkedHashMap<Field, List<AstNode>>();
-        addReferencedOptionalField(referencedOptionalFields, new ArrayList<AstNode>());
+        final Map<Field, OptionalFieldInfo> referencedOptionalFields =
+                new LinkedHashMap<Field, OptionalFieldInfo>();
+        addReferencedOptionalField(referencedOptionalFields, new ArrayList<AstNode>(),
+                new ArrayList<Expression>());
 
         return referencedOptionalFields;
     }
@@ -785,8 +838,8 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void addReferencedOptionalField(Map<Field, List<AstNode>> referencedOptionalFields,
-            ArrayList<AstNode> currentSymbolObjects)
+    private void addReferencedOptionalField(Map<Field, OptionalFieldInfo> referencedOptionalFields,
+            ArrayList<AstNode> currentDotPrefix, ArrayList<Expression> currentLeftAndExprs)
     {
         if (type == ZserioParser.ID)
         {
@@ -797,28 +850,58 @@ public class Expression extends AstNodeBase
                 {
                     final Field field = (Field)symbolObject;
                     if (field.isOptional())
-                        referencedOptionalFields.put(field, new ArrayList<AstNode>(currentSymbolObjects));
+                    {
+                        final List<AstNode> currentDotPrefixCopy =  new ArrayList<AstNode>(currentDotPrefix);
+                        final List<Expression> currentLeftAndExprsCopy =
+                                new ArrayList<Expression>(currentLeftAndExprs);
+                        referencedOptionalFields.put(field,
+                                new OptionalFieldInfo(currentDotPrefixCopy, currentLeftAndExprsCopy));
+                    }
                 }
-                currentSymbolObjects.add(symbolObject);
+                currentDotPrefix.add(symbolObject);
             }
         }
 
         if (operand1 != null)
         {
             if (type != ZserioParser.DOT)
-                currentSymbolObjects.clear();
-            operand1.addReferencedOptionalField(referencedOptionalFields, currentSymbolObjects);
+                currentDotPrefix.clear();
+            operand1.addReferencedOptionalField(referencedOptionalFields, currentDotPrefix,
+                    currentLeftAndExprs);
             if (operand2 != null)
             {
                 if (type != ZserioParser.DOT)
-                    currentSymbolObjects.clear();
-                operand2.addReferencedOptionalField(referencedOptionalFields, currentSymbolObjects);
+                {
+                    currentDotPrefix.clear();
+                    if (type == ZserioParser.LOGICAL_AND)
+                        addReferencedLeftAndExpr(operand1, currentLeftAndExprs); // add all 'and' operands
+                    else
+                        currentLeftAndExprs.clear();
+                }
+                operand2.addReferencedOptionalField(referencedOptionalFields, currentDotPrefix,
+                        currentLeftAndExprs);
                 if (operand3 != null)
                 {
-                    currentSymbolObjects.clear(); // dot operator is not ternary
-                    operand3.addReferencedOptionalField(referencedOptionalFields, currentSymbolObjects);
+                    currentDotPrefix.clear();  // dot operator is not ternary
+                    currentLeftAndExprs.clear(); // and operator is not ternary
+                    operand3.addReferencedOptionalField(referencedOptionalFields, currentDotPrefix,
+                            currentLeftAndExprs);
                 }
             }
+        }
+    }
+
+    private void addReferencedLeftAndExpr(Expression expr, ArrayList<Expression> currentLeftAndExprs)
+    {
+        Expression currentExpr = expr;
+        currentLeftAndExprs.add(currentExpr);
+        while (currentExpr.type == ZserioParser.LPAREN)
+            currentExpr = currentExpr.operand1;
+
+        if (currentExpr.type == ZserioParser.LOGICAL_AND)
+        {
+            addReferencedLeftAndExpr(currentExpr.operand1, currentLeftAndExprs);
+            addReferencedLeftAndExpr(currentExpr.operand2, currentLeftAndExprs);
         }
     }
 
