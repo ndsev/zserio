@@ -10,6 +10,7 @@
             <Method name="executeUpdate"/>
             <Method name="attachDatabase"/>
             <Method name="detachDatabases"/>
+            <Method name="validate"/>
         </Or>
     </Match>
 </FindBugsFilter>
