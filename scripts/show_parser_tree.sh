@@ -194,7 +194,7 @@ main()
     local PARAM_PARSER_RULE="packageDeclaration"
     local SWITCH_CLEAN
     local SWITCH_PURGE
-    parse_arguments PARAM_ZSERIO_SOURCE PARAM_OUT_DIR PARAM_PARSER_RULE SWITCH_CLEAN SWITCH_PURGE $@
+    parse_arguments PARAM_ZSERIO_SOURCE PARAM_OUT_DIR PARAM_PARSER_RULE SWITCH_CLEAN SWITCH_PURGE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help

@@ -125,7 +125,7 @@ main()
 
     # parse command line arguments
     local NEW_VERSION_STRING
-    parse_arguments NEW_VERSION_STRING $@
+    parse_arguments NEW_VERSION_STRING "$@"
     if [ $? -ne 0 ] ; then
         print_help
         return 1

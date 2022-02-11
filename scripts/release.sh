@@ -499,7 +499,7 @@ main()
     # parse command line arguments
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
     local SWITCH_UPDATE
-    parse_arguments PARAM_OUT_DIR SWITCH_UPDATE $@
+    parse_arguments PARAM_OUT_DIR SWITCH_UPDATE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
