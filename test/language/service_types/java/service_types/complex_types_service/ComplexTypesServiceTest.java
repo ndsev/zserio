@@ -34,7 +34,9 @@ public class ComplexTypesServiceTest
     @Test
     public void methodNames()
     {
+        assertEquals("swapModels", ComplexTypesService.swapModels_METHOD_NAME);
         assertEquals("swapModels", ComplexTypesService.ComplexTypesServiceService.methodNames()[0]);
+        assertEquals("getLength", ComplexTypesService.getLength_METHOD_NAME);
         assertEquals("getLength", ComplexTypesService.ComplexTypesServiceService.methodNames()[1]);
     }
 

@@ -2,6 +2,9 @@
 <#include "TypeInfo.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 
+<#macro method_name_constant_name method>
+    ${method.name}_METHOD_NAME<#t>
+</#macro>
 public final class ${name}
 {
 <#if withTypeInfoCode>
@@ -20,7 +23,7 @@ public final class ${name}
         {
             methodMap = new java.util.HashMap<java.lang.String, Method>();
 <#list methodList as method>
-            methodMap.put("${method.name}",
+            methodMap.put(<@method_name_constant_name method/>,
                 new Method()
                 {
                     @Override
@@ -57,7 +60,7 @@ public final class ${name}
             return new java.lang.String[]
             {
 <#list methodList as method>
-                "${method.name}"<#if method?has_next>,</#if>
+                <@method_name_constant_name method/><#if method?has_next>,</#if>
 </#list>
             };
         }
@@ -104,7 +107,7 @@ public final class ${name}
         {
             final byte[] requestData = zserio.runtime.io.ZserioIO.write(request);
 
-            final byte[] responseData = service.callMethod("${method.name}", requestData, context);
+            final byte[] responseData = service.callMethod(<@method_name_constant_name method/>, requestData, context);
 
             final ${method.responseTypeInfo.typeFullName} response =
                     zserio.runtime.io.ZserioIO.read(${method.responseTypeInfo.typeFullName}.class, responseData);
@@ -120,4 +123,10 @@ public final class ${name}
 
         private final zserio.runtime.service.ServiceInterface service;
     }
+<#if methodList?has_content>
+
+    <#list methodList as method>
+    public static final String <@method_name_constant_name method/> = "${method.name}";
+    </#list>
+</#if>
 }

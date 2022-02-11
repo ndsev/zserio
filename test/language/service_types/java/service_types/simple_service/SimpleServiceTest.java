@@ -19,6 +19,7 @@ public class SimpleServiceTest
     @Test
     public void methodNames()
     {
+        assertEquals("powerOfTwo", SimpleService.powerOfTwo_METHOD_NAME);
         assertEquals("powerOfTwo", SimpleService.SimpleServiceService.methodNames()[0]);
     }
 
