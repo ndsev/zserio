@@ -396,8 +396,8 @@ public class Expression extends AstNodeBase
          *
          * Example:
          *
-         * "value == 0 && (hasOptionalField == true) && optionalField == 0" will return expressions
-         * ["value == 0 && (hasOptionalField == true)", "value == 0", (hasOptionalField == true)"]
+         * "value == 0 'and' (hasOptionalField == true) 'and' optionalField == 0" will return expressions
+         * ["value == 0 'and' (hasOptionalField == true)", "value == 0", (hasOptionalField == true)"]
          * for optional field 'optionalField'.
          *
          * @return Left 'and' expression or null.
