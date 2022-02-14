@@ -163,18 +163,14 @@ public class ZserioAstTemplator extends ZserioAstWalker
         instantiationClashMap.put(shortNameKey, isShortNameKeyClash);
 
         // instantiate the template
-        final TemplatableType newInstantiation = instantiateImpl(template, instantiationPackage);
-        final InstantiationMapValue value = new InstantiationMapValue(newInstantiation, templateArguments);
-        instantiationMap.put(key, value);
-
-        return newInstantiation;
-    }
-
-    private TemplatableType instantiateImpl(TemplatableType template, Package instantiationPackage)
-    {
-        // instantiate the template
         final TemplatableType newInstantiation = template.instantiate(instantiationReferenceStack,
                 instantiationPackage);
+
+        // remember the instantiation
+        // note: must be done before templates within the instantiation (e.g. field types) are instantiated
+        //       to prevent stack overflow in case of templated compound type recursion
+        final InstantiationMapValue value = new InstantiationMapValue(newInstantiation, templateArguments);
+        instantiationMap.put(key, value);
 
         // resolve types within the instantiation
         newInstantiation.accept(typeResolver);

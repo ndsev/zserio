@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.antlr.ZserioParser;
-import zserio.ast.AstNode;
-import zserio.ast.Expression;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;

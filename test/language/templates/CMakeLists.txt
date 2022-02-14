@@ -65,6 +65,21 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.cpp
     ${ZSERIO_GEN_DIR}/templates/expression_full_template_argument/FullTemplateArgumentHolder.h
 
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_string.cpp
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_string.h
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_float32.cpp
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_float32.h
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_uint32.h
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_string.cpp
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_string.h
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_float32.cpp
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_float32.h
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/FunctionTemplatedReturnType.cpp
+    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/FunctionTemplatedReturnType.h
+
     ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/InstantiateClashOtherTemplate.cpp
     ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/InstantiateClashOtherTemplate.h
     ${ZSERIO_GEN_DIR}/templates/instantiate_clash_other_template/Test_uint32.cpp
@@ -192,21 +207,6 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/InstantiateVsDefault.h
     ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/pkg/Test_uint32.cpp
     ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/pkg/Test_uint32.h
-
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.cpp
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_uint32.h
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_string.cpp
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_string.h
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_float32.cpp
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/TestStructure_float32.h
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_uint32.cpp
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_uint32.h
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_string.cpp
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_string.h
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_float32.cpp
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/Holder_float32.h
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/FunctionTemplatedReturnType.cpp
-    ${ZSERIO_GEN_DIR}/templates/function_templated_return_type/FunctionTemplatedReturnType.h
 
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Union.cpp
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Union.h
@@ -381,6 +381,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/Compound.cpp
     ${ZSERIO_GEN_DIR}/templates/subtype_template_with_compound/Compound.h
 
+    ${ZSERIO_GEN_DIR}/templates/templated_struct_recursion/TemplatedStructRecursion.cpp
+    ${ZSERIO_GEN_DIR}/templates/templated_struct_recursion/TemplatedStructRecursion.h
+    ${ZSERIO_GEN_DIR}/templates/templated_struct_recursion/RecursiveTemplate_uint32.cpp
+    ${ZSERIO_GEN_DIR}/templates/templated_struct_recursion/RecursiveTemplate_uint32.h
+
     ${ZSERIO_GEN_DIR}/templates/union_templated_field/UnionTemplatedField.cpp
     ${ZSERIO_GEN_DIR}/templates/union_templated_field/UnionTemplatedField.h
     ${ZSERIO_GEN_DIR}/templates/union_templated_field/TemplatedUnion_uint16_uint32.cpp
@@ -419,6 +424,7 @@ add_test_sources(
     cpp/ExpressionEnumTemplateArgumentTest.cpp
     cpp/ExpressionEnumTemplateArgumentConflictTest.cpp
     cpp/ExpressionFullTemplateArgumentTest.cpp
+    cpp/FunctionTemplatedReturnTypeTest.cpp
     cpp/InstantiateClashOtherTemplateTest.cpp
     cpp/InstantiateImportedTest.cpp
     cpp/InstantiateNestedTemplateTest.cpp
@@ -440,7 +446,6 @@ add_test_sources(
     cpp/InstantiateViaImportTest.cpp
     cpp/InstantiateViaSingleImportTest.cpp
     cpp/InstantiateVsDefaultTest.cpp
-    cpp/FunctionTemplatedReturnTypeTest.cpp
     cpp/SqlTableTemplatedFieldTest.cpp
     cpp/StructFullAndShortTemplateArgumentTest.cpp
     cpp/StructFullNameTemplateArgumentTest.cpp
@@ -458,6 +463,7 @@ add_test_sources(
     cpp/SubtypeTemplateArgumentTest.cpp
     cpp/SubtypeTemplateWithBuiltinTest.cpp
     cpp/SubtypeTemplateWithCompoundTest.cpp
+    cpp/TemplatedStructRecursionTest.cpp
     cpp/UnionTemplatedFieldTest.cpp
 )
 
