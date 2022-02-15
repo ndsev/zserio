@@ -9,6 +9,19 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/union_types/simple_union/SimpleUnion.cpp
     ${ZSERIO_GEN_DIR}/union_types/simple_union/SimpleUnion.h
 
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionCompatibilityCheckVersion1.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionCompatibilityCheckVersion1.h
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionCompatibilityCheckVersion2.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionCompatibilityCheckVersion2.h
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionVersion1.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionVersion1.h
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionVersion2.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/UnionVersion2.h
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/CoordXY.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/CoordXY.h
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/CoordXYZ.cpp
+    ${ZSERIO_GEN_DIR}/union_types/union_compatibility_check/CoordXYZ.h
+
     ${ZSERIO_GEN_DIR}/union_types/union_with_array/Data8.cpp
     ${ZSERIO_GEN_DIR}/union_types/union_with_array/Data8.h
     ${ZSERIO_GEN_DIR}/union_types/union_with_array/TestUnion.cpp
@@ -37,6 +50,7 @@ add_test_sources(
     cpp/EmptyUnionTest.cpp
     cpp/EmptyUnionWithParameterTest.cpp
     cpp/SimpleUnionTest.cpp
+    cpp/UnionCompatibilityCheckTest.cpp
     cpp/UnionWithArrayTest.cpp
     cpp/UnionWithParameterizedFieldTest.cpp
     cpp/UnionWithParameterTest.cpp

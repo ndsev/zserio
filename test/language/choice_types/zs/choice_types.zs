@@ -2,6 +2,7 @@ package choice_types;
 
 import choice_types.bitmask_param_choice.*;
 import choice_types.bool_param_choice.*;
+import choice_types.choice_compatibility_check.*;
 import choice_types.choice_with_array.*;
 import choice_types.default_empty_choice.*;
 import choice_types.empty_choice.*;

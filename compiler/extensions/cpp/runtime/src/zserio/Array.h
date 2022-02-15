@@ -374,7 +374,6 @@ public:
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
                 m_packedArrayTraits.initContext(contextNode, m_rawArray.at(index));
-            endBitPosition += bitSizeOfDescriptor(contextNode, endBitPosition);
 
             for (size_t index = 0; index < size; ++index)
             {
@@ -440,7 +439,6 @@ public:
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
                 m_packedArrayTraits.initContext(contextNode, m_rawArray.at(index));
-            endBitPosition += bitSizeOfDescriptor(contextNode, endBitPosition);
 
             for (size_t index = 0; index < size; ++index)
             {
@@ -523,7 +521,6 @@ public:
             m_rawArray.reserve(readSize);
 
             auto& contextNode = getPackingContextNode();
-            readDescriptor(contextNode, in);
 
             for (size_t index = 0; index < readSize; ++index)
             {
@@ -580,7 +577,6 @@ public:
             auto& contextNode = getPackingContextNode();
             for (size_t index = 0; index < size; ++index)
                 m_packedArrayTraits.initContext(contextNode, m_rawArray.at(index));
-            writeDescriptor(contextNode, out);
 
             for (size_t index = 0; index < size; ++index)
             {
@@ -883,49 +879,6 @@ private:
         {
             for (auto& childNode : contextNode.getChildren())
                 resetContext(childNode);
-        }
-    }
-
-    static size_t bitSizeOfDescriptor(PackingContextNodeType& contextNode, size_t bitPosition)
-    {
-        size_t endBitPosition = bitPosition;
-
-        if (contextNode.hasContext())
-        {
-            endBitPosition += contextNode.getContext().bitSizeOfDescriptor();
-        }
-        else
-        {
-            for (auto& childNode : contextNode.getChildren())
-                endBitPosition += bitSizeOfDescriptor(childNode, endBitPosition);
-        }
-
-        return endBitPosition - bitPosition;
-    }
-
-    static void readDescriptor(PackingContextNodeType& contextNode, BitStreamReader& in)
-    {
-        if (contextNode.hasContext())
-        {
-            contextNode.getContext().readDescriptor(in);
-        }
-        else
-        {
-            for (auto& childNode : contextNode.getChildren())
-                readDescriptor(childNode, in);
-        }
-    }
-
-    static void writeDescriptor(PackingContextNodeType& contextNode, BitStreamWriter& out)
-    {
-        if (contextNode.hasContext())
-        {
-            contextNode.getContext().writeDescriptor(out);
-        }
-        else
-        {
-            for (auto& childNode : contextNode.getChildren())
-                writeDescriptor(childNode, out);
         }
     }
 

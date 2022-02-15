@@ -1,6 +1,8 @@
 noExplicitConstructor:*/choice_types/bitmask_param_choice/Selector.h
 noExplicitConstructor:*/choice_types/full_bitmask_param_choice/Selector.h
 uninitMemberVar:*/choice_types/bool_param_choice/BoolParamChoice.cpp
+uninitMemberVar:*/choice_types/choice_compatibility_check/ChoiceVersion1.cpp
+uninitMemberVar:*/choice_types/choice_compatibility_check/ChoiceVersion2.cpp
 uninitMemberVar:*/choice_types/choice_with_array/TestChoice.cpp
 uninitMemberVar:*/choice_types/default_empty_choice/DefaultEmptyChoice.cpp
 uninitMemberVar:*/choice_types/empty_choice_with_case/EmptyChoiceWithCase.cpp

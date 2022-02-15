@@ -54,11 +54,6 @@ int64_t calcUncheckedDelta(T lhs, uint64_t rhs)
  * readPacked, writePacked). They must be initialized at first via calling the init method for each packable
  * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
  * can be repeatedly called for exactly the same sequence of packable elements.
- *
- * Note that bitSizeOfDescriptor, writeDescriptor and readDescriptor methods finish the context initialization
- * and must be called before bitSizeOf, write and read operations respectively. Finishing of the context
- * initialization is made in the bitSizeOfDescriptor and writeDescriptor methods to safe one iteration in
- * the Array wrapper which would be otherwise needed to do the job.
  */
 class DeltaContext
 {
@@ -90,7 +85,7 @@ public:
     void init(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
     {
         m_numElements++;
-        m_unpackedBitSize += arrayTraits.bitSizeOf(element);
+        m_unpackedBitSize += bitSizeOfUnpacked(arrayTraits, element);
 
         if (!m_previousElement.hasValue())
         {
@@ -117,21 +112,6 @@ public:
     }
 
     /**
-     * Returns length of the descriptor stored in the bit stream in bits.
-     *
-     * \return Length of the descriptor stored in the bit stream in bits.
-     */
-    size_t bitSizeOfDescriptor()
-    {
-        finishInit(); // called from here for better performance
-
-        if (m_isPacked)
-            return 1 + MAX_BIT_NUMBER_BITS;
-        else
-            return 1;
-    }
-
-    /**
      * Returns length of the packed element stored in the bit stream in bits.
      *
      * \param arrayTraits Standard array traits.
@@ -142,28 +122,21 @@ public:
     template <typename ARRAY_TRAITS>
     size_t bitSizeOf(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
     {
-        if (!m_processingStarted || !m_isPacked)
+        if (!m_processingStarted)
         {
             m_processingStarted = true;
-            return arrayTraits.bitSizeOf(element);
+            finishInit();
+
+            return bitSizeOfDescriptor() + bitSizeOfUnpacked(arrayTraits, element);
+        }
+        else if (!m_isPacked)
+        {
+            return bitSizeOfUnpacked(arrayTraits, element);
         }
         else
         {
             return m_maxBitNumber + (m_maxBitNumber > 0 ? 1 : 0);
         }
-    }
-
-    /**
-     * Reads the delta packing descriptor from the bit stream. Called for all contexts before the first element
-     * is read.
-     *
-     * \param in Bit stream reader.
-     */
-    void readDescriptor(BitStreamReader& in)
-    {
-        m_isPacked = in.readBool();
-        if (m_isPacked)
-            m_maxBitNumber = static_cast<uint8_t>(in.readBits(MAX_BIT_NUMBER_BITS));
     }
 
     /**
@@ -177,12 +150,16 @@ public:
     template <typename ARRAY_TRAITS>
     typename ARRAY_TRAITS::ElementType read(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
     {
-        if (!m_processingStarted || !m_isPacked)
+        if (!m_processingStarted)
         {
             m_processingStarted = true;
-            const auto element = arrayTraits.read(in);
-            m_previousElement = static_cast<uint64_t>(element);
-            return element;
+            readDescriptor(in);
+
+            return readUnpacked(arrayTraits, in);
+        }
+        else if (!m_isPacked)
+        {
+            return readUnpacked(arrayTraits, in);
         }
         else
         {
@@ -200,21 +177,6 @@ public:
     }
 
     /**
-     * Writes the delta packing descriptor to the bit stream. Called for all contexts before the first element
-     * is written.
-     *
-     * \param out Bit stream writer.
-     */
-    void writeDescriptor(BitStreamWriter& out)
-    {
-        finishInit(); // called from here for better performance
-
-        out.writeBool(m_isPacked);
-        if (m_isPacked)
-            out.writeBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
-    }
-
-    /**
      * Writes the packed element to the bit stream.
      *
      * \param arrayTraits Standard array traits.
@@ -225,11 +187,17 @@ public:
     void write(const ARRAY_TRAITS& arrayTraits, BitStreamWriter& out,
             typename ARRAY_TRAITS::ElementType element)
     {
-        if (!m_processingStarted || !m_isPacked)
+        if (!m_processingStarted)
         {
             m_processingStarted = true;
-            m_previousElement = static_cast<uint64_t>(element);
-            arrayTraits.write(out, element);
+            finishInit();
+            writeDescriptor(out);
+
+            writeUnpacked(arrayTraits, out, element);
+        }
+        else if (!m_isPacked)
+        {
+            writeUnpacked(arrayTraits, out, element);
         }
         else
         {
@@ -255,6 +223,50 @@ private:
             if (packedBitSizeWithDescriptor >= unpackedBitSizeWithDescriptor)
                 m_isPacked = false;
         }
+    }
+
+    size_t bitSizeOfDescriptor()
+    {
+        if (m_isPacked)
+            return 1 + MAX_BIT_NUMBER_BITS;
+        else
+            return 1;
+    }
+
+    template <typename ARRAY_TRAITS>
+    static size_t bitSizeOfUnpacked(const ARRAY_TRAITS& arrayTraits, typename ARRAY_TRAITS::ElementType element)
+    {
+        return arrayTraits.bitSizeOf(element);
+    }
+
+    void readDescriptor(BitStreamReader& in)
+    {
+        m_isPacked = in.readBool();
+        if (m_isPacked)
+            m_maxBitNumber = static_cast<uint8_t>(in.readBits(MAX_BIT_NUMBER_BITS));
+    }
+
+    template <typename ARRAY_TRAITS>
+    typename ARRAY_TRAITS::ElementType readUnpacked(const ARRAY_TRAITS& arrayTraits, BitStreamReader& in)
+    {
+        const auto element = arrayTraits.read(in);
+        m_previousElement = static_cast<uint64_t>(element);
+        return element;
+    }
+
+    void writeDescriptor(BitStreamWriter& out)
+    {
+        out.writeBool(m_isPacked);
+        if (m_isPacked)
+            out.writeBits(m_maxBitNumber, MAX_BIT_NUMBER_BITS);
+    }
+
+    template <typename ARRAY_TRAITS>
+    void writeUnpacked(const ARRAY_TRAITS& arrayTraits, BitStreamWriter& out,
+            typename ARRAY_TRAITS::ElementType element)
+    {
+        m_previousElement = static_cast<uint64_t>(element);
+        arrayTraits.write(out, element);
     }
 
     static const uint8_t MAX_BIT_NUMBER_BITS = 6;
@@ -325,16 +337,6 @@ public:
     void createContext()
     {
         m_context = DeltaContext();
-    }
-
-    /**
-     * Gets whether the current node has a packing context.
-     *
-     * \return True when the current node has assigned a context, false otherwise.
-     */
-    bool hasContext() const
-    {
-        return m_context.hasValue();
     }
 
     /**

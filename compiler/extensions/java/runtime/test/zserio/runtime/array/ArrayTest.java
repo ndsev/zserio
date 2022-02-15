@@ -482,14 +482,13 @@ public class ArrayTest
         // zero delta
         final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {-10, -10, -10, -10, -10, -10, -10});
         final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
-        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + /* alignment */ 1 + elementBitSize +
-                /* alignment */ 3;
+        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize + /* alignment */ 4;
         testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
 
         // one-element array
         final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {-10});
         final int array3BitSizeOf = 1 + elementBitSize;
-        final int array3AlignedBitSizeOf = 1 + 7 + elementBitSize;
+        final int array3AlignedBitSizeOf = 1 + elementBitSize;
         testPackedArray(rawArray3, emptyRawArray, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);
 
         // empty array
@@ -514,7 +513,7 @@ public class ArrayTest
                 Short.MIN_VALUE, -1, 10, 20, 30, 40}); // max_bit_number 15, delta needs 16 bits
         final ArrayTraits arrayTraits16 = new ArrayTraits.SignedBitFieldShortArrayTraits(16);
         final int unpackedBitSizeOf = 1 + 6 * 16;
-        final int unpackedAlignedBitSizeOf = 8 + 6 * 16;
+        final int unpackedAlignedBitSizeOf = 1 + 16 + 7 + 5 * 16;
         testPackedArray(rawArray2, emptyRawArray, arrayTraits16, unpackedBitSizeOf, unpackedAlignedBitSizeOf);
     }
 
@@ -557,14 +556,13 @@ public class ArrayTest
         // zero delta
         final RawArray rawArray2 = new RawArray.ByteRawArray(new byte[] {1, 1, 1, 1, 1, 1, 1});
         final int array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
-        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + /* alignment */ 1 + elementBitSize +
-                /* alignment */ 3;
+        final int array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + elementBitSize + /* alignment */ 4;
         testPackedArray(rawArray2, emptyRawArray, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
 
         // one-element array
         final RawArray rawArray3 = new RawArray.ByteRawArray(new byte[] {1});
         final int array3BitSizeOf = 1 + elementBitSize;
-        final int array3AlignedBitSizeOf = 1 + 7 + elementBitSize;
+        final int array3AlignedBitSizeOf = 1 + elementBitSize;
         testPackedArray(rawArray3, emptyRawArray, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);
 
         // empty array
@@ -589,7 +587,7 @@ public class ArrayTest
         final RawArray rawArray2 = new RawArray.ShortRawArray(new short[] {
                 255, 0, 10, 20, 30, 40}); // max_bit_number 8, delta needs 9 bits
         final int array2BitSizeOf = 1 + 6 * 8;
-        final int array2AlignedBitSizeOf = 8 + 6 * 8;
+        final int array2AlignedBitSizeOf = 1 + 8 + 7 + 5 * 8;
         testPackedArray(rawArray2, emptyRawArray, arrayTraits8, array2BitSizeOf, array2AlignedBitSizeOf);
 
         // will not be packed because unpacked 8bit values will be more efficient
@@ -597,7 +595,7 @@ public class ArrayTest
         final RawArray rawArray3 = new RawArray.ShortRawArray(new short[] {
                 255, 128, 10, 20, 30, 40}); // max_bit_number 7, delta needs 8 bits
         final int array3BitSizeOf = 1 + 6 * 8;
-        final int array3AlignedBitSizeOf = 8 + 6 * 8;
+        final int array3AlignedBitSizeOf = 1 + 8 + 7 + 5 * 8;
         testPackedArray(rawArray3, emptyRawArray, arrayTraits8, array3BitSizeOf, array3AlignedBitSizeOf);
     }
 
@@ -705,7 +703,7 @@ public class ArrayTest
 
         final RawArray unpackedRawArray = new RawArray.LongRawArray(new long[] {5000000L, 0, 0, 0, 0, 0, 0});
         final int unpackedBitSizeOf = 1 + 32 + 6 * 8;
-        final int unpackedAlignedBitSizeOf = 8 + 32 + 6 * 8;
+        final int unpackedAlignedBitSizeOf = 1 + 32 + 7 + 6 * 8;
         testPackedArray(unpackedRawArray, emptyRawArray, arrayTraits,
                 unpackedBitSizeOf, unpackedAlignedBitSizeOf);
     }
@@ -1327,11 +1325,12 @@ public class ArrayTest
 
     private static int calcAlignedPackedBitSize(int elementBitSize, int arraySize, int maxDeltaBitSize)
     {
-        final int alignedElementBitSize = (elementBitSize + 7) / 8 * 8;
+        final int firstElementWithDescriptorBitSize = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
+        final int firstAlignedElementWithDescriptorBitSize = (firstElementWithDescriptorBitSize + 7) / 8 * 8;
         final int alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
 
-        return PACKING_DESCRIPTOR_BITSIZE + 1 /* packing descriptor alignment */ + alignedElementBitSize +
-            (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
+        return firstAlignedElementWithDescriptorBitSize +
+                (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
     }
 
     private static int PACKING_DESCRIPTOR_BITSIZE = 1 + 6;

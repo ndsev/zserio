@@ -23,18 +23,18 @@ protected:
                 writer.writeBits(wrongOffset, 32);
             else
                 writer.writeBits(currentOffset, 32);
-            currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            currentOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
         }
 
         writer.writeBits(SPACER_VALUE, 3);
 
         writer.writeVarSize(NUM_ELEMENTS);
 
+        writer.alignTo(8);
         writer.writeBool(true);
         writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
-        writer.alignTo(8);
         writer.writeBits(0, ELEMENT_SIZE);
-        for (uint8_t i = 0; i < NUM_ELEMENTS - 1; ++i)
+        for (uint8_t i = 1; i < NUM_ELEMENTS; ++i)
         {
             writer.alignTo(8);
             writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
@@ -47,10 +47,10 @@ protected:
         const size_t expectedNumElements = NUM_ELEMENTS;
         ASSERT_EQ(expectedNumElements, offsets.size());
         uint32_t expectedOffset = ELEMENT0_OFFSET + offsetShift;
-        for (auto it = offsets.begin(); it != offsets.end(); ++it)
+        for (size_t i = 0; i < offsets.size(); ++i)
         {
-            ASSERT_EQ(expectedOffset, *it);
-            expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            ASSERT_EQ(expectedOffset, offsets[i]);
+            expectedOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
         }
     }
 
@@ -67,7 +67,7 @@ protected:
         ASSERT_EQ(expectedNumElements, data.size());
         for (uint8_t i = 0; i < NUM_ELEMENTS; ++i)
         {
-            ASSERT_EQ(i, data[i]);
+            ASSERT_EQ(i, data[i]) << "i = " << static_cast<int>(i);
         }
     }
 
@@ -101,8 +101,10 @@ protected:
 
     static const size_t     AUTO_ARRAY_LENGTH_BYTE_SIZE = 1;
     static const uint32_t   ELEMENT0_OFFSET = AUTO_ARRAY_LENGTH_BYTE_SIZE + NUM_ELEMENTS * 4 +
-            (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 1 + 6 + 6 /* alignment */) / 8;
+            (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 5 /* alignment */) / 8;
     static const uint8_t    ELEMENT_SIZE = 5;
+    static const uint8_t    ALIGNED_FIRST_ELEMENT_SIZE = 1 + 6 + ELEMENT_SIZE + 4 /* alignment */;
+    static const uint8_t    ALIGNED_FIRST_ELEMENT_BYTE_SIZE = ALIGNED_FIRST_ELEMENT_SIZE / 8;
     static const uint8_t    ALIGNED_ELEMENT_SIZE = 8;
     static const uint8_t    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
 
@@ -112,7 +114,8 @@ protected:
     static const uint8_t    PACKED_ARRAY_MAX_BIT_NUMBER = 1;
 
     static const size_t     AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = ELEMENT0_OFFSET * 8 +
-            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + PACKED_ARRAY_MAX_BIT_NUMBER + 1;
+            ALIGNED_FIRST_ELEMENT_SIZE +
+            (NUM_ELEMENTS - 2) * ALIGNED_ELEMENT_SIZE + PACKED_ARRAY_MAX_BIT_NUMBER + 1;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };

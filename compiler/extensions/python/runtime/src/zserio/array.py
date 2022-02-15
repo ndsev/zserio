@@ -187,7 +187,6 @@ class Array:
             context_node = self._packed_array_traits.create_context()
             for element in self._raw_array:
                 self._packed_array_traits.init_context(context_node, element)
-            end_bitposition += Array._bitsizeof_descriptor(context_node, end_bitposition)
 
             for element in self._raw_array:
                 if self._set_offset_method is not None:
@@ -234,7 +233,6 @@ class Array:
             context_node = self._packed_array_traits.create_context()
             for element in self._raw_array:
                 self._packed_array_traits.init_context(context_node, element)
-            end_bitposition += Array._bitsizeof_descriptor(context_node, end_bitposition)
 
             for index in range(size):
                 if self._set_offset_method is not None:
@@ -302,7 +300,6 @@ class Array:
 
         if read_size > 0:
             context_node = self._packed_array_traits.create_context()
-            Array._read_descriptor(context_node, reader)
 
             for index in range(read_size):
                 if self._check_offset_method is not None:
@@ -343,40 +340,12 @@ class Array:
             context_node = self._packed_array_traits.create_context()
             for element in self._raw_array:
                 self._packed_array_traits.init_context(context_node, element)
-            Array._write_descriptor(context_node, writer)
 
             for index in range(size):
                 if self._check_offset_method is not None:
                     writer.alignto(8)
                     self._check_offset_method(index, writer.bitposition)
                 self._packed_array_traits.write(context_node, writer, self._raw_array[index])
-
-    @staticmethod
-    def _bitsizeof_descriptor(context_node: 'PackingContextNode', bitposition: int):
-        end_bitposition = bitposition
-        if context_node.has_context():
-            end_bitposition += context_node.context.bitsizeof_descriptor()
-        else:
-            for child_node in context_node.children:
-                end_bitposition += Array._bitsizeof_descriptor(child_node, end_bitposition)
-        return end_bitposition - bitposition
-
-    @staticmethod
-    def _read_descriptor(context_node: 'PackingContextNode', reader: BitStreamReader):
-        if context_node.has_context():
-            context_node.context.read_descriptor(reader)
-        else:
-            for child_node in context_node.children:
-                Array._read_descriptor(child_node, reader)
-
-    @staticmethod
-    def _write_descriptor(context_node: 'PackingContextNode', writer: BitStreamWriter):
-        if context_node.has_context():
-            context_node.context.write_descriptor(writer)
-        else:
-            for child_node in context_node.children:
-                Array._write_descriptor(child_node, writer)
-
 
 class DeltaContext:
     """
@@ -386,11 +355,6 @@ class DeltaContext:
     They must be initialized at first via calling the init method for each packable element present in the
     array. After the full initialization, only a single method (bitsizeof, read, write) can be repeatedly
     called for exactly the same sequence of packable elements.
-
-    Note that bitsizeof_descriptor, write_descriptor and read_descriptor methods finish the context
-    initialization and must be called before bitsizeof, write and read operations respectively. Finishing of
-    the context initialization is made in the bitsizeof_descriptor and write_descriptor methods to safe one
-    iteration in the Array wrapper which would be otherwise needed to do the job.
 
     Example::
 
@@ -422,7 +386,7 @@ class DeltaContext:
         """
 
         self._num_elements += 1
-        self._unpacked_bitsize += DeltaContext._array_traits_bitsizeof(array_traits, element)
+        self._unpacked_bitsize += DeltaContext._bitsizeof_unpacked(array_traits, element)
 
         if self._previous_element is None:
             self._previous_element = element
@@ -443,20 +407,6 @@ class DeltaContext:
 
                 self._previous_element = element
 
-    def bitsizeof_descriptor(self) -> int:
-        """
-        Returns length of the descriptor stored in the bit stream in bits.
-
-        :returns: Length of the descriptor stored in the bit stream in bits.
-        """
-
-        self._finish_init() # called from here for better performance
-
-        if self._is_packed:
-            return 1 + self._MAX_BIT_NUMBER_BITS
-        else:
-            return 1
-
     def bitsizeof(self, array_traits: typing.Any, element: int) -> int:
         """
         Returns length of the element representation stored in the bit stream in bits.
@@ -467,23 +417,15 @@ class DeltaContext:
         :returns: Length of the element representation stored in the bit stream in bits.
         """
 
-        if not self._processing_started or not self._is_packed:
+        if not self._processing_started:
             self._processing_started = True
-            return DeltaContext._array_traits_bitsizeof(array_traits, element)
-        else: # packed and not first
+            self._finish_init()
+
+            return self._bitsizeof_descriptor() + DeltaContext._bitsizeof_unpacked(array_traits, element)
+        elif not self._is_packed:
+            return DeltaContext._bitsizeof_unpacked(array_traits, element)
+        else:
             return self._max_bit_number + 1 if self._max_bit_number > 0 else 0
-
-    def read_descriptor(self, reader: BitStreamReader) -> None:
-        """
-        Reads the delta packing descriptor from the bit stream. Called for all contexts before the first element
-        is read.
-
-        :param reader: Bit stream reader.
-        """
-
-        self._is_packed = reader.read_bool()
-        if self._is_packed:
-            self._max_bit_number = reader.read_bits(self._MAX_BIT_NUMBER_BITS)
 
     def read(self, array_traits: typing.Any, reader: BitStreamReader) -> int:
         """
@@ -493,31 +435,19 @@ class DeltaContext:
         :param reader: Bit stream reader.
         """
 
-        if not self._processing_started or not self._is_packed:
+        if not self._processing_started:
             self._processing_started = True
-            element = array_traits.read(reader)
-            self._previous_element = element
-            return element
-        else: # packed and not first
+            self._read_descriptor(reader)
+
+            return self._read_unpacked(array_traits, reader)
+        elif not self._is_packed:
+            return self._read_unpacked(array_traits, reader)
+        else:
             assert self._previous_element is not None
             if self._max_bit_number > 0:
                 delta = reader.read_signed_bits(self._max_bit_number + 1)
                 self._previous_element += delta
             return self._previous_element
-
-    def write_descriptor(self, writer: BitStreamWriter) -> None:
-        """
-        Writes the delta packing descriptor to the bit stream. Called for all contexts before the first element
-        is written.
-
-        :param writer: Bit stream writer.
-        """
-
-        self._finish_init() # called from here for better performance
-
-        writer.write_bool(self._is_packed)
-        if self._is_packed:
-            writer.write_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
 
     def write(self, array_traits: typing.Any, writer: BitStreamWriter, element: int) -> None:
         """
@@ -528,10 +458,14 @@ class DeltaContext:
         :param element: Element to write.
         """
 
-        if not self._processing_started or not self._is_packed:
+        if not self._processing_started:
             self._processing_started = True
-            self._previous_element = element
-            array_traits.write(writer, element)
+            self._finish_init()
+            self._write_descriptor(writer)
+
+            self._write_unpacked(array_traits, writer, element)
+        elif not self._is_packed:
+            self._write_unpacked(array_traits, writer, element)
         else: # packed and not first
             assert self._previous_element is not None
             if self._max_bit_number > 0:
@@ -550,12 +484,37 @@ class DeltaContext:
             if packed_bitsize_with_descriptor >= unpacked_bitsize_with_descriptor:
                 self._is_packed = False
 
+    def _bitsizeof_descriptor(self) -> int:
+        if self._is_packed:
+            return 1 + self._MAX_BIT_NUMBER_BITS
+        else:
+            return 1
+
     @staticmethod
-    def _array_traits_bitsizeof(array_traits, element):
+    def _bitsizeof_unpacked(array_traits : typing.Any, element : int) -> int:
         if array_traits.HAS_BITSIZEOF_CONSTANT:
             return array_traits.bitsizeof()
         else: # we know that NEEDS_BITSIZEOF_POSITION is False here
             return array_traits.bitsizeof(element)
+
+    def _read_descriptor(self, reader: BitStreamReader) -> None:
+        self._is_packed = reader.read_bool()
+        if self._is_packed:
+            self._max_bit_number = reader.read_bits(self._MAX_BIT_NUMBER_BITS)
+
+    def _read_unpacked(self, array_traits: typing.Any, reader: BitStreamReader) -> int:
+        element = array_traits.read(reader)
+        self._previous_element = element
+        return element
+
+    def _write_descriptor(self, writer: BitStreamWriter) -> None:
+        writer.write_bool(self._is_packed)
+        if self._is_packed:
+            writer.write_bits(self._max_bit_number, self._MAX_BIT_NUMBER_BITS)
+
+    def _write_unpacked(self, array_traits: typing.Any, writer: BitStreamWriter, element: int) -> None:
+        self._previous_element = element
+        array_traits.write(writer, element)
 
     _MAX_BIT_NUMBER_BITS = 6
     _MAX_BIT_NUMBER_LIMIT = 62
@@ -602,15 +561,6 @@ class PackingContextNode:
         """
 
         self._context = DeltaContext()
-
-    def has_context(self) -> bool:
-        """
-        Checks whether this node has a context.
-
-        :returns: True when this is a leaf, False otherwise.
-        """
-
-        return self._context is not None
 
     @property
     def context(self) -> DeltaContext:

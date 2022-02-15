@@ -15,11 +15,6 @@ import zserio.runtime.io.BitStreamWriter;
  * readPacked, writePacked). They must be initialized at first via calling the init method for each packable
  * element present in the array. After the full initialization, only a single method (bitSizeOf, read, write)
  * can be repeatedly called for exactly the same sequence of packable elements.
- *
- Note that bitSizeOfDescriptor, writeDescriptor and readDescriptor methods finish the context initialization
- * and must be called before bitSizeOf, write and read operations respectively. Finishing of the context
- * initialization is made in the bitSizeOfDescriptor and writeDescriptor methods to safe one iteration in
- * the Array wrapper which would be otherwise needed to do the job.
  */
 public class DeltaContext
 {
@@ -32,7 +27,7 @@ public class DeltaContext
     public void init(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
     {
         numElements++;
-        unpackedBitSize += arrayTraits.bitSizeOf(element);
+        unpackedBitSize += bitSizeOfUnpacked(arrayTraits, element);
 
         if (previousElement == null)
         {
@@ -59,18 +54,6 @@ public class DeltaContext
     }
 
     /**
-     * Returns length of the descriptor stored in the bit stream in bits.
-     *
-     * @return Length of the descriptor stored in the bit stream in bits.
-     */
-    public int bitSizeOfDescriptor()
-    {
-        finishInit(); // called from here for better performance
-
-        return isPacked ? 1 + MAX_BIT_NUMBER_BITS : 1;
-    }
-
-    /**
      * Returns length of the packed element stored in the bit stream in bits.
      *
      * @param arrayTraits Standard array traits.
@@ -80,30 +63,21 @@ public class DeltaContext
      */
     public int bitSizeOf(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
     {
-        if (!processingStarted || !isPacked)
+        if (!processingStarted)
         {
             processingStarted = true;
-            return arrayTraits.bitSizeOf(element);
+            finishInit();
+
+            return bitSizeOfDescriptor() + bitSizeOfUnpacked(arrayTraits, element);
+        }
+        else if (!isPacked)
+        {
+            return bitSizeOfUnpacked(arrayTraits, element);
         }
         else
         {
             return maxBitNumber + (maxBitNumber > 0 ? 1 : 0);
         }
-    }
-
-    /**
-     * Reads the delta packing descriptor from the bit stream. Called for all contexts before the first element
-     * is read.
-     *
-     * @param reader Bit stream reader.
-     *
-     * @throws IOException Failure during bit stream manipulation.
-     */
-    public void readDescriptor(BitStreamReader reader) throws IOException
-    {
-        isPacked = reader.readBool();
-        if (isPacked)
-            maxBitNumber = (byte)reader.readBits(MAX_BIT_NUMBER_BITS);
     }
 
     /**
@@ -118,12 +92,16 @@ public class DeltaContext
      */
     public IntegralArrayElement read(IntegralArrayTraits arrayTraits, BitStreamReader reader) throws IOException
     {
-        if (!processingStarted || !isPacked)
+        if (!processingStarted)
         {
             processingStarted = true;
-            final IntegralArrayElement element = arrayTraits.read(reader);
-            previousElement = element.toBigInteger();
-            return element;
+            readDescriptor(reader);
+
+            return readUnpacked(arrayTraits, reader);
+        }
+        else if (!isPacked)
+        {
+            return readUnpacked(arrayTraits, reader);
         }
         else
         {
@@ -138,23 +116,6 @@ public class DeltaContext
     }
 
     /**
-     * Writes the delta packing descriptor to the bit stream. Called for all contexts before the first element
-     * is written.
-     *
-     * @param writer Bit stream writer.
-     *
-     * @throws IOException Failure during bit stream manipulation.
-     */
-    public void writeDescriptor(BitStreamWriter writer) throws IOException
-    {
-        finishInit(); // called from here for better performance
-
-        writer.writeBool(isPacked);
-        if (isPacked)
-            writer.writeBits(maxBitNumber, MAX_BIT_NUMBER_BITS);
-    }
-
-    /**
      * Writes the packed element to the bit stream.
      *
      * @param arrayTraits Standard array traits.
@@ -166,11 +127,17 @@ public class DeltaContext
     public void write(IntegralArrayTraits arrayTraits, BitStreamWriter writer, IntegralArrayElement element)
             throws IOException
     {
-        if (!processingStarted || !isPacked)
+        if (!processingStarted)
         {
             processingStarted = true;
-            previousElement = element.toBigInteger();
-            arrayTraits.write(writer,  element);
+            finishInit();
+            writeDescriptor(writer);
+
+            writeUnpacked(arrayTraits, writer, element);
+        }
+        else if (!isPacked)
+        {
+            writeUnpacked(arrayTraits, writer, element);
         }
         else
         {
@@ -195,6 +162,45 @@ public class DeltaContext
             if (packedBitSizeWithDescriptor >= unpackedBitSizeWithDescriptor)
                 isPacked = false;
         }
+    }
+
+    private int bitSizeOfDescriptor()
+    {
+        return isPacked ? 1 + MAX_BIT_NUMBER_BITS : 1;
+    }
+
+    private static int bitSizeOfUnpacked(IntegralArrayTraits arrayTraits, IntegralArrayElement element)
+    {
+        return arrayTraits.bitSizeOf(element);
+    }
+
+    private void readDescriptor(BitStreamReader reader) throws IOException
+    {
+        isPacked = reader.readBool();
+        if (isPacked)
+            maxBitNumber = (byte)reader.readBits(MAX_BIT_NUMBER_BITS);
+    }
+
+    private IntegralArrayElement readUnpacked(IntegralArrayTraits arrayTraits, BitStreamReader reader)
+            throws IOException
+    {
+        final IntegralArrayElement element = arrayTraits.read(reader);
+        previousElement = element.toBigInteger();
+        return element;
+    }
+
+    private void writeDescriptor(BitStreamWriter writer) throws IOException
+    {
+        writer.writeBool(isPacked);
+        if (isPacked)
+            writer.writeBits(maxBitNumber, MAX_BIT_NUMBER_BITS);
+    }
+
+    private void writeUnpacked(IntegralArrayTraits arrayTraits, BitStreamWriter writer,
+            IntegralArrayElement element) throws IOException
+    {
+        previousElement = element.toBigInteger();
+        arrayTraits.write(writer,  element);
     }
 
     private static byte bitLength(BigInteger element)

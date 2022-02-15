@@ -10,6 +10,27 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/choice_types/bool_param_choice/BoolParamChoice.h
     ${ZSERIO_GEN_DIR}/choice_types/bool_param_choice/Grey.h
 
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceCompatibilityCheckVersion1.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceCompatibilityCheckVersion1.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceCompatibilityCheckVersion2.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceCompatibilityCheckVersion2.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/HolderVersion1.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/HolderVersion1.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/HolderVersion2.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/HolderVersion2.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceVersion1.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceVersion1.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceVersion2.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/ChoiceVersion2.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/EnumVersion1.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/EnumVersion1.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/EnumVersion2.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/EnumVersion2.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/CoordXY.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/CoordXY.h
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/CoordXYZ.cpp
+    ${ZSERIO_GEN_DIR}/choice_types/choice_compatibility_check/CoordXYZ.h
+
     ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/TestChoice.cpp
     ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/TestChoice.h
     ${ZSERIO_GEN_DIR}/choice_types/choice_with_array/Data8.cpp
@@ -95,6 +116,7 @@ zserio_add_library(TARGET choice_types_zs
 add_test_sources(
     cpp/BitmaskParamChoiceTest.cpp
     cpp/BoolParamChoiceTest.cpp
+    cpp/ChoiceCompatibilityCheckTest.cpp
     cpp/ChoiceWithArrayTest.cpp
     cpp/DefaultEmptyChoiceTest.cpp
     cpp/EmptyChoiceTest.cpp

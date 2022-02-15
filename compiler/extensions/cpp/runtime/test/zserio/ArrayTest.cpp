@@ -379,11 +379,12 @@ protected:
 
     size_t calcAlignedPackedBitSize(size_t elementBitSize, size_t arraySize, size_t maxDeltaBitSize)
     {
-        const size_t alignedElementBitSize = (elementBitSize + 7) / 8 * 8;
+        const size_t firstElementWithDescriptorBitSize = PACKING_DESCRIPTOR_BITSIZE + elementBitSize;
+        const size_t alignedFirstElementWithDescriptorBitSize = (firstElementWithDescriptorBitSize + 7) / 8 * 8;
         const size_t alignedMaxDeltaBitSize = (maxDeltaBitSize + 1 + 7) / 8 * 8;
 
-        return PACKING_DESCRIPTOR_BITSIZE + 1 /* packing descriptor alignment */ + alignedElementBitSize +
-            (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
+        return alignedFirstElementWithDescriptorBitSize +
+                (arraySize - 2) * alignedMaxDeltaBitSize + (maxDeltaBitSize + 1);
     }
 
     static const size_t PACKING_DESCRIPTOR_BITSIZE = 1 + 6;
@@ -999,13 +1000,14 @@ TEST_F(ArrayTest, bitField64PackedArray)
     // zero delta
     std::vector<uint64_t> rawArray2 = {10, 10, 10};
     const size_t array2BitSizeOf = PACKING_DESCRIPTOR_BITSIZE + 64;
-    const size_t array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + /* alignment */ 1 + 64;
+    const size_t array2AlignedBitSizeOf = PACKING_DESCRIPTOR_BITSIZE + 64 +
+            /* alignment before element 2 */ (8 - PACKING_DESCRIPTOR_BITSIZE);
     testPackedArray(rawArray2, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
 
     // one-element array
     std::vector<uint64_t> rawArray3 = {10};
     const size_t array3BitSizeOf = 1 + 64;
-    const size_t array3AlignedBitSizeOf = 1 + /* alignment */ 7 + 64;
+    const size_t array3AlignedBitSizeOf = 1 + 64; // no alignment before first element, no more elements
     testPackedArray(rawArray3, arrayTraits, array3BitSizeOf, array3AlignedBitSizeOf);
 
     // empty array
@@ -1031,7 +1033,7 @@ TEST_F(ArrayTest, bitField8PackedArray)
     // will not be packed because unpacked 8bit values will be more efficient
     std::vector<uint8_t> rawArray1 = {UINT8_MAX, 0, 10, 20, 30, 40}; // max_bit_number 8, delta needs 9 bits
     const size_t array1BitSizeOf = 1 + 6 * 8;
-    const size_t array1AlignedBitSizeOf = 8 + 6 * 8;
+    const size_t array1AlignedBitSizeOf = 1 + 8 + /* alignment */ 7 + 5 * 8;
     testPackedArray(rawArray1, arrayTraits, array1BitSizeOf, array1AlignedBitSizeOf);
 
     // will not be packed because unpacked 8bit values will be more efficient
@@ -1039,7 +1041,7 @@ TEST_F(ArrayTest, bitField8PackedArray)
     std::vector<uint8_t> rawArray2 =
             {UINT8_MAX, UINT8_MAX / 2 + 1, 10, 20, 30, 40}; // max_bit_number 7, delta needs 8 bits
     const size_t array2BitSizeOf = 1 + 6 * 8;
-    const size_t array2AlignedBitSizeOf = 8 + 6 * 8;
+    const size_t array2AlignedBitSizeOf = 1 + 8 + /* alignment */ 7 + 5 * 8;
     testPackedArray(rawArray2, arrayTraits, array2BitSizeOf, array2AlignedBitSizeOf);
 }
 
@@ -1066,7 +1068,7 @@ TEST_F(ArrayTest, intField16PackedArray)
     // (6 bits more are needed to store max_bit_number in descriptor if packing was enabled)
     std::vector<int16_t> rawArray = {INT16_MIN, -1, 10, 20, 30, 40}; // max_bit_number 15, delta needs 16 bits
     const size_t unpackedBitSizeOf = 1 + 6 * 16;
-    const size_t unpackedAlignedBitSizeOf = 8 + 6 * 16;
+    const size_t unpackedAlignedBitSizeOf = 1 + 16 + /* alignment */ 7 + 5 * 16;
     testPackedArray(rawArray, arrayTraits, unpackedBitSizeOf, unpackedAlignedBitSizeOf);
 }
 
@@ -1085,7 +1087,7 @@ TEST_F(ArrayTest, varUInt64PackedArray)
 
     std::vector<uint64_t> unpackedRawArray = {UINT64_C(5000000), 0, 0, 0, 0, 0, 0};
     const size_t unpackedBitSizeOf = 1 + 32 + 6 * 8;
-    const size_t unpackedAlignedBitSizeOf = 8 + 32 + 6 * 8;
+    const size_t unpackedAlignedBitSizeOf = 1 + 32 + /* alignment */ 7 + 6 * 8;
     testPackedArray(unpackedRawArray, VarIntNNArrayTraits<uint64_t>(),
             unpackedBitSizeOf, unpackedAlignedBitSizeOf);
 }

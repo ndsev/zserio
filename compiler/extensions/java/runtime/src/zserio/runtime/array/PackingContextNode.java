@@ -48,16 +48,6 @@ public class PackingContextNode
     }
 
     /**
-     * Gets whether the current node has a packing context.
-     *
-     * @return True when the current node has assigned a context, false otherwise.
-     */
-    public boolean hasContext()
-    {
-        return deltaContext != null;
-    }
-
-    /**
      * Gets packing context assigned to this node.
      *
      * Can be called only when the context exists!

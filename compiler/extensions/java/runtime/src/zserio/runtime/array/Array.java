@@ -161,8 +161,6 @@ public class Array
             for (int index = 0; index < size; ++index)
                 packedArrayTraits.initContext(contextNode, rawArray.getElement(index));
 
-            endBitPosition += bitSizeOfDescriptor(contextNode, endBitPosition);
-
             for (int index = 0; index < size; ++index)
             {
                 if (offsetInitializer != null)
@@ -225,8 +223,6 @@ public class Array
             final PackingContextNode contextNode = packedArrayTraits.createContext();
             for (int index = 0; index < size; ++index)
                 packedArrayTraits.initContext(contextNode, rawArray.getElement(index));
-
-            endBitPosition += bitSizeOfDescriptor(contextNode, endBitPosition);
 
             for (int index= 0; index < size; ++index)
             {
@@ -335,7 +331,6 @@ public class Array
         if (readSize > 0)
         {
             final PackingContextNode contextNode = packedArrayTraits.createContext();
-            readDescriptor(contextNode, reader);
 
             for (int index = 0; index < readSize; ++index)
             {
@@ -397,8 +392,6 @@ public class Array
             for (int index = 0; index < size; ++index)
                 packedArrayTraits.initContext(contextNode, rawArray.getElement(index));
 
-            writeDescriptor(contextNode, writer);
-
             for (int index = 0; index < size; ++index)
             {
                 if (offsetChecker != null)
@@ -419,51 +412,6 @@ public class Array
 
         if (arrayType == ArrayType.IMPLICIT)
             throw new UnsupportedOperationException("Array: Implicit array cannot be packed!");
-    }
-
-    private static int bitSizeOfDescriptor(PackingContextNode contextNode, long bitPosition)
-    {
-        long endBitPosition = bitPosition;
-
-        if (contextNode.hasContext())
-        {
-            endBitPosition += contextNode.getContext().bitSizeOfDescriptor();
-        }
-        else
-        {
-            for (PackingContextNode childNode : contextNode.getChildren())
-                endBitPosition += bitSizeOfDescriptor(childNode, endBitPosition);
-        }
-
-        return (int)(endBitPosition - bitPosition);
-    }
-
-    private static void readDescriptor(PackingContextNode contextNode, BitStreamReader reader)
-            throws IOException
-    {
-        if (contextNode.hasContext())
-        {
-            contextNode.getContext().readDescriptor(reader);
-        }
-        else
-        {
-            for (PackingContextNode childNode : contextNode.getChildren())
-                readDescriptor(childNode, reader);
-        }
-    }
-
-    private static void writeDescriptor(PackingContextNode contextNode, BitStreamWriter writer)
-            throws IOException
-    {
-        if (contextNode.hasContext())
-        {
-            contextNode.getContext().writeDescriptor(writer);
-        }
-        else
-        {
-            for (PackingContextNode childNode : contextNode.getChildren())
-                writeDescriptor(childNode, writer);
-        }
     }
 
     private final RawArray rawArray;
