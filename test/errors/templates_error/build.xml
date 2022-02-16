@@ -23,6 +23,8 @@
         <testGen testName="templates_error" zsFile="instantiate_duplicated_name_error.zs" ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_duplicated_via_import_error.zs"
                 ignoreErrors="true"/>
+        <testGen testName="templates_error" zsFile="instantiate_duplicated_via_instantiate_error.zs"
+                ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_missing_template_arguments_error.zs"
                 ignoreErrors="true"/>
         <testGen testName="templates_error" zsFile="instantiate_name_clash_error.zs" ignoreErrors="true"/>

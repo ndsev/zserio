@@ -208,6 +208,17 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/pkg/Test_uint32.cpp
     ${ZSERIO_GEN_DIR}/templates/instantiate_vs_default/pkg/Test_uint32.h
 
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Data8.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Data8.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Data32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Data32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/InstantiateWithInstantiateTemplateArgument.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/InstantiateWithInstantiateTemplateArgument.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Other32.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Other32.h
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Other8.cpp
+    ${ZSERIO_GEN_DIR}/templates/instantiate_with_instantiate_template_argument/Other8.h
+
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Union.cpp
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/Union.h
     ${ZSERIO_GEN_DIR}/templates/sql_table_templated_field/TemplatedTable_Union.cpp
@@ -446,6 +457,7 @@ add_test_sources(
     cpp/InstantiateViaImportTest.cpp
     cpp/InstantiateViaSingleImportTest.cpp
     cpp/InstantiateVsDefaultTest.cpp
+    cpp/InstantiateWithInstantiateTemplateArgumentTest.cpp
     cpp/SqlTableTemplatedFieldTest.cpp
     cpp/StructFullAndShortTemplateArgumentTest.cpp
     cpp/StructFullNameTemplateArgumentTest.cpp

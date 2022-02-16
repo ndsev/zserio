@@ -55,20 +55,24 @@ public class TemplateArgument extends AstNodeBase
 
         final TemplateArgument otherArgument = (TemplateArgument)other;
 
-        final String referencedBaseTypeFullName = ZserioTypeUtil.getFullName(referencedBaseType);
+        final TypeReference baseTypeReference = typeReference.getBaseTypeReference();
+        final TypeReference otherBaseTypeReference = otherArgument.typeReference.getBaseTypeReference();
+
+        final String referencedBaseTypeFullName = ZserioTypeUtil.getFullName(baseTypeReference.getType());
         final String otherReferencedBaseTypeFullName =
-                ZserioTypeUtil.getFullName(otherArgument.referencedBaseType);
+                ZserioTypeUtil.getFullName(otherBaseTypeReference.getType());
 
         return referencedBaseTypeFullName.equals(otherReferencedBaseTypeFullName) &&
-                typeReference.getTemplateArguments().equals(otherArgument.typeReference.getTemplateArguments());
+                baseTypeReference.getTemplateArguments().equals(otherBaseTypeReference.getTemplateArguments());
     }
 
     @Override
     public int hashCode()
     {
         int hash = HashUtil.HASH_SEED;
-        hash = HashUtil.hash(hash, ZserioTypeUtil.getFullName(referencedBaseType));
-        for (TemplateArgument templateArgument : typeReference.getTemplateArguments())
+        final TypeReference baseTypeReference = typeReference.getBaseTypeReference();
+        hash = HashUtil.hash(hash, ZserioTypeUtil.getFullName(baseTypeReference.getType()));
+        for (TemplateArgument templateArgument : baseTypeReference.getTemplateArguments())
             hash = HashUtil.hash(hash, templateArgument);
 
         return hash;
@@ -91,22 +95,5 @@ public class TemplateArgument extends AstNodeBase
         return new TemplateArgument(getLocation(), instantiatedTypeReference);
     }
 
-    /**
-     * Resolves template argument.
-     */
-    void resolve()
-    {
-        if (isResolved)
-            return;
-
-        // We need to "remember" the referenced base type because in case the argument is a template
-        // instantiation, the type reference will be resolved further during the template instantiation.
-        referencedBaseType = typeReference.getBaseTypeReference().getType();
-        isResolved = true;
-    }
-
     private final TypeReference typeReference;
-
-    private ZserioType referencedBaseType = null;
-    private boolean isResolved = false;
 }

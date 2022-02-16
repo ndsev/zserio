@@ -122,6 +122,20 @@ public class TemplatesErrorTest
     }
 
     @Test
+    public void instantiateDuplicatedViaInstantiate()
+    {
+        final String errors[] =
+        {
+            "instantiate_duplicated_via_instantiate_error.zs:8:13: " +
+                    "In instantiation of 'Data' required from here",
+            "instantiate_duplicated_via_instantiate_error.zs:15:26:     First requested here",
+            "instantiate_duplicated_via_instantiate_error.zs:16:32: " +
+                    "Ambiguous request to instantiate template 'Other'!"
+        };
+        assertTrue(zserioErrors.isPresent(errors));
+    }
+
+    @Test
     public void instantiateMissingTemplateArguments()
     {
         final String error = "instantiate_missing_template_arguments_error.zs:8:13: " +
