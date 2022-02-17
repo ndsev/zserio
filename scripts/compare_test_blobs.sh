@@ -40,6 +40,7 @@ Usage:
 Arguments:
     -h, --help                  Show this help.
     -e, --help-env              Show help for environment variables.
+    -v, --verbose               Detailed report about the compared BLOBs.
     dir                         Specify the directories to use (at least 2).
 
 Examples:
@@ -59,8 +60,11 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    exit_if_argc_lt $# 1
+    exit_if_argc_lt $# 2
+    local VERBOSE_OUT="$1"; shift
     local PARAM_DIRS_OUT="$1"; shift
+
+    eval ${VERBOSE_OUT}=0
 
     local ARR=()
     local NUM_DIRS=0
@@ -73,6 +77,11 @@ parse_arguments()
 
             "-e" | "--help-env")
                 return 3
+                ;;
+
+            "-v" | "--verbose")
+                eval ${VERBOSE_OUT}=1
+                shift
                 ;;
 
             "-"*)
@@ -106,8 +115,9 @@ main()
     local ZSERIO_PROJECT_ROOT
     convert_to_absolute_path "${SCRIPT_DIR}/.." ZSERIO_PROJECT_ROOT
 
+    local VERBOSE
     local PARAM_DIRS=()
-    parse_arguments PARAM_DIRS "$@"
+    parse_arguments VERBOSE PARAM_DIRS "$@"
 
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
@@ -138,7 +148,10 @@ main()
 
         echo "Comparing ${PARAM_DIRS[0]} with ${DIR}"
         for i in ${!BLOBS_0[@]} ; do
-            cmp "${BLOBS_0[i]}" "${BLOBS_N[$i]}"
+            if [ ${VERBOSE} -ne 0 ] ; then
+                echo "  ${BLOBS_0[$i]##*/} <-> ${BLOBS_N[$i]##*/}"
+            fi
+            cmp "${BLOBS_0[$i]}" "${BLOBS_N[$i]}"
             if [ $? -ne 0 ] ; then
                 CMP_RESULT=1
             fi
