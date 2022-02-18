@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import zserio.runtime.service.ServiceData;
 import zserio.runtime.service.ServiceException;
+import zserio.runtime.io.Writer;
 
 public class ComplexTypesServiceTest
 {
@@ -209,9 +211,26 @@ public class ComplexTypesServiceTest
         }
     }
 
+    private static class LocalServiceClient implements zserio.runtime.service.ServiceClientInterface
+    {
+        public LocalServiceClient(Service service)
+        {
+            this.service = service;
+        }
+
+        @Override
+        public <T extends Writer> byte[] callMethod(String methodName, ServiceData<T> request, Object context)
+        {
+            return service.callMethod(methodName, request.getByteArray(), context).getByteArray();
+        }
+
+        private final Service service;
+    }
+
     private static final Service service = new Service();
+    private static final LocalServiceClient localServiceClient = new LocalServiceClient(service);
     private static final ComplexTypesService.ComplexTypesServiceClient client =
-            new ComplexTypesService.ComplexTypesServiceClient(service);
+            new ComplexTypesService.ComplexTypesServiceClient(localServiceClient);
 
     // note that conversion is slightly inaccurate and therefore this values are carefully chosen
     // to provide consistent results for the test needs

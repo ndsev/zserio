@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
+import zserio.runtime.service.ServiceData;
 import zserio.runtime.service.ServiceException;
+import zserio.runtime.io.Writer;
 
 public class SimpleServiceTest
 {
@@ -71,7 +73,24 @@ public class SimpleServiceTest
         public boolean seenByService = false;
     }
 
+    private static class LocalServiceClient implements zserio.runtime.service.ServiceClientInterface
+    {
+        public LocalServiceClient(Service service)
+        {
+            this.service = service;
+        }
+
+        @Override
+        public <T extends Writer> byte[] callMethod(String methodName, ServiceData<T> request, Object context)
+        {
+            return service.callMethod(methodName, request.getByteArray(), context).getByteArray();
+        }
+
+        private final Service service;
+    }
+
     private static final Service service = new Service();
+    private static final LocalServiceClient localServiceClient = new LocalServiceClient(service);
     private static final SimpleService.SimpleServiceClient client =
-            new SimpleService.SimpleServiceClient(service);
+            new SimpleService.SimpleServiceClient(localServiceClient);
 }

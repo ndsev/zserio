@@ -11,8 +11,16 @@
     <Match>
         <!-- May expose internal representation by returning reference to mutable object - this is ok -->
         <Bug code="EI"/>
-        <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
-        <Method name="getRawArray"/>
+        <Or>
+            <And>
+                <Class name="~zserio.runtime.array.RawArray\$.*RawArray"/>
+                <Method name="getRawArray"/>
+            </And>
+            <And>
+                <Class name="~zserio.runtime.service.ServiceData"/>
+                <Method name="getByteArray"/>
+            </And>
+        </Or>
     </Match>
     <Match>
         <!-- May expose internal representation by incorporating reference to mutable object - this is ok -->

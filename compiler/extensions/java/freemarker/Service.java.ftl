@@ -27,8 +27,8 @@ public final class ${name}
                 new Method()
                 {
                     @Override
-                    public byte[] invoke(byte[] requestData, java.lang.Object context)
-                            throws zserio.runtime.ZserioError
+                    public <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> invoke(
+                            byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError
                     {
                         return ${method.name}Method(requestData, context);
                     }
@@ -38,7 +38,8 @@ public final class ${name}
         }
 
         @Override
-        public byte[] callMethod(java.lang.String methodName, byte[] requestData, java.lang.Object context)
+        public <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> callMethod(
+                java.lang.String methodName, byte[] requestData, java.lang.Object context)
                 throws zserio.runtime.ZserioError
         {
             final Method method = methodMap.get(methodName);
@@ -71,22 +72,22 @@ public final class ${name}
 </#list>
 <#list methodList as method>
 
-        private byte[] ${method.name}Method(byte[] requestData, java.lang.Object context)
-                throws zserio.runtime.ZserioError
+        @SuppressWarnings("unchecked")
+        private <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> ${method.name}Method(
+                byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError
         {
             final ${method.requestTypeInfo.typeFullName} request =
                     zserio.runtime.io.ZserioIO.read(${method.requestTypeInfo.typeFullName}.class, requestData);
-
             final ${method.responseTypeInfo.typeFullName} response = ${method.name}Impl(request, context);
 
-            final byte[] responseData = zserio.runtime.io.ZserioIO.write(response);
-            return responseData;
+            return (zserio.runtime.service.ServiceData<T>)new zserio.runtime.service.ServiceData<${method.responseTypeInfo.typeFullName}>(response);
         }
 </#list>
 
         private interface Method
         {
-            byte[] invoke(byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
+            public <T extends zserio.runtime.io.Writer> zserio.runtime.service.ServiceData<T> invoke(
+                    byte[] requestData, java.lang.Object context) throws zserio.runtime.ZserioError;
         }
 
         private static final java.lang.String SERVICE_FULL_NAME = "${serviceFullName}";
@@ -96,19 +97,17 @@ public final class ${name}
 
     public static final class ${name}Client
     {
-        public ${name}Client(zserio.runtime.service.ServiceInterface service)
+        public ${name}Client(zserio.runtime.service.ServiceClientInterface serviceClient)
         {
-            this.service = service;
+            this.serviceClient = serviceClient;
         }
 <#list methodList as method>
 
         public ${method.responseTypeInfo.typeFullName} ${method.name}Method(${method.requestTypeInfo.typeFullName} request,
                 java.lang.Object context) throws zserio.runtime.ZserioError
         {
-            final byte[] requestData = zserio.runtime.io.ZserioIO.write(request);
-
-            final byte[] responseData = service.callMethod(<@method_name_constant_name method/>, requestData, context);
-
+            final byte[] responseData = serviceClient.callMethod(<@method_name_constant_name method/>,
+                    new zserio.runtime.service.ServiceData<>(request), context);
             final ${method.responseTypeInfo.typeFullName} response =
                     zserio.runtime.io.ZserioIO.read(${method.responseTypeInfo.typeFullName}.class, responseData);
             return response;
@@ -121,7 +120,7 @@ public final class ${name}
         }
 </#list>
 
-        private final zserio.runtime.service.ServiceInterface service;
+        private final zserio.runtime.service.ServiceClientInterface serviceClient;
     }
 <#if methodList?has_content>
 
