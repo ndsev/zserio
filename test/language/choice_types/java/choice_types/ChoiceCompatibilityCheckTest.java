@@ -159,7 +159,7 @@ public class ChoiceCompatibilityCheckTest
     {
         final ChoiceVersion1 choice = new ChoiceVersion1(selector);
         if (selector == EnumVersion1.COORD_XY)
-            choice.setCoordXY(new CoordXY(10 * index, 20 * index));
+            choice.setCoordXY(new CoordXY(10L * index, 20L * index));
         else
             choice.setText("text" + index);
 
@@ -170,11 +170,11 @@ public class ChoiceCompatibilityCheckTest
     {
         final ChoiceVersion2 choice = new ChoiceVersion2(selector);
         if (selector == EnumVersion2.COORD_XY)
-            choice.setCoordXY(new CoordXY(10 * index, 20 * index));
+            choice.setCoordXY(new CoordXY(10L * index, 20L * index));
         else if (selector == EnumVersion2.TEXT)
             choice.setText("text" + index);
         else
-            choice.setCoordXYZ(new CoordXYZ(10 * index, 20 * index, 1.1 * index));
+            choice.setCoordXYZ(new CoordXYZ(10L * index, 20L * index, 1.1 * index));
 
         return new HolderVersion2(selector, choice);
     }

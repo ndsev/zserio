@@ -155,7 +155,7 @@ public class UnionCompatibilityCheckTest
     {
         final UnionVersion1 union = new UnionVersion1();
         if (index % 2 == 0)
-            union.setCoordXY(new CoordXY(10 * index, 20 * index));
+            union.setCoordXY(new CoordXY(10L * index, 20L * index));
         else
             union.setText("text" + index);
 
@@ -166,7 +166,7 @@ public class UnionCompatibilityCheckTest
     {
         final UnionVersion2 union = new UnionVersion2();
         if (index % 2 == 0)
-            union.setCoordXY(new CoordXY(10 * index, 20 * index));
+            union.setCoordXY(new CoordXY(10L * index, 20L * index));
         else
             union.setText("text" + index);
 
@@ -176,7 +176,7 @@ public class UnionCompatibilityCheckTest
     private UnionVersion2 createUnionCoordXYZ(int index)
     {
         final UnionVersion2 union = new UnionVersion2();
-        union.setCoordXYZ(new CoordXYZ(10 * index, 20 * index, 1.1 * index));
+        union.setCoordXYZ(new CoordXYZ(10L * index, 20L * index, 1.1 * index));
         return union;
     }
 
