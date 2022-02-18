@@ -104,7 +104,7 @@ void initialize(T& object, ARGS&&... arguments)
 template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
         typename std::enable_if<!std::is_enum<T>::value &&
         detail::is_allocator<ALLOC>::value, int>::type = 0>
-BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator = ALLOC(), ARGS&&... arguments)
+BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arguments)
 {
     detail::initialize(object, std::forward<ARGS>(arguments)...);
     BasicBitBuffer<ALLOC> bitBuffer(object.initializeOffsets(), allocator);
