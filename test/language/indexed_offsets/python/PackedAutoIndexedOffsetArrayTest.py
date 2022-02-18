@@ -103,15 +103,15 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
                 writer.write_bits(WRONG_OFFSET, 32)
             else:
                 writer.write_bits(currentOffset, 32)
-            currentOffset += ALIGNED_ELEMENT_BYTE_SIZE
+            currentOffset += (ALIGNED_FIRST_ELEMENT_BYTE_SIZE if i == 0 else ALIGNED_ELEMENT_BYTE_SIZE)
 
         writer.write_bits(SPACER_VALUE, 3)
 
         writer.write_varsize(NUM_ELEMENTS)
 
+        writer.alignto(8)
         writer.write_bool(True)
         writer.write_bits(PACKED_ARRAY_MAX_BIT_NUMBER, 6)
-        writer.alignto(8)
         writer.write_bits(0, ELEMENT_SIZE)
         for _ in range(NUM_ELEMENTS - 1):
             writer.alignto(8)
@@ -121,9 +121,9 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
         offsets = autoIndexedOffsetArray.offsets
         self.assertEqual(NUM_ELEMENTS, len(offsets))
         expectedOffset = ELEMENT0_OFFSET + offsetShift
-        for offset in offsets:
+        for i, offset in enumerate(offsets):
             self.assertEqual(expectedOffset, offset)
-            expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE
+            expectedOffset += (ALIGNED_FIRST_ELEMENT_BYTE_SIZE if i == 0 else ALIGNED_ELEMENT_BYTE_SIZE)
 
     def _checkAutoIndexedOffsetArray(self, autoIndexedOffsetArray):
         offsetShift = 0
@@ -144,7 +144,7 @@ class PackedAutoIndexedOffsetArrayTest(unittest.TestCase):
                 offsets.append(WRONG_OFFSET)
             else:
                 offsets.append(currentOffset)
-            currentOffset += ALIGNED_ELEMENT_BYTE_SIZE
+            currentOffset += (ALIGNED_FIRST_ELEMENT_BYTE_SIZE if i == 0 else ALIGNED_ELEMENT_BYTE_SIZE)
 
         data = []
         for i in range(NUM_ELEMENTS):
@@ -160,8 +160,10 @@ WRONG_OFFSET = 0
 
 AUTO_ARRAY_LENGTH_BYTE_SIZE = 1
 ELEMENT0_OFFSET = (AUTO_ARRAY_LENGTH_BYTE_SIZE + (NUM_ELEMENTS * 4) +
-                   (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 1 + 6 + 6) // 8)
+                   (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 5) // 8)
 ELEMENT_SIZE = 5
+ALIGNED_FIRST_ELEMENT_SIZE = 1 + 6 + ELEMENT_SIZE + 4
+ALIGNED_FIRST_ELEMENT_BYTE_SIZE = ALIGNED_FIRST_ELEMENT_SIZE // 8
 ALIGNED_ELEMENT_SIZE = 8
 ALIGNED_ELEMENT_BYTE_SIZE = 1
 
@@ -170,5 +172,7 @@ SPACER_VALUE = 7
 PACKED_ARRAY_DELTA = 1
 PACKED_ARRAY_MAX_BIT_NUMBER = 1
 
-AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = (ELEMENT0_OFFSET * 8 + (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE +
+AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = (ELEMENT0_OFFSET * 8 +
+                                      ALIGNED_FIRST_ELEMENT_SIZE +
+                                      (NUM_ELEMENTS - 2) * ALIGNED_ELEMENT_SIZE +
                                       PACKED_ARRAY_MAX_BIT_NUMBER + 1)

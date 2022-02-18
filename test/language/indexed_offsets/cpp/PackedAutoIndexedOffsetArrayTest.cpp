@@ -83,7 +83,7 @@ protected:
                 offsets.push_back(wrongOffset);
             else
                 offsets.push_back(currentOffset);
-            currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            currentOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
         }
         autoIndexedOffsetArray.setSpacer(SPACER_VALUE);
 

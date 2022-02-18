@@ -134,18 +134,18 @@ public class PackedAutoIndexedOffsetArrayTest
                 writer.writeBits(WRONG_OFFSET, 32);
             else
                 writer.writeBits(currentOffset, 32);
-            currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            currentOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
         }
 
         writer.writeBits(SPACER_VALUE, 3);
 
         writer.writeVarSize(NUM_ELEMENTS);
 
+        writer.alignTo(8);
         writer.writeBool(true);
         writer.writeBits(PACKED_ARRAY_MAX_BIT_NUMBER, 6);
-        writer.alignTo(8);
         writer.writeBits(0, ELEMENT_SIZE);
-        for (int i = 0; i < NUM_ELEMENTS - 1; ++i)
+        for (int i = 1; i < NUM_ELEMENTS; ++i)
         {
             writer.alignTo(8);
             writer.writeSignedBits(PACKED_ARRAY_DELTA, PACKED_ARRAY_MAX_BIT_NUMBER + 1);
@@ -163,7 +163,7 @@ public class PackedAutoIndexedOffsetArrayTest
         {
             final long offset = offsets[i];
             assertEquals(expectedOffset, offset, "index: " + i);
-            expectedOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            expectedOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
         }
     }
 
@@ -192,7 +192,7 @@ public class PackedAutoIndexedOffsetArrayTest
                 offsets[i] = WRONG_OFFSET;
             else
                 offsets[i] = currentOffset;
-            currentOffset += ALIGNED_ELEMENT_BYTE_SIZE;
+            currentOffset += (i == 0 ? ALIGNED_FIRST_ELEMENT_BYTE_SIZE : ALIGNED_ELEMENT_BYTE_SIZE);
         }
         autoIndexedOffsetArray.setOffsets(offsets);
         autoIndexedOffsetArray.setSpacer(SPACER_VALUE);
@@ -214,8 +214,10 @@ public class PackedAutoIndexedOffsetArrayTest
     private static final int    AUTO_ARRAY_LENGTH_BYTE_SIZE = 1;
     private static final long   ELEMENT0_OFFSET =
             AUTO_ARRAY_LENGTH_BYTE_SIZE + (long)(NUM_ELEMENTS * 4) +
-            (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 1 + 6 + 6 /* alignment */) / 8;
+            (3 + AUTO_ARRAY_LENGTH_BYTE_SIZE * 8 + 5 /* alignment */) / 8;
     private static final int    ELEMENT_SIZE = 5;
+    private static final int    ALIGNED_FIRST_ELEMENT_SIZE = 1 + 6 + ELEMENT_SIZE + 4 /* alignment */;
+    private static final int    ALIGNED_FIRST_ELEMENT_BYTE_SIZE = ALIGNED_FIRST_ELEMENT_SIZE / 8;
     private static final int    ALIGNED_ELEMENT_SIZE = 8;
     private static final int    ALIGNED_ELEMENT_BYTE_SIZE = ALIGNED_ELEMENT_SIZE / 8;
 
@@ -225,5 +227,6 @@ public class PackedAutoIndexedOffsetArrayTest
     private static final short  PACKED_ARRAY_MAX_BIT_NUMBER = 1;
 
     private static final int    AUTO_INDEXED_OFFSET_ARRAY_BIT_SIZE = (int)ELEMENT0_OFFSET * 8 +
-            (NUM_ELEMENTS - 1) * ALIGNED_ELEMENT_SIZE + PACKED_ARRAY_MAX_BIT_NUMBER + 1;
+            ALIGNED_FIRST_ELEMENT_SIZE +
+            (NUM_ELEMENTS - 2) * ALIGNED_ELEMENT_SIZE + PACKED_ARRAY_MAX_BIT_NUMBER + 1;
 }
