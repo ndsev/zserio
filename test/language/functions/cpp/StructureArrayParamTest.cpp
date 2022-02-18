@@ -13,7 +13,7 @@ namespace functions
 namespace structure_array_param
 {
 
-class FunctionsStructureArrayParamTest : public ::testing::Test
+class StructureArrayParamTest : public ::testing::Test
 {
 protected:
     void writeParentStructureToByteArray(zserio::BitStreamWriter& writer)
@@ -50,6 +50,8 @@ protected:
             child.setValue(ANOTHER_VALUES[i]);
             anotherChildren.push_back(child);
         }
+
+        parentStructure.initializeChildren();
     }
 
 protected:
@@ -63,18 +65,18 @@ private:
     static const uint64_t ANOTHER_VALUES[NUM_ANOTHER_CHILDREN];
 };
 
-const uint64_t FunctionsStructureArrayParamTest::VALUES[FunctionsStructureArrayParamTest::NUM_CHILDREN] =
+const uint64_t StructureArrayParamTest::VALUES[StructureArrayParamTest::NUM_CHILDREN] =
 {
     0xAABB, 0xCCDD
 };
 
-const uint64_t FunctionsStructureArrayParamTest::ANOTHER_VALUES[
-        FunctionsStructureArrayParamTest::NUM_ANOTHER_CHILDREN] =
+const uint64_t StructureArrayParamTest::ANOTHER_VALUES[
+        StructureArrayParamTest::NUM_ANOTHER_CHILDREN] =
 {
     0xAABB, 0xCCDD
 };
 
-TEST_F(FunctionsStructureArrayParamTest, checkParentStructure)
+TEST_F(StructureArrayParamTest, checkParentStructure)
 {
     ParentStructure parentStructure;
     createParentStructure(parentStructure);

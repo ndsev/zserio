@@ -271,11 +271,10 @@ TEST_F(UInt64ParamChoiceTest, writeReadFile)
 {
     uint64_t selector = VARIANT_A_SELECTOR;
     UInt64ParamChoice uint64ParamChoiceA;
-    uint64ParamChoiceA.initialize(selector);
     const int8_t valueA = 99;
     uint64ParamChoiceA.setA(valueA);
     const std::string fileNameA = BLOB_NAME_BASE + "a.blob";
-    zserio::serializeToFile(uint64ParamChoiceA, fileNameA);
+    zserio::serializeToFile(uint64ParamChoiceA, fileNameA, selector);
 
     const UInt64ParamChoice readUInt64ParamChoiceA =
             zserio::deserializeFromFile<UInt64ParamChoice>(fileNameA, selector);
@@ -283,11 +282,10 @@ TEST_F(UInt64ParamChoiceTest, writeReadFile)
 
     selector = VARIANT_B_SELECTOR;
     UInt64ParamChoice uint64ParamChoiceB;
-    uint64ParamChoiceB.initialize(selector);
     const int16_t valueB = 234;
     uint64ParamChoiceB.setB(valueB);
     const std::string fileNameB = BLOB_NAME_BASE + "b.blob";
-    zserio::serializeToFile(uint64ParamChoiceB, fileNameB);
+    zserio::serializeToFile(uint64ParamChoiceB, fileNameB, selector);
 
     const UInt64ParamChoice readUInt64ParamChoiceB =
             zserio::deserializeFromFile<UInt64ParamChoice>(fileNameB, selector);

@@ -213,7 +213,7 @@ TEST_F(OptionalNestedIndexedOffsetArrayTest, initializeOffsetsWithoutOptional)
 TEST_F(OptionalNestedIndexedOffsetArrayTest, writeWithOptional)
 {
     const uint16_t length = NUM_ELEMENTS;
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     OptionalNestedIndexedOffsetArray optionalNestedIndexedOffsetArray;
     fillOptionalNestedIndexedOffsetArray(optionalNestedIndexedOffsetArray, length, createWrongOffsets);
 

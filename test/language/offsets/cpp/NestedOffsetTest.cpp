@@ -188,7 +188,7 @@ TEST_F(NestedOffsetTest, initializeOffsetsWithPosition)
 
 TEST_F(NestedOffsetTest, write)
 {
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     NestedOffset nestedOffset;
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
@@ -209,8 +209,9 @@ TEST_F(NestedOffsetTest, writeWithPosition)
     NestedOffset nestedOffset;
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
+    nestedOffset.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     nestedOffset.write(writer);
 
@@ -224,7 +225,7 @@ TEST_F(NestedOffsetTest, writeWrongOffsets)
     fillNestedOffset(nestedOffset, createWrongOffsets);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(nestedOffset.write(writer, zserio::NO_PRE_WRITE_ACTION), zserio::CppRuntimeException);
+    ASSERT_THROW(nestedOffset.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace nested_offset

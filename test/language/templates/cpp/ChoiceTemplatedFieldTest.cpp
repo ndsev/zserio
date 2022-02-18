@@ -21,6 +21,7 @@ TEST(ChoiceTemplatedFieldTest, readWrite)
         choice2.setTemplatedField1(Compound_uint32{42});
         choiceTemplatedField.setChoice2(choice2); // copy
     }
+    choiceTemplatedField.initializeChildren();
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

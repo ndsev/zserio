@@ -27,6 +27,7 @@ TEST(ChoiceTemplatedSelectorTest, readWrite)
         uint32Choice.setStringField("string");
         choiceTemplatedSelector.setUint32Choice(uint32Choice); // copy
     }
+    choiceTemplatedSelector.initializeChildren();
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

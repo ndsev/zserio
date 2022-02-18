@@ -12,7 +12,6 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/VarSizeUtil.h"
-#include "zserio/PreWriteAction.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
 #include "zserio/UniquePtr.h"
@@ -466,7 +465,8 @@ public:
      * \param offsetChecker Offset checker.
      */
     void read(BitStreamReader& in, size_t arrayLength,
-            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory, const OFFSET_CHECKER& offsetChecker)
+            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
+            const OFFSET_CHECKER& offsetChecker)
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT || ARRAY_TRAITS::IS_BITSIZEOF_CONSTANT,
                 "Implicit array elements must have constant bit size!");
@@ -506,7 +506,8 @@ public:
      * \param offsetChecker Offset checker used to check offsets before writing.
      */
     void readPacked(BitStreamReader& in, size_t arrayLength,
-            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory, const OFFSET_CHECKER& offsetChecker)
+            const detail::ElementFactory<ARRAY_TRAITS>& elementFactory,
+            const OFFSET_CHECKER& offsetChecker)
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
@@ -541,7 +542,7 @@ public:
      * \param out Bit stream write to use for writing.
      * \param offsetChecker Offset checker used to check offsets before writing.
      */
-    void write(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
+    void write(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker) const
     {
         const size_t size = m_rawArray.size();
         if (ARRAY_TYPE == ArrayType::AUTO || ARRAY_TYPE == ArrayType::ALIGNED_AUTO)
@@ -564,7 +565,7 @@ public:
      * \param out Bit stream where to write.
      * \param offsetChecker Offset checker used to check offsets before writing.
      */
-    void writePacked(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker)
+    void writePacked(BitStreamWriter& out, const OFFSET_CHECKER& offsetChecker) const
     {
         static_assert(ARRAY_TYPE != ArrayType::IMPLICIT, "Implicit array cannot be packed!");
 
@@ -831,7 +832,7 @@ public:
      *
      * \param out Bit stream write to use for writing.
      */
-    void write(BitStreamWriter& out)
+    void write(BitStreamWriter& out) const
     {
         write(out, detail::DummyOffsetChecker());
     }
@@ -843,7 +844,7 @@ public:
      *
      * \param out Bit stream where to write.
      */
-    void writePacked(BitStreamWriter& out)
+    void writePacked(BitStreamWriter& out) const
     {
         writePacked(out, detail::DummyOffsetChecker());
     }

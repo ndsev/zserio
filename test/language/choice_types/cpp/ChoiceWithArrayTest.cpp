@@ -94,11 +94,10 @@ TEST(ChoiceWithArrayTest, array16)
 TEST(ChoiceWithArrayTest, writeReadFileArray8)
 {
     TestChoice testChoice;
-    testChoice.initialize(8);
     vector_type<Data8> data8{Data8{1}, Data8{2}, Data8{3}, Data8{4}};
     testChoice.setArray8(data8);
     const std::string fileName = "language/choice_types/choice_with_array_array8.blob";
-    zserio::serializeToFile(testChoice, fileName);
+    zserio::serializeToFile(testChoice, fileName, static_cast<int8_t>(8));
 
     const auto readTestChoice = zserio::deserializeFromFile<TestChoice>(fileName, static_cast<int8_t>(8));
     ASSERT_EQ(testChoice, readTestChoice);
@@ -107,11 +106,10 @@ TEST(ChoiceWithArrayTest, writeReadFileArray8)
 TEST(ChoiceWithArrayTest, writeReadFileArray16)
 {
     TestChoice testChoice;
-    testChoice.initialize(16);
     vector_type<int16_t> array16{10, 20, 30, 40, 50};
     testChoice.setArray16(array16);
     const std::string fileName = "language/choice_types/choice_with_array_array16.blob";
-    zserio::serializeToFile(testChoice, fileName);
+    zserio::serializeToFile(testChoice, fileName, static_cast<int8_t>(16));
 
     const auto readTestChoice = zserio::deserializeFromFile<TestChoice>(fileName, static_cast<int8_t>(16));
     ASSERT_EQ(testChoice, readTestChoice);

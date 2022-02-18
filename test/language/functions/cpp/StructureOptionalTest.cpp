@@ -12,7 +12,7 @@ namespace functions
 namespace structure_optional
 {
 
-class FunctionsStructureOptionalTest : public ::testing::Test
+class StructureOptionalTest : public ::testing::Test
 {
 protected:
     uint8_t calculateValue(uint8_t defaultValue, uint8_t externalValue)
@@ -40,6 +40,8 @@ protected:
 
         ValueConsumer& valueConsumer = valueConsumerCreator.getValueConsumer();
         valueConsumer.setIsSmall(calculateValue(defaultValue, externalValue) < SMALL_VALUE_THRESHOLD);
+
+        valueConsumerCreator.initializeChildren();
     }
 
     void checkValueConsumerCreator(uint8_t defaultValue, uint8_t externalValue)
@@ -70,12 +72,12 @@ protected:
     static const uint8_t    SMALL_VALUE_THRESHOLD = 8;
 };
 
-TEST_F(FunctionsStructureOptionalTest, checkDefaultValueConsumerCreator)
+TEST_F(StructureOptionalTest, checkDefaultValueConsumerCreator)
 {
     checkValueConsumerCreator(DEFAULT_VALUE, EXTERNAL_VALUE);
 }
 
-TEST_F(FunctionsStructureOptionalTest, checkExternalValueConsumerCreator)
+TEST_F(StructureOptionalTest, checkExternalValueConsumerCreator)
 {
     checkValueConsumerCreator(INVALID_DEFAULT_VALUE, EXTERNAL_VALUE);
 }

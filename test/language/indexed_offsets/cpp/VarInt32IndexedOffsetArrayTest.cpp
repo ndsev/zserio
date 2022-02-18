@@ -76,7 +76,7 @@ protected:
                 offsets.push_back(wrongOffset);
             else
                 offsets.push_back(currentOffset);
-            currentOffset += static_cast<uint32_t>(zserio::bitSizeOfVarInt32(i));
+            currentOffset += static_cast<uint32_t>(zserio::bitSizeOfVarInt32(i) / 8);
         }
         varint32IndexedOffsetArray.setSpacer(SPACER_VALUE);
 
@@ -176,7 +176,7 @@ TEST_F(VarInt32IndexedOffsetArrayTest, initializeOffsetsWithPosition)
 
 TEST_F(VarInt32IndexedOffsetArrayTest, write)
 {
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     VarInt32IndexedOffsetArray varint32IndexedOffsetArray;
     fillVarInt32IndexedOffsetArray(varint32IndexedOffsetArray, createWrongOffsets);
 
@@ -196,8 +196,9 @@ TEST_F(VarInt32IndexedOffsetArrayTest, writeWithPosition)
     VarInt32IndexedOffsetArray varint32IndexedOffsetArray;
     fillVarInt32IndexedOffsetArray(varint32IndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 8;
+    varint32IndexedOffsetArray.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     varint32IndexedOffsetArray.write(writer);
 
@@ -212,8 +213,7 @@ TEST_F(VarInt32IndexedOffsetArrayTest, writeWrongOffsets)
     fillVarInt32IndexedOffsetArray(varint32IndexedOffsetArray, createWrongOffsets);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(varint32IndexedOffsetArray.write(writer, zserio::NO_PRE_WRITE_ACTION),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(varint32IndexedOffsetArray.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace varint32_indexed_offset_array

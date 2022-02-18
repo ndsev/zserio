@@ -9,7 +9,6 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitPositionUtil.h"
 #include "zserio/VarSizeUtil.h"
-#include "zserio/PreWriteAction.h"
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
 
@@ -1605,7 +1604,7 @@ struct BitmaskArrayTraits
      */
     static void write(BitStreamWriter& out, ElementType element)
     {
-        element.write(out, NO_PRE_WRITE_ACTION);
+        element.write(out);
     }
 
     // Be aware that T can be varuint, so bitSizeOf cannot return constant value.
@@ -1672,9 +1671,9 @@ public:
      * \param out Bit stream writer to use.
      * \param element Element to write.
      */
-    static void write(BitStreamWriter& out, ElementType& element)
+    static void write(BitStreamWriter& out, const ElementType& element)
     {
-        element.write(out, NO_PRE_WRITE_ACTION);
+        element.write(out);
     }
 
     /** Determines whether the bit size of the single element is constant. */
@@ -1958,7 +1957,7 @@ public:
      * \param element Element to write.
      */
     template <typename PACKING_CONTEXT_NODE>
-    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, ElementType& element)
+    static void write(PACKING_CONTEXT_NODE& contextNode, BitStreamWriter& out, const ElementType& element)
     {
         element.write(contextNode, out);
     }

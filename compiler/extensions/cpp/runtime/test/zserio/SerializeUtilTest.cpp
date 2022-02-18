@@ -2,6 +2,7 @@
 
 #include "zserio/SerializeUtil.h"
 #include "zserio/Enums.h"
+#include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio
 {
@@ -16,36 +17,34 @@ enum class DummyEnum : uint8_t
     VALUE3 = UINT8_C(2)
 };
 
+template <typename ALLOC = std::allocator<uint8_t>>
 struct DummyObject
 {
-    using allocator_type = std::allocator<uint8_t>;
-
-    explicit DummyObject(uint32_t value_) :
+    explicit DummyObject(uint32_t value_, const ALLOC& = ALLOC()) :
             value(value_)
     {}
 
-    explicit DummyObject(BitStreamReader& reader) :
+    explicit DummyObject(BitStreamReader& reader, const ALLOC& = ALLOC()) :
             value(reader.readBits(32))
     {}
 
-    size_t initializeOffsets(size_t bitPosition)
+    size_t initializeOffsets(size_t bitPosition = 0)
     {
         return bitPosition + 32;
     }
 
-    void write(BitStreamWriter& writer, PreWriteAction preWriteAction)
+    void write(BitStreamWriter& writer) const
     {
-        usedPreWriteAction = preWriteAction;
         writer.writeBits(value, 32);
     }
 
-    PreWriteAction usedPreWriteAction = PreWriteAction::ALL_PRE_WRITE_ACTIONS;
     uint32_t value;
 };
 
-struct DummyObjectWithInitializeChildren : DummyObject
+template <typename ALLOC = std::allocator<uint8_t>>
+struct DummyObjectWithInitializeChildren : DummyObject<ALLOC>
 {
-    using DummyObject::DummyObject;
+    using DummyObject<ALLOC>::DummyObject;
 
     void initializeChildren()
     {
@@ -55,14 +54,15 @@ struct DummyObjectWithInitializeChildren : DummyObject
     bool initializeChildrenCalled = false;
 };
 
-struct ParameterizedDummyObject : DummyObject
+template <typename ALLOC = std::allocator<uint8_t>>
+struct ParameterizedDummyObject : DummyObject<ALLOC>
 {
-    explicit ParameterizedDummyObject(uint32_t value_) :
-            DummyObject(value_), param(false), optionalValue(0)
+    explicit ParameterizedDummyObject(uint32_t value_, const ALLOC& allocator = ALLOC()) :
+            DummyObject<ALLOC>(value_, allocator), param(false), optionalValue(0)
     {}
 
-    ParameterizedDummyObject(BitStreamReader& reader, bool param_) :
-            DummyObject(reader), param(param_)
+    ParameterizedDummyObject(BitStreamReader& reader, bool param_, const ALLOC& allocator = ALLOC()) :
+            DummyObject<ALLOC>(reader, allocator), param(param_)
     {
         if (param)
             optionalValue = reader.readBits(32);
@@ -78,14 +78,14 @@ struct ParameterizedDummyObject : DummyObject
         optionalValue = optionalValue_;
     }
 
-    size_t initializeOffsets(size_t bitPosition)
+    size_t initializeOffsets(size_t bitPosition = 0)
     {
-        return DummyObject::initializeOffsets(bitPosition) + (param ? 32 : 0);
+        return DummyObject<ALLOC>::initializeOffsets(bitPosition) + (param ? 32 : 0);
     }
 
-    void write(BitStreamWriter& writer, PreWriteAction preWriteAction)
+    void write(BitStreamWriter& writer) const
     {
-        DummyObject::write(writer, preWriteAction);
+        DummyObject<ALLOC>::write(writer);
         if (param)
             writer.writeBits(optionalValue, 32);
     }
@@ -133,56 +133,90 @@ TEST(SerializeUtilTest, dummyObjectFile)
 {
     const std::string fileName = "SerializeUtilTest.bin";
 
-    DummyObject dummy(42);
+    DummyObject<> dummy(42);
     serializeToFile(dummy, fileName);
-    ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
 
-    auto readDummy = deserializeFromFile<DummyObject>(fileName);
+    auto readDummy = deserializeFromFile<DummyObject<>>(fileName);
     ASSERT_EQ(42, readDummy.value);
 }
 
 TEST(SerializeUtilTest, dummyObjectBitBuffer)
 {
-    DummyObject dummy(42);
-    const BitBuffer bitBuffer = serialize(dummy);
-    ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
-    ASSERT_EQ(32, bitBuffer.getBitSize());
-    ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
-    ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
-    ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
-    ASSERT_EQ(42, bitBuffer.getBuffer()[3]);
+    {
+        // without allocator
+        DummyObject<> dummy(42);
+        const BitBuffer bitBuffer = serialize(dummy);
+        ASSERT_EQ(32, bitBuffer.getBitSize());
+        ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
+        ASSERT_EQ(42, bitBuffer.getBuffer()[3]);
 
-    auto readDummy = deserialize<DummyObject>(bitBuffer);
-    ASSERT_EQ(42, readDummy.value);
+        auto readDummy = deserialize<DummyObject<>>(bitBuffer);
+        ASSERT_EQ(42, readDummy.value);
+    }
+
+    {
+        // with polymorphic allocator
+        const pmr::PolymorphicAllocator<> allocator;
+        DummyObject<pmr::PolymorphicAllocator<>> dummy(42, allocator);
+        const BasicBitBuffer<pmr::PolymorphicAllocator<>> bitBuffer = serialize(dummy, allocator);
+        ASSERT_EQ(32, bitBuffer.getBitSize());
+        ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
+        ASSERT_EQ(42, bitBuffer.getBuffer()[3]);
+
+        auto readDummy = deserialize<DummyObject<pmr::PolymorphicAllocator<>>>(bitBuffer, allocator);
+        ASSERT_EQ(42, readDummy.value);
+    }
 }
 
 TEST(SerializeUtilTest, dummyObjectWithInitializeChildrenFile)
 {
     const std::string fileName = "SerializeUtilTest.bin";
 
-    DummyObjectWithInitializeChildren dummy(13);
+    DummyObjectWithInitializeChildren<> dummy(13);
     serializeToFile(dummy, fileName);
-    ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
     ASSERT_TRUE(dummy.initializeChildrenCalled);
 
-    auto readDummy = deserializeFromFile<DummyObjectWithInitializeChildren>(fileName);
+    auto readDummy = deserializeFromFile<DummyObjectWithInitializeChildren<>>(fileName);
     ASSERT_EQ(13, readDummy.value);
 }
 
 TEST(SerializeUtilTest, dummyObjectWithInitializeChildrenBitBuffer)
 {
-    DummyObjectWithInitializeChildren dummy(13);
-    const BitBuffer bitBuffer = serialize(dummy);
-    ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
-    ASSERT_TRUE(dummy.initializeChildrenCalled);
-    ASSERT_EQ(32, bitBuffer.getBitSize());
-    ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
-    ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
-    ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
-    ASSERT_EQ(13, bitBuffer.getBuffer()[3]);
+    {
+        // without allocator
+        DummyObjectWithInitializeChildren<> dummy(13);
+        const BitBuffer bitBuffer = serialize(dummy);
+        ASSERT_TRUE(dummy.initializeChildrenCalled);
+        ASSERT_EQ(32, bitBuffer.getBitSize());
+        ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
+        ASSERT_EQ(13, bitBuffer.getBuffer()[3]);
 
-    auto readDummy = deserialize<DummyObjectWithInitializeChildren>(bitBuffer);
-    ASSERT_EQ(13, readDummy.value);
+        auto readDummy = deserialize<DummyObjectWithInitializeChildren<>>(bitBuffer);
+        ASSERT_EQ(13, readDummy.value);
+    }
+
+    {
+        // with polymorphic allocator
+        const pmr::PolymorphicAllocator<> allocator;
+        DummyObjectWithInitializeChildren<pmr::PolymorphicAllocator<>> dummy(13, allocator);
+        const BasicBitBuffer<pmr::PolymorphicAllocator<>> bitBuffer = serialize(dummy, allocator);
+        ASSERT_TRUE(dummy.initializeChildrenCalled);
+        ASSERT_EQ(32, bitBuffer.getBitSize());
+        ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
+        ASSERT_EQ(13, bitBuffer.getBuffer()[3]);
+
+        auto readDummy = deserialize<DummyObjectWithInitializeChildren<pmr::PolymorphicAllocator<>>>(bitBuffer,
+                allocator);
+        ASSERT_EQ(13, readDummy.value);
+    }
 }
 
 TEST(SerializeUtilTest, parameterizedDummyObjectFile)
@@ -191,13 +225,11 @@ TEST(SerializeUtilTest, parameterizedDummyObjectFile)
 
     {
         // with optional value
-        ParameterizedDummyObject dummy(42);
-        dummy.initialize(true);
+        ParameterizedDummyObject<> dummy(42);
         dummy.setOptionalValue(13);
-        serializeToFile(dummy, fileName);
-        ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
+        serializeToFile(dummy, fileName, true);
 
-        auto readDummy = deserializeFromFile<ParameterizedDummyObject>(fileName, true);
+        auto readDummy = deserializeFromFile<ParameterizedDummyObject<>>(fileName, true);
         ASSERT_EQ(42, readDummy.value);
         ASSERT_TRUE(readDummy.param);
         ASSERT_EQ(13, readDummy.optionalValue);
@@ -205,11 +237,10 @@ TEST(SerializeUtilTest, parameterizedDummyObjectFile)
 
     {
         // without optional value
-        ParameterizedDummyObject dummy(42);
-        serializeToFile(dummy, fileName);
-        ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
+        ParameterizedDummyObject<> dummy(42);
+        serializeToFile(dummy, fileName, false);
 
-        auto readDummy = deserializeFromFile<ParameterizedDummyObject>(fileName, false);
+        auto readDummy = deserializeFromFile<ParameterizedDummyObject<>>(fileName, false);
         ASSERT_EQ(42, readDummy.value);
         ASSERT_FALSE(readDummy.param);
     }
@@ -217,13 +248,12 @@ TEST(SerializeUtilTest, parameterizedDummyObjectFile)
 
 TEST(SerializeUtilTest, parameterizedDummyObjectBitBuffer)
 {
+    // without allocator
     {
         // with optional value
-        ParameterizedDummyObject dummy(42);
-        dummy.initialize(true);
+        ParameterizedDummyObject<> dummy(42);
         dummy.setOptionalValue(13);
-        const BitBuffer bitBuffer = serialize(dummy);
-        ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
+        const BitBuffer bitBuffer = serialize(dummy, true);
         ASSERT_EQ(64, bitBuffer.getBitSize());
         ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
         ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
@@ -234,7 +264,7 @@ TEST(SerializeUtilTest, parameterizedDummyObjectBitBuffer)
         ASSERT_EQ(0, bitBuffer.getBuffer()[6]);
         ASSERT_EQ(13, bitBuffer.getBuffer()[7]);
 
-        auto readDummy = deserialize<ParameterizedDummyObject>(bitBuffer, true);
+        auto readDummy = deserialize<ParameterizedDummyObject<>>(bitBuffer, true);
         ASSERT_EQ(42, readDummy.value);
         ASSERT_TRUE(readDummy.param);
         ASSERT_EQ(13, readDummy.optionalValue);
@@ -242,16 +272,56 @@ TEST(SerializeUtilTest, parameterizedDummyObjectBitBuffer)
 
     {
         // without optional value
-        ParameterizedDummyObject dummy(42);
-        const BitBuffer bitBuffer = serialize(dummy);
-        ASSERT_EQ(PreWriteAction::NO_PRE_WRITE_ACTION, dummy.usedPreWriteAction);
+        ParameterizedDummyObject<> dummy(42);
+        const BitBuffer bitBuffer = serialize(dummy, false);
         ASSERT_EQ(32, bitBuffer.getBitSize());
         ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
         ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
         ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
         ASSERT_EQ(42, bitBuffer.getBuffer()[3]);
 
-        auto readDummy = deserialize<ParameterizedDummyObject>(bitBuffer, false);
+        auto readDummy = deserialize<ParameterizedDummyObject<>>(bitBuffer, false);
+        ASSERT_EQ(42, readDummy.value);
+        ASSERT_FALSE(readDummy.param);
+    }
+
+    // with polymorphic allocator
+    {
+        // with optional value
+        const pmr::PolymorphicAllocator<> allocator;
+        ParameterizedDummyObject<pmr::PolymorphicAllocator<>> dummy(42, allocator);
+        dummy.setOptionalValue(13);
+        const BasicBitBuffer<pmr::PolymorphicAllocator<>> bitBuffer = serialize(dummy, allocator, true);
+        ASSERT_EQ(64, bitBuffer.getBitSize());
+        ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
+        ASSERT_EQ(42, bitBuffer.getBuffer()[3]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[4]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[5]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[6]);
+        ASSERT_EQ(13, bitBuffer.getBuffer()[7]);
+
+        auto readDummy = deserialize<ParameterizedDummyObject<pmr::PolymorphicAllocator<>>>(bitBuffer,
+                true, allocator);
+        ASSERT_EQ(42, readDummy.value);
+        ASSERT_TRUE(readDummy.param);
+        ASSERT_EQ(13, readDummy.optionalValue);
+    }
+
+    {
+        // without optional value
+        const pmr::PolymorphicAllocator<> allocator;
+        ParameterizedDummyObject<pmr::PolymorphicAllocator<>> dummy(42, allocator);
+        const BasicBitBuffer<pmr::PolymorphicAllocator<>> bitBuffer = serialize(dummy, allocator, false);
+        ASSERT_EQ(32, bitBuffer.getBitSize());
+        ASSERT_EQ(0, bitBuffer.getBuffer()[0]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[1]);
+        ASSERT_EQ(0, bitBuffer.getBuffer()[2]);
+        ASSERT_EQ(42, bitBuffer.getBuffer()[3]);
+
+        auto readDummy = deserialize<ParameterizedDummyObject<pmr::PolymorphicAllocator<>>>(bitBuffer,
+                false, allocator);
         ASSERT_EQ(42, readDummy.value);
         ASSERT_FALSE(readDummy.param);
     }

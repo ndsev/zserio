@@ -127,7 +127,7 @@ TEST_F(ParameterOffsetTest, initializeOffsetsWithPosition)
 
 TEST_F(ParameterOffsetTest, write)
 {
-    const bool createWrongOffset = true;
+    const bool createWrongOffset = false;
     School school;
     fillSchool(school, createWrongOffset);
 
@@ -143,12 +143,13 @@ TEST_F(ParameterOffsetTest, write)
 
 TEST_F(ParameterOffsetTest, writeWithPosition)
 {
-    const bool createWrongOffset = true;
+    const bool createWrongOffset = false;
     School school;
     fillSchool(school, createWrongOffset);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
+    school.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     school.write(writer);
 
@@ -162,7 +163,7 @@ TEST_F(ParameterOffsetTest, writeWrongOffset)
     fillSchool(school, createWrongOffset);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(school.write(writer, zserio::NO_PRE_WRITE_ACTION), zserio::CppRuntimeException);
+    ASSERT_THROW(school.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace parameter_offset

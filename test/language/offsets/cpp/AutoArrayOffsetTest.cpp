@@ -144,7 +144,7 @@ TEST_F(AutoArrayOffsetTest, initializeOffsetsWithPosition)
 
 TEST_F(AutoArrayOffsetTest, write)
 {
-    const bool createWrongOffset = true;
+    const bool createWrongOffset = false;
     AutoArrayHolder autoArrayHolder;
     fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
 
@@ -164,8 +164,9 @@ TEST_F(AutoArrayOffsetTest, writeWithPosition)
     AutoArrayHolder autoArrayHolder;
     fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
+    autoArrayHolder.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     autoArrayHolder.write(writer);
 
@@ -179,8 +180,7 @@ TEST_F(AutoArrayOffsetTest, writeWrongOffset)
     fillAutoArrayHolder(autoArrayHolder, createWrongOffset);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(autoArrayHolder.write(writer, zserio::NO_PRE_WRITE_ACTION),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(autoArrayHolder.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace auto_array_offset

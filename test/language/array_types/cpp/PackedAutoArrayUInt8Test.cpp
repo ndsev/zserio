@@ -112,7 +112,7 @@ protected:
         packedAutoArray.write(writer);
 
         ASSERT_EQ(packedAutoArray.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(packedAutoArray.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(packedAutoArray.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedAutoArray readPackedAutoArray(reader);

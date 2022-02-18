@@ -80,7 +80,7 @@ protected:
         autoArray.write(writer);
 
         ASSERT_EQ(autoArray.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(autoArray.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(autoArray.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         AutoArray readAutoArray(reader);

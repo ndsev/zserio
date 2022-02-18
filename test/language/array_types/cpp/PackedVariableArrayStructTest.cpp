@@ -26,6 +26,9 @@ protected:
         packedVariableArray.setNumElements(numElements);
         packedVariableArray.setTestUnpackedArray(TestUnpackedArray{testStructureArray});
         packedVariableArray.setTestPackedArray(TestPackedArray{testStructureArray});
+
+        packedVariableArray.initializeChildren();
+        packedVariableArray.initializeOffsets();
     }
 
     void fillTestStructureArray(vector_type<TestStructure>& testStructureArray, uint32_t numElements)
@@ -90,7 +93,6 @@ protected:
     {
         PackedVariableArray packedVariableArray;
         fillPackedVariableArray(packedVariableArray, numElements);
-        packedVariableArray.initializeChildren();
 
         const double unpackedBitSize = static_cast<double>(
                 packedVariableArray.getTestUnpackedArray().bitSizeOf());
@@ -112,7 +114,7 @@ protected:
         packedVariableArray.write(writer);
 
         ASSERT_EQ(packedVariableArray.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(packedVariableArray.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedVariableArray readPackedVariableArray(reader);
@@ -127,7 +129,7 @@ protected:
         const std::string fileName = BLOB_NAME_BASE + std::to_string(numElements) + ".blob";
         zserio::serializeToFile(packedVariableArray, fileName);
 
-        ASSERT_EQ(packedVariableArray.bitSizeOf(), packedVariableArray.initializeOffsets(0));
+        ASSERT_EQ(packedVariableArray.bitSizeOf(), packedVariableArray.initializeOffsets());
 
         auto readPackedVariableArray = zserio::deserializeFromFile<PackedVariableArray>(fileName);
         ASSERT_EQ(packedVariableArray, readPackedVariableArray);

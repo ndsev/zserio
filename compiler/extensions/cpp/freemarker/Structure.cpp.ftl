@@ -330,7 +330,6 @@ uint32_t ${name}::hashCode() const
 }
 <#if withWriterCode>
 
-<#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
 <#assign needsWriteNewLines=false/>
 <#list fieldList as field>
     <#if needs_field_any_write_check_code(field, name, 2)>
@@ -338,14 +337,9 @@ uint32_t ${name}::hashCode() const
         <#break>
     </#if>
 </#list>
-void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
-        ::zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
+void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>) const
 {
     <#if fieldList?has_content>
-        <#if hasPreWriteAction>
-    <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
-
-        </#if>
         <#list fieldList as field>
     <@compound_write_field field, name, 1/>
             <#if field?has_next && needsWriteNewLines>
@@ -357,7 +351,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 
 void ${name}::write(${types.packingContextNode.name}&<#rt>
         <#if needs_packing_context_node(fieldList)> contextNode</#if>, <#t>
-        <#lt>::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>)
+        <#lt>::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>) const
 {
     <#if fieldList?has_content>
         <#list fieldList as field>

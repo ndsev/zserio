@@ -15,10 +15,10 @@ namespace functions
 namespace union_array
 {
 
-class FunctionsUnionArrayTest : public ::testing::Test
+class UnionArrayTest : public ::testing::Test
 {
 public:
-    FunctionsUnionArrayTest()
+    UnionArrayTest()
     {
         uint8_t ElementsA[NUM_ITEM_ELEMENTS] = {12, 42, 17};
         uint8_t ElementsB[NUM_ITEM_ELEMENTS] = {13, 18, 14};
@@ -117,22 +117,22 @@ private:
     Item m_explicitItem;
 };
 
-TEST_F(FunctionsUnionArrayTest, checkUnionArrayFunctionElement0)
+TEST_F(UnionArrayTest, checkUnionArrayFunctionElement0)
 {
     checkUnionArrayFunction(0);
 }
 
-TEST_F(FunctionsUnionArrayTest, checkUnionArrayFunctionElement1)
+TEST_F(UnionArrayTest, checkUnionArrayFunctionElement1)
 {
     checkUnionArrayFunction(1);
 }
 
-TEST_F(FunctionsUnionArrayTest, checkUnionArrayFunctionElement2)
+TEST_F(UnionArrayTest, checkUnionArrayFunctionElement2)
 {
     checkUnionArrayFunction(2);
 }
 
-TEST_F(FunctionsUnionArrayTest, checkUnionArrayFunctionExplicitElement)
+TEST_F(UnionArrayTest, checkUnionArrayFunctionExplicitElement)
 {
     checkUnionArrayFunction(NUM_ITEM_ELEMENTS);
 }

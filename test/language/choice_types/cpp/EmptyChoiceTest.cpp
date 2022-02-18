@@ -162,9 +162,8 @@ TEST(EmptyChoiceTest, writeReadFile)
 {
     const uint8_t selector = 1;
     EmptyChoice emptyChoice;
-    emptyChoice.initialize(selector);
     const std::string fileName = "language/choice_types/empty_choice.blob";
-    zserio::serializeToFile(emptyChoice, fileName);
+    zserio::serializeToFile(emptyChoice, fileName, selector);
 
     EmptyChoice readEmptyChoice = zserio::deserializeFromFile<EmptyChoice>(fileName, selector);
     ASSERT_EQ(emptyChoice, readEmptyChoice);

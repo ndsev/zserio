@@ -210,7 +210,7 @@ TEST_F(OptionalIndexedOffsetArrayTest, initializeOffsetsWithoutOptional)
 TEST_F(OptionalIndexedOffsetArrayTest, writeWithOptional)
 {
     const bool hasOptional = true;
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     OptionalIndexedOffsetArray optionalIndexedOffsetArray;
     fillOptionalIndexedOffsetArray(optionalIndexedOffsetArray, hasOptional, createWrongOffsets);
 

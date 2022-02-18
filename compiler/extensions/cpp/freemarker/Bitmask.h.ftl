@@ -5,7 +5,6 @@
 
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/PreWriteAction.h>
 <#if !bitSize??>
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
@@ -83,15 +82,14 @@ public:
     size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 <#if withWriterCode>
 
-    size_t initializeOffsets(size_t bitPosition) const;
+    size_t initializeOffsets(size_t bitPosition = 0) const;
     size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 </#if>
 
     uint32_t hashCode() const;
 <#if withWriterCode>
 
-    void write(::zserio::BitStreamWriter& out,
-            ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS) const;
+    void write(::zserio::BitStreamWriter& out) const;
     void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out) const;
 </#if>
 

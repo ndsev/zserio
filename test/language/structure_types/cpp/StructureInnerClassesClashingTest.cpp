@@ -39,6 +39,7 @@ TEST_F(StructureInnerClassesClashingTest, writeReadOffsetChecker)
     OffsetChecker_array testStructure;
     testStructure.setArray(vector_type<uint32_t>{1, 2, 3, 4});
     testStructure.getOffsets().resize(testStructure.getArray().size());
+    testStructure.initializeOffsets();
 
     zserio::BitStreamWriter writer(bitBuffer);
     testStructure.write(writer);
@@ -53,6 +54,7 @@ TEST_F(StructureInnerClassesClashingTest, writeReadOffsetInitializer)
     OffsetInitializer_array testStructure;
     testStructure.setArray(vector_type<uint32_t>{1, 2, 3, 4});
     testStructure.getOffsets().resize(testStructure.getArray().size());
+    testStructure.initializeOffsets();
 
     zserio::BitStreamWriter writer(bitBuffer);
     testStructure.write(writer);

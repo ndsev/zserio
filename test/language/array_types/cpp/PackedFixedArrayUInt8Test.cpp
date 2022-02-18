@@ -104,7 +104,7 @@ TEST_F(PackedFixedArrayUInt8Test, writeRead)
     packedFixedArray.write(writer);
 
     ASSERT_EQ(packedFixedArray.bitSizeOf(), writer.getBitPosition());
-    ASSERT_EQ(packedFixedArray.initializeOffsets(0), writer.getBitPosition());
+    ASSERT_EQ(packedFixedArray.initializeOffsets(), writer.getBitPosition());
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     PackedFixedArray readPackedFixedArray(reader);

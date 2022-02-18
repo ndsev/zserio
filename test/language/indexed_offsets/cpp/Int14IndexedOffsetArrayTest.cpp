@@ -174,7 +174,7 @@ TEST_F(Int14IndexedOffsetArrayTest, initializeOffsetsWithPosition)
 
 TEST_F(Int14IndexedOffsetArrayTest, write)
 {
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     Int14IndexedOffsetArray int14IndexedOffsetArray;
     fillInt14IndexedOffsetArray(int14IndexedOffsetArray, createWrongOffsets);
 
@@ -194,8 +194,9 @@ TEST_F(Int14IndexedOffsetArrayTest, writeWithPosition)
     Int14IndexedOffsetArray int14IndexedOffsetArray;
     fillInt14IndexedOffsetArray(int14IndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 8;
+    int14IndexedOffsetArray.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     int14IndexedOffsetArray.write(writer);
 
@@ -210,8 +211,7 @@ TEST_F(Int14IndexedOffsetArrayTest, writeWrongOffsets)
     fillInt14IndexedOffsetArray(int14IndexedOffsetArray, createWrongOffsets);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(int14IndexedOffsetArray.write(writer, zserio::NO_PRE_WRITE_ACTION),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(int14IndexedOffsetArray.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace int14_indexed_offset_array

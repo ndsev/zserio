@@ -157,7 +157,7 @@ uint32_t ${name}::hashCode() const
 }
 <#if withWriterCode>
 
-void ${name}::write(::zserio::BitStreamWriter& out, ::zserio::PreWriteAction) const
+void ${name}::write(::zserio::BitStreamWriter& out) const
 {
     out.write${runtimeFunction.suffix}(m_value<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
 }

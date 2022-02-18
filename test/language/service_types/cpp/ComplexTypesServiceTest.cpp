@@ -171,6 +171,7 @@ TEST_F(ComplexTypesServiceTest, rgbToCmyk)
         data.at(i).setRgb(model);
     }
     request.initializeChildren();
+    request.initializeOffsets();
 
     LengthResponse lengthResponse = client.getLengthMethod(request);
     ASSERT_EQ(length, lengthResponse.getLength());
@@ -208,6 +209,7 @@ TEST_F(ComplexTypesServiceTest, cmykToRgb)
         data.at(i).setCmyk(model);
     }
     request.initializeChildren();
+    request.initializeOffsets();
 
     LengthResponse lengthResponse = client.getLengthMethod(request);
     ASSERT_EQ(length, lengthResponse.getLength());

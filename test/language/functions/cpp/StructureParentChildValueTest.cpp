@@ -12,7 +12,7 @@ namespace functions
 namespace structure_parent_child_value
 {
 
-class FunctionsStructureParentChildValueTest : public ::testing::Test
+class StructureParentChildValueTest : public ::testing::Test
 {
 protected:
     void writeParentValueToByteArray(zserio::BitStreamWriter& writer)
@@ -30,9 +30,9 @@ protected:
     static const uint32_t CHILD_VALUE;
 };
 
-const uint32_t FunctionsStructureParentChildValueTest::CHILD_VALUE = 0xABCD;
+const uint32_t StructureParentChildValueTest::CHILD_VALUE = 0xABCD;
 
-TEST_F(FunctionsStructureParentChildValueTest, checkParentValue)
+TEST_F(StructureParentChildValueTest, checkParentValue)
 {
     ParentValue parentValue;
     createParentValue(parentValue);

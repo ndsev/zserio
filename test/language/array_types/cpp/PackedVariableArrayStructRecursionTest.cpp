@@ -21,6 +21,8 @@ protected:
         blocks.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             blocks.push_back(createBlock(byteCount, false));
+        packedVariableArray.initializeChildren();
+        packedVariableArray.initializeOffsets();
     }
 
     Block createBlock(uint8_t byteCount, bool isLast)
@@ -73,7 +75,6 @@ protected:
     {
         PackedVariableArray packedVariableArray;
         fillPackedVariableArray(packedVariableArray, numElements);
-        packedVariableArray.initializeChildren();
 
         const double unpackedBitSize = static_cast<double>(getUnpackedVariableArrayBitSize(numElements));
         const double packedBitSize = static_cast<double>(packedVariableArray.bitSizeOf());
@@ -94,7 +95,7 @@ protected:
         packedVariableArray.write(writer);
 
         ASSERT_EQ(packedVariableArray.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(packedVariableArray.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedVariableArray readPackedVariableArray(reader);

@@ -470,15 +470,9 @@ uint32_t ${name}::hashCode() const
 }
 <#if withWriterCode>
 
-<#assign hasPreWriteAction=needsChildrenInitialization || hasFieldWithOffset/>
-void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>, <#rt>
-        ::zserio::PreWriteAction<#if hasPreWriteAction> preWriteAction</#if>)<#lt>
+void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>) const
 {
     <#if fieldList?has_content>
-        <#if hasPreWriteAction>
-    <@compound_pre_write_actions needsChildrenInitialization, hasFieldWithOffset/>
-
-        </#if>
     out.writeVarSize(static_cast<uint32_t>(m_choiceTag));
 
     switch (m_choiceTag)
@@ -495,7 +489,7 @@ void ${name}::write(::zserio::BitStreamWriter&<#if fieldList?has_content> out</#
 }
 
 void ${name}::write(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>, <#rt>
-        ::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>)<#lt>
+        ::zserio::BitStreamWriter&<#if fieldList?has_content> out</#if>) const<#lt>
 {
     <#if fieldList?has_content>
     contextNode.getChildren().at(0).getContext().write(${choiceTagArrayTraits}(),

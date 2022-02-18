@@ -147,8 +147,7 @@ TEST_F(OptionalMemberOffsetTest, writeWithOptional)
     const int32_t optionalField = 0x1A1A;
     const int32_t field = 0xA1A1;
     OptionalMemberOffset optionalMemberOffset;
-    fillOptionalMemberOffset(optionalMemberOffset, hasOptional, WRONG_OPTIONAL_FIELD_OFFSET, optionalField,
-            field);
+    fillOptionalMemberOffset(optionalMemberOffset, hasOptional, OPTIONAL_FIELD_OFFSET, optionalField, field);
 
     zserio::BitStreamWriter writer(bitBuffer);
     optionalMemberOffset.write(writer);

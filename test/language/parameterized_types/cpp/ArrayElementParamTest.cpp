@@ -10,7 +10,7 @@ namespace parameterized_types
 namespace array_element_param
 {
 
-class ParameterizedTypesArrayElementParamTest : public ::testing::Test
+class ArrayElementParamTest : public ::testing::Test
 {
 protected:
     void fillDatabase(Database& database)
@@ -35,6 +35,9 @@ protected:
                 items.push_back(j * 2);
             blocks.push_back(block);
         }
+
+        database.initializeChildren();
+        database.initializeOffsets();
     }
 
     void checkDatabaseInBitStream(zserio::BitStreamReader& reader, const Database& database)
@@ -70,11 +73,11 @@ private:
     static const uint32_t FIRST_BYTE_OFFSET;
 };
 
-const uint16_t ParameterizedTypesArrayElementParamTest::NUM_BLOCKS = 3;
-const uint32_t ParameterizedTypesArrayElementParamTest::FIRST_BYTE_OFFSET =
-        2 + ParameterizedTypesArrayElementParamTest::NUM_BLOCKS * (2 + 4);
+const uint16_t ArrayElementParamTest::NUM_BLOCKS = 3;
+const uint32_t ArrayElementParamTest::FIRST_BYTE_OFFSET =
+        2 + ArrayElementParamTest::NUM_BLOCKS * (2 + 4);
 
-TEST_F(ParameterizedTypesArrayElementParamTest, fieldConstructor)
+TEST_F(ArrayElementParamTest, fieldConstructor)
 {
     Database database;
     fillDatabase(database);
@@ -94,7 +97,7 @@ TEST_F(ParameterizedTypesArrayElementParamTest, fieldConstructor)
     ASSERT_EQ(blocks, newDatabase.getBlocks());
 }
 
-TEST_F(ParameterizedTypesArrayElementParamTest, moveConstructor)
+TEST_F(ArrayElementParamTest, moveConstructor)
 {
     Database database;
     fillDatabase(database);
@@ -107,7 +110,7 @@ TEST_F(ParameterizedTypesArrayElementParamTest, moveConstructor)
     ASSERT_EQ(blocksPtr, movedDatabase.getBlocks().data());
 }
 
-TEST_F(ParameterizedTypesArrayElementParamTest, moveAssignmentOperator)
+TEST_F(ArrayElementParamTest, moveAssignmentOperator)
 {
     Database database;
     fillDatabase(database);
@@ -121,7 +124,7 @@ TEST_F(ParameterizedTypesArrayElementParamTest, moveAssignmentOperator)
     ASSERT_EQ(blocksPtr, movedDatabase.getBlocks().data());
 }
 
-TEST_F(ParameterizedTypesArrayElementParamTest, write)
+TEST_F(ArrayElementParamTest, write)
 {
     Database database;
     fillDatabase(database);

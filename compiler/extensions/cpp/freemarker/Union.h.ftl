@@ -14,7 +14,6 @@
 #include <zserio/BitStreamWriter.h>
 #include <zserio/CppRuntimeException.h>
 #include <zserio/StringConvertUtil.h>
-#include <zserio/PreWriteAction.h>
 #include <zserio/AllocatorPropagatingCopy.h>
 <#if withTypeInfoCode>
 #include <zserio/ITypeInfo.h>
@@ -100,7 +99,7 @@ public:
     size_t bitSizeOf(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
 <#if withWriterCode>
 
-    size_t initializeOffsets(size_t bitPosition);
+    size_t initializeOffsets(size_t bitPosition = 0);
     size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition);
 </#if>
 
@@ -108,9 +107,8 @@ public:
     uint32_t hashCode() const;
 <#if withWriterCode>
 
-    void write(::zserio::BitStreamWriter& out,
-            ::zserio::PreWriteAction preWriteAction = ::zserio::ALL_PRE_WRITE_ACTIONS);
-    void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out);
+    void write(::zserio::BitStreamWriter& out) const;
+    void write(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamWriter& out) const;
 </#if>
 
 private:

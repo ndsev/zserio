@@ -13,7 +13,7 @@ namespace functions
 namespace structure_value
 {
 
-class FunctionsStructureValueTest : public ::testing::Test
+class StructureValueTest : public ::testing::Test
 {
 protected:
     void writeCustomVarIntToByteArray(zserio::BitStreamWriter& writer, uint32_t value)
@@ -79,32 +79,32 @@ protected:
     static const uint8_t    FOUR_BYTES_INDICATOR = 254;
 };
 
-TEST_F(FunctionsStructureValueTest, checkCustomVarIntValue42)
+TEST_F(StructureValueTest, checkCustomVarIntValue42)
 {
     checkCustomVarInt(42);
 }
 
-TEST_F(FunctionsStructureValueTest, checkCustomVarIntValue253)
+TEST_F(StructureValueTest, checkCustomVarIntValue253)
 {
     checkCustomVarInt(MAX_ONE_BYTE_VALUE);
 }
 
-TEST_F(FunctionsStructureValueTest, checkCustomVarIntValue255)
+TEST_F(StructureValueTest, checkCustomVarIntValue255)
 {
     checkCustomVarInt(TWO_BYTES_INDICATOR);
 }
 
-TEST_F(FunctionsStructureValueTest, checkCustomVarIntValue254)
+TEST_F(StructureValueTest, checkCustomVarIntValue254)
 {
     checkCustomVarInt(FOUR_BYTES_INDICATOR);
 }
 
-TEST_F(FunctionsStructureValueTest, checkCustomVarIntValue1000)
+TEST_F(StructureValueTest, checkCustomVarIntValue1000)
 {
     checkCustomVarInt(1000);
 }
 
-TEST_F(FunctionsStructureValueTest, checkCustomVarIntValue87654)
+TEST_F(StructureValueTest, checkCustomVarIntValue87654)
 {
     checkCustomVarInt(87654);
 }

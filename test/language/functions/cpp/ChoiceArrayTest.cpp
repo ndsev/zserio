@@ -15,10 +15,10 @@ namespace functions
 namespace choice_array
 {
 
-class FunctionsChoiceArrayTest : public ::testing::Test
+class ChoiceArrayTest : public ::testing::Test
 {
 public:
-    FunctionsChoiceArrayTest()
+    ChoiceArrayTest()
     {
         uint8_t ElementsA[NUM_ITEM_ELEMENTS] = {12, ELEMENT_A_FOR_EXTRA_VALUE, 17};
         uint8_t ElementsB[NUM_ITEM_ELEMENTS] = {13, 18, 14};
@@ -130,26 +130,26 @@ private:
     static const int32_t EXTRA_VALUE;
 };
 
-const uint16_t FunctionsChoiceArrayTest::NUM_ITEM_ELEMENTS;
-const uint8_t FunctionsChoiceArrayTest::ELEMENT_A_FOR_EXTRA_VALUE = 20;
-const int32_t FunctionsChoiceArrayTest::EXTRA_VALUE = 4711;
+const uint16_t ChoiceArrayTest::NUM_ITEM_ELEMENTS;
+const uint8_t ChoiceArrayTest::ELEMENT_A_FOR_EXTRA_VALUE = 20;
+const int32_t ChoiceArrayTest::EXTRA_VALUE = 4711;
 
-TEST_F(FunctionsChoiceArrayTest, checkChoiceArrayFunctionElement0)
+TEST_F(ChoiceArrayTest, checkChoiceArrayFunctionElement0)
 {
     checkChoiceArrayFunction(0);
 }
 
-TEST_F(FunctionsChoiceArrayTest, checkChoiceArrayFunctionElement1)
+TEST_F(ChoiceArrayTest, checkChoiceArrayFunctionElement1)
 {
     checkChoiceArrayFunction(1);
 }
 
-TEST_F(FunctionsChoiceArrayTest, checkChoiceArrayFunctionElement2)
+TEST_F(ChoiceArrayTest, checkChoiceArrayFunctionElement2)
 {
     checkChoiceArrayFunction(2);
 }
 
-TEST_F(FunctionsChoiceArrayTest, checkChoiceArrayFunctionExplicitElement)
+TEST_F(ChoiceArrayTest, checkChoiceArrayFunctionExplicitElement)
 {
     checkChoiceArrayFunction(NUM_ITEM_ELEMENTS);
 }

@@ -47,7 +47,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/FileUtil.cpp
     zserio/FileUtil.h
     zserio/IReflectable.h
-    zserio/Reflectable.h
     zserio/IPubsub.h
     zserio/IService.h
     zserio/ISqliteDatabase.h
@@ -56,8 +55,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/IValidationObserver.h
     zserio/OptionalHolder.h
     zserio/PackingContext.h
-    zserio/PreWriteAction.h
     zserio/PubsubException.h
+    zserio/Reflectable.h
     zserio/SerializeUtil.h
     zserio/ServiceException.h
     zserio/Span.h

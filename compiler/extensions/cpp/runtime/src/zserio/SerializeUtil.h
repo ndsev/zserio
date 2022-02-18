@@ -12,7 +12,6 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/FileUtil.h"
-#include "zserio/PreWriteAction.h"
 
 namespace zserio
 {
@@ -22,6 +21,22 @@ namespace detail
 
 template <typename T>
 using void_t = void;
+
+template <typename T, typename = void, typename = void>
+struct is_allocator : std::false_type
+{};
+
+template <typename T>
+struct is_allocator<T, void_t<decltype(&T::allocate)>, void_t<decltype(&T::deallocate)>> : std::true_type
+{};
+
+template <typename ...ARGS>
+struct is_first_allocator : std::false_type
+{};
+
+template <typename T, typename ...ARGS>
+struct is_first_allocator<T, ARGS...>  : is_allocator<T>
+{};
 
 template <typename T, typename = void>
 struct has_initialize_children : std::false_type
@@ -47,27 +62,73 @@ void initializeChildren(T& object)
     initializeChildren(has_initialize_children<T>(), object);
 }
 
+template <typename T, typename = void>
+struct has_initialize : std::false_type
+{};
+
+template <typename T>
+struct has_initialize<T, void_t<decltype(&T::initialize)>> : std::true_type
+{};
+
+template <typename T, typename ...ARGS>
+void initialize(std::true_type, T& object, ARGS&&... arguments)
+{
+    object.initialize(std::forward<ARGS>(arguments)...);
+}
+
+template <typename T>
+void initialize(std::false_type, T& object)
+{
+    initializeChildren(object);
+}
+
+template <typename T, typename ...ARGS>
+void initialize(T& object, ARGS&&... arguments)
+{
+    initialize(has_initialize<T>(), object, std::forward<ARGS>(arguments)...);
+}
+
 } // namespace detail
 
 /**
- * Serializes given generated object to bit buffer.
+ * Serializes given generated object to bit buffer using given allocator.
  *
  * \param object Generated object to serialize.
  * \param allocator Allocator to use to allocate bit buffer.
+ * \param arguments Object's actual parameters for initialize() method (optional).
  *
  * \return Bit buffer containing the serialized object.
  *
  * \throw CppRuntimeException When serialization fails.
  */
-template <typename T, typename ALLOC = std::allocator<uint8_t>,
-        typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator = ALLOC())
+template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
+        typename std::enable_if<!std::is_enum<T>::value &&
+        detail::is_allocator<ALLOC>::value, int>::type = 0>
+BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator = ALLOC(), ARGS&&... arguments)
 {
-    detail::initializeChildren(object);
-    BasicBitBuffer<ALLOC> bitBuffer(object.initializeOffsets(0), allocator);
+    detail::initialize(object, std::forward<ARGS>(arguments)...);
+    BasicBitBuffer<ALLOC> bitBuffer(object.initializeOffsets(), allocator);
     BitStreamWriter writer(bitBuffer);
-    object.write(writer, PreWriteAction::NO_PRE_WRITE_ACTION);
+    object.write(writer);
     return bitBuffer;
+}
+
+/**
+ * Serializes given generated object to bit buffer using default allocator 'std::allocator<uint8_t>'.
+ *
+ * \param object Generated object to serialize.
+ * \param arguments Object's actual parameters for initialize() method (optional).
+ *
+ * \return Bit buffer containing the serialized object.
+ *
+ * \throw CppRuntimeException When serialization fails.
+ */
+template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
+        typename std::enable_if<!std::is_enum<T>::value &&
+        !detail::is_first_allocator<typename std::decay<ARGS>::type...>::value, int>::type = 0>
+BasicBitBuffer<ALLOC> serialize(T& object, ARGS&&... arguments)
+{
+    return serialize(object, ALLOC(), std::forward<ARGS>(arguments)...);
 }
 
 /**
@@ -94,7 +155,7 @@ BasicBitBuffer<ALLOC> serialize(T enumValue, const ALLOC& allocator = ALLOC())
  * Deserializes given bit buffer to instance of generated object.
  *
  * \param bitBuffer Bit buffer to use.
- * \param arguments Object's actual paramters and/or allocator (all optional).
+ * \param arguments Object's actual parameters together with allocator for object's read constructor (optional).
  *
  * \return Generated object created from the given bit buffer.
  *
@@ -127,20 +188,24 @@ typename std::enable_if<std::is_enum<T>::value, T>::type deserialize(const Basic
 /**
  * Serializes given generated object to file.
  *
+ * \note Please note that BitBuffer is always allocated using 'std::allocator<uint8_t>'.
+ *
  * \param object Generated object to serialize.
  * \param fileName File name to write.
  *
  * \throw CppRuntimeException When serialization fails.
  */
-template <typename T>
-void serializeToFile(T& object, const std::string& fileName)
+template <typename T, typename ...ARGS>
+void serializeToFile(T& object, const std::string& fileName, ARGS&&... arguments)
 {
-    const BitBuffer bitBuffer = serialize(object);
+    const BitBuffer bitBuffer = serialize(object, std::forward<ARGS>(arguments)...);
     writeBufferToFile(bitBuffer, fileName);
 }
 
 /**
  * Deserializes given file contents to instance of generated object.
+ *
+ * \note Please note that BitBuffer is always allocated using 'std::allocator<uint8_t>'.
  *
  * \param fileName File to use.
  * \param arguments Object's arguments (optional).

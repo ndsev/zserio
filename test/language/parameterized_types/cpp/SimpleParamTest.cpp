@@ -11,7 +11,7 @@ namespace parameterized_types
 namespace simple_param
 {
 
-class ParameterizedTypesSimpleParamTest : public ::testing::Test
+class SimpleParamTest : public ::testing::Test
 {
 protected:
     void writeItemToByteArray(zserio::BitStreamWriter& writer, uint32_t version, uint16_t param,
@@ -43,16 +43,16 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const uint32_t ParameterizedTypesSimpleParamTest::LOWER_VERSION = 9;
-const uint32_t ParameterizedTypesSimpleParamTest::HIGHER_VERSION = 10;
+const uint32_t SimpleParamTest::LOWER_VERSION = 9;
+const uint32_t SimpleParamTest::HIGHER_VERSION = 10;
 
-const uint16_t ParameterizedTypesSimpleParamTest::ITEM_PARAM = 0xAA;
-const uint32_t ParameterizedTypesSimpleParamTest::ITEM_EXTRA_PARAM = 0xBB;
+const uint16_t SimpleParamTest::ITEM_PARAM = 0xAA;
+const uint32_t SimpleParamTest::ITEM_EXTRA_PARAM = 0xBB;
 
-const size_t ParameterizedTypesSimpleParamTest::ITEM_BIT_SIZE_WITHOUT_OPTIONAL = 16;
-const size_t ParameterizedTypesSimpleParamTest::ITEM_BIT_SIZE_WITH_OPTIONAL = 16 + 32;
+const size_t SimpleParamTest::ITEM_BIT_SIZE_WITHOUT_OPTIONAL = 16;
+const size_t SimpleParamTest::ITEM_BIT_SIZE_WITH_OPTIONAL = 16 + 32;
 
-TEST_F(ParameterizedTypesSimpleParamTest, emptyConstructor)
+TEST_F(SimpleParamTest, emptyConstructor)
 {
     const uint16_t version = LOWER_VERSION;
     Item item;
@@ -61,7 +61,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, emptyConstructor)
     ASSERT_FALSE(item.isExtraParamUsed());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, fieldConstructor)
+TEST_F(SimpleParamTest, fieldConstructor)
 {
     {
         Item item(ITEM_PARAM, zserio::NullOpt);
@@ -78,7 +78,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, fieldConstructor)
     }
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, bitStreamReaderConstructor)
+TEST_F(SimpleParamTest, bitStreamReaderConstructor)
 {
     const uint32_t version = HIGHER_VERSION;
     zserio::BitStreamWriter writer(bitBuffer);
@@ -94,7 +94,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, bitStreamReaderConstructor)
     ASSERT_EQ(itemExtraParam, item.getExtraParam());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, copyConstructor)
+TEST_F(SimpleParamTest, copyConstructor)
 {
     Item item;
     item.setParam(ITEM_PARAM);
@@ -108,7 +108,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, copyConstructor)
     ASSERT_EQ(item.getVersion(), itemCopy2.getVersion());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, operatorAssignment)
+TEST_F(SimpleParamTest, operatorAssignment)
 {
     Item item;
     item.setParam(ITEM_PARAM);
@@ -122,7 +122,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, operatorAssignment)
     ASSERT_EQ(item.getVersion(), itemCopy2.getVersion());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, moveConstructor)
+TEST_F(SimpleParamTest, moveConstructor)
 {
     Item item(ITEM_PARAM, zserio::NullOpt);
     item.initialize(LOWER_VERSION);
@@ -132,7 +132,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, moveConstructor)
     ASSERT_FALSE(movedItem.isExtraParamUsed());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, moveAssignmentOperator)
+TEST_F(SimpleParamTest, moveAssignmentOperator)
 {
     Item item(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item.initialize(HIGHER_VERSION);
@@ -144,7 +144,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, moveAssignmentOperator)
     ASSERT_EQ(ITEM_EXTRA_PARAM, movedItem.getExtraParam());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, propagateAllocatorCopyConstructor)
+TEST_F(SimpleParamTest, propagateAllocatorCopyConstructor)
 {
     Item item;
     item.setParam(ITEM_PARAM);
@@ -158,7 +158,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, propagateAllocatorCopyConstructor)
     ASSERT_EQ(item.getVersion(), itemCopy2.getVersion());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, bitSizeOf)
+TEST_F(SimpleParamTest, bitSizeOf)
 {
     Item item1;
     item1.initialize(LOWER_VERSION);
@@ -174,7 +174,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, bitSizeOf)
     ASSERT_EQ(expectedBitSizeWithOptional, item2.bitSizeOf());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, initializeOffsets)
+TEST_F(SimpleParamTest, initializeOffsets)
 {
     Item item1;
     item1.initialize(LOWER_VERSION);
@@ -191,7 +191,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, initializeOffsets)
     ASSERT_EQ(expectedBitPositionWithOptional, item2.initializeOffsets(bitPosition));
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, operatorEquality)
+TEST_F(SimpleParamTest, operatorEquality)
 {
     Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item1.initialize(LOWER_VERSION);
@@ -205,7 +205,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, operatorEquality)
     ASSERT_FALSE(item2 == item3);
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, hashCode)
+TEST_F(SimpleParamTest, hashCode)
 {
     Item item1(ITEM_PARAM, ITEM_EXTRA_PARAM);
     item1.initialize(LOWER_VERSION);
@@ -218,7 +218,7 @@ TEST_F(ParameterizedTypesSimpleParamTest, hashCode)
     ASSERT_TRUE(item2.hashCode() != item3.hashCode());
 }
 
-TEST_F(ParameterizedTypesSimpleParamTest, write)
+TEST_F(SimpleParamTest, write)
 {
     const uint32_t version = HIGHER_VERSION;
     Item item;

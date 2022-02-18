@@ -247,6 +247,7 @@ TEST_F(UnionWithParameterizedFieldTest, write)
     {
         TestUnion testUnion;
         testUnion.setField(33);
+        testUnion.initializeChildren();
         zserio::BitStreamWriter writer(bitBuffer);
         testUnion.write(writer);
         ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());
@@ -258,6 +259,7 @@ TEST_F(UnionWithParameterizedFieldTest, write)
     {
         TestUnion testUnion;
         testUnion.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
+        testUnion.initializeChildren();
         zserio::BitStreamWriter writer(bitBuffer);
         testUnion.write(writer);
         ASSERT_EQ(testUnion.bitSizeOf(), writer.getBitPosition());

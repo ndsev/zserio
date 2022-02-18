@@ -19,6 +19,7 @@ TEST(InstantiateTypeAsParameterTest, readWrite)
             P32{2}, Parameterized_P32{vector_type<uint32_t>{13, 42}}
     };
 
+    instantiateTypeAsParameter.initializeChildren();
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);
     instantiateTypeAsParameter.write(writer);

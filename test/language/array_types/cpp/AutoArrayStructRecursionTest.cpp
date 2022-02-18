@@ -93,7 +93,7 @@ protected:
         autoArrayRecursion.write(writer);
 
         ASSERT_EQ(autoArrayRecursion.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(autoArrayRecursion.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(autoArrayRecursion.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         AutoArrayRecursion readAutoArrayRecursion(reader);

@@ -242,7 +242,7 @@ TEST_F(BitOffsetTest, initializeOffsetsWithPosition)
 
 TEST_F(BitOffsetTest, write)
 {
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     BitOffset bitOffset;
     fillBitOffset(bitOffset, createWrongOffsets);
 
@@ -262,8 +262,9 @@ TEST_F(BitOffsetTest, writeWithPosition)
     BitOffset bitOffset;
     fillBitOffset(bitOffset, createWrongOffsets);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 2;
+    bitOffset.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     bitOffset.write(writer);
 
@@ -278,7 +279,7 @@ TEST_F(BitOffsetTest, writeWrongOffsets)
     fillBitOffset(bitOffset, createWrongOffsets);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(bitOffset.write(writer, zserio::NO_PRE_WRITE_ACTION), zserio::CppRuntimeException);
+    ASSERT_THROW(bitOffset.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace bit_offset

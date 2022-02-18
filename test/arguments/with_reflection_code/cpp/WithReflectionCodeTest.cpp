@@ -114,7 +114,7 @@ protected:
         ASSERT_EQ(bitSizeOf, reader.getBitPosition());
     }
 
-    void checkStructReflectable(IReflectable& reflectable, const Struct& structure)
+    void checkStructReflectable(IReflectable& reflectable, Struct& structure)
     {
         ASSERT_EQ("with_reflection_code.Struct"_sv, reflectable.getTypeInfo().getSchemaName());
 
@@ -347,6 +347,7 @@ protected:
         ASSERT_FALSE(reflectable["child.hasNicknames"]->getBool());
 
         // write read check on structure
+        structure.initializeOffsets(); // must be called because of previous setField(s)
         checkWriteRead(reflectable, structure);
     }
 };
@@ -356,13 +357,12 @@ TEST_F(WithReflectionCodeTest, checkChoiceWithStructure)
     Choice choice;
     choice.setStructField(createStruct());
     choice.initialize(Selector::STRUCT);
-    choice.initializeOffsets(0);
+    choice.initializeOffsets();
 
     auto reflectable = choice.reflectable();
     ASSERT_EQ("with_reflection_code.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(zserio::enumToValue(SelectorEnum::STRUCT),
-            reflectable->getParameter("selector")->getInt8());
+    ASSERT_EQ(zserio::enumToValue(SelectorEnum::STRUCT), reflectable->getParameter("selector")->getInt8());
     ASSERT_EQ(zserio::enumToValue(SelectorEnum::STRUCT), reflectable->getParameter("selector")->toInt());
     ASSERT_EQ(zserio::enumToString(SelectorEnum::STRUCT), reflectable->find("selector")->toString());
 
@@ -406,7 +406,7 @@ TEST_F(WithReflectionCodeTest, checkChoiceWithUnion)
     unionField.setStructField(createStruct());
     choice.setUnionField(unionField);
     choice.initialize(Selector::UNION);
-    choice.initializeOffsets(0);
+    choice.initializeOffsets();
 
     auto reflectable = choice.reflectable();
     ASSERT_EQ("with_reflection_code.Choice"_sv, reflectable->getTypeInfo().getSchemaName());
@@ -437,6 +437,7 @@ TEST_F(WithReflectionCodeTest, checkChoiceWithUnion)
     checkStructReflectable(*structReflectable, choice.getUnionField().getStructField());
 
     // write read check on union
+    choice.getUnionField().initializeOffsets(); // must be called because of previous setField(s)
     checkWriteRead(*(reflectable->getField("unionField")), choice.getUnionField());
 
     // write read check on choice

@@ -115,7 +115,7 @@ TEST_F(VariableArraySubtypedStructTest, writeRead)
     variableArray.write(writer);
 
     ASSERT_EQ(variableArray.bitSizeOf(), writer.getBitPosition());
-    ASSERT_EQ(variableArray.initializeOffsets(0), writer.getBitPosition());
+    ASSERT_EQ(variableArray.initializeOffsets(), writer.getBitPosition());
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     VariableArray readVariableArray(reader);

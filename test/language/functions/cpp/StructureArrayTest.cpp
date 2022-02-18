@@ -13,10 +13,10 @@ namespace functions
 namespace structure_array
 {
 
-class FunctionsStructureArrayTest : public ::testing::Test
+class StructureArrayTest : public ::testing::Test
 {
 public:
-    FunctionsStructureArrayTest()
+    StructureArrayTest()
     {
         uint8_t ElementsA[NUM_ITEM_ELEMENTS] = {1, 3, 5};
         uint8_t ElementsB[NUM_ITEM_ELEMENTS] = {2, 4, 6};
@@ -80,17 +80,17 @@ private:
     Item m_items[NUM_ITEM_ELEMENTS];
 };
 
-TEST_F(FunctionsStructureArrayTest, checkStructureArrayElement0)
+TEST_F(StructureArrayTest, checkStructureArrayElement0)
 {
     checkStructureArray(0);
 }
 
-TEST_F(FunctionsStructureArrayTest, checkStructureArrayElement1)
+TEST_F(StructureArrayTest, checkStructureArrayElement1)
 {
     checkStructureArray(1);
 }
 
-TEST_F(FunctionsStructureArrayTest, checkStructureArrayElement2)
+TEST_F(StructureArrayTest, checkStructureArrayElement2)
 {
     checkStructureArray(2);
 }

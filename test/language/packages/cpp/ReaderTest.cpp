@@ -26,6 +26,8 @@ TEST_F(ReaderTest, readWrite)
         test.getArray().emplace_back(i);
         test.getParameterizedArray().emplace_back(i);
     }
+    test.initializeChildren();
+    test.initializeOffsets();
 
     zserio::BitBuffer bitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

@@ -35,6 +35,9 @@ protected:
                 items.push_back(j * 2);
             blocks.push_back(block);
         }
+
+        database.initializeChildren();
+        database.initializeOffsets();
     }
 
     size_t getUnpackedDatabaseBitSize(uint16_t numBlocks)
@@ -71,7 +74,7 @@ protected:
         database.write(writer);
 
         ASSERT_EQ(database.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(database.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(database.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         Database readDatabase(reader);

@@ -107,7 +107,7 @@ protected:
         packedAutoArrayRecursion.write(writer);
 
         ASSERT_EQ(packedAutoArrayRecursion.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(packedAutoArrayRecursion.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(packedAutoArrayRecursion.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedAutoArrayRecursion readPackedAutoArrayRecursion(reader);

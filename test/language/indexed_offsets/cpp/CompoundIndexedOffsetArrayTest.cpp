@@ -186,7 +186,7 @@ TEST_F(CompoundIndexedOffsetArrayTest, initializeOffsetsWithPosition)
 
 TEST_F(CompoundIndexedOffsetArrayTest, write)
 {
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     CompoundIndexedOffsetArray compoundIndexedOffsetArray;
     fillCompoundIndexedOffsetArray(compoundIndexedOffsetArray, createWrongOffsets);
 
@@ -206,8 +206,9 @@ TEST_F(CompoundIndexedOffsetArrayTest, writeWithPosition)
     CompoundIndexedOffsetArray compoundIndexedOffsetArray;
     fillCompoundIndexedOffsetArray(compoundIndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 8;
+    compoundIndexedOffsetArray.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     compoundIndexedOffsetArray.write(writer);
 
@@ -222,8 +223,7 @@ TEST_F(CompoundIndexedOffsetArrayTest, writeWrongOffsets)
     fillCompoundIndexedOffsetArray(compoundIndexedOffsetArray, createWrongOffsets);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(compoundIndexedOffsetArray.write(writer, zserio::NO_PRE_WRITE_ACTION),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(compoundIndexedOffsetArray.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace compound_indexed_offset_array

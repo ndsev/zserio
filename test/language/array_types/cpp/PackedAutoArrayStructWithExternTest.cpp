@@ -58,7 +58,7 @@ TEST_F(PackedAutoArrayStructWithExternTest, writeRead)
     packedAutoArray.write(writer);
 
     ASSERT_EQ(writer.getBitPosition(), packedAutoArray.bitSizeOf());
-    ASSERT_EQ(writer.getBitPosition(), packedAutoArray.initializeOffsets(0));
+    ASSERT_EQ(writer.getBitPosition(), packedAutoArray.initializeOffsets());
 
     zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
     auto readPackedAutoArray = PackedAutoArray(reader);

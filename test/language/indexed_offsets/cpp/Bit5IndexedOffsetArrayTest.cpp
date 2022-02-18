@@ -174,7 +174,7 @@ TEST_F(Bit5IndexedOffsetArrayTest, initializeOffsetsWithPosition)
 
 TEST_F(Bit5IndexedOffsetArrayTest, write)
 {
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     Bit5IndexedOffsetArray bit5IndexedOffsetArray;
     fillBit5IndexedOffsetArray(bit5IndexedOffsetArray, createWrongOffsets);
 
@@ -194,8 +194,9 @@ TEST_F(Bit5IndexedOffsetArrayTest, writeWithPosition)
     Bit5IndexedOffsetArray bit5IndexedOffsetArray;
     fillBit5IndexedOffsetArray(bit5IndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 8;
+    bit5IndexedOffsetArray.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     bit5IndexedOffsetArray.write(writer);
 
@@ -210,8 +211,7 @@ TEST_F(Bit5IndexedOffsetArrayTest, writeWrongOffsets)
     fillBit5IndexedOffsetArray(bit5IndexedOffsetArray, createWrongOffsets);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(bit5IndexedOffsetArray.write(writer, zserio::NO_PRE_WRITE_ACTION),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(bit5IndexedOffsetArray.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace bit5_indexed_offset_array

@@ -40,8 +40,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         //             Try to unify the logic!
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
 
-        hasFieldWithOffset = compoundType.hasFieldWithOffset();
-
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
     }
 
@@ -70,11 +68,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return needsChildrenInitialization;
     }
 
-    public boolean getHasFieldWithOffset()
-    {
-        return hasFieldWithOffset;
-    }
-
     public TemplateInstantiationTemplateData getTemplateInstantiation()
     {
         return templateInstantiation;
@@ -86,7 +79,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     private final CompoundConstructorTemplateData compoundConstructorsData;
 
     private final boolean needsChildrenInitialization;
-    private final boolean hasFieldWithOffset;
 
     private final TemplateInstantiationTemplateData templateInstantiation;
 }

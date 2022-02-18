@@ -13,7 +13,7 @@ namespace functions
 namespace structure_param
 {
 
-class FunctionsStructureParamTest : public ::testing::Test
+class StructureParamTest : public ::testing::Test
 {
 protected:
     void writeMetresConverterCallerToByteArray(zserio::BitStreamWriter& writer)
@@ -27,6 +27,8 @@ protected:
         MetresConverter& metresConverter = metresConverterCaller.getMetresConverter();
         metresConverter.setA(VALUE_A);
         metresConverterCaller.setCm(CONVERTED_CM_VALUE);
+
+        metresConverterCaller.initializeChildren();
    }
 
     static const uint16_t VALUE_A = 0xABCD;
@@ -34,7 +36,7 @@ protected:
     static const uint16_t CONVERTED_CM_VALUE = M_VALUE_TO_CONVERT * 100;
 };
 
-TEST_F(FunctionsStructureParamTest, checkMetresConverterCaller)
+TEST_F(StructureParamTest, checkMetresConverterCaller)
 {
     MetresConverterCaller metresConverterCaller;
     createMetresConverterCaller(metresConverterCaller);

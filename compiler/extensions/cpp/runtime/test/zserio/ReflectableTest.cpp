@@ -128,7 +128,7 @@ public:
         return m_value == other.m_value;
     }
 
-    void write(BitStreamWriter& out, PreWriteAction = ALL_PRE_WRITE_ACTIONS) const
+    void write(BitStreamWriter& out) const
     {
         out.writeBits(m_value, UINT8_C(8));
     }
@@ -321,7 +321,7 @@ public:
         m_value = value;
     }
 
-    void write(BitStreamWriter& writer, PreWriteAction = ALL_PRE_WRITE_ACTIONS)
+    void write(BitStreamWriter& writer)
     {
         writer.writeBits(m_value, 31);
     }
@@ -454,7 +454,7 @@ public:
         m_dummyChild = dummyChild;
     }
 
-    void write(BitStreamWriter& out, PreWriteAction = ALL_PRE_WRITE_ACTIONS)
+    void write(BitStreamWriter& out)
     {
         m_dummyChild.write(out);
     }

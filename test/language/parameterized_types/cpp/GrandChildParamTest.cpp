@@ -13,7 +13,7 @@ using allocator_type = GrandChildParam::allocator_type;
 template <typename T>
 using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
-class ParameterizedTypesGrandChildParamTest : public ::testing::Test
+class GrandChildParamTest : public ::testing::Test
 {
 protected:
     void fillItemChoiceHolder(ItemChoiceHolder& itemChoiceHolder)
@@ -36,6 +36,8 @@ protected:
 
         vector_type<uint32_t> dummyArray(1);
         grandChildParam.setDummyArray(dummyArray);
+
+        grandChildParam.initializeChildren();
     }
 
     void checkItemChoiceHolderInBitStream(zserio::BitStreamReader& reader,
@@ -78,14 +80,14 @@ private:
     static const uint32_t ITEM_EXTRA_PARAM;
 };
 
-const std::string ParameterizedTypesGrandChildParamTest::BLOB_NAME =
+const std::string GrandChildParamTest::BLOB_NAME =
         "language/parameterized_types/grand_child_param.blob";
 
-const bool     ParameterizedTypesGrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
-const uint16_t ParameterizedTypesGrandChildParamTest::ITEM_PARAM = 0xAABB;
-const uint32_t ParameterizedTypesGrandChildParamTest::ITEM_EXTRA_PARAM = 0x11223344;
+const bool     GrandChildParamTest::ITEM_CHOICE_HOLDER_HAS_ITEM = true;
+const uint16_t GrandChildParamTest::ITEM_PARAM = 0xAABB;
+const uint32_t GrandChildParamTest::ITEM_EXTRA_PARAM = 0x11223344;
 
-TEST_F(ParameterizedTypesGrandChildParamTest, writeRead)
+TEST_F(GrandChildParamTest, writeRead)
 {
     GrandChildParam grandChildParam;
     fillGrandChildParam(grandChildParam);
@@ -101,7 +103,7 @@ TEST_F(ParameterizedTypesGrandChildParamTest, writeRead)
     ASSERT_EQ(grandChildParam, readGrandChildParam);
 }
 
-TEST_F(ParameterizedTypesGrandChildParamTest, writeReadFile)
+TEST_F(GrandChildParamTest, writeReadFile)
 {
     GrandChildParam grandChildParam;
     fillGrandChildParam(grandChildParam);

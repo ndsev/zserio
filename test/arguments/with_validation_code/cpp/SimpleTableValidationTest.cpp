@@ -113,6 +113,7 @@ private:
         filler.resize(rootStruct.getCount());
         for (size_t i = 0; i < filler.size(); ++i)
             filler[i] = static_cast<uint8_t>(id);
+        rootStruct.initializeOffsets();
 
         return rootStruct;
     }

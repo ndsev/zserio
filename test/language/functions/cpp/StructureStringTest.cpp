@@ -10,25 +10,25 @@ namespace functions
 namespace structure_string
 {
 
-TEST(FunctionsStructureStringTest, getPoolConst)
+TEST(StructureStringTest, getPoolConst)
 {
     TestStructure testStructure;
     ASSERT_EQ("POOL_CONST"_sv, testStructure.funcGetPoolConst());
 }
 
-TEST(FunctionsStructureStringTest, getPoolFiled)
+TEST(StructureStringTest, getPoolFiled)
 {
     TestStructure testStructure;
     ASSERT_EQ("POOL_FIELD"_sv, testStructure.funcGetPoolField());
 }
 
-TEST(FunctionsStructureStringTest, getConst)
+TEST(StructureStringTest, getConst)
 {
     TestStructure testStructure;
     ASSERT_EQ("CONST"_sv, testStructure.funcGetConst());
 }
 
-TEST(FunctionsStructureStringTest, getField)
+TEST(StructureStringTest, getField)
 {
     TestStructure testStructure;
     ASSERT_EQ("FIELD"_sv, testStructure.funcGetField());

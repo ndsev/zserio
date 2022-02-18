@@ -19,6 +19,7 @@ TEST(InstantiateTypeOnParameterizedTemplateTest, readWrite)
             2, TestP{Parameterized{vector_type<uint32_t>{13, 42}}}
     };
 
+    instantiateTypeOnParameterizedTemplate.initializeChildren();
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);
     instantiateTypeOnParameterizedTemplate.write(writer);

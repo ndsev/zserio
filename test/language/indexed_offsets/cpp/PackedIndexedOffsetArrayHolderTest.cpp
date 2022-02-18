@@ -33,6 +33,8 @@ protected:
         data2.reserve(numElements);
         for (size_t i = 0; i < numElements; ++i)
             data2.push_back(static_cast<int32_t>(i * 2));
+
+        autoIndexedOffsetArray.initializeOffsets();
     }
 
     size_t getAutoIndexedOffsetArrayBitSize(size_t numElements)
@@ -78,7 +80,7 @@ protected:
         autoIndexedOffsetArray.write(writer);
 
         ASSERT_EQ(autoIndexedOffsetArray.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(autoIndexedOffsetArray.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(autoIndexedOffsetArray.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         AutoIndexedOffsetArray readAutoIndexedOffsetArray(reader);

@@ -87,7 +87,7 @@ TEST_F(UInt64OffsetTest, initializeOffsets)
 {
     UInt64Offset uint64Offset;
     uint64Offset.getArray().resize(ARRAY_SIZE);
-    uint64Offset.initializeOffsets(0);
+    uint64Offset.initializeOffsets();
     ASSERT_EQ(OFFSET, uint64Offset.getOffset());
 }
 
@@ -104,6 +104,7 @@ TEST_F(UInt64OffsetTest, write)
 {
     UInt64Offset uint64Offset;
     uint64Offset.getArray().resize(ARRAY_SIZE);
+    uint64Offset.initializeOffsets();
     BitStreamWriter writer(bitBuffer);
     uint64Offset.write(writer);
     ASSERT_EQ(OFFSET, uint64Offset.getOffset());
@@ -114,8 +115,10 @@ TEST_F(UInt64OffsetTest, writeWithPosition)
 {
     UInt64Offset uint64Offset;
     uint64Offset.getArray().resize(ARRAY_SIZE);
+    const size_t bitPosition = 3;
+    uint64Offset.initializeOffsets(bitPosition);
     BitStreamWriter writer(bitBuffer);
-    writer.writeBits(0, 3);
+    writer.writeBits(0, bitPosition);
     uint64Offset.write(writer);
     ASSERT_EQ(OFFSET + 1, uint64Offset.getOffset());
     ASSERT_EQ(BIT_SIZE + 8, writer.getBitPosition());
@@ -127,7 +130,7 @@ TEST_F(UInt64OffsetTest, writeWrongOffsets)
     uint64Offset.getArray().resize(ARRAY_SIZE);
     uint64Offset.setOffset(WRONG_OFFSET);
     BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(uint64Offset.write(writer, NO_PRE_WRITE_ACTION), CppRuntimeException);
+    ASSERT_THROW(uint64Offset.write(writer), CppRuntimeException);
 }
 
 } // namespace uint64_offset

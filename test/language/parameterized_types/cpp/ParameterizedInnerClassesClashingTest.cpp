@@ -25,6 +25,7 @@ protected:
 TEST_F(ParameterizedInnerClassesClashingTest, writeReadElementFactory)
 {
     ElementFactory_array testStructure{100, vector_type<Compound>{{Compound{13}, Compound{42}}}};
+    testStructure.initializeChildren();
 
     zserio::BitStreamWriter writer(bitBuffer);
     testStructure.write(writer);
@@ -37,6 +38,7 @@ TEST_F(ParameterizedInnerClassesClashingTest, writeReadElementFactory)
 TEST_F(ParameterizedInnerClassesClashingTest, writeReadElementInitializer)
 {
     ElementInitializer_array testStructure{100, vector_type<Compound>{{Compound{13}, Compound{42}}}};
+    testStructure.initializeChildren();
 
     zserio::BitStreamWriter writer(bitBuffer);
     testStructure.write(writer);
@@ -55,6 +57,7 @@ TEST_F(ParameterizedInnerClassesClashingTest, writeReadElementChildrenInitialize
             Parent{param, Compound{42}}
         }}
     };
+    testStructure.initializeChildren();
 
     zserio::BitStreamWriter writer(bitBuffer);
     testStructure.write(writer);

@@ -181,6 +181,7 @@ TEST_F(OptionalExpressionTest, write)
 {
     Container container;
     container.setBasicColor(BasicColor::WHITE);
+    container.initializeChildren();
 
     zserio::BitStreamWriter writerWhite(bitBuffer);
     container.write(writerWhite);
@@ -200,6 +201,7 @@ TEST_F(OptionalExpressionTest, write)
     BlackColor blackColor;
     fillBlackColor(blackColor, numBlackTones);
     container.setBlackColor(blackColor);
+    container.initializeChildren();
 
     zserio::BitStreamWriter writerBlack(bitBuffer);
     container.write(writerBlack);

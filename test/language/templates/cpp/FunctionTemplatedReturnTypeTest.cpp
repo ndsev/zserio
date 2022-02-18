@@ -22,6 +22,7 @@ TEST(FunctionTemplatedReturnTypeTest, readWrite)
     functionTemplatedReturnType.setStringTest(TestStructure_string{zserio::NullOpt,
             Holder_string{string_type{"string"}}});
     functionTemplatedReturnType.setFloatTest(TestStructure_float32{4.2f, zserio::NullOpt});
+    functionTemplatedReturnType.initializeChildren();
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

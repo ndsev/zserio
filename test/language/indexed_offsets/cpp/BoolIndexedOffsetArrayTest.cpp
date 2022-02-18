@@ -174,7 +174,7 @@ TEST_F(BoolIndexedOffsetArrayTest, initializeOffsetsWithPosition)
 
 TEST_F(BoolIndexedOffsetArrayTest, write)
 {
-    const bool createWrongOffsets = true;
+    const bool createWrongOffsets = false;
     BoolIndexedOffsetArray boolIndexedOffsetArray;
     fillBoolIndexedOffsetArray(boolIndexedOffsetArray, createWrongOffsets);
 
@@ -194,8 +194,9 @@ TEST_F(BoolIndexedOffsetArrayTest, writeWithPosition)
     BoolIndexedOffsetArray boolIndexedOffsetArray;
     fillBoolIndexedOffsetArray(boolIndexedOffsetArray, createWrongOffsets);
 
-    zserio::BitStreamWriter writer(bitBuffer);
     const size_t bitPosition = 8;
+    boolIndexedOffsetArray.initializeOffsets(bitPosition);
+    zserio::BitStreamWriter writer(bitBuffer);
     writer.writeBits(0, bitPosition);
     boolIndexedOffsetArray.write(writer);
 
@@ -210,8 +211,7 @@ TEST_F(BoolIndexedOffsetArrayTest, writeWrongOffsets)
     fillBoolIndexedOffsetArray(boolIndexedOffsetArray, createWrongOffsets);
 
     zserio::BitStreamWriter writer(bitBuffer);
-    ASSERT_THROW(boolIndexedOffsetArray.write(writer, zserio::NO_PRE_WRITE_ACTION),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(boolIndexedOffsetArray.write(writer), zserio::CppRuntimeException);
 }
 
 } // namespace bool_indexed_offset_array

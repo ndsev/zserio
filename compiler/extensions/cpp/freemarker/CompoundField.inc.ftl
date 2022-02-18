@@ -179,17 +179,6 @@ ${I}            ::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) + " 
 ${I}}
 </#macro>
 
-<#macro compound_pre_write_actions needsChildrenInitialization hasFieldWithOffset>
-    <#if needsChildrenInitialization>
-    if ((preWriteAction & ::zserio::PRE_WRITE_INITIALIZE_CHILDREN) != 0)
-        initializeChildren();
-    </#if>
-    <#if hasFieldWithOffset>
-    if ((preWriteAction & ::zserio::PRE_WRITE_INITIALIZE_OFFSETS) != 0)
-        initializeOffsets(out.getBitPosition());
-    </#if>
-</#macro>
-
 <#macro field_optional_condition field>
     <#if field.optional.clause??>${field.optional.clause}<#else><@field_member_name field/>.hasValue()</#if><#t>
 </#macro>
@@ -236,7 +225,7 @@ ${I}::zserio::write(out, <@compound_get_field field/>);
 ${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/>(out<#rt>
         <#lt><#if field.offset?? && field.offset.containsIndex>, <@offset_checker_name field.name/>(*this)</#if>);
     <#else>
-${I}<@compound_get_field field/>.write(out, ::zserio::NO_PRE_WRITE_ACTION);
+${I}<@compound_get_field field/>.write(out);
     </#if>
 </#macro>
 
@@ -411,17 +400,17 @@ ${I}            lowerBound + ".." + upperBound + ">!";
     class <@offset_checker_name field.name/>
     {
     public:
-        explicit <@offset_checker_name field.name/>(${compoundName}& owner);
+        explicit <@offset_checker_name field.name/>(const ${compoundName}& owner);
 
         void checkOffset(size_t index, size_t byteOffset) const;
 
     private:
-        ${compoundName}& m_owner;
+        const ${compoundName}& m_owner;
     };
 </#macro>
 
 <#macro define_offset_checker_methods compoundName field>
-${compoundName}::<@offset_checker_name field.name/>::<@offset_checker_name field.name/>(${compoundName}& owner) :
+${compoundName}::<@offset_checker_name field.name/>::<@offset_checker_name field.name/>(const ${compoundName}& owner) :
         m_owner(owner)
 {}
 

@@ -676,10 +676,10 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     else
     {
         <#if field.sqlTypeData.isBlob>
-        ${field.typeInfo.typeFullName}& blob = row.${field.getterName}();
+        const ${field.typeInfo.typeFullName}& blob = row.${field.getterName}();
         ${types.bitBuffer.name} bitBuffer(blob.bitSizeOf(), get_allocator_ref());
         ::zserio::BitStreamWriter writer(bitBuffer);
-        blob.write(writer, ::zserio::NO_PRE_WRITE_ACTION);
+        blob.write(writer);
         result = sqlite3_bind_blob(&statement, ${field?index + 1}, bitBuffer.getBuffer(),
                 static_cast<int>(bitBuffer.getByteSize()), SQLITE_TRANSIENT);
         <#elseif field.sqlTypeData.isInteger>
@@ -869,7 +869,7 @@ void ${name}::Row::initializeOffsets()
         <#list fields as field>
             <#if field.sqlTypeData.isBlob>
     if (<@sql_field_member_name field/>)
-        <@sql_field_member_name field/>->initializeOffsets(0);
+        <@sql_field_member_name field/>->initializeOffsets();
             </#if>
         </#list>
 }

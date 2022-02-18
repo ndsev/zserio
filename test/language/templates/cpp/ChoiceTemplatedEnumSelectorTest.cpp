@@ -27,6 +27,7 @@ TEST(ChoiceTemplatedEnumSelectorTest, readWrite)
         fromOneChoice.setStringField("string");
         choiceTemplatedEnumSelector.setFromOneChoice(fromOneChoice); // copy
     }
+    choiceTemplatedEnumSelector.initializeChildren();
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
     zserio::BitStreamWriter writer(bitBuffer);

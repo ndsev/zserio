@@ -114,7 +114,7 @@ protected:
         packedVariableArray.write(writer);
 
         ASSERT_EQ(packedVariableArray.bitSizeOf(), writer.getBitPosition());
-        ASSERT_EQ(packedVariableArray.initializeOffsets(0), writer.getBitPosition());
+        ASSERT_EQ(packedVariableArray.initializeOffsets(), writer.getBitPosition());
 
         zserio::BitStreamReader reader(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
         PackedVariableArray readPackedVariableArray(reader);

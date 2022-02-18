@@ -98,8 +98,7 @@ public:
         return m_value == other.m_value;
     }
 
-    void write(BitStreamWriter& out,
-            PreWriteAction = ALL_PRE_WRITE_ACTIONS) const
+    void write(BitStreamWriter& out) const
     {
         out.writeBits(m_value, UINT8_C(8));
     }
@@ -196,12 +195,12 @@ public:
         return m_value;
     }
 
-    void write(BitStreamWriter& out, PreWriteAction)
+    void write(BitStreamWriter& out) const
     {
         out.writeBits(m_value, static_cast<uint8_t>(bitSizeOf()));
     }
 
-    void write(PackingContextNode& contextNode, BitStreamWriter& out)
+    void write(PackingContextNode& contextNode, BitStreamWriter& out) const
     {
         auto& context = contextNode.getChildren().at(0).getContext();
         context.write(BitFieldArrayTraits<uint32_t>(31), out, m_value);
