@@ -19,15 +19,41 @@ namespace zserio
 namespace detail
 {
 
-template <typename T>
+// These decltype's wrappers are needed because of old MSVC compiler 2015.
+template <typename T, typename U = decltype(&T::initialize)>
+struct DecltypeInitialize
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::initializeChildren)>
+struct DecltypeInitializeChildren
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::allocate)>
+struct DecltypeAllocate
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::deallocate)>
+struct DecltypeDeallocate
+{
+    using type = U;
+};
+
+template <typename ...T>
 using void_t = void;
 
-template <typename T, typename = void, typename = void>
+template <typename T, typename = void>
 struct is_allocator : std::false_type
 {};
 
 template <typename T>
-struct is_allocator<T, void_t<decltype(&T::allocate)>, void_t<decltype(&T::deallocate)>> : std::true_type
+struct is_allocator<T, void_t<typename DecltypeAllocate<T>::type,
+        typename DecltypeDeallocate<T>::type>> : std::true_type
 {};
 
 template <typename ...ARGS>
@@ -35,7 +61,7 @@ struct is_first_allocator : std::false_type
 {};
 
 template <typename T, typename ...ARGS>
-struct is_first_allocator<T, ARGS...>  : is_allocator<T>
+struct is_first_allocator<T, ARGS...> : is_allocator<T>
 {};
 
 template <typename T, typename = void>
@@ -43,23 +69,23 @@ struct has_initialize_children : std::false_type
 {};
 
 template <typename T>
-struct has_initialize_children<T, void_t<decltype(&T::initializeChildren)>> : std::true_type
+struct has_initialize_children<T, void_t<typename DecltypeInitializeChildren<T>::type>> : std::true_type
 {};
 
 template <typename T>
-void initializeChildren(std::true_type, T& object)
+void initializeChildrenImpl(std::true_type, T& object)
 {
     object.initializeChildren();
 }
 
 template <typename T>
-void initializeChildren(std::false_type, T&)
+void initializeChildrenImpl(std::false_type, T&)
 {}
 
 template <typename T>
 void initializeChildren(T& object)
 {
-    initializeChildren(has_initialize_children<T>(), object);
+    initializeChildrenImpl(has_initialize_children<T>(), object);
 }
 
 template <typename T, typename = void>
@@ -67,17 +93,17 @@ struct has_initialize : std::false_type
 {};
 
 template <typename T>
-struct has_initialize<T, void_t<decltype(&T::initialize)>> : std::true_type
+struct has_initialize<T, void_t<typename DecltypeInitialize<T>::type>> : std::true_type
 {};
 
 template <typename T, typename ...ARGS>
-void initialize(std::true_type, T& object, ARGS&&... arguments)
+void initializeImpl(std::true_type, T& object, ARGS&&... arguments)
 {
     object.initialize(std::forward<ARGS>(arguments)...);
 }
 
 template <typename T>
-void initialize(std::false_type, T& object)
+void initializeImpl(std::false_type, T& object)
 {
     initializeChildren(object);
 }
@@ -85,7 +111,18 @@ void initialize(std::false_type, T& object)
 template <typename T, typename ...ARGS>
 void initialize(T& object, ARGS&&... arguments)
 {
-    initialize(has_initialize<T>(), object, std::forward<ARGS>(arguments)...);
+    initializeImpl(has_initialize<T>(), object, std::forward<ARGS>(arguments)...);
+}
+
+// This implementation needs to be in detail because old MSVC compiler 2015 has problems with calling overload.
+template <typename T, typename ALLOC, typename ...ARGS>
+BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arguments)
+{
+    detail::initialize(object, std::forward<ARGS>(arguments)...);
+    BasicBitBuffer<ALLOC> bitBuffer(object.initializeOffsets(), allocator);
+    BitStreamWriter writer(bitBuffer);
+    object.write(writer);
+    return bitBuffer;
 }
 
 } // namespace detail
@@ -106,11 +143,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS
         detail::is_allocator<ALLOC>::value, int>::type = 0>
 BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arguments)
 {
-    detail::initialize(object, std::forward<ARGS>(arguments)...);
-    BasicBitBuffer<ALLOC> bitBuffer(object.initializeOffsets(), allocator);
-    BitStreamWriter writer(bitBuffer);
-    object.write(writer);
-    return bitBuffer;
+    return detail::serialize(object, allocator, std::forward<ARGS>(arguments)...);
 }
 
 /**
@@ -128,7 +161,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS
         !detail::is_first_allocator<typename std::decay<ARGS>::type...>::value, int>::type = 0>
 BasicBitBuffer<ALLOC> serialize(T& object, ARGS&&... arguments)
 {
-    return serialize(object, ALLOC(), std::forward<ARGS>(arguments)...);
+    return detail::serialize(object, ALLOC(), std::forward<ARGS>(arguments)...);
 }
 
 /**
