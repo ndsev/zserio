@@ -17,13 +17,6 @@ set_release_global_variables()
             return 1
         fi
     else
-        # GIT to use, defaults to "git" if not set
-        GIT="${GIT:-git}"
-        if [ ! -f "`which "${GIT}"`" ] ; then
-            stderr_echo "Cannot find git! Set GIT environment variable."
-            return 1
-        fi
-
         # CMAKE to use, defaults to "cmake" if not set
         CMAKE="${CMAKE:-cmake}"
         if [ ! -f "`which "${CMAKE}"`" ] ; then
@@ -121,7 +114,6 @@ print_release_help_env()
     cat << EOF
 Uses the following environment variables for releasing:
     ZIP      Zip executable to use. Default is "zip".
-    GIT      Git executable to use. Default is "git".
     CMAKE    CMake executable to use. Default is "cmake".
     ANT      Ant executable to use. Default is "ant".
     MVN      Mvn executable to use. Default is "mvn".
@@ -258,12 +250,12 @@ update_extension_sample()
     echo "Done"
     echo
 
-    "${GIT}" -C "${EXTENSION_SAMPLE_DIR}" diff --exit-code > /dev/null
+    git -C "${EXTENSION_SAMPLE_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Extension Sample already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Extension Sample."
-        "${GIT}" -C "${EXTENSION_SAMPLE_DIR}" commit -a \
+        git -C "${EXTENSION_SAMPLE_DIR}" commit -a \
                 -m "Change expected zserio core version to ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
@@ -298,12 +290,12 @@ update_tutorial_cpp()
     fi
     echo
 
-    "${GIT}" -C "${TUTORIAL_CPP_DIR}" diff --exit-code > /dev/null
+    git -C "${TUTORIAL_CPP_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Tutorial Cpp already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Tutorial Cpp."
-        "${GIT}" -C "${TUTORIAL_CPP_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
+        git -C "${TUTORIAL_CPP_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -342,12 +334,12 @@ update_tutorial_java()
     fi
     echo
 
-    "${GIT}" -C "${TUTORIAL_JAVA_DIR}" diff --exit-code > /dev/null
+    git -C "${TUTORIAL_JAVA_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Tutorial Java already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Tutorial Java."
-        "${GIT}" -C "${TUTORIAL_JAVA_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
+        git -C "${TUTORIAL_JAVA_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -392,12 +384,12 @@ update_tutorial_python()
     fi
     echo
 
-    "${GIT}" -C "${TUTORIAL_PYTHON_DIR}" diff --exit-code > /dev/null
+    git -C "${TUTORIAL_PYTHON_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Tutorial Python already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Tutorial Python."
-        "${GIT}" -C "${TUTORIAL_PYTHON_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
+        git -C "${TUTORIAL_PYTHON_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -542,10 +534,9 @@ main()
             return 1
         fi
     else
-        local ZSERIO_VERSION=`curl -s https://api.github.com/repos/ndsev/zserio/releases/latest |
-                grep tag_name | cut -d\" -f4 | cut -c2-`
-        if [ $? -ne 0 -o -z "${ZSERIO_VERSION}" ] ; then
-            stderr_echo "Failed to grep the latest Zserio version from GitHub!"
+        local ZSERIO_VERSION
+        get_latest_zserio_version ZSERIO_VERSION
+        if [ $? -ne 0 ] ; then
             return 1
         fi
 
