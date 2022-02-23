@@ -42,7 +42,7 @@ Service::Service(const allocator_type& allocator) :
         ::zserio::AllocatorHolder<${types.allocator.default}>(allocator)
 {}
 
-${types.responseDataPtr.name} Service::callMethod(
+${types.serviceDataPtr.name} Service::callMethod(
         ::zserio::StringView methodName, ::zserio::Span<const uint8_t> requestData, void* context)
 {
 <#list methodList as method>
@@ -72,60 +72,36 @@ const ::std::array<::zserio::StringView, ${methodList?size}>& Service::methodNam
 }
 <#list methodList as method>
 
-${types.responseDataPtr.name} Service::${method.name}Method(
+${types.serviceDataPtr.name} Service::${method.name}Method(
         ::zserio::Span<const uint8_t> requestData, void* context)
 {
     ::zserio::BitStreamReader reader(requestData.data(), requestData.size());
     const ${method.requestTypeInfo.typeFullName} request(reader, get_allocator_ref());
 
-    class ResponseData : public ::zserio::IBasicResponseData<allocator_type>
+    class ResponseData : public ${types.serviceDataPtr.name}::element_type
     {
     public:
-    <#if withReflectionCode>
         ResponseData(${method.responseTypeInfo.typeFullName}&& response, const allocator_type& allocator) :
-                m_response(std::move(response)), m_reflectable(m_response.reflectable(allocator)),
-                m_data(allocator)
+    <#if withReflectionCode>
+                m_response(std::move(response)), m_serviceData(m_response.reflectable(allocator), allocator)
+    <#else>
+                m_response(std::move(response)), m_serviceData(m_response, allocator)
+    </#if>
         {}
-    <#else>
-        ResponseData(${method.responseTypeInfo.typeFullName}&& response, const allocator_type& allocator) :
-                m_data(response.bitSizeOf(), allocator)
-        {
-            ::zserio::BitStreamWriter writer(m_data);
-            response.write(writer);
-        }
-    </#if>
 
-        virtual ${types.reflectablePtr.name} getReflectable() override
+        virtual ${types.reflectablePtr.name} getReflectable() const override
         {
-    <#if withReflectionCode>
-            return m_reflectable;
-    <#else>
-            return nullptr;
-    </#if>
+            return m_serviceData.getReflectable();
         }
 
         virtual ::zserio::Span<const uint8_t> getData() const override
         {
-    <#if withReflectionCode>
-            if (m_data.getBitSize() == 0)
-            {
-                // lazy initialization
-                m_data = ${types.bitBuffer.name}(m_reflectable->bitSizeOf(), m_data.get_allocator());
-                ::zserio::BitStreamWriter writer(m_data);
-                m_reflectable->write(writer);
-            }
-    </#if>
-            return ::zserio::Span<const uint8_t>(m_data.getBuffer(), m_data.getByteSize());
+            return m_serviceData.getData();
         }
 
     private:
-    <#if withReflectionCode>
         ${method.responseTypeInfo.typeFullName} m_response;
-        ${types.reflectablePtr.name} m_reflectable;
-        mutable ${types.bitBuffer.name} m_data;
-    <#else>
-        ${types.bitBuffer.name} m_data;
-    </#if>
+        ${types.serviceData.name} m_serviceData;
     };
 
     return ::std::allocate_shared<ResponseData>(get_allocator(),
@@ -144,9 +120,9 @@ ${method.responseTypeInfo.typeFullName} Client::${method.name}Method(${method.re
         <#lt>void* context)
 {
     <#if withReflectionCode>
-    const ${types.requestData.name} requestData(request.reflectable(get_allocator_ref()), get_allocator_ref());
+    const ${types.serviceData.name} requestData(request.reflectable(get_allocator_ref()), get_allocator_ref());
     <#else>
-    const ${types.requestData.name} requestData(request, get_allocator_ref());
+    const ${types.serviceData.name} requestData(request, get_allocator_ref());
     </#if>
 
     auto responseData = m_service.callMethod(::zserio::makeStringView("${method.name}"), requestData, context);

@@ -14,13 +14,17 @@ namespace pmr
 
 /** Typedef to service interface provided for convenience - using PropagatingPolymorphicAllocator<uint8_t>. */
 /** \{ */
-using IResponseData = IBasicResponseData<PropagatingPolymorphicAllocator<uint8_t>>;
-using IResponseDataPtr = IBasicResponseDataPtr<PropagatingPolymorphicAllocator<uint8_t>>;
+using IServiceData = IBasicServiceData<PropagatingPolymorphicAllocator<uint8_t>>;
+using IServiceDataPtr = IBasicServiceDataPtr<PropagatingPolymorphicAllocator<uint8_t>>;
 using IService = IBasicService<PropagatingPolymorphicAllocator<uint8_t>>;
-
-using RequestData = BasicRequestData<PropagatingPolymorphicAllocator<uint8_t>>;
 using IServiceClient = IBasicServiceClient<PropagatingPolymorphicAllocator<uint8_t>>;
 /** \} */
+
+/**
+ * Typedef to service data implementation provided for convenience - using
+ * PropagatingPolymorphicAllocator<uint8_t>.
+ */
+using ServiceData = BasicServiceData<PropagatingPolymorphicAllocator<uint8_t>>;
 
 } // namespace pmr
 } // namespace zserio

@@ -33,7 +33,7 @@ public:
     Service(Service&&) = default;
     Service& operator=(Service&&) = delete;
 
-    virtual ${types.responseDataPtr.name} callMethod(
+    virtual ${types.serviceDataPtr.name} callMethod(
             ::zserio::StringView methodName, ::zserio::Span<const uint8_t> requestData,
             void* context = nullptr) override;
 
@@ -48,7 +48,7 @@ private:
 </#list>
 
 <#list methodList as method>
-    ${types.responseDataPtr.name} ${method.name}Method(
+    ${types.serviceDataPtr.name} ${method.name}Method(
             ::zserio::Span<const uint8_t> requestData, void* context);
 </#list>
 </#if>

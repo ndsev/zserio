@@ -79,9 +79,9 @@ public class CppNativeMapper
         serviceType = new NativeRuntimeAllocType(typesContext.getService(), allocatorDefinition, stdUInt8Type);
         serviceClientType = new NativeRuntimeAllocType(typesContext.getServiceClient(), allocatorDefinition,
                 stdUInt8Type);
-        responseDataPtrType = new NativeRuntimeAllocType(typesContext.getResponseDataPtr(), allocatorDefinition,
+        serviceDataPtrType = new NativeRuntimeAllocType(typesContext.getServiceDataPtr(), allocatorDefinition,
                 stdUInt8Type);
-        requestDataType = new NativeRuntimeAllocType(typesContext.getRequestData(), allocatorDefinition,
+        serviceDataType = new NativeRuntimeAllocType(typesContext.getServiceData(), allocatorDefinition,
                 stdUInt8Type);
     }
 
@@ -232,14 +232,14 @@ public class CppNativeMapper
         return serviceClientType;
     }
 
-    public NativeRuntimeAllocType getResponseDataPtrType()
+    public NativeRuntimeAllocType getServiceDataPtrType()
     {
-        return responseDataPtrType;
+        return serviceDataPtrType;
     }
 
-    public NativeRuntimeAllocType getRequestDataType()
+    public NativeRuntimeAllocType getServiceDataType()
     {
-        return requestDataType;
+        return serviceDataType;
     }
 
     public NativeIntegralType getUInt64Type()
@@ -547,8 +547,8 @@ public class CppNativeMapper
     private final NativeRuntimeAllocType reflectablePtrType;
     private final NativeRuntimeAllocType serviceType;
     private final NativeRuntimeAllocType serviceClientType;
-    private final NativeRuntimeAllocType responseDataPtrType;
-    private final NativeRuntimeAllocType requestDataType;
+    private final NativeRuntimeAllocType serviceDataPtrType;
+    private final NativeRuntimeAllocType serviceDataType;
 
     private final static NativeBuiltinType booleanType =
             new NativeBuiltinType("bool", new NativeArrayTraits("BoolArrayTraits"));

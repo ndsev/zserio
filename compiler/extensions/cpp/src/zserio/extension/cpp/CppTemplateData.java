@@ -175,8 +175,8 @@ public abstract class CppTemplateData implements IncludeCollector
             reflectablePtr = new TypeTemplateData(nativeMapper.getReflectablePtrType());
             service = new TypeTemplateData(nativeMapper.getServiceType());
             serviceClient = new TypeTemplateData(nativeMapper.getServiceClientType());
-            responseDataPtr = new TypeTemplateData(nativeMapper.getResponseDataPtrType());
-            requestData = new TypeTemplateData(nativeMapper.getRequestDataType());
+            serviceDataPtr = new TypeTemplateData(nativeMapper.getServiceDataPtrType());
+            serviceData = new TypeTemplateData(nativeMapper.getServiceDataType());
         }
 
         public AllocatorTemplateData getAllocator()
@@ -254,14 +254,14 @@ public abstract class CppTemplateData implements IncludeCollector
             return serviceClient;
         }
 
-        public TypeTemplateData getResponseDataPtr()
+        public TypeTemplateData getServiceDataPtr()
         {
-            return responseDataPtr;
+            return serviceDataPtr;
         }
 
-        public TypeTemplateData getRequestData()
+        public TypeTemplateData getServiceData()
         {
-            return requestData;
+            return serviceData;
         }
 
         public static class AllocatorTemplateData
@@ -364,8 +364,8 @@ public abstract class CppTemplateData implements IncludeCollector
         private final TypeTemplateData reflectablePtr;
         private final TypeTemplateData service;
         private final TypeTemplateData serviceClient;
-        private final TypeTemplateData responseDataPtr;
-        private final TypeTemplateData requestData;
+        private final TypeTemplateData serviceDataPtr;
+        private final TypeTemplateData serviceData;
     }
 
     private final String generatorDescription;
