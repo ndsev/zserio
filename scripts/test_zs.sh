@@ -694,6 +694,9 @@ main()
         fi
     fi
 
+    # extensions need absolute paths
+    convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
+
     # purge if requested and then create test output directory
     local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
     local TEST_OUT_DIR="${ZSERIO_BUILD_DIR}/test_zs/${SWITCH_TEST_NAME}"

@@ -3,7 +3,6 @@
 SCRIPT_DIR=`dirname $0`
 source "${SCRIPT_DIR}/common_test_tools.sh"
 
-
 # Gets test suites matching the provided patterns.
 get_test_suites()
 {
@@ -447,8 +446,8 @@ Arguments:
 Package can be a combination of:
     cpp-linux32-gcc       Zserio C++ tests for linux32 target using gcc compiler.
     cpp-linux64-gcc       Zserio C++ tests for linux64 target using gcc compiler.
-    linux32-clang         Zserio ASIL C++ extension tests for linux32 target using Clang compiler.
-    linux64-clang         Zserio ASIL C++ extension tests for linux64 target using Clang compiler.
+    cpp-linux32-clang     Zserio C++ tests for linux32 target using using Clang compiler.
+    cpp-linux64-clang     Zserio C++ tests for linux64 target using Clang compiler.
     cpp-windows64-mingw   Zserio C++ tests for windows64 target (MinGW64).
     cpp-windows64-msvc    Zserio C++ tests for windows64 target (MSVC).
     java                  Zserio Java tests.
@@ -696,6 +695,9 @@ main()
             return 1
         fi
     fi
+
+    # extensions need absolute paths
+    convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
 
     # purge if requested and then create test output directory
     local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
