@@ -9,5 +9,5 @@ package zserio.extension.xml;
 public class XmlExtensionVersion
 {
     /** XML extension version string. */
-    public static final String VERSION_STRING = "2.5.0-pre1";
+    public static final String VERSION_STRING = "2.5.0";
 }
