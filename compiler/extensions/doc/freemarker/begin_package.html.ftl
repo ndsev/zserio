@@ -118,6 +118,11 @@
               <tr><td>
                 package <@symbol_reference symbol/>;
               </td></tr>
+    <#if compatibilityVersion??>
+              <tr><td>
+                zserio_compatiblity_version("${compatibilityVersion}");
+              </td></tr>
+    </#if>
             </tbody>
           <@code_table_end 5/>
 </#if>

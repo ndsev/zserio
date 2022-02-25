@@ -1,0 +1,49 @@
+<project name="compatibility_error" basedir="." default="run">
+    <testProperties testPath="errors/compatibility_error" testName="compatibility_error"/>
+
+    <target name="prepare">
+        <testPrepare testName="compatibility_error"/>
+    </target>
+
+    <target name="gen.check" depends="prepare">
+        <testGenCheck testName="compatibility_error"/>
+    </target>
+
+    <target name="gen" depends="gen.check" unless="compatibility_error.zs.gen_is_uptodate">
+        <testGenClean testName="compatibility_error"/>
+        <testGen testName="compatibility_error" zsFile="packed_array_in_template_240_error.zs"
+            ignoreErrors="true">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+        <testGen testName="compatibility_error" zsFile="packed_compound_array_242_error.zs" ignoreErrors="true">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+        <testGen testName="compatibility_error" zsFile="packed_uint32_array_241_error.zs" ignoreErrors="true">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+        <testGen testName="compatibility_error" zsFile="version_less_than_min_supported_error.zs"
+            ignoreErrors="true">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+        <testGen testName="compatibility_error" zsFile="wrong_compatibility_version_format_error.zs"
+            ignoreErrors="true">
+            <arg name="withoutCrossExtensionCheck"/>
+        </testGen>
+    </target>
+
+    <target name="compile" depends="gen">
+        <testCompile testName="compatibility_error" srcPath="${compatibility_error.base_dir}/java"/>
+    </target>
+
+    <target name="spotbugs" depends="compile" if="spotbugs.home_dir">
+        <testSpotBugs testName="compatibility_error" srcPath="${compatibility_error.base_dir}/java"/>
+    </target>
+
+    <target name="run" depends="spotbugs">
+        <testRun testName="compatibility_error"/>
+    </target>
+
+    <target name="clean">
+        <testClean testName="compatibility_error"/>
+    </target>
+</project>

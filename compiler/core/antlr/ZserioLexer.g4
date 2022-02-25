@@ -99,6 +99,7 @@ VARUINT             : 'varuint' ;
 VARUINT16           : 'varuint16' ;
 VARUINT32           : 'varuint32' ;
 VARUINT64           : 'varuint64' ;
+COMPAT_VERSION      : 'zserio_compatibility_version' ;
 
 // whitespaces
 WS : [\r\n\f\t ] -> skip ;

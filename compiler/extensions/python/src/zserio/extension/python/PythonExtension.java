@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.cli.Options;
 
 import zserio.ast.Root;
+import zserio.extension.common.CompatibilityChecker;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
@@ -46,6 +47,9 @@ public class PythonExtension implements Extension
     @Override
     public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
+        final CompatibilityChecker compatibilityChecker = new CompatibilityChecker();
+        rootNode.walk(compatibilityChecker);
+
         final ReservedKeywordsClashChecker pythonKeywordsClashChecker =
                 new ReservedKeywordsClashChecker("Python", PYTHON_KEYWORDS);
         rootNode.walk(pythonKeywordsClashChecker);

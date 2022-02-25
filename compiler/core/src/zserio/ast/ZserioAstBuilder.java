@@ -70,6 +70,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final PackageName topLevelPackageName = createTopLevelPackageName();
         final List<DocComment> docComments = docCommentManager.findDocComments(ctx.packageNameDefinition());
 
+        // package compatibility version
+        final CompatibilityVersion compatibilityVersion = visitCompatibilityVersionDirective(
+                ctx.compatibilityVersionDirective());
+
         // imports
         final List<Import> imports = new ArrayList<Import>();
         for (ZserioParser.ImportDeclarationContext importCtx : ctx.importDeclaration())
@@ -81,8 +85,8 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
         final AstLocation packageLocation = new AstLocation(packageLocationCtx.getStart());
         final List<DocComment> trailingDocComments = docCommentManager.findDocComments(ctx.EOF());
 
-        currentPackage = new Package(packageLocation, packageName, topLevelPackageName, imports, docComments,
-                trailingDocComments);
+        currentPackage = new Package(packageLocation, packageName, topLevelPackageName, compatibilityVersion,
+                imports, docComments, trailingDocComments);
         if (packageNameMap.put(currentPackage.getPackageName(), currentPackage) != null)
         {
             // translation unit package already exists, this could happen only for default packages
@@ -121,6 +125,17 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
                     "' does not match to the source file name!");
 
         return packageName;
+    }
+
+    @Override
+    public CompatibilityVersion visitCompatibilityVersionDirective(
+            ZserioParser.CompatibilityVersionDirectiveContext ctx)
+    {
+        if (ctx == null)
+            return null;
+
+        final Token versionToken = ctx.STRING_LITERAL().getSymbol();
+        return new CompatibilityVersion(new AstLocation(versionToken), versionToken.getText());
     }
 
     @Override

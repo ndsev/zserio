@@ -151,7 +151,8 @@ public class ZserioLexerTest
                 "varuint " +
                 "varuint16 " +
                 "varuint32 " +
-                "varuint64\n"
+                "varuint64 " +
+                "zserio_compatibility_version\n"
         );
 
         ZserioLexer lexer = new ZserioLexer(input);
@@ -219,6 +220,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.VARUINT16);
         checkToken(lexer, ZserioLexer.VARUINT32);
         checkToken(lexer, ZserioLexer.VARUINT64);
+        checkToken(lexer, ZserioLexer.COMPAT_VERSION);
 
         checkEOF(lexer);
     }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.cli.Options;
 
 import zserio.ast.Root;
+import zserio.extension.common.CompatibilityChecker;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
@@ -45,6 +46,9 @@ public class CppExtension implements Extension
     public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
         CppExtensionParameters.check(parameters);
+
+        final CompatibilityChecker compatibilityChecker = new CompatibilityChecker();
+        rootNode.walk(compatibilityChecker);
 
         final ReservedKeywordsClashChecker cppKeywordsClashChecker =
                 new ReservedKeywordsClashChecker("C++", CPP_KEYWORDS);

@@ -20,6 +20,13 @@ public interface ZserioAstVisitor
     public void visitPackage(Package packageNode);
 
     /**
+     * Visits compatibility version.
+     *
+     * @param compatibilityVersion Compatibility version AST node.
+     */
+    public void visitCompatibilityVersion(CompatibilityVersion compatibilityVersion);
+
+    /**
      * Visits a single import.
      *
      * @param importNode Import AST node.

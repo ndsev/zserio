@@ -16,6 +16,10 @@ public class ZserioAstDefaultVisitor implements ZserioAstVisitor
     {}
 
     @Override
+    public void visitCompatibilityVersion(CompatibilityVersion compatibilityVersion)
+    {}
+
+    @Override
     public void visitImport(Import unitImport)
     {}
 

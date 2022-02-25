@@ -35,6 +35,13 @@ public class ZserioParserTest
     }
 
     @Test
+    public void compatibilityVersionDirective()
+    {
+        checkParseTree("compatibilityVersionDirective", "zserio_compatibility_version(\"2.4.2\");",
+                "(compatibilityVersionDirective zserio_compatibility_version ( \"2.4.2\" ) ;)");
+    }
+
+    @Test
     public void importDeclaration()
     {
         checkParseTree("importDeclaration", "import pkg.*;",

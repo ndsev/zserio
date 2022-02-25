@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.Root;
+import zserio.extension.common.CompatibilityChecker;
 import zserio.extension.common.OutputFileManager;
 import zserio.extension.common.ReservedKeywordsClashChecker;
 import zserio.extension.common.ZserioExtensionException;
@@ -42,6 +43,9 @@ public class JavaExtension implements Extension
     @Override
     public void check(Root rootNode, ExtensionParameters parameters) throws ZserioExtensionException
     {
+        final CompatibilityChecker compatibilityChecker = new CompatibilityChecker();
+        rootNode.walk(compatibilityChecker);
+
         final ReservedKeywordsClashChecker javaKeywordsClashChecker =
                 new ReservedKeywordsClashChecker("Java", JAVA_KEYWORDS);
         rootNode.walk(javaKeywordsClashChecker);

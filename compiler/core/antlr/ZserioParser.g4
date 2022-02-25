@@ -12,6 +12,7 @@ tokens { RSHIFT }
 
 packageDeclaration
     :   packageNameDefinition?
+        compatibilityVersionDirective?
         importDeclaration*
         languageDirective*
         EOF
@@ -19,6 +20,10 @@ packageDeclaration
 
 packageNameDefinition
     :   PACKAGE id (DOT id)* SEMICOLON
+    ;
+
+compatibilityVersionDirective
+    :   COMPAT_VERSION LPAREN STRING_LITERAL RPAREN SEMICOLON
     ;
 
 importDeclaration
@@ -48,7 +53,6 @@ symbolDefinition
     :   constDefinition
     |   ruleGroupDefinition
     ;
-
 
 // CONST
 

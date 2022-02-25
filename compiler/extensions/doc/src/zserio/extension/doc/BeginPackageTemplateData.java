@@ -28,6 +28,9 @@ public class BeginPackageTemplateData
 
         this.headerNavigation = headerNavigation;
 
+        compatibilityVersion = pkg.getCompatibilityVersion() != null ?
+                pkg.getCompatibilityVersion().getVersion().toString() : null;
+
         for (Import importNode : pkg.getImports())
             importNodes.add(new ImportTemplateData(context, importNode));
 
@@ -66,6 +69,11 @@ public class BeginPackageTemplateData
     public HeaderNavigationTemplateData getHeaderNavigation()
     {
         return headerNavigation;
+    }
+
+    public String getCompatibilityVersion()
+    {
+        return compatibilityVersion;
     }
 
     public Iterable<ImportTemplateData> getImportNodes()
@@ -168,6 +176,7 @@ public class BeginPackageTemplateData
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;
     private final HeaderNavigationTemplateData headerNavigation;
+    private final String compatibilityVersion;
     private final List<ImportTemplateData> importNodes = new ArrayList<ImportTemplateData>();
     // we want to have sorted packages in symbol overview
     private final Set<PackageSymbolOverviewTemplateData> packages =

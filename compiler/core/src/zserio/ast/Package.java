@@ -26,17 +26,20 @@ public class Package extends DocumentableAstNode
      * @param location AST node location.
      * @param packageName Name of the package.
      * @param topLevelPackageName Name of the top level package given by command line.
+     * @param compatibilityVersion Package compatibility version AST node (can be null).
      * @param imports List of all imports defined in the package.
      * @param docComments List of documentation comments belonging to this node.
      * @param trailingDocComments List of documentation comments which are trailing at the end of this package.
      */
     public Package(AstLocation location, PackageName packageName, PackageName topLevelPackageName,
-            List<Import> imports, List<DocComment> docComments, List<DocComment> trailingDocComments)
+            CompatibilityVersion compatibilityVersion, List<Import> imports,
+            List<DocComment> docComments, List<DocComment> trailingDocComments)
     {
         super(location, docComments);
 
         this.packageName = packageName;
         this.topLevelPackageName = topLevelPackageName;
+        this.compatibilityVersion = compatibilityVersion;
         this.imports = imports;
         this.trailingDocComments = trailingDocComments;
     }
@@ -51,6 +54,9 @@ public class Package extends DocumentableAstNode
     public void visitChildren(ZserioAstVisitor visitor)
     {
         super.visitChildren(visitor);
+
+        if (compatibilityVersion != null)
+            compatibilityVersion.accept(visitor);
 
         for (Import packageImport : imports)
             packageImport.accept(visitor);
@@ -70,6 +76,16 @@ public class Package extends DocumentableAstNode
     public PackageName getPackageName()
     {
         return packageName;
+    }
+
+    /**
+     * Gets package compatibility version.
+     *
+     * @return Compatibility version AST node or null.
+     */
+    public CompatibilityVersion getCompatibilityVersion()
+    {
+        return compatibilityVersion;
     }
 
     /**
@@ -392,6 +408,7 @@ public class Package extends DocumentableAstNode
 
     private final PackageName packageName;
     private final PackageName topLevelPackageName;
+    private final CompatibilityVersion compatibilityVersion;
     private final List<Import> imports;
     private final List<DocComment> trailingDocComments;
 

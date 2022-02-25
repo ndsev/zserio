@@ -21,6 +21,12 @@ public class ZserioAstWalker implements ZserioAstVisitor
     }
 
     @Override
+    public void visitCompatibilityVersion(CompatibilityVersion compatibilityVersion)
+    {
+        compatibilityVersion.visitChildren(this);
+    }
+
+    @Override
     public void visitImport(Import unitImport)
     {
         unitImport.visitChildren(this);

@@ -27,6 +27,7 @@ import zserio.ast.ChoiceCase;
 import zserio.ast.ChoiceCaseExpression;
 import zserio.ast.ChoiceDefault;
 import zserio.ast.ChoiceType;
+import zserio.ast.CompatibilityVersion;
 import zserio.ast.Constant;
 import zserio.ast.DocComment;
 import zserio.ast.DocElement;
@@ -152,6 +153,14 @@ public class XmlAstWriter implements ZserioAstVisitor
         final Element xmlElement = xmlDoc.createElement("PACKAGE");
         xmlElement.setAttribute("packageName", unitPackage.getPackageName().toString());
         visitAstNode(unitPackage, xmlElement);
+    }
+
+    @Override
+    public void visitCompatibilityVersion(CompatibilityVersion compatibilityVersion)
+    {
+        final Element xmlElement = xmlDoc.createElement("COMPATIBILITY_VERSION");
+        xmlElement.setAttribute("versionString", compatibilityVersion.getVersion().toString());
+        visitAstNode(compatibilityVersion, xmlElement);
     }
 
     @Override
