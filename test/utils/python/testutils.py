@@ -113,13 +113,21 @@ def assertErrorsPresent(test, mainZsFile, expectedErrors):
 
     :param test: Current test.
     :param mainZsFile: Main zserio source file for the current test suite.
-    :param expectedErrors: List of expected error messages.
+    :param expectedErrors: List of expected error messages (in the right order!).
     """
 
     test.assertIn(mainZsFile, test.errors, msg=f"No error found for '{mainZsFile}'!")
     errors = test.errors[mainZsFile]
+    lastIndex = 0
     for expectedError in expectedErrors:
-        test.assertIn(expectedError, errors)
+        try:
+            lastIndex = errors.index(expectedError, lastIndex)
+        except ValueError:
+            try:
+                errors.index(expectedError)
+                test.fail(f"Expected error found in wrong order! ('{expectedError}')")
+            except ValueError:
+                test.fail(f"Expected error not found! ('{expectedError}')")
 
 class ZserioCompilerError(Exception):
     """
