@@ -56,6 +56,8 @@ described in zserio, giving the developer overall control of the data schema use
 
 [SQLite Extension](#sqlite-extension)
 
+[Compiler Directives](#compiler-directives)
+
 [Background & History](#background--history)
 
 [License & Copyright](#license--copyright)
@@ -1126,9 +1128,9 @@ There are two types of comments in zserio language:
 Standard comments are intended only as the comments of zserio schema and are filtered out during compilation.
 Thus, generators have no access to these comments.
 
-Documentation comments are not filtered out during compilation and they can be used for generation of zserio
-schema documentation or for documentation of generated code. These comments might be associated
-to the subsequent type or field definition.
+Documentation comments are not filtered out during compilation and they can be used by extensions
+(e.g. for generation of zserio schema documentation or for documentation of generated code).
+These comments might be associated to the subsequent type or field definition.
 
 Documentation comments are further divided to two types:
 
@@ -1962,6 +1964,29 @@ choice                                   | `BLOB`
 union                                    | `BLOB`
 
 [top](#language-guide)
+
+## Compiler Directives
+
+### Compatibility Check
+
+Although zserio tries to stay compatible with older versions, it may happen that it's necessary to
+break the schema compatibility in order to improve the language or some feature. For these cases zserio provides
+special language directive `zserio_compatibility_version` which takes the requested version string as an
+argument. The directive must be first command (except comments) in the source file.
+
+```
+zserio_compatibility_version("2.4.2");
+
+package compatibility;
+```
+
+When the `zserio_compatibility_version` directive is specified, zserio will check that all used features are
+still available and fire an error in case that the current version of language is not compatible anymore.
+
+Furthermore, the extensions can apply additional compatibility checks
+(e.g. that the generated code still produce binary compatible BLOBs).
+
+> Since `2.5.0`
 
 ## Background & History
 

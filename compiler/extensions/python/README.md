@@ -68,3 +68,12 @@ generation failure in case that it detects some clashing.
       which allows to set an additional top level package
     * Python Generator only checks for possible clashes with packages/modules which the generated serialization
       API uses, which is currently only `zserio` and `typing`
+
+## Compatibility check
+
+Python generator honors the `zserio_compatibility_version` specified in the schema. However note that only
+the version specified in the root package of the schema is taken into account. The generator checks that
+language features used in the schema are still encoded in a binary compatible way with the specified
+compatibility version and fires an error when it detects any problem.
+
+> Note: Binary encoding of packed arrays has been changed in version `2.5.0`.
