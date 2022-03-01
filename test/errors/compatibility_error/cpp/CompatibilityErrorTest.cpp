@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 
-#include "test_utils/ZserioErrors.h"
+#include "test_utils/ZserioErrorOutput.h"
 
 class CompatibilityErrorTest : public ::testing::Test
 {
@@ -10,7 +10,7 @@ protected:
     :   zserioErrors("errors/compatibility_error")
     {}
 
-    const test_utils::ZserioErrors zserioErrors;
+    const test_utils::ZserioErrorOutput zserioErrors;
 };
 
 TEST_F(CompatibilityErrorTest, packedArrayInTemplate240)

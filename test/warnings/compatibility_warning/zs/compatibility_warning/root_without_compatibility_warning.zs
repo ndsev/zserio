@@ -1,0 +1,3 @@
+package compatibility_warning.root_without_compatibility_warning;
+
+import compatibility_warning.subpackage.*;

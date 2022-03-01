@@ -5,6 +5,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.CompatibilityVersion;
 import zserio.ast.CompoundType;
 import zserio.ast.Field;
+import zserio.ast.Package;
 import zserio.ast.Root;
 import zserio.ast.StructureType;
 import zserio.ast.TypeInstantiation;
@@ -32,6 +33,28 @@ public class CompatibilityChecker extends DefaultTreeWalker
         compatibilityVersion = root.getRootPackage().getCompatibilityVersion();
         if (compatibilityVersion == null)
             return;
+    }
+
+    @Override
+    public void beginPackage(Package pkg) throws ZserioExtensionException
+    {
+        if (pkg.getCompatibilityVersion() != null)
+        {
+            if (compatibilityVersion == null)
+            {
+                ZserioToolPrinter.printWarning(pkg.getCompatibilityVersion(),
+                        "Package specifies compatibility version '" +
+                        pkg.getCompatibilityVersion().getVersion() + "' while root package specifies nothing!");
+            }
+            else if (pkg.getCompatibilityVersion().getVersion().compareTo(
+                    compatibilityVersion.getVersion()) != 0)
+            {
+                ZserioToolPrinter.printWarning(pkg.getCompatibilityVersion(),
+                        "Package compatibility version '" +
+                        pkg.getCompatibilityVersion().getVersion() + "' doesn't match to '" +
+                        compatibilityVersion.getVersion() + "' specified in root package!");
+            }
+        }
     }
 
     @Override

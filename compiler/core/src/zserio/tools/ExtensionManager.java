@@ -82,7 +82,6 @@ class ExtensionManager
         {
             if (commandLineArguments.getWithCrossExtensionCheck())
             {
-                ZserioToolPrinter.printMessage("Running cross extension check");
                 for (Extension extension : extensions)
                     check(rootNode, extension, parameters);
             }
@@ -108,6 +107,7 @@ class ExtensionManager
     {
         try
         {
+            ZserioToolPrinter.printMessage("Calling " + extension.getName() + " extension check");
             extension.check(rootNode, parameters);
         }
         catch (ZserioExtensionException exception)

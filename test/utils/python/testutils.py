@@ -18,7 +18,7 @@ TEST_ARGS["java"] = "java"
 COMPILED_ZS = {} # keys are zs definition tuples: (zsDir, mainZsFile), value is zserio tool error log
 
 def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevelPackage=None, extraArgs=None,
-                 expectedWarnings=0):
+                 expectedWarnings=0, errorOutputDict=None):
     """
     Compiles given zserio source and gets Zserio API.
 
@@ -29,6 +29,7 @@ def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevel
     :param topLevelPackage: Top level package. By default it's guessed from the mainZsFile.
     :param extraArgs: Extra arguments to zserio compiler.
     :param expectedWarnings: Number of expected zserio warnings to check.
+    :param errorOutputDict: Dictionary where to store error output from zserio compiler (key is the mainZsFile).
     :returns: Generated python API if available, None otherwise.
     """
     testDir = os.path.dirname(testFile) # current test directory
@@ -41,6 +42,8 @@ def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevel
         COMPILED_ZS[zsDef] = zserioResult.stderr
 
     _checkExpectedWarnings(COMPILED_ZS[zsDef], expectedWarnings)
+    if errorOutputDict is not None:
+        errorOutputDict[mainZsFile] = COMPILED_ZS[zsDef]
 
     apiModule = "api"
     if hasPackage:
@@ -88,13 +91,13 @@ def getTestSuiteName(testDir):
     firstDir = os.path.split(testDir)[1]
     return os.path.join(firstDir, secondDir)
 
-def compileErroneousZserio(testFile, mainZsFile, errors, extraArgs=None):
+def compileErroneousZserio(testFile, mainZsFile, errorOutputDict, extraArgs=None):
     """
     Compiles given zserio source and gets error output.
 
     :param testFile: Current test file (i.e. test case).
     :param mainZsFile: Main zserio source file for the current test suite.
-    :param errors: List where to store error output from zserio compiler.
+    :param errorOutputDict: Dictionary where to store error output from zserio compiler (key is the mainZsFile).
     :param extraArgs: Extra arguments to zserio compiler.
     """
 
@@ -105,7 +108,7 @@ def compileErroneousZserio(testFile, mainZsFile, errors, extraArgs=None):
     try:
         _compileZserio(zsDef, apiDir, _processExtraArgs(extraArgs))
     except ZserioCompilerError as zserioCompilerError:
-        errors[mainZsFile] = zserioCompilerError.stderr
+        errorOutputDict[mainZsFile] = zserioCompilerError.stderr
 
 def assertErrorsPresent(test, mainZsFile, expectedErrors):
     """
@@ -116,18 +119,18 @@ def assertErrorsPresent(test, mainZsFile, expectedErrors):
     :param expectedErrors: List of expected error messages (in the right order!).
     """
 
-    test.assertIn(mainZsFile, test.errors, msg=f"No error found for '{mainZsFile}'!")
-    errors = test.errors[mainZsFile]
-    lastIndex = 0
-    for expectedError in expectedErrors:
-        try:
-            lastIndex = errors.index(expectedError, lastIndex)
-        except ValueError:
-            try:
-                errors.index(expectedError)
-                test.fail(f"Expected error found in wrong order! ('{expectedError}')")
-            except ValueError:
-                test.fail(f"Expected error not found! ('{expectedError}')")
+    _assertMessagesPresent(test, mainZsFile, test.errors, expectedErrors, "error")
+
+def assertWarningsPresent(test, mainZsFile, expectedWarnings):
+    """
+    Checks warning output from zserio compiler for the test.
+
+    :param test: Current test.
+    :param mainZsFile: Main zserio source file for the current test suite.
+    :param expectedWarnings: List of expected warning messages (in the right order!).
+    """
+
+    _assertMessagesPresent(test, mainZsFile, test.warnings, expectedWarnings, "warning")
 
 class ZserioCompilerError(Exception):
     """
@@ -231,3 +234,26 @@ def _importModule(path, modulePath):
     api = importlib.import_module(modulePath)
     sys.path.remove(path)
     return api
+
+def _assertMessagesPresent(test, mainZsFile, errorOutputDict, expectedMessages, messageType):
+    """
+    Checks error output from zserio compiler for the test.
+
+    :param test: Current test.
+    :param mainZsFile: Main zserio source file for the current test suite.
+    :param errorOutputDict: Dictionary containing error output captured by the current test suite.
+    :param expectedMessages: List of expected messages (in the right order!).
+    :param messageType: String defining type of the message (e.g. error or warning).
+    """
+
+    test.assertIn(mainZsFile, errorOutputDict, msg=f"No error found for '{mainZsFile}'!")
+    testErrorOutput = errorOutputDict[mainZsFile]
+
+    lastIndex = 0
+    for expectedMessage in expectedMessages:
+        index = testErrorOutput.find(expectedMessage, lastIndex)
+        if index < lastIndex:
+            if index == -1:
+                test.fail(f"Expected {messageType} not found! ('{expectedMessage}')")
+            else:
+                test.fail(f"Expected {messageType} found in wrong order! ('{expectedMessage}')")
