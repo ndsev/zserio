@@ -21,8 +21,8 @@ public class CompatibilityVersionTest
     @Test
     public void versionHigherThanCurrentVersion()
     {
-        final Version currentVersion = Version.parseVersion(ZserioVersion.VERSION_STRING);
-        final Version higherVersion = new Version(
+        final ZserioVersion currentVersion = ZserioVersion.parseVersion(ZserioVersion.VERSION_STRING);
+        final ZserioVersion higherVersion = new ZserioVersion(
                 currentVersion.getMajor(), currentVersion.getMinor(), currentVersion.getRevision() + 1);
         final ParserException exception = assertThrows(ParserException.class, () ->
                 new CompatibilityVersion(new AstLocation(null), "\"" + higherVersion + "\""));

@@ -30,8 +30,7 @@ class ExtensionManager
         while (it.hasNext())
         {
             Extension extension = it.next();
-            if (ExtensionVersionMatcher.matchExtensionVersion(
-                    ZserioVersion.VERSION_STRING, extension.getVersion()))
+            if (ExtensionVersionMatcher.match(ZserioVersion.VERSION_STRING, extension.getVersion()))
             {
                 extensions.add(extension);
                 extension.registerOptions(commandLineArguments.getOptions());

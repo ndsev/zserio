@@ -9,7 +9,7 @@ import zserio.ast.Root;
 import zserio.ast.StructureType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.UnionType;
-import zserio.ast.Version;
+import zserio.tools.ZserioVersion;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -80,7 +80,7 @@ public class CompatibilityChecker extends DefaultTreeWalker
         }
     }
 
-    private static final Version PACKED_ARRAY_CHANGE_VERSION = new Version(2, 5, 0);
+    private static final ZserioVersion PACKED_ARRAY_CHANGE_VERSION = new ZserioVersion(2, 5, 0);
 
     private CompatibilityVersion compatibilityVersion = null;
 }

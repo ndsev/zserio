@@ -19,7 +19,7 @@ public class CompatibilityVersion extends AstNodeBase
 
         try
         {
-            this.version = Version.parseVersion(
+            this.version = ZserioVersion.parseVersion(
                     versionStringLiteral.substring(1, versionStringLiteral.length() - 1)); // strip quotes
         }
         catch (RuntimeException e)
@@ -53,13 +53,14 @@ public class CompatibilityVersion extends AstNodeBase
      *
      * @return Version.
      */
-    public Version getVersion()
+    public ZserioVersion getVersion()
     {
         return version;
     }
 
-    private static final Version CURRENT_ZSERIO_VERSION = Version.parseVersion(ZserioVersion.VERSION_STRING);
-    private static final Version MINIMUM_SUPPORTED_VERSION = new Version(2, 4, 0);
+    private static final ZserioVersion CURRENT_ZSERIO_VERSION =
+            ZserioVersion.parseVersion(ZserioVersion.VERSION_STRING);
+    private static final ZserioVersion MINIMUM_SUPPORTED_VERSION = new ZserioVersion(2, 4, 0);
 
-    private final Version version;
+    private final ZserioVersion version;
 }
