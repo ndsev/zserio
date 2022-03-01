@@ -143,3 +143,52 @@ struct PackedArray
 ```
 
 Both examples from above result in the exact same byte stream.
+
+The following shows an invisible zserio for array of structures packed using delta compression:
+
+**invisible zserio**
+
+```
+struct PackableStructure
+{
+    uint32 value;
+    string text;
+};
+
+struct PackedArray
+{
+    packed PackableStructure list[5];
+};
+```
+
+**classic zserio**
+
+```
+struct PackingDescriptor
+{
+    bool isPacked;
+    bit:6 maxBitNumber if isPacked;
+};
+
+struct PackableStructureElement0
+{
+    PackingDescriptor valuePackingDescriptor;
+    uint32 value;
+    string text;
+};
+
+struct PackableStructureElementX(PackingDescriptor valuePackingDescriptor)
+{
+    int<valuePackingDescriptor.maxBitNumber + 1> valueDelta if valuePackingDescriptor.isPacked;
+    uint32 value if !valuePackingDescriptor.isPacked;
+    string text;
+};
+
+struct PackedArray
+{
+    PackableStructureElement0 element0;
+    PackableStructureElementX(element0.valuePackingDescriptor) elements[4];
+};
+```
+
+Both examples from above result in the exact same byte stream.
