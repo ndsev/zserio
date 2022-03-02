@@ -135,7 +135,10 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
             return null;
 
         final Token versionToken = ctx.STRING_LITERAL().getSymbol();
-        return new CompatibilityVersion(new AstLocation(versionToken), versionToken.getText());
+        final AstLocation location = new AstLocation(versionToken);
+        final List<DocComment> docComments = docCommentManager.findDocComments(ctx);
+
+        return new CompatibilityVersion(location, versionToken.getText(), docComments);
     }
 
     @Override

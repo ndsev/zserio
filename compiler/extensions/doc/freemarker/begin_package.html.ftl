@@ -101,11 +101,36 @@
         </script>
 
         <main id="main" class="col-8 pl-3 order-2">
-<#if hasFloatingDocComments(docComments)>
+<#if compatibilityVersion??>
+    <#if hasFloatingDocComments(compatibilityVersion.docComments)>
+          <@doc_comments_floating compatibilityVersion.docComments, 5/>
+
+    </#if>
+<#else>
+    <#if hasFloatingDocComments(docComments)>
           <@doc_comments_floating docComments, 5/>
 
+    </#if>
 </#if>
           <h1 id="${symbol.htmlLink.htmlAnchor}" class="anchor">${symbol.name}</h1>
+<#if compatibilityVersion??>
+          <@code_table_begin 5/>
+            <tbody>
+    <#if hasStickyDocComments(compatibilityVersion.docComments)>
+              <tr class="doc"><td>
+                <@doc_comments_sticky compatibilityVersion.docComments, 8/>
+              </td></tr>
+    </#if>
+              <tr><td>
+                zserio_compatiblity_version("${compatibilityVersion.version}");
+              </td></tr>
+            </tbody>
+          <@code_table_end 5/>
+    <#if hasFloatingDocComments(docComments)>
+
+          <@doc_comments_floating docComments, 5/>
+    </#if>
+</#if>
 <#if !isDefaultPackage>
 
           <@code_table_begin 5/>
@@ -118,11 +143,6 @@
               <tr><td>
                 package <@symbol_reference symbol/>;
               </td></tr>
-    <#if compatibilityVersion??>
-              <tr><td>
-                zserio_compatiblity_version("${compatibilityVersion}");
-              </td></tr>
-    </#if>
             </tbody>
           <@code_table_end 5/>
 </#if>

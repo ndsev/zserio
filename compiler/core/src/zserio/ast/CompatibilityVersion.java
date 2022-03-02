@@ -1,11 +1,13 @@
 package zserio.ast;
 
+import java.util.List;
+
 import zserio.tools.ZserioVersion;
 
 /**
  * AST node for compatibility version.
  */
-public class CompatibilityVersion extends AstNodeBase
+public class CompatibilityVersion extends DocumentableAstNode
 {
     /**
      * Constructor.
@@ -13,9 +15,9 @@ public class CompatibilityVersion extends AstNodeBase
      * @param location AST node location.
      * @param versionStringLiteral Version string literal (including quotes!).
      */
-    public CompatibilityVersion(AstLocation location, String versionStringLiteral)
+    public CompatibilityVersion(AstLocation location, String versionStringLiteral, List<DocComment> docComments)
     {
-        super(location);
+        super(location, docComments);
 
         try
         {

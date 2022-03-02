@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import zserio.ast.AstNode;
+import zserio.ast.CompatibilityVersion;
 import zserio.ast.Import;
 import zserio.ast.Package;
 import zserio.ast.PackageSymbol;
@@ -29,7 +30,7 @@ public class BeginPackageTemplateData
         this.headerNavigation = headerNavigation;
 
         compatibilityVersion = pkg.getCompatibilityVersion() != null ?
-                pkg.getCompatibilityVersion().getVersion().toString() : null;
+                new CompatibilityVersionTemplateData(context, pkg.getCompatibilityVersion()) : null;
 
         for (Import importNode : pkg.getImports())
             importNodes.add(new ImportTemplateData(context, importNode));
@@ -71,7 +72,7 @@ public class BeginPackageTemplateData
         return headerNavigation;
     }
 
-    public String getCompatibilityVersion()
+    public CompatibilityVersionTemplateData getCompatibilityVersion()
     {
         return compatibilityVersion;
     }
@@ -138,6 +139,29 @@ public class BeginPackageTemplateData
         private final Set<SymbolTemplateData> packageSymbols = new TreeSet<SymbolTemplateData>();
     }
 
+    public static class CompatibilityVersionTemplateData
+    {
+        public CompatibilityVersionTemplateData(PackageTemplateDataContext context,
+                CompatibilityVersion compatibilityVersion)
+        {
+            version = compatibilityVersion.getVersion().toString();
+            docComments = new DocCommentsTemplateData(context, compatibilityVersion.getDocComments());
+        }
+
+        public String getVersion()
+        {
+            return version;
+        }
+
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
+        private final String version;
+        private final DocCommentsTemplateData docComments;
+    }
+
     public static class ImportTemplateData
     {
         public ImportTemplateData(PackageTemplateDataContext context, Import importNode)
@@ -176,7 +200,7 @@ public class BeginPackageTemplateData
     private final SymbolTemplateData symbol;
     private final DocCommentsTemplateData docComments;
     private final HeaderNavigationTemplateData headerNavigation;
-    private final String compatibilityVersion;
+    private final CompatibilityVersionTemplateData compatibilityVersion;
     private final List<ImportTemplateData> importNodes = new ArrayList<ImportTemplateData>();
     // we want to have sorted packages in symbol overview
     private final Set<PackageSymbolOverviewTemplateData> packages =
