@@ -14,7 +14,11 @@
         <testGen testName="array_types_warning" zsFile="array_types_warning.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="array_types_warning" expectedWarnings="10"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="array_types_warning"/>
     </target>
 

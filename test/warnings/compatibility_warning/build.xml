@@ -21,7 +21,11 @@
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="compatibility_warning" expectedWarnings="2"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="compatibility_warning"/>
     </target>
 

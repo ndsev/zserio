@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import test_utils.ZserioErrors;
+import test_utils.ZserioErrorOutput;
 
 public class ExpressionsErrorTest
 {
     @BeforeAll
     public static void readZserioErrors() throws IOException
     {
-        zserioErrors = new ZserioErrors();
+        zserioErrors = new ZserioErrorOutput();
     }
 
     @Test
@@ -54,5 +54,5 @@ public class ExpressionsErrorTest
         assertTrue(zserioErrors.isPresent(error));
     }
 
-    private static ZserioErrors zserioErrors;
+    private static ZserioErrorOutput zserioErrors;
 }

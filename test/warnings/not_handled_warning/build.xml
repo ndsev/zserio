@@ -14,7 +14,11 @@
         <testGen testName="not_handled_warning" zsFile="not_handled_warning.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="not_handled_warning" expectedWarnings="2"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="not_handled_warning"/>
     </target>
 

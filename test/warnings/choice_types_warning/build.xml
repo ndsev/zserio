@@ -14,7 +14,11 @@
         <testGen testName="choice_types_warning" zsFile="choice_types_warning.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="choice_types_warning" expectedWarnings="1"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="choice_types_warning"/>
     </target>
 

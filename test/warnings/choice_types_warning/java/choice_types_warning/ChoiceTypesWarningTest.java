@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import test_utils.ZserioWarnings;
+import test_utils.ZserioErrorOutput;
 
 public class ChoiceTypesWarningTest
 {
     @BeforeAll
     public static void readZserioWarnings() throws IOException
     {
-        zserioWarnings = new ZserioWarnings();
+        zserioWarnings = new ZserioErrorOutput();
     }
 
     @Test
@@ -24,12 +24,5 @@ public class ChoiceTypesWarningTest
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
-    @Test
-    public void checkNumberOfWarnings()
-    {
-        final int expectedNumberOfWarnings = 1;
-        assertEquals(expectedNumberOfWarnings, zserioWarnings.getCount());
-    }
-
-    private static ZserioWarnings zserioWarnings;
+    private static ZserioErrorOutput zserioWarnings;
 }

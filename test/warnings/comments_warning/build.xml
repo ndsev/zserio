@@ -16,7 +16,11 @@
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="comments_warning" expectedWarnings="13"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="comments_warning"/>
     </target>
 

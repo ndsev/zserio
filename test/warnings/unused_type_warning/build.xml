@@ -16,7 +16,11 @@
         </testGen>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="unused_type_warning" expectedWarnings="6"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="unused_type_warning"/>
     </target>
 

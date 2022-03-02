@@ -141,21 +141,27 @@ spotbugs.home_dir            - Location of the spotbugs tool. If not set, spotbu
         <attribute name="testName"/>
         <attribute name="expectedWarnings" default="0"/>
         <sequential>
-            <fail message="[ERROR] Zserio tool produced some warnings. See ${@{testName}.zs.log_file}!">
+            <!-- get number of warnings in the log file -->
+            <resourcecount property="@{testName}.num_warnings">
+                <tokens>
+                    <concat>
+                        <filterchain>
+                            <linecontainsregexp>
+                                <regexp pattern="\[WARNING\]"/>
+                            </linecontainsregexp>
+                        </filterchain>
+                        <fileset file="${@{testName}.zs.log_file}"/>
+                    </concat>
+                </tokens>
+            </resourcecount>
+            <local name="fail_message1"/>
+            <local name="fail_message2"/>
+            <property name="fail_message1"
+                value="[ERROR] Zserio tool produced ${@{testName}.num_warnings} warnings "/>
+            <property name="fail_message2" value="(expected @{expectedWarnings})!"/>
+            <fail message="${fail_message1}${fail_message2}${line.separator}See ${@{testName}.zs.log_file}!">
                 <condition>
-                    <!-- get number of warnings in the log file -->
-                    <resourcecount when="ne" count="@{expectedWarnings}">
-                        <tokens>
-                            <concat>
-                                <filterchain>
-                                    <linecontainsregexp>
-                                        <regexp pattern="\[WARNING\]"/>
-                                    </linecontainsregexp>
-                                </filterchain>
-                                <fileset file="${@{testName}.zs.log_file}"/>
-                            </concat>
-                        </tokens>
-                    </resourcecount>
+                    <not><equals arg1="@{expectedWarnings}" arg2="${@{testName}.num_warnings}"/></not>
                 </condition>
             </fail>
         </sequential>

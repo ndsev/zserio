@@ -14,7 +14,11 @@
         <testGen testName="file_encoding_warning" zsFile="file_encoding_warning.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="file_encoding_warning" expectedWarnings="3"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="file_encoding_warning"/>
     </target>
 

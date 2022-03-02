@@ -14,7 +14,11 @@
         <testGen testName="optional_members_warning" zsFile="optional_members_warning.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="optional_members_warning" expectedWarnings="24"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="optional_members_warning"/>
     </target>
 

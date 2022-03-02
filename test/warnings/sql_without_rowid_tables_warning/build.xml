@@ -15,7 +15,11 @@
         <testGen testName="sql_without_rowid_tables_warning" zsFile="sql_without_rowid_tables_warning.zs"/>
     </target>
 
-    <target name="compile" depends="gen">
+    <target name="gen.checkWarnings" depends="gen">
+        <testGenCheckWarnings testName="sql_without_rowid_tables_warning" expectedWarnings="1"/>
+    </target>
+
+    <target name="compile" depends="gen.checkWarnings">
         <testCompile testName="sql_without_rowid_tables_warning"/>
     </target>
 
