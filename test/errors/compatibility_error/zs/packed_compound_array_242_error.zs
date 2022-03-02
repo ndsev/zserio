@@ -1,6 +1,6 @@
-package packed_compound_array_242_error;
-
 zserio_compatibility_version("2.4.2");
+
+package packed_compound_array_242_error;
 
 struct Compound
 {

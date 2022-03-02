@@ -1,6 +1,6 @@
-package packed_uint32_array_241_error;
-
 zserio_compatibility_version("2.4.1");
+
+package packed_uint32_array_241_error;
 
 struct TestStruct
 {

@@ -17,7 +17,7 @@ class CompatibilityErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "packed_array_in_template_240_error.zs",
             [
-                ":3:30: Root package requires compatibility with version '2.4.0'!",
+                ":1:30: Root package requires compatibility with version '2.4.0'!",
                 ":7:14: Packed arrays binary encoding has been changed in version '2.5.0'!",
                 "Python Generator: Compatibility check failed!"
             ]
@@ -27,7 +27,7 @@ class CompatibilityErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "packed_compound_array_242_error.zs",
             [
-                ":3:30: Root package requires compatibility with version '2.4.2'!",
+                ":1:30: Root package requires compatibility with version '2.4.2'!",
                 ":16:25: Packed arrays binary encoding has been changed in version '2.5.0'!",
                 "Python Generator: Compatibility check failed!"
             ]
@@ -37,7 +37,7 @@ class CompatibilityErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "packed_uint32_array_241_error.zs",
             [
-                ":3:30: Root package requires compatibility with version '2.4.1'!",
+                ":1:30: Root package requires compatibility with version '2.4.1'!",
                 ":7:19: Packed arrays binary encoding has been changed in version '2.5.0'!",
                 "Python Generator: Compatibility check failed!"
             ]
@@ -47,7 +47,7 @@ class CompatibilityErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "version_less_than_min_supported_error.zs",
             [
-                ":3:30: Root package specifies unsupported compatibility version '2.3.2', " +
+                ":1:30: Root package specifies unsupported compatibility version '2.3.2', " +
                 "minimum supported version is '2.4.0'!"
             ]
         )
@@ -56,7 +56,7 @@ class CompatibilityErrorTest(unittest.TestCase):
         assertErrorsPresent(self,
             "wrong_compatibility_version_format_error.zs",
             [
-                "wrong_compatibility_version_format_error.zs:3:30: " +
+                "wrong_compatibility_version_format_error.zs:2:30: " +
                 "Failed to parse version string: '2.5.0-rc1' as a version!"
             ]
         )

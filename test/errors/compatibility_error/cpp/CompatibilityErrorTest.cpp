@@ -16,7 +16,7 @@ protected:
 TEST_F(CompatibilityErrorTest, packedArrayInTemplate240)
 {
     const std::vector<std::string> errors{{
-            "packed_array_in_template_240_error.zs:3:30: "
+            "packed_array_in_template_240_error.zs:1:30: "
                     "Root package requires compatibility with version '2.4.0'!",
             "packed_array_in_template_240_error.zs:7:14: "
                     "Packed arrays binary encoding has been changed in version '2.5.0'!",
@@ -29,7 +29,7 @@ TEST_F(CompatibilityErrorTest, packedArrayInTemplate240)
 TEST_F(CompatibilityErrorTest, packedCompoundArray242)
 {
     const std::vector<std::string> errors{{
-        "packed_compound_array_242_error.zs:3:30: "
+        "packed_compound_array_242_error.zs:1:30: "
                 "Root package requires compatibility with version '2.4.2'!",
         "packed_compound_array_242_error.zs:16:25: "
                 "Packed arrays binary encoding has been changed in version '2.5.0'!",
@@ -42,7 +42,7 @@ TEST_F(CompatibilityErrorTest, packedCompoundArray242)
 TEST_F(CompatibilityErrorTest, packedUInt32Array241)
 {
     const std::vector<std::string> errors{{
-        "packed_uint32_array_241_error.zs:3:30: "
+        "packed_uint32_array_241_error.zs:1:30: "
                 "Root package requires compatibility with version '2.4.1'!",
         "packed_uint32_array_241_error.zs:7:19: "
                 "Packed arrays binary encoding has been changed in version '2.5.0'!",
@@ -55,7 +55,7 @@ TEST_F(CompatibilityErrorTest, packedUInt32Array241)
 TEST_F(CompatibilityErrorTest, versionLessThanMinSupported)
 {
     ASSERT_TRUE(zserioErrors.isPresent(
-            "version_less_than_min_supported_error.zs:3:30: "
+            "version_less_than_min_supported_error.zs:1:30: "
                     "Root package specifies unsupported compatibility version '2.3.2', "
                     "minimum supported version is '2.4.0'!"));
 }
@@ -63,6 +63,6 @@ TEST_F(CompatibilityErrorTest, versionLessThanMinSupported)
 TEST_F(CompatibilityErrorTest, wrongCompatibilityVersionFormat)
 {
     ASSERT_TRUE(zserioErrors.isPresent(
-            "wrong_compatibility_version_format_error.zs:3:30: "
+            "wrong_compatibility_version_format_error.zs:2:30: "
                     "Failed to parse version string: '2.5.0-rc1' as a version!"));
 }

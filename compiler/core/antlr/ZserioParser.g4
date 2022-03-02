@@ -11,19 +11,19 @@ tokens { RSHIFT }
 // PACKAGE (main rule)
 
 packageDeclaration
-    :   packageNameDefinition?
-        compatibilityVersionDirective?
+    :   compatibilityVersionDirective?
+        packageNameDefinition?
         importDeclaration*
         languageDirective*
         EOF
     ;
 
-packageNameDefinition
-    :   PACKAGE id (DOT id)* SEMICOLON
-    ;
-
 compatibilityVersionDirective
     :   COMPAT_VERSION LPAREN STRING_LITERAL RPAREN SEMICOLON
+    ;
+
+packageNameDefinition
+    :   PACKAGE id (DOT id)* SEMICOLON
     ;
 
 importDeclaration

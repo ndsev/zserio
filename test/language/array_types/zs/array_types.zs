@@ -1,5 +1,6 @@
-package array_types;
 zserio_compatibility_version("2.5.0");
+
+package array_types;
 
 import array_types.arrays_mapping.*;
 import array_types.auto_array_struct_recursion.*;

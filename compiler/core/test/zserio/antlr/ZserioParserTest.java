@@ -26,19 +26,19 @@ public class ZserioParserTest
     }
 
     @Test
-    public void packageDeclaration()
+    public void compatibilityVersionDirective()
+    {
+        checkParseTree("compatibilityVersionDirective", "zserio_compatibility_version(\"2.4.2\");",
+                "(compatibilityVersionDirective zserio_compatibility_version ( \"2.4.2\" ) ;)");
+    }
+
+    @Test
+    public void packageNameDefinition()
     {
         checkParseTree("packageNameDefinition", "package test.pkg;",
                 "(packageNameDefinition package (id test) . (id pkg) ;)");
 
         assertParseError("packageDeclaration", "package test.*;", "mismatched input '*' expecting ID");
-    }
-
-    @Test
-    public void compatibilityVersionDirective()
-    {
-        checkParseTree("compatibilityVersionDirective", "zserio_compatibility_version(\"2.4.2\");",
-                "(compatibilityVersionDirective zserio_compatibility_version ( \"2.4.2\" ) ;)");
     }
 
     @Test
