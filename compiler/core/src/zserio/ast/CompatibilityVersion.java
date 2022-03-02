@@ -14,6 +14,7 @@ public class CompatibilityVersion extends DocumentableAstNode
      *
      * @param location AST node location.
      * @param versionStringLiteral Version string literal (including quotes!).
+     * @param docComments List of documentation comments belonging to this node.
      */
     public CompatibilityVersion(AstLocation location, String versionStringLiteral, List<DocComment> docComments)
     {
