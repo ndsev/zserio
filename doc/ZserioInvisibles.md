@@ -110,8 +110,10 @@ Both examples from above result in the exact same byte stream.
 
 ## Packed Arrays
 
-All packed arrays adds at least one hidden `bool` (1 bit) field at the beginning of the array to indicate
-whether the array is actually packed or not.
+### Packed Arrays of Integers
+
+All packed arrays of integers adds at least one hidden `bool` (1 bit) field at the beginning of the array to
+indicate whether the array is actually packed or not.
 
 The following shows an invisible zserio for array of `uint32` packed using delta compression:
 
@@ -143,6 +145,11 @@ struct PackedArray
 ```
 
 Both examples from above result in the exact same byte stream.
+
+### Packed Arrays of Compounds
+
+All packed arrays of compounds adds at least one hidden `bool` (1 bit) field before each packable field
+of compound to indicate whether the field is actually packed or not.
 
 The following shows an invisible zserio for array of structures packed using delta compression:
 
@@ -188,6 +195,89 @@ struct PackedArray
 {
     PackableStructureElement0 element0;
     PackableStructureElementX(element0.valuePackingDescriptor) elements[4];
+};
+```
+
+Both examples from above result in the exact same byte stream.
+
+### Packed Arrays of Nested Compounds
+
+All packed arrays of nested compounds adds at least one hidden `bool` (1 bit) field before each packable field
+of compound to indicate whether the field is actually packed or not.
+
+The following shows an invisible zserio for array of nested structures packed using delta compression:
+
+**invisible zserio**
+
+```
+struct InnerStructure
+{
+    uint64 value64;
+    uint16 value16;
+};
+
+struct PackableStructure
+{
+    uint32 value32;
+    string text;
+    InnerStructure innerStructure;
+};
+
+struct ClassicPackedArray
+{
+    packed PackableStructure list[5];
+};
+```
+
+**classic zserio**
+
+```
+struct PackingDescriptor
+{
+    bool isPacked;
+    bit:6 maxBitNumber if isPacked;
+};
+
+struct InnerStructureElement0
+{
+    PackingDescriptor value64PackingDescriptor;
+    uint64 value64;
+    PackingDescriptor value16PackingDescriptor;
+    uint16 value16;
+};
+
+struct PackableStructureElement0
+{
+    PackingDescriptor value32PackingDescriptor;
+    uint32 value32;
+    string text;
+    InnerStructureElement0 innerStructureElement0;
+};
+
+struct InnerStructureElementX(PackingDescriptor value64PackingDescriptor,
+        PackingDescriptor value16PackingDescriptor)
+{
+    int<value64PackingDescriptor.maxBitNumber + 1> value64Delta if value64PackingDescriptor.isPacked;
+    uint64 value64 if !value64PackingDescriptor.isPacked;
+    int<value16PackingDescriptor.maxBitNumber + 1> value16Delta if value16PackingDescriptor.isPacked;
+    uint16 value16 if !value16PackingDescriptor.isPacked;
+};
+
+struct PackableStructureElementX(PackingDescriptor value32PackingDescriptor,
+        PackingDescriptor value64PackingDescriptor, PackingDescriptor value16PackingDescriptor)
+{
+    int<value32PackingDescriptor.maxBitNumber + 1> value32Delta if value32PackingDescriptor.isPacked;
+    uint32 value32 if !value32PackingDescriptor.isPacked;
+    string text;
+    InnerStructureElementX(value64PackingDescriptor, value16PackingDescriptor) innerStructureElementX;
+};
+
+struct PackedArray
+{
+    PackableStructureElement0 element0;
+    PackableStructureElementX(element0.value32PackingDescriptor,
+            element0.innerStructureElement0.value64PackingDescriptor,
+            element0.innerStructureElement0.value16PackingDescriptor) elements[4];
 };
 ```
 
