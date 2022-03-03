@@ -134,19 +134,23 @@ You can find the detailed quick start tutorial in their respective repositories:
 - [Java Tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial)
 - [Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial)
 
-Or try [Interactive Zserio Compiler](https://share.streamlit.io/zserio-streamlit/zserio-streamlit/interactive_zserio.py) based on [Streamlit](https://streamlit.io).
+Or try [Interactive Zserio Compiler](https://share.streamlit.io/zserio-streamlit/zserio-streamlit/interactive_zserio.py)
+based on [Streamlit](https://streamlit.io).
 
 ## Features overview
 
-- optional elements
-- constraints
-- default values
-- parameters
-- alignments
-- offsets
-- arrays with indexed offsets
-- [generic services](#services)
-- [Pub/Sub](#pubsub)
+- [Optional elements](doc/ZserioLanguageOverview.md#optional-members)
+- [Constraints](doc/ZserioLanguageOverview.md#constraints)
+- [Default values](doc/ZserioLanguageOverview.md#default-values)
+- [Parameters](doc/ZserioLanguageOverview.md#parameterized-types)
+- [Alignments](doc/ZserioLanguageOverview.md#alignment)
+- [Offsets](doc/ZserioLanguageOverview.md#offsets)
+- [Arrays with indexed offsets](doc/ZserioLanguageOverview.md#indexed-offsets)
+- [Packed arrays](doc/ZserioLanguageOverview.md#packed-arrays)
+- [Templates](doc/ZserioLanguageOverview.md#templates)
+- [Generic services](#services)
+- [Generic Pub/Sub](#pubsub)
+- [SQLite extension](doc/ZserioLanguageOverview.md#sqlite-extension)
 
 ## Documentation
 
