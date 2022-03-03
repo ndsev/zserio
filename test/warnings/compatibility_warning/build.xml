@@ -12,7 +12,7 @@
     <target name="gen" depends="gen.check" unless="compatibility_warning.zs.gen_is_uptodate">
         <testGenClean testName="compatibility_warning"/>
         <testGen testName="compatibility_warning"
-            zsFile="compatibility_warning/root_with_different_compatibility_warning.zs">
+            zsFile="compatibility_warning/root_with_diff_compatibility_warning.zs">
             <arg name="withoutCrossExtensionCheck"/>
         </testGen>
         <testGen testName="compatibility_warning"

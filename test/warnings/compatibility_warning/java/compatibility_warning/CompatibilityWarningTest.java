@@ -25,7 +25,7 @@ public class CompatibilityWarningTest
     }
 
     @Test
-    public void rootWithDifferentCompatibility()
+    public void rootWithDiffCompatibility()
     {
         final String warning = "subpackage.zs:1:30: " +
                 "Package specifies compatibility version '2.4.2' while root package specifies nothing!";

@@ -13,7 +13,7 @@ protected:
     const test_utils::ZserioErrorOutput zserioWarnings;
 };
 
-TEST_F(CompatibilityWarningTest, rootWithDifferentCompatibility)
+TEST_F(CompatibilityWarningTest, rootWithDiffCompatibility)
 {
     const std::string error = "subpackage.zs:1:30: "
             "Package compatibility version '2.4.2' doesn't match to '2.5.0' specified in root package!";
