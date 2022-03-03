@@ -129,18 +129,23 @@ struct PackedArray
 **classic zserio**
 
 ```
-struct DeltaPackedArray
+struct PackingDescriptor
 {
-    bit:6 maxBitNumber;
+    bool isPacked;
+    bit:6 maxBitNumber if isPacked;
+};
+
+struct DeltaPackedArray(bit:6 maxBitNumber)
+{
     uint32 element0;
     int<maxBitNumber + 1> deltas[4];
 };
 
 struct PackedArray
 {
-    bool             isPacked;
-    DeltaPackedArray packedList if isPacked;
-    uint32           unpackedList[5] if !isPacked;
+    PackingDescriptor packingDescriptor;
+    DeltaPackedArray(packingDescriptor.maxBitNumber) packedList if packingDescriptor.isPacked;
+    uint32 unpackedList[5] if !packingDescriptor.isPacked;
 };
 ```
 
@@ -200,6 +205,9 @@ struct PackedArray
 
 Both examples from above result in the exact same byte stream.
 
+Packed arrays of choices and unions are encoding in the same way, meaning that all fields corresponded to the
+same case are considered as an array. If such array is empty, nothing is encoded in the bit stream.
+
 ### Packed Arrays of Nested Compounds
 
 All packed arrays of nested compounds adds at least one hidden `bool` (1 bit) field before each packable field
@@ -223,7 +231,7 @@ struct PackableStructure
     InnerStructure innerStructure;
 };
 
-struct ClassicPackedArray
+struct PackedArray
 {
     packed PackableStructure list[5];
 };
