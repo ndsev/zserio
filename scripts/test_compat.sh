@@ -162,7 +162,7 @@ compare_versions()
     if [ $? -ne 0 ] ; then
         return 1
     fi
-    "${TEST_OUT_DIR}/${LHS_VERSION}/scripts/test.sh" java -t language/*
+    "${TEST_OUT_DIR}/${LHS_VERSION}/scripts/test.sh" java -i language/*
     local TEST_RESULT=$?
     mv "${TEST_OUT_DIR}/${LHS_VERSION}/build" "${TEST_OUT_DIR}/${LHS_VERSION}/build-${LHS_VERSION}"
     if [ ${TEST_RESULT} -ne 0 ] ; then
@@ -174,7 +174,7 @@ compare_versions()
     if [ $? -ne 0 ] ; then
         return 1
     fi
-    "${TEST_OUT_DIR}/${LHS_VERSION}/scripts/test.sh" java -t language/*
+    "${TEST_OUT_DIR}/${LHS_VERSION}/scripts/test.sh" java -i language/*
     TEST_RESULT=$?
     mv "${TEST_OUT_DIR}/${LHS_VERSION}/build" "${TEST_OUT_DIR}/${LHS_VERSION}/build-${RHS_VERSION}"
     if [ ${TEST_RESULT} -ne 0 ] ; then
