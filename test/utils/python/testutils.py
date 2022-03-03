@@ -52,6 +52,7 @@ def getZserioApi(testFile, mainZsFile, *, hasPackage=True, hasApi=True, topLevel
             apiModulePathPrefix = topLevelPackage.split(".")[0]
         else:
             mainZsWithoutExt = os.path.splitext(mainZsFile)[0]
+            mainZsWithoutExt.replace("/", os.sep) # normalize mainZs path for current OS
             apiModulePathPrefix = mainZsWithoutExt.split(os.sep)[0]
 
         apiModule = apiModulePathPrefix + "." + apiModule
