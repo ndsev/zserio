@@ -323,16 +323,17 @@ update_tutorial_java()
 
     echo "Updating generated sources in Zserio Tutorial Java."
     echo
-    ${MVN} dependency:copy -Dmaven.repo.local="${TUTORIAL_JAVA_DIR}/download" \
+    local TUTORIAL_JAVA_BUILD_DIR="${TUTORIAL_JAVA_DIR}/build"
+    ${MVN} dependency:copy -Dmaven.repo.local="${TUTORIAL_JAVA_BUILD_DIR}/download" \
             -Dartifact=io.github.ndsev:zserio:LATEST \
-            -DoutputDirectory="${TUTORIAL_JAVA_DIR}" \
+            -DoutputDirectory="${TUTORIAL_JAVA_BUILD_DIR}" \
             -Dmdep.stripVersion=true
     local MVN_RESULT=$?
     if [ ${MVN_RESULT} -ne 0 ] ; then
         stderr_echo "Maven download failed with return code ${MVN_RESULT}!"
         return 1
     fi
-    "${JAVA_BIN}" -jar "${TUTORIAL_JAVA_DIR}/build/zserio.jar" -src "${TUTORIAL_JAVA_DIR}" tutorial.zs \
+    "${JAVA_BIN}" -jar "${TUTORIAL_JAVA_BUILD_DIR}/zserio.jar" -src "${TUTORIAL_JAVA_DIR}" tutorial.zs \
             -java "${TUTORIAL_JAVA_DIR}/src"
     local ZSERIO_RESULT=$?
     if [ ${ZSERIO_RESULT} -ne 0 ] ; then
