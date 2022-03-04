@@ -103,6 +103,13 @@ set_release_global_variables()
                     "environment variable."
             return 1
         fi
+
+        # Zserio Streamlit directory to use, defaults to "${SCRIPT_DIR}/../../zserio-streamlit" if not set
+        ZSERIO_STREAMLIT_DIR="${ZSERIO_STREAMLIT_DIR:-${SCRIPT_DIR}/../../zserio-streamlit}"
+        if [ ! -d "${ZSERIO_STREAMLIT_DIR}" ] ; then
+            stderr_echo "Cannot find Zserio Streamlit directory! Set ZSERIO_STREAMLIT_DIR environment variable."
+            return 1
+        fi
     fi
 
     return 0
@@ -401,6 +408,43 @@ update_tutorial_python()
     return 0
 }
 
+# Update Zserio Streamlit repository after new Zserio release.
+update_streamlit()
+{
+    exit_if_argc_ne $# 2
+    local STREAMLIT_DIR="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+
+    local REQUIREMENTS_FILE="${STREAMLIT_DIR}/requirements.txt"
+    echo -ne "Updating version to ${ZSERIO_VERSION} in Zserio Streamlit..."
+    sed -i -e 's/zserio==[2-9]\+\.[0-9]\+\.[0-9]\+\(\-[A-Za-z0-9]\+\)\?/'"zserio==${ZSERIO_VERSION}"'/' \
+            "${REQUIREMENTS_FILE}"
+    local SED_RESULT=$?
+    if [ ${SED_RESULT} -ne 0 ] ; then
+        stderr_echo "Sed failed with return code ${SED_RESULT}!"
+        return 1
+    fi
+    echo "Done"
+    echo
+
+    git -C "${STREAMLIT_DIR}" diff --exit-code > /dev/null
+    if [ $? -eq 0 ] ; then
+        echo $'\e[1;33m'"Zserio Streamlit already up to date."$'\e[0m'
+    else
+        echo "Committing update of Zserio Streamlit."
+        git -C "${STREAMLIT_DIR}" commit -a \
+                -m "Change required zserio version to ${ZSERIO_VERSION}"
+        local GIT_RESULT=$?
+        if [ ${GIT_RESULT} -ne 0 ] ; then
+            stderr_echo "Git failed with return code ${GIT_RESULT}!"
+            return 1
+        fi
+    fi
+    echo
+
+    return 0
+}
+
 # Print help message.
 print_help()
 {
@@ -414,8 +458,10 @@ Usage:
 Arguments:
     -h, --help     Show this help.
     -e, --help-env Show help for enviroment variables.
-    -u, --update-dependent-respositories
+    -u, --update-dependent-repositories
                    Update all Zserio dependent repositories after Zserio release.
+    -j, --update-tutorial-java
+                   Update only Java tutorial sources after Zserio release.
     -o <dir>, --output-directory <dir>
                    Output directory where build and distr are located.
 
@@ -435,12 +481,14 @@ EOF
 # 3 - Environment help switch is present. Arguments after help switch have not been checked.
 parse_arguments()
 {
-    local NUM_OF_ARGS=2
+    local NUM_OF_ARGS=3
     exit_if_argc_lt $# ${NUM_OF_ARGS}
     local PARAM_OUT_DIR_OUT="$1"; shift
-    local SWITCH_UPDATE_OUT="$1"; shift
+    local SWITCH_ALL_UPDATE_OUT="$1"; shift
+    local SWITCH_JAVA_TUTORIAL_UPDATE_OUT="$1"; shift
 
-    eval ${SWITCH_UPDATE_OUT}=0
+    eval ${SWITCH_ALL_UPDATE_OUT}=0
+    eval ${SWITCH_JAVA_TUTORIAL_UPDATE_OUT}=0
 
     local NUM_PARAMS=0
     local ARG="$1"
@@ -454,8 +502,13 @@ parse_arguments()
                 return 3
                 ;;
 
-            "-u" | "--update-dependent-respositories")
-                eval ${SWITCH_UPDATE_OUT}=1
+            "-u" | "--update-dependent-repositories")
+                eval ${SWITCH_ALL_UPDATE_OUT}=1
+                shift
+                ;;
+
+            "-j" | "--update-tutorial-java")
+                eval ${SWITCH_JAVA_TUTORIAL_UPDATE_OUT}=1
                 shift
                 ;;
 
@@ -490,8 +543,9 @@ main()
 
     # parse command line arguments
     local PARAM_OUT_DIR="${ZSERIO_PROJECT_ROOT}"
-    local SWITCH_UPDATE
-    parse_arguments PARAM_OUT_DIR SWITCH_UPDATE "$@"
+    local SWITCH_ALL_UPDATE
+    local SWITCH_JAVA_TUTORIAL_UPDATE
+    parse_arguments PARAM_OUT_DIR SWITCH_ALL_UPDATE SWITCH_JAVA_TUTORIAL_UPDATE "$@"
     local PARSE_RESULT=$?
     if [ ${PARSE_RESULT} -eq 2 ] ; then
         print_help
@@ -507,6 +561,11 @@ main()
     convert_to_absolute_path "${PARAM_OUT_DIR}" PARAM_OUT_DIR
 
     # set global variables
+    if [[ ${SWITCH_ALL_UPDATE} == 1 || ${SWITCH_JAVA_TUTORIAL_UPDATE} == 1 ]] ; then
+        local SWITCH_UPDATE=1
+    else
+        local SWITCH_UPDATE=0
+    fi
     set_release_global_variables ${SWITCH_UPDATE}
     if [ $? -ne 0 ] ; then
         return 1
@@ -543,25 +602,27 @@ main()
         echo "Updating dependent repositories after new Zserio release ${ZSERIO_VERSION}."
         echo
 
-        local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
-        upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
+        if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 0 ]] ; then
+            local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
+            upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
 
-        upload_pypi "${ZSERIO_PYPI_DIR}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
+            upload_pypi "${ZSERIO_PYPI_DIR}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
 
-        update_extension_sample "${ZSERIO_EXTENSION_SAMPLE_DIR}" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
-        fi
+            update_extension_sample "${ZSERIO_EXTENSION_SAMPLE_DIR}" "${ZSERIO_VERSION}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
 
-        update_tutorial_cpp "${ZSERIO_TUTORIAL_CPP_DIR}" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
+            update_tutorial_cpp "${ZSERIO_TUTORIAL_CPP_DIR}" "${ZSERIO_VERSION}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
         fi
 
         update_tutorial_java "${ZSERIO_TUTORIAL_JAVA_DIR}" "${ZSERIO_VERSION}"
@@ -569,9 +630,16 @@ main()
             return 1
         fi
 
-        update_tutorial_python "${ZSERIO_TUTORIAL_PYTHON_DIR}" "${ZSERIO_VERSION}"
-        if [ $? -ne 0 ] ; then
-            return 1
+        if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 0 ]] ; then
+            update_tutorial_python "${ZSERIO_TUTORIAL_PYTHON_DIR}" "${ZSERIO_VERSION}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+
+            update_streamlit "${ZSERIO_STREAMLIT_DIR}" "${ZSERIO_VERSION}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
         fi
     fi
 
