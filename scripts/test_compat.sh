@@ -25,7 +25,7 @@ get_sources()
                 local TAG_NAME="v${VERSION}"
             fi
             git clone --depth=1 --branch="${TAG_NAME}" --recurse-submodules \
-                    git@github.com:ndsev/zserio.git "${TEST_OUT_DIR}/${VERSION}"
+                    https://github.com/ndsev/zserio "${TEST_OUT_DIR}/${VERSION}"
             if [ $? -ne 0 ] ; then
                 stderr_echo "Failed to clone zserio tag \"${TAG_NAME}\"."
                 return 1
