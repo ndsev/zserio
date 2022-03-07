@@ -241,7 +241,10 @@ public class Expression extends AstNodeBase
         BITMASK,
 
         /** Expression which result is compound type. */
-        COMPOUND
+        COMPOUND,
+
+        /** Expression which result is extern type. */
+        EXTERN
     };
 
     /**
@@ -1606,6 +1609,10 @@ public class Expression extends AstNodeBase
         else if (baseType instanceof CompoundType)
         {
             expressionType = ExpressionType.COMPOUND;
+        }
+        else if (baseType instanceof ExternType)
+        {
+            expressionType = ExpressionType.EXTERN;
         }
         else
         {

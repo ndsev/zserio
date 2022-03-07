@@ -111,6 +111,10 @@ class ExpressionUtil
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.COMPOUND);
         }
+        else if (type instanceof ExternType)
+        {
+            isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.EXTERN);
+        }
 
         if (isTypeMismatch)
         {
