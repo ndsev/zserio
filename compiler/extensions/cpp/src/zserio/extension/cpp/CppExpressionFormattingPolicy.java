@@ -18,9 +18,11 @@ import zserio.ast.Function;
 import zserio.ast.Package;
 import zserio.ast.Parameter;
 import zserio.extension.common.DefaultExpressionFormattingPolicy;
+import zserio.extension.common.StringEscapeConverter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.symbols.CppNativeSymbol;
 import zserio.extension.cpp.types.CppNativeType;
+import zserio.extension.cpp.types.NativeStringViewType;
 
 /**
  * Default expressions formatting policy for C++ expressions.
@@ -35,6 +37,12 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     {
         this.cppNativeMapper = cppNativeMapper;
         this.includeCollector = includeCollector;
+    }
+
+    @Override
+    public FormattingConfig getConfig()
+    {
+        return new CppFormattingConfig();
     }
 
     @Override
@@ -123,8 +131,13 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public String getStringLiteral(Expression expr) throws ZserioExtensionException
     {
-        // must solve all constant string expressions in the generator to prevent dynamic allocations in runtime
-        throw new ZserioExtensionException("String literals cannot occur in C++ expressions!");
+        final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
+        includeCollector.addCppIncludesForType(nativeStringViewType);
+
+        // string literals in C++ does not support unicode escapes from interval <'\u0000', '\u0031'>
+        final String escapedStringLiteral =
+                StringEscapeConverter.convertUnicodeToHexEscapes(expr.getStringValue());
+        return nativeStringViewType.formatLiteral(escapedStringLiteral);
     }
 
     @Override
@@ -382,6 +395,15 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         }
 
         return workaround;
+    }
+
+    private static class CppFormattingConfig extends DefaultFormattingConfig
+    {
+        @Override
+        public boolean evaluateStrings()
+        {
+            return true;
+        }
     }
 
     private final CppNativeMapper cppNativeMapper;

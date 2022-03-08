@@ -602,14 +602,7 @@ public class CompoundFieldTemplateData
         if (initializerExpression == null)
             return null;
 
-        if (initializerExpression.getStringValue() != null)
-        {
-            return CppLiteralFormatter.formatStringLiteral(initializerExpression.getStringValue());
-        }
-        else
-        {
-            return cppExpressionFormatter.formatGetter(initializerExpression);
-        }
+        return cppExpressionFormatter.formatGetter(initializerExpression);
     }
 
     private static Constraint createConstraint(Field field, CppNativeMapper cppNativeMapper,

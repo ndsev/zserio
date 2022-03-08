@@ -15,6 +15,7 @@ import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
 import zserio.extension.python.types.PythonNativeType;
 import zserio.extension.common.ExpressionFormattingPolicy;
+import zserio.extension.common.DefaultExpressionFormattingPolicy;
 
 /**
  * Expression formatting policy for Python generator.
@@ -27,6 +28,12 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
     {
         this.context = context;
         this.importCollector = importCollector;
+    }
+
+    @Override
+    public FormattingConfig getConfig()
+    {
+        return new DefaultExpressionFormattingPolicy.DefaultFormattingConfig();
     }
 
     // atom expressions formatting

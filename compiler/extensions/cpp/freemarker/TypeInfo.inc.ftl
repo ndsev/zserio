@@ -207,11 +207,7 @@ ${I}}<#if comma>,</#if>
 ${I}::zserio::FunctionInfo{
 ${I}    ::zserio::makeStringView("${function.schemaName}"),
 ${I}    <@type_info function.returnTypeInfo/>,
-    <#if function.isConstStringReturnType>
-${I}    ${function.resultExpression}
-    <#else>
-${I}    ::zserio::makeStringView("${function.resultExpression}")
-    </#if>
+${I}    ::zserio::makeStringView("${function.resultExpression?j_string}")
 ${I}}<#if comma>,</#if>
 </#macro>
 

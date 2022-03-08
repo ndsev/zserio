@@ -44,7 +44,6 @@ public class CompoundFunctionTemplateData
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
             final ZserioType returnBaseType = returnTypeReference.getBaseTypeReference().getType();
-            isConstStringReturnType = function.getResultExpression().getStringValue() != null;
             if (returnBaseType instanceof StringType)
             {
                 // we have to return strings as StringView because we are not able to find out whether
@@ -53,25 +52,15 @@ public class CompoundFunctionTemplateData
                 final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
                 includeCollector.addHeaderIncludesForType(nativeStringViewType);
                 returnTypeInfo = new NativeTypeInfoTemplateData(nativeStringViewType, returnTypeReference);
-
-                if (isConstStringReturnType)
-                {
-                    resultExpression = nativeStringViewType.formatLiteral(
-                            function.getResultExpression().getStringValue());
-                }
-                else
-                {
-                    resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
-                }
             }
             else
             {
                 final CppNativeType returnNativeType = cppNativeMapper.getCppType(returnTypeReference);
                 includeCollector.addHeaderIncludesForType(returnNativeType);
                 returnTypeInfo = new NativeTypeInfoTemplateData(returnNativeType, returnTypeReference);
-                resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
             }
 
+            resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
             schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
         }
@@ -86,11 +75,6 @@ public class CompoundFunctionTemplateData
             return resultExpression;
         }
 
-        public boolean getIsConstStringReturnType()
-        {
-            return isConstStringReturnType;
-        }
-
         public String getSchemaName()
         {
             return schemaName;
@@ -103,7 +87,6 @@ public class CompoundFunctionTemplateData
 
         private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
-        private final boolean isConstStringReturnType;
         private final String schemaName;
         private final String name;
     }

@@ -37,8 +37,12 @@
             <#if field.optional??>
                 <#if field.holderNeedsAllocator>allocator<#else>::zserio::InPlace</#if>, <#t>
             </#if>
+            <#if field.typeInfo.isString>
+            ::zserio::stringViewToString(${field.initializer}, allocator)<#t>
+            <#else>
             static_cast<${field.typeInfo.typeFullName}>(${field.initializer})<#t>
             <#if field.needsAllocator>, allocator</#if><#t>
+            </#if>
         <#else>
             <#if field.optional??>
                 ::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if><#t>

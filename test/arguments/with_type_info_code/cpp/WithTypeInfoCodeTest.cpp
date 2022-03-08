@@ -426,7 +426,7 @@ protected:
         ASSERT_EQ(0, fieldStringField.typeArguments.size());
         ASSERT_EQ(""_sv, fieldStringField.alignment);
         ASSERT_EQ("getFieldU32()"_sv, fieldStringField.offset);
-        ASSERT_EQ("\"MyString\""_sv, fieldStringField.initializer);
+        ASSERT_EQ("::zserio::makeStringView(\"MyString\")"_sv, fieldStringField.initializer);
         ASSERT_EQ(false, fieldStringField.isOptional);
         ASSERT_EQ(""_sv, fieldStringField.optionalCondition);
         ASSERT_EQ(""_sv, fieldStringField.constraint);

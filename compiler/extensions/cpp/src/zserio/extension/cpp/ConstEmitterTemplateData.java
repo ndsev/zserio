@@ -33,22 +33,15 @@ public class ConstEmitterTemplateData extends CppTemplateData
             final NativeStringViewType nativeStringViewType = cppNativeMapper.getStringViewType();
             addHeaderIncludesForType(nativeStringViewType);
             typeInfo = new NativeTypeInfoTemplateData(nativeStringViewType, constantTypeInstantation);
-
-            final String stringValue = constant.getValueExpression().getStringValue();
-            if (stringValue == null)
-            {
-                throw new ZserioExtensionException(
-                        "Unexpected value expression which is a non-constant string!");
-            }
-            value = nativeStringViewType.formatLiteral(stringValue);
         }
         else
         {
             final CppNativeType nativeTargetType = cppNativeMapper.getCppType(constantTypeInstantation);
             addHeaderIncludesForType(nativeTargetType);
             typeInfo = new NativeTypeInfoTemplateData(nativeTargetType, constantTypeInstantation);
-            value = cppExpressionFormatter.formatGetter(constant.getValueExpression());
         }
+
+        value = cppExpressionFormatter.formatGetter(constant.getValueExpression());
     }
 
     public PackageTemplateData getPackage()

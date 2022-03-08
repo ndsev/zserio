@@ -161,6 +161,14 @@ public interface ExpressionFormattingPolicy
         private final String afterOperand3;
     }
 
+    public static interface FormattingConfig
+    {
+        public boolean evaluateStrings();
+    }
+
+    // configuration
+    public FormattingConfig getConfig();
+
     // atom expressions formatting
     public String getDecimalLiteral(Expression expr, boolean isNegative) throws ZserioExtensionException;
     public String getBinaryLiteral(Expression expr, boolean isNegative) throws ZserioExtensionException;

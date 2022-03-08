@@ -5,6 +5,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
 import zserio.ast.CompoundType;
 import zserio.ast.EnumType;
+import zserio.ast.StringType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
@@ -61,6 +62,11 @@ public class NativeTypeInfoTemplateData
         return isBoolean;
     }
 
+    public boolean getIsString()
+    {
+        return isString;
+    }
+
     public ArrayTraitsTemplateData getArrayTraits()
     {
         return arrayTraits;
@@ -82,6 +88,7 @@ public class NativeTypeInfoTemplateData
         isEnum = baseType instanceof EnumType;
         isBitmask = baseType instanceof BitmaskType;
         isBoolean = baseType instanceof BooleanType;
+        isString = baseType instanceof StringType;
 
         if (cppNativeType instanceof CppNativeArrayableType)
             arrayTraits = new ArrayTraitsTemplateData(((CppNativeArrayableType)cppNativeType).getArrayTraits());
@@ -108,6 +115,7 @@ public class NativeTypeInfoTemplateData
     private final boolean isEnum;
     private final boolean isBitmask;
     private final boolean isBoolean;
+    private final boolean isString;
     private final ArrayTraitsTemplateData arrayTraits;
     private final RuntimeFunctionTemplateData typeInfoGetter;
 }

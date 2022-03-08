@@ -1,7 +1,5 @@
 package zserio.extension.common;
 
-import java.math.BigInteger;
-
 import zserio.antlr.ZserioParser;
 import zserio.ast.Expression;
 
@@ -31,7 +29,7 @@ public class ExpressionFormatter
      */
     public String formatSetter(Expression expr) throws ZserioExtensionException
     {
-        return format(expr, true, false);
+        return format(expr, true);
     }
 
     /**
@@ -45,31 +43,13 @@ public class ExpressionFormatter
      */
     public String formatGetter(Expression expr) throws ZserioExtensionException
     {
-        return format(expr, false, false);
+        return format(expr, false);
     }
 
-    /**
-     * Formats expression into string for getter accessors together with evaluation of integer subexpressions.
-     *
-     * All integer subexpressions will be evaluated to integer numbers.
-     *
-     * @param expr Expression to format.
-     *
-     * @return Formatted expression in string format.
-     *
-     * @throws ZserioExtensionException Throws if expression has unexpected format.
-     */
-    public String formatGetterWithEvaluatedIntegers(Expression expr) throws ZserioExtensionException
-    {
-        return format(expr, false, true);
-    }
-
-    private String format(Expression expr, boolean formatSetter, boolean evaluateIntegers)
-            throws ZserioExtensionException
+    private String format(Expression expr, boolean formatSetter) throws ZserioExtensionException
     {
         buffer = new StringBuilder();
         this.formatSetter = formatSetter;
-        this.evaluateIntegers = evaluateIntegers;
         wasUnaryMinus = false;
         inArray = false;
         inDot = false;
@@ -90,7 +70,7 @@ public class ExpressionFormatter
 
     private void append(Expression expr) throws ZserioExtensionException
     {
-        if (!tryEmitExpressionAsIntegerValue(expr))
+        if (!tryEmitExpressionAsStringValue(expr))
         {
             final boolean isNegativeLiteral = wasUnaryMinus;
             wasUnaryMinus = false;
@@ -133,17 +113,15 @@ public class ExpressionFormatter
             return 3;
     }
 
-    private boolean tryEmitExpressionAsIntegerValue(Expression expr)
+    private boolean tryEmitExpressionAsStringValue(Expression expr) throws ZserioExtensionException
     {
-        if (!evaluateIntegers)
+        if (!policy.getConfig().evaluateStrings())
             return false;
 
-        // try to resolve expression to a integer value
-        final BigInteger value = expr.getIntegerValue();
-        if (value == null)
+        if (expr.getStringValue() == null)
             return false;
 
-        buffer.append(value.toString());
+        buffer.append(policy.getStringLiteral(expr));
 
         return true;
     }
@@ -389,7 +367,6 @@ public class ExpressionFormatter
 
     private StringBuilder buffer;
     private boolean formatSetter;
-    private boolean evaluateIntegers;
     private boolean wasUnaryMinus;
     private boolean inDot;
     private boolean inArray;

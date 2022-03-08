@@ -9,6 +9,21 @@ import zserio.ast.Expression;
  */
 public abstract class DefaultExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
+    public static class DefaultFormattingConfig implements FormattingConfig
+    {
+        @Override
+        public boolean evaluateStrings()
+        {
+            return false;
+        }
+    }
+
+    @Override
+    public FormattingConfig getConfig()
+    {
+        return new DefaultFormattingConfig();
+    }
+
     @Override
     public UnaryExpressionFormatting getBigIntegerCastingToNative(Expression expr)
     {
