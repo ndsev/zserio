@@ -106,19 +106,16 @@ public class ${name}
 
         // read rows
         final java.util.List<${rowName}> rows = new java.util.ArrayList<${rowName}>();
-        final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
-        try
-        {
+        try (
+            final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
             final java.sql.ResultSet resultSet = statement.executeQuery();
+        )
+        {
             while (resultSet.next())
             {
                 final ${rowName} row = readRow(<#if needsParameterProvider>parameterProvider, </#if>resultSet);
                 rows.add(row);
             }
-        }
-        finally
-        {
-            statement.close();
         }
 
         return rows;
@@ -148,8 +145,7 @@ public class ${name}
 
         // write rows
         final boolean wasTransactionStarted = startTransaction();
-        final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
-        try
+        try (final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString()))
         {
             for (${rowName} row : rows)
             {
@@ -157,10 +153,6 @@ public class ${name}
                 statement.addBatch();
             }
             statement.executeBatch();
-        }
-        finally
-        {
-            statement.close();
         }
 
         endTransaction(wasTransactionStarted);
@@ -181,15 +173,10 @@ public class ${name}
         sqlQuery.append(whereCondition);
 
         // update row
-        final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
-        try
+        try (final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString()))
         {
             writeRow(row, statement);
             statement.executeUpdate();
-        }
-        finally
-        {
-            statement.close();
         }
     }
 </#if>
@@ -218,12 +205,12 @@ public class ${name}
         </#list>
                     " FROM ");
             appendTableNameToQuery(sqlQuery);
-            final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
 
-            try
-            {
+            try (
+                final java.sql.PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
                 final java.sql.ResultSet resultSet = statement.executeQuery();
-
+            )
+            {
                 while (resultSet.next())
                 {
                     numberOfValidatedRows++;
@@ -240,10 +227,6 @@ public class ${name}
             </#if>
         </#list>
                 }
-            }
-            finally
-            {
-                statement.close();
             }
         }
 
@@ -270,14 +253,9 @@ public class ${name}
 
     private void executeUpdate(java.lang.String sql) throws java.sql.SQLException
     {
-        final java.sql.Statement statement = connection.createStatement();
-        try
+        try (final java.sql.Statement statement = connection.createStatement())
         {
             statement.executeUpdate(sql);
-        }
-        finally
-        {
-            statement.close();
         }
     }
 

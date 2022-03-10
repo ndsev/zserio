@@ -273,20 +273,17 @@ public class SqlTypesTest
         sqlQuery.append(")");
 
         // get table info
-        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery.toString());
-        try
-        {
+        try (
+            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery.toString());
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             while (resultSet.next())
             {
                 final String columnName = resultSet.getString(2);
                 final String columnType = resultSet.getString(3);
                 columnTypes.put(columnName, columnType);
             }
-        }
-        finally
-        {
-            statement.close();
         }
 
         return columnTypes;

@@ -377,15 +377,10 @@ public class SimpleTableValidationTest
 
         // set fieldEnum to an invalid enum value
         final String sql = "UPDATE simpleTable SET fieldEnum = 0 WHERE fieldEnum = ?";
-        final PreparedStatement statement = connection.prepareStatement(sql);
-        try
+        try (final PreparedStatement statement = connection.prepareStatement(sql))
         {
             statement.setLong(1, TestEnum.RED.getValue());
             statement.execute();
-        }
-        finally
-        {
-            statement.close();
         }
 
         final TestParameterProvider parameterProvider = new TestParameterProvider();
@@ -464,9 +459,8 @@ public class SimpleTableValidationTest
                 "INSERT INTO simpleTable (rowid, fieldBool, fieldBit5, fieldDynamicBit, fieldVarInt16, " +
                         "fieldString, fieldBlob, fieldEnum, fieldBitmask) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        final PreparedStatement statement = connection.prepareStatement(sql);
 
-        try
+        try (final PreparedStatement statement = connection.prepareStatement(sql))
         {
             int argIdx = 1;
             statement.setLong(argIdx++, id);
@@ -487,22 +481,13 @@ public class SimpleTableValidationTest
 
             statement.execute();
         }
-        finally
-        {
-            statement.close();
-        }
     }
 
     private void executeUpdate(String sql) throws SQLException
     {
-        final Statement statement = database.connection().createStatement();
-        try
+        try (final Statement statement = database.connection().createStatement())
         {
             statement.executeUpdate(sql);
-        }
-        finally
-        {
-            statement.close();
         }
     }
 

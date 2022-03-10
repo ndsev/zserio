@@ -39,20 +39,22 @@ public class SimpleDbTest
     @Test
     public void fileNameConstructor() throws SQLException
     {
-        database = new WorldDb(dbFile.toString());
-        database.createSchema();
-        checkDb(database);
-        database.close();
+        try (final WorldDb database = new WorldDb(dbFile.toString()))
+        {
+            database.createSchema();
+            checkDb(database);
+        }
     }
 
     @Test
     public void fileNameConstructorTableRelocationMap() throws SQLException
     {
         final Map<String, String> tableToDbFileNameRelocationMap = new HashMap<String, String>();
-        database = new WorldDb(dbFile.toString(), tableToDbFileNameRelocationMap);
-        database.createSchema();
-        checkDb(database);
-        database.close();
+        try (final WorldDb database = new WorldDb(dbFile.toString(), tableToDbFileNameRelocationMap))
+        {
+            database.createSchema();
+            checkDb(database);
+        }
     }
 
     @Test
@@ -61,12 +63,15 @@ public class SimpleDbTest
         final Properties connectionProps = new Properties();
         connectionProps.setProperty("flags", "CREATE");
         final String uriPath = "jdbc:sqlite:file:" + dbFile.toString();
-        final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
 
-        database = new WorldDb(connection);
-        database.createSchema();
-        checkDb(database);
-        connection.close();
+        try (
+            final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
+            final WorldDb database = new WorldDb(connection);
+        )
+        {
+            database.createSchema();
+            checkDb(database);
+        }
     }
 
     @Test
@@ -75,85 +80,89 @@ public class SimpleDbTest
         final Properties connectionProps = new Properties();
         connectionProps.setProperty("flags", "CREATE");
         final String uriPath = "jdbc:sqlite:file:" + dbFile.toString();
-        final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
-
         final Map<String, String> tableToDbFileNameRelocationMap = new HashMap<String, String>();
-        database = new WorldDb(connection, tableToDbFileNameRelocationMap);
-        database.createSchema();
-        checkDb(database);
-        connection.close();
+
+        try (
+            final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
+            final WorldDb database = new WorldDb(connection, tableToDbFileNameRelocationMap);
+        )
+        {
+            database.createSchema();
+            checkDb(database);
+        }
     }
 
     @Test
     public void tableGetters() throws SQLException
     {
-        database = new WorldDb(dbFile.toString());
-        database.createSchema();
+        try (final WorldDb database = new WorldDb(dbFile.toString()))
+        {
+            database.createSchema();
 
-        assertTrue(isTableInDb(EUROPE_TABLE_NAME));
-        final GeoMapTable europeTable = database.getEurope();
-        assertTrue(europeTable != null);
+            assertTrue(isTableInDb(database, EUROPE_TABLE_NAME));
+            final GeoMapTable europeTable = database.getEurope();
+            assertTrue(europeTable != null);
 
-        assertTrue(isTableInDb(AMERICA_TABLE_NAME));
-        final GeoMapTable americaTable = database.getAmerica();
-        assertTrue(americaTable != null);
-
-        database.close();
+            assertTrue(isTableInDb(database, AMERICA_TABLE_NAME));
+            final GeoMapTable americaTable = database.getAmerica();
+            assertTrue(americaTable != null);
+        }
     }
 
     @Test
     public void createSchema() throws SQLException
     {
-        database = new WorldDb(dbFile.toString());
+        try (final WorldDb database = new WorldDb(dbFile.toString()))
+        {
+            assertFalse(isTableInDb(database, EUROPE_TABLE_NAME));
+            assertFalse(isTableInDb(database, AMERICA_TABLE_NAME));
+            database.createSchema();
+            assertTrue(isTableInDb(database, EUROPE_TABLE_NAME));
+            assertTrue(isTableInDb(database, AMERICA_TABLE_NAME));
 
-        assertFalse(isTableInDb(EUROPE_TABLE_NAME));
-        assertFalse(isTableInDb(AMERICA_TABLE_NAME));
-        database.createSchema();
-        assertTrue(isTableInDb(EUROPE_TABLE_NAME));
-        assertTrue(isTableInDb(AMERICA_TABLE_NAME));
-
-        checkDb(database);
-        database.close();
+            checkDb(database);
+        }
     }
 
     @Test
     public void createSchemaWithoutRowIdBlackList() throws SQLException
     {
-        database = new WorldDb(dbFile.toString());
+        try (final WorldDb database = new WorldDb(dbFile.toString()))
+        {
+            assertFalse(isTableInDb(database, EUROPE_TABLE_NAME));
+            assertFalse(isTableInDb(database, AMERICA_TABLE_NAME));
+            final Set<String> withoutRowIdTableNamesBlackList = new HashSet<String>();
+            database.createSchema(withoutRowIdTableNamesBlackList);
+            assertTrue(isTableInDb(database, EUROPE_TABLE_NAME));
+            assertTrue(isTableInDb(database, AMERICA_TABLE_NAME));
 
-        assertFalse(isTableInDb(EUROPE_TABLE_NAME));
-        assertFalse(isTableInDb(AMERICA_TABLE_NAME));
-        final Set<String> withoutRowIdTableNamesBlackList = new HashSet<String>();
-        database.createSchema(withoutRowIdTableNamesBlackList);
-        assertTrue(isTableInDb(EUROPE_TABLE_NAME));
-        assertTrue(isTableInDb(AMERICA_TABLE_NAME));
-
-        checkDb(database);
-        database.close();
+            checkDb(database);
+        }
     }
 
     @Test
     public void deleteSchema() throws SQLException
     {
-        database = new WorldDb(dbFile.toString());
-        database.createSchema();
+        try (final WorldDb database = new WorldDb(dbFile.toString()))
+        {
+            database.createSchema();
 
-        assertTrue(isTableInDb(EUROPE_TABLE_NAME));
-        assertTrue(isTableInDb(AMERICA_TABLE_NAME));
-        database.deleteSchema();
-        assertFalse(isTableInDb(EUROPE_TABLE_NAME));
-        assertFalse(isTableInDb(AMERICA_TABLE_NAME));
-
-        database.close();
+            assertTrue(isTableInDb(database, EUROPE_TABLE_NAME));
+            assertTrue(isTableInDb(database, AMERICA_TABLE_NAME));
+            database.deleteSchema();
+            assertFalse(isTableInDb(database, EUROPE_TABLE_NAME));
+            assertFalse(isTableInDb(database, AMERICA_TABLE_NAME));
+        }
     }
 
     @Test
     public void validate() throws SQLException
     {
-        database = new WorldDb(dbFile.toString());
-        database.createSchema();
-        checkDb(database);
-        database.close();
+        try (final WorldDb database = new WorldDb(dbFile.toString()))
+        {
+            database.createSchema();
+            checkDb(database);
+        }
     }
 
     @Test
@@ -171,16 +180,17 @@ public class SimpleDbTest
             assertEquals(SimpleDbTest.tableNames[i], tableNames[i]);
     }
 
-    private boolean isTableInDb(String checkTableName) throws SQLException
+    private boolean isTableInDb(WorldDb database, String checkTableName) throws SQLException
     {
         // check if database does contain table
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
                 checkTableName + "'";
 
-        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-        try
-        {
+        try (
+            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             if (!resultSet.next())
                 return false;
 
@@ -188,10 +198,6 @@ public class SimpleDbTest
             final String readTableName = resultSet.getString(1);
             if (resultSet.wasNull() || !readTableName.equals(checkTableName))
                 return false;
-        }
-        finally
-        {
-            statement.close();
         }
 
         return true;
@@ -216,5 +222,4 @@ public class SimpleDbTest
     private static final String DB_FILE_NAME = "simple_db_test.sqlite";
 
     private final File dbFile = new File(DB_FILE_NAME);
-    private WorldDb database = null;
 }

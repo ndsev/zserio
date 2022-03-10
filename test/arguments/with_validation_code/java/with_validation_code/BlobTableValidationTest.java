@@ -63,8 +63,7 @@ public class BlobTableValidationTest
     private void insertRowWithNoneStandardBlob(Connection connection) throws SQLException
     {
         final String sqlCommand = "INSERT INTO blobTable(id, blob, nullableBlob) VALUES (?, ?, ?)";
-        final PreparedStatement statement = connection.prepareStatement(sqlCommand);
-        try
+        try (final PreparedStatement statement = connection.prepareStatement(sqlCommand))
         {
             int argIdx = 1;
             statement.setLong(argIdx++, ROW_ID);
@@ -78,10 +77,6 @@ public class BlobTableValidationTest
             statement.setNull(argIdx++, java.sql.Types.BLOB);
 
             statement.execute();
-        }
-        finally
-        {
-            statement.close();
         }
     }
 

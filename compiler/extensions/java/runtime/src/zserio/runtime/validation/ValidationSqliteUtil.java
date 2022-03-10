@@ -107,10 +107,11 @@ public class ValidationSqliteUtil
         sqlQuery.append(")");
 
         // get table info
-        final PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
-        try
-        {
+        try (
+            final PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             while (resultSet.next())
             {
                 final String columnName = resultSet.getString(2);
@@ -120,10 +121,6 @@ public class ValidationSqliteUtil
                 columnTypes.put(columnName,
                         new ColumnDescription(columnName, columnType, isNullable, primaryKeyIndex != 0));
             }
-        }
-        finally
-        {
-            statement.close();
         }
 
         return columnTypes;
@@ -155,11 +152,9 @@ public class ValidationSqliteUtil
         sqlQuery.append(" LIMIT 0");
 
         // try select to check if hidden column exists
-        try
+        try (final PreparedStatement statement = connection.prepareStatement(sqlQuery.toString()))
         {
-            final PreparedStatement statement = connection.prepareStatement(sqlQuery.toString());
-            statement.close();
-            return true;
+            return statement.execute();
         }
         catch (SQLException exception)
         {

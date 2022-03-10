@@ -207,14 +207,9 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
 
     private void executeUpdate(java.lang.String sql) throws java.sql.SQLException
     {
-        final java.sql.Statement statement = connection.createStatement();
-        try
+        try (final java.sql.Statement statement = connection.createStatement())
         {
             statement.executeUpdate(sql);
-        }
-        finally
-        {
-            statement.close();
         }
     }
 

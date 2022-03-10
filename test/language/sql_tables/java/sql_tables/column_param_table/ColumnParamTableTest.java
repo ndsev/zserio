@@ -153,10 +153,11 @@ public class ColumnParamTableTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
                 "'";
 
-        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-        try
-        {
+        try (
+            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             if (!resultSet.next())
                 return false;
 
@@ -164,10 +165,6 @@ public class ColumnParamTableTest
             final String tableName = resultSet.getString(1);
             if (resultSet.wasNull() || !tableName.equals(TABLE_NAME))
                 return false;
-        }
-        finally
-        {
-            statement.close();
         }
 
         return true;

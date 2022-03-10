@@ -259,9 +259,10 @@ public class WithoutWriterCodeTest
     public void readFile() throws IOException
     {
         final File file = new File(BLOB_NAME);
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-        writeTile(writer);
-        writer.close();
+        try (final FileBitStreamWriter writer = new FileBitStreamWriter(file))
+        {
+            writeTile(writer);
+        }
 
         final Tile tile = new Tile(file);
         checkTile(tile);
@@ -270,25 +271,25 @@ public class WithoutWriterCodeTest
     @Test
     public void readWorldDb() throws SQLException, IOException
     {
-        final Connection connection = createWorldDb();
-        final WorldDb worldDb = new WorldDb(connection);
+        try (
+            final Connection connection = createWorldDb();
+            final WorldDb worldDb = new WorldDb(connection);
+        )
+        {
+            final GeoMapTable europe = worldDb.getEurope();
+            final List<GeoMapTableRow> europeRows = europe.read();
 
-        final GeoMapTable europe = worldDb.getEurope();
-        final List<GeoMapTableRow> europeRows = europe.read();
+            final GeoMapTable america = worldDb.getAmerica();
+            final List<GeoMapTableRow> americaRows = america.read();
 
-        final GeoMapTable america = worldDb.getAmerica();
-        final List<GeoMapTableRow> americaRows = america.read();
+            assertEquals(1, europeRows.size());
+            assertEquals(TILE_ID_EUROPE, europeRows.get(0).getTileId());
+            checkTile(europeRows.get(0).getTile());
 
-        assertEquals(1, europeRows.size());
-        assertEquals(TILE_ID_EUROPE, europeRows.get(0).getTileId());
-        checkTile(europeRows.get(0).getTile());
-
-        assertEquals(1, americaRows.size());
-        assertEquals(TILE_ID_AMERICA, americaRows.get(0).getTileId());
-        checkTile(americaRows.get(0).getTile());
-
-        worldDb.close();
-        connection.close();
+            assertEquals(1, americaRows.size());
+            assertEquals(TILE_ID_AMERICA, americaRows.get(0).getTileId());
+            checkTile(americaRows.get(0).getTile());
+        }
     }
 
     private Set<String> getMethods(Class<?> userType)
@@ -339,43 +340,34 @@ public class WithoutWriterCodeTest
 
         final Connection connection = DriverManager.getConnection(uriPath, connectionProps);
 
-        final Statement statement = connection.createStatement();
-        try
+        try (final Statement statement = connection.createStatement())
         {
             statement.executeUpdate("CREATE TABLE europe(tileId INTEGER PRIMARY KEY, tile BLOB)");
             statement.executeUpdate( "CREATE TABLE america(tileId INTEGER PRIMARY KEY, tile BLOB)");
-        }
-        finally
-        {
-            statement.close();
         }
 
         final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
         writeTile(writer);
         final byte[] tileBytes = writer.toByteArray();
 
-        final PreparedStatement stmtEurope = connection.prepareStatement("INSERT INTO europe VALUES (?, ?)");
-        try
+        try (
+            final PreparedStatement stmtEurope = connection.prepareStatement(
+                    "INSERT INTO europe VALUES (?, ?)");
+        )
         {
             stmtEurope.setInt(1, TILE_ID_EUROPE);
             stmtEurope.setBytes(2, tileBytes);
             stmtEurope.executeUpdate();
         }
-        finally
-        {
-            stmtEurope.close();
-        }
 
-        final PreparedStatement stmtAmerica = connection.prepareStatement("INSERT INTO america VALUES (?, ?)");
-        try
+        try (
+            final PreparedStatement stmtAmerica = connection.prepareStatement(
+                    "INSERT INTO america VALUES (?, ?)");
+        )
         {
             stmtAmerica.setInt(1, TILE_ID_AMERICA);
             stmtAmerica.setBytes(2, tileBytes);
             stmtAmerica.executeUpdate();
-        }
-        finally
-        {
-            stmtAmerica.close();
         }
 
         return connection;

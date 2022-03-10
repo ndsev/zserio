@@ -158,10 +158,11 @@ public class SimpleVirtualColumnsTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + TABLE_NAME +
                 "'";
 
-        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-        try
-        {
+        try (
+            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             if (!resultSet.next())
                 return false;
 
@@ -170,10 +171,6 @@ public class SimpleVirtualColumnsTest
             if (resultSet.wasNull() || !tableName.equals(TABLE_NAME))
                 return false;
         }
-        finally
-        {
-            statement.close();
-        }
 
         return true;
     }
@@ -181,10 +178,11 @@ public class SimpleVirtualColumnsTest
     private boolean isVirtualColumnInTable() throws SQLException
     {
         final String sqlQuery = "PRAGMA table_info(" + TABLE_NAME + ")";
-        final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-        try
-        {
+        try (
+            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             while (resultSet.next())
             {
                 final String readColumnName = resultSet.getString(2);
@@ -194,10 +192,6 @@ public class SimpleVirtualColumnsTest
                         return true;
                 }
             }
-        }
-        finally
-        {
-            statement.close();
         }
 
         return false;

@@ -74,11 +74,9 @@ public class SimpleWithoutRowIdTableTest
         final String sqlQuery = "SELECT " + columnName + " FROM " + tableName + " LIMIT 0";
 
         // try select to check if column exists
-        try
+        try (final PreparedStatement statement = database.connection().prepareStatement(sqlQuery))
         {
-            final PreparedStatement statement = database.connection().prepareStatement(sqlQuery);
-            statement.close();
-            return true;
+            return statement.execute();
         }
         catch (SQLException exception)
         {

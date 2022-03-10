@@ -171,10 +171,11 @@ public class DbWithRelocationTest
     public void checkAttachedDatabases() throws SQLException
     {
         final String sqlQuery = "PRAGMA database_list";
-        final PreparedStatement statement = americaDb.connection().prepareStatement(sqlQuery);
-        try
-        {
+        try (
+            final PreparedStatement statement = americaDb.connection().prepareStatement(sqlQuery);
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             while (resultSet.next())
             {
                 final String databaseName = resultSet.getString(2);
@@ -182,10 +183,6 @@ public class DbWithRelocationTest
                 assertTrue(attachedDatabaseNames.contains(databaseName));
                 attachedDatabaseNames.remove(databaseName);
             }
-        }
-        finally
-        {
-            statement.close();
         }
 
         assertEquals(1, attachedDatabaseNames.size());
@@ -198,10 +195,11 @@ public class DbWithRelocationTest
         final String sqlQuery = "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
                 relocatedTableName + "'";
 
-        final PreparedStatement statement = db.connection().prepareStatement(sqlQuery);
-        try
-        {
+        try (
+            final PreparedStatement statement = db.connection().prepareStatement(sqlQuery);
             final ResultSet resultSet = statement.executeQuery();
+        )
+        {
             if (!resultSet.next())
                 return false;
 
@@ -209,10 +207,6 @@ public class DbWithRelocationTest
             final String tableName = resultSet.getString(1);
             if (resultSet.wasNull() || !tableName.equals(relocatedTableName))
                 return false;
-        }
-        finally
-        {
-            statement.close();
         }
 
         return true;

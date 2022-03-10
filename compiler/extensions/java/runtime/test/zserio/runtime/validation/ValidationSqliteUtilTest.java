@@ -33,8 +33,7 @@ public class ValidationSqliteUtilTest
     {
         final String TABLE_NAME = "ColumnTypesTestTable";
 
-        TestSqlDatabase testDatabase = new TestSqlDatabase();
-        try
+        try (final TestSqlDatabase testDatabase = new TestSqlDatabase())
         {
             testDatabase.executeUpdate("CREATE TABLE " + TABLE_NAME +
                     "(col1 TEXT, col2 INTEGER NOT NULL PRIMARY KEY, col3 BLOB);");
@@ -61,10 +60,6 @@ public class ValidationSqliteUtilTest
 
             assertTrue(schema.isEmpty());
         }
-        finally
-        {
-            testDatabase.close();
-        }
     }
 
     @Test
@@ -72,8 +67,7 @@ public class ValidationSqliteUtilTest
     {
         final String TABLE_NAME = "HiddenColumnTestTable";
 
-        TestSqlDatabase testDatabase = new TestSqlDatabase();
-        try
+        try (final TestSqlDatabase testDatabase = new TestSqlDatabase())
         {
             testDatabase.executeUpdate("CREATE VIRTUAL TABLE " + TABLE_NAME + " USING fts4 " +
                     "(substitutionId TEXT NOT NULL);");
@@ -81,10 +75,6 @@ public class ValidationSqliteUtilTest
                     "docId"));
             assertFalse(ValidationSqliteUtil.isHiddenColumnInTable(testDatabase.connection(), null, TABLE_NAME,
                     "languageCode"));
-        }
-        finally
-        {
-            testDatabase.close();
         }
     }
 
@@ -113,14 +103,9 @@ public class ValidationSqliteUtilTest
 
         public void executeUpdate(String sql) throws SQLException
         {
-            final Statement statement = connection.createStatement();
-            try
+            try (final Statement statement = connection.createStatement())
             {
                 statement.executeUpdate(sql);
-            }
-            finally
-            {
-                statement.close();
             }
         }
 
