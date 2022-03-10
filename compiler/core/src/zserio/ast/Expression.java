@@ -1358,6 +1358,21 @@ public class Expression extends AstNodeBase
             throw new ParserException(this, "Incompatible expression types (" + operand2.expressionType +
                     " != " + operand3.expressionType + ")!");
 
+        if (operand2.expressionType == ExpressionType.COMPOUND ||
+                operand2.expressionType == ExpressionType.BITMASK ||
+                operand2.expressionType == ExpressionType.ENUM)
+        {
+            if (operand2.zserioType != operand3.zserioType)
+            {
+                final String zserioType2Name = operand2.zserioType == null
+                        ? "UNKNOWN" : operand2.zserioType.getName();
+                final String zserioType3Name = operand3.zserioType == null
+                        ? "UNKNOWN" : operand3.zserioType.getName();
+                throw new ParserException(this, "Inconsistent expression types ('" +
+                        zserioType2Name + "' != '" + zserioType3Name + "')!");
+            }
+        }
+
         expressionType = operand2.expressionType;
         zserioType = operand2.zserioType;
         if (expressionType == ExpressionType.INTEGER)

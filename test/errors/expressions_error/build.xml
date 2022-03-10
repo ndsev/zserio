@@ -23,6 +23,18 @@
             ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="string_integer_concatenation_error.zs"
             ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_bitmask_types_in_argument_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_bitmask_types_in_constraint_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_compound_types_in_argument_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_compound_types_in_constraint_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_enum_types_in_argument_error.zs" ignoreErrors="true"/>
+        <testGen testName="expressions_error"
+            zsFile="ternary_incompatible_enum_types_in_optional_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="wrong_full_type_error.zs" ignoreErrors="true"/>
         <testGen testName="expressions_error" zsFile="wrong_lengthof_syntax_error.zs" ignoreErrors="true"/>
     </target>

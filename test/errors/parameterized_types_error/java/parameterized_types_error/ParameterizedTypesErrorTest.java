@@ -79,6 +79,30 @@ public class ParameterizedTypesErrorTest
     }
 
     @Test
+    public void wrongBitmaskArgumentType()
+    {
+        final String error = "wrong_bitmask_argument_type_error.zs:25:19: " +
+            "Wrong type of value expression ('Bitmask2' cannot be assigned to 'Bitmask1')!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void wrongCompoundArgumentType()
+    {
+        final String error = "wrong_compound_argument_type_error.zs:23:19: " +
+            "Wrong type of value expression ('Param2' cannot be assigned to 'Param1')!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void wrongEnumArgumentType()
+    {
+        final String error = "wrong_enum_argument_type_error.zs:25:19: " +
+            "Wrong type of value expression ('Enum2' cannot be assigned to 'Enum1')!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void wrongNumberOfArguments()
     {
         final String error = "wrong_number_of_arguments_error.zs:13:5: " +

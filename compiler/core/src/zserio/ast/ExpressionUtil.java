@@ -102,14 +102,20 @@ class ExpressionUtil
         else if (type instanceof EnumType)
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.ENUM);
+            if (!isTypeMismatch)
+                checkUserTypes(expression, type);
         }
         else if (type instanceof BitmaskType)
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.BITMASK);
+            if (!isTypeMismatch)
+                checkUserTypes(expression, type);
         }
         else if (type instanceof CompoundType)
         {
             isTypeMismatch = (expression.getExprType() != Expression.ExpressionType.COMPOUND);
+            if (!isTypeMismatch)
+                checkUserTypes(expression, type);
         }
         else if (type instanceof ExternType)
         {
@@ -122,6 +128,17 @@ class ExpressionUtil
             throw new ParserException(expression, "Wrong type of value expression (" +
                     expression.getExprType().toString().toLowerCase(Locale.ENGLISH) +
                     " cannot be assigned to " + typeName + ")!");
+        }
+    }
+
+    private static void checkUserTypes(Expression expression, ZserioType type)
+    {
+        final ZserioType zserioType = expression.getExprZserioType();
+        if (zserioType != type)
+        {
+            final String zserioTypeName = zserioType == null ? "UKNOWN" : zserioType.getName();
+            throw new ParserException(expression, "Wrong type of value expression ('" +
+                    zserioTypeName + "' cannot be assigned to '" + type.getName() + "')!");
         }
     }
 }
