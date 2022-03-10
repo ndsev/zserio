@@ -243,13 +243,17 @@ public class ByteArrayBitStreamVarIntTest
 
     private void readWriteTest(long value, int expectedNumBytes) throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeVarInt(value);
-        assertEquals(0, writer.getBitPosition() % 8);
-        assertEquals(expectedNumBytes, writer.getBytePosition());
-        byte[] buffer = writer.toByteArray();
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-        long readValue = reader.readVarInt();
-        assertEquals(value, readValue);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeVarInt(value);
+            assertEquals(0, writer.getBitPosition() % 8);
+            assertEquals(expectedNumBytes, writer.getBytePosition());
+            final byte[] buffer = writer.toByteArray();
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+            {
+                final long readValue = reader.readVarInt();
+                assertEquals(value, readValue);
+            }
+        }
     }
 }

@@ -65,22 +65,26 @@ public class ByteArrayBitStreamVarNumTest
                     // overflow, 2^32 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
                     final byte[] buffer = new byte[] { (byte) 0x8F, (byte)0xFF, (byte)0xFF, (byte)0xFF,
                             (byte)0xFF };
-                    final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                    thrown = assertThrows(IOException.class, () -> reader.readVarSize());
-                    assertThat(thrown.getMessage(), allOf(
-                            startsWith("ByteArrayBitStreamReader: Read value '"),
-                            endsWith("' is out of range for varsize type!")));
+                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+                    {
+                        thrown = assertThrows(IOException.class, () -> reader.readVarSize());
+                        assertThat(thrown.getMessage(), allOf(
+                                startsWith("ByteArrayBitStreamReader: Read value '"),
+                                endsWith("' is out of range for varsize type!")));
+                    }
                 }
 
                 {
                     // overflow, 2^36 - 1 is too much ({ 0x83, 0xFF, 0xFF, 0xFF, 0xFF } is the maximum)
                     final byte[] buffer = new byte[] { (byte) 0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF,
                             (byte)0xFF };
-                    final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                    thrown = assertThrows(IOException.class, () -> reader.readVarSize());
-                    assertThat(thrown.getMessage(), allOf(
-                            startsWith("ByteArrayBitStreamReader: Read value '"),
-                            endsWith("' is out of range for varsize type!")));
+                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+                    {
+                        thrown = assertThrows(IOException.class, () -> reader.readVarSize());
+                        assertThat(thrown.getMessage(), allOf(
+                                startsWith("ByteArrayBitStreamReader: Read value '"),
+                                endsWith("' is out of range for varsize type!")));
+                    }
                 }
             }
 
@@ -466,19 +470,15 @@ public class ByteArrayBitStreamVarNumTest
 
     private void writeReadTest(WriteReadTestable writeReadTest) throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writeReadTest.write(writer);
-        final byte[] data = writer.toByteArray();
-        writer.close();
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writeReadTest.write(writer);
+            final byte[] data = writer.toByteArray();
 
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data);
-        try
-        {
-            writeReadTest.read(reader);
-        }
-        finally
-        {
-            reader.close();
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+            {
+                writeReadTest.read(reader);
+            }
         }
     }
 

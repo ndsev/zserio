@@ -1,12 +1,13 @@
 package zserio.runtime.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.math.BigInteger;
 
 /**
  * An interface for a bit stream reader implementation.
  */
-public interface BitStreamReader extends BitStreamCloseable
+public interface BitStreamReader extends Closeable
 {
     /**
      * Reads the next numBits as signed bit value.

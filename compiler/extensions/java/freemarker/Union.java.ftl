@@ -287,9 +287,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     public void write(java.io.File file) throws java.io.IOException
     {
-        zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file);
-        write(out);
-        out.close();
+        try (final zserio.runtime.io.FileBitStreamWriter out = new zserio.runtime.io.FileBitStreamWriter(file))
+        {
+            write(out);
+        }
     }
 
     @Override

@@ -50,14 +50,15 @@ public class ImplicitArrayUInt8Test
         final File file = new File("test.bin");
         final int numElements = 99;
         writeImplicitArrayToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final ImplicitArray implicitArray = new ImplicitArray(stream);
-        stream.close();
+        try (final BitStreamReader stream = new FileBitStreamReader(file))
+        {
+            final ImplicitArray implicitArray = new ImplicitArray(stream);
 
-        final short[] array = implicitArray.getArray();
-        assertEquals(numElements, array.length);
-        for (short i = 0; i < numElements; ++i)
-            assertEquals(i, array[i]);
+            final short[] array = implicitArray.getArray();
+            assertEquals(numElements, array.length);
+            for (short i = 0; i < numElements; ++i)
+                assertEquals(i, array[i]);
+        }
     }
 
     @Test
@@ -70,12 +71,13 @@ public class ImplicitArrayUInt8Test
 
         ImplicitArray implicitArray = new ImplicitArray(array);
         final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        implicitArray.write(writer);
-        writer.close();
+        try (final BitStreamWriter writer = new FileBitStreamWriter(file))
+        {
+            implicitArray.write(writer);
 
-        assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
+            assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
+            assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
+        }
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
         final short[] readArray = readImplicitArray.getArray();
@@ -86,12 +88,11 @@ public class ImplicitArrayUInt8Test
 
     private void writeImplicitArrayToFile(File file, int numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        for (short i = 0; i < numElements; ++i)
-            writer.writeUnsignedByte(i);
-
-        writer.close();
+        try (final FileBitStreamWriter writer = new FileBitStreamWriter(file))
+        {
+            for (short i = 0; i < numElements; ++i)
+                writer.writeUnsignedByte(i);
+        }
     }
 
     private static final String BLOB_NAME = "implicit_array_uint8.blob";

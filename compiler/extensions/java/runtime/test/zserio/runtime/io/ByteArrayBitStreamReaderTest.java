@@ -17,30 +17,29 @@ public class ByteArrayBitStreamReaderTest
     public void bitBufferConstructor() throws IOException
     {
         final BitBuffer bitBuffer = new BitBuffer(new byte[]{(byte)0xAE, (byte)0xEA, (byte)0x80}, 17);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
 
-        assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
-        assertEquals(0xAEE, reader.readBits(12));
-        assertEquals(0x0A, reader.readBits(4));
-        assertEquals(0x01, reader.readBits(1));
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
+            assertEquals(0xAEE, reader.readBits(12));
+            assertEquals(0x0A, reader.readBits(4));
+            assertEquals(0x01, reader.readBits(1));
 
-        // check eof
-        assertThrows(IOException.class, () -> reader.readBits(1));
-
-        reader.close();
+            // check eof
+            assertThrows(IOException.class, () -> reader.readBits(1));
+        }
     }
 
     @Test
     public void bitBufferConstructorOverflow() throws IOException
     {
         final BitBuffer bitBuffer = new BitBuffer(new byte[]{(byte)0xFF, (byte)0xFF, (byte)0xF0}, 19);
-        final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+        try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+        {
+            assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
 
-        assertEquals(bitBuffer.getBitSize(), reader.getBufferBitSize());
-
-        assertThrows(IOException.class, () -> reader.readBits(20));
-
-        reader.close();
+            assertThrows(IOException.class, () -> reader.readBits(20));
+        }
     }
 
     @Test
@@ -58,17 +57,18 @@ public class ByteArrayBitStreamReaderTest
                 buffer[offset / 8 + 1] = (byte)(testValue << (8 - offset % 8));
 
             final BitBuffer bitBuffer = new BitBuffer(buffer, 8 + offset);
-            final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer);
+            try (final BitStreamReader reader = new ByteArrayBitStreamReader(bitBuffer))
+            {
+                // read offset bits
+                if (offset != 0) // java reader cannot read 0 bits
+                    assertEquals(0, reader.readBits(offset));
 
-            // read offset bits
-            if (offset != 0) // java reader cannot read 0 bits
-                assertEquals(0, reader.readBits(offset));
+                // read magic number
+                assertEquals(testValue, reader.readBits(8), "offset: " + offset);
 
-            // read magic number
-            assertEquals(testValue, reader.readBits(8), "offset: " + offset);
-
-            // check eof
-            assertThrows(IOException.class, () -> reader.readBits(1), "offset: " + offset + "!");
+                // check eof
+                assertThrows(IOException.class, () -> reader.readBits(1), "offset: " + offset + "!");
+            }
         }
     }
 
@@ -346,19 +346,24 @@ public class ByteArrayBitStreamReaderTest
     @Test
     public void signedBitfield2() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeShort((short)-10000);
-        writer.close();
-        final byte[] blob = writer.toByteArray();
-        assertEquals(2, blob.length);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeShort((short)-10000);
+            final byte[] blob = writer.toByteArray();
+            assertEquals(2, blob.length);
 
-        final BitStreamReader sReader = new ByteArrayBitStreamReader(blob);
-        final long s = sReader.readSignedBits(16);
-        assertEquals(-10000L, s);
+            try (final BitStreamReader sReader = new ByteArrayBitStreamReader(blob))
+            {
+                final long s = sReader.readSignedBits(16);
+                assertEquals(-10000L, s);
+            }
 
-        final BitStreamReader uReader = new ByteArrayBitStreamReader(blob);
-        final long u = uReader.readBits(16);
-        assertEquals(55536L, u);
+            try (final BitStreamReader uReader = new ByteArrayBitStreamReader(blob))
+            {
+                final long u = uReader.readBits(16);
+                assertEquals(55536L, u);
+            }
+        }
     }
 
     @Test
@@ -376,29 +381,34 @@ public class ByteArrayBitStreamReaderTest
             }
         });
 
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeSignedBits(-5, 10);
-        writer.writeSignedBits(-6, 10);
-        writer.writeSignedBits(-7, 10);
-        writer.close();
-        final byte[] blob = writer.toByteArray();
-        assertEquals(4, blob.length);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeSignedBits(-5, 10);
+            writer.writeSignedBits(-6, 10);
+            writer.writeSignedBits(-7, 10);
+            final byte[] blob = writer.toByteArray();
+            assertEquals(4, blob.length);
 
-        final BitStreamReader sReader = new ByteArrayBitStreamReader(blob);
-        long s1 = sReader.readSignedBits(10);
-        long s2 = sReader.readSignedBits(10);
-        long s3 = sReader.readSignedBits(10);
-        assertEquals(-5L, s1);
-        assertEquals(-6L, s2);
-        assertEquals(-7L, s3);
+            try (final BitStreamReader sReader = new ByteArrayBitStreamReader(blob))
+            {
+                long s1 = sReader.readSignedBits(10);
+                long s2 = sReader.readSignedBits(10);
+                long s3 = sReader.readSignedBits(10);
+                assertEquals(-5L, s1);
+                assertEquals(-6L, s2);
+                assertEquals(-7L, s3);
+            }
 
-        final BitStreamReader uReader = new ByteArrayBitStreamReader(blob);
-        long u1 = uReader.readBits(10);
-        long u2 = uReader.readBits(10);
-        long u3 = uReader.readBits(10);
-        assertEquals(1019, u1);
-        assertEquals(1018, u2);
-        assertEquals(1017, u3);
+            try (final BitStreamReader uReader = new ByteArrayBitStreamReader(blob))
+            {
+                long u1 = uReader.readBits(10);
+                long u2 = uReader.readBits(10);
+                long u3 = uReader.readBits(10);
+                assertEquals(1019, u1);
+                assertEquals(1018, u2);
+                assertEquals(1017, u3);
+            }
+        }
     }
 
     @Test
@@ -586,34 +596,42 @@ public class ByteArrayBitStreamReaderTest
         final BigInteger bigIntLongLong = BigInteger.valueOf(Long.MAX_VALUE);
         final BigInteger bigIntLongLongLong = BigInteger.valueOf(Long.MAX_VALUE).add(BigInteger.ONE);
 
-        final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter();
-        babsw.writeBigInteger(bigIntLongLong, 64);
-        babsw.writeBigInteger(bigIntLongLongLong, 64);
-        final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(babsw.toByteArray());
-
-        assertEquals(bigIntLongLong, in.readSignedBigInteger(64));
-        assertEquals(bigIntLongLongLong, in.readBigInteger(64));
+        try (final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter())
+        {
+            babsw.writeBigInteger(bigIntLongLong, 64);
+            babsw.writeBigInteger(bigIntLongLongLong, 64);
+            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(babsw.toByteArray()))
+            {
+                assertEquals(bigIntLongLong, in.readSignedBigInteger(64));
+                assertEquals(bigIntLongLongLong, in.readBigInteger(64));
+            }
+        }
     }
 
     @Test
     public void readFloat16() throws IOException
     {
-        final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter();
-        babsw.writeFloat16(1.0f);
-        final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(babsw.toByteArray());
-        assertEquals(1.0f, in.readFloat16(), 0);
-        in.close();
+        try (final ByteArrayBitStreamWriter babsw = new ByteArrayBitStreamWriter())
+        {
+            babsw.writeFloat16(1.0f);
+            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(babsw.toByteArray()))
+            {
+                assertEquals(1.0f, in.readFloat16(), 0);
+            }
+        }
     }
 
     @Test
     public void readTooMuch() throws IOException
     {
         // stream containing 1 byte of data
-        final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(new byte[] {0x33});
-        // 5 out of 8 bits are attempted to read. expected to just go fine
-        in.readBits(5);
-        // 9 out of 8 bits are attempted to read. expected to throw documented exception
-        assertThrows(IOException.class, () -> in.readBits(4));
+        try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(new byte[] {0x33}))
+        {
+            // 5 out of 8 bits are attempted to read. expected to just go fine
+            in.readBits(5);
+            // 9 out of 8 bits are attempted to read. expected to throw documented exception
+            assertThrows(IOException.class, () -> in.readBits(4));
+        }
     }
 
     @Test
@@ -625,11 +643,12 @@ public class ByteArrayBitStreamReaderTest
             (byte)0xe0
         };
 
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data);
-
-        assertEquals(0, reader.readBits(4));
-        assertEquals(0x7FFFFFFFFFFFFFFFL, reader.readBits(63));
-        assertEquals(0, reader.readBits(5));
+        try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+        {
+            assertEquals(0, reader.readBits(4));
+            assertEquals(0x7FFFFFFFFFFFFFFFL, reader.readBits(63));
+            assertEquals(0, reader.readBits(5));
+        }
     }
 
     private interface WriteReadTestable
@@ -660,22 +679,18 @@ public class ByteArrayBitStreamReaderTest
 
     private void writeReadTest(WriteReadTestable writeReadTest) throws IOException
     {
-        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        final MemoryCacheImageOutputStream writer = new MemoryCacheImageOutputStream(outputStream);
-        writeReadTest.write(writer);
-        writer.close();
-        outputStream.close();
-
-        final byte[] data = outputStream.toByteArray();
-
-        final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data);
-        try
+        try (final ByteArrayOutputStream outputStream = new ByteArrayOutputStream())
         {
-            writeReadTest.read(reader);
-        }
-        finally
-        {
-            reader.close();
+            try (final MemoryCacheImageOutputStream writer = new MemoryCacheImageOutputStream(outputStream))
+            {
+                writeReadTest.write(writer);
+            }
+
+            final byte[] data = outputStream.toByteArray();
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(data))
+            {
+                writeReadTest.read(reader);
+            }
         }
     }
 }

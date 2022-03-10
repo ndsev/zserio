@@ -51,14 +51,15 @@ public class ImplicitArrayUInt64Test
         final File file = new File("test.bin");
         final int numElements = 99;
         writeImplicitArrayToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final ImplicitArray implicitArray = new ImplicitArray(stream);
-        stream.close();
+        try (final BitStreamReader stream = new FileBitStreamReader(file))
+        {
+            final ImplicitArray implicitArray = new ImplicitArray(stream);
 
-        final BigInteger[] array = implicitArray.getArray();
-        assertEquals(numElements, array.length);
-        for (int i = 0; i < numElements; ++i)
-            assertEquals(BigInteger.valueOf(i), array[i]);
+            final BigInteger[] array = implicitArray.getArray();
+            assertEquals(numElements, array.length);
+            for (int i = 0; i < numElements; ++i)
+                assertEquals(BigInteger.valueOf(i), array[i]);
+        }
     }
 
     @Test
@@ -71,12 +72,13 @@ public class ImplicitArrayUInt64Test
 
         ImplicitArray implicitArray = new ImplicitArray(array);
         final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        implicitArray.write(writer);
-        writer.close();
+        try (final BitStreamWriter writer = new FileBitStreamWriter(file))
+        {
+            implicitArray.write(writer);
 
-        assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
+            assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
+            assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
+        }
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
         final BigInteger[] readArray = readImplicitArray.getArray();
@@ -87,12 +89,11 @@ public class ImplicitArrayUInt64Test
 
     private void writeImplicitArrayToFile(File file, int numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        for (int i = 0; i < numElements; ++i)
-            writer.writeBigInteger(BigInteger.valueOf(i), 64);
-
-        writer.close();
+        try (final FileBitStreamWriter writer = new FileBitStreamWriter(file))
+        {
+            for (int i = 0; i < numElements; ++i)
+                writer.writeBigInteger(BigInteger.valueOf(i), 64);
+        }
     }
 
     private static final String BLOB_NAME = "implicit_array_uint64.blob";

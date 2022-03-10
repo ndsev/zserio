@@ -50,14 +50,15 @@ public class ImplicitArrayFloat16Test
         final File file = new File("test.bin");
         final int numElements = 99;
         writeImplicitArrayToFile(file, numElements);
-        final BitStreamReader stream = new FileBitStreamReader(file);
-        final ImplicitArray implicitArray = new ImplicitArray(stream);
-        stream.close();
+        try (final BitStreamReader stream = new FileBitStreamReader(file))
+        {
+            final ImplicitArray implicitArray = new ImplicitArray(stream);
 
-        final float[] array = implicitArray.getArray();
-        assertEquals(numElements, array.length);
-        for (short i = 0; i < numElements; ++i)
-            assertEquals((float)i, array[i], 0.001f);
+            final float[] array = implicitArray.getArray();
+            assertEquals(numElements, array.length);
+            for (short i = 0; i < numElements; ++i)
+                assertEquals((float)i, array[i], 0.001f);
+        }
     }
 
     @Test
@@ -70,12 +71,13 @@ public class ImplicitArrayFloat16Test
 
         ImplicitArray implicitArray = new ImplicitArray(array);
         final File file = new File(BLOB_NAME);
-        final BitStreamWriter writer = new FileBitStreamWriter(file);
-        implicitArray.write(writer);
-        writer.close();
+        try (final BitStreamWriter writer = new FileBitStreamWriter(file))
+        {
+            implicitArray.write(writer);
 
-        assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
-        assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
+            assertEquals(implicitArray.bitSizeOf(), writer.getBitPosition());
+            assertEquals(implicitArray.initializeOffsets(0), writer.getBitPosition());
+        }
 
         final ImplicitArray readImplicitArray = new ImplicitArray(file);
         final float[] readArray = readImplicitArray.getArray();
@@ -86,12 +88,11 @@ public class ImplicitArrayFloat16Test
 
     private void writeImplicitArrayToFile(File file, int numElements) throws IOException
     {
-        final FileBitStreamWriter writer = new FileBitStreamWriter(file);
-
-        for (short i = 0; i < numElements; ++i)
-            writer.writeFloat16((float)i);
-
-        writer.close();
+        try (final FileBitStreamWriter writer = new FileBitStreamWriter(file))
+        {
+            for (short i = 0; i < numElements; ++i)
+                writer.writeFloat16((float)i);
+        }
     }
 
     private static final String BLOB_NAME = "implicit_array_float16.blob";

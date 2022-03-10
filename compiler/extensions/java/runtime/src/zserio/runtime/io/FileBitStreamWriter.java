@@ -34,16 +34,11 @@ public class FileBitStreamWriter extends ByteArrayBitStreamWriter
     public void close() throws IOException
     {
         final byte[] bytes = toByteArray();
-        final OutputStream os = new FileOutputStream(file);
 
-        try
+        try (final OutputStream os = new FileOutputStream(file))
         {
             os.write(bytes, 0, bytes.length);
             os.flush();
-        }
-        finally
-        {
-            os.close();
         }
     }
 

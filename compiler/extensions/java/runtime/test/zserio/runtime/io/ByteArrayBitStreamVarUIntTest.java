@@ -132,33 +132,43 @@ public class ByteArrayBitStreamVarUIntTest
     @Test
     public void writeOneAboveMaxThrows() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.ONE.shiftLeft(64)));
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.ONE.shiftLeft(64)));
+        }
     }
 
     @Test
     public void writeMinusOneThrows() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.valueOf(-1)));
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.valueOf(-1)));
+        }
     }
 
     @Test
     public void writeLongMinThrows() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.valueOf(Long.MIN_VALUE)));
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            assertThrows(IOException.class, () -> writer.writeVarUInt(BigInteger.valueOf(Long.MIN_VALUE)));
+        }
     }
 
     private void readWriteTest(BigInteger value, int expectedNumBytes) throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeVarUInt(value);
-        assertEquals(0, writer.getBitPosition() % 8);
-        assertEquals(expectedNumBytes, writer.getBytePosition());
-        byte[] buffer = writer.toByteArray();
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-        BigInteger readValue = reader.readVarUInt();
-        assertEquals(value, readValue);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeVarUInt(value);
+            assertEquals(0, writer.getBitPosition() % 8);
+            assertEquals(expectedNumBytes, writer.getBytePosition());
+            final byte[] buffer = writer.toByteArray();
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+            {
+                final BigInteger readValue = reader.readVarUInt();
+                assertEquals(value, readValue);
+            }
+        }
     }
 }

@@ -15,32 +15,30 @@ public class ByteArrayBitStreamStringTest
     @Test
     public void readStrings() throws IOException
     {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final PrintStream os = new PrintStream(baos, false, "UTF-8");
-
-        // note that all lengths fits to first byte of varuint64
-        os.write(7);
-        os.print("HAMBURG");
-        os.write(8); // Ü is C3 9C in UTF8
-        os.print("MÜNCHEN");
-        os.write(5); // Ö is C3 96 in UTF8
-        os.print("KÖLN");
-        os.close();
-        final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(baos.toByteArray());
-        try
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
-            final String hh = in.readString();
-            assertEquals("HAMBURG", hh);
+            try (final PrintStream os = new PrintStream(baos, false, "UTF-8"))
+            {
+                // note that all lengths fits to first byte of varuint64
+                os.write(7);
+                os.print("HAMBURG");
+                os.write(8); // Ü is C3 9C in UTF8
+                os.print("MÜNCHEN");
+                os.write(5); // Ö is C3 96 in UTF8
+                os.print("KÖLN");
+            }
 
-            final String m = in.readString();
-            assertEquals("MÜNCHEN", m);
+            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(baos.toByteArray()))
+            {
+                final String hh = in.readString();
+                assertEquals("HAMBURG", hh);
 
-            final String k = in.readString();
-            assertEquals("KÖLN", k);
-        }
-        finally
-        {
-            in.close();
+                final String m = in.readString();
+                assertEquals("MÜNCHEN", m);
+
+                final String k = in.readString();
+                assertEquals("KÖLN", k);
+            }
         }
     }
 
@@ -82,22 +80,20 @@ public class ByteArrayBitStreamStringTest
 
     private void writeZserioAndReadJdk(final String s1, final String s2, final String s3) throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeString(s1);
-        writer.writeString(s2);
-        writer.writeString(s3);
-        writer.close();
-
-        final Reader fileReader = new InputStreamReader(new ByteArrayInputStream(writer.toByteArray()), "UTF-8");
         final char[] charBuffer = new char[80];
         int numChars;
-        try
+
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            numChars = fileReader.read(charBuffer);
-        }
-        finally
-        {
-            fileReader.close();
+            writer.writeString(s1);
+            writer.writeString(s2);
+            writer.writeString(s3);
+
+            try (final Reader fileReader = new InputStreamReader(
+                    new ByteArrayInputStream(writer.toByteArray()), "UTF-8"))
+            {
+                numChars = fileReader.read(charBuffer);
+            }
         }
 
         final byte[] buffer = new String(charBuffer, 0, numChars).getBytes("UTF-8");
@@ -116,57 +112,49 @@ public class ByteArrayBitStreamStringTest
 
     private void writeZserioAndReadZserio(final String s1, final String s2, final String s3) throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeString(s1);
-        writer.writeString(s2);
-        writer.writeString(s3);
-        writer.close();
-
-        final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(writer.toByteArray());
-        try
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            final String hh = in.readString();
-            assertEquals(s1, hh);
+            writer.writeString(s1);
+            writer.writeString(s2);
+            writer.writeString(s3);
 
-            final String m = in.readString();
-            assertEquals(s2, m);
+            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(writer.toByteArray()))
+            {
+                final String hh = in.readString();
+                assertEquals(s1, hh);
 
-            final String k = in.readString();
-            assertEquals(s3, k);
-        }
-        finally
-        {
-            in.close();
+                final String m = in.readString();
+                assertEquals(s2, m);
+
+                final String k = in.readString();
+                assertEquals(s3, k);
+            }
         }
     }
 
     private void writeZserioAndReadZserioUnaligned(final String s1, final String s2, final String s3) throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeBits(7, 4);
-        writer.writeString(s1);
-        writer.writeString(s2);
-        writer.writeString(s3);
-        writer.close();
-
-        final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(writer.toByteArray());
-        try
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            final long b = in.readBits(4);
-            assertEquals(7, b);
+            writer.writeBits(7, 4);
+            writer.writeString(s1);
+            writer.writeString(s2);
+            writer.writeString(s3);
 
-            final String hh = in.readString();
-            assertEquals(s1, hh);
+            try (final ByteArrayBitStreamReader in = new ByteArrayBitStreamReader(writer.toByteArray()))
+            {
+                final long b = in.readBits(4);
+                assertEquals(7, b);
 
-            final String m = in.readString();
-            assertEquals(s2, m);
+                final String hh = in.readString();
+                assertEquals(s1, hh);
 
-            final String k = in.readString();
-            assertEquals(s3, k);
-        }
-        finally
-        {
-            in.close();
+                final String m = in.readString();
+                assertEquals(s2, m);
+
+                final String k = in.readString();
+                assertEquals(s3, k);
+            }
         }
     }
 }

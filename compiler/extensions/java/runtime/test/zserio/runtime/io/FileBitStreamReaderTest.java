@@ -36,30 +36,23 @@ public class FileBitStreamReaderTest
 
         final File tempFile = File.createTempFile(TempFileNamePrefix, null);
 
-        final DataOutputStream writer = new DataOutputStream(new FileOutputStream(tempFile));
-        try
+        try (
+            final FileOutputStream fileOutput = new FileOutputStream(tempFile);
+            final DataOutputStream writer = new DataOutputStream(fileOutput);
+        )
         {
             for (byte value : data)
             {
                 writer.writeByte(value);
             }
         }
-        finally
-        {
-            writer.close();
-        }
 
-        final FileBitStreamReader reader = new FileBitStreamReader(tempFile);
-        try
+        try (final FileBitStreamReader reader = new FileBitStreamReader(tempFile))
         {
             for (byte value : data)
             {
                 assertEquals(value, reader.readByte());
             }
-        }
-        finally
-        {
-            reader.close();
         }
 
         if (!tempFile.delete())

@@ -529,11 +529,12 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
         final byte[] blobData = resultSet.getBytes(${field_index + 1});
         if (blobData != null)
         {
-            final zserio.runtime.validation.ValidationBitStreamReader reader =
-                    new zserio.runtime.validation.ValidationBitStreamReader(blobData);
-            final zserio.runtime.io.ByteArrayBitStreamWriter writer =
-                    new zserio.runtime.io.ByteArrayBitStreamWriter();
-            try
+            try (
+                final zserio.runtime.validation.ValidationBitStreamReader reader =
+                        new zserio.runtime.validation.ValidationBitStreamReader(blobData);
+                final zserio.runtime.io.ByteArrayBitStreamWriter writer =
+                        new zserio.runtime.io.ByteArrayBitStreamWriter();
+            )
             {
                 <@read_blob field, true, 4/>
 
@@ -584,11 +585,6 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
                         getRowKeyValues(resultSet),
                         zserio.runtime.validation.ValidationError.Type.BLOB_PARSE_FAILED, exception));
                 return false;
-            }
-            finally
-            {
-                closeStream(writer);
-                closeStream(reader);
             }
         }
 
@@ -670,20 +666,6 @@ ${I}                (${parameter.typeInfo.typeFullName})(${parameter.expression}
 
         return rowKeyValues;
     }
-        <#if hasBlobField>
-
-    private static void closeStream(zserio.runtime.io.BitStreamCloseable stream)
-    {
-        try
-        {
-            stream.close();
-        }
-        catch (java.io.IOException exception)
-        {
-            // this cannot happen for byte array streams
-        }
-    }
-        </#if>
     </#if>
 </#if>
 

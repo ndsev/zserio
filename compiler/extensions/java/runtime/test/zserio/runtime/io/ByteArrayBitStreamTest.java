@@ -752,8 +752,7 @@ public class ByteArrayBitStreamTest
     @Test
     public void bitPosition() throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        try
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
             writer.writeBits(0xaaaa, 16);
             assertEquals(16, writer.getBitPosition());
@@ -767,41 +766,31 @@ public class ByteArrayBitStreamTest
             assertEquals(15, writer.getBitPosition());
             writer.setBitPosition(16);
             assertEquals(16, writer.getBitPosition());
-        }
-        finally
-        {
-            writer.close();
-        }
 
-        final byte[] buffer = writer.toByteArray();
+            final byte[] buffer = writer.toByteArray();
 
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-        try
-        {
-            assertEquals(0xaaf9, reader.readBits(16));
-            assertEquals(16, reader.getBitPosition());
-            reader.setBitPosition(8);
-            assertEquals(8, reader.getBitPosition());
-            assertEquals(0xf9, reader.readBits(8));
-            assertEquals(16, reader.getBitPosition());
-            reader.setBitPosition(13);
-            assertEquals(13, reader.getBitPosition());
-            assertEquals(0, reader.readBits(2));
-            assertEquals(15, reader.getBitPosition());
-            assertEquals(1, reader.readBits(1));
-            assertEquals(16, reader.getBitPosition());
-        }
-        finally
-        {
-            reader.close();
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+            {
+                assertEquals(0xaaf9, reader.readBits(16));
+                assertEquals(16, reader.getBitPosition());
+                reader.setBitPosition(8);
+                assertEquals(8, reader.getBitPosition());
+                assertEquals(0xf9, reader.readBits(8));
+                assertEquals(16, reader.getBitPosition());
+                reader.setBitPosition(13);
+                assertEquals(13, reader.getBitPosition());
+                assertEquals(0, reader.readBits(2));
+                assertEquals(15, reader.getBitPosition());
+                assertEquals(1, reader.readBits(1));
+                assertEquals(16, reader.getBitPosition());
+            }
         }
     }
 
     @Test
     public void alignTo() throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        try
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
             writer.writeBits(5, 3);
             writer.alignTo(8);
@@ -816,34 +805,25 @@ public class ByteArrayBitStreamTest
             writer.alignTo(64);
             assertEquals(64, writer.getBitPosition());
             writer.writeBits(0xCAFE, 16);
-        }
-        finally
-        {
-            writer.close();
-        }
 
-        final byte[] buffer = writer.toByteArray();
+            final byte[] buffer = writer.toByteArray();
 
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-        try
-        {
-            assertEquals(5, reader.readBits(3));
-            reader.alignTo(8);
-            assertEquals(8, reader.getBitPosition());
-            assertEquals(0, reader.readBits(1));
-            reader.alignTo(16);
-            assertEquals(16, reader.getBitPosition());
-            assertEquals(0xAA, reader.readBits(9));
-            reader.alignTo(32);
-            assertEquals(32, reader.getBitPosition());
-            assertEquals(0xACA, reader.readBits(13));
-            reader.alignTo(64);
-            assertEquals(64, reader.getBitPosition());
-            assertEquals(0xCAFE, reader.readBits(16));
-        }
-        finally
-        {
-            reader.close();
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+            {
+                assertEquals(5, reader.readBits(3));
+                reader.alignTo(8);
+                assertEquals(8, reader.getBitPosition());
+                assertEquals(0, reader.readBits(1));
+                reader.alignTo(16);
+                assertEquals(16, reader.getBitPosition());
+                assertEquals(0xAA, reader.readBits(9));
+                reader.alignTo(32);
+                assertEquals(32, reader.getBitPosition());
+                assertEquals(0xACA, reader.readBits(13));
+                reader.alignTo(64);
+                assertEquals(64, reader.getBitPosition());
+                assertEquals(0xCAFE, reader.readBits(16));
+            }
         }
     }
 
@@ -855,9 +835,8 @@ public class ByteArrayBitStreamTest
             // all possible start bit positions
             for (int bitPos = 0; bitPos <= maxStartBitPos; ++bitPos)
             {
-                try
+                try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
                 {
-                    ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
                     if (bitPos > 0)
                         writer.writeBits(0, bitPos);
                     for (int i = 0; i < values.length; ++i)
@@ -865,14 +844,14 @@ public class ByteArrayBitStreamTest
                         writeMethod.invoke(writer, values[i]);
                     }
 
-                    byte[] buffer = writer.toByteArray();
-                    writer.close();
-                    ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                    if (bitPos > 0)
-                        reader.readBits(bitPos);
-                    for (int i = 0; i < values.length; ++i)
-                        assertEquals(values[i], readMethod.invoke(reader));
-                    reader.close();
+                    final byte[] buffer = writer.toByteArray();
+                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+                    {
+                        if (bitPos > 0)
+                            reader.readBits(bitPos);
+                        for (int i = 0; i < values.length; ++i)
+                            assertEquals(values[i], readMethod.invoke(reader));
+                    }
                 }
                 catch (AssertionError e)
                 {
@@ -895,22 +874,21 @@ public class ByteArrayBitStreamTest
             // all possible start bit positions
             for (int bitPos = 0; bitPos < numBits; ++bitPos)
             {
-                try
+                try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
                 {
-                    ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
                     if (bitPos > 0)
                         writer.writeBits(0, bitPos);
                     for (int i = 0; i < values.length; ++i)
                         writeMethod.invoke(writer, values[i], numBits);
 
-                    byte[] buffer = writer.toByteArray();
-                    writer.close();
-                    ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer);
-                    if (bitPos > 0)
-                        reader.readBits(bitPos);
-                    for (int i = 0; i < values.length; ++i)
-                        assertEquals(values[i], readMethod.invoke(reader, numBits));
-                    reader.close();
+                    final byte[] buffer = writer.toByteArray();
+                    try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(buffer))
+                    {
+                        if (bitPos > 0)
+                            reader.readBits(bitPos);
+                        for (int i = 0; i < values.length; ++i)
+                            assertEquals(values[i], readMethod.invoke(reader, numBits));
+                    }
                 }
                 catch (AssertionError e)
                 {

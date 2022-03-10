@@ -126,14 +126,15 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void test4() throws Exception
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeShort((short)0x234c);
-        writer.writeBits(0xef, 8);
-        writer.alignTo(32);
-        writer.close();
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeShort((short)0x234c);
+            writer.writeBits(0xef, 8);
+            writer.alignTo(32);
 
-        final byte[] b = writer.toByteArray();
-        assertEquals(b.length * 8L, 32);
+            final byte[] b = writer.toByteArray();
+            assertEquals(b.length * 8L, 32);
+        }
     }
 
     @Test
@@ -145,23 +146,25 @@ public class ByteArrayBitStreamWriterTest
         for (int offset = 0; offset <= 63; ++offset)
         {
             final int bufferByteSize = (8 + offset + 7) / 8;
-            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter(bufferByteSize);
-            // fill the buffer with 1s to check proper masking
-            for (int i = 0; i < bufferByteSize; ++i)
-                writer.writeBits(0xFF, 8);
+            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter(bufferByteSize))
+            {
+                // fill the buffer with 1s to check proper masking
+                for (int i = 0; i < bufferByteSize; ++i)
+                    writer.writeBits(0xFF, 8);
 
-            writer.setBitPosition(0);
+                writer.setBitPosition(0);
 
-            if (offset != 0)
-                writer.writeBits(0, offset);
-            writer.writeBits(testValue, 8);
+                if (offset != 0)
+                    writer.writeBits(0, offset);
+                writer.writeBits(testValue, 8);
 
-            // check written value
-            byte[] writtenData = writer.toByteArray();
-            int writtenTestValue = ((int)writtenData[offset / 8]) << (offset % 8);
-            if (offset % 8 != 0)
-                writtenTestValue |= (0xFF & writtenData[offset / 8 + 1]) >>> (8 - (offset % 8));
-            assertEquals(testValue, writtenTestValue, "offset: " + offset);
+                // check written value
+                byte[] writtenData = writer.toByteArray();
+                int writtenTestValue = ((int)writtenData[offset / 8]) << (offset % 8);
+                if (offset % 8 != 0)
+                    writtenTestValue |= (0xFF & writtenData[offset / 8 + 1]) >>> (8 - (offset % 8));
+                assertEquals(testValue, writtenTestValue, "offset: " + offset);
+            }
         }
     }
 
@@ -424,30 +427,35 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void capacity() throws IOException
     {
-        ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        writer.writeInt(10);
-        writer.writeLong(10);
-        ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray());
-        assertEquals(10, reader.readInt());
-        assertEquals(10, reader.readLong());
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            writer.writeInt(10);
+            writer.writeLong(10);
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray()))
+            {
+                assertEquals(10, reader.readInt());
+                assertEquals(10, reader.readLong());
+            }
+        }
 
-        writer = new ByteArrayBitStreamWriter(1234);
-        writer.writeByte((byte)127);
-        writer.writeBits(7, 4);
-        writer.writeInt(123);
-        writer.writeLong(12345678910L);
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter(1234))
+        {
+            writer.writeByte((byte)127);
+            writer.writeBits(7, 4);
+            writer.writeInt(123);
+            writer.writeLong(12345678910L);
 
-        reader = new ByteArrayBitStreamReader(writer.toByteArray());
-        assertEquals((byte)127, reader.readByte());
-        assertEquals(7, reader.readBits(4));
-        assertEquals(123, reader.readInt());
-        assertEquals(12345678910L, reader.readLong());
+            try (final ByteArrayBitStreamReader reader = new ByteArrayBitStreamReader(writer.toByteArray()))
+            {
+                assertEquals((byte)127, reader.readByte());
+                assertEquals(7, reader.readBits(4));
+                assertEquals(123, reader.readInt());
+                assertEquals(12345678910L, reader.readLong());
+            }
+        }
 
         assertThrows(IllegalArgumentException.class, () -> new ByteArrayBitStreamWriter(Integer.MAX_VALUE));
         assertThrows(IllegalArgumentException.class, () -> new ByteArrayBitStreamWriter(-1));
-
-        reader.close();
-        writer.close();
     }
 
     /**
@@ -494,71 +502,76 @@ public class ByteArrayBitStreamWriterTest
     @Test
     public void growBuffer() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        for (int i = 0; i < 8191; i++)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            writer.writeByte((byte)1);
+            for (int i = 0; i < 8191; i++)
+            {
+                writer.writeByte((byte)1);
+            }
+            assertEquals(8191, writer.getBytePosition());
         }
-        assertEquals(8191, writer.getBytePosition());
-        writer.close();
     }
 
     @Test
-    public void writeBitsInvalidNumException()
+    public void writeBitsInvalidNumException() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-        final int numBits[] = { -1, 0, 65 };
-        for (int i = 0; i < numBits.length; ++i)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            final int numBitsArg = numBits[i];
-            assertThrows(IllegalArgumentException.class, () -> writer.writeBits(0x1L, numBitsArg));
-        } // for numbits
+            final int numBits[] = { -1, 0, 65 };
+            for (int i = 0; i < numBits.length; ++i)
+            {
+                final int numBitsArg = numBits[i];
+                assertThrows(IllegalArgumentException.class, () -> writer.writeBits(0x1L, numBitsArg));
+            } // for numbits
+        }
     }
 
     @Test
     public void writeBitsIllegalArgumentException() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
-
-        for (int i = 1; i < 64; i++)
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            final long minSigned   = -(1L << (i-1));
-            final long maxUnsigned =  (1L << (i  )) - 1;
+            for (int i = 1; i < 64; i++)
+            {
+                final long minSigned   = -(1L << (i-1));
+                final long maxUnsigned =  (1L << (i  )) - 1;
 
-            final long minSignedViolation   = minSigned - 1;
-            final long maxUnsignedViolation = maxUnsigned + 1;
+                final long minSignedViolation   = minSigned - 1;
+                final long maxUnsignedViolation = maxUnsigned + 1;
 
 
-            writer.writeBits(maxUnsigned, i);
-            writer.writeSignedBits(minSigned, i);
+                writer.writeBits(maxUnsigned, i);
+                writer.writeSignedBits(minSigned, i);
 
-            final int iArg = i;
-            assertThrows(IllegalArgumentException.class, () -> writer.writeSignedBits(minSignedViolation, iArg),
-                    "unexpected success writeBits: " + minSignedViolation + " # " + i);
+                final int iArg = i;
+                assertThrows(IllegalArgumentException.class, () -> writer.writeSignedBits(minSignedViolation, iArg),
+                        "unexpected success writeBits: " + minSignedViolation + " # " + i);
 
-            assertThrows(IllegalArgumentException.class, () -> writer.writeBits(maxUnsignedViolation, iArg),
-                    "unexpected success writeBits: " + maxUnsignedViolation + " # " + i);
-        } // for numBits
+                assertThrows(IllegalArgumentException.class, () -> writer.writeBits(maxUnsignedViolation, iArg),
+                        "unexpected success writeBits: " + maxUnsignedViolation + " # " + i);
+            } // for numBits
+        }
     }
 
     @Test
     public void writeIllegalArgumentException() throws IOException
     {
-        final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+        {
+            assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedByte((short)-1));
 
-        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedByte((short)-1));
+            assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedShort(-1));
 
-        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedShort(-1));
+            assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedInt(-1L));
 
-        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedInt(-1L));
+            assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedByte((short)(1 << 8)));
 
-        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedByte((short)(1 << 8)));
+            assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedShort(1 << 16));
 
-        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedShort(1 << 16));
+            assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedInt(1L << 32));
 
-        assertThrows(IllegalArgumentException.class, () -> writer.writeUnsignedInt(1L << 32));
-
-        // Note: no range check for writeBigInteger
+            // Note: no range check for writeBigInteger
+        }
     }
 
     @Test
@@ -815,28 +828,25 @@ public class ByteArrayBitStreamWriterTest
     {
         for (final TestMethod method : TestMethod.values())
         {
-            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
+            try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
+            {
 
-            if (method == TestMethod.UNALIGNED)
-            {
-                writer.writeBits(1, 1);
-            }
-            writeReadTest.write(writer);
-            writer.close();
+                if (method == TestMethod.UNALIGNED)
+                {
+                    writer.writeBits(1, 1);
+                }
+                writeReadTest.write(writer);
 
-            final byte[] data = writer.toByteArray();
-            if (method == TestMethod.UNALIGNED)
-                trimBitFromLeft(data);
-            final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
-            final MemoryCacheImageInputStream reader = new MemoryCacheImageInputStream(inputStream);
-            try
-            {
-                writeReadTest.read(reader);
-            }
-            finally
-            {
-                reader.close();
-                inputStream.close();
+                final byte[] data = writer.toByteArray();
+                if (method == TestMethod.UNALIGNED)
+                    trimBitFromLeft(data);
+                try (
+                    final ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+                    final MemoryCacheImageInputStream reader = new MemoryCacheImageInputStream(inputStream);
+                )
+                {
+                    writeReadTest.read(reader);
+                }
             }
         }
     }

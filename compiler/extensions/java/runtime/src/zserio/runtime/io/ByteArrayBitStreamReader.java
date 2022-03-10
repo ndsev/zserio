@@ -269,14 +269,15 @@ public class ByteArrayBitStreamReader extends ByteArrayBitStreamBase implements 
     @Override
     public String readString() throws IOException
     {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final int numBytes = readVarSize();
-        for (int i = 0; i < numBytes; i++)
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream())
         {
-            baos.write(readByte());
+            final int numBytes = readVarSize();
+            for (int i = 0; i < numBytes; i++)
+            {
+                baos.write(readByte());
+            }
+            return new String(baos.toByteArray(), DEFAULT_CHARSET_NAME);
         }
-        baos.close();
-        return new String(baos.toByteArray(), DEFAULT_CHARSET_NAME);
     }
 
     @Override

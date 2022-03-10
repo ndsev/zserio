@@ -39,11 +39,9 @@ public final class ZserioIO
      */
     public static <E extends Writer> byte[] write(final E obj)
     {
-        try
+        try (final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter())
         {
-            final ByteArrayBitStreamWriter writer = new ByteArrayBitStreamWriter();
             obj.write(writer);
-            writer.close();
             return writer.toByteArray();
         }
         catch (final IOException exc)

@@ -17,30 +17,20 @@ public class FileBitStreamWriterTest
 
         final File tempFile = File.createTempFile(TempFileNamePrefix, null);
 
-        final FileBitStreamWriter writer = new FileBitStreamWriter(tempFile);
-        try
+        try (final FileBitStreamWriter writer = new FileBitStreamWriter(tempFile))
         {
             for (byte value : data)
             {
                 writer.writeByte(value);
             }
         }
-        finally
-        {
-            writer.close();
-        }
 
-        final DataInputStream reader = new DataInputStream(new FileInputStream(tempFile));
-        try
+        try (final DataInputStream reader = new DataInputStream(new FileInputStream(tempFile)))
         {
             for (byte value : data)
             {
                 assertEquals(value, reader.readByte());
             }
-        }
-        finally
-        {
-            reader.close();
         }
 
         if (!tempFile.delete())

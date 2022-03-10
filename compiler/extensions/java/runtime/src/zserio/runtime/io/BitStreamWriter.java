@@ -1,12 +1,13 @@
 package zserio.runtime.io;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.math.BigInteger;
 
 /**
  * An interface for a bit stream writer implementation.
  */
-public interface BitStreamWriter extends BitStreamCloseable
+public interface BitStreamWriter extends Closeable
 {
     /**
      * Writes the given value with the given number of signed bits to the underlying storage.

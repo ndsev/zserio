@@ -16,9 +16,10 @@
         <#if constructorArgumentTypeList?has_content>
 
         </#if>
-        final zserio.runtime.io.FileBitStreamReader in = new zserio.runtime.io.FileBitStreamReader(file);
-        read(in);
-        in.close();
+        try (final zserio.runtime.io.FileBitStreamReader in = new zserio.runtime.io.FileBitStreamReader(file))
+        {
+            read(in);
+        }
     }
 
     public ${name}(zserio.runtime.io.BitStreamReader in<#if constructorArgumentTypeList?has_content>,${constructorArgumentTypeList}</#if>)
