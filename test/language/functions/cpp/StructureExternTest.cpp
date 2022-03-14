@@ -2,21 +2,28 @@
 
 #include "functions/structure_extern/TestStructure.h"
 
+#include "zserio/RebindAlloc.h"
+
 namespace functions
 {
 namespace structure_extern
 {
 
+using allocator_type = TestStructure::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
+
 class StructureExternTest : public ::testing::Test
 {
 protected:
-    static const zserio::BitBuffer FIELD;
-    static const zserio::BitBuffer CHILD_FIELD;
+    static const BitBuffer FIELD;
+    static const BitBuffer CHILD_FIELD;
 };
 
-const zserio::BitBuffer StructureExternTest::FIELD = zserio::BitBuffer{std::vector<uint8_t>{{0xAB, 0xE0}}, 11};
-const zserio::BitBuffer StructureExternTest::CHILD_FIELD =
-        zserio::BitBuffer{std::vector<uint8_t>{{0xCA, 0xFE}}, 15};
+const BitBuffer StructureExternTest::FIELD = BitBuffer{vector_type<uint8_t>{{0xAB, 0xE0}}, 11};
+const BitBuffer StructureExternTest::CHILD_FIELD =
+        BitBuffer{vector_type<uint8_t>{{0xCA, 0xFE}}, 15};
 
 TEST_F(StructureExternTest, getField)
 {
