@@ -231,14 +231,12 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
     {
         final String fileName = location.getFileName();
         final File file = new File(fileName);
-        FileInputStream inputStream = null;
-        byte fileContent[];
-        try
+        try (final FileInputStream inputStream = new FileInputStream(file))
         {
-            inputStream = new FileInputStream(file);
-            fileContent = new byte[(int)file.length()];
+            final byte fileContent[] = new byte[(int)file.length()];
             if (inputStream.read(fileContent) == -1)
                 throw new ParserException(location, "Error during reading of source file " + fileName + "!");
+            return fileContent;
         }
         catch (FileNotFoundException exception)
         {
@@ -248,20 +246,6 @@ public class ZserioParseTreeChecker extends ZserioParserBaseVisitor<Void>
         {
             throw new ParserException(location, "Source file '" + fileName + "' cannot be read again!");
         }
-        finally
-        {
-            try
-            {
-                if (inputStream != null)
-                    inputStream.close();
-            }
-            catch (IOException exception)
-            {
-                // just continue
-            }
-        }
-
-        return fileContent;
     }
 
     private final boolean allowImplicitArrays;

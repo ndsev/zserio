@@ -80,8 +80,14 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
     {
         if (!isExternal)
         {
-            detachDatabases();
-            connection.close();
+            try
+            {
+                detachDatabases();
+            }
+            finally
+            {
+                connection.close();
+            }
         }
     }
 

@@ -142,18 +142,21 @@ class ExtensionManager
 
     private static String getThrowableExceptionMessage(Throwable throwableException)
     {
-        final StringWriter stringWriter = new StringWriter();
-        final PrintWriter printWriter = new PrintWriter(stringWriter);
-        throwableException.printStackTrace(printWriter);
-        final String message = stringWriter.toString();
-        printWriter.close();
-        try
+        String message = null;
+
+        try (
+            final StringWriter stringWriter = new StringWriter();
+            final PrintWriter printWriter = new PrintWriter(stringWriter);
+        )
         {
-            stringWriter.close();
+            throwableException.printStackTrace(printWriter);
+            message = stringWriter.toString();
         }
-        catch (IOException exception)
+        catch (IOException e)
         {
-            // just ignore it
+            // ignore error in StringWriter.close
+            if (message == null)
+                message = e.getMessage();
         }
 
         return message;

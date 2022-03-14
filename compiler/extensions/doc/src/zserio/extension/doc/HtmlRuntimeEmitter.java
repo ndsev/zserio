@@ -55,21 +55,21 @@ class HtmlRuntimeEmitter
         final List<String> availableResources = new ArrayList<String>();
         final String resourceDir = JAR_RUNTIME_DIR + "/" + jarRuntimeSubdir;
         final URL jarUrl = HtmlRuntimeEmitter.class.getProtectionDomain().getCodeSource().getLocation();
-        final JarFile jarFile = new JarFile(jarUrl.toURI().getPath());
-        final Enumeration<JarEntry> jarEntries = jarFile.entries();
-        while (jarEntries.hasMoreElements())
+        try (final JarFile jarFile = new JarFile(jarUrl.toURI().getPath()))
         {
-            final JarEntry jarEntry = jarEntries.nextElement();
-
-            if (!jarEntry.isDirectory())
+            final Enumeration<JarEntry> jarEntries = jarFile.entries();
+            while (jarEntries.hasMoreElements())
             {
-                final String jarEntryName = jarEntry.getName();
-                if (jarEntryName.startsWith(resourceDir))
-                    availableResources.add(jarEntryName);
+                final JarEntry jarEntry = jarEntries.nextElement();
+
+                if (!jarEntry.isDirectory())
+                {
+                    final String jarEntryName = jarEntry.getName();
+                    if (jarEntryName.startsWith(resourceDir))
+                        availableResources.add(jarEntryName);
+                }
             }
         }
-
-        jarFile.close();
 
         return availableResources;
     }
@@ -77,9 +77,7 @@ class HtmlRuntimeEmitter
     private static void extractJarResource(String jarResource, OutputFileManager outputFileManager,
             String outputDir, String outputSubDir) throws IOException, ZserioExtensionException
     {
-        FileOutputStream writer = null;
-        final InputStream reader = HtmlRuntimeEmitter.class.getResourceAsStream("/" + jarResource);
-        try
+        try (final InputStream reader = HtmlRuntimeEmitter.class.getResourceAsStream("/" + jarResource))
         {
             if (reader != null)
             {
@@ -88,26 +86,15 @@ class HtmlRuntimeEmitter
                     throw new IOException("Directory " + outputFullDir.toString() + " cannot be created!");
 
                 final File outputFile = new File(outputFullDir, getResourceFileName(jarResource));
-                writer = new FileOutputStream(outputFile);
-                final byte[] buffer = new byte[16384];
-                int bytesRead = 0;
-                while ((bytesRead = reader.read(buffer)) != -1)
-                    writer.write(buffer, 0, bytesRead);
+                try (final FileOutputStream writer = new FileOutputStream(outputFile))
+                {
+                    final byte[] buffer = new byte[16384]; // read by 16kB chunks
+                    int bytesRead = 0;
+                    while ((bytesRead = reader.read(buffer)) != -1)
+                        writer.write(buffer, 0, bytesRead);
+                }
 
                 outputFileManager.registerOutputFile(outputFile);
-            }
-        }
-        finally
-        {
-            try
-            {
-                if (writer != null)
-                    writer.close();
-            }
-            finally
-            {
-                if (reader != null)
-                    reader.close();
             }
         }
     }

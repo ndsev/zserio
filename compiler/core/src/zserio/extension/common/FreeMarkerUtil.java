@@ -100,14 +100,13 @@ public class FreeMarkerUtil
                 amalgamatedDirectories.add(outputDirName);
         }
 
-        FileOutputStream fileOutputStream = null;
-        OutputStreamWriter outputStreamWriter = null;
-        BufferedWriter bufferedWriter = null;
-        try
+        try (
+            final FileOutputStream fileOutputStream = new FileOutputStream(outputFile, append);
+            final OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
+            final BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+        )
         {
-            fileOutputStream = new FileOutputStream(outputFile, append);
-            outputStreamWriter = new OutputStreamWriter(fileOutputStream, "UTF-8");
-            bufferedWriter = new BufferedWriter(outputStreamWriter);
+
             if (append)
                 bufferedWriter.newLine();
             processTemplate(templateName, templateDataModel, bufferedWriter);
@@ -115,21 +114,6 @@ public class FreeMarkerUtil
         catch (IOException exception)
         {
             throw new ZserioExtensionException(exception.getMessage());
-        }
-        finally
-        {
-            try
-            {
-                if (bufferedWriter != null)
-                    bufferedWriter.close();
-                else if (outputStreamWriter != null)
-                    outputStreamWriter.close();
-                else if (fileOutputStream != null)
-                    fileOutputStream.close();
-            }
-            catch( IOException e )
-            {
-            }
         }
     }
 

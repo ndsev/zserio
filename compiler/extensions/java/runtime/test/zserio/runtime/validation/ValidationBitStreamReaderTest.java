@@ -279,16 +279,18 @@ public class ValidationBitStreamReaderTest
             changedStream[1] |= 0xFF;
             changedStream[2] |= 0x80;
 
-            final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream);
-            assertTrue(Float.isNaN(reader.readFloat16()));
-            reader.setBitPosition(0);
+            try (final ValidationBitStreamReader reader = new ValidationBitStreamReader(changedStream))
+            {
+                assertTrue(Float.isNaN(reader.readFloat16()));
+                reader.setBitPosition(0);
 
-            assertEquals(1, reader.readBits(1));
-            assertTrue(Float.isNaN(reader.readFloat16()));
-            assertEquals(2, reader.readBits(2));
+                assertEquals(1, reader.readBits(1));
+                assertTrue(Float.isNaN(reader.readFloat16()));
+                assertEquals(2, reader.readBits(2));
 
-            final byte[] maskedStream = reader.toMaskedByteArray();
-            assertTrue(Arrays.equals(originalStream, maskedStream));
+                final byte[] maskedStream = reader.toMaskedByteArray();
+                assertTrue(Arrays.equals(originalStream, maskedStream));
+            }
         }
     }
 }

@@ -69,8 +69,10 @@ class ${name}:
 
     def close(self) -> None:
         if not self._is_external:
-            self._detach_databases()
-            self._connection.close()
+            try:
+                self._detach_databases()
+            finally:
+                self._connection.close()
         self._connection = None
 <#list fields as field>
 
