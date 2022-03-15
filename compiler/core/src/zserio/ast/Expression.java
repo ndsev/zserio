@@ -1364,12 +1364,8 @@ public class Expression extends AstNodeBase
         {
             if (operand2.zserioType != operand3.zserioType)
             {
-                final String zserioType2Name = operand2.zserioType == null
-                        ? "UNKNOWN" : operand2.zserioType.getName();
-                final String zserioType3Name = operand3.zserioType == null
-                        ? "UNKNOWN" : operand3.zserioType.getName();
-                throw new ParserException(this, "Inconsistent expression types ('" +
-                        zserioType2Name + "' != '" + zserioType3Name + "')!");
+                throw new ParserException(this, "Incompatible expression types ('" +
+                        operand2.zserioType.getName() + "' != '" + operand3.zserioType.getName() + "')!");
             }
         }
 

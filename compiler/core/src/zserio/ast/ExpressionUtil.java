@@ -136,9 +136,8 @@ class ExpressionUtil
         final ZserioType zserioType = expression.getExprZserioType();
         if (zserioType != type)
         {
-            final String zserioTypeName = zserioType == null ? "UKNOWN" : zserioType.getName();
             throw new ParserException(expression, "Wrong type of value expression ('" +
-                    zserioTypeName + "' cannot be assigned to '" + type.getName() + "')!");
+                    zserioType.getName() + "' cannot be assigned to '" + type.getName() + "')!");
         }
     }
 }
