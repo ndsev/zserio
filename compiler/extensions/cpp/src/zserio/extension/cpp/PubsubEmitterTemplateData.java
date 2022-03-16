@@ -63,13 +63,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
             final TypeReference messageTypeReference = message.getTypeReference();
             final CppNativeType cppNativeType = cppNativeMapper.getCppType(messageTypeReference);
             typeInfo = new NativeTypeInfoTemplateData(cppNativeType, messageTypeReference);
-            final String topicDefinitionStringValue = message.getTopicDefinitionExpr().getStringValue();
-            if (topicDefinitionStringValue == null)
-            {
-                throw new ZserioExtensionException(
-                        "Unexpected topic definition which is a non-constant string!");
-            }
-            topicDefinition = CppLiteralFormatter.formatStringLiteral(topicDefinitionStringValue);
+            topicDefinition = cppExpressionFormatter.formatGetter(message.getTopicDefinitionExpr());
             isPublished = message.isPublished();
             isSubscribed = message.isSubscribed();
         }

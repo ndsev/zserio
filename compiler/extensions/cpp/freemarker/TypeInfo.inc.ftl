@@ -257,7 +257,7 @@ ${I}    <@field_info_type_arguments_var_name field/>, // typeArguments
 ${I}    {}, // typeArguments
     </#if>
 ${I}    ::zserio::makeStringView("${field.sqlTypeData.name}"), // sqlTypeName
-${I}    <#if field.sqlConstraint??>::zserio::makeStringView(${field.sqlConstraint})<#else>{}</#if>, // sqlConstraint
+${I}    <#if field.sqlConstraint??>${field.sqlConstraint}<#else>{}</#if>, // sqlConstraint
 ${I}    <#if field.isVirtual>true<#else>false</#if>, // isVirtual
 ${I}}<#if comma>,</#if>
 </#macro>
@@ -303,7 +303,7 @@ ${I}    ::zserio::makeStringView("${message.name}"), // schemaName
 ${I}    <@type_info message.typeInfo/>, // typeInfo
 ${I}    <#if message.isPublished>true<#else>false</#if>, // isPublished
 ${I}    <#if message.isSubscribed>true<#else>false</#if>, // isSubscribed
-${I}    ::zserio::makeStringView(${message.topicDefinition}), // topic
+${I}    ${message.topicDefinition}, // topic
 ${I}}<#if comma>,</#if>
 </#macro>
 

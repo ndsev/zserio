@@ -9,6 +9,9 @@ import zserio.ast.Expression;
  */
 public abstract class DefaultExpressionFormattingPolicy implements ExpressionFormattingPolicy
 {
+    /**
+     * Default formating configuration.
+     */
     public static class DefaultFormattingConfig implements FormattingConfig
     {
         @Override

@@ -76,6 +76,7 @@ protected:
         writer.writeBits(STRUCT_BIT7_ARRAY_ELEMENT1, 7);
         writer.writeBits(STRUCT_BIT7_ARRAY_ELEMENT2, 7);
         writer.writeString(zserio::string<>(STRUCT_STRING_FIELD));
+        writer.writeString(zserio::string<>(STRUCT_DEFAULT_STRING_FIELD));
         writer.writeVarSize(STRUCT_PACKED_UINT16_ARRAY_SIZE);
         writer.writeBool(true);
         writer.writeBits(STRUCT_PACKED_UINT16_ARRAY_MAX_BIT_NUMBER, 6);
@@ -295,6 +296,7 @@ protected:
         ASSERT_EQ(STRUCT_BIT7_ARRAY_ELEMENT1, bit7Array[1]);
         ASSERT_EQ(STRUCT_BIT7_ARRAY_ELEMENT2, bit7Array[2]);
         ASSERT_EQ(STRUCT_STRING_FIELD, structField.getStringField());
+        ASSERT_EQ(STRUCT_DEFAULT_STRING_FIELD, structField.getDefaultStringField());
         const auto& packedUInt16Array = structField.getPackedUInt16Array();
         ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_SIZE, packedUInt16Array.size());
         ASSERT_EQ(STRUCT_PACKED_UINT16_ARRAY_ELEMENT0, packedUInt16Array[0]);
@@ -614,7 +616,7 @@ protected:
         InvalidMemoryResource invalidMemoryResource;
         MemoryResourceScopedSetter invalidMemoryResourceScopedSetter(invalidMemoryResource);
 
-        TestMemoryResource<> memoryResource("Memory Resource #1");
+        TestMemoryResource<1024 * 3> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
 
@@ -676,7 +678,7 @@ protected:
         InvalidMemoryResource invalidMemoryResource;
         MemoryResourceScopedSetter invalidMemoryResourceScopedSetter(invalidMemoryResource);
 
-        TestMemoryResource<> memoryResource("Memory Resource #1");
+        TestMemoryResource<1024 * 3> memoryResource("Memory Resource #1");
         {
             const allocator_type allocator(&memoryResource);
 
@@ -1007,6 +1009,7 @@ private:
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT1;
     static const uint8_t STRUCT_BIT7_ARRAY_ELEMENT2;
     static const char* STRUCT_STRING_FIELD;
+    static const char* STRUCT_DEFAULT_STRING_FIELD;
     static const uint32_t STRUCT_PACKED_UINT16_ARRAY_SIZE;
     static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT0;
     static const uint16_t STRUCT_PACKED_UINT16_ARRAY_ELEMENT1;
@@ -1060,6 +1063,8 @@ const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT0 = 0x2B;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT1 = 0x4D;
 const uint8_t ComplexAllocationTest::STRUCT_BIT7_ARRAY_ELEMENT2 = 0x6F;
 const char* ComplexAllocationTest::STRUCT_STRING_FIELD = "Structure String Field Must Be Longer Than 32 Bytes";
+const char* ComplexAllocationTest::STRUCT_DEFAULT_STRING_FIELD =
+        "Structure Default String Field Must Be Longer Than 32 Bytes";
 const uint32_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_SIZE = 3;
 const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT0 = 0xCAFC;
 const uint16_t ComplexAllocationTest::STRUCT_PACKED_UINT16_ARRAY_ELEMENT1 = 0xCAFD;
@@ -1085,8 +1090,8 @@ const uint8_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT0_DATA = 0xAE;
 const uint8_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT1_VAR_SIZE = 15;
 const uint16_t ComplexAllocationTest::EXTERNAL_ARRAY_ELEMENT1_DATA = 0xEA;
 
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3289;
-const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3256;
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITH_ARRAYS_BIT_SIZE = 3769;
+const size_t ComplexAllocationTest::MAIN_STRUCTURE_WITHOUT_ARRAYS_BIT_SIZE = 3736;
 
 TEST_F(ComplexAllocationTest, readConstructor)
 {

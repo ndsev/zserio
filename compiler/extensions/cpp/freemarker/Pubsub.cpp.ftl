@@ -73,7 +73,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 
 void ${name}::publish${message.name?cap_first}(${message.typeInfo.typeFullName}& message, void* context)
 {
-    publish(message, ::zserio::makeStringView(${message.topicDefinition}), context);
+    publish(message, ${message.topicDefinition}, context);
 }
     </#if>
     <#if message.isSubscribed>
@@ -84,7 +84,7 @@ void ${name}::publish${message.name?cap_first}(${message.typeInfo.typeFullName}&
 {
     const auto& onRawCallback = ::std::allocate_shared<${name}OnRaw<${message.typeInfo.typeFullName}>>(
             get_allocator_ref(), callback, get_allocator_ref());
-    return m_pubsub.subscribe(::zserio::makeStringView(${message.topicDefinition}), onRawCallback, context);
+    return m_pubsub.subscribe(${message.topicDefinition}, onRawCallback, context);
 }
     </#if>
 </#list>

@@ -44,7 +44,8 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         super(context, tableType);
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-        sqlConstraint = createSqlConstraint(tableType.getSqlConstraint());
+        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
+        sqlConstraint = createSqlConstraint(tableType.getSqlConstraint(), cppExpressionFormatter);
         virtualTableUsing = tableType.getVirtualTableUsingString();
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
@@ -59,7 +60,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         boolean requiresOwnerContext = false;
         for (Field tableField : tableFields)
         {
-            final FieldTemplateData field = new FieldTemplateData(cppNativeMapper,
+            final FieldTemplateData field = new FieldTemplateData(cppNativeMapper, cppExpressionFormatter,
                     cppSqlIndirectExpressionFormatter, sqlNativeTypeMapper, tableType, tableField, this);
             fields.add(field);
 
@@ -195,7 +196,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(CppNativeMapper cppNativeMapper,
+        public FieldTemplateData(CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
                 ExpressionFormatter cppSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
                 SqlTableType table, Field field, IncludeCollector includeCollector)
                         throws ZserioExtensionException
@@ -209,7 +210,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             typeInfo = new NativeTypeInfoTemplateData(nativeFieldType, fieldTypeInstantiation);
 
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
-            sqlConstraint = createSqlConstraint(fieldSqlConstraint);
+            sqlConstraint = createSqlConstraint(fieldSqlConstraint, cppExpressionFormatter);
             isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
             isPrimaryKey = table.isFieldPrimaryKey(field);
             isVirtual = field.isVirtual();
@@ -527,16 +528,13 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final boolean needsChildrenInitialization;
     }
 
-    private static String createSqlConstraint(SqlConstraint sqlConstraint) throws ZserioExtensionException
+    private static String createSqlConstraint(SqlConstraint sqlConstraint,
+            ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
     {
         if (sqlConstraint == null)
             return null;
 
-        final String stringValue = sqlConstraint.getConstraintExpr().getStringValue();
-        if (stringValue == null)
-            throw new ZserioExtensionException("Unexpected sql constraint which is a non-constant string!");
-
-        return CppLiteralFormatter.formatStringLiteral(stringValue);
+        return cppExpressionFormatter.formatGetter(sqlConstraint.getConstraintExpr());
     }
 
     private static SqlRangeCheckData createRangeCheckData(CppNativeMapper cppNativeMapper,

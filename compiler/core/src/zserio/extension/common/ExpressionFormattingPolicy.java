@@ -161,12 +161,24 @@ public interface ExpressionFormattingPolicy
         private final String afterOperand3;
     }
 
+    /**
+     * Interface to formatting configuration.
+     */
     public static interface FormattingConfig
     {
+        /**
+         * Gets whether constant string expressions should be evaluated.
+         *
+         * @return True when constant string expressions should be evaluated, false otherwise.
+         */
         public boolean evaluateStrings();
     }
 
-    // configuration
+    /**
+     * Gets formatting configuration.
+     *
+     * @return Formatting configuration.
+     */
     public FormattingConfig getConfig();
 
     // atom expressions formatting

@@ -75,7 +75,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 
     static const ::zserio::StringView sqlConstraint<#rt>
     <#if sqlConstraint??>
-        <#lt> = ::zserio::makeStringView(${sqlConstraint});
+        <#lt> = ${sqlConstraint};
     <#else>
         <#lt>;
     </#if>
