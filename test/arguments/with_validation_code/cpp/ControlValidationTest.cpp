@@ -5,6 +5,7 @@
 
 #include "zserio/FloatUtil.h"
 #include "zserio/SqliteFinalizer.h"
+#include "zserio/StringConvertUtil.h"
 
 #include "with_validation_code/control_validation/ControlValidationDb.h"
 #include "test_utils/ValidationObservers.h"
@@ -122,7 +123,7 @@ protected:
         virtual bool beginTable(zserio::StringView tableName, size_t numberOfTableRows) override
         {
             ValidationObserver::beginTable(tableName, numberOfTableRows);
-            if (m_tablesToSkip.count(zserio::stringViewToString(tableName)) != 0)
+            if (m_tablesToSkip.count(zserio::toString(tableName)) != 0)
                 return false;
             return true;
         }
@@ -142,7 +143,7 @@ protected:
             ValidationObserver::reportError(tableName, fieldName, primaryKeyValues, errorType, message);
             if (errorType >= zserio::IValidationObserver::VALUE_OUT_OF_RANGE)
             {
-                size_t& numErrors = m_numberOfErrorsInRowsPerTable[zserio::stringViewToString(tableName)];
+                size_t& numErrors = m_numberOfErrorsInRowsPerTable[zserio::toString(tableName)];
                 if (++numErrors >= m_numberOfErrorsInRowsToSkipRestOfTheTable)
                     return false;
             }

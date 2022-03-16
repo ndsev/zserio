@@ -27,13 +27,8 @@ protected:
         StringTypeExpression stringTypeExpression;
         stringTypeExpression.setHasValue(hasValue);
         if (hasValue)
-            stringTypeExpression.setValue(convertToString(VALUE));
+            stringTypeExpression.setValue(zserio::toString<allocator_type>(VALUE));
         return stringTypeExpression;
-    }
-
-    static string_type convertToString(zserio::StringView sv)
-    {
-        return zserio::stringViewToString(sv, allocator_type());
     }
 
     static const zserio::StringView VALUE;
@@ -66,31 +61,31 @@ TEST_F(StringTypeTest, returnValue)
 TEST_F(StringTypeTest, returnDefaultValue)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(true);
-    ASSERT_EQ(CHOOSER ? convertToString(STRING_CONSTANT) :
-            convertToString(FALSE) + convertToString(SPACE) + convertToString(STRING_CONSTANT),
-            convertToString(stringTypeExpression.funcReturnDefaultValue()));
+    ASSERT_EQ(CHOOSER ? zserio::toString(STRING_CONSTANT) :
+            zserio::toString(FALSE) + zserio::toString(SPACE) + zserio::toString(STRING_CONSTANT),
+            zserio::toString(stringTypeExpression.funcReturnDefaultValue()));
 }
 
 TEST_F(StringTypeTest, returnDefaultChosen)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(true);
-    ASSERT_EQ(CHOOSER ? convertToString(CHOSEN) + convertToString(SPACE) + convertToString(STRING_CONSTANT) :
-            string_type(), convertToString(stringTypeExpression.funcReturnDefaultChosen()));
+    ASSERT_EQ(CHOOSER ? zserio::toString(CHOSEN) + zserio::toString(SPACE) + zserio::toString(STRING_CONSTANT) :
+            std::string(), zserio::toString(stringTypeExpression.funcReturnDefaultChosen()));
 }
 
 TEST_F(StringTypeTest, appendix)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(false);
-    ASSERT_EQ(convertToString(APPEND) + convertToString(IX),
-            convertToString(stringTypeExpression.funcAppendix()));
+    ASSERT_EQ(zserio::toString(APPEND) + zserio::toString(IX),
+            zserio::toString(stringTypeExpression.funcAppendix()));
 }
 
 TEST_F(StringTypeTest, appendToConst)
 {
     const StringTypeExpression stringTypeExpression = createStringTypeExpression(false);
-    ASSERT_EQ(convertToString(STRING_CONSTANT) + convertToString(UNDERSCORE) +
-            convertToString(APPEND) + convertToString(IX),
-            convertToString(stringTypeExpression.funcAppendToConst()));
+    ASSERT_EQ(zserio::toString(STRING_CONSTANT) + zserio::toString(UNDERSCORE) +
+            zserio::toString(APPEND) + zserio::toString(IX),
+            zserio::toString(stringTypeExpression.funcAppendToConst()));
 }
 
 TEST_F(StringTypeTest, valueOrLiteral)
@@ -106,8 +101,8 @@ TEST_F(StringTypeTest, valueOrLiteralExpression)
     StringTypeExpression stringTypeExpression1 = createStringTypeExpression(true);
     ASSERT_EQ(VALUE, stringTypeExpression1.funcValueOrLiteralExpression());
     StringTypeExpression stringTypeExpression2 = createStringTypeExpression(false);
-    ASSERT_EQ(convertToString(LITERAL) + convertToString(SPACE) + convertToString(EXPRESSION),
-            convertToString(stringTypeExpression2.funcValueOrLiteralExpression()));
+    ASSERT_EQ(zserio::toString(LITERAL) + zserio::toString(SPACE) + zserio::toString(EXPRESSION),
+            zserio::toString(stringTypeExpression2.funcValueOrLiteralExpression()));
 }
 
 TEST_F(StringTypeTest, valueOrConst)
@@ -123,8 +118,8 @@ TEST_F(StringTypeTest, valueOrConstExpression)
     StringTypeExpression stringTypeExpression1 = createStringTypeExpression(true);
     ASSERT_EQ(VALUE, stringTypeExpression1.funcValueOrConstExpression());
     StringTypeExpression stringTypeExpression2 = createStringTypeExpression(false);
-    ASSERT_EQ(convertToString(STRING_CONSTANT) + convertToString(SPACE) + convertToString(EXPRESSION),
-            convertToString(stringTypeExpression2.funcValueOrConstExpression()));
+    ASSERT_EQ(zserio::toString(STRING_CONSTANT) + zserio::toString(SPACE) + zserio::toString(EXPRESSION),
+            zserio::toString(stringTypeExpression2.funcValueOrConstExpression()));
 }
 
 } // namespace string_type

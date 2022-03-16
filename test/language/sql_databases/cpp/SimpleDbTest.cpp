@@ -12,6 +12,7 @@
 #include "zserio/RebindAlloc.h"
 #include "zserio/SqliteFinalizer.h"
 #include "zserio/StringView.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace sql_databases
 {
@@ -146,7 +147,7 @@ TEST_F(SimpleDbTest, tableNames)
     std::transform(WorldDb::tableNames().begin(), WorldDb::tableNames().end(), std::back_inserter(tableNames),
             [](zserio::StringView name) -> string_type
             {
-                return zserio::stringViewToString(name, allocator_type());
+                return zserio::toString(name, allocator_type());
             }
     );
 

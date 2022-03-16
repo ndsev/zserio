@@ -3,6 +3,7 @@
 
 #include "zserio/String.h"
 #include "zserio/RebindAlloc.h"
+#include "zserio/StringView.h"
 #include <sstream>
 
 namespace zserio
@@ -106,10 +107,10 @@ const char* convertIntToString(char buffer[24], T value)
  * \return String representation of the given integral value.
  */
 template <typename ALLOC, typename T>
-zserio::string<zserio::RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLOC())
+string<RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLOC())
 {
     char buffer[24];
-    return zserio::string<zserio::RebindAlloc<ALLOC, char>>(convertIntToString(buffer, value), allocator);
+    return string<RebindAlloc<ALLOC, char>>(convertIntToString(buffer, value), allocator);
 }
 
 /**
@@ -134,9 +135,21 @@ inline const char* convertBoolToString(bool value)
  * \param allocator Allocator to use for the string allocation.
  */
 template <typename ALLOC>
-zserio::string<zserio::RebindAlloc<ALLOC, char>> toString(bool value, const ALLOC& allocator = ALLOC())
+string<RebindAlloc<ALLOC, char>> toString(bool value, const ALLOC& allocator = ALLOC())
 {
-    return zserio::string<zserio::RebindAlloc<ALLOC, char>>(convertBoolToString(value), allocator);
+    return string<RebindAlloc<ALLOC, char>>(convertBoolToString(value), allocator);
+}
+
+/**
+ * Converts a string view to string using the given allocator. Defined for convenience.
+ *
+ * \param value String view to convert.
+ * \param allocator Allocator to use for the string allocation.
+ */
+template <typename ALLOC>
+string<RebindAlloc<ALLOC, char>> toString(StringView value, const ALLOC& allocator = ALLOC())
+{
+    return stringViewToString(value, allocator);
 }
 
 /**
@@ -147,7 +160,7 @@ zserio::string<zserio::RebindAlloc<ALLOC, char>> toString(bool value, const ALLO
  * \return String representation of the given value.
  */
 template <typename T>
-zserio::string<std::allocator<char>> toString(T value)
+string<std::allocator<char>> toString(T value)
 {
     return toString<std::allocator<char>>(value);
 }

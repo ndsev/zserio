@@ -683,7 +683,7 @@ public:
 
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator) const override
     {
-        return stringViewToString(getString(), allocator);
+        return zserio::toString(getString(), allocator);
     }
 
     virtual void write(BitStreamWriter& writer) override

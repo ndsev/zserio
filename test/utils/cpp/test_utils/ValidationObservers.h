@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include "zserio/IValidationObserver.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace test_utils
 {
@@ -66,15 +67,15 @@ public:
         Error(zserio::StringView tableNameView, zserio::StringView fieldNameView,
                 zserio::Span<const zserio::StringView> primaryKeyValuesSpan, ErrorType error,
                 zserio::StringView messageView) :
-                tableName(zserio::stringViewToString(tableNameView)),
-                fieldName(zserio::stringViewToString(fieldNameView)),
+                tableName(zserio::toString(tableNameView)),
+                fieldName(zserio::toString(fieldNameView)),
                 errorType(error),
-                message(zserio::stringViewToString(messageView))
+                message(zserio::toString(messageView))
         {
             std::transform(primaryKeyValuesSpan.begin(), primaryKeyValuesSpan.end(),
                     std::back_inserter(this->primaryKeyValues),
                     [](zserio::StringView msg) -> std::string {
-                        return ::zserio::stringViewToString(msg);
+                        return ::zserio::toString(msg);
                     });
         }
 
@@ -97,14 +98,14 @@ public:
 
     virtual bool beginTable(zserio::StringView tableName, size_t numberOfRows) override
     {
-        m_rowCountsMap[zserio::stringViewToString(tableName)] =
+        m_rowCountsMap[zserio::toString(tableName)] =
                 std::make_tuple(numberOfRows, static_cast<size_t>(0));
         return true;
     }
 
     virtual bool endTable(zserio::StringView tableName, size_t numberOfValidatedRows) override
     {
-        std::get<1>(m_rowCountsMap[zserio::stringViewToString(tableName)]) = numberOfValidatedRows;
+        std::get<1>(m_rowCountsMap[zserio::toString(tableName)]) = numberOfValidatedRows;
         return true;
     }
 
@@ -161,7 +162,7 @@ public:
 private:
     RowCounts getTableRowCounts(zserio::StringView tableName) const
     {
-        auto search = m_rowCountsMap.find(zserio::stringViewToString(tableName));
+        auto search = m_rowCountsMap.find(zserio::toString(tableName));
 
         return (search != m_rowCountsMap.end()) ? search->second : std::make_tuple<size_t, size_t>(0, 0);
     }

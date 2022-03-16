@@ -106,4 +106,12 @@ TEST(StringConvertUtilTest, convertBool)
     EXPECT_EQ("false", toString(false));
 }
 
+TEST(StringConvertUtilTest, convertStringView)
+{
+    EXPECT_EQ(std::string(), toString(StringView()));
+    EXPECT_EQ("test", toString(StringView("test")));
+    const char buffer[4] = { 't', 'e', 's', 't' };
+    EXPECT_EQ("test", toString(StringView(buffer, sizeof(buffer))));
+}
+
 } // namespace zserio

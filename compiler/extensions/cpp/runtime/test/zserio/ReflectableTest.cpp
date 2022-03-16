@@ -816,7 +816,7 @@ protected:
     {
         ASSERT_EQ(value, reflectable->getString());
 
-        ASSERT_EQ(stringViewToString(value), reflectable->toString());
+        ASSERT_EQ(toString(value), reflectable->toString());
         ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
         ASSERT_THROW(reflectable->toUInt(), CppRuntimeException);
         ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
@@ -837,7 +837,7 @@ protected:
         checkNonCompound(reflectable);
         checkNonArray(reflectable);
 
-        checkWriteRead(stringViewToString(value), reflectable,
+        checkWriteRead(toString(value), reflectable,
                 std::bind(&BitStreamReader::readString<>, _1, std::allocator<uint8_t>()),
                 bitSizeOfVarSize(convertSizeToUInt32(value.size())) + value.size() * 8);
     }
