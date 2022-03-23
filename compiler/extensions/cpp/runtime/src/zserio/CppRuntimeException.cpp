@@ -38,6 +38,19 @@ CppRuntimeException& CppRuntimeException::append(bool value)
     return append(value ? ::zserio::makeStringView("true") : ::zserio::makeStringView("false"));
 }
 
+CppRuntimeException& CppRuntimeException::append(float value)
+{
+    char buffer[48];
+    const char* stringValue = convertFloatToString(buffer, value);
+
+    return append(stringValue);
+}
+
+CppRuntimeException& CppRuntimeException::append(double value)
+{
+    return append(static_cast<float>(value));
+}
+
 void CppRuntimeException::appendImpl(const char* message, size_t messageLen)
 {
     if (messageLen > 0)

@@ -1,5 +1,7 @@
 uninitMemberVar:*/parameterized_types/array_element_param/Block.cpp
 uninitMemberVar:*/parameterized_types/array_element_param/Block.h
+uninitMemberVar:*/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
+uninitMemberVar:*/parameterized_types/fixed_and_variable_param/ArrayHolder.h
 uninitMemberVar:*/parameterized_types/grand_child_param/ItemChoice.cpp
 uninitMemberVar:*/parameterized_types/grand_child_param/Item.cpp
 uninitMemberVar:*/parameterized_types/grand_child_param/Item.h
@@ -9,3 +11,5 @@ uninitMemberVar:*/parameterized_types/parameterized_inner_classes_clashing/Compo
 uninitMemberVar:*/parameterized_types/parameterized_inner_classes_clashing/Compound.h
 uninitMemberVar:*/parameterized_types/simple_param/Item.cpp
 uninitMemberVar:*/parameterized_types/simple_param/Item.h
+
+noExplicitConstructor:*/parameterized_types/fixed_and_variable_param/Access.h

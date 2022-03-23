@@ -56,7 +56,7 @@ variable-naming-style=any
 [DESIGN]
 
 # Maximum number of arguments for function / method.
-max-args=8
+max-args=10
 
 # Maximum number of locals for function / method body.
 max-locals=30

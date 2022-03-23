@@ -21,25 +21,25 @@ namespace detail
 
 // These decltype's wrappers are needed because of old MSVC compiler 2015.
 template <typename T, typename U = decltype(&T::initialize)>
-struct DecltypeInitialize
+struct decltype_initialize
 {
     using type = U;
 };
 
 template <typename T, typename U = decltype(&T::initializeChildren)>
-struct DecltypeInitializeChildren
+struct decltype_initialize_children
 {
     using type = U;
 };
 
 template <typename T, typename U = decltype(&T::allocate)>
-struct DecltypeAllocate
+struct decltype_allocate
 {
     using type = U;
 };
 
 template <typename T, typename U = decltype(&T::deallocate)>
-struct DecltypeDeallocate
+struct decltype_deallocate
 {
     using type = U;
 };
@@ -52,8 +52,8 @@ struct is_allocator : std::false_type
 {};
 
 template <typename T>
-struct is_allocator<T, void_t<typename DecltypeAllocate<T>::type,
-        typename DecltypeDeallocate<T>::type>> : std::true_type
+struct is_allocator<T, void_t<typename decltype_allocate<T>::type,
+        typename decltype_deallocate<T>::type>> : std::true_type
 {};
 
 template <typename ...ARGS>
@@ -69,7 +69,7 @@ struct has_initialize_children : std::false_type
 {};
 
 template <typename T>
-struct has_initialize_children<T, void_t<typename DecltypeInitializeChildren<T>::type>> : std::true_type
+struct has_initialize_children<T, void_t<typename decltype_initialize_children<T>::type>> : std::true_type
 {};
 
 template <typename T>
@@ -93,7 +93,7 @@ struct has_initialize : std::false_type
 {};
 
 template <typename T>
-struct has_initialize<T, void_t<typename DecltypeInitialize<T>::type>> : std::true_type
+struct has_initialize<T, void_t<typename decltype_initialize<T>::type>> : std::true_type
 {};
 
 template <typename T, typename ...ARGS>

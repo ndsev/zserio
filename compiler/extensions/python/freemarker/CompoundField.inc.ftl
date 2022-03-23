@@ -225,8 +225,8 @@ ${I}self.<@field_member_name field/> = ${field.typeInfo.typeFullName}.from_reade
 </#macro>
 
 <#macro compound_field_constructor_parameters compound>
-    <#list compound.instantiatedParameters as parameter>
-        ${parameter.expression}<#if parameter_has_next>, </#if><#t>
+    <#list compound.instantiatedParameters as instantiatedParameter>
+        ${instantiatedParameter.expression}<#if instantiatedParameter_has_next>, </#if><#t>
     </#list>
 </#macro>
 
@@ -258,6 +258,7 @@ ${I}zserio_writer.alignto(8)
     </#if>
     <@compound_check_constraint_field field, compoundName, indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
+    <@compound_check_parameterized_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     <#if packed && field.isPackable && !field.array??>
         <#if field.typeInfo.isBuiltin>
@@ -283,8 +284,7 @@ ${I}self.<@field_member_name field/>.write(zserio_writer<#if field.compound??>, 
 ${I}# check offset
 ${I}if ${bitPositionName} != zserio.bitposition.bytes_to_bits(${field.offset.getter}):
 ${I}    raise zserio.PythonRuntimeException("Wrong offset for field ${compoundName}.${field.name}: "
-${I}                                        f"{${bitPositionName}} != "
-${I}                                        f"{zserio.bitposition.bytes_to_bits(${field.offset.getter})}!")
+${I}                                        f"{${bitPositionName}} != {zserio.bitposition.bytes_to_bits(${field.offset.getter})}!")
     </#if>
 </#macro>
 
@@ -304,6 +304,20 @@ ${I}# check array length
 ${I}if len(self.<@field_member_name field/>) != ${field.array.length}:
 ${I}    raise zserio.PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: "
 ${I}                                        f"{len(self.<@field_member_name field/>)} != {${field.array.length}}!")
+    </#if>
+</#macro>
+
+<#macro compound_check_parameterized_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.compound?? && field.compound.instantiatedParameters?has_content>
+${I}# check parameters
+        <#list field.compound.instantiatedParameters as instantiatedParameter>
+            <#local parameter=field.compound.parameters.list[instantiatedParameter?index]/>
+            <#local compareOperator><#if parameter.typeInfo.isBuiltin>!=<#else>is not</#if><#t></#local>
+${I}if self.<@field_member_name field/>.${parameter.propertyName} ${compareOperator} (${instantiatedParameter.expression}):
+${I}    raise zserio.PythonRuntimeException("Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: "
+${I}                                        f"{self.<@field_member_name field/>.${parameter.propertyName}} != {${instantiatedParameter.expression}}!")
+        </#list>
     </#if>
 </#macro>
 
@@ -524,6 +538,7 @@ ${I}self.<@field_member_name field/>.init_packing_context(<@compound_field_packi
         </#if>
         <@compound_check_constraint_field field, compoundName, indent/>
         <@compound_check_array_length_field field, compoundName, indent/>
+        <@compound_check_parameterized_field field, compoundName, indent/>
         <@compound_check_range_field field, compoundName, indent/>
     </#local>
     <#if checkCode == "">

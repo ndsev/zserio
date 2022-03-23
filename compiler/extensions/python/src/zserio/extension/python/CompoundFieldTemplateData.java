@@ -29,13 +29,11 @@ public final class CompoundFieldTemplateData
     public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType, Field field,
             ImportCollector importCollector) throws ZserioExtensionException
     {
-        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
-        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
-
         name = field.getName();
         snakeCaseName = PythonSymbolConverter.toLowerSnakeCase(name);
 
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
+        final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final PythonNativeType nativeType = pythonNativeMapper.getPythonType(fieldTypeInstantiation);
         importCollector.importType(nativeType);
 
@@ -46,6 +44,7 @@ public final class CompoundFieldTemplateData
 
         final ExpressionFormatter pythonExpressionFormatter =
                 context.getPythonExpressionFormatter(importCollector);
+        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         rangeCheck = createRangeCheck(fieldTypeInstantiation, withRangeCheckCode, pythonExpressionFormatter);
         final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
         optional = createOptional(field, fieldBaseType, parentType, pythonExpressionFormatter);
@@ -58,11 +57,10 @@ public final class CompoundFieldTemplateData
 
         bitSize = new BitSize(fieldTypeInstantiation, pythonExpressionFormatter);
         offset = createOffset(field, pythonExpressionFormatter);
-        array = createArray(fieldTypeInstantiation, parentType, pythonNativeMapper, pythonExpressionFormatter,
-                importCollector);
-        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(
-                fieldTypeInstantiation, pythonExpressionFormatter);
-        compound = createCompound(pythonExpressionFormatter, fieldTypeInstantiation);
+        array = createArray(context, fieldTypeInstantiation, parentType, importCollector);
+        runtimeFunction = PythonRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
+                pythonExpressionFormatter);
+        compound = createCompound(context, fieldTypeInstantiation, importCollector);
     }
 
     public String getName()
@@ -308,24 +306,26 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(ArrayInstantiation arrayInstantiation, ZserioType parentType,
-                PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
+        public Array(TemplateDataContext context, ArrayInstantiation arrayInstantiation, ZserioType parentType,
                 ImportCollector importCollector) throws ZserioExtensionException
         {
             isImplicit = arrayInstantiation.isImplicit();
             isPacked = arrayInstantiation.isPacked();
+            final ExpressionFormatter pythonExpressionFormatter =
+                    context.getPythonExpressionFormatter(importCollector);
             length = createLength(arrayInstantiation, pythonExpressionFormatter);
 
+            final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
-            final ZserioType elementBaseType = elementTypeInstantiation.getBaseType();
             final PythonNativeType elementNativeType =
                     pythonNativeMapper.getPythonType(elementTypeInstantiation);
             importCollector.importType(elementNativeType);
 
             elementTypeInfo = new NativeTypeInfoTemplateData(elementNativeType, elementTypeInstantiation);
+            final ZserioType elementBaseType = elementTypeInstantiation.getBaseType();
             elementIsRecursive = (elementBaseType == parentType);
             elementBitSize = new BitSize(elementTypeInstantiation, pythonExpressionFormatter);
-            elementCompound = createCompound(pythonExpressionFormatter, elementTypeInstantiation);
+            elementCompound = createCompound(context, elementTypeInstantiation, importCollector);
         }
 
         public boolean getIsImplicit()
@@ -384,23 +384,35 @@ public final class CompoundFieldTemplateData
 
     public static class Compound
     {
-        public Compound()
+        public Compound(TemplateDataContext context,
+                ParameterizedTypeInstantiation parameterizedTypeInstantiation, ImportCollector importCollector)
+                        throws ZserioExtensionException
         {
-            instantiatedParameters = new ArrayList<InstantiatedParameterData>(0);
+            this(context, parameterizedTypeInstantiation.getBaseType(), importCollector);
+
+            final ExpressionFormatter pythonExpressionFormatter =
+                    context.getPythonExpressionFormatter(importCollector);
+            for (InstantiatedParameter param : parameterizedTypeInstantiation.getInstantiatedParameters())
+            {
+                instantiatedParameters.add(new InstantiatedParameterData(pythonExpressionFormatter, param));
+            }
         }
 
-        public Compound(ExpressionFormatter pythonExpressionFormatter,
-                ParameterizedTypeInstantiation parameterizedInstantiation) throws ZserioExtensionException
+        public Compound(TemplateDataContext context, CompoundType compoundType, ImportCollector importCollector)
+                throws ZserioExtensionException
         {
-            final List<InstantiatedParameter> parameters = parameterizedInstantiation.getInstantiatedParameters();
-            instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
-            for (InstantiatedParameter parameter : parameters)
-                instantiatedParameters.add(new InstantiatedParameterData(pythonExpressionFormatter, parameter));
+            instantiatedParameters = new ArrayList<InstantiatedParameterData>();
+            parameters = new CompoundParameterTemplateData(context, compoundType, importCollector);
         }
 
         public Iterable<InstantiatedParameterData> getInstantiatedParameters()
         {
             return instantiatedParameters;
+        }
+
+        public CompoundParameterTemplateData getParameters()
+        {
+            return parameters;
         }
 
         public static class InstantiatedParameterData
@@ -428,6 +440,7 @@ public final class CompoundFieldTemplateData
         }
 
         private final List<InstantiatedParameterData> instantiatedParameters;
+        private final CompoundParameterTemplateData parameters;
     }
 
     private static RangeCheck createRangeCheck(TypeInstantiation typeInstantiation, boolean withRangeCheckCode,
@@ -515,24 +528,22 @@ public final class CompoundFieldTemplateData
         return new Offset(offsetExpression, pythonExpressionFormatter);
     }
 
-    private static Array createArray(TypeInstantiation typeInstantiation, ZserioType parentType,
-            PythonNativeMapper pythonNativeMapper, ExpressionFormatter pythonExpressionFormatter,
-            ImportCollector importCollector) throws ZserioExtensionException
+    private static Array createArray(TemplateDataContext context, TypeInstantiation typeInstantiation,
+            ZserioType parentType, ImportCollector importCollector) throws ZserioExtensionException
     {
         if (!(typeInstantiation instanceof ArrayInstantiation))
             return null;
 
-        return new Array((ArrayInstantiation)typeInstantiation, parentType, pythonNativeMapper,
-                pythonExpressionFormatter, importCollector);
+        return new Array(context, (ArrayInstantiation)typeInstantiation, parentType, importCollector);
     }
 
-    private static Compound createCompound(ExpressionFormatter pythonExpressionFormatter,
-            TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    private static Compound createCompound(TemplateDataContext context, TypeInstantiation typeInstantiation,
+            ImportCollector importCollector) throws ZserioExtensionException
     {
         if (typeInstantiation instanceof ParameterizedTypeInstantiation)
-            return new Compound(pythonExpressionFormatter, (ParameterizedTypeInstantiation)typeInstantiation);
+            return new Compound(context, (ParameterizedTypeInstantiation)typeInstantiation, importCollector);
         else if (typeInstantiation.getBaseType() instanceof CompoundType)
-            return new Compound();
+            return new Compound(context, (CompoundType)typeInstantiation.getBaseType(), importCollector);
         else
             return null;
     }

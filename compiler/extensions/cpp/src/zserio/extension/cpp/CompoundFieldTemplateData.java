@@ -2,7 +2,6 @@ package zserio.extension.cpp;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.DynamicBitFieldInstantiation;
@@ -47,7 +46,7 @@ public class CompoundFieldTemplateData
         optional = (field.isOptional()) ?
                 createOptional(field, fieldBaseType, parentType, cppExpressionFormatter) : null;
         compound = createCompound(cppNativeMapper, cppExpressionFormatter, cppOwnerIndirectExpressionFormatter,
-                parentType, fieldTypeInstantiation);
+                fieldTypeInstantiation, includeCollector);
 
         name = field.getName();
 
@@ -225,32 +224,35 @@ public class CompoundFieldTemplateData
     public static class Compound
     {
         public Compound(CppNativeMapper cppNativeMapper, ExpressionFormatter cppExpressionFormatter,
-                ExpressionFormatter cppIndirectExpressionFormatter, CompoundType owner,
-                ParameterizedTypeInstantiation parameterizedTypeInstantiation) throws ZserioExtensionException
+                ExpressionFormatter cppIndirectExpressionFormatter,
+                ParameterizedTypeInstantiation parameterizedTypeInstantiation,
+                IncludeCollector includeCollector) throws ZserioExtensionException
         {
-            final CompoundType baseType = parameterizedTypeInstantiation.getBaseType();
-            final List<InstantiatedParameter> parameters =
-                    parameterizedTypeInstantiation.getInstantiatedParameters();
-            instantiatedParameters = new ArrayList<InstantiatedParameterData>(parameters.size());
-            for (InstantiatedParameter parameter : parameters)
+            this(cppNativeMapper, parameterizedTypeInstantiation.getBaseType(), includeCollector);
+
+            for (InstantiatedParameter param : parameterizedTypeInstantiation.getInstantiatedParameters())
             {
                 instantiatedParameters.add(new InstantiatedParameterData(cppNativeMapper,
-                        cppExpressionFormatter, cppIndirectExpressionFormatter, parameter));
+                        cppExpressionFormatter, cppIndirectExpressionFormatter, param));
             }
-
-            needsChildrenInitialization = baseType.needsChildrenInitialization();
         }
 
-        public Compound(TypeInstantiation typeInstantiation)
+        public Compound(CppNativeMapper cppNativeMapper, CompoundType compoundType,
+                IncludeCollector includeCollector) throws ZserioExtensionException
         {
             instantiatedParameters = new ArrayList<InstantiatedParameterData>();
-            final CompoundType baseType = (CompoundType)typeInstantiation.getBaseType();
-            needsChildrenInitialization = baseType.needsChildrenInitialization();
+            parameters = new CompoundParameterTemplateData(cppNativeMapper, compoundType, includeCollector);
+            needsChildrenInitialization = compoundType.needsChildrenInitialization();
         }
 
         public Iterable<InstantiatedParameterData> getInstantiatedParameters()
         {
             return instantiatedParameters;
+        }
+
+        public CompoundParameterTemplateData getParameters()
+        {
+            return parameters;
         }
 
         public boolean getNeedsChildrenInitialization()
@@ -295,6 +297,7 @@ public class CompoundFieldTemplateData
         }
 
         private final ArrayList<InstantiatedParameterData> instantiatedParameters;
+        private final CompoundParameterTemplateData parameters;
         private final boolean needsChildrenInitialization;
     }
 
@@ -446,7 +449,7 @@ public class CompoundFieldTemplateData
                                     cppObjectIndirectExpressionFormatter).getValue()
                             : null;
             elementCompound = createCompound(cppNativeMapper, cppExpressionFormatter,
-                    cppOnwerIndirectExpressionFormatter, parentType, elementTypeInstantiation);
+                    cppOnwerIndirectExpressionFormatter, elementTypeInstantiation, includeCollector);
             elementIntegerRange = createIntegerRange(cppNativeMapper, elementTypeInstantiation,
                     cppExpressionFormatter);
             elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
@@ -656,16 +659,18 @@ public class CompoundFieldTemplateData
 
     private static Compound createCompound(CppNativeMapper cppNativeMapper,
             ExpressionFormatter cppExpressionFormatter, ExpressionFormatter cppIndirectExpressionFormatter,
-            CompoundType owner, TypeInstantiation typeInstantiation) throws ZserioExtensionException
+            TypeInstantiation typeInstantiation, IncludeCollector includeCollector)
+                    throws ZserioExtensionException
     {
         if (typeInstantiation instanceof ParameterizedTypeInstantiation)
         {
             return new Compound(cppNativeMapper, cppExpressionFormatter, cppIndirectExpressionFormatter,
-                    owner, (ParameterizedTypeInstantiation)typeInstantiation);
+                    (ParameterizedTypeInstantiation)typeInstantiation, includeCollector);
         }
         if (typeInstantiation.getBaseType() instanceof CompoundType)
         {
-            return new Compound(typeInstantiation);
+            return new Compound(cppNativeMapper, (CompoundType)typeInstantiation.getBaseType(),
+                    includeCollector);
         }
         else
         {

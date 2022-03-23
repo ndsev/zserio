@@ -5,6 +5,7 @@
 #include "zserio/RebindAlloc.h"
 #include "zserio/StringView.h"
 #include <sstream>
+#include <limits>
 
 namespace zserio
 {
@@ -99,18 +100,30 @@ const char* convertIntToString(char buffer[24], T value)
 }
 
 /**
- * Converts an integral value to string using the given allocator. Defined for convenience.
+ * Converts float to string and writes the result to the given buffer.
+ * Note that only five three digits after point are used. that the buffer is filled from behind.
  *
- * \param value     Value to convert.
- * \param allocator Allocator to use for the string allocation.
+ * \param buffer Buffer to fill with the string representation of the given value.
+ * \param value  Value to convert.
  *
- * \return String representation of the given integral value.
+ * \return Pointer to the beginning of the resulting string.
  */
-template <typename ALLOC, typename T>
-string<RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLOC())
+inline const char* convertFloatToString(char buffer[48], float value)
 {
-    char buffer[24];
-    return string<RebindAlloc<ALLOC, char>>(convertIntToString(buffer, value), allocator);
+    if (value >= static_cast<float>(std::numeric_limits<int64_t>::max()))
+        return "+Inf";
+    if (value <= static_cast<float>(std::numeric_limits<int64_t>::min()))
+        return "-Inf";
+
+    const int64_t integerPart = static_cast<int64_t>(value);
+    const int64_t floatingPart = static_cast<int64_t>(
+            (value - static_cast<float>(integerPart)) * 1E3f); // 3 digits
+    const int64_t floatingPartAbs = (floatingPart < 0) ? 0 - floatingPart : floatingPart;
+    char* floatingPartString = const_cast<char*>(convertIntToString(buffer + 24, floatingPartAbs));
+    const char* integerPartString = convertIntToString(floatingPartString - 24, integerPart);
+    *(floatingPartString - 1) = '.'; // replace terminated zero in the first substring (integerPartString)
+
+    return integerPartString;
 }
 
 /**
@@ -123,6 +136,21 @@ string<RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLO
 inline const char* convertBoolToString(bool value)
 {
     return value ? "true" : "false";
+}
+
+/**
+ * Converts an integral value to string using the given allocator. Defined for convenience.
+ *
+ * \param value     Value to convert.
+ * \param allocator Allocator to use for the string allocation.
+ *
+ * \return String representation of the given integral value.
+ */
+template <typename ALLOC, typename T>
+string<RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLOC())
+{
+    char buffer[24];
+    return string<RebindAlloc<ALLOC, char>>(convertIntToString(buffer, value), allocator);
 }
 
 /**

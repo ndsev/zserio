@@ -69,11 +69,100 @@ TEST(CppRuntimeExceptionTest, appendBool)
     ASSERT_EQ(testMessage, exception.what());
 }
 
+TEST(CppRuntimeExceptionTest, appendFloat)
+{
+    const float value = 123.456f;
+    CppRuntimeException exception = CppRuntimeException("") + value;
+    ASSERT_EQ(std::string("123.456"), exception.what());
+}
+
+TEST(CppRuntimeExceptionTest, appendDouble)
+{
+    const double value = 123.456;
+    CppRuntimeException exception = CppRuntimeException("") + value;
+    ASSERT_EQ(std::string("123.456"), exception.what());
+}
+
 TEST(CppRuntimeExceptionTest, appendInt)
 {
-    int value = 42;
+    const int value = 42;
     CppRuntimeException exception = CppRuntimeException("") + value;
     ASSERT_EQ(std::to_string(value), exception.what());
+}
+
+enum class Enumeration : uint8_t
+{
+    BLACK,
+    RED,
+    WHITE
+};
+
+template <>
+struct EnumTraits<Enumeration>
+{
+    static constexpr ::std::array<const char*, 3> names =
+    {{
+        "BLACK",
+        "RED",
+        "WHITE"
+    }};
+};
+
+constexpr ::std::array<const char*, 3> EnumTraits<Enumeration>::names;
+
+template <>
+size_t enumToOrdinal(Enumeration value)
+{
+    switch (value)
+    {
+    case Enumeration::BLACK:
+        return 0;
+    case Enumeration::RED:
+        return 1;
+    case Enumeration::WHITE:
+        return 2;
+    default:
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration Enumeration: ") +
+                static_cast<typename ::std::underlying_type<Enumeration>::type>(value) + "!";
+    }
+}
+
+TEST(CppRuntimeExceptionTest, appendEnum)
+{
+    const Enumeration value = Enumeration::RED;
+    CppRuntimeException exception = CppRuntimeException("") + value;
+    ASSERT_EQ(std::string("RED"), exception.what());
+}
+
+class Bitmask
+{
+public:
+    typedef uint8_t underlying_type;
+
+    enum class Values : underlying_type
+    {
+        READ = UINT8_C(1),
+        WRITE = UINT8_C(2)
+    };
+
+    constexpr explicit Bitmask(Values value) noexcept :
+        m_value(static_cast<underlying_type>(value))
+    {}
+
+    constexpr underlying_type getValue() const
+    {
+        return m_value;
+    }
+
+private:
+    underlying_type m_value;
+};
+
+TEST(CppRuntimeExceptionTest, appendBitmask)
+{
+    const Bitmask value(Bitmask::Values::WRITE);
+    CppRuntimeException exception = CppRuntimeException("") + value;
+    ASSERT_EQ(std::string("2"), exception.what());
 }
 
 } // namespace zserio

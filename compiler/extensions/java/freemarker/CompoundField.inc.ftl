@@ -121,9 +121,11 @@ ${I}}
 </#macro>
 
 <#macro compound_field_compound_ctor_params compound>
-    <#list compound.instantiatedParameters as parameter>
-        <#if parameter.typeInfo.isSimple>(${parameter.typeInfo.typeFullName})(</#if>${parameter.expression}<#if parameter.typeInfo.isSimple>)</#if><#t>
-        <#if parameter_has_next>, </#if><#t>
+    <#list compound.instantiatedParameters as instantiatedParameter>
+        <#if instantiatedParameter.typeInfo.isSimple>(${instantiatedParameter.typeInfo.typeFullName})(</#if><#t>
+            ${instantiatedParameter.expression}<#t>
+        <#if instantiatedParameter.typeInfo.isSimple>)</#if><#t>
+        <#if instantiatedParameter_has_next>, </#if><#t>
     </#list>
 </#macro>
 
@@ -248,6 +250,7 @@ ${I}<@compound_get_field field/>.write<@array_field_packed_suffix field, packed/
 ${I}out.write${field.runtimeFunction.suffix}(<@compound_get_field field/><#if field.runtimeFunction.arg??>, ${field.runtimeFunction.arg}</#if>);
     <#else>
         <#-- enum or compound -->
+        <@compound_check_parameterized_field field, compoundName, indent/>
 ${I}<@compound_get_field field/>.write(out, false);
     </#if>
 </#macro>
@@ -257,6 +260,44 @@ ${I}<@compound_get_field field/>.write(out, false);
     <#if field.constraint??>
 ${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${field.constraint}))
 ${I}    throw new zserio.runtime.ConstraintError("Constraint violated at ${compoundName}.${field.name}!");
+    </#if>
+</#macro>
+
+<#macro compound_check_parameterized_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.compound?? && field.compound.instantiatedParameters?has_content>
+${I}// check parameters
+        <#list field.compound.instantiatedParameters as instantiatedParameter>
+            <#local parameter=field.compound.parameters.list[instantiatedParameter?index]/>
+            <#if instantiatedParameter.typeInfo.isSimple>
+                <#local instantiatedExpression>
+                    (${instantiatedParameter.typeInfo.typeFullName})(${instantiatedParameter.expression})<#t>
+                </#local>
+                <#if instantiatedParameter.typeInfo.isFloat>
+                    <#-- float type: compare by floatToIntBits() to get rid of SpotBugs -->
+                    <#local parameterValue>java.lang.Float.floatToIntBits(<@compound_get_field field/>.${parameter.getterName}())</#local>
+                    <#local instantiatedValue>java.lang.Float.floatToIntBits(${instantiatedExpression})</#local>
+                <#elseif instantiatedParameter.typeInfo.isDouble>
+                    <#-- double type: compare by doubleToLongBits() to get rid of SpotBugs -->
+                    <#local parameterValue>java.lang.Double.doubleToLongBits(<@compound_get_field field/>.${parameter.getterName}())</#local>
+                    <#local instantiatedValue>java.lang.Double.doubleToLongBits(${instantiatedExpression})</#local>
+                <#else>
+                    <#-- other simple types -->
+                    <#local parameterValue><@compound_get_field field/>.${parameter.getterName}()</#local>
+                    <#local instantiatedValue>${instantiatedExpression}</#local>
+                </#if>
+${I}if (${parameterValue} != ${instantiatedValue})
+${I}{
+${I}    throw new zserio.runtime.ZserioError("Write: Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: " +
+${I}            ${parameterValue} + " != " + ${instantiatedValue} + "!");
+${I}}
+            <#else>
+${I}if (<@compound_get_field field/>.${parameter.getterName}() != (${instantiatedParameter.expression}))
+${I}{
+${I}    throw new zserio.runtime.ZserioError("Write: Inconsistent parameter ${parameter.name} for field ${compoundName}.${field.name}!");
+${I}}
+            </#if>
+        </#list>
     </#if>
 </#macro>
 

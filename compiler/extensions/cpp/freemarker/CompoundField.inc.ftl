@@ -150,11 +150,15 @@ ${I}return <@compound_read_field_retval field, readCommand, false/>;
 </#macro>
 
 <#macro compound_field_compound_ctor_params compound useIndirectExpression>
-    <#list compound.instantiatedParameters as parameter>
-        <#if parameter.typeInfo.isSimple>static_cast<${parameter.typeInfo.typeFullName}>(</#if><#t>
-                <#if useIndirectExpression>${parameter.indirectExpression}<#else>${parameter.expression}</#if><#t>
-        <#if parameter.typeInfo.isSimple>)</#if><#t>
-        <#if parameter?has_next>, </#if><#t>
+    <#list compound.instantiatedParameters as instantiatedParameter>
+        <#if instantiatedParameter.typeInfo.isSimple>static_cast<${instantiatedParameter.typeInfo.typeFullName}>(</#if><#t>
+            <#if useIndirectExpression>
+                ${instantiatedParameter.indirectExpression}<#t>
+             <#else>
+                ${instantiatedParameter.expression}<#t>
+             </#if>
+        <#if instantiatedParameter.typeInfo.isSimple>)</#if><#t>
+        <#if instantiatedParameter?has_next>, </#if><#t>
     </#list>
 </#macro>
 
@@ -239,6 +243,7 @@ ${I}out.alignTo(${field.alignmentValue});
     </#if>
     <@compound_check_constraint_field field, compoundName, "Write", indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
+    <@compound_check_parameterized_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
 </#macro>
 
@@ -263,6 +268,31 @@ ${I}    throw ::zserio::CppRuntimeException("Write: Wrong array length for field
 ${I}            <@compound_get_field field/>.getRawArray().size() + " != " +
 ${I}            static_cast<size_t>(${field.array.length}) + "!";
 ${I}}
+    </#if>
+</#macro>
+
+<#macro compound_check_parameterized_field field compoundName indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if field.compound?? && field.compound.instantiatedParameters?has_content>
+${I}// check parameters
+        <#list field.compound.instantiatedParameters as instantiatedParameter>
+            <#local parameter=field.compound.parameters.list[instantiatedParameter?index]/>
+            <#if instantiatedParameter.typeInfo.isSimple>
+                <#local instantiatedExpression>
+                    static_cast<${instantiatedParameter.typeInfo.typeFullName}>(${instantiatedParameter.expression})<#t>
+                </#local>
+${I}if (<@compound_get_field field/>.${parameter.getterName}() != ${instantiatedExpression})
+${I}{
+${I}    throw ::zserio::CppRuntimeException("Write: Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: ") +
+${I}            <@compound_get_field field/>.${parameter.getterName}() + " != " + ${instantiatedExpression} + "!";
+${I}}
+            <#else>
+${I}if (&(<@compound_get_field field/>.${parameter.getterName}()) != &(${instantiatedParameter.expression}))
+${I}{
+${I}    throw ::zserio::CppRuntimeException("Write: Inconsistent parameter ${parameter.name} for field ${compoundName}.${field.name}!");
+${I}}
+            </#if>
+        </#list>
     </#if>
 </#macro>
 
@@ -1067,6 +1097,7 @@ ${I}        <@array_traits field/>, <@compound_get_field field/>);
     <@compound_check_offset_field field, compoundName, "Write", "out", indent/>
         </#if>
     <@compound_check_constraint_field field, compoundName, "Write", indent/>
+    <@compound_check_parameterized_field field, compoundName, indent/>
     <@compound_check_array_length_field field, compoundName, indent/>
     <@compound_check_range_field field, compoundName, indent/>
     </#local>

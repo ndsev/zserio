@@ -7,6 +7,17 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/Access.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/Access.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/ArrayHolder.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/Color.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/Color.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/FixedAndVariableParam.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/FixedAndVariableParam.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/LimitHolder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/LimitHolder.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/GrandChildParam.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/GrandChildParam.h
     ${ZSERIO_GEN_DIR}/parameterized_types/grand_child_param/Item.cpp
@@ -56,6 +67,7 @@ zserio_add_library(TARGET parameterized_types_zs
 
 add_test_sources(
     cpp/ArrayElementParamTest.cpp
+    cpp/FixedAndVariableParamTest.cpp
     cpp/GrandChildParamTest.cpp
     cpp/PackedArrayElementParamTest.cpp
     cpp/ParameterizedInnerClassesClashingTest.cpp
