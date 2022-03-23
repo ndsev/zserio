@@ -26,7 +26,7 @@ protected:
         arrayHolder.setExtraValue(EXTRA_VALUE);
         arrayHolder.setHasBlack(color == Color::BLACK);
         arrayHolder.setHasRead((access & Access::Values::READ) == Access::Values::READ);
-        arrayHolder.setHasFloatBiggerThanOne(floatValue > 1.0);
+        arrayHolder.setHasFloatBiggerThanOne(floatValue > 1.0f);
 
         arrayHolder.initialize(size, extraLimit, limitHolder, color, access, floatValue);
     }
@@ -64,7 +64,7 @@ protected:
         ASSERT_EQ(arrayHolder.getExtraValue(), reader.readBits(3));
         ASSERT_EQ(color == Color::BLACK, reader.readBool());
         ASSERT_EQ((access & Access::Values::READ) == Access::Values::READ, reader.readBool());
-        ASSERT_EQ(floatValue > 1.0, reader.readBool());
+        ASSERT_EQ(floatValue > 1.0f, reader.readBool());
     }
 
     void checkFixedAndVariableParamInBitStream(zserio::BitStreamReader& reader,
@@ -73,7 +73,7 @@ protected:
     {
         ASSERT_EQ(extraLimit, reader.readBits(8));
         ASSERT_EQ(limit, reader.readBits(8));
-        ASSERT_EQ(color, zserio::valueToEnum<Color>(reader.readBits(2)));
+        ASSERT_EQ(color, zserio::valueToEnum<Color>(static_cast<uint8_t>(reader.readBits(2))));
         ASSERT_EQ(access.getValue(), reader.readBits(4));
         ASSERT_EQ(floatValue, reader.readFloat16());
         const ArrayHolder& arrayHolder = fixedAndVariableParam.getArrayHolder();

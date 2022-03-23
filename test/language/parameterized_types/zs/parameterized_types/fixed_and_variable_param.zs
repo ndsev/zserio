@@ -24,7 +24,7 @@ struct ArrayHolder(varsize size, uint8 extraLimit, LimitHolder limitHolder, Colo
     bit:3 extraValue : extraValue <= extraLimit && extraValue <= limitHolder.limit;
     bool hasBlack : hasBlack == (color == Color.BLACK);
     bool hasRead : hasRead == ((access & Access.READ) == Access.READ);
-    bool hasFloatBiggerThanOne : hasFloatBiggerThanOne == (floatValue > 1.0);
+    bool hasFloatBiggerThanOne : hasFloatBiggerThanOne == (floatValue > 1.0f);
 };
 
 struct FixedAndVariableParam
