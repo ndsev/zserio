@@ -1,8 +1,9 @@
+#include <algorithm>
+#include <array>
+
 #include "gtest/gtest.h"
 
 #include "zserio/CppRuntimeException.h"
-
-#include <algorithm>
 
 using namespace zserio::literals;
 
@@ -39,16 +40,14 @@ TEST(CppRuntimeExceptionTest, appendCString)
 {
     std::string testMessage = "1234567890123456";
     const std::string appendix = "1234567890123456";
-    CppRuntimeException exception(testMessage.c_str());
-
-    exception + appendix.c_str();
+    CppRuntimeException exception = CppRuntimeException(testMessage.c_str()) + appendix.c_str();
     testMessage += appendix;
     ASSERT_EQ(testMessage, exception.what());
 
     static const size_t max_len = CppRuntimeException::BUFFER_SIZE - 1;
     for (int i = 0; i < 100; ++i)
     {
-        exception + appendix.c_str();
+        exception = exception + appendix.c_str();
         testMessage += appendix;
         const size_t len = std::min(testMessage.size(), max_len);
         ASSERT_EQ(testMessage.substr(0, len), exception.what());
@@ -58,13 +57,11 @@ TEST(CppRuntimeExceptionTest, appendCString)
 TEST(CppRuntimeExceptionTest, appendBool)
 {
     std::string testMessage = "test true: ";
-    CppRuntimeException exception(testMessage.c_str());
-
-    exception + true;
+    CppRuntimeException exception = CppRuntimeException(testMessage.c_str()) + true;
     testMessage += "true";
     ASSERT_EQ(testMessage, exception.what());
 
-    exception + ", and false: " + false;
+    exception = exception + ", and false: " + false;
     testMessage += ", and false: false";
     ASSERT_EQ(testMessage, exception.what());
 }
