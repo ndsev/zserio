@@ -34,8 +34,8 @@ choice ChoiceWithoutPackableField(bool selector) on selector
 
 struct PackedArrayChoiceHasNoPackableField
 {
-    packed StructWithPackable array1[];
-    packed UnionWithPackableField array2[];
-    packed StructWithPackableArray array3[];
-    packed ChoiceWithoutPackableField(true) array4[];
+    packed StructWithPackable array1[]; // no warning
+    packed UnionWithPackableField array2[]; // no warning
+    packed StructWithPackableArray array3[]; // no warning
+    packed ChoiceWithoutPackableField(true) array4[]; // warning!
 };

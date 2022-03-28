@@ -275,7 +275,7 @@ bool ${compoundConstructorsData.compoundName}::isInitialized() const
 
 <#function read_constructor_needs_packing_context_node fieldList>
     <#list fieldList as field>
-        <#if field.isPackable>
+        <#if field.usesAnyHolder || field.isPackable>
             <#return true>
         </#if>
     </#list>

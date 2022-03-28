@@ -10,9 +10,9 @@ namespace test_utils
 class ZserioErrorOutput
 {
 public:
-    ZserioErrorOutput(const std::string& prefix)
+    ZserioErrorOutput(const std::string& prefix, const std::string& fileName = ZSERIO_ERROR_OUTPUT_FILE_NAME)
     {
-        const std::string errorsFileName = prefix + "/" + ZSERIO_ERROR_OUTPUT_FILE_NAME;
+        const std::string errorsFileName = prefix + "/" + fileName;
         std::ifstream errorsFile(errorsFileName);
         if (!errorsFile)
             throw std::runtime_error("Failed to open zserio errors file!");

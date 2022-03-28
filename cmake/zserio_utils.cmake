@@ -42,6 +42,7 @@ endfunction()
 #   EXPECTED_WARNINGS num_warnings (optional, default 0)
 #   IGNORE_ERRORS ON|OFF (optional, default OFF)
 #   ZSERIO_LOG_FILENAME (optional)
+#   APPEND_TO_ZSERIO_LOG_FILE ON|OFF (optional, default OFF)
 #
 # Only the files mentioned in OUT_FILES will be added to the static library target.
 # OUT_FILES can be EMPTY if no output should be generated.
@@ -63,7 +64,8 @@ function(zserio_add_library)
             (ARG STREQUAL ZSERIO_OPTIONS) OR
             (ARG STREQUAL EXPECTED_WARNINGS) OR
             (ARG STREQUAL IGNORE_ERRORS) OR
-            (ARG STREQUAL ZSERIO_LOG_FILENAME))
+            (ARG STREQUAL ZSERIO_LOG_FILENAME) OR
+            (ARG STREQUAL APPEND_TO_ZSERIO_LOG_FILE))
             if (DEFINED VALUE_${ARG})
                 message(FATAL_ERROR "Option ${ARG} used multiple times!")
             endif ()
@@ -92,6 +94,9 @@ function(zserio_add_library)
     endif ()
     if (NOT DEFINED VALUE_IGNORE_ERRORS)
         set(VALUE_IGNORE_ERRORS OFF)
+    endif ()
+    if (NOT DEFINED VALUE_APPEND_TO_ZSERIO_LOG_FILE)
+        set(VALUE_APPEND_TO_ZSERIO_LOG_FILE OFF)
     endif ()
 
     # create ALL_SOURCES list with full paths
@@ -131,6 +136,7 @@ function(zserio_add_library)
             -DEXPECTED_WARNINGS=${VALUE_EXPECTED_WARNINGS}
             -DIGNORE_ERRORS=${VALUE_IGNORE_ERRORS}
             -DLOG_FILENAME="${VALUE_ZSERIO_LOG_FILENAME}"
+            -DAPPEND_TO_LOG_FILE=${VALUE_APPEND_TO_ZSERIO_LOG_FILE}
             -P ${CMAKE_MODULE_PATH}/zserio_tool.cmake
         COMMENT "Generating sources with Zserio from ${VALUE_MAIN_SOURCE}")
 
