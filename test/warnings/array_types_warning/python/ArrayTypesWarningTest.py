@@ -32,7 +32,7 @@ class ArrayTypesWarningTest(unittest.TestCase):
             "array_types_warning.zs",
             [
                 "packed_array_template_has_no_packable_field.zs:22:13: "
-                        "In instantiation of 'Template' required from here",
+                "In instantiation of 'Template' required from here",
                 "packed_array_template_has_no_packable_field.zs:5:12: 'string' is not packable element type!"
             ]
         )
@@ -41,9 +41,9 @@ class ArrayTypesWarningTest(unittest.TestCase):
             "array_types_warning.zs",
             [
                 "packed_array_template_has_no_packable_field.zs:24:13: "
-                        "In instantiation of 'Template' required from here",
+                "In instantiation of 'Template' required from here",
                 "packed_array_template_has_no_packable_field.zs:5:12: "
-                        "'Unpackable' doesn't contain any packable field!"
+                "'Unpackable' doesn't contain any packable field!"
             ]
         )
 
