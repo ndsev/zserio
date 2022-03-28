@@ -12,8 +12,9 @@ zserio_add_library(TARGET packed_array_in_template_240_error_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutCrossExtensionCheck
-    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
     IGNORE_ERRORS ON
+    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
+    APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
 zserio_add_library(TARGET packed_compound_array_242_error_zs
@@ -24,8 +25,9 @@ zserio_add_library(TARGET packed_compound_array_242_error_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutCrossExtensionCheck
-    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
     IGNORE_ERRORS ON
+    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
+    APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
 zserio_add_library(TARGET packed_uint32_array_241_error_zs
@@ -36,8 +38,9 @@ zserio_add_library(TARGET packed_uint32_array_241_error_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutCrossExtensionCheck
-    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
     IGNORE_ERRORS ON
+    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
+    APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
 zserio_add_library(TARGET version_less_than_min_supported_error_zs
@@ -48,8 +51,9 @@ zserio_add_library(TARGET version_less_than_min_supported_error_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutCrossExtensionCheck
-    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
     IGNORE_ERRORS ON
+    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
+    APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
 zserio_add_library(TARGET wrong_compatibility_version_format_error_zs
@@ -60,8 +64,9 @@ zserio_add_library(TARGET wrong_compatibility_version_format_error_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutCrossExtensionCheck
-    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
     IGNORE_ERRORS ON
+    ZSERIO_LOG_FILENAME ${LOG_FILENAME}
+    APPEND_TO_ZSERIO_LOG_FILE ON
 )
 
 add_test_dependencies(packed_array_in_template_240_error_zs)

@@ -75,8 +75,8 @@ zserio_add_library(TARGET array_types_warning_zs
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
     ZSERIO_OPTIONS -withoutSourcesAmalgamation
-    ZSERIO_LOG_FILENAME zserio_log.txt
     EXPECTED_WARNINGS 11
+    ZSERIO_LOG_FILENAME zserio_log.txt
 )
 
 add_test_sources(
