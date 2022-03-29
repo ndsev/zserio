@@ -75,7 +75,6 @@ public class OptionalMembersWarningTest
         assertTrue(zserioWarnings.isPresent(warning));
     }
 
-
     @Test
     public void optionalReferencesInOptionalClause()
     {

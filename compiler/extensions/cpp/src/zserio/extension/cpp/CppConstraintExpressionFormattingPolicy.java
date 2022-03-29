@@ -19,9 +19,9 @@ public class CppConstraintExpressionFormattingPolicy extends CppExpressionFormat
     }
 
     @Override
-    protected void formatFieldGetter(StringBuilder result, Field field)
+    protected void formatFieldGetter(StringBuilder result, boolean isMostLeftId, Field field)
     {
-        if (field == constraintField)
+        if (isMostLeftId && field == constraintField)
         {
             result.append(CONTRAINT_FIELD_VARIABLE);
             if (field.getTypeInstantiation() instanceof ArrayInstantiation)
@@ -29,7 +29,7 @@ public class CppConstraintExpressionFormattingPolicy extends CppExpressionFormat
         }
         else
         {
-            super.formatFieldGetter(result, field);
+            super.formatFieldGetter(result, isMostLeftId, field);
         }
     }
 

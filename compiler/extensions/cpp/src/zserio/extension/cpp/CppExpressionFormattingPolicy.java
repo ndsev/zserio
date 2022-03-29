@@ -239,7 +239,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         return "";
     }
 
-    protected void formatFieldGetter(StringBuilder result, Field field)
+    protected void formatFieldGetter(StringBuilder result, boolean isMostLeftId, Field field)
     {
         result.append(AccessorNameFormatter.getGetterName(field));
         result.append(CPP_GETTER_FUNCTION_CALL);
@@ -341,7 +341,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         }
         else
         {
-            formatFieldGetter(result, field);
+            formatFieldGetter(result, isMostLeftId, field);
         }
     }
 
