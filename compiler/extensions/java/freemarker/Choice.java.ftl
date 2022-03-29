@@ -25,9 +25,13 @@ selector == (${case.expressionForIf})<#if case_has_next> || </#if><#rt>
         </#list>
     </#if>
 </#macro>
+<#macro choice_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}throw new zserio.runtime.ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
+</#macro>
 <#assign isSwitchAllowed = !isSelectorExpressionBoolean && !isSelectorExpressionBigInteger &&
         !isSelectorExpressionLong && !selectorExpressionBitmaskTypeName??>
-<#macro choice_switch memberActionMacroName indent packed=false>
+<#macro choice_switch memberActionMacroName noMatchMacroName indent packed=false>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#local fieldIndex=0>
     <#if isSwitchAllowed>
@@ -39,16 +43,14 @@ ${I}case ${case.expressionForCase}:
             </#list>
         <@.vars[memberActionMacroName] caseMember, indent + 1, packed, fieldIndex/>
             <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
-${I}    break;
         </#list>
         <#if !isDefaultUnreachable>
 ${I}default:
             <#if defaultMember??>
         <@.vars[memberActionMacroName] defaultMember, indent + 1, packed, fieldIndex/>
                 <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
-${I}    break;
             <#else>
-${I}    throw new zserio.runtime.ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
+        <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
         </#if>
 ${I}}
@@ -81,7 +83,7 @@ ${I}{
         <@.vars[memberActionMacroName] defaultMember, indent + 1, packed, fieldIndex/>
                 <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
             <#else>
-${I}    throw new zserio.runtime.ZserioError("No match in choice ${name}: " + ${selectorExpression} + "!");
+        <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
 ${I}}
         </#if>
@@ -116,6 +118,27 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 
 </#if>
+<#macro choice_tag_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}return UNDEFINED_CHOICE;
+</#macro>
+<#macro choice_tag_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}return <@choice_tag_name member.compoundField/>;
+    <#else>
+${I}return UNDEFINED_CHOICE;
+    </#if>
+</#macro>
+    public int choiceTag()
+    {
+<#if fieldList?has_content>
+        <@choice_switch "choice_tag_member", "choice_tag_no_match", 2/>
+<#else>
+        return UNDEFINED_CHOICE;
+</#if>
+    }
+
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
 <#list fieldList as field>
@@ -132,18 +155,21 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     <#return false>
 </#function>
 <#macro choice_init_packing_context_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <@compound_init_packing_context_field member.compoundField, index, indent/>
     <#else>
-        <#local I>${""?left_pad(indent * 4)}</#local>
-        <#lt>${I}// empty
+${I}// empty
+    </#if>
+    <#if isSwitchAllowed>
+${I}break;
     </#if>
 </#macro>
     @Override
     public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
 <#if choice_needs_init_packing_context(fieldList)>
-        <@choice_switch "choice_init_packing_context_member", 2, true/>
+        <@choice_switch "choice_init_packing_context_member", "choice_no_match", 2, true/>
 </#if>
     }
 
@@ -154,11 +180,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 
 <#macro choice_bitsizeof_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <@compound_bitsizeof_field member.compoundField, indent, packed, index/>
     <#else>
-        <#local I>${""?left_pad(indent * 4)}</#local>
-        <#lt>${I}// empty
+${I}// empty
+    </#if>
+    <#if isSwitchAllowed>
+${I}break;
     </#if>
 </#macro>
     @Override
@@ -167,7 +196,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 <#if fieldList?has_content>
         long endBitPosition = bitPosition;
 
-        <@choice_switch "choice_bitsizeof_member", 2/>
+        <@choice_switch "choice_bitsizeof_member", "choice_no_match", 2/>
 
         return (int)(endBitPosition - bitPosition);
 <#else>
@@ -181,7 +210,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 <#if fieldList?has_content>
         long endBitPosition = bitPosition;
 
-        <@choice_switch "choice_bitsizeof_member", 2, true/>
+        <@choice_switch "choice_bitsizeof_member", "choice_no_match", 2, true/>
 
         return (int)(endBitPosition - bitPosition);
 <#else>
@@ -250,18 +279,21 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 
 <#macro choice_read_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <@compound_read_field member.compoundField, name, indent, packed, index/>
         <@compound_check_constraint_field member.compoundField, name, indent/>
     <#else>
-        <#local I>${""?left_pad(indent * 4)}</#local>
-        <#lt>${I}// empty
+${I}// empty
+    </#if>
+    <#if isSwitchAllowed>
+${I}break;
     </#if>
 </#macro>
     public void read(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
 <#if fieldList?has_content>
-        <@choice_switch "choice_read_member", 2/>
+        <@choice_switch "choice_read_member", "choice_no_match", 2/>
 </#if>
     }
 
@@ -269,7 +301,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             throws java.io.IOException
     {
 <#if fieldList?has_content>
-        <@choice_switch "choice_read_member", 2, true/>
+        <@choice_switch "choice_read_member", "choice_no_match", 2, true/>
 </#if>
     }
 <#if withWriterCode>
@@ -287,13 +319,16 @@ ${I}}
     <#else>
 ${I}// empty
     </#if>
+    <#if isSwitchAllowed>
+${I}break;
+    </#if>
 </#macro>
     public long initializeOffsets(long bitPosition)
     {
     <#if fieldList?has_content>
         long endBitPosition = bitPosition;
 
-        <@choice_switch "choice_initialize_offsets_member", 2/>
+        <@choice_switch "choice_initialize_offsets_member", "choice_no_match", 2/>
 
         return endBitPosition;
     <#else>
@@ -306,7 +341,7 @@ ${I}// empty
     <#if fieldList?has_content>
         long endBitPosition = bitPosition;
 
-        <@choice_switch "choice_initialize_offsets_member", 2, true/>
+        <@choice_switch "choice_initialize_offsets_member", "choice_no_match", 2, true/>
 
         return endBitPosition;
     <#else>
@@ -329,12 +364,15 @@ ${I}// empty
     }
 
 <#macro choice_write_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
         <@compound_check_constraint_field member.compoundField, name, indent/>
         <@compound_write_field member.compoundField, name, indent, packed, index/>
     <#else>
-        <#local I>${""?left_pad(indent * 4)}</#local>
-        <#lt>${I}// empty
+${I}// empty
+    </#if>
+    <#if isSwitchAllowed>
+${I}break;
     </#if>
 </#macro>
     @Override
@@ -351,7 +389,7 @@ ${I}// empty
         }
 
         </#if>
-        <@choice_switch "choice_write_member", 2/>
+        <@choice_switch "choice_write_member", "choice_no_match", 2/>
     </#if>
     }
 
@@ -360,10 +398,15 @@ ${I}// empty
             zserio.runtime.io.BitStreamWriter out) throws java.io.IOException
     {
     <#if fieldList?has_content>
-        <@choice_switch "choice_write_member", 2, true/>
+        <@choice_switch "choice_write_member", "choice_no_match", 2, true/>
     </#if>
     }
 </#if>
+
+<#list fieldList as field>
+    public static final int <@choice_tag_name field/> = ${field?index};
+</#list>
+    public static final int UNDEFINED_CHOICE = -1;
 <#list fieldList as field>
     <@define_field_helper_classes name, field/>
 </#list>

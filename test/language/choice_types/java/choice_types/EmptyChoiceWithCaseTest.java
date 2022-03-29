@@ -51,6 +51,16 @@ public class EmptyChoiceWithCaseTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        EmptyChoiceWithCase emptyChoiceWithCase = new EmptyChoiceWithCase((short)0);
+        assertEquals(EmptyChoiceWithCase.UNDEFINED_CHOICE, emptyChoiceWithCase.choiceTag());
+
+        emptyChoiceWithCase = new EmptyChoiceWithCase((short)1);
+        assertEquals(EmptyChoiceWithCase.UNDEFINED_CHOICE, emptyChoiceWithCase.choiceTag());
+    }
+
+    @Test
     public void getSelector()
     {
         final short selector = 1;

@@ -83,6 +83,19 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         uint16ParamChoice.c = value
         self.assertEqual(value, uint16ParamChoice.c)
 
+    def testChoiceTag(self):
+        uint16ParamChoice = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
+        self.assertEqual(uint16ParamChoice.CHOICE_A, uint16ParamChoice.choice_tag)
+
+        uint16ParamChoice = self.api.UInt16ParamChoice(self.VARIANT_B_SELECTOR1)
+        self.assertEqual(uint16ParamChoice.CHOICE_B, uint16ParamChoice.choice_tag)
+
+        uint16ParamChoice = self.api.UInt16ParamChoice(self.VARIANT_C_SELECTOR)
+        self.assertEqual(uint16ParamChoice.CHOICE_C, uint16ParamChoice.choice_tag)
+
+        uint16ParamChoice = self.api.UInt16ParamChoice(self.EMPTY_SELECTOR1)
+        self.assertEqual(uint16ParamChoice.UNDEFINED_CHOICE, uint16ParamChoice.choice_tag)
+
     def testBitSizeOf(self):
         uint16ParamChoiceA = self.api.UInt16ParamChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99

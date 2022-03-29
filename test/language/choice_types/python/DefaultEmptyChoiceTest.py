@@ -18,6 +18,16 @@ class DefaultEmptyChoiceTest(unittest.TestCase):
         self.assertEqual(tag, defaultEmptyChoice.tag)
         self.assertEqual(value, defaultEmptyChoice.b)
 
+    def testChoiceTag(self):
+        defaultEmptyChoice = self.api.DefaultEmptyChoice(self.DEFAULT_SELECTOR)
+        self.assertEqual(defaultEmptyChoice.UNDEFINED_CHOICE, defaultEmptyChoice.choice_tag)
+
+        defaultEmptyChoice = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
+        self.assertEqual(defaultEmptyChoice.CHOICE_A, defaultEmptyChoice.choice_tag)
+
+        defaultEmptyChoice = self.api.DefaultEmptyChoice(self.VARIANT_B_SELECTOR)
+        self.assertEqual(defaultEmptyChoice.CHOICE_B, defaultEmptyChoice.choice_tag)
+
     def testReadWrite(self):
         defaultEmptyChoiceA = self.api.DefaultEmptyChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99

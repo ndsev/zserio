@@ -77,6 +77,13 @@ class BoolParamChoiceTest(unittest.TestCase):
         boolParamChoice.grey = value
         self.assertEqual(value, boolParamChoice.grey)
 
+    def testChoiceTag(self):
+        boolParamChoice = self.api.BoolParamChoice(True)
+        self.assertEqual(self.api.BoolParamChoice.CHOICE_BLACK, boolParamChoice.choice_tag)
+
+        boolParamChoice = self.api.BoolParamChoice(False)
+        self.assertEqual(self.api.BoolParamChoice.CHOICE_GREY, boolParamChoice.choice_tag)
+
     def testBitSizeOf(self):
         boolParamChoice = self.api.BoolParamChoice(True)
         self.assertEqual(8, boolParamChoice.bitsizeof())

@@ -83,6 +83,19 @@ class UInt32ParamChoiceTest(unittest.TestCase):
         uint32ParamChoice.c = value
         self.assertEqual(value, uint32ParamChoice.c)
 
+    def testChoiceTag(self):
+        uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
+        self.assertEqual(uint32ParamChoice.CHOICE_A, uint32ParamChoice.choice_tag)
+
+        uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_B_SELECTOR1)
+        self.assertEqual(uint32ParamChoice.CHOICE_B, uint32ParamChoice.choice_tag)
+
+        uint32ParamChoice = self.api.UInt32ParamChoice(self.VARIANT_C_SELECTOR)
+        self.assertEqual(uint32ParamChoice.CHOICE_C, uint32ParamChoice.choice_tag)
+
+        uint32ParamChoice = self.api.UInt32ParamChoice(self.EMPTY_SELECTOR1)
+        self.assertEqual(uint32ParamChoice.UNDEFINED_CHOICE, uint32ParamChoice.choice_tag)
+
     def testBitSizeOf(self):
         uint32ParamChoiceA = self.api.UInt32ParamChoice(self.VARIANT_A_SELECTOR)
         byteValueA = 99

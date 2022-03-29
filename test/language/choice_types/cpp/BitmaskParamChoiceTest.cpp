@@ -173,6 +173,19 @@ TEST_F(BitmaskParamChoiceTest, getSetBlackAndWhite)
     ASSERT_EQ(value, bitmaskParamChoice.getBlackAndWhite());
 }
 
+TEST_F(BitmaskParamChoiceTest, choiceTag)
+{
+    BitmaskParamChoice bitmaskParamChoice;
+    bitmaskParamChoice.initialize(Selector::Values::BLACK);
+    ASSERT_EQ(BitmaskParamChoice::CHOICE_black, bitmaskParamChoice.choiceTag());
+
+    bitmaskParamChoice.initialize(Selector::Values::WHITE);
+    ASSERT_EQ(BitmaskParamChoice::CHOICE_white, bitmaskParamChoice.choiceTag());
+
+    bitmaskParamChoice.initialize(Selector::Values::BLACK_AND_WHITE);
+    ASSERT_EQ(BitmaskParamChoice::CHOICE_blackAndWhite, bitmaskParamChoice.choiceTag());
+}
+
 TEST_F(BitmaskParamChoiceTest, bitSizeOf)
 {
     Selector selectorB = Selector::Values::BLACK;

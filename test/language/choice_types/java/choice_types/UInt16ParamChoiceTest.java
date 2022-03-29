@@ -53,6 +53,22 @@ public class UInt16ParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        UInt16ParamChoice uint16ParamChoice = new UInt16ParamChoice(VARIANT_A_SELECTOR);
+        assertEquals(UInt16ParamChoice.CHOICE_a, uint16ParamChoice.choiceTag());
+
+        uint16ParamChoice = new UInt16ParamChoice(VARIANT_B_SELECTOR1);
+        assertEquals(UInt16ParamChoice.CHOICE_b, uint16ParamChoice.choiceTag());
+
+        uint16ParamChoice = new UInt16ParamChoice(VARIANT_C_SELECTOR);
+        assertEquals(UInt16ParamChoice.CHOICE_c, uint16ParamChoice.choiceTag());
+
+        uint16ParamChoice = new UInt16ParamChoice(EMPTY_SELECTOR1);
+        assertEquals(UInt16ParamChoice.UNDEFINED_CHOICE, uint16ParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         final UInt16ParamChoice uint16ParamChoiceA = new UInt16ParamChoice(VARIANT_A_SELECTOR);

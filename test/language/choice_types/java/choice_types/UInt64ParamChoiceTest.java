@@ -51,6 +51,22 @@ public class UInt64ParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
+        assertEquals(UInt64ParamChoice.CHOICE_a, uint64ParamChoice.choiceTag());
+
+        uint64ParamChoice = new UInt64ParamChoice(VARIANT_B_SELECTOR);
+        assertEquals(UInt64ParamChoice.CHOICE_b, uint64ParamChoice.choiceTag());
+
+        uint64ParamChoice = new UInt64ParamChoice(VARIANT_C_SELECTOR);
+        assertEquals(UInt64ParamChoice.CHOICE_c, uint64ParamChoice.choiceTag());
+
+        uint64ParamChoice = new UInt64ParamChoice(EMPTY_SELECTOR);
+        assertEquals(UInt64ParamChoice.UNDEFINED_CHOICE, uint64ParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         UInt64ParamChoice uint64ParamChoice = new UInt64ParamChoice(VARIANT_A_SELECTOR);
@@ -207,4 +223,5 @@ public class UInt64ParamChoiceTest
     private final static BigInteger VARIANT_A_SELECTOR = BigInteger.ONE;
     private final static BigInteger VARIANT_B_SELECTOR = new BigInteger("2");
     private final static BigInteger VARIANT_C_SELECTOR = new BigInteger("7");
+    private final static BigInteger EMPTY_SELECTOR = new BigInteger("5");
 }

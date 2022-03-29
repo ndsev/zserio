@@ -46,6 +46,10 @@ ${I}self.<@field_member_name field/> = <@field_argument_name field/>
     </#if>
 </#macro>
 
+<#macro choice_tag_name field>
+    CHOICE_${field.snakeCaseName?upper_case}<#t>
+</#macro>
+
 <#macro compound_bitsizeof_field field indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>

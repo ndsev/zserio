@@ -105,6 +105,16 @@ TEST(EmptyChoiceWithCaseTest, getSelector)
     ASSERT_EQ(selector, emptyChoiceWithCase.getSelector());
 }
 
+TEST(EmptyChoiceWithCaseTest, choiceTag)
+{
+    EmptyChoiceWithCase emptyChoiceWithCase;
+    emptyChoiceWithCase.initialize(0);
+    ASSERT_EQ(EmptyChoiceWithCase::UNDEFINED_CHOICE, emptyChoiceWithCase.choiceTag());
+
+    emptyChoiceWithCase.initialize(1);
+    ASSERT_EQ(EmptyChoiceWithCase::UNDEFINED_CHOICE, emptyChoiceWithCase.choiceTag());
+}
+
 TEST(EmptyChoiceWithCaseTest, bitSizeOf)
 {
     EmptyChoiceWithCase emptyChoiceWithCase;

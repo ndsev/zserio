@@ -39,6 +39,10 @@ class EmptyChoiceTest(unittest.TestCase):
         emptyChoice = self.api.EmptyChoice(selector)
         self.assertEqual(selector, emptyChoice.selector)
 
+    def testChoiceTag(self):
+        emptyChoice = self.api.EmptyChoice(0)
+        self.assertEqual(emptyChoice.UNDEFINED_CHOICE, emptyChoice.choice_tag)
+
     def testBitSizeOf(self):
         emptyChoice = self.api.EmptyChoice(1)
         self.assertEqual(0, emptyChoice.bitsizeof(1))

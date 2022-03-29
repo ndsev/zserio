@@ -14,7 +14,11 @@ selector == (${expressionList?first})<#rt>
 selector in (<#list expressionList as expression>${expression}<#if expression?has_next>, </#if></#list>)<#rt>
     </#if>
 </#macro>
-<#macro choice_if memberActionMacroName packed=false>
+<#macro choice_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}raise zserio.PythonRuntimeException("No match in choice ${name}!")
+</#macro>
+<#macro choice_if memberActionMacroName noMatchMacroName packed=false>
         selector = ${selector}
 
     <#local fieldIndex=0>
@@ -24,24 +28,16 @@ selector in (<#list expressionList as expression>${expression}<#if expression?ha
         <#else>
         else:
         </#if>
-        <#if caseMember.compoundField??>
-            <@.vars[memberActionMacroName] caseMember.compoundField, 3, packed, fieldIndex/>
-            <#local fieldIndex+=1>
-        <#else>
-            pass
-        </#if>
+        <@.vars[memberActionMacroName] caseMember, 3, packed, fieldIndex/>
+            <#if caseMember.compoundField??><#local fieldIndex+=1></#if>
     </#list>
     <#if !isDefaultUnreachable>
         else:
         <#if defaultMember??>
-            <#if defaultMember.compoundField??>
-            <@.vars[memberActionMacroName] defaultMember.compoundField, 3, packed, fieldIndex/>
-                <#local fieldIndex+=1>
-            <#else>
-            pass
-            </#if>
+            <@.vars[memberActionMacroName] defaultMember, 3, packed, fieldIndex/>
+            <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
         <#else>
-            raise zserio.PythonRuntimeException("No match in choice ${name}!")
+            <@.vars[noMatchMacroName] name, 3/>
         </#if>
     </#if>
 </#macro>
@@ -179,6 +175,26 @@ class ${name}:
         return ${function.resultExpression}
 </#list>
 
+<#macro choice_tag_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}return self.UNDEFINED_CHOICE
+</#macro>
+<#macro choice_tag_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}return self.<@choice_tag_name member.compoundField/>
+    <#else>
+${I}return self.UNDEFINED_CHOICE
+    </#if>
+</#macro>
+    @property
+    def choice_tag(self) -> int:
+<#if fieldList?has_content>
+        <@choice_if "choice_tag_member", "choice_tag_no_match"/>
+<#else>
+        return self.UNDEFINED_CHOICE
+</#if>
+
     @staticmethod
     def create_packing_context(zserio_context_node: zserio.array.PackingContextNode) -> None:
     <#if fieldList?has_content>
@@ -189,27 +205,39 @@ class ${name}:
         del zserio_context_node
     </#if>
 
-<#macro choice_init_packing_context_field field indent packed index>
-    <#local initCode><@compound_init_packing_context_field field, index, indent/></#local>
-    <#if initCode?has_content>
+<#macro choice_init_packing_context_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+        <#local initCode><@compound_init_packing_context_field member.compoundField, index, indent/></#local>
+        <#if initCode?has_content>
 ${initCode}<#rt>
+        <#else>
+${I}pass
+        </#if>
     <#else>
-        <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}pass
     </#if>
 </#macro>
     def init_packing_context(self, zserio_context_node: zserio.array.PackingContextNode) -> None:
 <#if compound_needs_packing_context_node(fieldList)>
-        <@choice_if "choice_init_packing_context_field", true/>
+        <@choice_if "choice_init_packing_context_member", "choice_no_match", true/>
 <#else>
         del zserio_context_node
 </#if>
 
+<#macro choice_bitsizeof_member member indent packed index>
+    <#if member.compoundField??>
+        <@compound_bitsizeof_field member.compoundField, indent, packed, index/>
+    <#else>
+        <#local I>${""?left_pad(indent * 4)}</#local>
+${I}pass
+    </#if>
+</#macro>
     def bitsizeof(self, bitposition: int = 0) -> int:
 <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "compound_bitsizeof_field"/>
+        <@choice_if "choice_bitsizeof_member", "choice_no_match"/>
 
         return end_bitposition - bitposition
 <#else>
@@ -227,7 +255,7 @@ ${I}pass
 <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "compound_bitsizeof_field", true/>
+        <@choice_if "choice_bitsizeof_member", "choice_no_match", true/>
 
         return end_bitposition - bitposition
 <#else>
@@ -237,11 +265,19 @@ ${I}pass
 </#if>
 <#if withWriterCode>
 
+<#macro choice_initialize_offsets_member member indent packed index>
+    <#if member.compoundField??>
+        <@compound_initialize_offsets_field member.compoundField, indent, packed, index/>
+    <#else>
+        <#local I>${""?left_pad(indent * 4)}</#local>
+${I}pass
+    </#if>
+</#macro>
     def initialize_offsets(self, bitposition: int) -> int:
     <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "compound_initialize_offsets_field"/>
+        <@choice_if "choice_initialize_offsets_member", "choice_no_match"/>
 
         return end_bitposition
     <#else>
@@ -257,7 +293,7 @@ ${I}pass
     <#if fieldList?has_content>
         end_bitposition = bitposition
 
-        <@choice_if "compound_initialize_offsets_field", true/>
+        <@choice_if "choice_initialize_offsets_member", "choice_no_match", true/>
 
         return end_bitposition
     <#else>
@@ -265,12 +301,17 @@ ${I}pass
     </#if>
 </#if>
 
-<#macro choice_read_field field indent packed index>
-    <@compound_read_field field, name, indent, packed, index/>
+<#macro choice_read_member member indent packed index>
+    <#if member.compoundField??>
+        <@compound_read_field member.compoundField, name, indent, packed, index/>
+    <#else>
+        <#local I>${""?left_pad(indent * 4)}</#local>
+${I}pass
+    </#if>
 </#macro>
     def read(self, zserio_reader: zserio.BitStreamReader) -> None:
 <#if fieldList?has_content>
-        <@choice_if "choice_read_field"/>
+        <@choice_if "choice_read_member", "choice_no_match"/>
 <#else>
         del zserio_reader
 </#if>
@@ -282,15 +323,20 @@ ${I}pass
         del zserio_context_node
 
     </#if>
-        <@choice_if "choice_read_field", true/>
+        <@choice_if "choice_read_member", "choice_no_match", true/>
 <#else>
         del zserio_context_node
         del zserio_reader
 </#if>
 <#if withWriterCode>
 
-<#macro choice_write_field field indent packed index>
-    <@compound_write_field field, name, indent, packed, index/>
+<#macro choice_write_member member indent packed index>
+    <#if member.compoundField??>
+        <@compound_write_field member.compoundField, name, indent, packed, index/>
+    <#else>
+        <#local I>${""?left_pad(indent * 4)}</#local>
+${I}pass
+    </#if>
 </#macro>
     def write(self, zserio_writer: zserio.BitStreamWriter, *,
               zserio_call_initialize_offsets: bool = True) -> None:
@@ -302,7 +348,7 @@ ${I}pass
         del zserio_call_initialize_offsets
         </#if>
 
-        <@choice_if "choice_write_field"/>
+        <@choice_if "choice_write_member", "choice_no_match"/>
     <#else>
         del zserio_writer
         del zserio_call_initialize_offsets
@@ -315,7 +361,7 @@ ${I}pass
         del zserio_context_node
 
         </#if>
-        <@choice_if "choice_write_field", true/>
+        <@choice_if "choice_write_member", "choice_no_match", true/>
     <#else>
         del zserio_context_node
         del zserio_writer
@@ -324,3 +370,9 @@ ${I}pass
 <#list fieldList as field>
     <@define_element_creator field, name/>
 </#list>
+
+<#list fieldList as field>
+    <@choice_tag_name field/> = ${field?index}
+</#list>
+    <#-- don't use CHOICE_UNDEFINED to prevent clashing with generated choice tags -->
+    UNDEFINED_CHOICE = -1

@@ -41,6 +41,7 @@ protected:
     static const uint64_t VARIANT_A_SELECTOR = 1;
     static const uint64_t VARIANT_B_SELECTOR = 2;
     static const uint64_t VARIANT_C_SELECTOR = 7;
+    static const uint64_t EMPTY_SELECTOR = 5;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
@@ -175,6 +176,22 @@ TEST_F(UInt64ParamChoiceTest, getSetC)
     const int32_t value = 23456;
     uint64ParamChoice.setC(value);
     ASSERT_EQ(value, uint64ParamChoice.getC());
+}
+
+TEST_F(UInt64ParamChoiceTest, choiceTag)
+{
+    UInt64ParamChoice uint64ParamChoice;
+    uint64ParamChoice.initialize(VARIANT_A_SELECTOR);
+    ASSERT_EQ(UInt64ParamChoice::CHOICE_a, uint64ParamChoice.choiceTag());
+
+    uint64ParamChoice.initialize(VARIANT_B_SELECTOR);
+    ASSERT_EQ(UInt64ParamChoice::CHOICE_b, uint64ParamChoice.choiceTag());
+
+    uint64ParamChoice.initialize(VARIANT_C_SELECTOR);
+    ASSERT_EQ(UInt64ParamChoice::CHOICE_c, uint64ParamChoice.choiceTag());
+
+    uint64ParamChoice.initialize(EMPTY_SELECTOR);
+    ASSERT_EQ(UInt64ParamChoice::UNDEFINED_CHOICE, uint64ParamChoice.choiceTag());
 }
 
 TEST_F(UInt64ParamChoiceTest, bitSizeOf)

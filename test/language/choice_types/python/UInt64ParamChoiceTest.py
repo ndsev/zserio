@@ -81,6 +81,19 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         uint64ParamChoice.c = value
         self.assertEqual(value, uint64ParamChoice.c)
 
+    def testChoiceTag(self):
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
+        self.assertEqual(uint64ParamChoice.CHOICE_A, uint64ParamChoice.choice_tag)
+
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_B_SELECTOR)
+        self.assertEqual(uint64ParamChoice.CHOICE_B, uint64ParamChoice.choice_tag)
+
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_C_SELECTOR)
+        self.assertEqual(uint64ParamChoice.CHOICE_C, uint64ParamChoice.choice_tag)
+
+        uint64ParamChoice = self.api.UInt64ParamChoice(self.EMPTY_SELECTOR)
+        self.assertEqual(uint64ParamChoice.UNDEFINED_CHOICE, uint64ParamChoice.choice_tag)
+
     def testBitSizeOf(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_A_SELECTOR)
         self.assertEqual(8, uint64ParamChoice.bitsizeof())
@@ -155,3 +168,4 @@ class UInt64ParamChoiceTest(unittest.TestCase):
     VARIANT_A_SELECTOR = 1
     VARIANT_B_SELECTOR = 2
     VARIANT_C_SELECTOR = 7
+    EMPTY_SELECTOR = 5

@@ -147,6 +147,17 @@ TEST_F(BoolParamChoiceTest, getSetGrey)
     ASSERT_EQ(value, boolParamChoice.getGrey());
 }
 
+TEST_F(BoolParamChoiceTest, choiceTag)
+{
+    BoolParamChoice boolParamChoiceBlack;
+    boolParamChoiceBlack.initialize(true);
+    ASSERT_EQ(BoolParamChoice::CHOICE_black, boolParamChoiceBlack.choiceTag());
+
+    BoolParamChoice boolParamChoiceGrey;
+    boolParamChoiceGrey.initialize(false);
+    ASSERT_EQ(BoolParamChoice::CHOICE_grey, boolParamChoiceGrey.choiceTag());
+}
+
 TEST_F(BoolParamChoiceTest, bitSizeOf)
 {
     BoolParamChoice boolParamChoiceB;

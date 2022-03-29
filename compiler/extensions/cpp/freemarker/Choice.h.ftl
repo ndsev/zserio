@@ -31,6 +31,14 @@ class ${name}
 public:
     using allocator_type = ${types.allocator.default};
 
+    enum ChoiceTag : int32_t
+    {
+<#list fieldList as field>
+        <@choice_tag_name field/> = ${field?index},
+</#list>
+        UNDEFINED_CHOICE = -1
+    };
+
 <#if withWriterCode>
     <@compound_constructor_declaration compoundConstructorsData/>
 
@@ -79,6 +87,8 @@ public:
 
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
+    ChoiceTag choiceTag() const;
+
     static void createPackingContext(${types.packingContextNode.name}& contextNode);
     void initPackingContext(${types.packingContextNode.name}& contextNode) const;
 

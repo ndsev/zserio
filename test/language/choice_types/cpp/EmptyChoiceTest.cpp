@@ -103,6 +103,13 @@ TEST(EmptyChoiceTest, getSelector)
     ASSERT_EQ(selector, emptyChoice.getSelector());
 }
 
+TEST(EmptyChoiceTest, choiceTag)
+{
+    EmptyChoice emptyChoice;
+    emptyChoice.initialize(0);
+    ASSERT_EQ(EmptyChoice::UNDEFINED_CHOICE, emptyChoice.choiceTag());
+}
+
 TEST(EmptyChoiceTest, bitSizeOf)
 {
     EmptyChoice emptyChoice;

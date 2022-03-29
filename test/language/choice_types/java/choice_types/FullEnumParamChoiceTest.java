@@ -54,6 +54,19 @@ public class FullEnumParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(Selector.BLACK);
+        assertEquals(FullEnumParamChoice.CHOICE_black, fullEnumParamChoice.choiceTag());
+
+        fullEnumParamChoice = new FullEnumParamChoice(Selector.GREY);
+        assertEquals(FullEnumParamChoice.CHOICE_grey, fullEnumParamChoice.choiceTag());
+
+        fullEnumParamChoice = new FullEnumParamChoice(Selector.WHITE);
+        assertEquals(FullEnumParamChoice.CHOICE_white, fullEnumParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         FullEnumParamChoice fullEnumParamChoice = new FullEnumParamChoice(Selector.BLACK);

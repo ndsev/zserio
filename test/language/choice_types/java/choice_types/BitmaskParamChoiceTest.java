@@ -54,6 +54,19 @@ public class BitmaskParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        BitmaskParamChoice bitmaskParamChoice = new BitmaskParamChoice(Selector.Values.BLACK);
+        assertEquals(BitmaskParamChoice.CHOICE_black, bitmaskParamChoice.choiceTag());
+
+        bitmaskParamChoice = new BitmaskParamChoice(Selector.Values.WHITE);
+        assertEquals(BitmaskParamChoice.CHOICE_white, bitmaskParamChoice.choiceTag());
+
+        bitmaskParamChoice = new BitmaskParamChoice(Selector.Values.BLACK_AND_WHITE);
+        assertEquals(BitmaskParamChoice.CHOICE_blackAndWhite, bitmaskParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         BitmaskParamChoice bitmaskParamChoice = new BitmaskParamChoice(Selector.Values.BLACK);

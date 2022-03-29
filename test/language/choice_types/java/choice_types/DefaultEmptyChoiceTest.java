@@ -33,6 +33,19 @@ public class DefaultEmptyChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        DefaultEmptyChoice defaultEmptyChoice = new DefaultEmptyChoice(VARIANT_A_SELECTOR);
+        assertEquals(DefaultEmptyChoice.CHOICE_a, defaultEmptyChoice.choiceTag());
+
+        defaultEmptyChoice = new DefaultEmptyChoice(VARIANT_B_SELECTOR);
+        assertEquals(DefaultEmptyChoice.CHOICE_b, defaultEmptyChoice.choiceTag());
+
+        defaultEmptyChoice = new DefaultEmptyChoice(DEFAULT_SELECTOR);
+        assertEquals(DefaultEmptyChoice.UNDEFINED_CHOICE, defaultEmptyChoice.choiceTag());
+    }
+
+    @Test
     public void fileWrite() throws IOException, ZserioError
     {
         final DefaultEmptyChoice defaultEmptyChoiceA = new DefaultEmptyChoice(VARIANT_A_SELECTOR);

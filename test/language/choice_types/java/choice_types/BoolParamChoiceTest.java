@@ -53,6 +53,16 @@ public class BoolParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        BoolParamChoice boolParamChoice = new BoolParamChoice(true);
+        assertEquals(BoolParamChoice.CHOICE_black, boolParamChoice.choiceTag());
+
+        boolParamChoice = new BoolParamChoice(false);
+        assertEquals(BoolParamChoice.CHOICE_grey, boolParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         BoolParamChoice boolParamChoice = new BoolParamChoice(true);

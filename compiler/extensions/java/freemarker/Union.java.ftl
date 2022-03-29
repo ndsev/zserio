@@ -35,6 +35,11 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 
 </#if>
+    public int choiceTag()
+    {
+        return choiceTag;
+    }
+
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
 <#if fieldList?has_content>
@@ -123,11 +128,6 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 <#else>
         return 0;
 </#if>
-    }
-
-    public int choiceTag()
-    {
-        return choiceTag;
     }
 
 <@compound_parameter_accessors compoundParametersData/>
@@ -355,14 +355,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#if>
 
 <#list fieldList as field>
-    public static final int <@choice_tag_name field/> = ${field_index};
+    public static final int <@choice_tag_name field/> = ${field?index};
 </#list>
     public static final int UNDEFINED_CHOICE = -1;
 <#list fieldList as field>
     <@define_field_helper_classes name, field/>
 </#list>
 
-<@compound_parameter_members compoundParametersData/>
+    <@compound_parameter_members compoundParametersData/>
     private java.lang.Object objectChoice;
     private int choiceTag = UNDEFINED_CHOICE;
 }

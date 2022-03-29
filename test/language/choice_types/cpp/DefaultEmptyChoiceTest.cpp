@@ -54,6 +54,19 @@ TEST_F(DefaultEmptyChoiceTest, bitStreamReaderConstructor)
     ASSERT_EQ(value, defaultEmptyChoice.getA());
 }
 
+TEST_F(DefaultEmptyChoiceTest, choiceTag)
+{
+    DefaultEmptyChoice defaultEmptyChoice;
+    defaultEmptyChoice.initialize(VARIANT_A_SELECTOR);
+    ASSERT_EQ(DefaultEmptyChoice::CHOICE_a, defaultEmptyChoice.choiceTag());
+
+    defaultEmptyChoice.initialize(VARIANT_B_SELECTOR);
+    ASSERT_EQ(DefaultEmptyChoice::CHOICE_b, defaultEmptyChoice.choiceTag());
+
+    defaultEmptyChoice.initialize(DEFAULT_SELECTOR);
+    ASSERT_EQ(DefaultEmptyChoice::UNDEFINED_CHOICE, defaultEmptyChoice.choiceTag());
+}
+
 TEST_F(DefaultEmptyChoiceTest, write)
 {
     const uint8_t tagA = VARIANT_A_SELECTOR;

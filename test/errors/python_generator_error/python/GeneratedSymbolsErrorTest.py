@@ -7,6 +7,8 @@ class GeneratedSymbolsErrorTest(unittest.TestCase):
     def setUpClass(cls):
         cls.errors = {}
 
+        compileErroneousZserio(__file__, "generated_symbols/choice_choice_tag_property_clash_error.zs",
+                               cls.errors)
         compileErroneousZserio(__file__, "generated_symbols/choice_invalid_function_name_private_error.zs",
                                cls.errors)
         compileErroneousZserio(__file__, "generated_symbols/choice_invalid_property_name_private_error.zs",
@@ -52,6 +54,16 @@ class GeneratedSymbolsErrorTest(unittest.TestCase):
                                cls.errors)
         compileErroneousZserio(__file__, "generated_symbols/union_public_method_property_clash_error.zs",
                                cls.errors)
+
+    def testChoiceChoiceTagPropertyClash(self):
+        assertErrorsPresent(self,
+            "generated_symbols/choice_choice_tag_property_clash_error.zs",
+            [
+                ":8:16: Property name 'choice_tag' generated for symbol 'choiceTag' " +
+                "clashes with generated API method!",
+                "[ERROR] Python Generator: Property name clash detected!"
+            ]
+        )
 
     def testChoiceInvalidFunctionNamePrivate(self):
         assertErrorsPresent(self,

@@ -194,6 +194,22 @@ TEST_F(UInt32ParamChoiceTest, getSetC)
     ASSERT_EQ(value, uint32ParamChoice.getC());
 }
 
+TEST_F(UInt32ParamChoiceTest, choiceTag)
+{
+    UInt32ParamChoice uint32ParamChoice;
+    uint32ParamChoice.initialize(VARIANT_A_SELECTOR);
+    ASSERT_EQ(UInt32ParamChoice::CHOICE_a, uint32ParamChoice.choiceTag());
+
+    uint32ParamChoice.initialize(VARIANT_B_SELECTOR1);
+    ASSERT_EQ(UInt32ParamChoice::CHOICE_b, uint32ParamChoice.choiceTag());
+
+    uint32ParamChoice.initialize(VARIANT_C_SELECTOR);
+    ASSERT_EQ(UInt32ParamChoice::CHOICE_c, uint32ParamChoice.choiceTag());
+
+    uint32ParamChoice.initialize(EMPTY_SELECTOR1);
+    ASSERT_EQ(UInt32ParamChoice::UNDEFINED_CHOICE, uint32ParamChoice.choiceTag());
+}
+
 TEST_F(UInt32ParamChoiceTest, bitSizeOf)
 {
     UInt32ParamChoice uint32ParamChoice;

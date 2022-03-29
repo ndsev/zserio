@@ -244,11 +244,6 @@ void ${name}::initializeChildren()
 }
 
 </#if>
-${name}::ChoiceTag ${name}::choiceTag() const
-{
-    return m_choiceTag;
-}
-
 <@compound_parameter_accessors_definition name, compoundParametersData/>
 <#list fieldList as field>
     <#if needs_field_getter(field)>
@@ -281,6 +276,11 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
+${name}::ChoiceTag ${name}::choiceTag() const
+{
+    return m_choiceTag;
+}
+
 void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>)
 {
 <#if fieldList?has_content>

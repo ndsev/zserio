@@ -7,9 +7,6 @@
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
-<#macro choice_tag_name field>
-    CHOICE_${field.snakeCaseName?upper_case}<#t>
-</#macro>
 <#macro union_if memberActionMacroName packed=false index=0>
     <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choice_tag == self.<@choice_tag_name field/>:
@@ -322,5 +319,5 @@ ${I}pass
 <#list fieldList as field>
     <@choice_tag_name field/> = ${field?index}
 </#list>
-    <#-- don't use CHOICE_undefined to prevent clashing with generated choice tags -->
+    <#-- don't use CHOICE_UNDEFINED to prevent clashing with generated choice tags -->
     UNDEFINED_CHOICE = -1

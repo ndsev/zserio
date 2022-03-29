@@ -83,6 +83,16 @@ class FullBitmaskParamChoiceTest(unittest.TestCase):
         fullBitmaskParamChoice.black_and_white = value
         self.assertEqual(value, fullBitmaskParamChoice.black_and_white)
 
+    def testChoiceTag(self):
+        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)
+        self.assertEqual(fullBitmaskParamChoice.CHOICE_BLACK, fullBitmaskParamChoice.choice_tag)
+
+        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.WHITE)
+        self.assertEqual(fullBitmaskParamChoice.CHOICE_WHITE, fullBitmaskParamChoice.choice_tag)
+
+        fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK_AND_WHITE)
+        self.assertEqual(fullBitmaskParamChoice.CHOICE_BLACK_AND_WHITE, fullBitmaskParamChoice.choice_tag)
+
     def testBitSizeOf(self):
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(self.api.Selector.Values.BLACK)
         self.assertEqual(8, fullBitmaskParamChoice.bitsizeof())

@@ -53,6 +53,22 @@ public class UInt32ParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        UInt32ParamChoice uint32ParamChoice = new UInt32ParamChoice(VARIANT_A_SELECTOR);
+        assertEquals(UInt32ParamChoice.CHOICE_a, uint32ParamChoice.choiceTag());
+
+        uint32ParamChoice = new UInt32ParamChoice(VARIANT_B_SELECTOR1);
+        assertEquals(UInt32ParamChoice.CHOICE_b, uint32ParamChoice.choiceTag());
+
+        uint32ParamChoice = new UInt32ParamChoice(VARIANT_C_SELECTOR);
+        assertEquals(UInt32ParamChoice.CHOICE_c, uint32ParamChoice.choiceTag());
+
+        uint32ParamChoice = new UInt32ParamChoice(EMPTY_SELECTOR1);
+        assertEquals(UInt32ParamChoice.UNDEFINED_CHOICE, uint32ParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         final UInt32ParamChoice uint32ParamChoiceA = new UInt32ParamChoice(VARIANT_A_SELECTOR);

@@ -170,6 +170,21 @@ TEST_F(EnumParamChoiceTest, getSetWhite)
     ASSERT_EQ(value, enumParamChoice.getWhite());
 }
 
+TEST_F(EnumParamChoiceTest, choiceTag)
+{
+    EnumParamChoice enumParamChoiceB;
+    enumParamChoiceB.initialize(Selector::BLACK);
+    ASSERT_EQ(EnumParamChoice::CHOICE_black, enumParamChoiceB.choiceTag());
+
+    EnumParamChoice enumParamChoiceG;
+    enumParamChoiceG.initialize(Selector::GREY);
+    ASSERT_EQ(EnumParamChoice::CHOICE_grey, enumParamChoiceG.choiceTag());
+
+    EnumParamChoice enumParamChoiceW;
+    enumParamChoiceW.initialize(Selector::WHITE);
+    ASSERT_EQ(EnumParamChoice::CHOICE_white, enumParamChoiceW.choiceTag());
+}
+
 TEST_F(EnumParamChoiceTest, bitSizeOf)
 {
     EnumParamChoice enumParamChoiceB;

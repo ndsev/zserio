@@ -82,6 +82,16 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         bitmaskParamChoice.black_and_white = value
         self.assertEqual(value, bitmaskParamChoice.black_and_white)
 
+    def testChoiceTag(self):
+        bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK_AND_WHITE)
+        self.assertEqual(self.api.BitmaskParamChoice.CHOICE_BLACK_AND_WHITE, bitmaskParamChoice.choice_tag)
+
+        bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
+        self.assertEqual(self.api.BitmaskParamChoice.CHOICE_BLACK, bitmaskParamChoice.choice_tag)
+
+        bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.WHITE)
+        self.assertEqual(self.api.BitmaskParamChoice.CHOICE_WHITE, bitmaskParamChoice.choice_tag)
+
     def testBitSizeOf(self):
         bitmaskParamChoice = self.api.BitmaskParamChoice(self.api.Selector.Values.BLACK)
         self.assertEqual(8, bitmaskParamChoice.bitsizeof())

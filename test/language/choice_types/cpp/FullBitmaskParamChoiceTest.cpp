@@ -174,6 +174,19 @@ TEST_F(FullBitmaskParamChoiceTest, getSetBlackAndWhite)
     ASSERT_EQ(value, fullBitmaskParamChoice.getBlackAndWhite());
 }
 
+TEST_F(FullBitmaskParamChoiceTest, choiceTag)
+{
+    FullBitmaskParamChoice fullBitmaskParamChoice;
+    fullBitmaskParamChoice.initialize(Selector::Values::BLACK);
+    ASSERT_EQ(FullBitmaskParamChoice::CHOICE_black, fullBitmaskParamChoice.choiceTag());
+
+    fullBitmaskParamChoice.initialize(Selector::Values::WHITE);
+    ASSERT_EQ(FullBitmaskParamChoice::CHOICE_white, fullBitmaskParamChoice.choiceTag());
+
+    fullBitmaskParamChoice.initialize(Selector::Values::BLACK_AND_WHITE);
+    ASSERT_EQ(FullBitmaskParamChoice::CHOICE_blackAndWhite, fullBitmaskParamChoice.choiceTag());
+}
+
 TEST_F(FullBitmaskParamChoiceTest, bitSizeOf)
 {
     Selector selectorB = Selector::Values::BLACK;

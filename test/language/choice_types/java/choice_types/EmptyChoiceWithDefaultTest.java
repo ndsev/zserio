@@ -51,6 +51,16 @@ public class EmptyChoiceWithDefaultTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        EmptyChoiceWithDefault emptyChoiceWithDefault = new EmptyChoiceWithDefault((short)0);
+        assertEquals(EmptyChoiceWithDefault.UNDEFINED_CHOICE, emptyChoiceWithDefault.choiceTag());
+
+        emptyChoiceWithDefault = new EmptyChoiceWithDefault((short)1);
+        assertEquals(EmptyChoiceWithDefault.UNDEFINED_CHOICE, emptyChoiceWithDefault.choiceTag());
+    }
+
+    @Test
     public void getSelector()
     {
         final short selector = 1;

@@ -89,7 +89,7 @@ ${I}default:
         <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex, indent+1/>
                 <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
             <#else>
-        <@.vars[noMatchMacroName] name indent+1/>
+        <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
         </#if>
 ${I}}
@@ -114,7 +114,7 @@ ${I}{
         <@.vars[memberActionMacroName] defaultMember, packed, fieldIndex, indent+1/>
                 <#if defaultMember.compoundField??><#local fieldIndex+=1></#if>
             <#else>
-        <@.vars[noMatchMacroName] name indent+1/>
+        <@.vars[noMatchMacroName] name, indent+1/>
             </#if>
 ${I}}
         </#if>
@@ -270,6 +270,27 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>
+<#macro choice_tag_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}return UNDEFINED_CHOICE;
+</#macro>
+<#macro choice_tag_member member packed index indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}return <@choice_tag_name member.compoundField/>;
+    <#else>
+${I}return UNDEFINED_CHOICE;
+    </#if>
+</#macro>
+${name}::ChoiceTag ${name}::choiceTag() const
+{
+<#if fieldList?has_content>
+    <@choice_switch "choice_tag_member", "choice_tag_no_match", selectorExpression, 1, true/>
+<#else>
+    return UNDEFINED_CHOICE;
+</#if>
+}
+
 void ${name}::createPackingContext(${types.packingContextNode.name}&<#if fieldList?has_content> contextNode</#if>)
 {
 <#list fieldList as field>

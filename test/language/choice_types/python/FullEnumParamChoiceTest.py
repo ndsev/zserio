@@ -83,6 +83,16 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         fullEnumParamChoice.white = value
         self.assertEqual(value, fullEnumParamChoice.white)
 
+    def testChoiceTag(self):
+        fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
+        self.assertEqual(fullEnumParamChoice.CHOICE_BLACK, fullEnumParamChoice.choice_tag)
+
+        fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.GREY)
+        self.assertEqual(fullEnumParamChoice.CHOICE_GREY, fullEnumParamChoice.choice_tag)
+
+        fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.WHITE)
+        self.assertEqual(fullEnumParamChoice.CHOICE_WHITE, fullEnumParamChoice.choice_tag)
+
     def testBitSizeOf(self):
         fullEnumParamChoice = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
         self.assertEqual(8, fullEnumParamChoice.bitsizeof())

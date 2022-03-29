@@ -54,6 +54,19 @@ public class EnumParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        EnumParamChoice enumParamChoice = new EnumParamChoice(Selector.BLACK);
+        assertEquals(EnumParamChoice.CHOICE_black, enumParamChoice.choiceTag());
+
+        enumParamChoice = new EnumParamChoice(Selector.GREY);
+        assertEquals(EnumParamChoice.CHOICE_grey, enumParamChoice.choiceTag());
+
+        enumParamChoice = new EnumParamChoice(Selector.WHITE);
+        assertEquals(EnumParamChoice.CHOICE_white, enumParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         EnumParamChoice enumParamChoice = new EnumParamChoice(Selector.BLACK);

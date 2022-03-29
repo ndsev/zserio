@@ -54,6 +54,19 @@ public class FullBitmaskParamChoiceTest
     }
 
     @Test
+    public void choiceTag()
+    {
+        FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(Selector.Values.BLACK);
+        assertEquals(FullBitmaskParamChoice.CHOICE_black, fullBitmaskParamChoice.choiceTag());
+
+        fullBitmaskParamChoice = new FullBitmaskParamChoice(Selector.Values.WHITE);
+        assertEquals(FullBitmaskParamChoice.CHOICE_white, fullBitmaskParamChoice.choiceTag());
+
+        fullBitmaskParamChoice = new FullBitmaskParamChoice(Selector.Values.BLACK_AND_WHITE);
+        assertEquals(FullBitmaskParamChoice.CHOICE_blackAndWhite, fullBitmaskParamChoice.choiceTag());
+    }
+
+    @Test
     public void bitSizeOf()
     {
         FullBitmaskParamChoice fullBitmaskParamChoice = new FullBitmaskParamChoice(Selector.Values.BLACK);

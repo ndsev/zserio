@@ -38,6 +38,13 @@ class EmptyChoiceWithDefaultTest(unittest.TestCase):
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(selector)
         self.assertEqual(selector, emptyChoiceWithDefault.selector)
 
+    def testChoiceTag(self):
+        emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(0)
+        self.assertEqual(emptyChoiceWithDefault.UNDEFINED_CHOICE, emptyChoiceWithDefault.choice_tag)
+
+        emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(1)
+        self.assertEqual(emptyChoiceWithDefault.UNDEFINED_CHOICE, emptyChoiceWithDefault.choice_tag)
+
     def testBitSizeOf(self):
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(1)
         self.assertEqual(0, emptyChoiceWithDefault.bitsizeof(1))
