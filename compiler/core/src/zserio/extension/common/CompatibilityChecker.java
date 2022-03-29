@@ -31,8 +31,6 @@ public class CompatibilityChecker extends DefaultTreeWalker
     public void beginRoot(Root root) throws ZserioExtensionException
     {
         compatibilityVersion = root.getRootPackage().getCompatibilityVersion();
-        if (compatibilityVersion == null)
-            return;
     }
 
     @Override

@@ -61,7 +61,7 @@ public class CompatibilityErrorTest
     public void versionLessThanMinSupported()
     {
         final String error = "version_less_than_min_supported_error.zs:1:30: " +
-                "Root package specifies unsupported compatibility version '2.3.2', " +
+                "Package specifies unsupported compatibility version '2.3.2', " +
                 "minimum supported version is '2.4.0'!";
         assertTrue(zserioErrors.isPresent(error));
     }

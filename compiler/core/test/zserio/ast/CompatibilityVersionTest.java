@@ -18,7 +18,7 @@ public class CompatibilityVersionTest
         final ParserException exception = assertThrows(ParserException.class, () ->
                 new CompatibilityVersion(new AstLocation(null), "\"2.3.0\"", new ArrayList<DocComment>()));
         assertThat(exception.getMessage(), containsString(
-                "Root package specifies unsupported compatibility version '2.3.0', minimum supported "));
+                "Package specifies unsupported compatibility version '2.3.0', minimum supported "));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class CompatibilityVersionTest
                 new CompatibilityVersion(
                         new AstLocation(null), "\"" + higherVersion + "\"", new ArrayList<DocComment>()));
         assertThat(exception.getMessage(), containsString(
-                "Root package specifies compatibility version '" + higherVersion + "' " +
+                "Package specifies compatibility version '" + higherVersion + "' " +
                 "which is higher than current zserio version '" + ZserioVersion.VERSION_STRING + "'!"));
     }
 }

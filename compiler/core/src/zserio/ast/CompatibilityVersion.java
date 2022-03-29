@@ -33,14 +33,14 @@ public class CompatibilityVersion extends DocumentableAstNode
         if (version.compareTo(CURRENT_ZSERIO_VERSION) > 0)
         {
             throw new ParserException(location,
-                    "Root package specifies compatibility version '" + version + "' " +
+                    "Package specifies compatibility version '" + version + "' " +
                     "which is higher than current zserio version '" + CURRENT_ZSERIO_VERSION + "'!");
         }
 
         if (version.compareTo(MINIMUM_SUPPORTED_VERSION) < 0)
         {
             throw new ParserException(location,
-                    "Root package specifies unsupported compatibility version '" + version +
+                    "Package specifies unsupported compatibility version '" + version +
                     "', minimum supported version is '" + MINIMUM_SUPPORTED_VERSION + "'!");
         }
     }
