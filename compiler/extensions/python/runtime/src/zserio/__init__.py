@@ -31,4 +31,4 @@ from zserio import pubsub
 from zserio import service
 from zserio import typeinfo
 
-VERSION_STRING = "2.5.0"
+VERSION_STRING = "2.5.1"
