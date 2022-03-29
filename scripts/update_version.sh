@@ -36,16 +36,20 @@ update_version()
     local VERSION_FILES="${FOUND_VERSION_FILES[@]}
                          ${PYTHON_RUNTIME_VERSION_FILE}
                          ${CPP_RUNTIME_DOXYFILE}"
+    local COMPATIBILITY_VERSION_FILE="${ZSERIO_SOURCE_DIR}/core/src/zserio/ast/CompatibilityVersion.java"
+    local NUM_UPDATED_FILES=0
     for VERSION_FILE in ${VERSION_FILES}
     do
-        update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}"
-        if [ $? -ne 0 ] ; then
-            return 1
+        if [[ "${VERSION_FILE}" != "${COMPATIBILITY_VERSION_FILE}" ]] ; then 
+            update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+            NUM_UPDATED_FILES=$((NUM_UPDATED_FILES+1))
         fi
     done
-    local VERSION_FILES_ARRAY=(${VERSION_FILES})
     echo
-    echo "Total number of updated files: ${#VERSION_FILES_ARRAY[@]}"
+    echo "Total number of updated files: ${NUM_UPDATED_FILES}"
 
     return 0
 }
