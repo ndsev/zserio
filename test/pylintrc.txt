@@ -66,7 +66,7 @@ max-locals=30
 max-public-methods=30
 
 # Maximum number of return / yield for function / method body.
-max-returns=10
+max-returns=40
 
 # Maximum number of statements in function / method body.
 max-statements=60
