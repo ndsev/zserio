@@ -12,7 +12,8 @@
 disable=no-else-return,
         protected-access,
         wrong-import-order,
-        consider-using-in
+        consider-using-in,
+        too-many-return-statements
 
 [FORMAT]
 
@@ -64,9 +65,6 @@ max-locals=30
 
 # Maximum number of public methods for a class (see R0904).
 max-public-methods=30
-
-# Maximum number of return / yield for function / method body.
-max-returns=40
 
 # Maximum number of statements in function / method body.
 max-statements=60
