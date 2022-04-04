@@ -100,9 +100,9 @@ new ${field.typeInfo.arrayableInfo.arrayTraits.name}(<#rt>
 
 <#macro compound_field_get_offset field>
     <#if field.offset.typeInfo.requiresBigInt>
-        ${field.offset.getter}.longValue()<#t>
+        (${field.offset.getter}).longValue()<#t>
     <#else>
-        ${field.offset.getter}<#t>
+        (${field.offset.getter})<#t>
     </#if>
 </#macro>
 

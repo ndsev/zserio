@@ -249,7 +249,8 @@ public class JavaRuntimeFunctionDataCreator
             final String suffix = (instantiation.getBaseType().isSigned()) ? "SignedBits" :
                 (instantiation.getMaxBitSize() > 63) ? "BigInteger" : "Bits";
             // this int cast is necessary because length can be bigger than integer (uint64, uint32)
-            final String arg = "(int)" + javaExpressionFormatter.formatGetter(instantiation.getLengthExpression());
+            final String arg = "(int)" + "(" +
+                    javaExpressionFormatter.formatGetter(instantiation.getLengthExpression()) + ")";
             return new RuntimeFunctionTemplateData(
                     suffix, arg, javaNativeMapper.getJavaType(instantiation).getFullName());
         }

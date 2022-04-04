@@ -479,13 +479,23 @@ public class Expression extends AstNodeBase
     }
 
     /**
-     * Checks if expression contains function call.
+     * Checks if expression contains a ternary operator out of array index.
      *
-     * @return Returns true if this expression contains function call.
+     * @return Returns true if this expression contains a ternary operator out of array index.
      */
-    public boolean containsFunctionCall()
+    public boolean containsTernaryOperatorOutOfArray()
     {
-        return containsOperand(ZserioParser.RPAREN);
+        return containsOperandOutOfArray(ZserioParser.QUESTIONMARK);
+    }
+
+    /**
+     * Checks if expression contains a function call out of array index.
+     *
+     * @return Returns true if this expression contain a function call out of array index.
+     */
+    public boolean containsFunctionCallOutOfArray()
+    {
+        return containsOperandOutOfArray(ZserioParser.RPAREN);
     }
 
     /**
@@ -925,6 +935,35 @@ public class Expression extends AstNodeBase
 
                 if (operand3 != null)
                     if (operand3.containsOperand(operandTokenType))
+                        return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean containsOperandOutOfArray(int operandTokenType)
+    {
+        return containsOperandOutOfArray(operandTokenType, false);
+    }
+
+    private boolean containsOperandOutOfArray(int operandTokenType, boolean inArray)
+    {
+        if (type == operandTokenType)
+            return true;
+
+        if (operand1 != null)
+        {
+            if (operand1.containsOperandOutOfArray(operandTokenType, inArray))
+                return true;
+
+            if (operand2 != null && type != ZserioParser.LBRACKET)
+            {
+                if (operand2.containsOperandOutOfArray(operandTokenType))
+                    return true;
+
+                if (operand3 != null)
+                    if (operand3.containsOperandOutOfArray(operandTokenType, inArray))
                         return true;
             }
         }

@@ -30,8 +30,8 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/School.cpp
     ${ZSERIO_GEN_DIR}/offsets/parameter_offset/School.h
 
-    ${ZSERIO_GEN_DIR}/offsets/uint64_array_offset/UInt64ArrayOffset.cpp
-    ${ZSERIO_GEN_DIR}/offsets/uint64_array_offset/UInt64ArrayOffset.h
+    ${ZSERIO_GEN_DIR}/offsets/ternary_operator_offset/TernaryOffset.cpp
+    ${ZSERIO_GEN_DIR}/offsets/ternary_operator_offset/TernaryOffset.h
 
     ${ZSERIO_GEN_DIR}/offsets/uint64_offset/UInt64Offset.cpp
     ${ZSERIO_GEN_DIR}/offsets/uint64_offset/UInt64Offset.h
@@ -54,7 +54,7 @@ add_test_sources(
     cpp/OptionalMemberOffsetTest.cpp
     cpp/PackedAutoArrayOffsetTest.cpp
     cpp/ParameterOffsetTest.cpp
-    cpp/UInt64ArrayOffsetTest.cpp
+    cpp/TernaryOperatorOffsetTest.cpp
     cpp/UInt64OffsetTest.cpp
 )
 

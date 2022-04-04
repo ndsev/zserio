@@ -355,8 +355,11 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
                         "' is not an unsigned fixed sized integer type!");
             }
 
-            if (offsetExpr.containsFunctionCall())
-                throw new ParserException(offsetExpr, "Function call cannot be used in offset expression!");
+            if (offsetExpr.containsFunctionCallOutOfArray())
+                throw new ParserException(offsetExpr, "Function call cannot be used for offset setting!");
+
+            if (offsetExpr.containsTernaryOperatorOutOfArray())
+                throw new ParserException(offsetExpr, "Ternary operator cannot be used for offset setting!");
 
             if (offsetExpr.op2() == null)
             {

@@ -332,12 +332,14 @@ public class ExpressionFormatter
         append(expr.op1());
         buffer.append(formatting.getAfterOperand1());
 
-        if (expressionType == ZserioParser.LBRACKET)
-            inArray = oldInFlag;
-        else if (expressionType == ZserioParser.DOT)
+        if (expressionType == ZserioParser.DOT)
             inDot = oldInFlag;
 
         append(expr.op2());
+
+        if (expressionType == ZserioParser.LBRACKET)
+            inArray = oldInFlag;
+
         buffer.append(formatting.getAfterOperand2());
     }
 
@@ -355,7 +357,10 @@ public class ExpressionFormatter
         }
 
         buffer.append(formatting.getBeforeOperand1());
+        final boolean oldFormatSetter = formatSetter;
+        formatSetter = false; // condition in ternary operator must be always getter
         append(formatting.getOperand1());
+        formatSetter = oldFormatSetter;
         buffer.append(formatting.getAfterOperand1());
         append(formatting.getOperand2());
         buffer.append(formatting.getAfterOperand2());

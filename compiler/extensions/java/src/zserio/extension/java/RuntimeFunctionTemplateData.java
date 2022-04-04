@@ -5,17 +5,17 @@ package zserio.extension.java;
  */
 public class RuntimeFunctionTemplateData
 {
-    RuntimeFunctionTemplateData(String suffix)
+    public RuntimeFunctionTemplateData(String suffix)
     {
         this(suffix, null, null);
     }
 
-    RuntimeFunctionTemplateData(String suffix, String arg)
+    public RuntimeFunctionTemplateData(String suffix, String arg)
     {
         this(suffix, arg, null);
     }
 
-    RuntimeFunctionTemplateData(String suffix, String arg, String javaReadTypeName)
+    public RuntimeFunctionTemplateData(String suffix, String arg, String javaReadTypeName)
     {
         this.suffix = suffix;
         this.arg = arg;

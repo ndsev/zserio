@@ -179,7 +179,7 @@ ${I}// check offset
 ${I}if (::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) != (${field.offset.getter}))
 ${I}{
 ${I}    throw ::zserio::CppRuntimeException("${actionName}: Wrong offset for field ${compoundName}.${field.name}: ") +
-${I}            ::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) + " != " + ${field.offset.getter} + "!";
+${I}            ::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) + " != " + (${field.offset.getter}) + "!";
 ${I}}
 </#macro>
 
@@ -446,10 +446,10 @@ ${compoundName}::<@offset_checker_name field.name/>::<@offset_checker_name field
 
 void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t index, size_t byteOffset) const
 {
-    if (byteOffset != ${field.offset.indirectGetter})
+    if (byteOffset != (${field.offset.indirectGetter}))
     {
         throw ::zserio::CppRuntimeException("Wrong offset for field ${compoundName}.${field.name}: ") +
-                byteOffset + " != " + ${field.offset.indirectGetter} + "!";
+                byteOffset + " != " + (${field.offset.indirectGetter}) + "!";
     }
 }
 </#macro>

@@ -50,7 +50,7 @@ public class OffsetsErrorTest
     @Test
     public void functionError()
     {
-        final String error = "function_error.zs:12:1: Function call cannot be used in offset expression!";
+        final String error = "function_error.zs:12:1: Function call cannot be used for offset setting!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
@@ -82,6 +82,14 @@ public class OffsetsErrorTest
     {
         final String error = "string_error.zs:6:1: " +
                 "Offset expression for field 'values' is not an unsigned fixed sized integer type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void ternaryOperatorError()
+    {
+        final String error = "ternary_operator_error.zs:8:1: " +
+                "Ternary operator cannot be used for offset setting!";
         assertTrue(zserioErrors.isPresent(error));
     }
 
