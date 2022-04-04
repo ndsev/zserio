@@ -11,6 +11,10 @@ namespace offsets
 namespace ternary_operator_offset
 {
 
+using allocator_type = TernaryOffset::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
 class TernaryOperatorOffsetTest : public ::testing::Test
 {
 protected:
@@ -50,7 +54,7 @@ protected:
     void fillTernaryOffset(TernaryOffset& ternaryOffset, bool isFirstOffsetUsed, bool createWrongOffset)
     {
         ternaryOffset.setIsFirstOffsetUsed(isFirstOffsetUsed);
-        const std::vector<uint32_t> offsets = { WRONG_FIELD_OFFSET, WRONG_FIELD_OFFSET };
+        const vector_type<uint32_t> offsets = { WRONG_FIELD_OFFSET, WRONG_FIELD_OFFSET };
         ternaryOffset.setOffsets(offsets);
         ternaryOffset.setValue(FIELD_VALUE);
         if (!createWrongOffset)
