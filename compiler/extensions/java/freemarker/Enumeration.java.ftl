@@ -110,7 +110,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     {
         out.write${runtimeFunction.suffix}(getValue()<#if runtimeFunction.arg??>, ${runtimeFunction.arg}</#if>);
     }
-    
+
     @Override
     public void write(zserio.runtime.array.PackingContextNode contextNode,
             zserio.runtime.io.BitStreamWriter out) throws java.io.IOException

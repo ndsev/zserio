@@ -314,7 +314,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         </#list>
     </#if>
     }
-    
+
     @Override
     public void write(zserio.runtime.array.PackingContextNode contextNode,
             zserio.runtime.io.BitStreamWriter out) throws java.io.IOException

@@ -40,7 +40,7 @@ update_version()
     local NUM_UPDATED_FILES=0
     for VERSION_FILE in ${VERSION_FILES}
     do
-        if [[ "${VERSION_FILE}" != "${COMPATIBILITY_VERSION_FILE}" ]] ; then 
+        if [[ "${VERSION_FILE}" != "${COMPATIBILITY_VERSION_FILE}" ]] ; then
             update_version_in_file "${VERSION_FILE}" "${NEW_VERSION_STRING}"
             if [ $? -ne 0 ] ; then
                 return 1

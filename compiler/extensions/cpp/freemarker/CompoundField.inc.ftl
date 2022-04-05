@@ -560,7 +560,7 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
     public:
         explicit <@element_initializer_name field.name/>(${compoundName}& owner);
 
-    void initialize(${field.array.elementTypeInfo.typeFullName}& element, size_t index) const;
+        void initialize(${field.array.elementTypeInfo.typeFullName}& element, size_t index) const;
 
     private:
         ${compoundName}& m_owner;

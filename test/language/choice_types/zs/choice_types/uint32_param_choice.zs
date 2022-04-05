@@ -10,7 +10,7 @@ choice UInt32ParamChoice(uint32 selector) on selector
     case 1:
         VariantA  a;
 
-    case 2: 
+    case 2:
     case 3:
     case 4:
         VariantB  b;

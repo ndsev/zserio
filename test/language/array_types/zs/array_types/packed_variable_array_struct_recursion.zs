@@ -5,7 +5,7 @@ struct Block(uint8 byteCount)
     uint8   dataBytes[byteCount];
     uint8   blockTerminator;
 
-    Block(blockTerminator) nextData if blockTerminator > 0; 
+    Block(blockTerminator) nextData if blockTerminator > 0;
 };
 
 struct PackedVariableArray

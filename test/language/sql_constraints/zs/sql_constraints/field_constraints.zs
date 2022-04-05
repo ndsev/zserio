@@ -6,7 +6,7 @@ const string NOT_NULL_CONSTRAINT = "NOT NULL";
 const string CONSTRAINTS_CONSTANT = "123";
 
 sql_table FieldConstraintsTable
-{                                                
+{
     int32               primaryKey               sql "PrImArY  key " + // spaces and cases are intended
                                                       NOT_NULL_CONSTRAINT;
     int32               withoutSql;
