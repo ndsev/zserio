@@ -171,7 +171,7 @@ ${I}<@field_member_name field/> = new ${field.typeInfo.typeFullName}(<@compound_
         </#if>
     <#elseif field.array??>
 ${I}<@field_member_name field/> = <@array_wrapper_read_constructor field, indent + 2/>;
-${I}<@compound_get_field field/>.read<@array_field_packed_suffix field, packed/>(in<#if field.array.length??>, (int)${field.array.length}</#if>);
+${I}<@compound_get_field field/>.read<@array_field_packed_suffix field, packed/>(in<#if field.array.length??>, (int)(${field.array.length})</#if>);
     <#elseif field.runtimeFunction??>
 ${I}<@field_member_name field/> = <#if field.runtimeFunction.javaReadTypeName??>(${field.runtimeFunction.javaReadTypeName})</#if><#rt>
         <#lt>in.read${field.runtimeFunction.suffix}(${field.runtimeFunction.arg!});

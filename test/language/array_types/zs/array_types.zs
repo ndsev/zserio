@@ -19,3 +19,4 @@ import array_types.packed_variable_array_uint8.*;
 import array_types.variable_array_struct_cast_int8.*;
 import array_types.variable_array_struct_cast_varuint.*;
 import array_types.variable_array_subtyped_struct.*;
+import array_types.variable_array_ternary_operator.*;

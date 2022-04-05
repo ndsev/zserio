@@ -305,7 +305,7 @@ ${I}    raise zserio.PythonRuntimeException("Constraint violated for field ${com
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.array?? && field.array.length??>
 ${I}# check array length
-${I}if len(self.<@field_member_name field/>) != ${field.array.length}:
+${I}if len(self.<@field_member_name field/>) != (${field.array.length}):
 ${I}    raise zserio.PythonRuntimeException("Wrong array length for field ${compoundName}.${field.name}: "
 ${I}                                        f"{len(self.<@field_member_name field/>)} != {${field.array.length}}!")
     </#if>

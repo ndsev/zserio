@@ -96,6 +96,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/VariableArray.h
     ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/array_types/variable_array_subtyped_struct/TestStructure.h
+
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_ternary_operator/VariableArray.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_ternary_operator/VariableArray.h
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_ternary_operator/VariableArrayElement.cpp
+    ${ZSERIO_GEN_DIR}/array_types/variable_array_ternary_operator/VariableArrayElement.h
 )
 
 zserio_add_library(TARGET array_types_zs
@@ -126,6 +131,7 @@ add_test_sources(
     cpp/VariableArrayStructCastInt8Test.cpp
     cpp/VariableArrayStructCastVarUIntTest.cpp
     cpp/VariableArraySubtypedStructTest.cpp
+    cpp/VariableArrayTernaryOperatorTest.cpp
 )
 
 add_test_dependencies(array_types_zs)
