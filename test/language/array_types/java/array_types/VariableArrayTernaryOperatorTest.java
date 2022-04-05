@@ -37,8 +37,9 @@ public class VariableArrayTernaryOperatorTest
         variableArray.setIsFirstSizeUsed(isFirstSizeUsed);
         final byte currentSize = (isFirstSizeUsed) ? variableArray.getFirstSize() :
             variableArray.getSecondSize();
-        final VariableArrayElement array[] = new VariableArrayElement[currentSize * currentSize];
-        for (int i = 0; i < array.length; ++i)
+        final int arraySize = (int)currentSize * (int)currentSize;
+        final VariableArrayElement array[] = new VariableArrayElement[arraySize];
+        for (int i = 0; i < arraySize; ++i)
         {
             final VariableArrayElement variableArrayElement = new VariableArrayElement(currentSize);
             variableArrayElement.setElement(i);
@@ -54,7 +55,8 @@ public class VariableArrayTernaryOperatorTest
         assertEquals(isFirstSizeUsed, variableArray.getIsFirstSizeUsed());
         final byte currentSize = (isFirstSizeUsed) ? FIRST_SIZE : SECOND_SIZE;
         final VariableArrayElement array[] = variableArray.getArray();
-        for (int i = 0; i < currentSize * currentSize; ++i)
+        final int arraySize = (int)currentSize * (int)currentSize;
+        for (int i = 0; i < arraySize; ++i)
         {
             final VariableArrayElement variableArrayElement = array[i];
             assertEquals(currentSize, variableArrayElement.getBitSize());

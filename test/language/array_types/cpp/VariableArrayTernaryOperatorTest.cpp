@@ -20,11 +20,12 @@ protected:
     void fillVariableArray(VariableArray& variableArray, bool isFirstSizeUsed)
     {
         variableArray.setIsFirstSizeUsed(isFirstSizeUsed);
-        const size_t currentSize = (isFirstSizeUsed) ? variableArray.getFirstSize() :
+        const uint8_t currentSize = (isFirstSizeUsed) ? variableArray.getFirstSize() :
                 variableArray.getSecondSize();
         vector_type<VariableArrayElement>& array = variableArray.getArray();
         array.clear();
-        for (size_t i = 0; i < currentSize * currentSize; ++i)
+        const size_t arraySize = static_cast<size_t>(currentSize) * static_cast<size_t>(currentSize);
+        for (size_t i = 0; i < arraySize; ++i)
         {
             VariableArrayElement variableArrayElement;
             variableArrayElement.setElement(i);
@@ -36,9 +37,10 @@ protected:
     void checkVariableArray(const VariableArray& variableArray, bool isFirstSizeUsed)
     {
         ASSERT_EQ(isFirstSizeUsed, variableArray.getIsFirstSizeUsed());
-        const size_t currentSize = (isFirstSizeUsed) ? FIRST_SIZE : SECOND_SIZE;
+        const uint8_t currentSize = (isFirstSizeUsed) ? FIRST_SIZE : SECOND_SIZE;
         const vector_type<VariableArrayElement>& array = variableArray.getArray();
-        for (size_t i = 0; i < currentSize * currentSize; ++i)
+        const size_t arraySize = static_cast<size_t>(currentSize) * static_cast<size_t>(currentSize);
+        for (size_t i = 0; i < arraySize; ++i)
         {
             const VariableArrayElement& variableArrayElement = array[i];
             ASSERT_EQ(currentSize, variableArrayElement.getBitSize());
