@@ -114,7 +114,7 @@ class Walker:
         self._observer.end_root(zserio_object)
 
     def _walk_field(self, zserio_object: typing.Any, member_info: MemberInfo) -> bool:
-        if MemberAttribute.ARRAY_LENGTH in member_info.attributes:
+        if MemberAttribute.ARRAY_LENGTH in member_info.attributes and zserio_object is not None:
             if self._observer.begin_array(zserio_object, member_info):
                 for element in zserio_object:
                     if not self._walk_field_value(element, member_info):

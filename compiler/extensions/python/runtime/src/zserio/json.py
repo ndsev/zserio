@@ -56,14 +56,14 @@ class JsonWriter(Walker.Observer):
 
         self._io.write(f"\"{member_info.schema_name}\"{self._key_separator}")
 
-        self._begin_arrays()
+        self._begin_array()
 
         return True
 
     def end_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
         self._is_first = False
 
-        self._end_arrays()
+        self._end_array()
 
         self._end_item()
 
@@ -91,7 +91,7 @@ class JsonWriter(Walker.Observer):
     def visit_value(self, value: typing.Any, member_info: MemberInfo) -> bool:
         self._begin_item()
 
-        if not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
+        if value is None or not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
             self._io.write(f"\"{member_info.schema_name}\"{self._key_separator}")
 
         json_value = self._json_encoder.encode(value, member_info.type_info)
@@ -127,13 +127,13 @@ class JsonWriter(Walker.Observer):
 
         self._io.write("}")
 
-    def _begin_arrays(self):
+    def _begin_array(self):
         self._io.write("[")
 
         self._is_first = True
         self._level += 1
 
-    def _end_arrays(self):
+    def _end_array(self):
         if self._indent is not None:
             self._io.write("\n")
         self._level -= 1
