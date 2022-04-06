@@ -58,7 +58,12 @@ generate_ant_file()
         <!-- Confusing method names. -->
         <Match>
             <Bug code=\"Nm\"/>
-        </Match>"
+        </Match>
+        <!-- Method uses the same code for two switch clauses. -->
+        <Match>
+            <Bug code=\"DB\"/>
+        </Match>
+        "
     fi
 
     cat > ${BUILD_DIR}/build.xml << EOF
