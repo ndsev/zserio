@@ -21,8 +21,11 @@ class JsonWriterTest(unittest.TestCase):
         json_writer.begin_root(object())
         json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)))
         json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
+        json_writer.visit_value(BitBuffer(bytes([0x1F]), 5), MemberInfo("data", TypeInfo("extern", BitBuffer)))
         json_writer.end_root(object())
-        self.assertEqual("{\"identifier\": 13, \"text\": \"test\"}", json_writer.get_io().getvalue())
+        self.assertEqual(
+            "{\"identifier\": 13, \"text\": \"test\", \"data\": {\"buffer\": \"b'\\\\x1f'\", \"bitSize\": 5}}",
+            json_writer.get_io().getvalue())
 
     def test_nested_compound(self):
         json_writer = JsonWriter()
@@ -116,11 +119,10 @@ class JsonEncoderTest(unittest.TestCase):
         json_encoder = JsonEncoder()
         self.assertEqual("0", json_encoder.encode(DummyBitmask(), dummy_bitmask_type_info))
 
-    def test_encode_bitbuffer(self):
+    def test_encode_bytes(self):
         json_encoder = JsonEncoder()
-        self.assertEqual("\"zserio.BitBuffer(b'\\\\x1f', 5)\"", json_encoder.encode(
-            BitBuffer(bytes([0x1F]), 5), TypeInfo("extern", BitBuffer)
-        ))
+        self.assertEqual("\"b'\\\\x1f\\\\x11\\\\xab'\"",
+                         json_encoder.encode(bytes([0x1F, 0x11, 0xAB]), TypeInfo("bytes", bytes)))
 
     def test_encode_str(self):
         json_encoder = JsonEncoder()

@@ -94,8 +94,11 @@ class JsonWriter(Walker.Observer):
         if value is None or not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
             self._io.write(f"\"{member_info.schema_name}\"{self._key_separator}")
 
-        json_value = self._json_encoder.encode(value, member_info.type_info)
-        self._io.write(json_value)
+        if isinstance(value, BitBuffer):
+            self._visit_bitbuffer(value, member_info)
+        else:
+            json_value = self._json_encoder.encode(value, member_info.type_info)
+            self._io.write(json_value)
 
         self._end_item()
         return True
@@ -142,6 +145,20 @@ class JsonWriter(Walker.Observer):
 
         self._io.write("]")
 
+    def _visit_bitbuffer(self, value: typing.Any, member_info: MemberInfo):
+        self._begin_obj()
+        self._begin_item()
+        self._io.write(f"\"buffer\"{self._key_separator}")
+        json_value = self._json_encoder.encode(value.buffer, member_info.type_info)
+        self._io.write(json_value)
+        self._end_item()
+        self._begin_item()
+        self._io.write(f"\"bitSize\"{self._key_separator}")
+        json_value = self._json_encoder.encode(value.bitsize, member_info.type_info)
+        self._io.write(json_value)
+        self._end_item()
+        self._end_obj()
+
 class JsonEncoder:
     """
     Converts zserio values to/from Json string representation.
@@ -163,8 +180,8 @@ class JsonEncoder:
             return self._encoder.encode(value.value)
         elif TypeAttribute.BITMASK_VALUES in type_info.attributes:
             return self._encoder.encode(value.value)
-        elif isinstance(value, BitBuffer):
-            return self._encoder.encode(f"zserio.BitBuffer({value.buffer!r}, {value.bitsize})")
+        elif isinstance(value, bytes):
+            return self._encoder.encode(f"{value!r}")
         elif isinstance(value, str):
             return self._encoder.encode(value)
         else:
