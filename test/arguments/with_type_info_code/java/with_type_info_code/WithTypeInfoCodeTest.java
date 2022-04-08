@@ -578,7 +578,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(6, fields.size());
+        assertEquals(7, fields.size());
 
         // fieldU32
         final FieldInfo fieldU32Field = fields.get(0);
@@ -592,7 +592,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, fieldU32Field.getTypeArguments().size());
         assertEquals("8", fieldU32Field.getAlignment());
         assertEquals("", fieldU32Field.getOffset());
-        assertEquals("0", fieldU32Field.getInitializer());
+        assertEquals("10", fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
         assertEquals("", fieldU32Field.getOptionalCondition());
         assertEquals("", fieldU32Field.getConstraint());
@@ -601,8 +601,29 @@ public class WithTypeInfoCodeTest
         assertFalse(fieldU32Field.isPacked());
         assertFalse(fieldU32Field.isImplicit());
 
+        // fieldOffset
+        final FieldInfo fieldOffsetField = fields.get(1);
+        assertEquals("fieldOffset", fieldOffsetField.getSchemaName());
+
+        assertEquals("uint32", fieldOffsetField.getTypeInfo().getSchemaName());
+        assertEquals(SchemaType.UINT32, fieldOffsetField.getTypeInfo().getSchemaType());
+        assertEquals(JavaType.LONG, fieldOffsetField.getTypeInfo().getJavaType());
+        assertEquals(32, fieldOffsetField.getTypeInfo().getBitSize());
+
+        assertEquals(0, fieldOffsetField.getTypeArguments().size());
+        assertEquals("", fieldOffsetField.getAlignment());
+        assertEquals("", fieldOffsetField.getOffset());
+        assertEquals("", fieldOffsetField.getInitializer());
+        assertFalse(fieldOffsetField.isOptional());
+        assertEquals("", fieldOffsetField.getOptionalCondition());
+        assertEquals("", fieldOffsetField.getConstraint());
+        assertFalse(fieldOffsetField.isArray());
+        assertEquals("", fieldOffsetField.getArrayLength());
+        assertFalse(fieldOffsetField.isPacked());
+        assertFalse(fieldOffsetField.isImplicit());
+
         // fieldString
-        final FieldInfo fieldStringField = fields.get(1);
+        final FieldInfo fieldStringField = fields.get(2);
         assertEquals("fieldString", fieldStringField.getSchemaName());
 
         assertEquals("string", fieldStringField.getTypeInfo().getSchemaName());
@@ -611,7 +632,7 @@ public class WithTypeInfoCodeTest
 
         assertEquals(0, fieldStringField.getTypeArguments().size());
         assertEquals("", fieldStringField.getAlignment());
-        assertEquals("getFieldU32()", fieldStringField.getOffset());
+        assertEquals("getFieldOffset()", fieldStringField.getOffset());
         assertEquals("\"My\" + \"String\"", fieldStringField.getInitializer());
         assertFalse(fieldStringField.isOptional());
         assertEquals("", fieldStringField.getOptionalCondition());
@@ -622,7 +643,7 @@ public class WithTypeInfoCodeTest
         assertFalse(fieldStringField.isImplicit());
 
         // fieldBool
-        final FieldInfo fieldBoolField = fields.get(2);
+        final FieldInfo fieldBoolField = fields.get(3);
         assertEquals("fieldBool", fieldBoolField.getSchemaName());
 
         assertEquals("bool", fieldBoolField.getTypeInfo().getSchemaName());
@@ -643,7 +664,7 @@ public class WithTypeInfoCodeTest
         assertFalse(fieldBoolField.isImplicit());
 
         // fieldFloat16
-        final FieldInfo fieldFloat16Field = fields.get(3);
+        final FieldInfo fieldFloat16Field = fields.get(4);
         assertEquals("fieldFloat16", fieldFloat16Field.getSchemaName());
 
         assertEquals("float16", fieldFloat16Field.getTypeInfo().getSchemaName());
@@ -664,7 +685,7 @@ public class WithTypeInfoCodeTest
         assertFalse(fieldFloat16Field.isImplicit());
 
         // fieldFloat32
-        final FieldInfo fieldFloat32Field = fields.get(4);
+        final FieldInfo fieldFloat32Field = fields.get(5);
         assertEquals("fieldFloat32", fieldFloat32Field.getSchemaName());
 
         assertEquals("float32", fieldFloat32Field.getTypeInfo().getSchemaName());
@@ -685,7 +706,7 @@ public class WithTypeInfoCodeTest
         assertFalse(fieldFloat32Field.isImplicit());
 
         // fieldFloat64
-        final FieldInfo fieldFloat64Field = fields.get(5);
+        final FieldInfo fieldFloat64Field = fields.get(6);
         assertEquals("fieldFloat64", fieldFloat64Field.getSchemaName());
 
         assertEquals("float64", fieldFloat64Field.getTypeInfo().getSchemaName());

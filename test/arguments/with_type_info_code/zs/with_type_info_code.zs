@@ -3,8 +3,9 @@ package with_type_info_code;
 struct SimpleStruct
 {
 align(8):
-    uint32 fieldU32 = 0;
-fieldU32:
+    uint32 fieldU32 = 10;
+    uint32 fieldOffset;
+fieldOffset:
     string fieldString = "My" + "String";
     bool fieldBool = false;
     float16 fieldFloat16 = 1.0f;

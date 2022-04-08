@@ -1,9 +1,11 @@
 import unittest
+import os
+import json
+import zserio
 
 from zserio.typeinfo import TypeAttribute, MemberAttribute, TypeInfo
-from zserio import BitBuffer
 
-from testutils import getZserioApi
+from testutils import getZserioApi, getApiDir
 
 class WithTypeInfoCodeTest(unittest.TestCase):
     @classmethod
@@ -20,13 +22,45 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def testSimpleService(self):
         self._checkSimpleService(self.api.SimpleService.type_info())
 
+    def testWriteReadFileWithOptionals(self):
+        withTypeInfoCode = self._createWithTypeInfoCode(createOptionals=True)
+        zserio.serialize_to_file(withTypeInfoCode, self.BLOB_NAME_WITH_OPTIONALS)
+
+        readWithTypeInfoCode = zserio.deserialize_from_file(self.api.WithTypeInfoCode,
+                                                            self.BLOB_NAME_WITH_OPTIONALS)
+        self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
+
+    def testWriteReadFileWithoutOptionals(self):
+        withTypeInfoCode = self._createWithTypeInfoCode(createOptionals=False)
+        zserio.serialize_to_file(withTypeInfoCode, self.BLOB_NAME_WITHOUT_OPTIONALS)
+
+        readWithTypeInfoCode = zserio.deserialize_from_file(self.api.WithTypeInfoCode,
+                                                            self.BLOB_NAME_WITHOUT_OPTIONALS)
+        self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
+
+    def testJsonWriterWithOptionals(self):
+        withTypeInfoCode = self._createWithTypeInfoCode(createOptionals=True)
+        withTypeInfoCode.initialize_offsets(0)
+        with open(self.JSON_NAME_WITH_OPTIONALS, "w", encoding="utf-8") as jsonFile:
+            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4))
+            walker.walk(withTypeInfoCode)
+        self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_OPTIONALS, createdOptionals=True)
+
+    def testJsonWriterWithoutOptionals(self):
+        withTypeInfoCode = self._createWithTypeInfoCode(createOptionals=False)
+        withTypeInfoCode.initialize_offsets(0)
+        with open(self.JSON_NAME_WITHOUT_OPTIONALS, "w", encoding="utf-8") as jsonFile:
+            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4))
+            walker.walk(withTypeInfoCode)
+        self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITHOUT_OPTIONALS, createdOptionals=False)
+
     def _checkSimpleStruct(self, type_info):
         self.assertEqual("with_type_info_code.SimpleStruct", type_info.schema_name)
         self.assertEqual(self.api.SimpleStruct, type_info.py_type)
         self.assertEqual(1, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(6, len(fields))
+        self.assertEqual(7, len(fields))
 
         # fieldU32
         member_info = fields[0]
@@ -40,10 +74,20 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.ALIGN, member_info.attributes)
         self.assertEqual("8", member_info.attributes[MemberAttribute.ALIGN])
         self.assertIn(MemberAttribute.INITIALIZER, member_info.attributes)
-        self.assertEqual("0", member_info.attributes[MemberAttribute.INITIALIZER])
+        self.assertEqual("10", member_info.attributes[MemberAttribute.INITIALIZER])
+
+        # fieldOffset
+        member_info = fields[1]
+        self.assertEqual("fieldOffset", member_info.schema_name)
+        self.assertEqual("uint32", member_info.type_info.schema_name)
+        self.assertEqual(int, member_info.type_info.py_type)
+        self.assertFalse(member_info.type_info.attributes)
+        self.assertEqual(1, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("field_offset", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
         # fieldString
-        member_info = fields[1]
+        member_info = fields[2]
         self.assertEqual("fieldString", member_info.schema_name)
         self.assertEqual("string", member_info.type_info.schema_name)
         self.assertEqual(str, member_info.type_info.py_type)
@@ -52,12 +96,12 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("field_string", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.OFFSET, member_info.attributes)
-        self.assertEqual("self.field_u32", member_info.attributes[MemberAttribute.OFFSET])
+        self.assertEqual("self.field_offset", member_info.attributes[MemberAttribute.OFFSET])
         self.assertIn(MemberAttribute.INITIALIZER, member_info.attributes)
         self.assertEqual("\"My\" + \"String\"", member_info.attributes[MemberAttribute.INITIALIZER])
 
         # fieldBool
-        member_info = fields[2]
+        member_info = fields[3]
         self.assertEqual("fieldBool", member_info.schema_name)
         self.assertEqual("bool", member_info.type_info.schema_name)
         self.assertEqual(bool, member_info.type_info.py_type)
@@ -69,7 +113,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("False", member_info.attributes[MemberAttribute.INITIALIZER])
 
         # fieldFloat16
-        member_info = fields[3]
+        member_info = fields[4]
         self.assertEqual("fieldFloat16", member_info.schema_name)
         self.assertEqual("float16", member_info.type_info.schema_name)
         self.assertEqual(float, member_info.type_info.py_type)
@@ -81,7 +125,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("1.0", member_info.attributes[MemberAttribute.INITIALIZER])
 
         # fieldFloat32
-        member_info = fields[4]
+        member_info = fields[5]
         self.assertEqual("fieldFloat32", member_info.schema_name)
         self.assertEqual("float32", member_info.type_info.schema_name)
         self.assertEqual(float, member_info.type_info.py_type)
@@ -91,7 +135,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("field_float32", member_info.attributes[MemberAttribute.PROPERTY_NAME])
 
         # fieldFloat64
-        member_info = fields[5]
+        member_info = fields[6]
         self.assertEqual("fieldFloat64", member_info.schema_name)
         self.assertEqual("float64", member_info.type_info.schema_name)
         self.assertEqual(float, member_info.type_info.py_type)
@@ -751,7 +795,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         member_info = fields[10]
         self.assertEqual("externData", member_info.schema_name)
         self.assertEqual("extern", member_info.type_info.schema_name)
-        self.assertEqual(BitBuffer, member_info.type_info.py_type)
+        self.assertEqual(zserio.BitBuffer, member_info.type_info.py_type)
         self.assertFalse(member_info.type_info.attributes)
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("extern_data", member_info.attributes[MemberAttribute.PROPERTY_NAME])
@@ -1043,3 +1087,201 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("get_simple_struct", member_info.attributes[MemberAttribute.CLIENT_METHOD_NAME])
         self.assertIn(MemberAttribute.REQUEST_TYPE, member_info.attributes)
         self._checkSimpleUnion(member_info.attributes[MemberAttribute.REQUEST_TYPE])
+
+    def _createWithTypeInfoCode(self, *, createOptionals):
+        simpleStruct = self._createSimpleStruct()
+        testEnum = self.api.TestEnum.TWO
+        ts32 = self._createTS32()
+        withTypeInfoCode = self.api.WithTypeInfoCode(
+            simpleStruct,
+            self._createComplexStruct(createOptionals),
+            self._createParameterizedStruct(simpleStruct),
+            self._createRecursiveStruct(),
+            self._createRecursiveUnion(),
+            self._createRecursiveChoice(True, False),
+            testEnum,
+            self._createSimpleChoice(testEnum),
+            ts32,
+            self._createTemplatedParameterizedStruct_TS32(ts32),
+            zserio.BitBuffer(bytes([0xCA, 0xFE]), 15),
+            [1, 4, 6, 4, 6, 1])
+
+        return withTypeInfoCode
+
+    def _checkWithTypeInfoCodeJson(self, jsonFileName, *, createdOptionals):
+        with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
+            jsonData = json.load(jsonFile)
+
+        testEnum = self.api.TestEnum.TWO
+        ts32 = self._createTS32()
+        self._checkSimpleStructJson(jsonData["simpleStruct"], 8)
+        self._checkComplexStructJson(jsonData["complexStruct"], createdOptionals)
+        self._checkParameterizedStructJson(jsonData["parameterizedStruct"], 10)
+        self._checkRecursiveStructJson(jsonData["recursiveStruct"])
+        self._checkRecursiveUnionJson(jsonData["recursiveUnion"])
+        self._checkRecursiveChoiceJson(jsonData["recursiveChoice"], True, False)
+        self.assertEqual(testEnum.value, jsonData["selector"])
+        self._checkSimpleChoiceJson(jsonData["simpleChoice"], testEnum)
+        self._checkTS32Json(jsonData["templatedStruct"])
+        self._checkTemplatedParameterizedStruct_TS32Json(jsonData["templatedParameterizedStruct"], ts32)
+        self.assertEqual("b'\\xca\\xfe'", jsonData["externData"]["buffer"])
+        self.assertEqual(15, jsonData["externData"]["bitSize"])
+        implicitArray = [1, 4, 6, 4, 6, 1]
+        self.assertEqual(len(implicitArray), len(jsonData["implicitArray"]))
+        for i, implicitArrayElement in enumerate(implicitArray):
+            self.assertEqual(implicitArrayElement, jsonData["implicitArray"][i])
+
+    def _createSimpleStruct(self):
+        simpleStruct = self.api.SimpleStruct()
+        simpleStruct.field_offset = 0
+        simpleStruct.field_float32 = 4.0
+
+        return simpleStruct
+
+    def _checkSimpleStructJson(self, simpleStruct, fieldOffset):
+        self.assertEqual(10, simpleStruct["fieldU32"])
+        self.assertEqual(fieldOffset, simpleStruct["fieldOffset"])
+        self.assertEqual("MyString", simpleStruct["fieldString"])
+        self.assertEqual(False, simpleStruct["fieldBool"])
+        self.assertEqual(1.0, simpleStruct["fieldFloat16"])
+        self.assertEqual(4.0, simpleStruct["fieldFloat32"])
+        self.assertEqual(2.0, simpleStruct["fieldFloat64"])
+
+    def _createComplexStruct(self, createOptionals):
+        simpleStruct = self._createSimpleStruct()
+        complexStruct = self.api.ComplexStruct(
+            simpleStruct,
+            self._createSimpleStruct() if createOptionals else None,
+            [3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5],
+            [3, 2, 1],
+            [self._createParameterizedStruct(simpleStruct),
+             self._createParameterizedStruct(simpleStruct)] if createOptionals else None,
+            7,
+            list(range(1, 65536, 2)))
+
+        return complexStruct
+
+    def _checkComplexStructJson(self, complexStruct, createdOptionals):
+        self._checkSimpleStructJson(complexStruct["simpleStruct"], 40)
+        if createdOptionals:
+            self._checkSimpleStructJson(complexStruct["optionalSimpleStruct"], 72)
+        else:
+            self.assertEqual(None, complexStruct["optionalSimpleStruct"])
+        self.assertEqual([3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5], complexStruct["array"])
+        self.assertEqual([3, 2, 1], complexStruct["arrayWithLen"])
+        if createdOptionals:
+            self._checkParameterizedStructJson(complexStruct["paramStructArray"][0], 10)
+            self._checkParameterizedStructJson(complexStruct["paramStructArray"][1], 10)
+        else:
+            self.assertEqual(None, complexStruct["paramStructArray"])
+        self.assertEqual(7, complexStruct["dynamicBitField"])
+        self.assertEqual(list(range(1, 65536, 2)), complexStruct["dynamicBitFieldArray"])
+
+    def _createParameterizedStruct(self, simpleStruct):
+        parameterizedStruct = self.api.ParameterizedStruct(
+            simpleStruct,
+            list(range(simpleStruct.field_u32)))
+
+        return parameterizedStruct
+
+    def _checkParameterizedStructJson(self, parameterizedStruct, fieldU32):
+        self.assertEqual(list(range(fieldU32)), parameterizedStruct["array"])
+
+    def _createRecursiveStruct(self):
+        recursiveStruct = self.api.RecursiveStruct(
+            0xDEAD1,
+            self.api.RecursiveStruct(0xDEAD2, None, []),
+            [self.api.RecursiveStruct(0xDEAD3, None, []), self.api.RecursiveStruct(0xDEAD4, None, []) ])
+
+        return recursiveStruct
+
+    def _checkRecursiveStructJson(self, recursiveStruct):
+        self.assertEqual(0xDEAD1, recursiveStruct["fieldU32"])
+        self.assertEqual(0xDEAD2, recursiveStruct["fieldRecursion"]["fieldU32"])
+        self.assertEqual(None, recursiveStruct["fieldRecursion"]["fieldRecursion"])
+        self.assertEqual([], recursiveStruct["fieldRecursion"]["arrayRecursion"])
+        self.assertEqual(0xDEAD3, recursiveStruct["arrayRecursion"][0]["fieldU32"])
+        self.assertEqual(None, recursiveStruct["arrayRecursion"][0]["fieldRecursion"])
+        self.assertEqual([], recursiveStruct["arrayRecursion"][0]["arrayRecursion"])
+        self.assertEqual(0xDEAD4, recursiveStruct["arrayRecursion"][1]["fieldU32"])
+        self.assertEqual(None, recursiveStruct["arrayRecursion"][1]["fieldRecursion"])
+        self.assertEqual([], recursiveStruct["arrayRecursion"][1]["arrayRecursion"])
+
+    def _createRecursiveUnion(self):
+        recursiveUnion = self.api.RecursiveUnion()
+        recursiveUnion.recursive = [self.api.RecursiveUnion(field_u32_ = 0xDEAD)]
+
+        return recursiveUnion
+
+    def _checkRecursiveUnionJson(self, recursiveUnion):
+        self.assertEqual(0xDEAD, recursiveUnion["recursive"][0]["fieldU32"])
+
+    def _createRecursiveChoice(self, param1, param2):
+        recursiveChoice = self.api.RecursiveChoice(param1, param2)
+        if param1:
+            recursiveChoice.recursive = [self._createRecursiveChoice(param2, False)]
+        else:
+            recursiveChoice.field_u32 = 0xDEAD
+
+        return recursiveChoice
+
+    def _checkRecursiveChoiceJson(self, recursiveChoice, param1, param2):
+        if param1:
+            for i in range(len(recursiveChoice["recursive"])):
+                self._checkRecursiveChoiceJson(recursiveChoice["recursive"][i], param2, False)
+        else:
+            self.assertEqual(0xDEAD, recursiveChoice["fieldU32"])
+
+    def _createSimpleUnion(self):
+        simpleUnion = self.api.SimpleUnion()
+        simpleUnion.test_bitmask = self.api.TestBitmask.Values.GREEN
+
+        return simpleUnion
+
+    def _checkSimpleUnionJson(self, simpleUnion):
+        self.assertEqual(self.api.TestBitmask.Values.GREEN.value, simpleUnion["testBitmask"])
+
+    def _createSimpleChoice(self, testEnum):
+        simpleChoice = self.api.SimpleChoice(testEnum)
+        if testEnum == self.api.TestEnum.TWO:
+            simpleChoice.field_two = self._createSimpleUnion()
+        else:
+            simpleChoice.field_default = "text"
+
+        return simpleChoice
+
+    def _checkSimpleChoiceJson(self, simpleChoice, testEnum):
+        if testEnum == self.api.TestEnum.TWO:
+            self._checkSimpleUnionJson(simpleChoice["fieldTwo"])
+        else:
+            self.assertEqual("text", simpleChoice["fieldDefault"])
+
+    def _createTS32(self):
+        ts32 = self.api.TS32(
+            0xDEAD
+            )
+
+        return ts32
+
+    def _checkTS32Json(self, ts32):
+        self.assertEqual(0xDEAD, ts32["field"])
+
+    def _createTemplatedParameterizedStruct_TS32(self, ts32):
+        templatedParameterizedStruct_TS32 = self.api.TemplatedParameterizedStruct_TS32(
+            ts32,
+            list(range(ts32.field, 0, -1)))
+
+        return templatedParameterizedStruct_TS32
+
+    def _checkTemplatedParameterizedStruct_TS32Json(self, templatedParameterizedStruct_TS32, ts32):
+        for i in range(ts32.field, 0, -1):
+            self.assertEqual(i, templatedParameterizedStruct_TS32["array"][ts32.field - i])
+
+    BLOB_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                            "with_type_info_code_optionals.blob")
+    BLOB_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                               "with_type_info_code.blob")
+    JSON_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                            "with_type_info_code_optionals.json")
+    JSON_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                               "with_type_info_code.json")

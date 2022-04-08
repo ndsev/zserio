@@ -392,7 +392,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(6, fields.size());
+        ASSERT_EQ(7, fields.size());
 
         // fieldU32
         const zserio::FieldInfo& fieldU32Field = fields[0];
@@ -406,7 +406,7 @@ protected:
         ASSERT_EQ(0, fieldU32Field.typeArguments.size());
         ASSERT_EQ("8"_sv, fieldU32Field.alignment);
         ASSERT_EQ(""_sv, fieldU32Field.offset);
-        ASSERT_EQ("0"_sv, fieldU32Field.initializer);
+        ASSERT_EQ("10"_sv, fieldU32Field.initializer);
         ASSERT_EQ(false, fieldU32Field.isOptional);
         ASSERT_EQ(""_sv, fieldU32Field.optionalCondition);
         ASSERT_EQ(""_sv, fieldU32Field.constraint);
@@ -415,8 +415,29 @@ protected:
         ASSERT_EQ(false, fieldU32Field.isPacked);
         ASSERT_EQ(false, fieldU32Field.isImplicit);
 
+        // fieldOffset
+        const zserio::FieldInfo& fieldOffsetField = fields[1];
+        ASSERT_EQ("fieldOffset"_sv, fieldOffsetField.schemaName);
+
+        ASSERT_EQ("uint32"_sv, fieldOffsetField.typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::UINT32, fieldOffsetField.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::UINT32, fieldOffsetField.typeInfo.getCppType());
+        ASSERT_EQ(32, fieldOffsetField.typeInfo.getBitSize());
+
+        ASSERT_EQ(0, fieldOffsetField.typeArguments.size());
+        ASSERT_EQ(""_sv, fieldOffsetField.alignment);
+        ASSERT_EQ(""_sv, fieldOffsetField.offset);
+        ASSERT_EQ(""_sv, fieldOffsetField.initializer);
+        ASSERT_EQ(false, fieldOffsetField.isOptional);
+        ASSERT_EQ(""_sv, fieldOffsetField.optionalCondition);
+        ASSERT_EQ(""_sv, fieldOffsetField.constraint);
+        ASSERT_EQ(false, fieldOffsetField.isArray);
+        ASSERT_EQ(""_sv, fieldOffsetField.arrayLength);
+        ASSERT_EQ(false, fieldOffsetField.isPacked);
+        ASSERT_EQ(false, fieldOffsetField.isImplicit);
+
         // fieldString
-        const zserio::FieldInfo& fieldStringField = fields[1];
+        const zserio::FieldInfo& fieldStringField = fields[2];
         ASSERT_EQ("fieldString"_sv, fieldStringField.schemaName);
 
         ASSERT_EQ("string"_sv, fieldStringField.typeInfo.getSchemaName());
@@ -425,7 +446,7 @@ protected:
 
         ASSERT_EQ(0, fieldStringField.typeArguments.size());
         ASSERT_EQ(""_sv, fieldStringField.alignment);
-        ASSERT_EQ("getFieldU32()"_sv, fieldStringField.offset);
+        ASSERT_EQ("getFieldOffset()"_sv, fieldStringField.offset);
         ASSERT_EQ("::zserio::makeStringView(\"MyString\")"_sv, fieldStringField.initializer);
         ASSERT_EQ(false, fieldStringField.isOptional);
         ASSERT_EQ(""_sv, fieldStringField.optionalCondition);
@@ -436,7 +457,7 @@ protected:
         ASSERT_EQ(false, fieldStringField.isImplicit);
 
         // fieldBool
-        const zserio::FieldInfo& fieldBoolField = fields[2];
+        const zserio::FieldInfo& fieldBoolField = fields[3];
         ASSERT_EQ("fieldBool"_sv, fieldBoolField.schemaName);
 
         ASSERT_EQ("bool"_sv, fieldBoolField.typeInfo.getSchemaName());
@@ -457,7 +478,7 @@ protected:
         ASSERT_EQ(false, fieldBoolField.isImplicit);
 
         // fieldFloat16
-        const zserio::FieldInfo& fieldFloat16Field = fields[3];
+        const zserio::FieldInfo& fieldFloat16Field = fields[4];
         ASSERT_EQ("fieldFloat16"_sv, fieldFloat16Field.schemaName);
 
         ASSERT_EQ("float16"_sv, fieldFloat16Field.typeInfo.getSchemaName());
@@ -478,7 +499,7 @@ protected:
         ASSERT_EQ(false, fieldFloat16Field.isImplicit);
 
         // fieldFloat32
-        const zserio::FieldInfo& fieldFloat32Field = fields[4];
+        const zserio::FieldInfo& fieldFloat32Field = fields[5];
         ASSERT_EQ("fieldFloat32"_sv, fieldFloat32Field.schemaName);
 
         ASSERT_EQ("float32"_sv, fieldFloat32Field.typeInfo.getSchemaName());
@@ -499,7 +520,7 @@ protected:
         ASSERT_EQ(false, fieldFloat32Field.isImplicit);
 
         // fieldFloat64
-        const zserio::FieldInfo& fieldFloat64Field = fields[5];
+        const zserio::FieldInfo& fieldFloat64Field = fields[6];
         ASSERT_EQ("fieldFloat64"_sv, fieldFloat64Field.schemaName);
 
         ASSERT_EQ("float64"_sv, fieldFloat64Field.typeInfo.getSchemaName());
