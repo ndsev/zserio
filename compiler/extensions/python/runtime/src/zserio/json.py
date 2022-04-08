@@ -45,31 +45,27 @@ class JsonWriter(Walker.Observer):
 
         return self._io
 
-    def begin_root(self, _compound):
+    def begin_root(self, _compound: typing.Any) -> None:
         self._begin_obj()
 
-    def end_root(self, _compound):
+    def end_root(self, _compound: typing.Any) -> None:
         self._end_obj()
 
-    def begin_array(self, _array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
+    def begin_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> None:
         self._begin_item()
 
         self._io.write(f"\"{member_info.schema_name}\"{self._key_separator}")
 
         self._begin_array()
 
-        return True
-
-    def end_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
+    def end_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> None:
         self._is_first = False
 
         self._end_array()
 
         self._end_item()
 
-        return True
-
-    def begin_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
+    def begin_compound(self, compound: typing.Any, member_info: MemberInfo) -> None:
         self._begin_item()
 
         if not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
@@ -77,18 +73,14 @@ class JsonWriter(Walker.Observer):
 
         self._begin_obj()
 
-        return True
-
-    def end_compound(self, _compound: typing.Any, _member_info: MemberInfo) -> bool:
+    def end_compound(self, compound: typing.Any, member_info: MemberInfo) -> None:
         self._is_first = False
 
         self._end_obj()
 
         self._end_item()
 
-        return True
-
-    def visit_value(self, value: typing.Any, member_info: MemberInfo) -> bool:
+    def visit_value(self, value: typing.Any, member_info: MemberInfo) -> None:
         self._begin_item()
 
         if value is None or not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
@@ -101,7 +93,6 @@ class JsonWriter(Walker.Observer):
             self._io.write(json_value)
 
         self._end_item()
-        return True
 
     def _begin_item(self):
         if not self._is_first:

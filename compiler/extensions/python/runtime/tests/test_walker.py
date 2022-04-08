@@ -1,7 +1,7 @@
 import unittest
 import typing
 
-from zserio import Walker, PythonRuntimeException
+from zserio import Walker, WalkFilter, PythonRuntimeException
 from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute
 from zserio.array import Array, ObjectArrayTraits
 
@@ -145,17 +145,7 @@ class DummyObject:
         return self._union_array
 
 class TestObserver(Walker.Observer):
-    def __init__(self, *, begin_array=True, end_array=True, only_first_element=False,
-                 begin_compound=True, end_compound=True, visit_value=True):
-        self._config = {
-            "begin_array": begin_array,
-            "end_array": end_array,
-            "only_first_element": only_first_element,
-            "begin_compound": begin_compound,
-            "end_compound": end_compound,
-            "visit_value": visit_value
-        }
-
+    def __init__(self):
         self._captures = {
             "begin_root": None,
             "end_root": None,
@@ -165,8 +155,6 @@ class TestObserver(Walker.Observer):
             "end_compound": [],
             "visit_value": []
         }
-
-        self._is_first_element = False
 
     @property
     def captures(self):
@@ -178,30 +166,57 @@ class TestObserver(Walker.Observer):
     def end_root(self, compound):
         self._captures["end_root"] = compound
 
-    def begin_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
+    def begin_array(self, array, member_info: MemberInfo):
         self._captures["begin_array"].append(array)
-        self._is_first_element = True
-        return self._config["begin_array"]
 
-    def end_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
+    def end_array(self, array, member_info: MemberInfo):
         self._captures["end_array"].append(array)
-        self._is_first_element = False
-        return self._config["end_array"]
 
     def begin_compound(self, compound, member_info):
         self._captures["begin_compound"].append(compound)
-        return self._config["begin_compound"]
 
     def end_compound(self, compound, member_info):
         self._captures["end_compound"].append(compound)
-        if self._config["only_first_element"] and self._is_first_element:
-            return False
-        self._is_first_element = False
-        return self._config["end_compound"]
 
     def visit_value(self, value, member_info):
         self._captures["visit_value"].append(value)
-        return self._config["visit_value"]
+
+class TestFilter(Walker.Filter):
+    def __init__(self, *, before_array=True, after_array=True, only_first_element=False,
+                 before_compound=True, after_compound=True, before_value=True, after_value=True):
+        self._config = {
+            "before_array": before_array,
+            "after_array": after_array,
+            "only_first_element": only_first_element,
+            "before_compound": before_compound,
+            "after_compound": after_compound,
+            "before_value": before_value,
+            "after_value": after_value
+        }
+        self._is_first_element = False
+
+    def before_array(self, array, member_info):
+        self._is_first_element = True
+        return self._config["before_array"]
+
+    def after_array(self, array, member_info):
+        self._is_first_element = False
+        return self._config["after_array"]
+
+    def before_compound(self, compound, member_info):
+        return self._config["before_compound"]
+
+    def after_compound(self, compound, member_info):
+        if self._config["only_first_element"] and self._is_first_element:
+            return False
+        self._is_first_element = False
+        return self._config["after_compound"]
+
+    def before_value(self, value, member_info):
+        return self._config["before_value"]
+
+    def after_value(self, value, member_info):
+        return self._config["after_value"]
 
 class WalkerTest(unittest.TestCase):
 
@@ -226,6 +241,25 @@ class WalkerTest(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             observer.visit_value("", dummy_member_info)
 
+    def test_filter(self):
+        walk_filter = Walker.Filter()
+
+        dummy_object = object()
+        dummy_member_info = MemberInfo("dummy", TypeInfo("dummy", None))
+
+        with self.assertRaises(NotImplementedError):
+            walk_filter.before_array([], dummy_member_info)
+        with self.assertRaises(NotImplementedError):
+            walk_filter.after_array([], dummy_member_info)
+        with self.assertRaises(NotImplementedError):
+            walk_filter.before_compound(dummy_object, dummy_member_info)
+        with self.assertRaises(NotImplementedError):
+            walk_filter.after_compound(dummy_object, dummy_member_info)
+        with self.assertRaises(NotImplementedError):
+            walk_filter.before_value("", dummy_member_info)
+        with self.assertRaises(NotImplementedError):
+            walk_filter.after_value("", dummy_member_info)
+
     def test_walk_without_type_info(self):
         walker = Walker(TestObserver())
         obj = object()
@@ -248,9 +282,70 @@ class WalkerTest(unittest.TestCase):
         self.assertEqual([13, "nested", "test", '1', 2], observer.captures["visit_value"])
 
     def test_walk_skip_compound(self):
-        observer = TestObserver(begin_array=True, end_array=True,
-                                begin_compound=False, end_compound=True, visit_value=True)
-        walker = Walker(observer)
+        observer = TestObserver()
+        test_filter = TestFilter(before_array=True, after_array=True,
+                                 before_compound=False, after_compound=True,
+                                 before_value=True, after_value=True)
+        walker = Walker(observer, WalkFilter().add(test_filter))
+        obj = self._create_dummy_object()
+        walker.walk(obj)
+        self.assertEqual(obj, observer.captures["begin_root"])
+        self.assertEqual(obj, observer.captures["end_root"])
+        self.assertEqual([obj.union_array], observer.captures["begin_array"])
+        self.assertEqual([obj.union_array], observer.captures["end_array"])
+        self.assertEqual([], observer.captures["begin_compound"])
+        self.assertEqual([], observer.captures["end_compound"])
+        self.assertEqual([13, "test"], observer.captures["visit_value"])
+
+    def test_walk_skip_siblings(self):
+        observer = TestObserver()
+        test_filter = TestFilter(before_array=True, after_array=True,
+                                 before_compound=True, after_compound=True,
+                                 before_value=True, after_value=False)
+        walker = Walker(observer, WalkFilter().add(test_filter))
+        obj = self._create_dummy_object()
+        walker.walk(obj)
+        self.assertEqual(obj, observer.captures["begin_root"])
+        self.assertEqual(obj, observer.captures["end_root"])
+        self.assertEqual([], observer.captures["begin_compound"])
+        self.assertEqual([], observer.captures["end_compound"])
+        self.assertEqual([13], observer.captures["visit_value"])
+
+    def test_walk_skip_after_nested(self):
+        observer = TestObserver()
+        test_filter = TestFilter(before_array=True, after_array=True,
+                                 before_compound=True, after_compound=False,
+                                 before_value=True, after_value=True)
+        walker = Walker(observer, WalkFilter().add(test_filter))
+        obj = self._create_dummy_object()
+        walker.walk(obj)
+        self.assertEqual(obj, observer.captures["begin_root"])
+        self.assertEqual(obj, observer.captures["end_root"])
+        self.assertEqual([], observer.captures["begin_array"])
+        self.assertEqual([], observer.captures["end_array"])
+        self.assertEqual([obj.nested], observer.captures["begin_compound"])
+        self.assertEqual([obj.nested], observer.captures["end_compound"])
+        self.assertEqual([13, "nested"], observer.captures["visit_value"])
+
+    def test_walk_only_first_element(self):
+        observer = TestObserver()
+        test_filter = TestFilter(before_array=True, after_array=True, only_first_element=True,
+                                 before_compound=True, after_compound=True,
+                                 before_value=True, after_value=True)
+        walker = Walker(observer, WalkFilter().add(test_filter))
+        obj = self._create_dummy_object()
+        walker.walk(obj)
+        self.assertEqual(obj, observer.captures["begin_root"])
+        self.assertEqual(obj, observer.captures["end_root"])
+        self.assertEqual([obj.union_array], observer.captures["begin_array"])
+        self.assertEqual([obj.union_array], observer.captures["end_array"])
+        self.assertEqual([obj.nested, obj.union_array[0]], observer.captures["begin_compound"])
+        self.assertEqual([obj.nested, obj.union_array[0]], observer.captures["end_compound"])
+        self.assertEqual([13, "nested", "test", '1'], observer.captures["visit_value"])
+
+    def test_depth_filter_1(self):
+        observer = TestObserver()
+        walker = Walker(observer, WalkFilter().add(WalkFilter.DepthFilter(1)))
         obj = self._create_dummy_object()
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
@@ -263,45 +358,6 @@ class WalkerTest(unittest.TestCase):
                          observer.captures["end_compound"])
         self.assertEqual([13, "test"], observer.captures["visit_value"])
 
-    def test_walk_skip_siblings(self):
-        observer = TestObserver(begin_array=True, end_array=True,
-                                begin_compound=True, end_compound=True, visit_value=False)
-        walker = Walker(observer)
-        obj = self._create_dummy_object()
-        walker.walk(obj)
-        self.assertEqual(obj, observer.captures["begin_root"])
-        self.assertEqual(obj, observer.captures["end_root"])
-        self.assertEqual([], observer.captures["begin_compound"])
-        self.assertEqual([], observer.captures["end_compound"])
-        self.assertEqual([13], observer.captures["visit_value"])
-
-    def test_walk_skip_after_nested(self):
-        observer = TestObserver(begin_array=True, end_array=True,
-                                begin_compound=True, end_compound=False, visit_value=True)
-        walker = Walker(observer)
-        obj = self._create_dummy_object()
-        walker.walk(obj)
-        self.assertEqual(obj, observer.captures["begin_root"])
-        self.assertEqual(obj, observer.captures["end_root"])
-        self.assertEqual([], observer.captures["begin_array"])
-        self.assertEqual([], observer.captures["end_array"])
-        self.assertEqual([obj.nested], observer.captures["begin_compound"])
-        self.assertEqual([obj.nested], observer.captures["end_compound"])
-        self.assertEqual([13, "nested"], observer.captures["visit_value"])
-
-    def test_walk_only_first_element(self):
-        observer = TestObserver(begin_array=True, end_array=True, only_first_element=True,
-                                begin_compound=True, end_compound=True, visit_value=True)
-        walker = Walker(observer)
-        obj = self._create_dummy_object()
-        walker.walk(obj)
-        self.assertEqual(obj, observer.captures["begin_root"])
-        self.assertEqual(obj, observer.captures["end_root"])
-        self.assertEqual([obj.union_array], observer.captures["begin_array"])
-        self.assertEqual([obj.union_array], observer.captures["end_array"])
-        self.assertEqual([obj.nested, obj.union_array[0]], observer.captures["begin_compound"])
-        self.assertEqual([obj.nested, obj.union_array[0]], observer.captures["end_compound"])
-        self.assertEqual([13, "nested", "test", '1'], observer.captures["visit_value"])
 
     @staticmethod
     def _create_dummy_object():
