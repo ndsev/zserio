@@ -345,7 +345,7 @@ class WalkerTest(unittest.TestCase):
 
     def test_depth_filter_1(self):
         observer = TestObserver()
-        walker = Walker(observer, WalkFilter().add(WalkFilter.DepthFilter(1)))
+        walker = Walker(observer, WalkFilter().add(WalkFilter.Depth(1)))
         obj = self._create_dummy_object()
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
@@ -358,6 +358,18 @@ class WalkerTest(unittest.TestCase):
                          observer.captures["end_compound"])
         self.assertEqual([13, "test"], observer.captures["visit_value"])
 
+    def test_regex_filter(self):
+        observer = TestObserver()
+        walker = Walker(observer, WalkFilter().add(WalkFilter.Regex("nested\\.text$")))
+        obj = self._create_dummy_object()
+        walker.walk(obj)
+        self.assertEqual(obj, observer.captures["begin_root"])
+        self.assertEqual(obj, observer.captures["end_root"])
+        self.assertEqual([], observer.captures["begin_array"])
+        self.assertEqual([], observer.captures["end_array"])
+        self.assertEqual([obj.nested], observer.captures["begin_compound"])
+        self.assertEqual([obj.nested], observer.captures["end_compound"])
+        self.assertEqual(["nested"], observer.captures["visit_value"])
 
     @staticmethod
     def _create_dummy_object():

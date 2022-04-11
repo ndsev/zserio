@@ -1,11 +1,12 @@
 """
 The module implements generic walker through given zserio object tree.
 """
-import typing
 import functools
+import re
+import typing
 
 from zserio.exception import PythonRuntimeException
-from zserio.typeinfo import TypeAttribute, MemberInfo, MemberAttribute
+from zserio.typeinfo import RecursiveTypeInfo, TypeAttribute, MemberInfo, MemberAttribute
 
 class Walker:
     """
@@ -271,9 +272,9 @@ class WalkFilter(Walker.Filter):
     def _apply_filters(self, method):
         return functools.reduce(lambda x, y: x and y, map(method, self._filters), True)
 
-    class DepthFilter(Walker.Filter):
+    class Depth(Walker.Filter):
         """
-        Walk filers which allows to walk only to the given maximum depth.
+        Walk filter which allows to walk only to the given maximum depth.
         """
 
         def __init__(self, max_depth):
@@ -306,3 +307,72 @@ class WalkFilter(Walker.Filter):
 
         def after_value(self, _value: typing.Any, _member_info: MemberInfo) -> bool:
             return True
+
+    class Regex(Walker.Filter):
+        """
+        Walk filter which allows to walk only paths matching given regex.
+
+        The path is constructed from field names within the root object, thus the root object
+        itself is not part of the path.
+
+        Currently arrays are processed based on field names and it's not possible to specify an index.
+        """
+
+        def __init__(self, path_regex: str) -> None:
+            """
+            Constructor.
+
+            :param path_regex: Path regex to use for filtering.
+            """
+
+            self._path_regex = re.compile(path_regex)
+            self._current_path: typing.List[str] = []
+
+        def before_array(self, _array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
+            self._current_path.append(member_info.schema_name)
+            return self._match(self._get_paths(member_info))
+
+        def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
+            self._current_path.pop()
+            return True
+
+        def before_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
+            self._current_path.append(member_info.schema_name)
+            return self._match(self._get_paths(member_info))
+
+        def after_compound(self, _compound: typing.Any, _member_info: MemberInfo) -> bool:
+            self._current_path.pop()
+            return True
+
+        def before_value(self, _value: typing.Any, member_info: MemberInfo) -> bool:
+            self._current_path.append(member_info.schema_name)
+            return self._match(self._get_paths(member_info))
+
+        def after_value(self, _value: typing.Any, _member_info: MemberInfo) -> bool:
+            self._current_path.pop()
+            return True
+
+        def _get_paths(self, member_info: MemberInfo) -> typing.List[str]:
+            paths: typing.List[str] = []
+            self._get_paths_recursive(paths, self._current_path.copy(), member_info)
+            return paths
+
+        def _get_paths_recursive(self, paths: typing.List[str], current_path: typing.List[str],
+                                 member_info: MemberInfo) -> None:
+            type_info = member_info.type_info
+            if TypeAttribute.FIELDS in type_info.attributes:
+                for field in type_info.attributes[TypeAttribute.FIELDS]:
+                    if not isinstance(field.type_info, RecursiveTypeInfo):
+                        current_path.append(field.schema_name)
+                        self._get_paths_recursive(paths, current_path, field)
+                        current_path.pop()
+            else:
+                paths.append(self.PATH_SEPARATOR.join(current_path))
+
+        def _match(self, paths) -> bool:
+            for path in paths:
+                if self._path_regex.match(path):
+                    return True
+            return False
+
+        PATH_SEPARATOR = "."
