@@ -54,7 +54,8 @@ class Walker:
 
             raise NotImplementedError()
 
-        def begin_compound(self, compound: typing.Any, member_info: MemberInfo) -> None:
+        def begin_compound(self, compound: typing.Any, member_info: MemberInfo,
+                           element_index: typing.Optional[int]) -> None:
             """
             Called at the beginning of an compound field object.
 
@@ -62,24 +63,29 @@ class Walker:
 
             :param compound: Compound zserio object.
             :param member_info: Compound member info.
+            :param element_index: Element index in array or None if the compound is not in array.
             """
             raise NotImplementedError()
 
-        def end_compound(self, compound: typing.Any, member_info: MemberInfo) -> None:
+        def end_compound(self, compound: typing.Any, member_info: MemberInfo,
+                         element_index: typing.Optional[int]) -> None:
             """
             Called at the end of just walked compound object.
 
             :param compound: Compound zserio object.
             :param member_info: Compound member info.
+            :param element_index: Element index in array or None if the compound is not in array.
             """
             raise NotImplementedError()
 
-        def visit_value(self, value: typing.Any, member_info: MemberInfo) -> None:
+        def visit_value(self, value: typing.Any, member_info: MemberInfo,
+                        element_index: typing.Optional[int]) -> None:
             """
             Called when a simple (or an unset compound - i.e. None) value is reached.
 
             :param value: Simple value.
             :param member_info: Member info.
+            :param element_index: Element index in array or None if the value is not in array.
             """
             raise NotImplementedError()
 
@@ -111,7 +117,8 @@ class Walker:
 
             raise NotImplementedError()
 
-        def before_compound(self, compound: typing.Any, member_info: MemberInfo) -> bool:
+        def before_compound(self, compound: typing.Any, member_info: MemberInfo,
+                            element_index: typing.Optional[int]) -> bool:
             """
             Called before a compound object.
 
@@ -119,39 +126,46 @@ class Walker:
 
             :param compound: Compound zserio object.
             :param member_info: Compound member info.
+            :param element_index: Element index in array or None if the compound is not in array.
 
             :returns: True when the walking should continue into the compound object, False otherwise.
             """
             raise NotImplementedError()
 
-        def after_compound(self, compound: typing.Any, member_info: MemberInfo) -> bool:
+        def after_compound(self, compound: typing.Any, member_info: MemberInfo,
+                           element_index: typing.Optional[int]) -> bool:
             """
             Called after a compound object.
 
             :param compound: Compound zserio object.
             :param member_info: Compound member info.
+            :param element_index: Element index in array or None if the compound is not in array.
 
             :returns: True when the walking should continue to a next sibling, False to return to the parent.
             """
             raise NotImplementedError()
 
-        def before_value(self, value: typing.Any, member_info: MemberInfo) -> bool:
+        def before_value(self, value: typing.Any, member_info: MemberInfo,
+                         element_index: typing.Optional[int]) -> bool:
             """
             Called before a simple (or an unset compound - i.e. None) value.
 
             :param value: Simple value.
             :param member_info: Member info.
+            :param element_index: Element index in array or None if the value is not in array.
 
             :returns: True when the walking should continue to the simple value, False otherwise.
             """
             raise NotImplementedError()
 
-        def after_value(self, value: typing.Any, member_info: MemberInfo) -> bool:
+        def after_value(self, value: typing.Any, member_info: MemberInfo,
+                        element_index: typing.Optional[int]) -> bool:
             """
             Called after a simple value.
 
             :param value: Simple value.
             :param member_info: Member info.
+            :param element_index: Element index in array or None if the value is not in array.
 
             :returns: True when the walking should continue to a next sibling, False to return to the parent.
             """
@@ -186,26 +200,27 @@ class Walker:
         if MemberAttribute.ARRAY_LENGTH in member_info.attributes and zserio_object is not None:
             if self._walk_filter.before_array(zserio_object, member_info):
                 self._observer.begin_array(zserio_object, member_info)
-                for element in zserio_object:
-                    if not self._walk_field_value(element, member_info):
+                for index, element in enumerate(zserio_object):
+                    if not self._walk_field_value(element, member_info, index):
                         break
                 self._observer.end_array(zserio_object, member_info)
             return self._walk_filter.after_array(zserio_object, member_info)
         else:
             return self._walk_field_value(zserio_object, member_info)
 
-    def _walk_field_value(self, zserio_object: typing.Any, member_info: MemberInfo) -> bool:
+    def _walk_field_value(self, zserio_object: typing.Any, member_info: MemberInfo,
+                          element_index: typing.Optional[int] = None) -> bool:
         type_info = member_info.type_info
         if TypeAttribute.FIELDS not in type_info.attributes or zserio_object is None: # simple field
-            if self._walk_filter.before_value(zserio_object, member_info):
-                self._observer.visit_value(zserio_object, member_info)
-            return self._walk_filter.after_value(zserio_object, member_info)
+            if self._walk_filter.before_value(zserio_object, member_info, element_index):
+                self._observer.visit_value(zserio_object, member_info, element_index)
+            return self._walk_filter.after_value(zserio_object, member_info, element_index)
         else:
-            if self._walk_filter.before_compound(zserio_object, member_info):
-                self._observer.begin_compound(zserio_object, member_info)
+            if self._walk_filter.before_compound(zserio_object, member_info, element_index):
+                self._observer.begin_compound(zserio_object, member_info, element_index)
                 self._walk_fields(zserio_object, type_info)
-                self._observer.end_compound(zserio_object, member_info)
-            return self._walk_filter.after_compound(zserio_object, member_info)
+                self._observer.end_compound(zserio_object, member_info, element_index)
+            return self._walk_filter.after_compound(zserio_object, member_info, element_index)
 
     def _walk_fields(self, zserio_object, type_info):
         if TypeAttribute.FIELDS in type_info.attributes:
@@ -257,17 +272,21 @@ class WalkFilter(Walker.Filter):
     def after_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
         return self._apply_filters(lambda x: x.after_array(array, member_info))
 
-    def before_compound(self, compound: typing.Any, member_info: MemberInfo) -> bool:
-        return self._apply_filters(lambda x: x.before_compound(compound, member_info))
+    def before_compound(self, compound: typing.Any, member_info: MemberInfo,
+                        element_index: typing.Optional[int]) -> bool:
+        return self._apply_filters(lambda x: x.before_compound(compound, member_info, element_index))
 
-    def after_compound(self, compound: typing.Any, member_info: MemberInfo) -> bool:
-        return self._apply_filters(lambda x: x.after_compound(compound, member_info))
+    def after_compound(self, compound: typing.Any, member_info: MemberInfo,
+                       element_index: typing.Optional[int]) -> bool:
+        return self._apply_filters(lambda x: x.after_compound(compound, member_info, element_index))
 
-    def before_value(self, value: typing.Any, member_info: MemberInfo) -> bool:
-        return self._apply_filters(lambda x: x.before_value(value, member_info))
+    def before_value(self, value: typing.Any, member_info: MemberInfo,
+                     element_index: typing.Optional[int]) -> bool:
+        return self._apply_filters(lambda x: x.before_value(value, member_info, element_index))
 
-    def after_value(self, value: typing.Any, member_info: MemberInfo) -> bool:
-        return self._apply_filters(lambda x: x.after_value(value, member_info))
+    def after_value(self, value: typing.Any, member_info: MemberInfo,
+                    element_index: typing.Optional[int]) -> bool:
+        return self._apply_filters(lambda x: x.after_value(value, member_info, element_index))
 
     def _apply_filters(self, method):
         return functools.reduce(lambda x, y: x and y, map(method, self._filters), True)
@@ -296,19 +315,23 @@ class WalkFilter(Walker.Filter):
             self._depth -= 1
             return True
 
-        def before_compound(self, _compound: typing.Any, _member_info: MemberInfo) -> bool:
+        def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
+                            _element_index: typing.Optional[int]) -> bool:
             enter = self._depth <= self._max_depth
             self._depth += 1
             return enter
 
-        def after_compound(self, _compound: typing.Any, _member_info: MemberInfo) -> bool:
+        def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
+                           _element_index: typing.Optional[int]) -> bool:
             self._depth -= 1
             return True
 
-        def before_value(self, _value: typing.Any, _member_info: MemberInfo) -> bool:
+        def before_value(self, _value: typing.Any, _member_info: MemberInfo,
+                         _element_index: typing.Optional[int]) -> bool:
             return self._depth <= self._max_depth
 
-        def after_value(self, _value: typing.Any, _member_info: MemberInfo) -> bool:
+        def after_value(self, _value: typing.Any, _member_info: MemberInfo,
+                        _element_index: typing.Optional[int]) -> bool:
             return True
 
     class Regex(Walker.Filter):
@@ -339,19 +362,23 @@ class WalkFilter(Walker.Filter):
             self._current_path.pop()
             return True
 
-        def before_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
+        def before_compound(self, _compound: typing.Any, member_info: MemberInfo,
+                            _element_index: typing.Optional[int]) -> bool:
             self._current_path.append(member_info.schema_name)
             return self._match(member_info)
 
-        def after_compound(self, _compound: typing.Any, _member_info: MemberInfo) -> bool:
+        def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
+                           _element_index: typing.Optional[int]) -> bool:
             self._current_path.pop()
             return True
 
-        def before_value(self, _value: typing.Any, member_info: MemberInfo) -> bool:
+        def before_value(self, _value: typing.Any, member_info: MemberInfo,
+                         _element_index: typing.Optional[int]) -> bool:
             self._current_path.append(member_info.schema_name)
             return self._match(member_info)
 
-        def after_value(self, _value: typing.Any, _member_info: MemberInfo) -> bool:
+        def after_value(self, _value: typing.Any, _member_info: MemberInfo,
+                        _element_index: typing.Optional[int]) -> bool:
             self._current_path.pop()
             return True
 
@@ -397,31 +424,21 @@ class WalkFilter(Walker.Filter):
             self._array_length_stack.pop()
             return True
 
-        def before_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
-            return self._before_array_element(member_info)
+        def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
+                            element_index: typing.Optional[int]) -> bool:
+            return self._filter_array_element(element_index)
 
-        def after_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
-            return self._after_array_element(member_info)
+        def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
+                           element_index: typing.Optional[int]) -> bool:
+            return self._filter_array_element(element_index)
 
-        def before_value(self, _value: typing.Any, member_info: MemberInfo) -> bool:
-            return self._before_array_element(member_info)
+        def before_value(self, _value: typing.Any, _member_info: MemberInfo,
+                         element_index: typing.Optional[int]) -> bool:
+            return self._filter_array_element(element_index)
 
-        def after_value(self, _value: typing.Any, member_info: MemberInfo) -> bool:
-            return self._after_array_element(member_info)
+        def after_value(self, _value: typing.Any, _member_info: MemberInfo,
+                        element_index: typing.Optional[int]) -> bool:
+            return self._filter_array_element(element_index)
 
-        @staticmethod
-        def _is_array_element(member_info: MemberInfo) -> bool:
-            return MemberAttribute.ARRAY_LENGTH in member_info.attributes
-
-        def _before_array_element(self, member_info: MemberInfo) -> bool:
-            if self._is_array_element(member_info):
-                self._array_length_stack[-1] += 1
-                return self._array_length_stack[-1] <= self._max_array_length
-
-            return True
-
-        def _after_array_element(self, member_info: MemberInfo) -> bool:
-            if self._is_array_element(member_info):
-                return self._array_length_stack[-1] <= self._max_array_length
-
-            return True
+        def _filter_array_element(self, element_index: typing.Optional[int]) -> bool:
+            return True if element_index is None else element_index < self._max_array_length

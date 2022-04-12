@@ -65,7 +65,8 @@ class JsonWriter(Walker.Observer):
 
         self._end_item()
 
-    def begin_compound(self, compound: typing.Any, member_info: MemberInfo) -> None:
+    def begin_compound(self, compound: typing.Any, member_info: MemberInfo,
+                       _element_index: typing.Optional[int]) -> None:
         self._begin_item()
 
         if not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
@@ -73,14 +74,16 @@ class JsonWriter(Walker.Observer):
 
         self._begin_obj()
 
-    def end_compound(self, compound: typing.Any, member_info: MemberInfo) -> None:
+    def end_compound(self, compound: typing.Any, member_info: MemberInfo,
+                     _element_index: typing.Optional[int]) -> None:
         self._is_first = False
 
         self._end_obj()
 
         self._end_item()
 
-    def visit_value(self, value: typing.Any, member_info: MemberInfo) -> None:
+    def visit_value(self, value: typing.Any, member_info: MemberInfo,
+                    _element_index: typing.Optional[int]) -> None:
         self._begin_item()
 
         if value is None or not MemberAttribute.ARRAY_LENGTH in member_info.attributes:

@@ -12,16 +12,19 @@ class JsonWriterTest(unittest.TestCase):
 
     def test_simple_field(self):
         json_writer = JsonWriter()
-        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
+        none_element_index = None
+        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)), none_element_index)
         # note that this is not valid JSON
         self.assertEqual("\"text\": \"test\"", json_writer.get_io().getvalue())
 
     def test_compound(self):
         json_writer = JsonWriter()
+        none_element_index = None
         json_writer.begin_root(object())
-        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)))
-        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
-        json_writer.visit_value(BitBuffer(bytes([0x1F]), 5), MemberInfo("data", TypeInfo("extern", BitBuffer)))
+        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)), none_element_index)
+        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)), none_element_index)
+        json_writer.visit_value(BitBuffer(bytes([0x1F]), 5), MemberInfo("data", TypeInfo("extern", BitBuffer)),
+                                none_element_index)
         json_writer.end_root(object())
         self.assertEqual(
             "{\"identifier\": 13, \"text\": \"test\", \"data\": {\"buffer\": \"b'\\\\x1f'\", \"bitSize\": 5}}",
@@ -70,12 +73,13 @@ class JsonWriterTest(unittest.TestCase):
     @staticmethod
     def _walk_nested(json_writer):
         dummy_type_info = TypeInfo("dummy", object)
+        none_element_index = None
 
         json_writer.begin_root(object())
-        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)))
-        json_writer.begin_compound(object(), MemberInfo("nested", dummy_type_info))
-        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
-        json_writer.end_compound(object(), MemberInfo("nested", dummy_type_info))
+        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)), none_element_index)
+        json_writer.begin_compound(object(), MemberInfo("nested", dummy_type_info), none_element_index)
+        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)), none_element_index)
+        json_writer.end_compound(object(), MemberInfo("nested", dummy_type_info), none_element_index)
         json_writer.end_root(object())
 
     @staticmethod
@@ -86,8 +90,8 @@ class JsonWriterTest(unittest.TestCase):
 
         json_writer.begin_root(object())
         json_writer.begin_array([1, 2], array_member_info)
-        json_writer.visit_value(1, array_member_info)
-        json_writer.visit_value(2, array_member_info)
+        json_writer.visit_value(1, array_member_info, 0)
+        json_writer.visit_value(2, array_member_info, 1)
         json_writer.end_array([1, 2], array_member_info)
         json_writer.end_root(object())
 
