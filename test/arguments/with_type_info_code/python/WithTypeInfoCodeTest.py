@@ -79,13 +79,13 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def testJsonWriterWithDepth1ArrayLength0Filter(self):
         withTypeInfoCode = self._createWithTypeInfoCode()
         withTypeInfoCode.initialize_offsets(0)
-        with open(self.JSON_NAME_WITH_DEPTH_FILTER, "w", encoding="utf-8") as jsonFile:
+        with open(self.JSON_NAME_WITH_DEPTH_ARRAY_LENGTH_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.WalkFilter()
             walkFilter.add(zserio.WalkFilter.Depth(1))
             walkFilter.add(zserio.WalkFilter.ArrayLength(0))
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
-        self._checkWithTypeInfoCodeDepth1ArrayLength0Json(self.JSON_NAME_WITH_DEPTH_FILTER)
+        self._checkWithTypeInfoCodeDepth1ArrayLength0Json(self.JSON_NAME_WITH_DEPTH_ARRAY_LENGTH_FILTER)
 
     def testJsonWriterWithDepth3Filter(self):
         withTypeInfoCode = self._createWithTypeInfoCode()
@@ -96,6 +96,15 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_DEPTH_FILTER)
+
+    def testJsonWriterWithRegexFilter(self):
+        withTypeInfoCode = self._createWithTypeInfoCode(createOptionals=False)
+        withTypeInfoCode.initialize_offsets(0)
+        with open(self.JSON_NAME_WITH_REGEX_FILTER, "w", encoding="utf-8") as jsonFile:
+            walkFilter = zserio.WalkFilter().add(zserio.WalkFilter.Regex(".*fieldOffset"))
+            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
+            walker.walk(withTypeInfoCode)
+        self._checkWithTypeInfoCodeRegexJson(self.JSON_NAME_WITH_REGEX_FILTER)
 
     def _checkSimpleStruct(self, type_info):
         self.assertEqual("with_type_info_code.SimpleStruct", type_info.schema_name)
@@ -1176,6 +1185,8 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         for i, jsonArrayElement in enumerate(jsonData["implicitArray"]):
             self.assertEqual(implicitArray[i], jsonArrayElement)
 
+        self.assertEqual(12, len(jsonData.keys()))
+
     def _checkWithTypeInfoCodeDepth1ArrayLength0Json(self, jsonFileName):
         with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
@@ -1192,6 +1203,18 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual({}, jsonData["templatedParameterizedStruct"])
         self._checkExternDataJson(jsonData["externData"])
         self.assertEqual([], jsonData["implicitArray"])
+        self.assertEqual(12, len(jsonData.keys()))
+
+    def _checkWithTypeInfoCodeRegexJson(self, jsonFileName):
+        with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
+            jsonData = json.load(jsonFile)
+
+        self.assertEqual(8, jsonData["simpleStruct"]["fieldOffset"])
+        self.assertEqual(1, len(jsonData["simpleStruct"].keys()))
+        self.assertEqual(40, jsonData["complexStruct"]["simpleStruct"]["fieldOffset"])
+        self.assertEqual(1, len(jsonData["complexStruct"].keys()))
+        self.assertEqual(1, len(jsonData["complexStruct"]["simpleStruct"].keys()))
+        self.assertEqual(2, len(jsonData.keys()))
 
     def _createSimpleStruct(self):
         simpleStruct = self.api.SimpleStruct()
@@ -1208,6 +1231,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(1.0, simpleStruct["fieldFloat16"])
         self.assertEqual(4.0, simpleStruct["fieldFloat32"])
         self.assertEqual(2.0, simpleStruct["fieldFloat64"])
+        self.assertEqual(7, len(simpleStruct.keys()))
 
     def _createComplexStruct(self, createOptionals):
         simpleStruct = self._createSimpleStruct()
@@ -1254,6 +1278,8 @@ class WithTypeInfoCodeTest(unittest.TestCase):
                                                maxArrayLength > 65536 // 2) else maxArrayLength * 2
         self.assertEqual(list(range(1, dynamicBitFieldArrayLength, 2)), complexStruct["dynamicBitFieldArray"])
 
+        self.assertEqual(7, len(complexStruct.keys()))
+
     def _createParameterizedStruct(self, simpleStruct):
         parameterizedStruct = self.api.ParameterizedStruct(
             simpleStruct,
@@ -1264,6 +1290,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def _checkParameterizedStructJson(self, parameterizedStruct, fieldU32, maxArrayLength):
         arrayLength = fieldU32 if maxArrayLength is None or maxArrayLength > fieldU32 else maxArrayLength
         self.assertEqual(list(range(arrayLength)), parameterizedStruct["array"])
+        self.assertEqual(1, len(parameterizedStruct.keys()))
 
     def _createRecursiveStruct(self):
         recursiveStruct = self.api.RecursiveStruct(
@@ -1286,6 +1313,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             self.assertEqual(0xDEAD4, recursiveStruct["arrayRecursion"][1]["fieldU32"])
             self.assertEqual(None, recursiveStruct["arrayRecursion"][1]["fieldRecursion"])
             self.assertEqual([], recursiveStruct["arrayRecursion"][1]["arrayRecursion"])
+        self.assertEqual(3, len(recursiveStruct.keys()))
 
     def _createRecursiveUnion(self):
         recursiveUnion = self.api.RecursiveUnion()
@@ -1296,6 +1324,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def _checkRecursiveUnionJson(self, recursiveUnion, maxArrayLength):
         if maxArrayLength is None or maxArrayLength > 0:
             self.assertEqual(0xDEAD, recursiveUnion["recursive"][0]["fieldU32"])
+        self.assertEqual(1, len(recursiveUnion.keys()))
 
     def _createRecursiveChoice(self, param1, param2):
         recursiveChoice = self.api.RecursiveChoice(param1, param2)
@@ -1314,6 +1343,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
                 self._checkRecursiveChoiceJson(recursiveChoice["recursive"][i], param2, False, maxArrayLength)
         else:
             self.assertEqual(0xDEAD, recursiveChoice["fieldU32"])
+        self.assertEqual(1, len(recursiveChoice.keys()))
 
     def _createSimpleUnion(self):
         simpleUnion = self.api.SimpleUnion()
@@ -1323,6 +1353,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
     def _checkSimpleUnionJson(self, simpleUnion):
         self.assertEqual(self.api.TestBitmask.Values.GREEN.value, simpleUnion["testBitmask"])
+        self.assertEqual(1, len(simpleUnion.keys()))
 
     def _createSimpleChoice(self, testEnum):
         simpleChoice = self.api.SimpleChoice(testEnum)
@@ -1338,6 +1369,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             self._checkSimpleUnionJson(simpleChoice["fieldTwo"])
         else:
             self.assertEqual("text", simpleChoice["fieldDefault"])
+        self.assertEqual(1, len(simpleChoice.keys()))
 
     def _createTS32(self):
         ts32 = self.api.TS32(
@@ -1348,6 +1380,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
     def _checkTS32Json(self, ts32):
         self.assertEqual(0xDEAD, ts32["field"])
+        self.assertEqual(1, len(ts32.keys()))
 
     def _createTemplatedParameterizedStruct_TS32(self, ts32):
         templatedParameterizedStruct_TS32 = self.api.TemplatedParameterizedStruct_TS32(
@@ -1361,6 +1394,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         arrayLength = ts32.field if maxArrayLength is None or maxArrayLength > ts32.field else maxArrayLength
         for i in range(ts32.field, ts32.field - arrayLength, -1):
             self.assertEqual(i, templatedParameterizedStruct_TS32["array"][ts32.field - i])
+        self.assertEqual(1, len(templatedParameterizedStruct_TS32.keys()))
 
     @staticmethod
     def _createExternData():
@@ -1369,6 +1403,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def _checkExternDataJson(self, externData):
         self.assertEqual("b'\\xca\\xfe'", externData["buffer"])
         self.assertEqual(15, externData["bitSize"])
+        self.assertEqual(2, len(externData.keys()))
 
     BLOB_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
                                             "with_type_info_code_optionals.blob")
@@ -1382,3 +1417,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
                                                       "with_type_info_code_array_length.json")
     JSON_NAME_WITH_DEPTH_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
                                                "with_type_info_code_depth.json")
+    JSON_NAME_WITH_DEPTH_ARRAY_LENGTH_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                                            "with_type_info_code_depth_array_length.json")
+    JSON_NAME_WITH_REGEX_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                               "with_type_info_code_regex.json")
