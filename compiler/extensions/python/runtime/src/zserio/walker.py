@@ -6,7 +6,7 @@ import re
 import typing
 
 from zserio.exception import PythonRuntimeException
-from zserio.typeinfo import RecursiveTypeInfo, TypeAttribute, MemberInfo, MemberAttribute
+from zserio.typeinfo import TypeAttribute, MemberInfo, MemberAttribute
 
 class Walker:
     """
@@ -88,6 +88,35 @@ class Walker:
             :param element_index: Element index in array or None if the value is not in array.
             """
             raise NotImplementedError()
+
+    class DefaultObserver(Observer):
+        """
+        Default observer which just does nothing.
+        """
+
+        def begin_root(self, _root: typing.Any) -> None:
+            pass
+
+        def end_root(self, _root: typing.Any) -> None:
+            pass
+
+        def begin_array(self, _array: typing.List[typing.Any], member_info: MemberInfo) -> None:
+            pass
+
+        def end_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> None:
+            pass
+
+        def begin_compound(self, _compound: typing.Any, member_info: MemberInfo,
+                           element_index: typing.Optional[int]) -> None:
+            pass
+
+        def end_compound(self, _compound: typing.Any, _member_info: MemberInfo,
+                         element_index: typing.Optional[int]) -> None:
+            pass
+
+        def visit_value(self, _value : typing.Any, member_info: MemberInfo,
+                        element_index: typing.Optional[int]) -> None:
+            pass
 
     class Filter:
         """
@@ -351,55 +380,137 @@ class WalkFilter(Walker.Filter):
             :param path_regex: Path regex to use for filtering.
             """
 
-            self._path_regex = re.compile(path_regex)
             self._current_path: typing.List[str] = []
+            self._path_regex = re.compile(path_regex)
 
-        def before_array(self, _array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
+        def before_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
             self._current_path.append(member_info.schema_name)
-            return self._match(member_info)
+            if self._path_regex.match(".".join(self._current_path)):
+                return True # the array itself matches
+
+            # try to find match in each element and continue into the array only if some match is found
+            # (note that array is never None)
+            for i, element in enumerate(array):
+                self._current_path[-1] = member_info.schema_name + f"[{i}]"
+                if self._match_subtree(element, member_info):
+                    return True
+            self._current_path[-1] = member_info.schema_name
+            return False
 
         def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
             self._current_path.pop()
             return True
 
-        def before_compound(self, _compound: typing.Any, member_info: MemberInfo,
-                            _element_index: typing.Optional[int]) -> bool:
-            self._current_path.append(member_info.schema_name)
-            return self._match(member_info)
+        def before_compound(self, compound: typing.Any, member_info: MemberInfo,
+                            element_index: typing.Optional[int]) -> bool:
+            self._append_path(member_info, element_index)
+            if self._path_regex.match(".".join(self._current_path)):
+                return True # the compound itself matches
 
-        def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                           _element_index: typing.Optional[int]) -> bool:
-            self._current_path.pop()
+            return self._match_subtree(compound, member_info)
+
+        def after_compound(self, _compound: typing.Any, member_info: MemberInfo,
+                           element_index: typing.Optional[int]) -> bool:
+            self._pop_path(member_info, element_index)
             return True
 
-        def before_value(self, _value: typing.Any, member_info: MemberInfo,
-                         _element_index: typing.Optional[int]) -> bool:
-            self._current_path.append(member_info.schema_name)
-            return self._match(member_info)
+        def before_value(self, value: typing.Any, member_info: MemberInfo,
+                         element_index: typing.Optional[int]) -> bool:
+            self._append_path(member_info, element_index)
+            return self._match_subtree(value, member_info)
 
-        def after_value(self, _value: typing.Any, _member_info: MemberInfo,
-                        _element_index: typing.Optional[int]) -> bool:
-            self._current_path.pop()
+        def after_value(self, _value: typing.Any, member_info: MemberInfo,
+                        element_index: typing.Optional[int]) -> bool:
+            self._pop_path(member_info, element_index)
             return True
 
-        def _match(self, member_info: MemberInfo) -> bool:
-            return self._match_paths_recursive(self._current_path.copy(), member_info)
-
-        def _match_paths_recursive(self, current_path: typing.List[str], member_info: MemberInfo) -> bool:
-            type_info = member_info.type_info
-            if TypeAttribute.FIELDS in type_info.attributes:
-                for field in type_info.attributes[TypeAttribute.FIELDS]:
-                    if not isinstance(field.type_info, RecursiveTypeInfo):
-                        current_path.append(field.schema_name)
-                        matched = self._match_paths_recursive(current_path, field)
-                        current_path.pop()
-                        if matched:
-                            return True
-                return False
+        def _match_subtree(self, member: typing.Any, member_info: MemberInfo) -> bool:
+            if member is not None and TypeAttribute.FIELDS in member_info.type_info.attributes:
+                # is a not None compound, try to find match within its subtree
+                subtree_regex = self._SubtreeRegex(self._current_path.copy(), self._path_regex)
+                walker = Walker(Walker.DefaultObserver(), subtree_regex)
+                walker.walk(member)
+                return subtree_regex.matches()
             else:
-                return self._path_regex.match(self.PATH_SEPARATOR.join(current_path)) is not None
+                # try to match a simple value or None compound
+                return self._path_regex.match(".".join(self._current_path)) is not None
 
-        PATH_SEPARATOR = "."
+        def _append_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
+            if element_index is None:
+                self._current_path.append(member_info.schema_name)
+            else:
+                self._current_path[-1] = member_info.schema_name + f"[{element_index}]" # add index
+
+        def _pop_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
+            if element_index is None:
+                self._current_path.pop()
+            else:
+                self._current_path[-1] = member_info.schema_name # just remove the index
+
+
+        class _SubtreeRegex(Walker.Filter):
+            """
+            Walks whole subtree and in case of match stops walking. Used to check whether any path
+            within the subtree matches given regex.
+            """
+
+            def __init__(self, current_path: typing.List[str], path_regex: typing.Pattern) -> None:
+                self._current_path = current_path
+                self._path_regex = path_regex
+                self._matches = False
+
+            def matches(self) -> bool:
+                """
+                Returns whether the subtree contains any matching value.
+
+                :returns: True when the subtree contains a matching value, False otherwise.
+                """
+
+                return self._matches
+
+            def before_array(self, _array, member_info):
+                self._current_path.append(member_info.schema_name)
+                self._matches = self._path_regex.match(".".join(self._current_path))
+                # terminate when the match is already found (note that array is never None)
+                return not self._matches
+
+            def after_array(self, _array, _member_info):
+                self._current_path.pop()
+                return not self._matches # terminate when the match is already found
+
+            def before_compound(self, _compound, member_info, element_index):
+                self._append_path(member_info, element_index)
+                self._matches = self._path_regex.match(".".join(self._current_path)) is not None
+
+                #  terminate when the match is already found (not that compound is never None here)
+                return not self._matches
+
+            def after_compound(self, _compound, member_info, element_index):
+                self._pop_path(member_info, element_index)
+                return not self._matches # terminate when the match is already found
+
+            def before_value(self, _value, member_info, element_index):
+                self._append_path(member_info, element_index)
+                self._matches = self._path_regex.match(".".join(self._current_path)) is not None
+
+                return not self._matches # terminate when the match is already found
+
+            def after_value(self, _value, member_info, element_index):
+                self._pop_path(member_info, element_index)
+                return not self._matches # terminate when the match is already found
+
+            def _append_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
+                if element_index is None:
+                    self._current_path.append(member_info.schema_name)
+                else:
+                    self._current_path[-1] = member_info.schema_name + f"[{element_index}]" # add index
+
+            def _pop_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
+                if element_index is None:
+                    self._current_path.pop()
+                else:
+                    self._current_path[-1] = member_info.schema_name # just remove the index
+
 
     class ArrayLength(Walker.Filter):
         """
