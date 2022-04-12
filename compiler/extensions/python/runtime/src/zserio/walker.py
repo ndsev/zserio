@@ -288,9 +288,12 @@ class WalkFilter(Walker.Filter):
             self._depth = 1
 
         def before_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
-            return self._depth <= self._max_depth
+            enter = self._depth <= self._max_depth
+            self._depth += 1
+            return enter
 
         def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
+            self._depth -= 1
             return True
 
         def before_compound(self, _compound: typing.Any, _member_info: MemberInfo) -> bool:
