@@ -330,7 +330,7 @@ class WalkFilter(Walker.Filter):
 
         def before_array(self, _array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
             self._current_path.append(member_info.schema_name)
-            return self._match(self._get_paths(member_info))
+            return self._match(member_info)
 
         def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
             self._current_path.pop()
@@ -338,7 +338,7 @@ class WalkFilter(Walker.Filter):
 
         def before_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
             self._current_path.append(member_info.schema_name)
-            return self._match(self._get_paths(member_info))
+            return self._match(member_info)
 
         def after_compound(self, _compound: typing.Any, _member_info: MemberInfo) -> bool:
             self._current_path.pop()
@@ -346,33 +346,27 @@ class WalkFilter(Walker.Filter):
 
         def before_value(self, _value: typing.Any, member_info: MemberInfo) -> bool:
             self._current_path.append(member_info.schema_name)
-            return self._match(self._get_paths(member_info))
+            return self._match(member_info)
 
         def after_value(self, _value: typing.Any, _member_info: MemberInfo) -> bool:
             self._current_path.pop()
             return True
 
-        def _get_paths(self, member_info: MemberInfo) -> typing.List[str]:
-            paths: typing.List[str] = []
-            self._get_paths_recursive(paths, self._current_path.copy(), member_info)
-            return paths
+        def _match(self, member_info: MemberInfo) -> bool:
+            return self._match_paths_recursive(self._current_path.copy(), member_info)
 
-        def _get_paths_recursive(self, paths: typing.List[str], current_path: typing.List[str],
-                                 member_info: MemberInfo) -> None:
+        def _match_paths_recursive(self, current_path: typing.List[str], member_info: MemberInfo) -> bool:
             type_info = member_info.type_info
             if TypeAttribute.FIELDS in type_info.attributes:
                 for field in type_info.attributes[TypeAttribute.FIELDS]:
                     if not isinstance(field.type_info, RecursiveTypeInfo):
                         current_path.append(field.schema_name)
-                        self._get_paths_recursive(paths, current_path, field)
+                        matched = self._match_paths_recursive(current_path, field)
                         current_path.pop()
+                        if matched:
+                            return True
+                return False
             else:
-                paths.append(self.PATH_SEPARATOR.join(current_path))
-
-        def _match(self, paths) -> bool:
-            for path in paths:
-                if self._path_regex.match(path):
-                    return True
-            return False
+                return self._path_regex.match(self.PATH_SEPARATOR.join(current_path)) is not None
 
         PATH_SEPARATOR = "."
