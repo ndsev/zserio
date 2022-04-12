@@ -371,6 +371,19 @@ class WalkerTest(unittest.TestCase):
         self.assertEqual([obj.nested], observer.captures["end_compound"])
         self.assertEqual(["nested"], observer.captures["visit_value"])
 
+    def test_array_length_filter_0(self):
+        observer = TestObserver()
+        walker = Walker(observer, WalkFilter().add(WalkFilter.ArrayLength(0)))
+        obj = self._create_dummy_object()
+        walker.walk(obj)
+        self.assertEqual(obj, observer.captures["begin_root"])
+        self.assertEqual(obj, observer.captures["end_root"])
+        self.assertEqual([obj.union_array], observer.captures["begin_array"])
+        self.assertEqual([obj.union_array], observer.captures["end_array"])
+        self.assertEqual([obj.nested], observer.captures["begin_compound"])
+        self.assertEqual([obj.nested], observer.captures["end_compound"])
+        self.assertEqual([13, "nested", "test"], observer.captures["visit_value"])
+
     @staticmethod
     def _create_dummy_object():
         return DummyObject(13, DummyNested("nested"), "test", [DummyUnion(text_="1"), DummyUnion(value_=2)])

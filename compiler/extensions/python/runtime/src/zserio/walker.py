@@ -277,7 +277,7 @@ class WalkFilter(Walker.Filter):
         Walk filter which allows to walk only to the given maximum depth.
         """
 
-        def __init__(self, max_depth):
+        def __init__(self, max_depth: int):
             """
             Constructor.
 
@@ -370,3 +370,55 @@ class WalkFilter(Walker.Filter):
                 return self._path_regex.match(self.PATH_SEPARATOR.join(current_path)) is not None
 
         PATH_SEPARATOR = "."
+
+    class ArrayLength(Walker.Filter):
+        """
+        Walk filter which allows to walk only to the given maximum array length.
+        """
+
+        def __init__(self, max_array_length: int):
+            """
+            Constructor.
+
+            :param max_array_length: Maximum array length to walk to.
+            """
+
+            self._max_array_length = max_array_length
+            self._array_length_stack: typing.List[int] = []
+
+        def before_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
+            self._array_length_stack.append(0)
+            return True
+
+        def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
+            self._array_length_stack.pop()
+            return True
+
+        def before_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
+            return self._before_array_element(member_info)
+
+        def after_compound(self, _compound: typing.Any, member_info: MemberInfo) -> bool:
+            return self._after_array_element(member_info)
+
+        def before_value(self, _value: typing.Any, member_info: MemberInfo) -> bool:
+            return self._before_array_element(member_info)
+
+        def after_value(self, _value: typing.Any, member_info: MemberInfo) -> bool:
+            return self._after_array_element(member_info)
+
+        @staticmethod
+        def _is_array_element(member_info: MemberInfo) -> bool:
+            return MemberAttribute.ARRAY_LENGTH in member_info.attributes
+
+        def _before_array_element(self, member_info: MemberInfo) -> bool:
+            if self._is_array_element(member_info):
+                self._array_length_stack[-1] += 1
+                return self._array_length_stack[-1] <= self._max_array_length
+
+            return True
+
+        def _after_array_element(self, member_info: MemberInfo) -> bool:
+            if self._is_array_element(member_info):
+                return self._array_length_stack[-1] <= self._max_array_length
+
+            return True

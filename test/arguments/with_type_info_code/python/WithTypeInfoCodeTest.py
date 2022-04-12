@@ -54,6 +54,49 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITHOUT_OPTIONALS, createdOptionals=False)
 
+    def testJsonWriterWithArrayLengthFilter(self):
+        withTypeInfoCode = self._createWithTypeInfoCode()
+        withTypeInfoCode.initialize_offsets(0)
+        for i in range(11):
+            with open(self.JSON_NAME_WITH_ARRAY_LENGTH_FILTER, "w", encoding="utf-8") as jsonFile:
+                walkFilter = zserio.WalkFilter().add(zserio.WalkFilter.ArrayLength(i))
+                walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
+                walker.walk(withTypeInfoCode)
+            self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_ARRAY_LENGTH_FILTER, maxArrayLength=i)
+
+    def testJsonWriterWithDepth0Filter(self):
+        withTypeInfoCode = self._createWithTypeInfoCode()
+        withTypeInfoCode.initialize_offsets(0)
+        with open(self.JSON_NAME_WITH_DEPTH_FILTER, "w", encoding="utf-8") as jsonFile:
+            walkFilter = zserio.WalkFilter().add(zserio.WalkFilter.Depth(0))
+            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
+            walker.walk(withTypeInfoCode)
+
+        with open(self.JSON_NAME_WITH_DEPTH_FILTER, 'r', encoding="utf-8") as jsonFile:
+            jsonData = json.load(jsonFile)
+        self.assertEqual({}, jsonData)
+
+    def testJsonWriterWithDepth1ArrayLength0Filter(self):
+        withTypeInfoCode = self._createWithTypeInfoCode()
+        withTypeInfoCode.initialize_offsets(0)
+        with open(self.JSON_NAME_WITH_DEPTH_FILTER, "w", encoding="utf-8") as jsonFile:
+            walkFilter = zserio.WalkFilter()
+            walkFilter.add(zserio.WalkFilter.Depth(1))
+            walkFilter.add(zserio.WalkFilter.ArrayLength(0))
+            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
+            walker.walk(withTypeInfoCode)
+        self._checkWithTypeInfoCodeDepth1ArrayLength0Json(self.JSON_NAME_WITH_DEPTH_FILTER)
+
+    def testJsonWriterWithDepth3Filter(self):
+        withTypeInfoCode = self._createWithTypeInfoCode()
+        withTypeInfoCode.initialize_offsets(0)
+        with open(self.JSON_NAME_WITH_DEPTH_FILTER, "w", encoding="utf-8") as jsonFile:
+            walkFilter = zserio.WalkFilter()
+            walkFilter.add(zserio.WalkFilter.Depth(3))
+            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
+            walker.walk(withTypeInfoCode)
+        self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_DEPTH_FILTER)
+
     def _checkSimpleStruct(self, type_info):
         self.assertEqual("with_type_info_code.SimpleStruct", type_info.schema_name)
         self.assertEqual(self.api.SimpleStruct, type_info.py_type)
@@ -1088,7 +1131,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.REQUEST_TYPE, member_info.attributes)
         self._checkSimpleUnion(member_info.attributes[MemberAttribute.REQUEST_TYPE])
 
-    def _createWithTypeInfoCode(self, *, createOptionals):
+    def _createWithTypeInfoCode(self, *, createOptionals = True):
         simpleStruct = self._createSimpleStruct()
         testEnum = self.api.TestEnum.TWO
         ts32 = self._createTS32()
@@ -1103,33 +1146,52 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             self._createSimpleChoice(testEnum),
             ts32,
             self._createTemplatedParameterizedStruct_TS32(ts32),
-            zserio.BitBuffer(bytes([0xCA, 0xFE]), 15),
+            self._createExternData(),
             [1, 4, 6, 4, 6, 1])
 
         return withTypeInfoCode
 
-    def _checkWithTypeInfoCodeJson(self, jsonFileName, *, createdOptionals):
+    def _checkWithTypeInfoCodeJson(self, jsonFileName, *, createdOptionals = True, maxArrayLength = None):
         with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
 
         testEnum = self.api.TestEnum.TWO
         ts32 = self._createTS32()
         self._checkSimpleStructJson(jsonData["simpleStruct"], 8)
-        self._checkComplexStructJson(jsonData["complexStruct"], createdOptionals)
-        self._checkParameterizedStructJson(jsonData["parameterizedStruct"], 10)
-        self._checkRecursiveStructJson(jsonData["recursiveStruct"])
-        self._checkRecursiveUnionJson(jsonData["recursiveUnion"])
-        self._checkRecursiveChoiceJson(jsonData["recursiveChoice"], True, False)
+        self._checkComplexStructJson(jsonData["complexStruct"], createdOptionals, maxArrayLength)
+        self._checkParameterizedStructJson(jsonData["parameterizedStruct"], 10, maxArrayLength)
+        self._checkRecursiveStructJson(jsonData["recursiveStruct"], maxArrayLength)
+        self._checkRecursiveUnionJson(jsonData["recursiveUnion"], maxArrayLength)
+        self._checkRecursiveChoiceJson(jsonData["recursiveChoice"], True, False, maxArrayLength)
         self.assertEqual(testEnum.value, jsonData["selector"])
         self._checkSimpleChoiceJson(jsonData["simpleChoice"], testEnum)
         self._checkTS32Json(jsonData["templatedStruct"])
-        self._checkTemplatedParameterizedStruct_TS32Json(jsonData["templatedParameterizedStruct"], ts32)
-        self.assertEqual("b'\\xca\\xfe'", jsonData["externData"]["buffer"])
-        self.assertEqual(15, jsonData["externData"]["bitSize"])
+        self._checkTemplatedParameterizedStruct_TS32Json(jsonData["templatedParameterizedStruct"], ts32,
+                                                         maxArrayLength)
+        self._checkExternDataJson(jsonData["externData"])
         implicitArray = [1, 4, 6, 4, 6, 1]
-        self.assertEqual(len(implicitArray), len(jsonData["implicitArray"]))
-        for i, implicitArrayElement in enumerate(implicitArray):
-            self.assertEqual(implicitArrayElement, jsonData["implicitArray"][i])
+        filteredArrayLength = len(implicitArray) if (maxArrayLength is None or
+                                                     len(implicitArray) <= maxArrayLength) else maxArrayLength
+        self.assertEqual(filteredArrayLength, len(jsonData["implicitArray"]))
+        for i, jsonArrayElement in enumerate(jsonData["implicitArray"]):
+            self.assertEqual(implicitArray[i], jsonArrayElement)
+
+    def _checkWithTypeInfoCodeDepth1ArrayLength0Json(self, jsonFileName):
+        with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
+            jsonData = json.load(jsonFile)
+
+        self.assertEqual({}, jsonData["simpleStruct"])
+        self.assertEqual({}, jsonData["complexStruct"])
+        self.assertEqual({}, jsonData["parameterizedStruct"])
+        self.assertEqual({}, jsonData["recursiveStruct"])
+        self.assertEqual({}, jsonData["recursiveUnion"])
+        self.assertEqual({}, jsonData["recursiveChoice"])
+        self.assertEqual(self.api.TestEnum.TWO.value, jsonData["selector"])
+        self.assertEqual({}, jsonData["simpleChoice"])
+        self.assertEqual({}, jsonData["templatedStruct"])
+        self.assertEqual({}, jsonData["templatedParameterizedStruct"])
+        self._checkExternDataJson(jsonData["externData"])
+        self.assertEqual([], jsonData["implicitArray"])
 
     def _createSimpleStruct(self):
         simpleStruct = self.api.SimpleStruct()
@@ -1153,7 +1215,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             simpleStruct,
             self._createSimpleStruct() if createOptionals else None,
             [3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5],
-            [3, 2, 1],
+            list(range(3, 0, -1)),
             [self._createParameterizedStruct(simpleStruct),
              self._createParameterizedStruct(simpleStruct)] if createOptionals else None,
             7,
@@ -1161,21 +1223,36 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         return complexStruct
 
-    def _checkComplexStructJson(self, complexStruct, createdOptionals):
+    def _checkComplexStructJson(self, complexStruct, createdOptionals, maxArrayLength):
         self._checkSimpleStructJson(complexStruct["simpleStruct"], 40)
+
         if createdOptionals:
             self._checkSimpleStructJson(complexStruct["optionalSimpleStruct"], 72)
         else:
             self.assertEqual(None, complexStruct["optionalSimpleStruct"])
-        self.assertEqual([3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5], complexStruct["array"])
-        self.assertEqual([3, 2, 1], complexStruct["arrayWithLen"])
+
+        array = [3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5]
+        arrayLength = len(array) if maxArrayLength is None or len(array) <= maxArrayLength else maxArrayLength
+        self.assertEqual(arrayLength, len(complexStruct["array"]))
+        for i, jsonArrayElement in enumerate(complexStruct["array"]):
+            self.assertEqual(array[i], jsonArrayElement)
+
+        arrayWithLenLength = 3 if maxArrayLength is None or maxArrayLength > 3 else maxArrayLength
+        self.assertEqual(list(range(3, 3 - arrayWithLenLength, -1)), complexStruct["arrayWithLen"])
+
         if createdOptionals:
-            self._checkParameterizedStructJson(complexStruct["paramStructArray"][0], 10)
-            self._checkParameterizedStructJson(complexStruct["paramStructArray"][1], 10)
+            if maxArrayLength is None or maxArrayLength > 0:
+                self._checkParameterizedStructJson(complexStruct["paramStructArray"][0], 10, maxArrayLength)
+            if maxArrayLength is None or maxArrayLength > 1:
+                self._checkParameterizedStructJson(complexStruct["paramStructArray"][1], 10, maxArrayLength)
         else:
             self.assertEqual(None, complexStruct["paramStructArray"])
+
         self.assertEqual(7, complexStruct["dynamicBitField"])
-        self.assertEqual(list(range(1, 65536, 2)), complexStruct["dynamicBitFieldArray"])
+
+        dynamicBitFieldArrayLength = 65536 if (maxArrayLength is None or
+                                               maxArrayLength > 65536 // 2) else maxArrayLength * 2
+        self.assertEqual(list(range(1, dynamicBitFieldArrayLength, 2)), complexStruct["dynamicBitFieldArray"])
 
     def _createParameterizedStruct(self, simpleStruct):
         parameterizedStruct = self.api.ParameterizedStruct(
@@ -1184,8 +1261,9 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         return parameterizedStruct
 
-    def _checkParameterizedStructJson(self, parameterizedStruct, fieldU32):
-        self.assertEqual(list(range(fieldU32)), parameterizedStruct["array"])
+    def _checkParameterizedStructJson(self, parameterizedStruct, fieldU32, maxArrayLength):
+        arrayLength = fieldU32 if maxArrayLength is None or maxArrayLength > fieldU32 else maxArrayLength
+        self.assertEqual(list(range(arrayLength)), parameterizedStruct["array"])
 
     def _createRecursiveStruct(self):
         recursiveStruct = self.api.RecursiveStruct(
@@ -1195,17 +1273,19 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         return recursiveStruct
 
-    def _checkRecursiveStructJson(self, recursiveStruct):
+    def _checkRecursiveStructJson(self, recursiveStruct, maxArrayLength):
         self.assertEqual(0xDEAD1, recursiveStruct["fieldU32"])
         self.assertEqual(0xDEAD2, recursiveStruct["fieldRecursion"]["fieldU32"])
         self.assertEqual(None, recursiveStruct["fieldRecursion"]["fieldRecursion"])
         self.assertEqual([], recursiveStruct["fieldRecursion"]["arrayRecursion"])
-        self.assertEqual(0xDEAD3, recursiveStruct["arrayRecursion"][0]["fieldU32"])
-        self.assertEqual(None, recursiveStruct["arrayRecursion"][0]["fieldRecursion"])
-        self.assertEqual([], recursiveStruct["arrayRecursion"][0]["arrayRecursion"])
-        self.assertEqual(0xDEAD4, recursiveStruct["arrayRecursion"][1]["fieldU32"])
-        self.assertEqual(None, recursiveStruct["arrayRecursion"][1]["fieldRecursion"])
-        self.assertEqual([], recursiveStruct["arrayRecursion"][1]["arrayRecursion"])
+        if maxArrayLength is None or maxArrayLength > 0:
+            self.assertEqual(0xDEAD3, recursiveStruct["arrayRecursion"][0]["fieldU32"])
+            self.assertEqual(None, recursiveStruct["arrayRecursion"][0]["fieldRecursion"])
+            self.assertEqual([], recursiveStruct["arrayRecursion"][0]["arrayRecursion"])
+        if maxArrayLength is None or maxArrayLength > 1:
+            self.assertEqual(0xDEAD4, recursiveStruct["arrayRecursion"][1]["fieldU32"])
+            self.assertEqual(None, recursiveStruct["arrayRecursion"][1]["fieldRecursion"])
+            self.assertEqual([], recursiveStruct["arrayRecursion"][1]["arrayRecursion"])
 
     def _createRecursiveUnion(self):
         recursiveUnion = self.api.RecursiveUnion()
@@ -1213,8 +1293,9 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         return recursiveUnion
 
-    def _checkRecursiveUnionJson(self, recursiveUnion):
-        self.assertEqual(0xDEAD, recursiveUnion["recursive"][0]["fieldU32"])
+    def _checkRecursiveUnionJson(self, recursiveUnion, maxArrayLength):
+        if maxArrayLength is None or maxArrayLength > 0:
+            self.assertEqual(0xDEAD, recursiveUnion["recursive"][0]["fieldU32"])
 
     def _createRecursiveChoice(self, param1, param2):
         recursiveChoice = self.api.RecursiveChoice(param1, param2)
@@ -1225,10 +1306,12 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         return recursiveChoice
 
-    def _checkRecursiveChoiceJson(self, recursiveChoice, param1, param2):
+    def _checkRecursiveChoiceJson(self, recursiveChoice, param1, param2, maxArrayLength):
         if param1:
-            for i in range(len(recursiveChoice["recursive"])):
-                self._checkRecursiveChoiceJson(recursiveChoice["recursive"][i], param2, False)
+            recursiveLength = (len(recursiveChoice["recursive"]) if maxArrayLength is None or
+                               maxArrayLength > len(recursiveChoice["recursive"]) else maxArrayLength)
+            for i in range(recursiveLength):
+                self._checkRecursiveChoiceJson(recursiveChoice["recursive"][i], param2, False, maxArrayLength)
         else:
             self.assertEqual(0xDEAD, recursiveChoice["fieldU32"])
 
@@ -1273,9 +1356,19 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         return templatedParameterizedStruct_TS32
 
-    def _checkTemplatedParameterizedStruct_TS32Json(self, templatedParameterizedStruct_TS32, ts32):
-        for i in range(ts32.field, 0, -1):
+    def _checkTemplatedParameterizedStruct_TS32Json(self, templatedParameterizedStruct_TS32, ts32,
+                                                    maxArrayLength):
+        arrayLength = ts32.field if maxArrayLength is None or maxArrayLength > ts32.field else maxArrayLength
+        for i in range(ts32.field, ts32.field - arrayLength, -1):
             self.assertEqual(i, templatedParameterizedStruct_TS32["array"][ts32.field - i])
+
+    @staticmethod
+    def _createExternData():
+        return zserio.BitBuffer(bytes([0xCA, 0xFE]), 15)
+
+    def _checkExternDataJson(self, externData):
+        self.assertEqual("b'\\xca\\xfe'", externData["buffer"])
+        self.assertEqual(15, externData["bitSize"])
 
     BLOB_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
                                             "with_type_info_code_optionals.blob")
@@ -1285,3 +1378,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
                                             "with_type_info_code_optionals.json")
     JSON_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
                                                "with_type_info_code.json")
+    JSON_NAME_WITH_ARRAY_LENGTH_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                                      "with_type_info_code_array_length.json")
+    JSON_NAME_WITH_DEPTH_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                               "with_type_info_code_depth.json")
