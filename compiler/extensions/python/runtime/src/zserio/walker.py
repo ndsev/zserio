@@ -55,7 +55,7 @@ class Walker:
             raise NotImplementedError()
 
         def begin_compound(self, compound: typing.Any, member_info: MemberInfo,
-                           element_index: typing.Optional[int]) -> None:
+                           element_index: typing.Optional[int] = None) -> None:
             """
             Called at the beginning of an compound field object.
 
@@ -68,7 +68,7 @@ class Walker:
             raise NotImplementedError()
 
         def end_compound(self, compound: typing.Any, member_info: MemberInfo,
-                         element_index: typing.Optional[int]) -> None:
+                         element_index: typing.Optional[int] = None) -> None:
             """
             Called at the end of just walked compound object.
 
@@ -79,7 +79,7 @@ class Walker:
             raise NotImplementedError()
 
         def visit_value(self, value: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int]) -> None:
+                        element_index: typing.Optional[int] = None) -> None:
             """
             Called when a simple (or an unset compound - i.e. None) value is reached.
 
@@ -107,15 +107,15 @@ class Walker:
             pass
 
         def begin_compound(self, _compound: typing.Any, member_info: MemberInfo,
-                           element_index: typing.Optional[int]) -> None:
+                           element_index: typing.Optional[int] = None) -> None:
             pass
 
         def end_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                         element_index: typing.Optional[int]) -> None:
+                         element_index: typing.Optional[int] = None) -> None:
             pass
 
         def visit_value(self, _value : typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int]) -> None:
+                        element_index: typing.Optional[int] = None) -> None:
             pass
 
     class Filter:
@@ -147,7 +147,7 @@ class Walker:
             raise NotImplementedError()
 
         def before_compound(self, compound: typing.Any, member_info: MemberInfo,
-                            element_index: typing.Optional[int]) -> bool:
+                            element_index: typing.Optional[int] = None) -> bool:
             """
             Called before a compound object.
 
@@ -162,7 +162,7 @@ class Walker:
             raise NotImplementedError()
 
         def after_compound(self, compound: typing.Any, member_info: MemberInfo,
-                           element_index: typing.Optional[int]) -> bool:
+                           element_index: typing.Optional[int] = None) -> bool:
             """
             Called after a compound object.
 
@@ -175,7 +175,7 @@ class Walker:
             raise NotImplementedError()
 
         def before_value(self, value: typing.Any, member_info: MemberInfo,
-                         element_index: typing.Optional[int]) -> bool:
+                         element_index: typing.Optional[int] = None) -> bool:
             """
             Called before a simple (or an unset compound - i.e. None) value.
 
@@ -188,7 +188,7 @@ class Walker:
             raise NotImplementedError()
 
         def after_value(self, value: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int]) -> bool:
+                        element_index: typing.Optional[int] = None) -> bool:
             """
             Called after a simple value.
 
@@ -302,19 +302,19 @@ class WalkFilter(Walker.Filter):
         return self._apply_filters(lambda x: x.after_array(array, member_info))
 
     def before_compound(self, compound: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int]) -> bool:
+                        element_index: typing.Optional[int] = None) -> bool:
         return self._apply_filters(lambda x: x.before_compound(compound, member_info, element_index))
 
     def after_compound(self, compound: typing.Any, member_info: MemberInfo,
-                       element_index: typing.Optional[int]) -> bool:
+                       element_index: typing.Optional[int] = None) -> bool:
         return self._apply_filters(lambda x: x.after_compound(compound, member_info, element_index))
 
     def before_value(self, value: typing.Any, member_info: MemberInfo,
-                     element_index: typing.Optional[int]) -> bool:
+                     element_index: typing.Optional[int] = None) -> bool:
         return self._apply_filters(lambda x: x.before_value(value, member_info, element_index))
 
     def after_value(self, value: typing.Any, member_info: MemberInfo,
-                    element_index: typing.Optional[int]) -> bool:
+                    element_index: typing.Optional[int] = None) -> bool:
         return self._apply_filters(lambda x: x.after_value(value, member_info, element_index))
 
     def _apply_filters(self, method):
@@ -345,22 +345,22 @@ class WalkFilter(Walker.Filter):
             return True
 
         def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                            _element_index: typing.Optional[int]) -> bool:
+                            _element_index: typing.Optional[int] = None) -> bool:
             enter = self._depth <= self._max_depth
             self._depth += 1
             return enter
 
         def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                           _element_index: typing.Optional[int]) -> bool:
+                           _element_index: typing.Optional[int] = None) -> bool:
             self._depth -= 1
             return True
 
         def before_value(self, _value: typing.Any, _member_info: MemberInfo,
-                         _element_index: typing.Optional[int]) -> bool:
+                         _element_index: typing.Optional[int] = None) -> bool:
             return self._depth <= self._max_depth
 
         def after_value(self, _value: typing.Any, _member_info: MemberInfo,
-                        _element_index: typing.Optional[int]) -> bool:
+                        _element_index: typing.Optional[int] = None) -> bool:
             return True
 
     class Regex(Walker.Filter):
@@ -402,7 +402,7 @@ class WalkFilter(Walker.Filter):
             return True
 
         def before_compound(self, compound: typing.Any, member_info: MemberInfo,
-                            element_index: typing.Optional[int]) -> bool:
+                            element_index: typing.Optional[int] = None) -> bool:
             self._append_path(member_info, element_index)
             if self._path_regex.match(".".join(self._current_path)):
                 return True # the compound itself matches
@@ -410,17 +410,17 @@ class WalkFilter(Walker.Filter):
             return self._match_subtree(compound, member_info)
 
         def after_compound(self, _compound: typing.Any, member_info: MemberInfo,
-                           element_index: typing.Optional[int]) -> bool:
+                           element_index: typing.Optional[int] = None) -> bool:
             self._pop_path(member_info, element_index)
             return True
 
         def before_value(self, value: typing.Any, member_info: MemberInfo,
-                         element_index: typing.Optional[int]) -> bool:
+                         element_index: typing.Optional[int] = None) -> bool:
             self._append_path(member_info, element_index)
             return self._match_subtree(value, member_info)
 
         def after_value(self, _value: typing.Any, member_info: MemberInfo,
-                        element_index: typing.Optional[int]) -> bool:
+                        element_index: typing.Optional[int] = None) -> bool:
             self._pop_path(member_info, element_index)
             return True
 
@@ -468,34 +468,39 @@ class WalkFilter(Walker.Filter):
 
                 return self._matches
 
-            def before_array(self, _array, member_info):
+            def before_array(self, _array: typing.List[typing.Any], member_info: MemberInfo):
                 self._current_path.append(member_info.schema_name)
-                self._matches = self._path_regex.match(".".join(self._current_path))
+                self._matches = self._path_regex.match(".".join(self._current_path)) is not None
+
                 # terminate when the match is already found (note that array is never None)
                 return not self._matches
 
-            def after_array(self, _array, _member_info):
+            def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo):
                 self._current_path.pop()
                 return not self._matches # terminate when the match is already found
 
-            def before_compound(self, _compound, member_info, element_index):
+            def before_compound(self, _compound: typing.Any, member_info: MemberInfo,
+                                element_index: typing.Optional[int] = None):
                 self._append_path(member_info, element_index)
                 self._matches = self._path_regex.match(".".join(self._current_path)) is not None
 
                 #  terminate when the match is already found (not that compound is never None here)
                 return not self._matches
 
-            def after_compound(self, _compound, member_info, element_index):
+            def after_compound(self, _compound: typing.Any, member_info: MemberInfo,
+                               element_index: typing.Optional[int] = None):
                 self._pop_path(member_info, element_index)
                 return not self._matches # terminate when the match is already found
 
-            def before_value(self, _value, member_info, element_index):
+            def before_value(self, _value: typing.Any, member_info: MemberInfo,
+                             element_index: typing.Optional[int] = None):
                 self._append_path(member_info, element_index)
                 self._matches = self._path_regex.match(".".join(self._current_path)) is not None
 
                 return not self._matches # terminate when the match is already found
 
-            def after_value(self, _value, member_info, element_index):
+            def after_value(self, _value: typing.Any, member_info: MemberInfo,
+                            element_index: typing.Optional[int] = None):
                 self._pop_path(member_info, element_index)
                 return not self._matches # terminate when the match is already found
 
@@ -536,19 +541,19 @@ class WalkFilter(Walker.Filter):
             return True
 
         def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                            element_index: typing.Optional[int]) -> bool:
+                            element_index: typing.Optional[int] = None) -> bool:
             return self._filter_array_element(element_index)
 
         def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
-                           element_index: typing.Optional[int]) -> bool:
+                           element_index: typing.Optional[int] = None) -> bool:
             return self._filter_array_element(element_index)
 
         def before_value(self, _value: typing.Any, _member_info: MemberInfo,
-                         element_index: typing.Optional[int]) -> bool:
+                         element_index: typing.Optional[int] = None) -> bool:
             return self._filter_array_element(element_index)
 
         def after_value(self, _value: typing.Any, _member_info: MemberInfo,
-                        element_index: typing.Optional[int]) -> bool:
+                        element_index: typing.Optional[int] = None) -> bool:
             return self._filter_array_element(element_index)
 
         def _filter_array_element(self, element_index: typing.Optional[int]) -> bool:
