@@ -1,4 +1,9 @@
+#include <vector>
+
 #include "gtest/gtest.h"
+
+#include "zserio/RebindAlloc.h"
+#include "zserio/SerializeUtil.h"
 
 #include "with_type_info_code/SqlDatabase.h"
 #include "with_type_info_code/SimplePubsub.h"
@@ -8,6 +13,12 @@ using namespace zserio::literals;
 
 namespace with_type_info_code
 {
+
+using allocator_type = WithTypeInfoCode::allocator_type;
+template <typename T>
+using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+
+using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
 class WithTypeInfoCodeTest : public ::testing::Test
 {
@@ -1442,7 +1453,153 @@ protected:
         checkSimpleStruct(getSimpleStructMethod.responseTypeInfo);
         checkSimpleUnion(getSimpleStructMethod.requestTypeInfo);
     }
+
+    void fillWithTypeInfoCode(WithTypeInfoCode& withTypeInfoCode, bool createOptionals = true)
+    {
+        fillSimpleStruct(withTypeInfoCode.getSimpleStruct());
+        fillComplexStruct(withTypeInfoCode.getComplexStruct(), createOptionals);
+        fillParameterizedStruct(withTypeInfoCode.getParameterizedStruct(), withTypeInfoCode.getSimpleStruct());
+        fillRecursiveStruct(withTypeInfoCode.getRecursiveStruct());
+        fillRecursiveUnion(withTypeInfoCode.getRecursiveUnion());
+        fillRecursiveChoice(withTypeInfoCode.getRecursiveChoice(), true, false);
+        withTypeInfoCode.setSelector(TestEnum::TWO);
+        fillSimpleChoice(withTypeInfoCode.getSimpleChoice(), withTypeInfoCode.getSelector());
+        fillTS32(withTypeInfoCode.getTemplatedStruct());
+        fillTemplatedParameterizedStruct_TS32(withTypeInfoCode.getTemplatedParameterizedStruct(),
+                withTypeInfoCode.getTemplatedStruct());
+        const vector_type<uint8_t> buffer = {0xCA, 0xFE};
+        withTypeInfoCode.setExternData(BitBuffer(buffer, 15));
+        const vector_type<uint32_t> implicitArray = {1, 4, 6, 4, 6, 1};
+        withTypeInfoCode.setImplicitArray(implicitArray);
+
+        withTypeInfoCode.initializeChildren();
+    }
+
+    void fillSimpleStruct(SimpleStruct& simpleStruct)
+    {
+        simpleStruct.setFieldOffset(0);
+        simpleStruct.setFieldFloat32(4.0);
+    }
+
+    void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals)
+    {
+        fillSimpleStruct(complexStruct.getSimpleStruct());
+
+        if (createOptionals)
+        {
+            SimpleStruct simpleStruct;
+            fillSimpleStruct(simpleStruct);
+            complexStruct.setOptionalSimpleStruct(simpleStruct);
+        }
+
+        const vector_type<uint32_t> array = {3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5};
+        complexStruct.setArray(array);
+
+        const vector_type<int8_t> arrayWithLen = {3, 2, 1};
+        complexStruct.setArrayWithLen(arrayWithLen);
+
+        if (createOptionals)
+        {
+            ParameterizedStruct parameterizedStruct;
+            fillParameterizedStruct(parameterizedStruct, complexStruct.getSimpleStruct());
+            const vector_type<ParameterizedStruct> paramStructArray = {parameterizedStruct,
+                    parameterizedStruct};
+            complexStruct.setParamStructArray(paramStructArray);
+        }
+
+        complexStruct.setDynamicBitField(7);
+
+        vector_type<uint64_t> dynamicBitFieldArray;
+        for (uint64_t i = 1; i < 65536; i += 2)
+            dynamicBitFieldArray.push_back(i);
+        complexStruct.setDynamicBitFieldArray(dynamicBitFieldArray);
+    }
+
+    void fillParameterizedStruct(ParameterizedStruct& parameterizedStruct, const SimpleStruct& simpleStruct)
+    {
+        vector_type<uint8_t> array;
+        for (uint8_t i = 0; i < simpleStruct.getFieldU32(); i++)
+            array.push_back(i);
+        parameterizedStruct.setArray(array);
+    }
+
+    void fillRecursiveStruct(RecursiveStruct& recursiveStruct)
+    {
+        recursiveStruct.setFieldU32(0xDEAD1);
+        recursiveStruct.setFieldRecursion(RecursiveStruct(0xDEAD2, zserio::NullOpt,
+                vector_type<RecursiveStruct>()));
+        const vector_type<RecursiveStruct> arrayRecursion = {
+                RecursiveStruct(0xDEAD3, zserio::NullOpt, vector_type<RecursiveStruct>()),
+                RecursiveStruct(0xDEAD4, zserio::NullOpt, vector_type<RecursiveStruct>())};
+        recursiveStruct.setArrayRecursion(arrayRecursion);
+    }
+
+    void fillRecursiveUnion(RecursiveUnion& recursiveUnion)
+    {
+        RecursiveUnion recursiveUnionFieldU32;
+        recursiveUnionFieldU32.setFieldU32(0xDEAD);
+        const vector_type<RecursiveUnion> recursive = {recursiveUnionFieldU32};
+        recursiveUnion.setRecursive(recursive);
+    }
+
+    void fillRecursiveChoice(RecursiveChoice& recursiveChoice, bool param1, bool param2)
+    {
+        if (param1)
+        {
+            RecursiveChoice recursiveChoiceFalse;
+            fillRecursiveChoice(recursiveChoiceFalse, param2, false);
+            const vector_type<RecursiveChoice> recursive = {recursiveChoiceFalse};
+            recursiveChoice.setRecursive(recursive);
+        }
+        else
+        {
+            recursiveChoice.setFieldU32(0xDEAD);
+        }
+    }
+
+    void fillSimpleUnion(SimpleUnion& simpleUnion)
+    {
+        simpleUnion.setTestBitmask(TestBitmask::Values::Green);
+    }
+
+    void fillSimpleChoice(SimpleChoice& simpleChoice, const TestEnum& testEnum)
+    {
+        if (testEnum == TestEnum::TWO)
+        {
+            SimpleUnion simpleUnion;
+            fillSimpleUnion(simpleUnion);
+            simpleChoice.setFieldTwo(simpleUnion);
+        }
+        else
+        {
+            simpleChoice.setFieldDefault("text");
+        }
+    }
+
+    void fillTS32(TS32& ts32)
+    {
+        ts32.setField(0xDEAD);
+    }
+
+    void fillTemplatedParameterizedStruct_TS32(
+            TemplatedParameterizedStruct_TS32& templatedParameterizedStruct_TS32, const TS32& ts32)
+    {
+        vector_type<uint32_t> array;
+        for (uint32_t i = ts32.getField(); i > 0; --i)
+            array.push_back(i);
+        templatedParameterizedStruct_TS32.setArray(array);
+    }
+
+    static const std::string BLOB_NAME_WITH_OPTIONALS;
+    static const std::string BLOB_NAME_WITHOUT_OPTIONALS;
+
+    zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
+
+const std::string WithTypeInfoCodeTest::BLOB_NAME_WITH_OPTIONALS =
+        "arguments/with_type_info_code/with_type_info_code_optionals.blob";
+const std::string WithTypeInfoCodeTest::BLOB_NAME_WITHOUT_OPTIONALS =
+        "arguments/with_type_info_code/with_type_info_code.blob";
 
 TEST_F(WithTypeInfoCodeTest, checkSqlDatabase)
 {
@@ -1457,6 +1614,28 @@ TEST_F(WithTypeInfoCodeTest, checkSimplePubsub)
 TEST_F(WithTypeInfoCodeTest, checkSimpleService)
 {
     checkSimpleService(SimpleService::typeInfo());
+}
+
+TEST_F(WithTypeInfoCodeTest, writeReadFileWithOptionals)
+{
+
+    WithTypeInfoCode withTypeInfoCode;
+    fillWithTypeInfoCode(withTypeInfoCode);
+    zserio::serializeToFile(withTypeInfoCode, BLOB_NAME_WITH_OPTIONALS);
+    const WithTypeInfoCode readWithTypeInfoCode =
+            zserio::deserializeFromFile<WithTypeInfoCode>(BLOB_NAME_WITH_OPTIONALS);
+    ASSERT_EQ(withTypeInfoCode, readWithTypeInfoCode);
+}
+
+TEST_F(WithTypeInfoCodeTest, writeReadFileWithoutOptionals)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    const bool createOptionals = false;
+    fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
+    zserio::serializeToFile(withTypeInfoCode, BLOB_NAME_WITHOUT_OPTIONALS);
+    const WithTypeInfoCode readWithTypeInfoCode =
+            zserio::deserializeFromFile<WithTypeInfoCode>(BLOB_NAME_WITHOUT_OPTIONALS);
+    ASSERT_EQ(withTypeInfoCode, readWithTypeInfoCode);
 }
 
 } // namespace with_type_info_code

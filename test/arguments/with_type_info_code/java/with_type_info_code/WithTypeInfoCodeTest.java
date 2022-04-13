@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.math.BigInteger;
+import java.io.IOException;
+import java.io.File;
 
 import with_type_info_code.SqlDatabase;
 import with_type_info_code.SimplePubsub;
@@ -24,6 +27,9 @@ import zserio.runtime.typeinfo.MessageInfo;
 import zserio.runtime.typeinfo.MethodInfo;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
+import zserio.runtime.io.BitStreamWriter;
+import zserio.runtime.io.FileBitStreamWriter;
 
 public class WithTypeInfoCodeTest
 {
@@ -61,6 +67,33 @@ public class WithTypeInfoCodeTest
     public void checkSimpleServiceIsNotTemplate()
     {
         assertThrows(ZserioError.class, () -> SimpleService.typeInfo().getTemplateName());
+    }
+
+    @Test
+    public void writeReadFileWithOptionals() throws IOException
+    {
+        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode();
+        final File file = new File(BLOB_NAME_WITH_OPTIONALS);
+        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        withTypeInfoCode.write(writer);
+        writer.close();
+
+        final WithTypeInfoCode readWithTypeInfoCode = new WithTypeInfoCode(file);
+        assertEquals(withTypeInfoCode, readWithTypeInfoCode);
+    }
+
+    @Test
+    public void writeReadFileWithoutOptionals() throws IOException
+    {
+        final boolean createdOptionals = false;
+        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
+        final File file = new File(BLOB_NAME_WITHOUT_OPTIONALS);
+        final BitStreamWriter writer = new FileBitStreamWriter(file);
+        withTypeInfoCode.write(writer);
+        writer.close();
+
+        final WithTypeInfoCode readWithTypeInfoCode = new WithTypeInfoCode(file);
+        assertEquals(withTypeInfoCode, readWithTypeInfoCode);
     }
 
     private void checkSqlDatabase(TypeInfo typeInfo)
@@ -1486,4 +1519,156 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(getSimpleStructMethod.getResponseTypeInfo());
         checkSimpleUnion(getSimpleStructMethod.getRequestTypeInfo());
     }
+
+    private WithTypeInfoCode createWithTypeInfoCode()
+    {
+        return createWithTypeInfoCode(true);
+    }
+
+    private WithTypeInfoCode createWithTypeInfoCode(boolean createOptionals)
+    {
+        final SimpleStruct simpleStruct = createSimpleStruct();
+        final TestEnum testEnum = TestEnum.TWO;
+        final TS32 ts32 = createTS32();
+        final WithTypeInfoCode withTypeInfoCode = new WithTypeInfoCode(
+            simpleStruct,
+            createComplexStruct(createOptionals),
+            createParameterizedStruct(simpleStruct),
+            createRecursiveStruct(),
+            createRecursiveUnion(),
+            createRecursiveChoice(true, false),
+            testEnum,
+            createSimpleChoice(testEnum),
+            ts32,
+            createTemplatedParameterizedStruct_TS32(ts32),
+            createExternData(),
+            new long[] {1, 4, 6, 4, 6, 1});
+
+        return withTypeInfoCode;
+    }
+
+    private SimpleStruct createSimpleStruct()
+    {
+        final SimpleStruct simpleStruct = new SimpleStruct();
+        simpleStruct.setFieldOffset(0);
+        simpleStruct.setFieldFloat32(4.0f);
+
+        return simpleStruct;
+    }
+
+    private ComplexStruct createComplexStruct(boolean createOptionals)
+    {
+        final SimpleStruct simpleStruct = createSimpleStruct();
+        final BigInteger[] dynamicBitFieldArray = new BigInteger[65536 / 2];
+        for (int i = 0; i < dynamicBitFieldArray.length; i++)
+            dynamicBitFieldArray[i] = BigInteger.valueOf(2 * i + 1);
+
+        final ComplexStruct complexStruct = new ComplexStruct(
+            simpleStruct,
+            (createOptionals) ? createSimpleStruct() : null,
+            new long[] {3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5},
+            new byte[] {3, 2, 1},
+            (createOptionals) ? new ParameterizedStruct[] { createParameterizedStruct(simpleStruct),
+                    createParameterizedStruct(simpleStruct) } : null,
+            BigInteger.valueOf(7),
+            dynamicBitFieldArray);
+
+        return complexStruct;
+    }
+
+    private ParameterizedStruct createParameterizedStruct(SimpleStruct simpleStruct)
+    {
+        final short[] array = new short[(int)simpleStruct.getFieldU32()];
+        for (int i = 0; i < array.length; i++)
+            array[i] = (short)i;
+        final ParameterizedStruct parameterizedStruct = new ParameterizedStruct(
+            simpleStruct,
+            array);
+
+        return parameterizedStruct;
+    }
+
+    private RecursiveStruct createRecursiveStruct()
+    {
+        final RecursiveStruct recursiveStruct = new RecursiveStruct(
+            0xDEAD1,
+            new RecursiveStruct(0xDEAD2, null, new RecursiveStruct[0]),
+            new RecursiveStruct[] {new RecursiveStruct(0xDEAD3, null, new RecursiveStruct[0]),
+                    new RecursiveStruct(0xDEAD4, null, new RecursiveStruct[0])});
+
+        return recursiveStruct;
+    }
+
+    private RecursiveUnion createRecursiveUnion()
+    {
+        final RecursiveUnion recursiveUnionFieldU32 = new RecursiveUnion();
+        recursiveUnionFieldU32.setFieldU32(0xDEAD);
+        final RecursiveUnion[] recursive = new RecursiveUnion[] {recursiveUnionFieldU32};
+        final RecursiveUnion recursiveUnion = new RecursiveUnion();
+        recursiveUnion.setRecursive(recursive);
+
+        return recursiveUnion;
+    }
+
+    private RecursiveChoice createRecursiveChoice(boolean param1, boolean param2)
+    {
+        final RecursiveChoice recursiveChoice = new RecursiveChoice(param1, param2);
+        if (param1)
+        {
+            final RecursiveChoice recursiveChoiceFalse = createRecursiveChoice(param2, false);
+            final RecursiveChoice[] recursive = new RecursiveChoice[] {recursiveChoiceFalse};
+            recursiveChoice.setRecursive(recursive);
+        }
+        else
+        {
+            recursiveChoice.setFieldU32(0xDEAD);
+        }
+
+        return recursiveChoice;
+    }
+
+    private SimpleUnion createSimpleUnion()
+    {
+        final SimpleUnion simpleUnion = new SimpleUnion();
+        simpleUnion.setTestBitmask(TestBitmask.Values.Green);
+
+        return simpleUnion;
+    }
+
+    private SimpleChoice createSimpleChoice(TestEnum testEnum)
+    {
+        final SimpleChoice simpleChoice = new SimpleChoice(testEnum);
+        if (testEnum == TestEnum.TWO)
+            simpleChoice.setFieldTwo(createSimpleUnion());
+        else
+            simpleChoice.setFieldDefault("text");
+
+        return simpleChoice;
+    }
+
+    private TS32 createTS32()
+    {
+        final TS32 ts32 = new TS32(0xDEAD);
+
+        return ts32;
+    }
+
+    private TemplatedParameterizedStruct_TS32 createTemplatedParameterizedStruct_TS32(TS32 ts32)
+    {
+        final long[] array = new long[(int)ts32.getField()];
+        for (int i = array.length; i > 0; --i)
+            array[array.length - i] = i;
+        final TemplatedParameterizedStruct_TS32 templatedParameterizedStruct_TS32 =
+                new TemplatedParameterizedStruct_TS32(ts32, array);
+
+        return templatedParameterizedStruct_TS32;
+    }
+
+    private BitBuffer createExternData()
+    {
+        return new BitBuffer(new byte[]{(byte)0xCA, (byte)0xFE}, 15);
+    }
+
+    private static final String BLOB_NAME_WITH_OPTIONALS = "with_type_info_code_optionals.blob";
+    private static final String BLOB_NAME_WITHOUT_OPTIONALS = "with_type_info_code.blob";
 }
