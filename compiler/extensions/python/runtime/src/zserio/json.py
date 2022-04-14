@@ -8,11 +8,11 @@ import json
 
 from zserio.bitbuffer import BitBuffer
 from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo, MemberAttribute
-from zserio.walker import Walker
+from zserio.walker import WalkObserver
 
-class JsonWriter(Walker.Observer):
+class JsonWriter(WalkObserver):
     """
-    Observer implementing zserio.Walker.Observer which dumps zserio objects to JSON format.
+    Observer implementing zserio.WalkObserver which dumps zserio objects to JSON format.
     """
 
     def __init__(self, *, text_io: typing.Optional[io.TextIOBase] = None,

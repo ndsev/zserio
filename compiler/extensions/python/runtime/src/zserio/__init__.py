@@ -13,7 +13,8 @@ from zserio.exception import PythonRuntimeException
 from zserio.service import ServiceData, ServiceInterface, ServiceClientInterface, ServiceException
 from zserio.pubsub import PubsubInterface, PubsubException
 from zserio.json import JsonWriter
-from zserio.walker import Walker, WalkFilter
+from zserio.walker import (WalkObserver, WalkFilter, Walker, DefaultWalkObserver, DepthWalkFilter,
+                           RegexWalkFilter, ArrayLengthWalkFilter, AndWalkFilter)
 
 from zserio.serialization import (serialize, deserialize, serialize_to_bytes, deserialize_bytes,
                                   serialize_to_file, deserialize_from_file)
