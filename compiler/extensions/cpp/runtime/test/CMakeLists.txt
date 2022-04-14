@@ -56,6 +56,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/UniquePtrTest.cpp
     zserio/ValidationSqliteUtilTest.cpp
     zserio/VarSizeUtilTest.cpp
+    zserio/WalkerTest.cpp
 )
 
 set(ZSERIO_CPP_RUNTIME_TEST_HEADERS

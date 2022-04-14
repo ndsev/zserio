@@ -53,6 +53,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/ISqliteDatabaseReader.h
     zserio/ITypeInfo.h
     zserio/IValidationObserver.h
+    zserio/IWalkFilter.h
+    zserio/IWalkObserver.h
     zserio/OptionalHolder.h
     zserio/PackingContext.h
     zserio/PubsubException.h
@@ -74,6 +76,9 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/ValidationSqliteUtil.h
     zserio/VarSizeUtil.cpp
     zserio/VarSizeUtil.h
+    zserio/Walker.cpp
+    zserio/Walker.h
+    zserio/WalkerConst.h
     zserio/pmr/AnyHolder.h
     zserio/pmr/ArrayTraits.h
     zserio/pmr/BitBuffer.h

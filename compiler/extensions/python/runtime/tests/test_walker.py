@@ -232,10 +232,9 @@ class TestFilter(Walker.Filter):
         return self._config["before_compound"]
 
     def after_compound(self, compound, member_info, element_index = None):
-        if self._config["only_first_element"] and self._is_first_element:
-            return False
+        go_to_next = not (self._config["only_first_element"] and self._is_first_element)
         self._is_first_element = False
-        return self._config["after_compound"]
+        return go_to_next and self._config["after_compound"]
 
     def before_value(self, value, member_info, element_index = None):
         return self._config["before_value"]
@@ -343,6 +342,8 @@ class WalkerTest(unittest.TestCase):
         walker.walk(obj)
         self.assertEqual(obj, observer.captures["begin_root"])
         self.assertEqual(obj, observer.captures["end_root"])
+        self.assertEqual([], observer.captures["begin_array"])
+        self.assertEqual([], observer.captures["end_array"])
         self.assertEqual([], observer.captures["begin_compound"])
         self.assertEqual([], observer.captures["end_compound"])
         self.assertEqual([13], observer.captures["visit_value"])
@@ -465,8 +466,10 @@ class DepthFilterTest(unittest.TestCase):
 
         self.assertFalse(depth_filter.before_array([], dummy_member_info))
         self.assertTrue(depth_filter.after_array([], dummy_member_info))
+
         self.assertFalse(depth_filter.before_compound(object(), dummy_member_info))
         self.assertTrue(depth_filter.after_compound(object(), dummy_member_info))
+
         self.assertFalse(depth_filter.before_value(None, dummy_member_info))
         self.assertTrue(depth_filter.after_value(None, dummy_member_info))
 
@@ -475,21 +478,23 @@ class DepthFilterTest(unittest.TestCase):
         depth_filter = WalkFilter.Depth(1)
 
         self.assertTrue(depth_filter.before_array([], dummy_member_info))  # 0
-        self.assertFalse(depth_filter.before_compound(object(), dummy_member_info, 0))  # 1
-        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info, 0))  # 1
         self.assertFalse(depth_filter.before_array([], dummy_member_info))  # 1
         self.assertTrue(depth_filter.after_array([], dummy_member_info))  # 1
+        self.assertFalse(depth_filter.before_compound(object(), dummy_member_info, 0))  # 1
+        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info, 0))  # 1
         self.assertFalse(depth_filter.before_value(None, dummy_member_info, 1))  # 1
         self.assertTrue(depth_filter.after_value(None, dummy_member_info, 1))  # 1
         self.assertTrue(depth_filter.after_array([], dummy_member_info))  # 0
+
         self.assertTrue(depth_filter.before_compound(object(), dummy_member_info))  # 0
-        self.assertFalse(depth_filter.before_compound(object(), dummy_member_info))  # 1
-        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info))  # 1
         self.assertFalse(depth_filter.before_array([], dummy_member_info))  # 1
         self.assertTrue(depth_filter.after_array([], dummy_member_info))  # 1
+        self.assertFalse(depth_filter.before_compound(object(), dummy_member_info))  # 1
+        self.assertTrue(depth_filter.after_compound(object(), dummy_member_info))  # 1
         self.assertFalse(depth_filter.before_value(None, dummy_member_info))  # 1
         self.assertTrue(depth_filter.after_value(None, dummy_member_info))  # 1
         self.assertTrue(depth_filter.after_compound(object(), dummy_member_info))  # 0
+
         self.assertTrue(depth_filter.before_value(None, dummy_member_info))  # 0
         self.assertTrue(depth_filter.after_value(None, dummy_member_info))  # 0
 

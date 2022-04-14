@@ -251,7 +251,7 @@ class Walker:
                 self._observer.end_compound(zserio_object, member_info, element_index)
             return self._walk_filter.after_compound(zserio_object, member_info, element_index)
 
-    def _walk_fields(self, zserio_object, type_info):
+    def _walk_fields(self, zserio_object, type_info) -> None:
         if TypeAttribute.FIELDS in type_info.attributes:
             fields = type_info.attributes[TypeAttribute.FIELDS]
             if TypeAttribute.SELECTOR in type_info.attributes:
