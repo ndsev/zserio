@@ -543,6 +543,11 @@ public:
         return m_identifier_;
     }
 
+    void setIdentifier(uint32_t identifier_)
+    {
+        m_identifier_ = identifier_;
+    }
+
     const DummyNested& getNested() const
     {
         return m_nested_;
@@ -558,6 +563,11 @@ public:
         return m_text_;
     }
 
+    void setText(string<>&& text_)
+    {
+        m_text_ = std::move(text_);
+    }
+
     const ::std::vector<DummyUnion>& getUnionArray() const
     {
         return m_unionArray_.getRawArray();
@@ -566,6 +576,12 @@ public:
     ::std::vector<DummyUnion>& getUnionArray()
     {
         return m_unionArray_.getRawArray();
+    }
+
+    void setUnionArray(::std::vector<DummyUnion>&& unionArray_)
+    {
+        m_unionArray_ = ZserioArrayType_unionArray(std::move(unionArray_),
+                ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>());
     }
 
 private:
@@ -929,6 +945,114 @@ TEST(DepthFilterTest, depth1)
     ASSERT_TRUE(walkFilter.beforeValue(dummyReflectable, dummyFieldInfo)); // 0
     ASSERT_TRUE(walkFilter.afterValue(dummyReflectable, dummyFieldInfo)); // 0
 }
+
+TEST(RegexWalkFilterTest, regexAll)
+{
+    RegexWalkFilter regexWalkFilter(".*");
+    IWalkFilter& walkFilter = regexWalkFilter;
+    IReflectablePtr dummyReflectable = nullptr;
+    const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
+    const FieldInfo& dummyArrayFieldInfo = DummyObject::typeInfo().getFields()[3];
+
+    ASSERT_TRUE(walkFilter.beforeArray(dummyReflectable, dummyArrayFieldInfo));
+    ASSERT_TRUE(walkFilter.afterArray(dummyReflectable, dummyArrayFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeCompound(dummyReflectable, dummyFieldInfo));
+    ASSERT_TRUE(walkFilter.afterCompound(dummyReflectable, dummyFieldInfo));
+    ASSERT_TRUE(walkFilter.beforeValue(dummyReflectable, dummyFieldInfo));
+    ASSERT_TRUE(walkFilter.afterValue(dummyReflectable, dummyFieldInfo));
+}
+
+TEST(RegexWalkFilterTest, regexPrefix)
+{
+    RegexWalkFilter regexWalkFilter("nested\\..*");
+    IWalkFilter& walkFilter = regexWalkFilter;
+    DummyObject dummyObject = createDummyObject();
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+
+    const FieldInfo& identifierFieldInfo = dummyObject.typeInfo().getFields()[0];
+    IReflectablePtr identifierReflectable = dummyReflectable->getField("identifier");
+    ASSERT_FALSE(walkFilter.beforeValue(identifierReflectable, identifierFieldInfo));
+    ASSERT_TRUE(walkFilter.afterValue(identifierReflectable, identifierFieldInfo));
+
+    const FieldInfo& nestedFieldInfo = dummyObject.typeInfo().getFields()[1];
+    IReflectablePtr nestedReflectable = dummyReflectable->getField("nested");
+    ASSERT_TRUE(walkFilter.beforeCompound(nestedReflectable, nestedFieldInfo));
+    const FieldInfo& textFieldInfo = nestedFieldInfo.typeInfo.getFields()[0];
+    IReflectablePtr textReflectable = nestedReflectable->getField("text");
+    ASSERT_TRUE(walkFilter.beforeValue(textReflectable, textFieldInfo));
+    ASSERT_TRUE(walkFilter.afterValue(textReflectable, textFieldInfo));
+    ASSERT_TRUE(walkFilter.afterCompound(nestedReflectable, nestedFieldInfo));
+
+    // ignore text
+
+    const FieldInfo& unionArrayFieldInfo = dummyObject.typeInfo().getFields()[3];
+    IReflectablePtr unionArrayReflectable = dummyReflectable->getField("unionArray");
+    ASSERT_FALSE(walkFilter.beforeArray(unionArrayReflectable, unionArrayFieldInfo));
+    ASSERT_TRUE(walkFilter.afterArray(unionArrayReflectable, unionArrayFieldInfo));
+}
+
+TEST(RegexWalkFilterTest, regexArray)
+{
+    RegexWalkFilter regexWalkFilter("unionArray\\[\\d+\\]\\.nes.*");
+    IWalkFilter& walkFilter = regexWalkFilter;
+    DummyObject dummyObject = createDummyObject();
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+
+    const FieldInfo& unionArrayFieldInfo = dummyObject.typeInfo().getFields()[3];
+    IReflectablePtr unionArrayReflectable = dummyReflectable->getField("unionArray");
+    ASSERT_TRUE(walkFilter.beforeArray(unionArrayReflectable, unionArrayFieldInfo));
+
+    ASSERT_FALSE(walkFilter.beforeCompound(unionArrayReflectable->at(0), unionArrayFieldInfo, 0));
+    ASSERT_TRUE(walkFilter.afterCompound(unionArrayReflectable->at(0), unionArrayFieldInfo, 0));
+
+    ASSERT_FALSE(walkFilter.beforeCompound(unionArrayReflectable->at(1), unionArrayFieldInfo, 1));
+    ASSERT_TRUE(walkFilter.afterCompound(unionArrayReflectable->at(1), unionArrayFieldInfo, 1));
+
+    ASSERT_TRUE(walkFilter.beforeCompound(unionArrayReflectable->at(2), unionArrayFieldInfo, 2));
+    ASSERT_TRUE(walkFilter.afterCompound(unionArrayReflectable->at(2), unionArrayFieldInfo, 2));
+
+    ASSERT_TRUE(walkFilter.afterArray(unionArrayReflectable, unionArrayFieldInfo));
+}
+
+TEST(RegexWalkFilterTest, regexArrayNoMatch)
+{
+    RegexWalkFilter regexWalkFilter("^unionArray\\[\\d*\\]\\.te.*");
+    IWalkFilter& walkFilter = regexWalkFilter;
+
+    std::vector<DummyUnion> unionArray;
+    unionArray.resize(1);
+    unionArray[0].setNestedArray(std::vector<DummyNested>{{DummyNested{"nestedArray"}}});
+    DummyObject dummyObject (13, DummyNested("nested"), "test", std::move(unionArray));
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+
+    const FieldInfo& unionArrayFieldInfo = dummyObject.typeInfo().getFields()[3];
+    IReflectablePtr unionArrayReflectable = dummyReflectable->getField("unionArray");
+    ASSERT_FALSE(walkFilter.beforeArray(unionArrayReflectable, unionArrayFieldInfo));
+    ASSERT_TRUE(walkFilter.afterArray(unionArrayReflectable, unionArrayFieldInfo));
+}
+
+TEST(RegexWalkFilterTest, regexUnsetCompoundMatch)
+{
+    RegexWalkFilter regexWalkFilter("nested");
+    IWalkFilter& walkFilter = regexWalkFilter;
+
+    std::vector<DummyUnion> unionArray;
+    unionArray.resize(2);
+    unionArray[0].setText("1");
+    unionArray[1].setValue(2);
+    DummyObject dummyObject;
+    dummyObject.setIdentifier(13);
+    dummyObject.setText("test");
+    dummyObject.setUnionArray(std::move(unionArray));
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+
+    const FieldInfo& nestedFieldInfo = dummyObject.typeInfo().getFields()[1];
+    IReflectablePtr nestedReflectable = dummyReflectable->getField("nested");
+    ASSERT_TRUE(walkFilter.beforeCompound(nestedReflectable, nestedFieldInfo));
+    ASSERT_TRUE(walkFilter.afterCompound(nestedReflectable, nestedFieldInfo));
+}
+
+// TODO[Mi-L@]: how to test real null compounds and null arrays? E.g. optionals?
 
 TEST(ArrayLengthWalkFilterTest, length0)
 {

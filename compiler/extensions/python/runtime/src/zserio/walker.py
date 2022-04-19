@@ -448,7 +448,7 @@ class RegexWalkFilter(WalkFilter):
             self._current_path.append(member_info.schema_name)
             self._matches = self._path_regex.match(".".join(self._current_path)) is not None
 
-            # terminate when the match is already found (note that array is never None)
+            # terminate when the match is already found (note that array is never None here)
             return not self._matches
 
         def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo):
@@ -460,7 +460,7 @@ class RegexWalkFilter(WalkFilter):
             self._append_path(member_info, element_index)
             self._matches = self._path_regex.match(".".join(self._current_path)) is not None
 
-            #  terminate when the match is already found (not that compound is never None here)
+            #  terminate when the match is already found (note that compound is never None here)
             return not self._matches
 
         def after_compound(self, _compound: typing.Any, member_info: MemberInfo,

@@ -457,7 +457,7 @@ class WalkFilterTest(unittest.TestCase):
         self.assertFalse(walk_filter.before_value(None, dummy_member_info))
         self.assertFalse(walk_filter.after_value(None, dummy_member_info))
 
-class DepthFilterTest(unittest.TestCase):
+class DepthWalkFilterTest(unittest.TestCase):
 
     def test_depth_0(self):
         dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
@@ -498,7 +498,7 @@ class DepthFilterTest(unittest.TestCase):
         self.assertTrue(depth_filter.after_value(None, dummy_member_info))  # 0
 
 
-class RegexFilterTest(unittest.TestCase):
+class RegexWalkFilterTest(unittest.TestCase):
 
     def test_regex_all(self):
         dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
@@ -555,7 +555,7 @@ class RegexFilterTest(unittest.TestCase):
 
     def test_regex_array_no_match(self):
         dummy_object = DummyObject(13, DummyNested("nested"), "test",
-                                   [DummyUnion(nested_array_=[DummyNested("ahoj")])])
+                                   [DummyUnion(nested_array_=[DummyNested("nestedArray")])])
 
         regex_filter = RegexWalkFilter("^unionArray\\[\\d*\\]\\.te.*")
 
@@ -569,8 +569,9 @@ class RegexFilterTest(unittest.TestCase):
         regex_filter = RegexWalkFilter("nested")
 
         nested_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][1]
-        self.assertTrue(regex_filter.before_compound(dummy_object.nested, nested_member_info))
-        self.assertTrue(regex_filter.after_compound(dummy_object.nested, nested_member_info))
+        # note that in Python the None compounds are processed as values!
+        self.assertTrue(regex_filter.before_value(dummy_object.nested, nested_member_info))
+        self.assertTrue(regex_filter.after_value(dummy_object.nested, nested_member_info))
 
     def test_regex_none_compound_no_match(self):
         dummy_object = DummyObject(13, None, "test", [DummyUnion(text_="1"), DummyUnion(value_=2)])
@@ -578,8 +579,9 @@ class RegexFilterTest(unittest.TestCase):
         regex_filter = RegexWalkFilter("^nested\\.text$")
 
         nested_member_info = dummy_object.type_info().attributes[TypeAttribute.FIELDS][1]
-        self.assertFalse(regex_filter.before_compound(dummy_object.nested, nested_member_info))
-        self.assertTrue(regex_filter.after_compound(dummy_object.nested, nested_member_info))
+        # note that in Python the None compounds are processed as values!
+        self.assertFalse(regex_filter.before_value(dummy_object.nested, nested_member_info))
+        self.assertTrue(regex_filter.after_value(dummy_object.nested, nested_member_info))
 
     def test_regex_none_array_match(self):
         dummy_object = DummyObject(13, DummyNested("nested"), "test", None)
@@ -599,7 +601,7 @@ class RegexFilterTest(unittest.TestCase):
         self.assertFalse(regex_filter.before_array(dummy_object.union_array, union_array_member_info))
         self.assertTrue(regex_filter.after_array(dummy_object.union_array, union_array_member_info))
 
-class ArrayLengthFilterTest(unittest.TestCase):
+class ArrayLengthWalkFilterTest(unittest.TestCase):
 
     def test_array_length_0(self):
         dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))

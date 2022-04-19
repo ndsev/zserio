@@ -2,6 +2,7 @@
 
 #include "zserio/TypeInfoUtil.h"
 #include "zserio/Walker.h"
+#include "zserio/StringConvertUtil.h"
 
 namespace zserio
 {
@@ -13,6 +14,7 @@ Walker::Walker(IWalkObserver& walkObserver, IWalkFilter& walkFilter) :
 void Walker::walk(const IReflectablePtr& compound)
 {
     // TODO[Mi-L@]: Add various checks!
+    // TODO[Mi-L@]: How to walk optionals?
 
     m_walkObserver.beginRoot(compound);
     walkFields(compound);
@@ -135,6 +137,214 @@ bool DepthWalkFilter::afterValue(const IReflectablePtr&, const FieldInfo&, size_
     return true;
 }
 
+namespace
+{
+
+std::string getCurrentPathImpl(const std::vector<std::string>& currentPath)
+{
+    std::string currentPathStr;
+    for (auto it = currentPath.begin(); it != currentPath.end(); ++it)
+        {
+            if (!currentPathStr.empty())
+                currentPathStr += ".";
+            currentPathStr += *it;
+        }
+        return currentPathStr;
+}
+
+void appendPathImpl(std::vector<std::string>& currentPath, const FieldInfo& fieldInfo, size_t elementIndex)
+{
+    if (elementIndex == WALKER_NOT_ELEMENT)
+        currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size());
+    else
+        currentPath.back() = toString(fieldInfo.schemaName) + "[" + toString(elementIndex) + "]";
+}
+
+void popPathImpl(std::vector<std::string>& currentPath, const FieldInfo& fieldInfo, size_t elementIndex)
+{
+    if (elementIndex == WALKER_NOT_ELEMENT)
+        currentPath.pop_back();
+    else
+        currentPath.back() = toString(fieldInfo.schemaName);
+}
+
+class SubtreeRegexWalkFilter : public IWalkFilter
+{
+public:
+    SubtreeRegexWalkFilter(const std::vector<std::string> currentPath, const std::regex& pathRegex) :
+            m_currentPath(currentPath), m_pathRegex(pathRegex)
+    {}
+
+    bool matches()
+    {
+        return m_matches;
+    }
+
+    virtual bool beforeArray(const IReflectablePtr&, const FieldInfo& fieldInfo) override
+    {
+        m_currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size());
+        m_matches = std::regex_match(getCurrentPath(), m_pathRegex);
+
+        // terminate when the match is already found (note that array is never null here)
+        return !m_matches;
+    }
+
+    virtual bool afterArray(const IReflectablePtr&, const FieldInfo&) override
+    {
+        m_currentPath.pop_back();
+        return !m_matches; // terminate when the match is already found
+    }
+
+    virtual bool beforeCompound(const IReflectablePtr&, const FieldInfo& fieldInfo,
+            size_t elementIndex) override
+    {
+        appendPath(fieldInfo, elementIndex);
+        m_matches = std::regex_match(getCurrentPath(), m_pathRegex);
+
+        // terminate when the match is already found (note that compound is never null here)
+        return !m_matches;
+    }
+
+    virtual bool afterCompound(const IReflectablePtr&, const FieldInfo& fieldInfo,
+            size_t elementIndex) override
+    {
+        popPath(fieldInfo, elementIndex);
+        return !m_matches; // terminate when the match is already found
+    }
+
+    virtual bool beforeValue(const IReflectablePtr&, const FieldInfo& fieldInfo,
+            size_t elementIndex) override
+    {
+        appendPath(fieldInfo, elementIndex);
+        m_matches = std::regex_match(getCurrentPath(), m_pathRegex);
+
+        return !m_matches; // terminate when the match is already found
+    }
+
+    virtual bool afterValue(const IReflectablePtr&, const FieldInfo& fieldInfo,
+            size_t elementIndex) override
+    {
+        popPath(fieldInfo, elementIndex);
+        return !m_matches; // terminate when the match is already found
+    }
+
+private:
+    std::string getCurrentPath() const
+    {
+        return getCurrentPathImpl(m_currentPath);
+    }
+
+    void appendPath(const FieldInfo& fieldInfo, size_t elementIndex)
+    {
+        appendPathImpl(m_currentPath, fieldInfo, elementIndex);
+    }
+
+    void popPath(const FieldInfo& fieldInfo, size_t elementIndex)
+    {
+        popPathImpl(m_currentPath, fieldInfo, elementIndex);
+    }
+
+    std::vector<std::string> m_currentPath;
+    std::regex m_pathRegex;
+    bool m_matches = false;
+};
+
+} // namespace
+
+RegexWalkFilter::RegexWalkFilter(const char* pathRegex) :
+        m_pathRegex(pathRegex)
+{}
+
+bool RegexWalkFilter::beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo)
+{
+    m_currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size());
+
+    if (std::regex_match(getCurrentPath(), m_pathRegex))
+        return true; // the array itself matches
+
+    for (size_t i = 0; i < array->size(); ++i)
+    {
+        m_currentPath.back() = toString(fieldInfo.schemaName) + "[" + toString(i) + "]";
+
+        if (matchSubtree(array->at(i), fieldInfo))
+            return true;
+
+        m_currentPath.back() = toString(fieldInfo.schemaName);
+    }
+
+    return false;
+}
+
+bool RegexWalkFilter::afterArray(const IReflectablePtr&, const FieldInfo&)
+{
+    m_currentPath.pop_back();
+    return true;
+}
+
+bool RegexWalkFilter::beforeCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+        size_t elementIndex)
+{
+    appendPath(fieldInfo, elementIndex);
+    if (std::regex_match(getCurrentPath(), m_pathRegex))
+        return true; // the compound itself matches
+
+    return matchSubtree(compound, fieldInfo);
+}
+
+bool RegexWalkFilter::afterCompound(const IReflectablePtr&, const FieldInfo& fieldInfo,
+        size_t elementIndex)
+{
+    popPath(fieldInfo, elementIndex);
+    return true;
+}
+
+bool RegexWalkFilter::beforeValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
+        size_t elementIndex)
+{
+    appendPath(fieldInfo, elementIndex);
+    return matchSubtree(value, fieldInfo);
+}
+
+bool RegexWalkFilter::afterValue(const IReflectablePtr&, const FieldInfo& fieldInfo,
+        size_t elementIndex)
+{
+    popPath(fieldInfo, elementIndex);
+    return true;
+}
+
+void RegexWalkFilter::appendPath(const FieldInfo& fieldInfo, size_t elementIndex)
+{
+    appendPathImpl(m_currentPath, fieldInfo, elementIndex);
+}
+
+void RegexWalkFilter::popPath(const FieldInfo& fieldInfo, size_t elementIndex)
+{
+    popPathImpl(m_currentPath, fieldInfo, elementIndex);
+}
+
+std::string RegexWalkFilter::getCurrentPath() const
+{
+    return getCurrentPathImpl(m_currentPath);
+}
+
+bool RegexWalkFilter::matchSubtree(const IReflectablePtr& value, const FieldInfo& fieldInfo) const
+{
+    if (value != nullptr && TypeInfoUtil::isCompound(fieldInfo.typeInfo.getSchemaType()))
+    {
+        // is a not null compound, try to find match within its subtree
+        SubtreeRegexWalkFilter subtreeFilter(m_currentPath, m_pathRegex);
+        DefaultWalkObserver defaultObserver;
+        Walker walker(defaultObserver, subtreeFilter);
+        walker.walk(value);
+        return subtreeFilter.matches();
+    }
+    else
+    {
+        // try to match a simple value or null compound
+        return std::regex_match(getCurrentPath(), m_pathRegex);
+    }
+}
+
 ArrayLengthWalkFilter::ArrayLengthWalkFilter(size_t maxArrayLength) :
         m_maxArrayLength(maxArrayLength)
 {}
@@ -174,4 +384,4 @@ bool ArrayLengthWalkFilter::filterArrayElement(size_t elementIndex)
     return elementIndex == WALKER_NOT_ELEMENT ? true : elementIndex < m_maxArrayLength;
 }
 
-} // namespace
+} // namespace zserio

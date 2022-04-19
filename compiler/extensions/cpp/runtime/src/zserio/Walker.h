@@ -1,6 +1,8 @@
 #ifndef ZSERIO_WALKER_H_INC
 #define ZSERIO_WALKER_H_INC
 
+#include <regex>
+
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
 #include "zserio/WalkerConst.h"
@@ -97,6 +99,34 @@ public:
 private:
     size_t m_maxDepth;
     size_t m_depth;
+};
+
+class RegexWalkFilter : public IWalkFilter
+{
+public:
+    RegexWalkFilter(const char* pathRegex);
+
+    virtual bool beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
+    virtual bool afterArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
+
+    virtual bool beforeCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+    virtual bool afterCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+
+    virtual bool beforeValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+    virtual bool afterValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+
+private:
+    void appendPath(const FieldInfo& fieldInfo, size_t elementIndex);
+    void popPath(const FieldInfo& fieldInfo, size_t elementIndex);
+    std::string getCurrentPath() const;
+    bool matchSubtree(const IReflectablePtr& value, const FieldInfo& fieldInfo) const;
+
+    std::vector<std::string> m_currentPath;
+    std::regex m_pathRegex;
 };
 
 class ArrayLengthWalkFilter : public IWalkFilter
