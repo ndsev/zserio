@@ -374,6 +374,8 @@ public class WithTypeInfoCodeTest
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
         assertEquals("simpleStruct", simpleStructField.getSchemaName());
+        assertEquals("getSimpleStruct", simpleStructField.getGetterName());
+        assertEquals("setSimpleStruct", simpleStructField.getSetterName());
 
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
@@ -383,6 +385,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", simpleStructField.getInitializer());
         assertFalse(simpleStructField.isOptional());
         assertEquals("", simpleStructField.getOptionalCondition());
+        assertEquals("", simpleStructField.getIndicatorName());
         assertEquals("", simpleStructField.getConstraint());
         assertFalse(simpleStructField.isArray());
         assertEquals("", simpleStructField.getArrayLength());
@@ -392,6 +395,8 @@ public class WithTypeInfoCodeTest
         // complexStruct
         final FieldInfo complexStructField = fields.get(1);
         assertEquals("complexStruct", complexStructField.getSchemaName());
+        assertEquals("getComplexStruct", complexStructField.getGetterName());
+        assertEquals("setComplexStruct", complexStructField.getSetterName());
 
         checkComplexStruct(complexStructField.getTypeInfo());
 
@@ -401,6 +406,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", complexStructField.getInitializer());
         assertFalse(complexStructField.isOptional());
         assertEquals("", complexStructField.getOptionalCondition());
+        assertEquals("", complexStructField.getIndicatorName());
         assertEquals("", complexStructField.getConstraint());
         assertFalse(complexStructField.isArray());
         assertEquals("", complexStructField.getArrayLength());
@@ -410,6 +416,8 @@ public class WithTypeInfoCodeTest
         // parameterizedStruct
         final FieldInfo parameterizedStructField = fields.get(2);
         assertEquals("parameterizedStruct", parameterizedStructField.getSchemaName());
+        assertEquals("getParameterizedStruct", parameterizedStructField.getGetterName());
+        assertEquals("setParameterizedStruct", parameterizedStructField.getSetterName());
 
         checkParameterizedStruct(parameterizedStructField.getTypeInfo());
 
@@ -420,6 +428,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", parameterizedStructField.getInitializer());
         assertFalse(parameterizedStructField.isOptional());
         assertEquals("", parameterizedStructField.getOptionalCondition());
+        assertEquals("", parameterizedStructField.getIndicatorName());
         assertEquals("", parameterizedStructField.getConstraint());
         assertFalse(parameterizedStructField.isArray());
         assertEquals("", parameterizedStructField.getArrayLength());
@@ -429,6 +438,8 @@ public class WithTypeInfoCodeTest
         // recursiveStruct
         final FieldInfo recursiveStructField = fields.get(3);
         assertEquals("recursiveStruct", recursiveStructField.getSchemaName());
+        assertEquals("getRecursiveStruct", recursiveStructField.getGetterName());
+        assertEquals("setRecursiveStruct", recursiveStructField.getSetterName());
 
         checkRecursiveStruct(recursiveStructField.getTypeInfo());
 
@@ -438,6 +449,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", recursiveStructField.getInitializer());
         assertFalse(recursiveStructField.isOptional());
         assertEquals("", recursiveStructField.getOptionalCondition());
+        assertEquals("", recursiveStructField.getIndicatorName());
         assertEquals("", recursiveStructField.getConstraint());
         assertFalse(recursiveStructField.isArray());
         assertEquals("", recursiveStructField.getArrayLength());
@@ -447,6 +459,8 @@ public class WithTypeInfoCodeTest
         // recursiveUnion
         final FieldInfo recursiveUnion = fields.get(4);
         assertEquals("recursiveUnion", recursiveUnion.getSchemaName());
+        assertEquals("getRecursiveUnion", recursiveUnion.getGetterName());
+        assertEquals("setRecursiveUnion", recursiveUnion.getSetterName());
 
         checkRecursiveUnion(recursiveUnion.getTypeInfo());
 
@@ -456,6 +470,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", recursiveUnion.getInitializer());
         assertFalse(recursiveUnion.isOptional());
         assertEquals("", recursiveUnion.getOptionalCondition());
+        assertEquals("", recursiveUnion.getIndicatorName());
         assertEquals("", recursiveUnion.getConstraint());
         assertFalse(recursiveUnion.isArray());
         assertEquals("", recursiveUnion.getArrayLength());
@@ -465,6 +480,8 @@ public class WithTypeInfoCodeTest
         // recursiveChoice
         final FieldInfo recursiveChoice = fields.get(5);
         assertEquals("recursiveChoice", recursiveChoice.getSchemaName());
+        assertEquals("getRecursiveChoice", recursiveChoice.getGetterName());
+        assertEquals("setRecursiveChoice", recursiveChoice.getSetterName());
 
         checkRecursiveChoice(recursiveChoice.getTypeInfo());
 
@@ -476,6 +493,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", recursiveChoice.getInitializer());
         assertFalse(recursiveChoice.isOptional());
         assertEquals("", recursiveChoice.getOptionalCondition());
+        assertEquals("", recursiveChoice.getIndicatorName());
         assertEquals("", recursiveChoice.getConstraint());
         assertFalse(recursiveChoice.isArray());
         assertEquals("", recursiveChoice.getArrayLength());
@@ -485,6 +503,8 @@ public class WithTypeInfoCodeTest
         // selector
         final FieldInfo selectorField = fields.get(6);
         assertEquals("selector", selectorField.getSchemaName());
+        assertEquals("getSelector", selectorField.getGetterName());
+        assertEquals("setSelector", selectorField.getSetterName());
 
         checkTestEnum(selectorField.getTypeInfo());
 
@@ -494,6 +514,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", selectorField.getInitializer());
         assertFalse(selectorField.isOptional());
         assertEquals("", selectorField.getOptionalCondition());
+        assertEquals("", selectorField.getIndicatorName());
         assertEquals("", selectorField.getConstraint());
         assertFalse(selectorField.isArray());
         assertEquals("", selectorField.getArrayLength());
@@ -503,6 +524,8 @@ public class WithTypeInfoCodeTest
         // simpleChoice
         final FieldInfo simpleChoiceField = fields.get(7);
         assertEquals("simpleChoice", simpleChoiceField.getSchemaName());
+        assertEquals("getSimpleChoice", simpleChoiceField.getGetterName());
+        assertEquals("setSimpleChoice", simpleChoiceField.getSetterName());
 
         checkSimpleChoice(simpleChoiceField.getTypeInfo());
 
@@ -513,6 +536,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", simpleChoiceField.getInitializer());
         assertFalse(simpleChoiceField.isOptional());
         assertEquals("", simpleChoiceField.getOptionalCondition());
+        assertEquals("", simpleChoiceField.getIndicatorName());
         assertEquals("", simpleChoiceField.getConstraint());
         assertFalse(simpleChoiceField.isArray());
         assertEquals("", simpleChoiceField.getArrayLength());
@@ -522,6 +546,8 @@ public class WithTypeInfoCodeTest
         // templatedStruct
         final FieldInfo templatedStructField = fields.get(8);
         assertEquals("templatedStruct", templatedStructField.getSchemaName());
+        assertEquals("getTemplatedStruct", templatedStructField.getGetterName());
+        assertEquals("setTemplatedStruct", templatedStructField.getSetterName());
 
         checkTS32(templatedStructField.getTypeInfo());
 
@@ -531,6 +557,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", templatedStructField.getInitializer());
         assertFalse(templatedStructField.isOptional());
         assertEquals("", templatedStructField.getOptionalCondition());
+        assertEquals("", templatedStructField.getIndicatorName());
         assertEquals("", templatedStructField.getConstraint());
         assertFalse(templatedStructField.isArray());
         assertEquals("", templatedStructField.getArrayLength());
@@ -540,6 +567,8 @@ public class WithTypeInfoCodeTest
         // templatedParameterizedStruct
         final FieldInfo templatedParameterizedStructField = fields.get(9);
         assertEquals("templatedParameterizedStruct", templatedParameterizedStructField.getSchemaName());
+        assertEquals("getTemplatedParameterizedStruct", templatedParameterizedStructField.getGetterName());
+        assertEquals("setTemplatedParameterizedStruct", templatedParameterizedStructField.getSetterName());
 
         checkTemplatedParameterizedStruct_TS32(templatedParameterizedStructField.getTypeInfo());
 
@@ -550,6 +579,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", templatedParameterizedStructField.getInitializer());
         assertFalse(templatedParameterizedStructField.isOptional());
         assertEquals("", templatedParameterizedStructField.getOptionalCondition());
+        assertEquals("", templatedParameterizedStructField.getIndicatorName());
         assertEquals("", templatedParameterizedStructField.getConstraint());
         assertFalse(templatedParameterizedStructField.isArray());
         assertEquals("", templatedParameterizedStructField.getArrayLength());
@@ -559,6 +589,8 @@ public class WithTypeInfoCodeTest
         // externData
         final FieldInfo externDataField = fields.get(10);
         assertEquals("externData", externDataField.getSchemaName());
+        assertEquals("getExternData", externDataField.getGetterName());
+        assertEquals("setExternData", externDataField.getSetterName());
 
         assertEquals("extern", externDataField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.EXTERN, externDataField.getTypeInfo().getSchemaType());
@@ -570,6 +602,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", externDataField.getInitializer());
         assertFalse(externDataField.isOptional());
         assertEquals("", externDataField.getOptionalCondition());
+        assertEquals("", externDataField.getIndicatorName());
         assertEquals("", externDataField.getConstraint());
         assertFalse(externDataField.isArray());
         assertEquals("", externDataField.getArrayLength());
@@ -579,6 +612,8 @@ public class WithTypeInfoCodeTest
         // implicitArray
         final FieldInfo implicitArrayField = fields.get(11);
         assertEquals("implicitArray", implicitArrayField.getSchemaName());
+        assertEquals("getImplicitArray", implicitArrayField.getGetterName());
+        assertEquals("setImplicitArray", implicitArrayField.getSetterName());
 
         assertEquals("uint32", implicitArrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, implicitArrayField.getTypeInfo().getSchemaType());
@@ -591,6 +626,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", implicitArrayField.getInitializer());
         assertFalse(implicitArrayField.isOptional());
         assertEquals("", implicitArrayField.getOptionalCondition());
+        assertEquals("", implicitArrayField.getIndicatorName());
         assertEquals("", implicitArrayField.getConstraint());
         assertTrue(implicitArrayField.isArray());
         assertEquals("", implicitArrayField.getArrayLength());
@@ -616,6 +652,8 @@ public class WithTypeInfoCodeTest
         // fieldU32
         final FieldInfo fieldU32Field = fields.get(0);
         assertEquals("fieldU32", fieldU32Field.getSchemaName());
+        assertEquals("getFieldU32", fieldU32Field.getGetterName());
+        assertEquals("setFieldU32", fieldU32Field.getSetterName());
 
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
@@ -628,6 +666,7 @@ public class WithTypeInfoCodeTest
         assertEquals("10", fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
         assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals("", fieldU32Field.getIndicatorName());
         assertEquals("", fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
         assertEquals("", fieldU32Field.getArrayLength());
@@ -637,6 +676,8 @@ public class WithTypeInfoCodeTest
         // fieldOffset
         final FieldInfo fieldOffsetField = fields.get(1);
         assertEquals("fieldOffset", fieldOffsetField.getSchemaName());
+        assertEquals("getFieldOffset", fieldOffsetField.getGetterName());
+        assertEquals("setFieldOffset", fieldOffsetField.getSetterName());
 
         assertEquals("uint32", fieldOffsetField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldOffsetField.getTypeInfo().getSchemaType());
@@ -649,6 +690,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldOffsetField.getInitializer());
         assertFalse(fieldOffsetField.isOptional());
         assertEquals("", fieldOffsetField.getOptionalCondition());
+        assertEquals("", fieldOffsetField.getIndicatorName());
         assertEquals("", fieldOffsetField.getConstraint());
         assertFalse(fieldOffsetField.isArray());
         assertEquals("", fieldOffsetField.getArrayLength());
@@ -658,6 +700,8 @@ public class WithTypeInfoCodeTest
         // fieldString
         final FieldInfo fieldStringField = fields.get(2);
         assertEquals("fieldString", fieldStringField.getSchemaName());
+        assertEquals("getFieldString", fieldStringField.getGetterName());
+        assertEquals("setFieldString", fieldStringField.getSetterName());
 
         assertEquals("string", fieldStringField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.STRING, fieldStringField.getTypeInfo().getSchemaType());
@@ -669,6 +713,7 @@ public class WithTypeInfoCodeTest
         assertEquals("\"My\" + \"String\"", fieldStringField.getInitializer());
         assertFalse(fieldStringField.isOptional());
         assertEquals("", fieldStringField.getOptionalCondition());
+        assertEquals("", fieldStringField.getIndicatorName());
         assertEquals("", fieldStringField.getConstraint());
         assertFalse(fieldStringField.isArray());
         assertEquals("", fieldStringField.getArrayLength());
@@ -678,6 +723,8 @@ public class WithTypeInfoCodeTest
         // fieldBool
         final FieldInfo fieldBoolField = fields.get(3);
         assertEquals("fieldBool", fieldBoolField.getSchemaName());
+        assertEquals("getFieldBool", fieldBoolField.getGetterName());
+        assertEquals("setFieldBool", fieldBoolField.getSetterName());
 
         assertEquals("bool", fieldBoolField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.BOOL, fieldBoolField.getTypeInfo().getSchemaType());
@@ -690,6 +737,7 @@ public class WithTypeInfoCodeTest
         assertEquals("false", fieldBoolField.getInitializer());
         assertFalse(fieldBoolField.isOptional());
         assertEquals("", fieldBoolField.getOptionalCondition());
+        assertEquals("", fieldBoolField.getIndicatorName());
         assertEquals("", fieldBoolField.getConstraint());
         assertFalse(fieldBoolField.isArray());
         assertEquals("", fieldBoolField.getArrayLength());
@@ -699,6 +747,8 @@ public class WithTypeInfoCodeTest
         // fieldFloat16
         final FieldInfo fieldFloat16Field = fields.get(4);
         assertEquals("fieldFloat16", fieldFloat16Field.getSchemaName());
+        assertEquals("getFieldFloat16", fieldFloat16Field.getGetterName());
+        assertEquals("setFieldFloat16", fieldFloat16Field.getSetterName());
 
         assertEquals("float16", fieldFloat16Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FLOAT16, fieldFloat16Field.getTypeInfo().getSchemaType());
@@ -711,6 +761,7 @@ public class WithTypeInfoCodeTest
         assertEquals("1.0f", fieldFloat16Field.getInitializer());
         assertFalse(fieldFloat16Field.isOptional());
         assertEquals("", fieldFloat16Field.getOptionalCondition());
+        assertEquals("", fieldFloat16Field.getIndicatorName());
         assertEquals("", fieldFloat16Field.getConstraint());
         assertFalse(fieldFloat16Field.isArray());
         assertEquals("", fieldFloat16Field.getArrayLength());
@@ -720,6 +771,8 @@ public class WithTypeInfoCodeTest
         // fieldFloat32
         final FieldInfo fieldFloat32Field = fields.get(5);
         assertEquals("fieldFloat32", fieldFloat32Field.getSchemaName());
+        assertEquals("getFieldFloat32", fieldFloat32Field.getGetterName());
+        assertEquals("setFieldFloat32", fieldFloat32Field.getSetterName());
 
         assertEquals("float32", fieldFloat32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FLOAT32, fieldFloat32Field.getTypeInfo().getSchemaType());
@@ -732,6 +785,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldFloat32Field.getInitializer());
         assertFalse(fieldFloat32Field.isOptional());
         assertEquals("", fieldFloat32Field.getOptionalCondition());
+        assertEquals("", fieldFloat32Field.getIndicatorName());
         assertEquals("", fieldFloat32Field.getConstraint());
         assertFalse(fieldFloat32Field.isArray());
         assertEquals("", fieldFloat32Field.getArrayLength());
@@ -741,6 +795,8 @@ public class WithTypeInfoCodeTest
         // fieldFloat64
         final FieldInfo fieldFloat64Field = fields.get(6);
         assertEquals("fieldFloat64", fieldFloat64Field.getSchemaName());
+        assertEquals("getFieldFloat64", fieldFloat64Field.getGetterName());
+        assertEquals("setFieldFloat64", fieldFloat64Field.getSetterName());
 
         assertEquals("float64", fieldFloat64Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FLOAT64, fieldFloat64Field.getTypeInfo().getSchemaType());
@@ -753,6 +809,7 @@ public class WithTypeInfoCodeTest
         assertEquals("2.0", fieldFloat64Field.getInitializer());
         assertFalse(fieldFloat64Field.isOptional());
         assertEquals("", fieldFloat64Field.getOptionalCondition());
+        assertEquals("", fieldFloat64Field.getIndicatorName());
         assertEquals("", fieldFloat64Field.getConstraint());
         assertFalse(fieldFloat64Field.isArray());
         assertEquals("", fieldFloat64Field.getArrayLength());
@@ -787,6 +844,8 @@ public class WithTypeInfoCodeTest
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
         assertEquals("simpleStruct", simpleStructField.getSchemaName());
+        assertEquals("getSimpleStruct", simpleStructField.getGetterName());
+        assertEquals("setSimpleStruct", simpleStructField.getSetterName());
 
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
@@ -796,6 +855,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", simpleStructField.getInitializer());
         assertFalse(simpleStructField.isOptional());
         assertEquals("", simpleStructField.getOptionalCondition());
+        assertEquals("", simpleStructField.getIndicatorName());
         assertEquals("", simpleStructField.getConstraint());
         assertFalse(simpleStructField.isArray());
         assertEquals("", simpleStructField.getArrayLength());
@@ -805,6 +865,8 @@ public class WithTypeInfoCodeTest
         // optionalSimpleStruct
         final FieldInfo optionalSimpleStructField = fields.get(1);
         assertEquals("optionalSimpleStruct", optionalSimpleStructField.getSchemaName());
+        assertEquals("getOptionalSimpleStruct", optionalSimpleStructField.getGetterName());
+        assertEquals("setOptionalSimpleStruct", optionalSimpleStructField.getSetterName());
 
         checkSimpleStruct(optionalSimpleStructField.getTypeInfo());
 
@@ -814,6 +876,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", optionalSimpleStructField.getInitializer());
         assertTrue(optionalSimpleStructField.isOptional());
         assertEquals("", optionalSimpleStructField.getOptionalCondition());
+        assertEquals("isOptionalSimpleStructUsed", optionalSimpleStructField.getIndicatorName());
         assertEquals("", optionalSimpleStructField.getConstraint());
         assertFalse(optionalSimpleStructField.isArray());
         assertEquals("", optionalSimpleStructField.getArrayLength());
@@ -823,6 +886,8 @@ public class WithTypeInfoCodeTest
         // array
         final FieldInfo arrayField = fields.get(2);
         assertEquals("array", arrayField.getSchemaName());
+        assertEquals("getArray", arrayField.getGetterName());
+        assertEquals("setArray", arrayField.getSetterName());
 
         assertEquals("uint32", arrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, arrayField.getTypeInfo().getSchemaType());
@@ -835,6 +900,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", arrayField.getInitializer());
         assertFalse(arrayField.isOptional());
         assertEquals("", arrayField.getOptionalCondition());
+        assertEquals("", arrayField.getIndicatorName());
         assertEquals("getArray().length > 0", arrayField.getConstraint());
         assertTrue(arrayField.isArray());
         assertEquals("", arrayField.getArrayLength());
@@ -844,6 +910,8 @@ public class WithTypeInfoCodeTest
         // arrayWithLen
         final FieldInfo arrayWithLenField = fields.get(3);
         assertEquals("arrayWithLen", arrayWithLenField.getSchemaName());
+        assertEquals("getArrayWithLen", arrayWithLenField.getGetterName());
+        assertEquals("setArrayWithLen", arrayWithLenField.getSetterName());
 
         assertEquals("int:5", arrayWithLenField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FIXED_SIGNED_BITFIELD, arrayWithLenField.getTypeInfo().getSchemaType());
@@ -856,6 +924,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", arrayWithLenField.getInitializer());
         assertTrue(arrayWithLenField.isOptional());
         assertEquals("getArray()[0] > 0", arrayWithLenField.getOptionalCondition());
+        assertEquals("isArrayWithLenUsed", arrayWithLenField.getIndicatorName());
         assertEquals("", arrayWithLenField.getConstraint());
         assertTrue(arrayWithLenField.isArray());
         assertEquals("getArray()[0]", arrayWithLenField.getArrayLength());
@@ -865,6 +934,8 @@ public class WithTypeInfoCodeTest
         // paramStructArray
         final FieldInfo paramStructArrayField = fields.get(4);
         assertEquals("paramStructArray", paramStructArrayField.getSchemaName());
+        assertEquals("getParamStructArray", paramStructArrayField.getGetterName());
+        assertEquals("setParamStructArray", paramStructArrayField.getSetterName());
 
         checkParameterizedStruct(paramStructArrayField.getTypeInfo());
 
@@ -875,6 +946,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", paramStructArrayField.getInitializer());
         assertTrue(paramStructArrayField.isOptional());
         assertEquals("", paramStructArrayField.getOptionalCondition());
+        assertEquals("isParamStructArrayUsed", paramStructArrayField.getIndicatorName());
         assertEquals("", paramStructArrayField.getConstraint());
         assertTrue(paramStructArrayField.isArray());
         assertEquals("", paramStructArrayField.getArrayLength());
@@ -884,6 +956,8 @@ public class WithTypeInfoCodeTest
         // dynamicBitField
         final FieldInfo dynamicBitFieldField = fields.get(5);
         assertEquals("dynamicBitField", dynamicBitFieldField.getSchemaName());
+        assertEquals("getDynamicBitField", dynamicBitFieldField.getGetterName());
+        assertEquals("setDynamicBitField", dynamicBitFieldField.getSetterName());
 
         assertEquals("bit<>", dynamicBitFieldField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD, dynamicBitFieldField.getTypeInfo().getSchemaType());
@@ -896,6 +970,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", dynamicBitFieldField.getInitializer());
         assertFalse(dynamicBitFieldField.isOptional());
         assertEquals("", dynamicBitFieldField.getOptionalCondition());
+        assertEquals("", dynamicBitFieldField.getIndicatorName());
         assertEquals("", dynamicBitFieldField.getConstraint());
         assertFalse(dynamicBitFieldField.isArray());
         assertEquals("", dynamicBitFieldField.getArrayLength());
@@ -905,6 +980,8 @@ public class WithTypeInfoCodeTest
         // dynamicBitFieldArray
         final FieldInfo dynamicBitFieldArrayField = fields.get(6);
         assertEquals("dynamicBitFieldArray", dynamicBitFieldArrayField.getSchemaName());
+        assertEquals("getDynamicBitFieldArray", dynamicBitFieldArrayField.getGetterName());
+        assertEquals("setDynamicBitFieldArray", dynamicBitFieldArrayField.getSetterName());
 
         assertEquals("bit<>", dynamicBitFieldArrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD, dynamicBitFieldArrayField.getTypeInfo().getSchemaType());
@@ -918,6 +995,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", dynamicBitFieldArrayField.getInitializer());
         assertFalse(dynamicBitFieldArrayField.isOptional());
         assertEquals("", dynamicBitFieldArrayField.getOptionalCondition());
+        assertEquals("", dynamicBitFieldArrayField.getIndicatorName());
         assertEquals("", dynamicBitFieldArrayField.getConstraint());
         assertTrue(dynamicBitFieldArrayField.isArray());
         assertEquals("", dynamicBitFieldArrayField.getArrayLength());
@@ -949,6 +1027,8 @@ public class WithTypeInfoCodeTest
         // array
         final FieldInfo arrayField = fields.get(0);
         assertEquals("array", arrayField.getSchemaName());
+        assertEquals("getArray", arrayField.getGetterName());
+        assertEquals("setArray", arrayField.getSetterName());
 
         assertEquals("uint8", arrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT8, arrayField.getTypeInfo().getSchemaType());
@@ -961,6 +1041,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", arrayField.getInitializer());
         assertFalse(arrayField.isOptional());
         assertEquals("", arrayField.getOptionalCondition());
+        assertEquals("", arrayField.getIndicatorName());
         assertEquals("", arrayField.getConstraint());
         assertTrue(arrayField.isArray());
         assertEquals("getSimple().getFieldU32()", arrayField.getArrayLength());
@@ -986,6 +1067,8 @@ public class WithTypeInfoCodeTest
         // fieldU32
         final FieldInfo fieldU32Field = fields.get(0);
         assertEquals("fieldU32", fieldU32Field.getSchemaName());
+        assertEquals("getFieldU32", fieldU32Field.getGetterName());
+        assertEquals("setFieldU32", fieldU32Field.getSetterName());
 
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
@@ -998,6 +1081,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
         assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals("", fieldU32Field.getIndicatorName());
         assertEquals("", fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
         assertEquals("", fieldU32Field.getArrayLength());
@@ -1007,6 +1091,8 @@ public class WithTypeInfoCodeTest
         // fieldRecursion
         final FieldInfo fieldRecursion = fields.get(1);
         assertEquals("fieldRecursion", fieldRecursion.getSchemaName());
+        assertEquals("getFieldRecursion", fieldRecursion.getGetterName());
+        assertEquals("setFieldRecursion", fieldRecursion.getSetterName());
 
         assertEquals(typeInfo.getSchemaName(), fieldRecursion.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), fieldRecursion.getTypeInfo().getSchemaType());
@@ -1019,6 +1105,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldRecursion.getInitializer());
         assertTrue(fieldRecursion.isOptional());
         assertEquals("", fieldRecursion.getOptionalCondition());
+        assertEquals("isFieldRecursionUsed", fieldRecursion.getIndicatorName());
         assertEquals("", fieldRecursion.getConstraint());
         assertFalse(fieldRecursion.isArray());
         assertEquals("", fieldRecursion.getArrayLength());
@@ -1028,6 +1115,8 @@ public class WithTypeInfoCodeTest
         // arrayRecursion
         final FieldInfo arrayRecursion = fields.get(2);
         assertEquals("arrayRecursion", arrayRecursion.getSchemaName());
+        assertEquals("getArrayRecursion", arrayRecursion.getGetterName());
+        assertEquals("setArrayRecursion", arrayRecursion.getSetterName());
 
         assertEquals(typeInfo.getSchemaName(), arrayRecursion.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), arrayRecursion.getTypeInfo().getSchemaType());
@@ -1040,6 +1129,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", arrayRecursion.getInitializer());
         assertFalse(arrayRecursion.isOptional());
         assertEquals("", arrayRecursion.getOptionalCondition());
+        assertEquals("", arrayRecursion.getIndicatorName());
         assertEquals("", arrayRecursion.getConstraint());
         assertTrue(arrayRecursion.isArray());
         assertEquals("", arrayRecursion.getArrayLength());
@@ -1059,6 +1149,8 @@ public class WithTypeInfoCodeTest
         // fieldU32
         final FieldInfo fieldU32Field = fields.get(0);
         assertEquals("fieldU32", fieldU32Field.getSchemaName());
+        assertEquals("getFieldU32", fieldU32Field.getGetterName());
+        assertEquals("setFieldU32", fieldU32Field.getSetterName());
 
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
@@ -1071,6 +1163,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
         assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals("", fieldU32Field.getIndicatorName());
         assertEquals("", fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
         assertEquals("", fieldU32Field.getArrayLength());
@@ -1080,6 +1173,8 @@ public class WithTypeInfoCodeTest
         // recursive
         final FieldInfo recursive = fields.get(1);
         assertEquals("recursive", recursive.getSchemaName());
+        assertEquals("getRecursive", recursive.getGetterName());
+        assertEquals("setRecursive", recursive.getSetterName());
 
         assertEquals(typeInfo.getSchemaName(), recursive.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), recursive.getTypeInfo().getSchemaType());
@@ -1092,6 +1187,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", recursive.getInitializer());
         assertFalse(recursive.isOptional());
         assertEquals("", recursive.getOptionalCondition());
+        assertEquals("", recursive.getIndicatorName());
         assertEquals("", recursive.getConstraint());
         assertTrue(recursive.isArray());
         assertEquals("", recursive.getArrayLength());
@@ -1130,6 +1226,8 @@ public class WithTypeInfoCodeTest
         // recursive
         final FieldInfo recursive = fields.get(0);
         assertEquals("recursive", recursive.getSchemaName());
+        assertEquals("getRecursive", recursive.getGetterName());
+        assertEquals("setRecursive", recursive.getSetterName());
 
         assertEquals(typeInfo.getSchemaName(), recursive.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), recursive.getTypeInfo().getSchemaType());
@@ -1144,6 +1242,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", recursive.getInitializer());
         assertFalse(recursive.isOptional());
         assertEquals("", recursive.getOptionalCondition());
+        assertEquals("", recursive.getIndicatorName());
         assertEquals("", recursive.getConstraint());
         assertTrue(recursive.isArray());
         assertEquals("", recursive.getArrayLength());
@@ -1153,6 +1252,8 @@ public class WithTypeInfoCodeTest
         // fieldU32
         final FieldInfo fieldU32Field = fields.get(1);
         assertEquals("fieldU32", fieldU32Field.getSchemaName());
+        assertEquals("getFieldU32", fieldU32Field.getGetterName());
+        assertEquals("setFieldU32", fieldU32Field.getSetterName());
 
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
@@ -1165,6 +1266,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
         assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals("", fieldU32Field.getIndicatorName());
         assertEquals("", fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
         assertEquals("", fieldU32Field.getArrayLength());
@@ -1238,6 +1340,8 @@ public class WithTypeInfoCodeTest
         // fieldTwo
         final FieldInfo fieldTwoField = fields.get(0);
         assertEquals("fieldTwo", fieldTwoField.getSchemaName());
+        assertEquals("getFieldTwo", fieldTwoField.getGetterName());
+        assertEquals("setFieldTwo", fieldTwoField.getSetterName());
 
         checkSimpleUnion(fieldTwoField.getTypeInfo());
 
@@ -1247,6 +1351,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldTwoField.getInitializer());
         assertFalse(fieldTwoField.isOptional());
         assertEquals("", fieldTwoField.getOptionalCondition());
+        assertEquals("", fieldTwoField.getIndicatorName());
         assertEquals("", fieldTwoField.getConstraint());
         assertFalse(fieldTwoField.isArray());
         assertEquals("", fieldTwoField.getArrayLength());
@@ -1256,6 +1361,8 @@ public class WithTypeInfoCodeTest
         // fieldDefault
         final FieldInfo fieldDefaultField = fields.get(1);
         assertEquals("fieldDefault", fieldDefaultField.getSchemaName());
+        assertEquals("getFieldDefault", fieldDefaultField.getGetterName());
+        assertEquals("setFieldDefault", fieldDefaultField.getSetterName());
 
         assertEquals("string", fieldDefaultField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.STRING, fieldDefaultField.getTypeInfo().getSchemaType());
@@ -1267,6 +1374,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldDefaultField.getInitializer());
         assertFalse(fieldDefaultField.isOptional());
         assertEquals("", fieldDefaultField.getOptionalCondition());
+        assertEquals("", fieldDefaultField.getIndicatorName());
         assertEquals("", fieldDefaultField.getConstraint());
         assertFalse(fieldDefaultField.isArray());
         assertEquals("", fieldDefaultField.getArrayLength());
@@ -1322,6 +1430,8 @@ public class WithTypeInfoCodeTest
         // testBitmask
         final FieldInfo testBitmaskField = fields.get(0);
         assertEquals("testBitmask", testBitmaskField.getSchemaName());
+        assertEquals("getTestBitmask", testBitmaskField.getGetterName());
+        assertEquals("setTestBitmask", testBitmaskField.getSetterName());
 
         checkTestBitmask(testBitmaskField.getTypeInfo());
 
@@ -1331,6 +1441,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", testBitmaskField.getInitializer());
         assertFalse(testBitmaskField.isOptional());
         assertEquals("", testBitmaskField.getOptionalCondition());
+        assertEquals("", testBitmaskField.getIndicatorName());
         assertEquals("", testBitmaskField.getConstraint());
         assertFalse(testBitmaskField.isArray());
         assertEquals("", testBitmaskField.getArrayLength());
@@ -1340,6 +1451,8 @@ public class WithTypeInfoCodeTest
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(1);
         assertEquals("simpleStruct", simpleStructField.getSchemaName());
+        assertEquals("getSimpleStruct", simpleStructField.getGetterName());
+        assertEquals("setSimpleStruct", simpleStructField.getSetterName());
 
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
@@ -1349,6 +1462,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", simpleStructField.getInitializer());
         assertFalse(simpleStructField.isOptional());
         assertEquals("", simpleStructField.getOptionalCondition());
+        assertEquals("", simpleStructField.getIndicatorName());
         assertEquals("", simpleStructField.getConstraint());
         assertFalse(simpleStructField.isArray());
         assertEquals("", simpleStructField.getArrayLength());
@@ -1412,6 +1526,8 @@ public class WithTypeInfoCodeTest
         // field
         final FieldInfo fieldField = fields.get(0);
         assertEquals("field", fieldField.getSchemaName());
+        assertEquals("getField", fieldField.getGetterName());
+        assertEquals("setField", fieldField.getSetterName());
 
         assertEquals("uint32", fieldField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldField.getTypeInfo().getSchemaType());
@@ -1424,6 +1540,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", fieldField.getInitializer());
         assertFalse(fieldField.isOptional());
         assertEquals("", fieldField.getOptionalCondition());
+        assertEquals("", fieldField.getIndicatorName());
         assertEquals("", fieldField.getConstraint());
         assertFalse(fieldField.isArray());
         assertEquals("", fieldField.getArrayLength());
@@ -1458,6 +1575,8 @@ public class WithTypeInfoCodeTest
         // array
         final FieldInfo arrayField = fields.get(0);
         assertEquals("array", arrayField.getSchemaName());
+        assertEquals("getArray", arrayField.getGetterName());
+        assertEquals("setArray", arrayField.getSetterName());
 
         assertEquals("uint32", arrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, arrayField.getTypeInfo().getSchemaType());
@@ -1470,6 +1589,7 @@ public class WithTypeInfoCodeTest
         assertEquals("", arrayField.getInitializer());
         assertFalse(arrayField.isOptional());
         assertEquals("", arrayField.getOptionalCondition());
+        assertEquals("", arrayField.getIndicatorName());
         assertEquals("", arrayField.getConstraint());
         assertTrue(arrayField.isArray());
         assertEquals("getParam().getField()", arrayField.getArrayLength());

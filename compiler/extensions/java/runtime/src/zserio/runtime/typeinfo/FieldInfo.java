@@ -12,6 +12,8 @@ public class FieldInfo
      * Constructor.
      *
      * @param schemaName Field schema name.
+     * @param getterName Field getter name.
+     * @param setterName Field setter name.
      * @param typeInfo Field type info.
      * @param typeArguments Field type arguments.
      * @param alignment Field alignment.
@@ -19,17 +21,21 @@ public class FieldInfo
      * @param initializer Field initializer.
      * @param isOptional Flag whether the field is optional.
      * @param optionalCondition Field optional condition.
+     * @param indicatorName Field indicator name.
      * @param constraint Field constraint.
      * @param isArray Flag whether the field is an array.
      * @param arrayLength Array length.
      * @param isPacked Flag whether the field is a packed array.
      * @param isImplicit Flag whether the field is an implicit array.
      */
-    public FieldInfo(String schemaName, TypeInfo typeInfo, List<String> typeArguments,
-            String alignment, String offset, String initializer, boolean isOptional, String optionalCondition,
-            String constraint, boolean isArray, String arrayLength, boolean isPacked, boolean isImplicit)
+    public FieldInfo(String schemaName, String getterName, String setterName, TypeInfo typeInfo,
+            List<String> typeArguments, String alignment, String offset, String initializer, boolean isOptional,
+            String optionalCondition, String indicatorName, String constraint, boolean isArray,
+            String arrayLength, boolean isPacked, boolean isImplicit)
     {
         this.schemaName = schemaName;
+        this.getterName = getterName;
+        this.setterName = setterName;
         this.typeInfo = typeInfo;
         this.typeArguments = typeArguments;
         this.alignment = alignment;
@@ -37,6 +43,7 @@ public class FieldInfo
         this.initializer = initializer;
         this.isOptional = isOptional;
         this.optionalCondition = optionalCondition;
+        this.indicatorName = indicatorName;
         this.constraint = constraint;
         this.isArray = isArray;
         this.arrayLength = arrayLength;
@@ -52,6 +59,26 @@ public class FieldInfo
     public String getSchemaName()
     {
         return schemaName;
+    }
+
+    /**
+     * Gets field getter name.
+     *
+     * @return Name of the field getter as is in generated code.
+     */
+    public String getGetterName()
+    {
+        return getterName;
+    }
+
+    /**
+     * Gets field setter name.
+     *
+     * @return Name of the field setter as is in generated code.
+     */
+    public String getSetterName()
+    {
+        return setterName;
     }
 
     /**
@@ -125,6 +152,16 @@ public class FieldInfo
     }
 
     /**
+     * Gets field indicator name.
+     *
+     * @return Name of the field indicator as is in generated code.
+     */
+    public String getIndicatorName()
+    {
+        return indicatorName;
+    }
+
+    /**
      * Gets field constraint expression.
      *
      * @return Constraint or empty if the field does not have constraint.
@@ -175,6 +212,8 @@ public class FieldInfo
     }
 
     private final String schemaName;
+    private final String getterName;
+    private final String setterName;
     private final TypeInfo typeInfo;
     private final List<String> typeArguments;
     private final String alignment;
@@ -182,6 +221,7 @@ public class FieldInfo
     private final String initializer;
     private final boolean isOptional;
     private final String optionalCondition;
+    private final String indicatorName;
     private final String constraint;
     private final boolean isArray;
     private final String arrayLength;

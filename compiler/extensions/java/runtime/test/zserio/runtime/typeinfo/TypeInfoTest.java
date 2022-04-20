@@ -620,7 +620,9 @@ public class TypeInfoTest
 
             final List<FieldInfo> fields = Arrays.asList(
                     new FieldInfo(
-                            "recursive",
+                            "recursive", // schemaName
+                            "getRecursive", // getterName
+                            "setRecursive", // setterName
                             new RecursiveTypeInfo(new RecursiveTypeInfoGetter()), // typeInfo
                             new ArrayList<String>(), // typeArguments
                             "", // alignment
@@ -628,6 +630,7 @@ public class TypeInfoTest
                             "", // initializer
                             true, // isOptional
                             "", // optionalCondition
+                            "isRecursiveUsed", // indicatorName
                             "", // constraint
                             false, // isArray
                             "", // arrayLength

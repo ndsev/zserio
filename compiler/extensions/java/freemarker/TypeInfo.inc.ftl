@@ -24,6 +24,8 @@ ${I}new java.util.ArrayList<zserio.runtime.typeinfo.FieldInfo>();
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}new zserio.runtime.typeinfo.FieldInfo(
 ${I}        "${field.name}", // schemaName
+${I}        "${field.getterName}", // getterName
+${I}        "${field.setterName}", // setterName
     <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
 ${I}        new zserio.runtime.typeinfo.TypeInfo.RecursiveTypeInfo(<#rt>
                     <#lt>new <@field_info_recursive_type_info_getter_name field/>()), // typeInfo
@@ -38,6 +40,7 @@ ${I}        "<#if field.offset??>${field.offset.getter?j_string}</#if>", // offs
 ${I}        "${(field.initializer!"")?j_string}", // initializer
 ${I}        ${(field.optional??)?c}, // isOptional
 ${I}        "<#if field.optional??>${(field.optional.clause!"")?j_string}</#if>", // optionalCondition
+${I}        "<#if field.optional??>${field.optional.indicatorName}</#if>", // indicatorName
 ${I}        "${(field.constraint!"")?j_string}", // constraint
 ${I}        ${(field.array??)?c}, // isArray
 ${I}        <#if field.array??>"${(field.array.length!"")?j_string}"<#else>""</#if>, // arrayLength
