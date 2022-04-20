@@ -7,7 +7,7 @@
 namespace zserio
 {
 
-Walker::Walker(IWalkObserver& walkObserver, IWalkFilter& walkFilter) :
+Walker::Walker(const IWalkObserverPtr& walkObserver, const IWalkFilterPtr& walkFilter) :
         m_walkObserver(walkObserver), m_walkFilter(walkFilter)
 {}
 
@@ -16,9 +16,9 @@ void Walker::walk(const IReflectablePtr& compound)
     // TODO[Mi-L@]: Add various checks!
     // TODO[Mi-L@]: How to walk optionals?
 
-    m_walkObserver.beginRoot(compound);
+    m_walkObserver->beginRoot(compound);
     walkFields(compound);
-    m_walkObserver.endRoot(compound);
+    m_walkObserver->endRoot(compound);
 }
 
 void Walker::walkFields(const IReflectablePtr& compound)
@@ -57,18 +57,18 @@ bool Walker::walkField(const IReflectablePtr& reflectable, const FieldInfo& fiel
 {
     if (reflectable->isArray())
     {
-        if (m_walkFilter.beforeArray(reflectable, fieldInfo))
+        if (m_walkFilter->beforeArray(reflectable, fieldInfo))
         {
-            m_walkObserver.beginArray(reflectable, fieldInfo);
+            m_walkObserver->beginArray(reflectable, fieldInfo);
             for (size_t i = 0; i < reflectable->size(); ++i)
             {
                 if (!walkFieldValue(reflectable->at(i), fieldInfo, i))
                     break;
             }
-            m_walkObserver.endArray(reflectable, fieldInfo);
+            m_walkObserver->endArray(reflectable, fieldInfo);
 
         }
-        return m_walkFilter.afterArray(reflectable, fieldInfo);
+        return m_walkFilter->afterArray(reflectable, fieldInfo);
     }
     else
     {
@@ -81,19 +81,19 @@ bool Walker::walkFieldValue(const IReflectablePtr& reflectable, const FieldInfo&
     const ITypeInfo& typeInfo = fieldInfo.typeInfo;
     if (TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
-        if (m_walkFilter.beforeCompound(reflectable, fieldInfo, elementIndex))
+        if (m_walkFilter->beforeCompound(reflectable, fieldInfo, elementIndex))
         {
-            m_walkObserver.beginCompound(reflectable, fieldInfo, elementIndex);
+            m_walkObserver->beginCompound(reflectable, fieldInfo, elementIndex);
             walkFields(reflectable);
-            m_walkObserver.endCompound(reflectable, fieldInfo, elementIndex);
+            m_walkObserver->endCompound(reflectable, fieldInfo, elementIndex);
         }
-        return m_walkFilter.afterCompound(reflectable, fieldInfo, elementIndex);
+        return m_walkFilter->afterCompound(reflectable, fieldInfo, elementIndex);
     }
     else
     {
-        if (m_walkFilter.beforeValue(reflectable, fieldInfo, elementIndex))
-            m_walkObserver.visitValue(reflectable, fieldInfo, elementIndex);
-        return m_walkFilter.afterValue(reflectable, fieldInfo, elementIndex);
+        if (m_walkFilter->beforeValue(reflectable, fieldInfo, elementIndex))
+            m_walkObserver->visitValue(reflectable, fieldInfo, elementIndex);
+        return m_walkFilter->afterValue(reflectable, fieldInfo, elementIndex);
     }
 }
 
@@ -332,11 +332,11 @@ bool RegexWalkFilter::matchSubtree(const IReflectablePtr& value, const FieldInfo
     if (value != nullptr && TypeInfoUtil::isCompound(fieldInfo.typeInfo.getSchemaType()))
     {
         // is a not null compound, try to find match within its subtree
-        SubtreeRegexWalkFilter subtreeFilter(m_currentPath, m_pathRegex);
+        auto subtreeFilter = std::make_shared<SubtreeRegexWalkFilter>(m_currentPath, m_pathRegex);
         DefaultWalkObserver defaultObserver;
-        Walker walker(defaultObserver, subtreeFilter);
+        Walker walker(std::make_shared<DefaultWalkObserver>(), subtreeFilter);
         walker.walk(value);
-        return subtreeFilter.matches();
+        return subtreeFilter->matches();
     }
     else
     {
@@ -382,6 +382,42 @@ bool ArrayLengthWalkFilter::afterValue(const IReflectablePtr&, const FieldInfo&,
 bool ArrayLengthWalkFilter::filterArrayElement(size_t elementIndex)
 {
     return elementIndex == WALKER_NOT_ELEMENT ? true : elementIndex < m_maxArrayLength;
+}
+
+AndWalkFilter::AndWalkFilter(const std::vector<IWalkFilterPtr>& walkFilters) :
+        m_walkFilters(walkFilters)
+{}
+
+bool AndWalkFilter::beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo)
+{
+    return applyFilters(&IWalkFilter::beforeArray, array, fieldInfo);
+}
+
+bool AndWalkFilter::afterArray(const IReflectablePtr& array, const FieldInfo& fieldInfo)
+{
+    return applyFilters(&IWalkFilter::afterArray, array, fieldInfo);
+}
+
+bool AndWalkFilter::beforeCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+        size_t elementIndex)
+{
+    return applyFilters(&IWalkFilter::beforeCompound, compound, fieldInfo, elementIndex);
+}
+
+bool AndWalkFilter::afterCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+        size_t elementIndex)
+{
+    return applyFilters(&IWalkFilter::afterCompound, compound, fieldInfo, elementIndex);
+}
+
+bool AndWalkFilter::beforeValue(const IReflectablePtr& value, const FieldInfo& fieldInfo, size_t elementIndex)
+{
+    return applyFilters(&IWalkFilter::beforeValue, value, fieldInfo, elementIndex);
+}
+
+bool AndWalkFilter::afterValue(const IReflectablePtr& value, const FieldInfo& fieldInfo, size_t elementIndex)
+{
+    return applyFilters(&IWalkFilter::afterValue, value, fieldInfo, elementIndex);
 }
 
 } // namespace zserio

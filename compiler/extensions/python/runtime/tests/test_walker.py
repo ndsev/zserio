@@ -397,66 +397,6 @@ class DefaultObserverTest(unittest.TestCase):
         default_observer.end_compound(object(), dummy_member_info)
         default_observer.visit_value(None, dummy_member_info)
 
-class WalkFilterTest(unittest.TestCase):
-
-    def test_empty(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
-        walk_filter = AndWalkFilter([])
-
-        self.assertTrue(walk_filter.before_array([], dummy_member_info))
-        self.assertTrue(walk_filter.after_array([], dummy_member_info))
-        self.assertTrue(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.before_value(None, dummy_member_info))
-        self.assertTrue(walk_filter.after_value(None, dummy_member_info))
-
-    def test_true_true(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
-        # two filters returning True
-        walk_filter = AndWalkFilter([AndWalkFilter([]), AndWalkFilter([])])
-
-        self.assertTrue(walk_filter.before_array([], dummy_member_info))
-        self.assertTrue(walk_filter.after_array([], dummy_member_info))
-        self.assertTrue(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertTrue(walk_filter.before_value(None, dummy_member_info))
-        self.assertTrue(walk_filter.after_value(None, dummy_member_info))
-
-    def test_false_false(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
-        # two filters returning False
-        walk_filter = AndWalkFilter([
-            TestWalkFilter(before_array=False, after_array=False,
-                           before_compound=False, after_compound=False,
-                           before_value=False, after_value=False),
-            TestWalkFilter(before_array=False, after_array=False,
-                           before_compound=False, after_compound=False,
-                           before_value=False, after_value=False)
-            ])
-
-        self.assertFalse(walk_filter.before_array([], dummy_member_info))
-        self.assertFalse(walk_filter.after_array([], dummy_member_info))
-        self.assertFalse(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.before_value(None, dummy_member_info))
-        self.assertFalse(walk_filter.after_value(None, dummy_member_info))
-
-    def test_true_false(self):
-        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
-        walk_filter = AndWalkFilter([
-            AndWalkFilter([]), # returning true
-            TestWalkFilter(before_array=False, after_array=False,
-                           before_compound=False, after_compound=False,
-                           before_value=False, after_value=False) # returning false
-        ])
-
-        self.assertFalse(walk_filter.before_array([], dummy_member_info))
-        self.assertFalse(walk_filter.after_array([], dummy_member_info))
-        self.assertFalse(walk_filter.before_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.after_compound(object(), dummy_member_info))
-        self.assertFalse(walk_filter.before_value(None, dummy_member_info))
-        self.assertFalse(walk_filter.after_value(None, dummy_member_info))
-
 class DepthWalkFilterTest(unittest.TestCase):
 
     def test_depth_0(self):
@@ -625,6 +565,67 @@ class ArrayLengthWalkFilterTest(unittest.TestCase):
         self.assertFalse(array_length_filter.after_value(None, dummy_array_member_info, 0))
         self.assertTrue(array_length_filter.after_array([], dummy_array_member_info))
         self.assertTrue(array_length_filter.after_compound(object(), dummy_member_info))
+
+
+class AndWalkFilterTest(unittest.TestCase):
+
+    def test_empty(self):
+        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walk_filter = AndWalkFilter([])
+
+        self.assertTrue(walk_filter.before_array([], dummy_member_info))
+        self.assertTrue(walk_filter.after_array([], dummy_member_info))
+        self.assertTrue(walk_filter.before_compound(object(), dummy_member_info))
+        self.assertTrue(walk_filter.after_compound(object(), dummy_member_info))
+        self.assertTrue(walk_filter.before_value(None, dummy_member_info))
+        self.assertTrue(walk_filter.after_value(None, dummy_member_info))
+
+    def test_true_true(self):
+        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        # two filters returning True
+        walk_filter = AndWalkFilter([TestWalkFilter(), TestWalkFilter()])
+
+        self.assertTrue(walk_filter.before_array([], dummy_member_info))
+        self.assertTrue(walk_filter.after_array([], dummy_member_info))
+        self.assertTrue(walk_filter.before_compound(object(), dummy_member_info))
+        self.assertTrue(walk_filter.after_compound(object(), dummy_member_info))
+        self.assertTrue(walk_filter.before_value(None, dummy_member_info))
+        self.assertTrue(walk_filter.after_value(None, dummy_member_info))
+
+    def test_false_false(self):
+        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        # two filters returning False
+        walk_filter = AndWalkFilter([
+            TestWalkFilter(before_array=False, after_array=False,
+                           before_compound=False, after_compound=False,
+                           before_value=False, after_value=False),
+            TestWalkFilter(before_array=False, after_array=False,
+                           before_compound=False, after_compound=False,
+                           before_value=False, after_value=False)
+            ])
+
+        self.assertFalse(walk_filter.before_array([], dummy_member_info))
+        self.assertFalse(walk_filter.after_array([], dummy_member_info))
+        self.assertFalse(walk_filter.before_compound(object(), dummy_member_info))
+        self.assertFalse(walk_filter.after_compound(object(), dummy_member_info))
+        self.assertFalse(walk_filter.before_value(None, dummy_member_info))
+        self.assertFalse(walk_filter.after_value(None, dummy_member_info))
+
+    def test_true_false(self):
+        dummy_member_info = MemberInfo("dummy", TypeInfo("Dummy", None))
+        walk_filter = AndWalkFilter([
+            TestWalkFilter(), # returning true
+            TestWalkFilter(before_array=False, after_array=False,
+                           before_compound=False, after_compound=False,
+                           before_value=False, after_value=False) # returning false
+        ])
+
+        self.assertFalse(walk_filter.before_array([], dummy_member_info))
+        self.assertFalse(walk_filter.after_array([], dummy_member_info))
+        self.assertFalse(walk_filter.before_compound(object(), dummy_member_info))
+        self.assertFalse(walk_filter.after_compound(object(), dummy_member_info))
+        self.assertFalse(walk_filter.before_value(None, dummy_member_info))
+        self.assertFalse(walk_filter.after_value(None, dummy_member_info))
 
 
 def _create_dummy_object():

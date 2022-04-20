@@ -362,7 +362,7 @@ class RegexWalkFilter(WalkFilter):
 
     def before_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> bool:
         self._current_path.append(member_info.schema_name)
-        if self._path_regex.match(".".join(self._current_path)):
+        if self._path_regex.match(self._get_current_path()):
             return True # the array itself matches
 
         # try to find match in each element and continue into the array only if some match is found
@@ -381,7 +381,7 @@ class RegexWalkFilter(WalkFilter):
     def before_compound(self, compound: typing.Any, member_info: MemberInfo,
                         element_index: typing.Optional[int] = None) -> bool:
         self._append_path(member_info, element_index)
-        if self._path_regex.match(".".join(self._current_path)):
+        if self._path_regex.match(self._get_current_path()):
             return True # the compound itself matches
 
         return self._match_subtree(compound, member_info)
@@ -410,19 +410,36 @@ class RegexWalkFilter(WalkFilter):
             return subtree_regex_filter.matches()
         else:
             # try to match a simple value or None compound
-            return self._path_regex.match(".".join(self._current_path)) is not None
+            return self._path_regex.match(self._get_current_path()) is not None
+
+    def _get_current_path(self):
+        return self._get_current_path_impl(self._current_path)
 
     def _append_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
-        if element_index is None:
-            self._current_path.append(member_info.schema_name)
-        else:
-            self._current_path[-1] = member_info.schema_name + f"[{element_index}]" # add index
+        self._append_path_impl(self._current_path, member_info, element_index)
 
     def _pop_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
+        self._pop_path_impl(self._current_path, member_info, element_index)
+
+    @staticmethod
+    def _get_current_path_impl(current_path: typing.List[str]) -> str:
+        return ".".join(current_path)
+
+    @staticmethod
+    def _append_path_impl(current_path: typing.List[str], member_info: MemberInfo,
+            element_index: typing.Union[int, None]) -> None:
         if element_index is None:
-            self._current_path.pop()
+            current_path.append(member_info.schema_name)
         else:
-            self._current_path[-1] = member_info.schema_name # just remove the index
+            current_path[-1] = member_info.schema_name + f"[{element_index}]" # add index
+
+    @staticmethod
+    def _pop_path_impl(current_path: typing.List[str], member_info: MemberInfo,
+            element_index: typing.Union[int, None]) -> None:
+        if element_index is None:
+            current_path.pop()
+        else:
+            current_path[-1] = member_info.schema_name # just remove the index
 
     class _SubtreeRegexFilter(WalkFilter):
         """
@@ -446,7 +463,7 @@ class RegexWalkFilter(WalkFilter):
 
         def before_array(self, _array: typing.List[typing.Any], member_info: MemberInfo):
             self._current_path.append(member_info.schema_name)
-            self._matches = self._path_regex.match(".".join(self._current_path)) is not None
+            self._matches = self._path_regex.match(self._get_current_path()) is not None
 
             # terminate when the match is already found (note that array is never None here)
             return not self._matches
@@ -458,7 +475,7 @@ class RegexWalkFilter(WalkFilter):
         def before_compound(self, _compound: typing.Any, member_info: MemberInfo,
                             element_index: typing.Optional[int] = None):
             self._append_path(member_info, element_index)
-            self._matches = self._path_regex.match(".".join(self._current_path)) is not None
+            self._matches = self._path_regex.match(self._get_current_path()) is not None
 
             #  terminate when the match is already found (note that compound is never None here)
             return not self._matches
@@ -471,7 +488,7 @@ class RegexWalkFilter(WalkFilter):
         def before_value(self, _value: typing.Any, member_info: MemberInfo,
                          element_index: typing.Optional[int] = None):
             self._append_path(member_info, element_index)
-            self._matches = self._path_regex.match(".".join(self._current_path)) is not None
+            self._matches = self._path_regex.match(self._get_current_path()) is not None
 
             return not self._matches # terminate when the match is already found
 
@@ -480,17 +497,14 @@ class RegexWalkFilter(WalkFilter):
             self._pop_path(member_info, element_index)
             return not self._matches # terminate when the match is already found
 
+        def _get_current_path(self):
+            return RegexWalkFilter._get_current_path_impl(self._current_path)
+
         def _append_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
-            if element_index is None:
-                self._current_path.append(member_info.schema_name)
-            else:
-                self._current_path[-1] = member_info.schema_name + f"[{element_index}]" # add index
+            return RegexWalkFilter._append_path_impl(self._current_path, member_info, element_index)
 
         def _pop_path(self, member_info: MemberInfo, element_index: typing.Union[int, None]) -> None:
-            if element_index is None:
-                self._current_path.pop()
-            else:
-                self._current_path[-1] = member_info.schema_name # just remove the index
+            return RegexWalkFilter._pop_path_impl(self._current_path, member_info, element_index)
 
 class ArrayLengthWalkFilter(WalkFilter):
     """

@@ -1,6 +1,8 @@
 #ifndef ZSERIO_I_WALK_OBSERVER_H_INC
 #define ZSERIO_I_WALK_OBSERVER_H_INC
 
+#include <memory>
+
 #include "zserio/WalkerConst.h"
 
 namespace zserio
@@ -25,6 +27,8 @@ public:
     virtual void visitValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 };
+
+using IWalkObserverPtr = std::shared_ptr<IWalkObserver>;
 
 } // namespace zserio
 

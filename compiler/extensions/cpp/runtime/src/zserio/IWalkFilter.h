@@ -1,6 +1,8 @@
 #ifndef ZSERIO_I_WALK_FILTER_H_INC
 #define ZSERIO_I_WALK_FILTER_H_INC
 
+#include <memory>
+
 #include "zserio/WalkerConst.h"
 
 namespace zserio
@@ -24,6 +26,8 @@ public:
     virtual bool afterValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 };
+
+using IWalkFilterPtr = std::shared_ptr<IWalkFilter>;
 
 } // namespace zserio
 

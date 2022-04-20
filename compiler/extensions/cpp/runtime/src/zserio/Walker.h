@@ -1,6 +1,7 @@
 #ifndef ZSERIO_WALKER_H_INC
 #define ZSERIO_WALKER_H_INC
 
+#include <functional>
 #include <regex>
 
 #include "zserio/IReflectable.h"
@@ -15,7 +16,7 @@ namespace zserio
 class Walker
 {
 public:
-    Walker(IWalkObserver& walkObserver, IWalkFilter& filter);
+    Walker(const IWalkObserverPtr& walkObserver, const IWalkFilterPtr& filter);
 
     void walk(const IReflectablePtr& reflectable);
 
@@ -25,8 +26,8 @@ private:
     bool walkFieldValue(const IReflectablePtr& reflectable, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT);
 
-    IWalkObserver& m_walkObserver;
-    IWalkFilter& m_walkFilter;
+    IWalkObserverPtr m_walkObserver;
+    IWalkFilterPtr m_walkFilter;
 };
 
 class DefaultWalkObserver : public IWalkObserver
@@ -81,7 +82,7 @@ public:
 class DepthWalkFilter : public IWalkFilter
 {
 public:
-    DepthWalkFilter(size_t maxDepth);
+    explicit DepthWalkFilter(size_t maxDepth);
 
     virtual bool beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
     virtual bool afterArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
@@ -104,7 +105,7 @@ private:
 class RegexWalkFilter : public IWalkFilter
 {
 public:
-    RegexWalkFilter(const char* pathRegex);
+    explicit RegexWalkFilter(const char* pathRegex);
 
     virtual bool beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
     virtual bool afterArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
@@ -132,7 +133,7 @@ private:
 class ArrayLengthWalkFilter : public IWalkFilter
 {
 public:
-    ArrayLengthWalkFilter(size_t maxArrayLength);
+    explicit ArrayLengthWalkFilter(size_t maxArrayLength);
 
     virtual bool beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
     virtual bool afterArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
@@ -151,6 +152,37 @@ private:
     bool filterArrayElement(size_t elementIndex);
 
     size_t m_maxArrayLength;
+};
+
+class AndWalkFilter : public IWalkFilter
+{
+public:
+    explicit AndWalkFilter(const std::vector<IWalkFilterPtr>& walkFilters);
+
+    virtual bool beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
+    virtual bool afterArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) override;
+
+    virtual bool beforeCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+    virtual bool afterCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+
+    virtual bool beforeValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+    virtual bool afterValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
+            size_t elementIndex) override;
+
+private:
+    template <typename FilterFunc, typename ...Args>
+    bool applyFilters(FilterFunc filterFunc, Args... args)
+    {
+        bool result = true;
+        for (const IWalkFilterPtr& walkFilter : m_walkFilters)
+            result &= ((*walkFilter).*filterFunc)(args...);
+        return result;
+    }
+
+    std::vector<IWalkFilterPtr> m_walkFilters;
 };
 
 } // namespace zserio
