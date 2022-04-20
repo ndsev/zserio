@@ -13,49 +13,49 @@ Walker::Walker(const IWalkObserverPtr& walkObserver, const IWalkFilterPtr& walkF
 
 void Walker::walk(const IReflectablePtr& compound)
 {
-    // TODO[Mi-L@]: Add various checks!
-    // TODO[Mi-L@]: How to walk optionals?
+    const ITypeInfo& typeInfo = compound->getTypeInfo();
+    if (!TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
+    {
+        throw CppRuntimeException("Walker: Root object '") + typeInfo.getSchemaName() +
+                "' is not a compound type!";
+    }
 
     m_walkObserver->beginRoot(compound);
-    walkFields(compound);
+    walkFields(compound, typeInfo);
     m_walkObserver->endRoot(compound);
 }
 
-void Walker::walkFields(const IReflectablePtr& compound)
+void Walker::walkFields(const IReflectablePtr& compound, const ITypeInfo& typeInfo)
 {
-    const ITypeInfo& typeInfo = compound->getTypeInfo();
-    if (TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
+    if (TypeInfoUtil::hasChoice(typeInfo.getSchemaType()))
     {
-        if (TypeInfoUtil::hasChoice(typeInfo.getSchemaType()))
+        StringView compoundChoice = compound->getChoice();
+        if (!compoundChoice.empty())
         {
-            StringView compoundChoice = compound->getChoice();
-            if (!compoundChoice.empty())
+            Span<const FieldInfo> fields = typeInfo.getFields();
+            auto fieldsIt = std::find_if(fields.begin(), fields.end(),
+                    [compoundChoice](const FieldInfo& fieldInfo) {
+                            return fieldInfo.schemaName == compoundChoice; });
+            if (fieldsIt != fields.end())
             {
-                Span<const FieldInfo> fields = typeInfo.getFields();
-                auto fieldsIt = std::find_if(fields.begin(), fields.end(),
-                        [compoundChoice](const FieldInfo& fieldInfo) {
-                                return fieldInfo.schemaName == compoundChoice; });
-                if (fieldsIt != fields.end())
-                {
-                    walkField(compound->getField(compoundChoice), *fieldsIt);
-                }
+                walkField(compound->getField(compoundChoice), *fieldsIt);
             }
-            // else uninitialized or empty branch
         }
-        else
+        // else uninitialized or empty branch
+    }
+    else
+    {
+        for (const FieldInfo& field : typeInfo.getFields())
         {
-            for (const FieldInfo& field : typeInfo.getFields())
-            {
-                if (!walkField(compound->getField(field.schemaName), field))
-                    break;
-            }
+            if (!walkField(compound->getField(field.schemaName), field))
+                break;
         }
     }
 }
 
 bool Walker::walkField(const IReflectablePtr& reflectable, const FieldInfo& fieldInfo)
 {
-    if (reflectable->isArray())
+    if (reflectable && reflectable->isArray())
     {
         if (m_walkFilter->beforeArray(reflectable, fieldInfo))
         {
@@ -79,12 +79,12 @@ bool Walker::walkField(const IReflectablePtr& reflectable, const FieldInfo& fiel
 bool Walker::walkFieldValue(const IReflectablePtr& reflectable, const FieldInfo& fieldInfo, size_t elementIndex)
 {
     const ITypeInfo& typeInfo = fieldInfo.typeInfo;
-    if (TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
+    if (reflectable && TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
         if (m_walkFilter->beforeCompound(reflectable, fieldInfo, elementIndex))
         {
             m_walkObserver->beginCompound(reflectable, fieldInfo, elementIndex);
-            walkFields(reflectable);
+            walkFields(reflectable, typeInfo);
             m_walkObserver->endCompound(reflectable, fieldInfo, elementIndex);
         }
         return m_walkFilter->afterCompound(reflectable, fieldInfo, elementIndex);

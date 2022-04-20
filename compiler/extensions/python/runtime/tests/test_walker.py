@@ -3,7 +3,7 @@ import typing
 
 from zserio import (WalkObserver, WalkFilter, Walker, DefaultWalkObserver, PythonRuntimeException,
                     ArrayLengthWalkFilter, DepthWalkFilter, RegexWalkFilter, AndWalkFilter)
-from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute
+from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute, ItemInfo
 from zserio.array import Array, ObjectArrayTraits
 
 class DummyUnion:
@@ -291,6 +291,18 @@ class WalkerTest(unittest.TestCase):
         obj = object()
         with self.assertRaises(PythonRuntimeException):
             walker.walk(obj)
+
+    def test_walk_non_compound(self):
+        class DummyEnum:
+            @staticmethod
+            def type_info():
+                return TypeInfo("DummyEnum", DummyEnum, attributes={
+                    TypeAttribute.ENUM_ITEMS : [ItemInfo("ZERO", 0)]
+                })
+
+        walker = Walker(TestWalkObserver())
+        with self.assertRaises(PythonRuntimeException):
+            walker.walk(DummyEnum())
 
     def test_walk(self):
         observer = TestWalkObserver()
