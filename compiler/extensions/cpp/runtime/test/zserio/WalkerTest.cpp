@@ -8,6 +8,7 @@
 #include "zserio/ArrayTraits.h"
 #include "zserio/PackingContext.h"
 #include "zserio/BitStreamWriter.h"
+#include <zserio/OptionalHolder.h>
 
 using namespace zserio::literals;
 
@@ -90,14 +91,7 @@ public:
                 {
                     return ReflectableFactory::getString(m_object.getText(), get_allocator());
                 }
-                else
-                {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
-                }
-            }
-
-            virtual void setField(StringView, const AnyHolder<allocator_type>&) override
-            {
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
             }
 
             virtual void write(BitStreamWriter&) override
@@ -121,11 +115,6 @@ public:
         return m_text_;
     }
 
-    void setText(const string<>& text_)
-    {
-        m_text_ = text_;
-    }
-
 private:
     string<> m_text_;
 };
@@ -134,22 +123,7 @@ class DummyUnion
 {
 private:
     class ZserioElementFactory_nestedArray
-    {
-    public:
-        explicit ZserioElementFactory_nestedArray(DummyUnion& owner) :
-                m_owner(owner)
-        {}
-
-        void create(::std::vector<DummyNested>&, BitStreamReader&, size_t) const
-        {}
-
-        void create(PackingContextNode&, ::std::vector<DummyNested>&,
-                BitStreamReader&, size_t) const
-        {}
-
-    private:
-        DummyUnion& m_owner;
-    };
+    {};
 
     using ZserioArrayType_nestedArray = Array<::std::vector<DummyNested>,
             ObjectArrayTraits<DummyNested, ZserioElementFactory_nestedArray>,
@@ -261,14 +235,7 @@ public:
                 {
                     return ReflectableFactory::getCompoundArray(m_object.getNestedArray(), get_allocator());
                 }
-                else
-                {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyUnion'!";
-                }
-            }
-
-            virtual void setField(StringView, const AnyHolder<allocator_type>&) override
-            {
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyUnion'!";
             }
 
             virtual StringView getChoice() const override
@@ -329,11 +296,6 @@ public:
         m_objectChoice = text_;
     }
 
-    const ::std::vector<DummyNested>& getNestedArray() const
-    {
-        return m_objectChoice.get<ZserioArrayType_nestedArray>().getRawArray();
-    }
-
     ::std::vector<DummyNested>& getNestedArray()
     {
         return m_objectChoice.get<ZserioArrayType_nestedArray>().getRawArray();
@@ -355,45 +317,38 @@ class DummyObject
 {
 private:
     class ZserioElementFactory_unionArray
-    {
-    public:
-        explicit ZserioElementFactory_unionArray(DummyObject& owner) :
-            m_owner(owner)
-        {}
+    {};
 
-        void create(::std::vector<DummyUnion>&, BitStreamReader&, size_t) const
-        {}
-
-        void create(PackingContextNode&, ::std::vector<DummyUnion>&,
-                BitStreamReader&, size_t) const
-        {}
-
-    private:
-        DummyObject& m_owner;
-    };
+    class ZserioElementFactory_optionalUnionArray
+    {};
 
     using ZserioArrayType_unionArray = Array<::std::vector<DummyUnion>,
-            ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>,
-            ArrayType::AUTO>;
+            ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>, ArrayType::AUTO>;
+
+    using ZserioArrayType_optionalUnionArray = Array<::std::vector<DummyUnion>,
+            ObjectArrayTraits<DummyUnion, ZserioElementFactory_optionalUnionArray>, ArrayType::AUTO>;
 
 public:
     using allocator_type = ::std::allocator<uint8_t>;
 
     DummyObject(const allocator_type& allocator = allocator_type()) :
             m_identifier_(uint32_t()),
-            m_nested_(allocator),
+            m_nested_(NullOpt),
             m_text_(allocator),
-            m_unionArray_(ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>(), allocator)
+            m_unionArray_(ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>(), allocator),
+            m_optionalUnionArray_(NullOpt)
     {}
 
     template <typename ZSERIO_T_nested,
             typename ZSERIO_T_text,
-            typename ZSERIO_T_unionArray>
+            typename ZSERIO_T_unionArray,
+            typename ZSERIO_T_optionalUnionArray>
     DummyObject(
             uint32_t identifier_,
             ZSERIO_T_nested&& nested_,
             ZSERIO_T_text&& text_,
             ZSERIO_T_unionArray&& unionArray_,
+            ZSERIO_T_optionalUnionArray&& optionalUnionArray_,
             const allocator_type& allocator = allocator_type()) :
             DummyObject(allocator)
     {
@@ -402,6 +357,9 @@ public:
         m_text_ = ::std::forward<ZSERIO_T_text>(text_);
         m_unionArray_ = ZserioArrayType_unionArray(::std::forward<ZSERIO_T_unionArray>(unionArray_),
                 ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>());
+        m_optionalUnionArray_ = createOptionalArray<ZserioArrayType_optionalUnionArray>(
+                ::std::forward<ZSERIO_T_optionalUnionArray>(optionalUnionArray_),
+                ObjectArrayTraits<DummyUnion, ZserioElementFactory_optionalUnionArray>());
     }
 
     static const ITypeInfo& typeInfo()
@@ -409,7 +367,7 @@ public:
         static const StringView templateName;
         static const Span<TemplateArgumentInfo> templateArguments;
 
-        static const ::std::array<FieldInfo, 4> fields = {
+        static const ::std::array<FieldInfo, 5> fields = {
             FieldInfo{
                 makeStringView("identifier"), // schemaName
                 BuiltinTypeInfo::getUInt32(), // typeInfo
@@ -432,8 +390,8 @@ public:
                 {}, // alignment
                 {}, // offset
                 {}, // initializer
-                false, // isOptional
-                {}, // optionalClause
+                true, // isOptional
+                makeStringView("getIdentifier() != 0"), // optionalClause
                 {}, // constraint
                 false, // isArray
                 {}, // arrayLength
@@ -463,6 +421,21 @@ public:
                 {}, // offset
                 {}, // initializer
                 false, // isOptional
+                {}, // optionalClause
+                {}, // constraint
+                true, // isArray
+                {}, // arrayLength
+                false, // isPacked
+                false // isImplicit
+            },
+            FieldInfo{
+                makeStringView("optionalUnionArray"), // schemaName
+                DummyUnion::typeInfo(), // typeInfo
+                {}, // typeArguments
+                {}, // alignment
+                {}, // offset
+                {}, // initializer
+                true, // isOptional
                 {}, // optionalClause
                 {}, // constraint
                 true, // isArray
@@ -502,6 +475,9 @@ public:
                 }
                 if (name == makeStringView("nested"))
                 {
+                    if (!m_object.isNestedUsed())
+                        return nullptr;
+
                     return m_object.getNested().reflectable(get_allocator());
                 }
                 if (name == makeStringView("text"))
@@ -512,14 +488,14 @@ public:
                 {
                     return ReflectableFactory::getCompoundArray(m_object.getUnionArray(), get_allocator());
                 }
-                else
+                if (name == makeStringView("optionalUnionArray"))
                 {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
-                }
-            }
+                    if (!m_object.isOptionalUnionArrayUsed())
+                        return nullptr;
 
-            virtual void setField(StringView, const AnyHolder<allocator_type>&) override
-            {
+                    return ReflectableFactory::getCompoundArray(m_object.getOptionalUnionArray(), get_allocator());
+                }
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
             }
 
             virtual void write(BitStreamWriter&) override
@@ -543,19 +519,14 @@ public:
         return m_identifier_;
     }
 
-    void setIdentifier(uint32_t identifier_)
-    {
-        m_identifier_ = identifier_;
-    }
-
-    const DummyNested& getNested() const
-    {
-        return m_nested_;
-    }
-
     DummyNested& getNested()
     {
-        return m_nested_;
+        return m_nested_.value();
+    }
+
+    bool isNestedUsed() const
+    {
+        return getIdentifier() != 0;
     }
 
     const string<>& getText() const
@@ -563,42 +534,44 @@ public:
         return m_text_;
     }
 
-    void setText(string<>&& text_)
-    {
-        m_text_ = std::move(text_);
-    }
-
-    const ::std::vector<DummyUnion>& getUnionArray() const
-    {
-        return m_unionArray_.getRawArray();
-    }
-
     ::std::vector<DummyUnion>& getUnionArray()
     {
         return m_unionArray_.getRawArray();
     }
 
-    void setUnionArray(::std::vector<DummyUnion>&& unionArray_)
+    ::std::vector<DummyUnion>& getOptionalUnionArray()
     {
-        m_unionArray_ = ZserioArrayType_unionArray(std::move(unionArray_),
-                ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>());
+        return m_optionalUnionArray_.value().getRawArray();
+    }
+
+    bool isOptionalUnionArrayUsed() const
+    {
+        return m_optionalUnionArray_.hasValue();
     }
 
 private:
     uint32_t m_identifier_;
-    DummyNested m_nested_;
+    InplaceOptionalHolder<DummyNested> m_nested_;
     string<> m_text_;
     ZserioArrayType_unionArray m_unionArray_;
+    InplaceOptionalHolder<ZserioArrayType_optionalUnionArray> m_optionalUnionArray_;
 };
 
-DummyObject createDummyObject()
+DummyObject createDummyObject(uint32_t identifier = 13, bool createNested = true)
 {
     std::vector<DummyUnion> unionArray;
     unionArray.resize(3);
     unionArray[0].setText("1");
     unionArray[1].setValue(2);
     unionArray[2].setNestedArray(std::vector<DummyNested>{{DummyNested{"nestedArray"}}});
-    return DummyObject(13, DummyNested("nested"), "test", std::move(unionArray));
+    if (createNested)
+    {
+        return DummyObject(identifier, DummyNested("nested"), "test", std::move(unionArray), NullOpt);
+    }
+    else
+    {
+        return DummyObject(identifier, NullOpt, "test", std::move(unionArray), NullOpt);
+    }
 }
 
 class TestWalkObserver : public IWalkObserver
@@ -721,7 +694,103 @@ private:
     bool m_isFirstElement = false;
 };
 
+class DummyBitmask
+{
+public:
+    static const ITypeInfo& typeInfo()
+    {
+        static const std::array<ItemInfo, 1> values = {
+            ItemInfo{"ZERO"_sv, "UINT32_C(0)"_sv}
+        };
+
+        static const BitmaskTypeInfo typeInfo = {
+            "DummyBitmask"_sv, BuiltinTypeInfo::getUInt32(), {}, values
+        };
+
+        return typeInfo;
+    }
+
+    IReflectablePtr reflectable(const ::std::allocator<uint8_t>& allocator = ::std::allocator<uint8_t>())
+    {
+        class Reflectable : public ReflectableBase<::std::allocator<uint8_t>>
+        {
+        public:
+            explicit Reflectable(DummyBitmask) :
+                    ReflectableBase<::std::allocator<uint8_t>>(DummyBitmask::typeInfo())
+            {}
+
+            void write(BitStreamWriter&) override
+            {}
+
+            size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+        };
+
+        return ::std::allocate_shared<Reflectable>(allocator, *this);
+    }
+};
+
 } // namespace
+
+TEST(WalkerTest, dummyObject)
+{
+    // test to improve coverage
+    std::vector<DummyUnion> unionArray;
+    unionArray.resize(1);
+    unionArray[0].setNestedArray(std::vector<DummyNested>{{DummyNested{"nestedArray"}}});
+    std::vector<DummyUnion> optionalUnionArray;
+    optionalUnionArray.resize(2);
+    optionalUnionArray[0].setNestedArray(std::vector<DummyNested>{{DummyNested{"nestedArray"}}});
+    DummyObject dummyObject(13, DummyNested("nested"), "test", std::move(unionArray),
+            std::move(optionalUnionArray));
+
+    PackingContextNode dummyPackingContextNode{std::allocator<uint8_t>()};
+    dummyObject.getNested().createPackingContext(dummyPackingContextNode);
+
+    BitStreamWriter dummyWriter(nullptr, 0);
+
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    ASSERT_THROW(dummyReflectable->getField("nonexistent"), CppRuntimeException);
+    ASSERT_EQ(0, dummyReflectable->bitSizeOf(0));
+    ASSERT_NO_THROW(dummyReflectable->write(dummyWriter));
+
+    IReflectablePtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
+    ASSERT_NE(nullptr, optionalUnionArrayReflectable);
+    ASSERT_EQ(2, optionalUnionArrayReflectable->size());
+    IReflectablePtr unionReflectable1 = optionalUnionArrayReflectable->at(0);
+    ASSERT_NE(nullptr, unionReflectable1);
+    ASSERT_THROW(unionReflectable1->getField("nonexistent"), CppRuntimeException);
+    ASSERT_EQ(0, unionReflectable1->bitSizeOf(0));
+    ASSERT_NO_THROW(unionReflectable1->write(dummyWriter));
+
+    IReflectablePtr unionReflectable2 = optionalUnionArrayReflectable->at(1);
+    ASSERT_NE(nullptr, unionReflectable2);
+    ASSERT_EQ(""_sv, unionReflectable2->getChoice());
+
+    IReflectablePtr nestedArrayReflectable = unionReflectable1->getField("nestedArray");
+    ASSERT_NE(nullptr, nestedArrayReflectable);
+    ASSERT_EQ(1, nestedArrayReflectable->size());
+    IReflectablePtr nestedReflectable = nestedArrayReflectable->at(0);
+    ASSERT_NE(nullptr, nestedReflectable);
+    ASSERT_THROW(nestedReflectable->getField("nonexistent"), CppRuntimeException);
+    ASSERT_EQ(0, nestedReflectable->bitSizeOf(0));
+    ASSERT_NO_THROW(nestedReflectable->write(dummyWriter));
+
+    DummyBitmask dummyBitmask;
+    IReflectablePtr bitmaskReflectable = dummyBitmask.reflectable();
+    ASSERT_EQ(0, bitmaskReflectable->bitSizeOf(0));
+    ASSERT_NO_THROW(bitmaskReflectable->write(dummyWriter));
+}
+
+TEST(WalkerTest, walkNonCompound)
+{
+    Walker walker(std::make_shared<DefaultWalkObserver>(), std::make_shared<DefaultWalkFilter>());
+    DummyBitmask dummyBitmask;
+
+    ASSERT_THROW(walker.walk(dummyBitmask.reflectable()), CppRuntimeException);
+}
 
 TEST(WalkerTest, walk)
 {
@@ -755,16 +824,57 @@ TEST(WalkerTest, walk)
     ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
     ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(4)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(6, observer->getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(7, observer->getCaptures("visitValue"_sv).size());
     ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
     ASSERT_EQ("nested", observer->getCaptures("visitValue"_sv).at(1)->toString());
     ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(2)->toString());
     ASSERT_EQ("1", observer->getCaptures("visitValue"_sv).at(3)->toString());
     ASSERT_EQ(2, observer->getCaptures("visitValue"_sv).at(4)->toUInt());
     ASSERT_EQ("nestedArray", observer->getCaptures("visitValue"_sv).at(5)->toString());
+    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(6));
 }
 
-TEST(WalkerTest, walkSkipCompund)
+TEST(WalkerTest, walkWrongCondition)
+{
+    auto observer = std::make_shared<TestWalkObserver>();
+    Walker walker(observer, std::make_shared<DefaultWalkFilter>());
+    DummyObject dummyObject = createDummyObject(13, false);
+    walker.walk(dummyObject.reflectable());
+
+    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+
+    ASSERT_EQ(2, observer->getCaptures("beginArray"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginArray"_sv).at(1)->getTypeInfo().getSchemaName());
+
+    ASSERT_EQ(2, observer->getCaptures("endArray"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
+
+    ASSERT_EQ(4, observer->getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+
+    ASSERT_EQ(4, observer->getCaptures("endCompound"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+
+    ASSERT_EQ(7, observer->getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
+    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(1));
+    ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(2)->toString());
+    ASSERT_EQ("1", observer->getCaptures("visitValue"_sv).at(3)->toString());
+    ASSERT_EQ(2, observer->getCaptures("visitValue"_sv).at(4)->toUInt());
+    ASSERT_EQ("nestedArray", observer->getCaptures("visitValue"_sv).at(5)->toString());
+    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(6));
+}
+
+TEST(WalkerTest, walkSkipCompound)
 {
     auto observer = std::make_shared<TestWalkObserver>();
     auto testFilter = std::make_shared<TestWalkFilter>();
@@ -785,9 +895,10 @@ TEST(WalkerTest, walkSkipCompund)
     ASSERT_TRUE(observer->getCaptures("beginCompound"_sv).empty());
     ASSERT_TRUE(observer->getCaptures("endCompound"_sv).empty());
 
-    ASSERT_EQ(2, observer->getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(3, observer->getCaptures("visitValue"_sv).size());
     ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
     ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(1)->toString());
+    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(2));
 }
 
 TEST(WalkerTest, walkSkipSiblings)
@@ -864,11 +975,12 @@ TEST(WalkerTest, walkOnlyFirstElement)
     ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
     ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(4, observer->getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(5, observer->getCaptures("visitValue"_sv).size());
     ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
     ASSERT_EQ("nested", observer->getCaptures("visitValue"_sv).at(1)->toString());
     ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(2)->toString());
     ASSERT_EQ("1", observer->getCaptures("visitValue"_sv).at(3)->toString());
+    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(4));
 }
 
 TEST(DefaultWalkObserverTest, allMethods)
@@ -948,7 +1060,7 @@ TEST(DepthFilterTest, depth1)
     ASSERT_TRUE(walkFilter.afterValue(dummyReflectable, dummyFieldInfo)); // 0
 }
 
-TEST(RegexWalkFilterTest, regexAll)
+TEST(RegexWalkFilterTest, regexAllMatch)
 {
     RegexWalkFilter regexWalkFilter(".*");
     IWalkFilter& walkFilter = regexWalkFilter;
@@ -964,7 +1076,7 @@ TEST(RegexWalkFilterTest, regexAll)
     ASSERT_TRUE(walkFilter.afterValue(dummyReflectable, dummyFieldInfo));
 }
 
-TEST(RegexWalkFilterTest, regexPrefix)
+TEST(RegexWalkFilterTest, regexPrefixMatch)
 {
     RegexWalkFilter regexWalkFilter("nested\\..*");
     IWalkFilter& walkFilter = regexWalkFilter;
@@ -993,7 +1105,7 @@ TEST(RegexWalkFilterTest, regexPrefix)
     ASSERT_TRUE(walkFilter.afterArray(unionArrayReflectable, unionArrayFieldInfo));
 }
 
-TEST(RegexWalkFilterTest, regexArray)
+TEST(RegexWalkFilterTest, regexArrayMatch)
 {
     RegexWalkFilter regexWalkFilter("unionArray\\[\\d+\\]\\.nes.*");
     IWalkFilter& walkFilter = regexWalkFilter;
@@ -1024,7 +1136,7 @@ TEST(RegexWalkFilterTest, regexArrayNoMatch)
     std::vector<DummyUnion> unionArray;
     unionArray.resize(1);
     unionArray[0].setNestedArray(std::vector<DummyNested>{{DummyNested{"nestedArray"}}});
-    DummyObject dummyObject (13, DummyNested("nested"), "test", std::move(unionArray));
+    DummyObject dummyObject (13, DummyNested("nested"), "test", std::move(unionArray), NullOpt);
     IReflectablePtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& unionArrayFieldInfo = dummyObject.typeInfo().getFields()[3];
@@ -1033,28 +1145,69 @@ TEST(RegexWalkFilterTest, regexArrayNoMatch)
     ASSERT_TRUE(walkFilter.afterArray(unionArrayReflectable, unionArrayFieldInfo));
 }
 
-TEST(RegexWalkFilterTest, regexUnsetCompoundMatch)
+TEST(RegexWalkFilterTest, regexNullCompoundMatch)
 {
     RegexWalkFilter regexWalkFilter("nested");
     IWalkFilter& walkFilter = regexWalkFilter;
 
-    std::vector<DummyUnion> unionArray;
-    unionArray.resize(2);
-    unionArray[0].setText("1");
-    unionArray[1].setValue(2);
-    DummyObject dummyObject;
-    dummyObject.setIdentifier(13);
-    dummyObject.setText("test");
-    dummyObject.setUnionArray(std::move(unionArray));
+    DummyObject dummyObject = createDummyObject(0, false);
     IReflectablePtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& nestedFieldInfo = dummyObject.typeInfo().getFields()[1];
     IReflectablePtr nestedReflectable = dummyReflectable->getField("nested");
-    ASSERT_TRUE(walkFilter.beforeCompound(nestedReflectable, nestedFieldInfo));
-    ASSERT_TRUE(walkFilter.afterCompound(nestedReflectable, nestedFieldInfo));
+    ASSERT_EQ(nullptr, nestedReflectable);
+    // note that the null compounds are processed as values!
+    ASSERT_TRUE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo));
+    ASSERT_TRUE(walkFilter.afterValue(nestedReflectable, nestedFieldInfo));
 }
 
-// TODO[Mi-L@]: how to test real null compounds and null arrays? E.g. optionals?
+TEST(RegexWalkFilterTest, regexNullCompoundNoMatch)
+{
+    RegexWalkFilter regexWalkFilter("^nested\\.text$");
+    IWalkFilter& walkFilter = regexWalkFilter;
+
+    DummyObject dummyObject = createDummyObject(0, false);
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+
+    const FieldInfo& nestedFieldInfo = dummyObject.typeInfo().getFields()[1];
+    IReflectablePtr nestedReflectable = dummyReflectable->getField("nested");
+    ASSERT_EQ(nullptr, nestedReflectable);
+    // note that the null compounds are processed as values!
+    ASSERT_FALSE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo));
+    ASSERT_TRUE(walkFilter.afterValue(nestedReflectable, nestedFieldInfo));
+}
+
+TEST(RegexWalkFilterTest, regexNullArrayMatch)
+{
+    RegexWalkFilter regexWalkFilter("optionalUnionArray");
+    IWalkFilter& walkFilter = regexWalkFilter;
+
+    DummyObject dummyObject = createDummyObject();
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+
+    const FieldInfo& optionalUnionArrayFieldInfo = dummyObject.typeInfo().getFields()[4];
+    IReflectablePtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
+    ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
+    // note that the null arrays are processed as values!
+    ASSERT_TRUE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
+    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
+}
+
+TEST(RegexWalkFilterTest, regexNullArrayNoMatch)
+{
+    RegexWalkFilter regexWalkFilter("^optionalUnionArray\\.\\[\\d+\\]\\.nestedArray.*");
+    IWalkFilter& walkFilter = regexWalkFilter;
+
+    DummyObject dummyObject = createDummyObject();
+    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+
+    const FieldInfo& optionalUnionArrayFieldInfo = dummyObject.typeInfo().getFields()[4];
+    IReflectablePtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
+    ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
+    // note that the null arrays are processed as values!
+    ASSERT_FALSE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
+    ASSERT_TRUE(walkFilter.afterValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
+}
 
 TEST(ArrayLengthWalkFilterTest, length0)
 {

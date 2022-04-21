@@ -45,9 +45,17 @@ void Walker::walkFields(const IReflectablePtr& compound, const ITypeInfo& typeIn
     }
     else
     {
-        for (const FieldInfo& field : typeInfo.getFields())
+        for (const FieldInfo& fieldInfo : typeInfo.getFields())
         {
-            if (!walkField(compound->getField(field.schemaName), field))
+            IReflectablePtr fieldReflectable = nullptr;
+            try // TODO[Mi-L@]: Hack needed because we don't generate isOptionalFieldSet() (the actual value)
+            {
+                fieldReflectable = compound->getField(fieldInfo.schemaName);
+            }
+            catch (CppRuntimeException&)
+            {}
+
+            if (!walkField(fieldReflectable, fieldInfo))
                 break;
         }
     }
@@ -171,7 +179,7 @@ void popPathImpl(std::vector<std::string>& currentPath, const FieldInfo& fieldIn
 class SubtreeRegexWalkFilter : public IWalkFilter
 {
 public:
-    SubtreeRegexWalkFilter(const std::vector<std::string> currentPath, const std::regex& pathRegex) :
+    SubtreeRegexWalkFilter(const std::vector<std::string>& currentPath, const std::regex& pathRegex) :
             m_currentPath(currentPath), m_pathRegex(pathRegex)
     {}
 

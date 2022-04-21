@@ -58,7 +58,7 @@ public:
      *
      * \param compound Reflectable compound zserio object.
      * \param fieldInfo Compound field info.
-     * \param elementIndex: Element index in array or WALKER_NOT_ELEMENT if the compound is not in array.
+     * \param elementIndex Element index in array or WALKER_NOT_ELEMENT if the compound is not in array.
      */
     virtual void beginCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;

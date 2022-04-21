@@ -84,7 +84,7 @@ public:
      * Called after a simple (or an unset compound or array - i.e. nullptr) value.
      *
      * \param value Reflectable simple value.
-     * \param fieldInfo: Field info.
+     * \param fieldInfo Field info.
      * \param elementIndex Element index in array or None if the value is not in array.
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.

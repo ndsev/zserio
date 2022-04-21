@@ -18,6 +18,24 @@ cmake_minimum_required(VERSION 3.1.0)
 project(ZserioCppRuntime)
 
 set(ZSERIO_CPP_RUNTIME_LIB_SRCS
+    zserio/pmr/AnyHolder.h
+    zserio/pmr/ArrayTraits.h
+    zserio/pmr/BitBuffer.h
+    zserio/pmr/HeapOptionalHolder.h
+    zserio/pmr/IReflectable.h
+    zserio/pmr/IService.h
+    zserio/pmr/Map.h
+    zserio/pmr/MemoryResource.cpp
+    zserio/pmr/MemoryResource.h
+    zserio/pmr/NewDeleteResource.cpp
+    zserio/pmr/NewDeleteResource.h
+    zserio/pmr/PackingContext.h
+    zserio/pmr/PolymorphicAllocator.h
+    zserio/pmr/Reflectable.h
+    zserio/pmr/Set.h
+    zserio/pmr/String.h
+    zserio/pmr/UniquePtr.h
+    zserio/pmr/Vector.h
     zserio/AllocatorHolder.h
     zserio/AllocatorPropagatingCopy.h
     zserio/AnyHolder.h
@@ -79,24 +97,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/Walker.cpp
     zserio/Walker.h
     zserio/WalkerConst.h
-    zserio/pmr/AnyHolder.h
-    zserio/pmr/ArrayTraits.h
-    zserio/pmr/BitBuffer.h
-    zserio/pmr/HeapOptionalHolder.h
-    zserio/pmr/IReflectable.h
-    zserio/pmr/IService.h
-    zserio/pmr/Map.h
-    zserio/pmr/MemoryResource.cpp
-    zserio/pmr/MemoryResource.h
-    zserio/pmr/NewDeleteResource.cpp
-    zserio/pmr/NewDeleteResource.h
-    zserio/pmr/PackingContext.h
-    zserio/pmr/PolymorphicAllocator.h
-    zserio/pmr/Reflectable.h
-    zserio/pmr/Set.h
-    zserio/pmr/String.h
-    zserio/pmr/UniquePtr.h
-    zserio/pmr/Vector.h
 )
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)

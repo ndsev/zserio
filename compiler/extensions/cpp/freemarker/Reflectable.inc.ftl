@@ -14,10 +14,7 @@ ${I}            return nullptr;
 ${I}        return <@reflectable_create_field field/>;
 ${I}    }
     </#list>
-${I}    else
-${I}    {
-${I}        throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
-${I}    }
+${I}    throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
