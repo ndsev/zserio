@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "zserio/WalkerConst.h"
+#include "zserio/IReflectable.h"
 
 namespace zserio
 {

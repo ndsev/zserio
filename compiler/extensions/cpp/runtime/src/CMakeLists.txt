@@ -73,6 +73,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/IValidationObserver.h
     zserio/IWalkFilter.h
     zserio/IWalkObserver.h
+    zserio/JsonWriter.cpp
+    zserio/JsonWriter.h
     zserio/OptionalHolder.h
     zserio/PackingContext.h
     zserio/PubsubException.h

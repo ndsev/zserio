@@ -7,12 +7,12 @@ import typing
 import json
 
 from zserio.bitbuffer import BitBuffer
-from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo, MemberAttribute
+from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo
 from zserio.walker import WalkObserver
 
 class JsonWriter(WalkObserver):
     """
-    Observer implementing zserio.WalkObserver which dumps zserio objects to JSON format.
+    Walker observer which dumps zserio objects to JSON format.
     """
 
     def __init__(self, *, text_io: typing.Optional[io.TextIOBase] = None,
@@ -46,15 +46,15 @@ class JsonWriter(WalkObserver):
         return self._io
 
     def begin_root(self, _compound: typing.Any) -> None:
-        self._begin_obj()
+        self._begin_object()
 
     def end_root(self, _compound: typing.Any) -> None:
-        self._end_obj()
+        self._end_object()
 
     def begin_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> None:
         self._begin_item()
 
-        self._io.write(f"\"{member_info.schema_name}\"{self._key_separator}")
+        self._write_key(member_info.schema_name)
 
         self._begin_array()
 
@@ -66,34 +66,30 @@ class JsonWriter(WalkObserver):
         self._end_item()
 
     def begin_compound(self, compound: typing.Any, member_info: MemberInfo,
-                       _element_index: typing.Optional[int] = None) -> None:
+                       element_index: typing.Optional[int] = None) -> None:
         self._begin_item()
 
-        if not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
-            self._io.write(f"\"{member_info.schema_name}\"{self._key_separator}")
+        if element_index is None:
+            self._write_key(member_info.schema_name)
 
-        self._begin_obj()
+        self._begin_object()
 
     def end_compound(self, compound: typing.Any, member_info: MemberInfo,
                      _element_index: typing.Optional[int] = None) -> None:
         self._is_first = False
 
-        self._end_obj()
+        self._end_object()
 
         self._end_item()
 
     def visit_value(self, value: typing.Any, member_info: MemberInfo,
-                    _element_index: typing.Optional[int] = None) -> None:
+                    element_index: typing.Optional[int] = None) -> None:
         self._begin_item()
 
-        if value is None or not MemberAttribute.ARRAY_LENGTH in member_info.attributes:
-            self._io.write(f"\"{member_info.schema_name}\"{self._key_separator}")
+        if element_index is None:
+            self._write_key(member_info.schema_name)
 
-        if isinstance(value, BitBuffer):
-            self._visit_bitbuffer(value, member_info)
-        else:
-            json_value = self._json_encoder.encode(value, member_info.type_info)
-            self._io.write(json_value)
+        self._write_value(value, member_info)
 
         self._end_item()
 
@@ -103,19 +99,19 @@ class JsonWriter(WalkObserver):
 
         if self._indent is not None:
             self._io.write("\n")
-        if self._indent:
-            self._io.write(self._indent * self._level)
+            if self._indent:
+                self._io.write(self._indent * self._level)
 
     def _end_item(self):
         self._is_first = False
 
-    def _begin_obj(self):
+    def _begin_object(self):
         self._io.write("{")
 
         self._is_first = True
         self._level += 1
 
-    def _end_obj(self):
+    def _end_object(self):
         if self._indent is not None:
             self._io.write("\n")
         self._level -= 1
@@ -139,19 +135,29 @@ class JsonWriter(WalkObserver):
 
         self._io.write("]")
 
-    def _visit_bitbuffer(self, value: typing.Any, member_info: MemberInfo):
-        self._begin_obj()
+    def _write_key(self, key: str) -> None:
+        self._io.write(f"\"{key}\"{self._key_separator}")
+
+    def _write_value(self, value: typing.Any, member_info: MemberInfo) -> None:
+        if isinstance(value, BitBuffer):
+            self._write_bitbuffer(value, member_info)
+        else:
+            json_value = self._json_encoder.encode(value, member_info.type_info)
+            self._io.write(json_value)
+
+    def _write_bitbuffer(self, value: typing.Any, member_info: MemberInfo):
+        self._begin_object()
         self._begin_item()
-        self._io.write(f"\"buffer\"{self._key_separator}")
+        self._write_key("buffer")
         json_value = self._json_encoder.encode(value.buffer, member_info.type_info)
         self._io.write(json_value)
         self._end_item()
         self._begin_item()
-        self._io.write(f"\"bitSize\"{self._key_separator}")
+        self._write_key("bitSize")
         json_value = self._json_encoder.encode(value.bitsize, member_info.type_info)
         self._io.write(json_value)
         self._end_item()
-        self._end_obj()
+        self._end_object()
 
 class JsonEncoder:
     """
