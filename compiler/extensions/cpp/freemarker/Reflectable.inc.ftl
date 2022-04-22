@@ -7,7 +7,7 @@ ${I}{
 ${I}    if (name == ::zserio::makeStringView("${field.name}"))
 ${I}    {
         <#if field.optional??>
-${I}        if (!m_object.${field.optional.indicatorName}())
+${I}        if (!m_object.${field.optional.isSetIndicatorName}())
 ${I}            return nullptr;
 
         </#if>

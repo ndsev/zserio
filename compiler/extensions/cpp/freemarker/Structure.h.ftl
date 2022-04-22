@@ -107,7 +107,8 @@ public:
         <#if withWriterCode>
     void ${field.optional.resetterName}();
         </#if>
-    bool ${field.optional.indicatorName}() const;
+    bool ${field.optional.isSetIndicatorName}() const;
+    bool ${field.optional.isUsedIndicatorName}() const;
     </#if>
 
 </#list>

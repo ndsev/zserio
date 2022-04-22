@@ -90,22 +90,35 @@ TEST_F(OptionalRecursionTest, resetNextData)
 {
     Block block12;
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_TRUE(block12.isNextDataSet());
     ASSERT_TRUE(block12.isNextDataUsed());
 
     ASSERT_NO_THROW(block12.getNextData());
-    block12.resetNextData();
+    block12.resetNextData(); // used but not set
+    ASSERT_FALSE(block12.isNextDataSet());
+    ASSERT_TRUE(block12.isNextDataUsed());
     ASSERT_THROW(block12.getNextData(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalRecursionTest, isNextDataUsed)
+TEST_F(OptionalRecursionTest, isNextDataSetAndUsed)
 {
     Block block1;
     fillBlock(block1, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    ASSERT_FALSE(block1.isNextDataSet());
     ASSERT_FALSE(block1.isNextDataUsed());
 
     Block block12;
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_TRUE(block12.isNextDataSet());
     ASSERT_TRUE(block12.isNextDataUsed());
+
+    block1.setBlockTerminator(1); // used but not set
+    ASSERT_FALSE(block1.isNextDataSet());
+    ASSERT_TRUE(block1.isNextDataUsed());
+
+    block12.setBlockTerminator(0); // set but not used
+    ASSERT_TRUE(block12.isNextDataSet());
+    ASSERT_FALSE(block12.isNextDataUsed());
 }
 
 TEST_F(OptionalRecursionTest, bitSizeOf)
@@ -117,6 +130,9 @@ TEST_F(OptionalRecursionTest, bitSizeOf)
     Block block12;
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
     ASSERT_EQ(getBlockBitSize(sizeof(BLOCK1_DATA), sizeof(BLOCK2_DATA)), block12.bitSizeOf());
+
+    block12.setBlockTerminator(0); // set but not used
+    ASSERT_EQ(getBlockBitSize(sizeof(BLOCK1_DATA)), block12.bitSizeOf());
 }
 
 TEST_F(OptionalRecursionTest, initializeOffsets)
@@ -130,6 +146,9 @@ TEST_F(OptionalRecursionTest, initializeOffsets)
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
     ASSERT_EQ(bitPosition + getBlockBitSize(sizeof(BLOCK1_DATA), sizeof(BLOCK2_DATA)),
             block12.initializeOffsets(bitPosition));
+
+    block12.setBlockTerminator(0); // set but not used
+    ASSERT_EQ(bitPosition + getBlockBitSize(sizeof(BLOCK1_DATA)), block12.initializeOffsets(bitPosition));
 }
 
 TEST_F(OptionalRecursionTest, operatorEquality)
@@ -141,9 +160,19 @@ TEST_F(OptionalRecursionTest, operatorEquality)
     fillBlock(block2, BLOCK1_DATA, sizeof(BLOCK1_DATA));
     ASSERT_TRUE(block2 == block1);
 
-    Block block12;
-    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
-    ASSERT_FALSE(block12 == block1);
+    Block block12_1;
+    fillBlock(block12_1, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_FALSE(block12_1 == block1);
+
+    Block block12_2;
+    fillBlock(block12_2, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_TRUE(block12_1 == block12_2);
+
+    block12_1.setBlockTerminator(0); // set but not used
+    ASSERT_FALSE(block12_1 == block12_2);
+
+    block12_2.setBlockTerminator(0); // set but not used
+    ASSERT_TRUE(block12_1 == block12_2);
 }
 
 TEST_F(OptionalRecursionTest, hashCode)
@@ -155,9 +184,19 @@ TEST_F(OptionalRecursionTest, hashCode)
     fillBlock(block2, BLOCK1_DATA, sizeof(BLOCK1_DATA));
     ASSERT_EQ(block2.hashCode(), block1.hashCode());
 
-    Block block12;
-    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
-    ASSERT_NE(block12.hashCode(), block1.hashCode());
+    Block block12_1;
+    fillBlock(block12_1, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_NE(block12_1.hashCode(), block1.hashCode());
+
+    Block block12_2;
+    fillBlock(block12_2, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_EQ(block12_1.hashCode(), block12_2.hashCode());
+
+    block12_1.setBlockTerminator(0); // set but not used
+    ASSERT_NE(block12_1.hashCode(), block12_2.hashCode());
+
+    block12_2.setBlockTerminator(0); // set but not used
+    ASSERT_EQ(block12_1.hashCode(), block12_2.hashCode());
 }
 
 TEST_F(OptionalRecursionTest, writeBlock1)
@@ -186,9 +225,18 @@ TEST_F(OptionalRecursionTest, writeBlock12)
     checkBlockInBitStream(reader, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
     reader.setBitPosition(0);
 
-    zserio::BitStreamReader reader2(writer.getWriteBuffer(), writer.getBitPosition(), zserio::BitsTag());
-    Block readBlock12(reader2, sizeof(BLOCK1_DATA));
+    Block readBlock12(reader, sizeof(BLOCK1_DATA));
     ASSERT_EQ(block12, readBlock12);
+
+    block12.setBlockTerminator(0); // set but not used
+    zserio::BitStreamWriter writer2(bitBuffer);
+    block12.write(writer2);
+    zserio::BitStreamReader reader2(writer2.getWriteBuffer(), writer2.getBitPosition(), zserio::BitsTag());
+    checkBlockInBitStream(reader2, BLOCK1_DATA, sizeof(BLOCK1_DATA));
+    reader2.setBitPosition(0);
+
+    Block readBlock12_2(reader2, sizeof(BLOCK1_DATA));
+    ASSERT_EQ(block12, readBlock12_2);
 }
 
 } // namespace optional_recursion

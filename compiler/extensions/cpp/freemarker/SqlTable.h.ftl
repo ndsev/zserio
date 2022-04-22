@@ -76,7 +76,7 @@ public:
         void ${field.setterName}(${field.typeInfo.typeFullName} <@sql_field_argument_name field/>);
     </#if>
         void ${field.resetterName}();
-        bool ${field.indicatorName}() const;
+        bool ${field.isSetIndicatorName}() const;
 
 </#list>
 <#if withWriterCode>

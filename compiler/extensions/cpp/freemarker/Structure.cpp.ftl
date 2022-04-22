@@ -206,7 +206,12 @@ void ${name}::${field.optional.resetterName}()
 }
 
         </#if>
-bool ${name}::${field.optional.indicatorName}() const
+bool ${name}::${field.optional.isSetIndicatorName}() const
+{
+    return <@field_member_name field/>.hasValue();
+}
+
+bool ${name}::${field.optional.isUsedIndicatorName}() const
 {
     return (<@field_optional_condition field/>);
 }

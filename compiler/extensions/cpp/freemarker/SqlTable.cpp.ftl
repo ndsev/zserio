@@ -669,7 +669,7 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
 
     <#list fields as field>
     // field ${field.name}
-    if (!row.${field.indicatorName}())
+    if (!row.${field.isSetIndicatorName}())
     {
         result = sqlite3_bind_null(&statement, ${field?index + 1});
     }
@@ -823,7 +823,7 @@ void ${name}::Row::${field.resetterName}()
     <@sql_field_member_name field/>.reset();
 }
 
-bool ${name}::Row::${field.indicatorName}() const
+bool ${name}::Row::${field.isSetIndicatorName}() const
 {
     return <@sql_field_member_name field/>.hasValue();
 }

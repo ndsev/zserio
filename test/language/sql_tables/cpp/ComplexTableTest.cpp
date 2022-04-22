@@ -120,45 +120,45 @@ protected:
     {
         ASSERT_EQ(row1.getBlobId(), row2.getBlobId());
 
-        if (row1.isAgeUsed() && row2.isAgeUsed())
+        if (row1.isAgeSet() && row2.isAgeSet())
             ASSERT_EQ(row1.getAge(), row2.getAge());
         else
-            ASSERT_EQ(row1.isAgeUsed(), row2.isAgeUsed());
+            ASSERT_EQ(row1.isAgeSet(), row2.isAgeSet());
 
-        if (row1.isNameUsed() && row2.isNameUsed())
+        if (row1.isNameSet() && row2.isNameSet())
             ASSERT_EQ(row1.getName(), row2.getName());
         else
-            ASSERT_EQ(row1.isNameUsed(), row2.isNameUsed());
+            ASSERT_EQ(row1.isNameSet(), row2.isNameSet());
 
-        if (row1.isIsValidUsed() && row2.isIsValidUsed())
+        if (row1.isIsValidSet() && row2.isIsValidSet())
             ASSERT_EQ(row1.getIsValid(), row2.getIsValid());
         else
-            ASSERT_EQ(row1.isIsValidUsed(), row2.isIsValidUsed());
+            ASSERT_EQ(row1.isIsValidSet(), row2.isIsValidSet());
 
-        if (row1.isSalaryUsed() && row2.isSalaryUsed())
+        if (row1.isSalarySet() && row2.isSalarySet())
             ASSERT_EQ(row1.getSalary(), row2.getSalary());
         else
-            ASSERT_EQ(row1.isSalaryUsed(), row2.isSalaryUsed());
+            ASSERT_EQ(row1.isSalarySet(), row2.isSalarySet());
 
-        if (row1.isBonusUsed() && row2.isBonusUsed())
+        if (row1.isBonusSet() && row2.isBonusSet())
             ASSERT_EQ(row1.getBonus(), row2.getBonus());
         else
-            ASSERT_EQ(row1.isBonusUsed(), row2.isBonusUsed());
+            ASSERT_EQ(row1.isBonusSet(), row2.isBonusSet());
 
-        if (row1.isValueUsed() && row2.isValueUsed())
+        if (row1.isValueSet() && row2.isValueSet())
             ASSERT_EQ(row1.getValue(), row2.getValue());
         else
-            ASSERT_EQ(row1.isValueUsed(), row2.isValueUsed());
+            ASSERT_EQ(row1.isValueSet(), row2.isValueSet());
 
-        if (row1.isColorUsed() && row2.isColorUsed())
+        if (row1.isColorSet() && row2.isColorSet())
             ASSERT_EQ(row1.getColor(), row2.getColor());
         else
-            ASSERT_EQ(row1.isColorUsed(), row2.isColorUsed());
+            ASSERT_EQ(row1.isColorSet(), row2.isColorSet());
 
-        if (row1.isBlobUsed() && row2.isBlobUsed())
+        if (row1.isBlobSet() && row2.isBlobSet())
             ASSERT_EQ(row1.getBlob(), row2.getBlob());
         else
-            ASSERT_EQ(row1.isBlobUsed(), row2.isBlobUsed());
+            ASSERT_EQ(row1.isBlobSet(), row2.isBlobSet());
     }
 
     static void checkComplexTableRowsWithNullValues(const vector_type<ComplexTable::Row>& rows1,

@@ -47,16 +47,19 @@ const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITH_OPTIONAL = 32 + 1 + 32;
 TEST_F(AutoOptionalTest, emptyConstructor)
 {
     const Container container;
+    ASSERT_FALSE(container.isAutoOptionalIntSet());
     ASSERT_FALSE(container.isAutoOptionalIntUsed());
 }
 
 TEST_F(AutoOptionalTest, fieldConstructor)
 {
     const Container containerWithOptional(NON_OPTIONAL_INT_VALUE, AUTO_OPTIONAL_INT_VALUE);
+    ASSERT_TRUE(containerWithOptional.isAutoOptionalIntSet());
     ASSERT_TRUE(containerWithOptional.isAutoOptionalIntUsed());
     ASSERT_EQ(AUTO_OPTIONAL_INT_VALUE, containerWithOptional.getAutoOptionalInt());
 
     const Container containerWithoutOptional(NON_OPTIONAL_INT_VALUE, zserio::NullOpt);
+    ASSERT_FALSE(containerWithoutOptional.isAutoOptionalIntSet());
     ASSERT_FALSE(containerWithoutOptional.isAutoOptionalIntUsed());
 }
 
@@ -64,19 +67,23 @@ TEST_F(AutoOptionalTest, resetAutoOptionalInt)
 {
     Container container;
     container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
+    ASSERT_TRUE(container.isAutoOptionalIntSet());
     ASSERT_TRUE(container.isAutoOptionalIntUsed());
 
     container.resetAutoOptionalInt();
+    ASSERT_FALSE(container.isAutoOptionalIntSet());
     ASSERT_FALSE(container.isAutoOptionalIntUsed());
 }
 
-TEST_F(AutoOptionalTest, isAutoOptionalIntUsed)
+TEST_F(AutoOptionalTest, isAutoOptionalIntSetAndUsed)
 {
     Container container;
     container.setNonOptionalInt(NON_OPTIONAL_INT_VALUE);
+    ASSERT_FALSE(container.isAutoOptionalIntSet());
     ASSERT_FALSE(container.isAutoOptionalIntUsed());
 
     container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
+    ASSERT_TRUE(container.isAutoOptionalIntSet());
     ASSERT_TRUE(container.isAutoOptionalIntUsed());
 }
 
@@ -142,6 +149,7 @@ TEST_F(AutoOptionalTest, write)
     checkContainerInBitStream(readerNonOptional, NON_OPTIONAL_INT_VALUE, false, 0);
     Container readContainerNonOptional(readerNonOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerNonOptional.getNonOptionalInt());
+    ASSERT_FALSE(readContainerNonOptional.isAutoOptionalIntSet());
     ASSERT_FALSE(readContainerNonOptional.isAutoOptionalIntUsed());
 
     const int autoOptionalIntValue = AUTO_OPTIONAL_INT_VALUE;
@@ -155,6 +163,7 @@ TEST_F(AutoOptionalTest, write)
     checkContainerInBitStream(readerOptional, NON_OPTIONAL_INT_VALUE, true, autoOptionalIntValue);
     Container readContainerOptional(readerOptional);
     ASSERT_EQ(NON_OPTIONAL_INT_VALUE, readContainerOptional.getNonOptionalInt());
+    ASSERT_TRUE(readContainerOptional.isAutoOptionalIntSet());
     ASSERT_TRUE(readContainerOptional.isAutoOptionalIntUsed());
     ASSERT_EQ(AUTO_OPTIONAL_INT_VALUE, readContainerOptional.getAutoOptionalInt());
 }

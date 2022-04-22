@@ -77,6 +77,8 @@ protected:
     static const size_t EMPTY_EMPLOYEE_BIT_SIZE;
     static const size_t TEAM_LEAD_BIT_SIZE;
 
+    static const size_t TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS;
+
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
@@ -102,23 +104,41 @@ const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT
         (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER1_NAME) - 1) * 8 +
         (sizeof(OptionalArrayRecursionTest::EMPLOYEE_DEVELOPER2_NAME) - 1) * 8;
 
+const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS = EMPTY_EMPLOYEE_BIT_SIZE +
+        (sizeof(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) - 1) * 8;
+
+
 TEST_F(OptionalArrayRecursionTest, resetTeamMembers)
 {
     Employee employee;
     fillTeamLead(employee);
+    ASSERT_TRUE(employee.isTeamMembersSet());
     ASSERT_TRUE(employee.isTeamMembersUsed());
 
     ASSERT_NO_THROW(employee.getTeamMembers());
-    employee.resetTeamMembers();
+    employee.resetTeamMembers(); // used but not set
+    ASSERT_FALSE(employee.isTeamMembersSet());
+    ASSERT_TRUE(employee.isTeamMembersUsed());
     ASSERT_THROW(employee.getTeamMembers(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalArrayRecursionTest, isTeamMembersUsed)
+TEST_F(OptionalArrayRecursionTest, isTeamMembersSetAndUsed)
 {
     Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
+    ASSERT_FALSE(employee.isTeamMembersSet());
     ASSERT_FALSE(employee.isTeamMembersUsed());
 
     fillTeamLead(employee);
+    ASSERT_TRUE(employee.isTeamMembersSet());
+    ASSERT_TRUE(employee.isTeamMembersUsed());
+
+    employee.setTitle(Title::DEVELOPER); // set but not used
+    ASSERT_TRUE(employee.isTeamMembersSet());
+    ASSERT_FALSE(employee.isTeamMembersUsed());
+
+    employee.setTitle(Title::TEAM_LEAD);
+    employee.resetTeamMembers(); // used but not set
+    ASSERT_FALSE(employee.isTeamMembersSet());
     ASSERT_TRUE(employee.isTeamMembersUsed());
 }
 
@@ -129,6 +149,9 @@ TEST_F(OptionalArrayRecursionTest, bitSizeOf)
 
     fillTeamLead(employee);
     ASSERT_EQ(TEAM_LEAD_BIT_SIZE, employee.bitSizeOf());
+
+    employee.setTitle(Title::DEVELOPER); // set but not used
+    ASSERT_EQ(TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS, employee.bitSizeOf());
 }
 
 TEST_F(OptionalArrayRecursionTest, initializeOffsets)
@@ -139,15 +162,27 @@ TEST_F(OptionalArrayRecursionTest, initializeOffsets)
 
     fillTeamLead(employee);
     ASSERT_EQ(bitPosition + TEAM_LEAD_BIT_SIZE, employee.initializeOffsets(bitPosition));
+
+    employee.setTitle(Title::DEVELOPER); // set but not used
+    ASSERT_EQ(bitPosition + TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS, employee.initializeOffsets(bitPosition));
 }
 
 TEST_F(OptionalArrayRecursionTest, operatorEquality)
 {
-    Employee teamLead1;
-    Employee teamLead2;
+    Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
 
+    Employee teamLead1;
     fillTeamLead(teamLead1);
+
+    Employee teamLead2;
     fillTeamLead(teamLead2);
+
+    ASSERT_FALSE(employee == teamLead2);
+    ASSERT_TRUE(teamLead1 == teamLead2);
+
+    teamLead1.setTitle(Title::DEVELOPER); // set but not used
+    ASSERT_FALSE(teamLead1 == teamLead2);
+    teamLead2.setTitle(Title::DEVELOPER); // set but not used
     ASSERT_TRUE(teamLead1 == teamLead2);
 }
 
@@ -158,6 +193,11 @@ TEST_F(OptionalArrayRecursionTest, hashCode)
 
     fillTeamLead(teamLead1);
     fillTeamLead(teamLead2);
+    ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
+
+    teamLead1.setTitle(Title::DEVELOPER); // set but not used
+    ASSERT_NE(teamLead1.hashCode(), teamLead2.hashCode());
+    teamLead2.setTitle(Title::DEVELOPER); // set but not used
     ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
 }
 
@@ -193,9 +233,22 @@ TEST_F(OptionalArrayRecursionTest, writeReadTeamLead)
     ASSERT_EQ(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead.getName());
     ASSERT_EQ(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead.getSalary());
     ASSERT_EQ(Title::TEAM_LEAD, readTeamLead.getTitle());
+    ASSERT_TRUE(readTeamLead.isTeamMembersSet());
     ASSERT_TRUE(readTeamLead.isTeamMembersUsed());
     vector_type<Employee> teamMembers = readTeamLead.getTeamMembers();
     ASSERT_EQ(NUM_DEVELOPERS, teamMembers.size());
+
+    teamLead.setTitle(Title::DEVELOPER); // set but not used
+    zserio::BitStreamWriter writer2(bitBuffer);
+    teamLead.write(writer2);
+    zserio::BitStreamReader reader2(writer2.getWriteBuffer(), writer2.getBitPosition(), zserio::BitsTag());
+    Employee readTeamLead2(reader2);
+    ASSERT_EQ(EMPLOYEE_TEAM_LEAD_NAME, readTeamLead2.getName());
+    ASSERT_EQ(EMPLOYEE_TEAM_LEAD_SALARY, readTeamLead2.getSalary());
+    ASSERT_EQ(Title::DEVELOPER, readTeamLead2.getTitle());
+    ASSERT_FALSE(readTeamLead2.isTeamMembersSet());
+    ASSERT_FALSE(readTeamLead2.isTeamMembersUsed());
+    ASSERT_THROW(readTeamLead2.getTeamMembers(), zserio::CppRuntimeException);
 }
 
 TEST_F(OptionalArrayRecursionTest, writeReadFileEmployee)

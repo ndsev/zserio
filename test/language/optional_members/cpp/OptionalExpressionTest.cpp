@@ -52,11 +52,15 @@ TEST_F(OptionalExpressionTest, fieldConstructor)
     BlackColor blackColor;
     fillBlackColor(blackColor, NUM_BLACK_TONES);
     const Container containerWithOptionals(BasicColor::BLACK, NUM_BLACK_TONES, blackColor);
+    ASSERT_TRUE(containerWithOptionals.isNumBlackTonesSet());
     ASSERT_TRUE(containerWithOptionals.isNumBlackTonesUsed());
+    ASSERT_TRUE(containerWithOptionals.isBlackColorSet());
     ASSERT_TRUE(containerWithOptionals.isBlackColorUsed());
 
     const Container containerWithoutOptionals(BasicColor::WHITE, zserio::NullOpt, zserio::NullOpt);
+    ASSERT_FALSE(containerWithoutOptionals.isNumBlackTonesSet());
     ASSERT_FALSE(containerWithoutOptionals.isNumBlackTonesUsed());
+    ASSERT_FALSE(containerWithoutOptionals.isBlackColorSet());
     ASSERT_FALSE(containerWithoutOptionals.isBlackColorUsed());
 }
 
@@ -65,24 +69,38 @@ TEST_F(OptionalExpressionTest, resetNumBlackTones)
     Container container;
     container.setBasicColor(BasicColor::BLACK);
     container.setNumBlackTones(NUM_BLACK_TONES);
+    ASSERT_TRUE(container.isNumBlackTonesSet());
     ASSERT_TRUE(container.isNumBlackTonesUsed());
 
     ASSERT_NO_THROW(container.getNumBlackTones());
-    container.resetNumBlackTones();
+    container.resetNumBlackTones(); // used but not set
+    ASSERT_FALSE(container.isNumBlackTonesSet());
+    ASSERT_TRUE(container.isNumBlackTonesUsed());
     ASSERT_THROW(container.getNumBlackTones(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalExpressionTest, isNumBlackTonesUsed)
+TEST_F(OptionalExpressionTest, isNumBlackTonesSetAndUsed)
 {
     Container container;
     container.setBasicColor(BasicColor::WHITE);
+    ASSERT_FALSE(container.isNumBlackTonesSet());
     ASSERT_FALSE(container.isNumBlackTonesUsed());
 
     container.setBasicColor(BasicColor::BLACK);
     const uint8_t numBlackTones = NUM_BLACK_TONES;
     container.setNumBlackTones(numBlackTones);
+    ASSERT_TRUE(container.isNumBlackTonesSet());
     ASSERT_TRUE(container.isNumBlackTonesUsed());
     ASSERT_EQ(numBlackTones, container.getNumBlackTones());
+
+    container.setBasicColor(BasicColor::WHITE); // set but not used
+    ASSERT_TRUE(container.isNumBlackTonesSet());
+    ASSERT_FALSE(container.isNumBlackTonesUsed());
+
+    container.setBasicColor(BasicColor::BLACK);
+    container.resetNumBlackTones(); // used but not set
+    ASSERT_FALSE(container.isNumBlackTonesSet());
+    ASSERT_TRUE(container.isNumBlackTonesUsed());
 }
 
 TEST_F(OptionalExpressionTest, resetBlackColor)
@@ -92,23 +110,37 @@ TEST_F(OptionalExpressionTest, resetBlackColor)
     BlackColor blackColor;
     fillBlackColor(blackColor, NUM_BLACK_TONES);
     container.setBlackColor(blackColor);
+    ASSERT_TRUE(container.isBlackColorSet());
     ASSERT_TRUE(container.isBlackColorUsed());
 
     ASSERT_NO_THROW(container.getBlackColor());
-    container.resetBlackColor();
+    container.resetBlackColor(); // used but not set
+    ASSERT_FALSE(container.isBlackColorSet());
+    ASSERT_TRUE(container.isBlackColorUsed());
     ASSERT_THROW(container.getBlackColor(), zserio::CppRuntimeException);
 }
 
-TEST_F(OptionalExpressionTest, isBlackColorUsed)
+TEST_F(OptionalExpressionTest, isBlackColorSetAndUsed)
 {
     Container container;
     container.setBasicColor(BasicColor::WHITE);
+    ASSERT_FALSE(container.isBlackColorSet());
     ASSERT_FALSE(container.isBlackColorUsed());
 
     container.setBasicColor(BasicColor::BLACK);
     BlackColor blackColor;
     fillBlackColor(blackColor, NUM_BLACK_TONES);
     container.setBlackColor(blackColor);
+    ASSERT_TRUE(container.isBlackColorSet());
+    ASSERT_TRUE(container.isBlackColorUsed());
+
+    container.setBasicColor(BasicColor::WHITE); // set but not used
+    ASSERT_TRUE(container.isBlackColorSet());
+    ASSERT_FALSE(container.isBlackColorUsed());
+
+    container.setBasicColor(BasicColor::BLACK);
+    container.resetBlackColor(); // used but not set
+    ASSERT_FALSE(container.isBlackColorSet());
     ASSERT_TRUE(container.isBlackColorUsed());
 }
 
@@ -127,6 +159,9 @@ TEST_F(OptionalExpressionTest, bitSizeOf)
     container.initializeChildren();
     const size_t bitSizeWithOptional = CONTAINER_BIT_SIZE_WITH_OPTIONAL;
     ASSERT_EQ(bitSizeWithOptional, container.bitSizeOf());
+
+    container.setBasicColor(BasicColor::WHITE); // set but not used
+    ASSERT_EQ(bitSizeWithoutOptional, container.bitSizeOf());
 }
 
 TEST_F(OptionalExpressionTest, initializeOffsets)
@@ -145,6 +180,9 @@ TEST_F(OptionalExpressionTest, initializeOffsets)
     container.initializeChildren();
     const size_t bitSizeWithOptional = CONTAINER_BIT_SIZE_WITH_OPTIONAL;
     ASSERT_EQ(bitPosition + bitSizeWithOptional, container.initializeOffsets(bitPosition));
+
+    container.setBasicColor(BasicColor::WHITE); // set but not used
+    ASSERT_EQ(bitPosition + bitSizeWithoutOptional, container.initializeOffsets(bitPosition));
 }
 
 TEST_F(OptionalExpressionTest, operatorEquality)
@@ -160,6 +198,9 @@ TEST_F(OptionalExpressionTest, operatorEquality)
     container2.setBlackColor(blackColor);
     container2.initializeChildren();
     ASSERT_FALSE(container1 == container2);
+
+    container2.setBasicColor(BasicColor::WHITE); // set but not used
+    ASSERT_TRUE(container1 == container2);
 }
 
 TEST_F(OptionalExpressionTest, hashCode)
@@ -175,6 +216,9 @@ TEST_F(OptionalExpressionTest, hashCode)
     container2.setBlackColor(blackColor);
     container2.initializeChildren();
     ASSERT_NE(container1.hashCode(), container2.hashCode());
+
+    container2.setBasicColor(BasicColor::WHITE); // set but not used
+    ASSERT_EQ(container1.hashCode(), container2.hashCode());
 }
 
 TEST_F(OptionalExpressionTest, write)
@@ -192,7 +236,9 @@ TEST_F(OptionalExpressionTest, write)
     Container readContainerWhite(readerWhite);
 
     ASSERT_EQ(BasicColor::WHITE, readContainerWhite.getBasicColor());
+    ASSERT_FALSE(readContainerWhite.isNumBlackTonesSet());
     ASSERT_FALSE(readContainerWhite.isNumBlackTonesUsed());
+    ASSERT_FALSE(readContainerWhite.isBlackColorSet());
     ASSERT_FALSE(readContainerWhite.isBlackColorUsed());
 
     container.setBasicColor(BasicColor::BLACK);
@@ -212,11 +258,28 @@ TEST_F(OptionalExpressionTest, write)
     Container readContainerBlack(readerBlack);
 
     ASSERT_EQ(BasicColor::BLACK, readContainerBlack.getBasicColor());
+    ASSERT_TRUE(readContainerBlack.isNumBlackTonesSet());
     ASSERT_TRUE(readContainerBlack.isNumBlackTonesUsed());
+    ASSERT_TRUE(readContainerBlack.isBlackColorSet());
     ASSERT_TRUE(readContainerBlack.isBlackColorUsed());
     ASSERT_EQ(numBlackTones, readContainerBlack.getNumBlackTones());
     ASSERT_EQ(numBlackTones, readContainerBlack.getBlackColor().getNumBlackTones());
     ASSERT_EQ(blackColor.getTones(), readContainerBlack.getBlackColor().getTones());
+
+    container.setBasicColor(BasicColor::WHITE); // set but not used
+    zserio::BitStreamWriter writerBlackToWhite(bitBuffer);
+    container.write(writerBlackToWhite);
+
+    zserio::BitStreamReader readerBlackToWhite(writerBlackToWhite.getWriteBuffer(),
+            writerBlackToWhite.getBitPosition(), zserio::BitsTag());
+    checkContainerInBitStream(readerBlackToWhite, BasicColor::WHITE, NUM_BLACK_TONES);
+    Container readContainerBlackToWhite(readerBlackToWhite);
+
+    ASSERT_EQ(BasicColor::WHITE, readContainerBlackToWhite.getBasicColor());
+    ASSERT_FALSE(readContainerBlackToWhite.isNumBlackTonesSet());
+    ASSERT_FALSE(readContainerBlackToWhite.isNumBlackTonesUsed());
+    ASSERT_FALSE(readContainerBlackToWhite.isBlackColorSet());
+    ASSERT_FALSE(readContainerBlackToWhite.isBlackColorUsed());
 }
 
 } // namespace optional_expression

@@ -185,13 +185,15 @@ public class CompoundFieldTemplateData
 
     public static class Optional
     {
-        public Optional(Expression optionalClauseExpression, String resetterName, String indicatorName,
+        public Optional(Expression optionalClauseExpression, String resetterName,
+                String isSetIndicatorName, String isUsedIndicatorName,
                 ExpressionFormatter cppExpressionFormatter, boolean isRecursive) throws ZserioExtensionException
         {
             clause = (optionalClauseExpression == null) ? null :
                 cppExpressionFormatter.formatGetter(optionalClauseExpression);
             this.resetterName = resetterName;
-            this.indicatorName = indicatorName;
+            this.isSetIndicatorName = isSetIndicatorName;
+            this.isUsedIndicatorName = isUsedIndicatorName;
             this.isRecursive = isRecursive;
         }
 
@@ -205,9 +207,14 @@ public class CompoundFieldTemplateData
             return resetterName;
         }
 
-        public String getIndicatorName()
+        public String getIsSetIndicatorName()
         {
-            return indicatorName;
+            return isSetIndicatorName;
+        }
+
+        public String getIsUsedIndicatorName()
+        {
+            return isUsedIndicatorName;
         }
 
         public boolean getIsRecursive()
@@ -217,7 +224,8 @@ public class CompoundFieldTemplateData
 
         private final String clause;
         private final String resetterName;
-        private final String indicatorName;
+        private final String isSetIndicatorName;
+        private final String isUsedIndicatorName;
         private final boolean isRecursive;
     }
 
@@ -535,10 +543,11 @@ public class CompoundFieldTemplateData
 
         final Expression optionalClauseExpression = field.getOptionalClauseExpr();
         final String resetterName = AccessorNameFormatter.getResetterName(field);
-        final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
+        final String isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
+        final String isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
 
-        return new Optional(optionalClauseExpression, resetterName, indicatorName, cppExpressionFormatter,
-                isRecursive);
+        return new Optional(optionalClauseExpression, resetterName, isSetIndicatorName, isUsedIndicatorName,
+                cppExpressionFormatter, isRecursive);
     }
 
     private static IntegerRange createIntegerRange(CppNativeMapper cppNativeMapper,

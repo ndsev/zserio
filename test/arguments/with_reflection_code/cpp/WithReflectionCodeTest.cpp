@@ -500,4 +500,29 @@ TEST_F(WithReflectionCodeTest, checkChoiceWithBitmask)
     checkWriteRead(*reflectable, choice, Selector::BITMASK);
 }
 
+TEST_F(WithReflectionCodeTest, childOptionalInconsistencies)
+{
+    // optional not set and not used
+    Child child{13, "name", false, zserio::NullOpt};
+    auto reflectable = child.reflectable();
+    ASSERT_EQ(nullptr, reflectable->getField("nicknames"));
+
+    // optional used and set
+    child.setHasNicknames(true);
+    child.setNicknames(vector_type<string_type>{{{"nick1"}, {"nick2"}}});
+    ASSERT_NE(nullptr, reflectable->getField("nicknames"));
+    ASSERT_EQ(2, reflectable->getField("nicknames")->size());
+
+    // optional set but not used
+    child.setHasNicknames(false);
+    ASSERT_NE(nullptr, reflectable->getField("nicknames"));
+    ASSERT_EQ(2, reflectable->getField("nicknames")->size());
+
+    // optional used but not set
+    child.setHasNicknames(true);
+    child.resetNicknames();
+    ASSERT_THROW(child.getNicknames(), zserio::CppRuntimeException);
+    ASSERT_EQ(nullptr, reflectable->getField("nicknames")); // reflectable doesn't throw for missing optional!
+}
+
 } // namespace with_reflection_code

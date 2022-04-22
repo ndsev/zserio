@@ -475,7 +475,7 @@ public:
                 }
                 if (name == makeStringView("nested"))
                 {
-                    if (!m_object.isNestedUsed())
+                    if (!m_object.isNestedSet())
                         return nullptr;
 
                     return m_object.getNested().reflectable(get_allocator());
@@ -490,7 +490,7 @@ public:
                 }
                 if (name == makeStringView("optionalUnionArray"))
                 {
-                    if (!m_object.isOptionalUnionArrayUsed())
+                    if (!m_object.isOptionalUnionArraySet())
                         return nullptr;
 
                     return ReflectableFactory::getCompoundArray(m_object.getOptionalUnionArray(), get_allocator());
@@ -524,9 +524,9 @@ public:
         return m_nested_.value();
     }
 
-    bool isNestedUsed() const
+    bool isNestedSet() const
     {
-        return getIdentifier() != 0;
+        return m_nested_.hasValue();
     }
 
     const string<>& getText() const
@@ -544,7 +544,7 @@ public:
         return m_optionalUnionArray_.value().getRawArray();
     }
 
-    bool isOptionalUnionArrayUsed() const
+    bool isOptionalUnionArraySet() const
     {
         return m_optionalUnionArray_.hasValue();
     }

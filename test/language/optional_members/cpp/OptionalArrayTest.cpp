@@ -25,8 +25,10 @@ TEST(OptionalArrayTest, data8)
 TEST(OptionalArrayTest, autoData8)
 {
     TestStruct test;
+    ASSERT_FALSE(test.isAutoData8Set());
     ASSERT_FALSE(test.isAutoData8Used());
     test.setAutoData8(vector_type<Data8>(4));
+    ASSERT_TRUE(test.isAutoData8Set());
     ASSERT_TRUE(test.isAutoData8Used());
     ASSERT_EQ(4, test.getAutoData8().size());
 }
@@ -42,8 +44,10 @@ TEST(OptionalArrayTest, data16)
 TEST(OptionalArrayTest, autoData16)
 {
     TestStruct test;
+    ASSERT_FALSE(test.isAutoData16Set());
     ASSERT_FALSE(test.isAutoData16Used());
     test.setAutoData16(vector_type<int16_t>(4));
+    ASSERT_TRUE(test.isAutoData16Set());
     ASSERT_TRUE(test.isAutoData16Used());
     ASSERT_EQ(4, test.getAutoData16().size());
 }

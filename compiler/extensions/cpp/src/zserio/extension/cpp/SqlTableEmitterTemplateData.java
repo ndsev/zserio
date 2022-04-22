@@ -218,7 +218,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             getterName = AccessorNameFormatter.getGetterName(field);
             setterName = AccessorNameFormatter.getSetterName(field);
             resetterName = AccessorNameFormatter.getResetterName(field);
-            indicatorName = AccessorNameFormatter.getIndicatorName(field);
+            isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
 
             typeParameters = new ArrayList<ParameterTemplateData>();
             boolean hasImplicitParameters = false;
@@ -297,9 +297,9 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             return resetterName;
         }
 
-        public String getIndicatorName()
+        public String getIsSetIndicatorName()
         {
-            return indicatorName;
+            return isSetIndicatorName;
         }
 
         public Iterable<ParameterTemplateData> getTypeParameters()
@@ -517,7 +517,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final String getterName;
         private final String setterName;
         private final String resetterName;
-        private final String indicatorName;
+        private final String isSetIndicatorName;
         private final List<ParameterTemplateData> typeParameters;
         private final boolean hasImplicitParameters;
         private final boolean hasExplicitParameters;
