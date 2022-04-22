@@ -67,39 +67,39 @@ void walkArray(IWalkObserver& observer)
 
 TEST(JsonWriterTest, empty)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
 
-    ASSERT_EQ("", os.str());
+    ASSERT_EQ("", os->str());
 }
 
 TEST(JsonWriterTest, nullValue)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(nullptr, TEXT_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"text\": null", os.str());
+    ASSERT_EQ("\"text\": null", os->str());
 }
 
 TEST(JsonWriterTest, value)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"text\": \"test\"", os.str());
+    ASSERT_EQ("\"text\": \"test\"", os->str());
 }
 
 TEST(JsonWriterTest, compound)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
@@ -111,79 +111,79 @@ TEST(JsonWriterTest, compound)
     observer.endRoot(nullptr);
 
     ASSERT_EQ("{\"identifier\": 13, \"text\": \"test\", \"data\": "
-            "{\"buffer\": [31], \"bitSize\": 5}}", os.str());
+            "{\"buffer\": [31], \"bitSize\": 5}}", os->str());
 }
 
 TEST(JsonWriterTest, nested_compound)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}", os.str());
+    ASSERT_EQ("{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}", os->str());
 }
 
 TEST(JsonWriterTest, array)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
 
     walkArray(jsonWriter);
 
-    ASSERT_EQ("{\"array\": [1, 2]}", os.str());
+    ASSERT_EQ("{\"array\": [1, 2]}", os->str());
 }
 
 TEST(JsonWriterTest, arrayWithIndent)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os, 2);
 
     walkArray(jsonWriter);
 
-    ASSERT_EQ("{\n  \"array\": [\n    1,\n    2\n  ]\n}", os.str());
+    ASSERT_EQ("{\n  \"array\": [\n    1,\n    2\n  ]\n}", os->str());
 }
 
 TEST(JsonWriterTest, emptyIndent)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os, "");
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}", os.str());
+    ASSERT_EQ("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}", os->str());
 }
 
 TEST(JsonWriterTest, strIndent)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os, "  ");
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os.str());
+    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os->str());
 }
 
 TEST(JsonWriterTest, intIndent)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os, 2);
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os.str());
+    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os->str());
 }
 
 TEST(JsonWriterTest, compactSeparators)
 {
-    std::ostringstream os;
+    auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
     jsonWriter.setItemSeparator(",");
     jsonWriter.setKeySeparator(":");
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\"identifier\":13,\"nested\":{\"text\":\"test\"}}", os.str());
+    ASSERT_EQ("{\"identifier\":13,\"nested\":{\"text\":\"test\"}}", os->str());
 }
 
 } // namespace zserio

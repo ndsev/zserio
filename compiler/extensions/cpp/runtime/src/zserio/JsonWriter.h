@@ -2,6 +2,7 @@
 #define ZSERIO_JSON_WRITER_H_INC
 
 #include <ostream>
+#include <memory>
 #include "zserio/IWalkObserver.h"
 #include "zserio/OptionalHolder.h"
 
@@ -18,9 +19,9 @@ public:
     static constexpr const char* DEFAULT_ITEM_SEPARATOR_WITH_INDENT = ",";
     static constexpr const char* DEFAULT_KEY_SEPARATOR = ": ";
 
-    explicit JsonWriter(std::ostream& out);
-    JsonWriter(std::ostream& out, uint8_t indent);
-    JsonWriter(std::ostream& out, const std::string& indent);
+    explicit JsonWriter(const std::shared_ptr<std::ostream>& out);
+    JsonWriter(const std::shared_ptr<std::ostream>& out, uint8_t indent);
+    JsonWriter(const std::shared_ptr<std::ostream>& out, const std::string& indent);
 
     void setItemSeparator(const std::string& itemSeparator);
     void setKeySeparator(const std::string& keySeparator);
@@ -40,7 +41,12 @@ public:
             size_t elementIndex) override;
 
 private:
-    JsonWriter(std::ostream& out, InplaceOptionalHolder<std::string>&& optionalIndent);
+    JsonWriter(const std::shared_ptr<std::ostream>& out, InplaceOptionalHolder<std::string>&& optionalIndent);
+
+    std::ostream& out()
+    {
+        return *m_out;
+    }
 
     void beginItem();
     void endItem();
@@ -54,7 +60,7 @@ private:
     void writeValue(const IReflectablePtr& value);
     void writeBitBuffer(const BitBuffer& bitBuffer);
 
-    std::ostream& m_out;
+    std::shared_ptr<std::ostream> m_out;
     InplaceOptionalHolder<std::string> m_indent;
     std::string m_itemSeparator;
     std::string m_keySeparator;

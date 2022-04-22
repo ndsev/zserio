@@ -6,19 +6,20 @@ using namespace zserio::literals;
 namespace zserio
 {
 
-JsonWriter::JsonWriter(std::ostream& out) :
+JsonWriter::JsonWriter(const std::shared_ptr<std::ostream>& out) :
         JsonWriter(out, NullOpt)
 {}
 
-JsonWriter::JsonWriter(std::ostream& out, uint8_t indent) :
+JsonWriter::JsonWriter(const std::shared_ptr<std::ostream>& out, uint8_t indent) :
         JsonWriter(out, std::string(indent, ' '))
 {}
 
-JsonWriter::JsonWriter(std::ostream& out, const std::string& indent) :
+JsonWriter::JsonWriter(const std::shared_ptr<std::ostream>& out, const std::string& indent) :
         JsonWriter(out, InplaceOptionalHolder<std::string>(indent))
 {}
 
-JsonWriter::JsonWriter(std::ostream& out, InplaceOptionalHolder<std::string>&& optionalIndent) :
+JsonWriter::JsonWriter(const std::shared_ptr<std::ostream>& out,
+        InplaceOptionalHolder<std::string>&& optionalIndent) :
         m_out(out), m_indent(optionalIndent),
         m_itemSeparator(m_indent.hasValue() ? DEFAULT_ITEM_SEPARATOR_WITH_INDENT : DEFAULT_ITEM_SEPARATOR),
         m_keySeparator(DEFAULT_KEY_SEPARATOR)
@@ -42,7 +43,7 @@ void JsonWriter::beginRoot(const IReflectablePtr&)
 void JsonWriter::endRoot(const IReflectablePtr&)
 {
     endObject();
-    m_out.flush();
+    out().flush();
 }
 
 void JsonWriter::beginArray(const IReflectablePtr&, const FieldInfo& fieldInfo)
@@ -98,10 +99,10 @@ void JsonWriter::visitValue(const IReflectablePtr& value, const FieldInfo& field
 void JsonWriter::beginItem()
 {
     if (!m_isFirst)
-        m_out.write(m_itemSeparator.data(), m_itemSeparator.size());
+        out().write(m_itemSeparator.data(), m_itemSeparator.size());
 
     if (m_indent.hasValue())
-        m_out.put('\n');
+        out().put('\n');
 
     writeIndent();
 }
@@ -113,7 +114,7 @@ void JsonWriter::endItem()
 
 void JsonWriter::beginObject()
 {
-    m_out.put('{');
+    out().put('{');
 
     m_isFirst = true;
     m_level += 1;
@@ -122,18 +123,18 @@ void JsonWriter::beginObject()
 void JsonWriter::endObject()
 {
     if (m_indent.hasValue())
-        m_out.put('\n');
+        out().put('\n');
 
     m_level -= 1;
 
     writeIndent();
 
-    m_out.put('}');
+    out().put('}');
 }
 
 void JsonWriter::beginArray()
 {
-    m_out.put('[');
+    out().put('[');
 
     m_isFirst = true;
     m_level += 1;
@@ -142,13 +143,13 @@ void JsonWriter::beginArray()
 void JsonWriter::endArray()
 {
     if (m_indent.hasValue())
-        m_out.put('\n');
+        out().put('\n');
 
     m_level -= 1;
 
     writeIndent();
 
-    m_out.put(']');
+    out().put(']');
 }
 
 void JsonWriter::writeIndent()
@@ -159,18 +160,18 @@ void JsonWriter::writeIndent()
         if (!indent.empty())
         {
             for (size_t i = 0; i < m_level; ++i)
-                m_out.write(indent.data(), indent.size());
+                out().write(indent.data(), indent.size());
         }
     }
 }
 
 void JsonWriter::writeKey(StringView key)
 {
-    m_out.put('\"');
-    m_out.write(key.data(), key.size());
-    m_out.put('\"');
-    m_out.write(m_keySeparator.data(), m_keySeparator.size());
-    m_out.flush();
+    out().put('\"');
+    out().write(key.data(), key.size());
+    out().put('\"');
+    out().write(m_keySeparator.data(), m_keySeparator.size());
+    out().flush();
 }
 
 void JsonWriter::writeValue(const IReflectablePtr& reflectable)
@@ -179,7 +180,7 @@ void JsonWriter::writeValue(const IReflectablePtr& reflectable)
 
     if (!reflectable)
     {
-        m_out << "null";
+        out() << "null";
         return;
     }
 
@@ -187,32 +188,32 @@ void JsonWriter::writeValue(const IReflectablePtr& reflectable)
     switch (typeInfo.getCppType())
     {
     case CppType::BOOL:
-        m_out << zserio::toString(reflectable->getBool());
+        out() << zserio::toString(reflectable->getBool());
         break;
     case CppType::INT8:
     case CppType::INT16:
     case CppType::INT32:
     case CppType::INT64:
-        m_out << reflectable->toInt();
+        out() << reflectable->toInt();
         break;
     case CppType::UINT8:
     case CppType::UINT16:
     case CppType::UINT32:
     case CppType::UINT64:
-        m_out << reflectable->toUInt();
+        out() << reflectable->toUInt();
         break;
     case CppType::FLOAT:
-        m_out << reflectable->getFloat();
+        out() << reflectable->getFloat();
         break;
     case CppType::DOUBLE:
-        m_out << reflectable->getDouble();
+        out() << reflectable->getDouble();
         break;
     case CppType::STRING:
     {
         StringView stringValue = reflectable->getString();
-        m_out.put('\"');
-        m_out.write(stringValue.data(), stringValue.size());
-        m_out.put('\"');
+        out().put('\"');
+        out().write(stringValue.data(), stringValue.size());
+        out().put('\"');
         break;
     }
     case CppType::BIT_BUFFER:
@@ -221,16 +222,16 @@ void JsonWriter::writeValue(const IReflectablePtr& reflectable)
     case CppType::ENUM:
     case CppType::BITMASK:
         if (TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()))
-            m_out << reflectable->toInt();
+            out() << reflectable->toInt();
         else
-            m_out << reflectable->toUInt();
+            out() << reflectable->toUInt();
         break;
     default:
         throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '") +
                 typeInfo.getSchemaName() + "'!";
     }
 
-    m_out.flush();
+    out().flush();
 }
 
 void JsonWriter::writeBitBuffer(const BitBuffer& bitBuffer)
@@ -243,14 +244,14 @@ void JsonWriter::writeBitBuffer(const BitBuffer& bitBuffer)
     for (size_t i = 0; i < bitBuffer.getByteSize(); ++i)
     {
         beginItem();
-        m_out << static_cast<int>(buffer[i]);
+        out() << static_cast<int>(buffer[i]);
         endItem();
     }
     endArray();
     endItem();
     beginItem();
     writeKey("bitSize"_sv);
-    m_out << bitBuffer.getBitSize();
+    out() << bitBuffer.getBitSize();
     endItem();
     endObject();
 }
