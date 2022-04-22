@@ -1,0 +1,10 @@
+{
+    "simpleStruct": {
+        "fieldOffset": 8
+    },
+    "complexStruct": {
+        "simpleStruct": {
+            "fieldOffset": 40
+        }
+    }
+}

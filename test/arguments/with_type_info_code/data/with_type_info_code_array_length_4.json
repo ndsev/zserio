@@ -1,0 +1,142 @@
+{
+    "simpleStruct": {
+        "fieldU32": 10,
+        "fieldOffset": 8,
+        "fieldString": "MyString",
+        "fieldBool": false,
+        "fieldFloat16": 1.0,
+        "fieldFloat32": 4.0,
+        "fieldFloat64": 2.0
+    },
+    "complexStruct": {
+        "simpleStruct": {
+            "fieldU32": 10,
+            "fieldOffset": 40,
+            "fieldString": "MyString",
+            "fieldBool": false,
+            "fieldFloat16": 1.0,
+            "fieldFloat32": 4.0,
+            "fieldFloat64": 2.0
+        },
+        "optionalSimpleStruct": {
+            "fieldU32": 10,
+            "fieldOffset": 72,
+            "fieldString": "MyString",
+            "fieldBool": false,
+            "fieldFloat16": 1.0,
+            "fieldFloat32": 4.0,
+            "fieldFloat64": 2.0
+        },
+        "array": [
+            3,
+            703698,
+            703699,
+            703700
+        ],
+        "arrayWithLen": [
+            3,
+            2,
+            1
+        ],
+        "paramStructArray": [
+            {
+                "array": [
+                    0,
+                    1,
+                    2,
+                    3
+                ]
+            },
+            {
+                "array": [
+                    0,
+                    1,
+                    2,
+                    3
+                ]
+            }
+        ],
+        "dynamicBitField": 7,
+        "dynamicBitFieldArray": [
+            1,
+            3,
+            5,
+            7
+        ]
+    },
+    "parameterizedStruct": {
+        "array": [
+            0,
+            1,
+            2,
+            3
+        ]
+    },
+    "recursiveStruct": {
+        "fieldU32": 912081,
+        "fieldRecursion": {
+            "fieldU32": 912082,
+            "fieldRecursion": null,
+            "arrayRecursion": [
+            ]
+        },
+        "arrayRecursion": [
+            {
+                "fieldU32": 912083,
+                "fieldRecursion": null,
+                "arrayRecursion": [
+                ]
+            },
+            {
+                "fieldU32": 912084,
+                "fieldRecursion": null,
+                "arrayRecursion": [
+                ]
+            }
+        ]
+    },
+    "recursiveUnion": {
+        "recursive": [
+            {
+                "fieldU32": 57005
+            }
+        ]
+    },
+    "recursiveChoice": {
+        "recursive": [
+            {
+                "fieldU32": 57005
+            }
+        ]
+    },
+    "selector": 5,
+    "simpleChoice": {
+        "fieldTwo": {
+            "testBitmask": 2
+        }
+    },
+    "templatedStruct": {
+        "field": 57005
+    },
+    "templatedParameterizedStruct": {
+        "array": [
+            57005,
+            57004,
+            57003,
+            57002
+        ]
+    },
+    "externData": {
+        "buffer": [
+            202,
+            254
+        ],
+        "bitSize": 15
+    },
+    "implicitArray": [
+        1,
+        4,
+        6,
+        4
+    ]
+}

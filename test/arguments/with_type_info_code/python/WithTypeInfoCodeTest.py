@@ -2,6 +2,7 @@ import unittest
 import os
 import json
 import zserio
+import filecmp
 
 from zserio.typeinfo import TypeAttribute, MemberAttribute, TypeInfo
 
@@ -45,6 +46,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4))
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_OPTIONALS, createdOptionals=True)
+        self._checkJsonFile(self.JSON_NAME_WITH_OPTIONALS)
 
     def testJsonWriterWithoutOptionals(self):
         withTypeInfoCode = self._createWithTypeInfoCode(createOptionals=False)
@@ -53,46 +55,51 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4))
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITHOUT_OPTIONALS, createdOptionals=False)
+        self._checkJsonFile(self.JSON_NAME_WITHOUT_OPTIONALS)
 
     def testJsonWriterWithArrayLengthFilter(self):
         withTypeInfoCode = self._createWithTypeInfoCode()
         withTypeInfoCode.initialize_offsets(0)
         for i in range(11):
-            with open(self.JSON_NAME_WITH_ARRAY_LENGTH_FILTER, "w", encoding="utf-8") as jsonFile:
+            jsonFileName = self._getJsonNameWithArrayLengthFilter(i)
+            with open(jsonFileName, "w", encoding="utf-8") as jsonFile:
                 walkFilter = zserio.ArrayLengthWalkFilter(i)
                 walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
                 walker.walk(withTypeInfoCode)
-            self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_ARRAY_LENGTH_FILTER, maxArrayLength=i)
+            self._checkWithTypeInfoCodeJson(jsonFileName, maxArrayLength=i)
+            self._checkJsonFile(jsonFileName)
 
     def testJsonWriterWithDepth0Filter(self):
         withTypeInfoCode = self._createWithTypeInfoCode()
         withTypeInfoCode.initialize_offsets(0)
-        with open(self.JSON_NAME_WITH_DEPTH_FILTER, "w", encoding="utf-8") as jsonFile:
+        with open(self.JSON_NAME_WITH_DEPTH0_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.DepthWalkFilter(0)
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
 
-        with open(self.JSON_NAME_WITH_DEPTH_FILTER, 'r', encoding="utf-8") as jsonFile:
+        with open(self.JSON_NAME_WITH_DEPTH0_FILTER, 'r', encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
         self.assertEqual({}, jsonData)
 
     def testJsonWriterWithDepth1ArrayLength0Filter(self):
         withTypeInfoCode = self._createWithTypeInfoCode()
         withTypeInfoCode.initialize_offsets(0)
-        with open(self.JSON_NAME_WITH_DEPTH_ARRAY_LENGTH_FILTER, "w", encoding="utf-8") as jsonFile:
+        with open(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.AndWalkFilter([zserio.DepthWalkFilter(1), zserio.ArrayLengthWalkFilter(0)])
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
-        self._checkWithTypeInfoCodeDepth1ArrayLength0Json(self.JSON_NAME_WITH_DEPTH_ARRAY_LENGTH_FILTER)
+        self._checkWithTypeInfoCodeDepth1ArrayLength0Json(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER)
+        self._checkJsonFile(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER)
 
     def testJsonWriterWithDepth5Filter(self):
         withTypeInfoCode = self._createWithTypeInfoCode()
         withTypeInfoCode.initialize_offsets(0)
-        with open(self.JSON_NAME_WITH_DEPTH_FILTER, "w", encoding="utf-8") as jsonFile:
+        with open(self.JSON_NAME_WITH_DEPTH5_FILTER, "w", encoding="utf-8") as jsonFile:
             walkFilter = zserio.DepthWalkFilter(5)
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
-        self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_DEPTH_FILTER)
+        self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_DEPTH5_FILTER)
+        self._checkJsonFile(self.JSON_NAME_WITH_DEPTH5_FILTER)
 
     def testJsonWriterWithRegexFilter(self):
         withTypeInfoCode = self._createWithTypeInfoCode(createOptionals=False)
@@ -102,6 +109,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeRegexJson(self.JSON_NAME_WITH_REGEX_FILTER)
+        self._checkJsonFile(self.JSON_NAME_WITH_REGEX_FILTER)
 
     def _checkSimpleStruct(self, type_info):
         self.assertEqual("with_type_info_code.SimpleStruct", type_info.schema_name)
@@ -1402,6 +1410,17 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(15, externData["bitSize"])
         self.assertEqual(2, len(externData.keys()))
 
+    @staticmethod
+    def _getJsonNameWithArrayLengthFilter(arrayLength):
+        return os.path.join(getApiDir(os.path.dirname(__file__)),
+                            "with_type_info_code_array_length_" + str(arrayLength) + ".json")
+
+    def _checkJsonFile(self, createdJsonFileName):
+        createdJsonBaseName = os.path.basename(createdJsonFileName)
+        jsonDataFileName = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data",
+                                        createdJsonBaseName)
+        self.assertTrue(filecmp.cmp(jsonDataFileName, createdJsonFileName))
+
     BLOB_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
                                             "with_type_info_code_optionals.blob")
     BLOB_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
@@ -1410,11 +1429,11 @@ class WithTypeInfoCodeTest(unittest.TestCase):
                                             "with_type_info_code_optionals.json")
     JSON_NAME_WITHOUT_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
                                                "with_type_info_code.json")
-    JSON_NAME_WITH_ARRAY_LENGTH_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                                      "with_type_info_code_array_length.json")
-    JSON_NAME_WITH_DEPTH_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                               "with_type_info_code_depth.json")
-    JSON_NAME_WITH_DEPTH_ARRAY_LENGTH_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
-                                                            "with_type_info_code_depth_array_length.json")
+    JSON_NAME_WITH_DEPTH0_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                                "with_type_info_code_depth0.json")
+    JSON_NAME_WITH_DEPTH5_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                                "with_type_info_code_depth5.json")
+    JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
+                                                              "with_type_info_code_depth1_array_length0.json")
     JSON_NAME_WITH_REGEX_FILTER = os.path.join(getApiDir(os.path.dirname(__file__)),
                                                "with_type_info_code_regex.json")
