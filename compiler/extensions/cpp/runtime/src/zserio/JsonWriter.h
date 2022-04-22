@@ -15,18 +15,15 @@ class JsonWriter : public IWalkObserver
 {
 public:
     static constexpr const char* DEFAULT_ITEM_SEPARATOR = ", ";
-    static constexpr const char* DEFAULT_ITEM_SEPARATOR_WITH_INDENT = ", ";
+    static constexpr const char* DEFAULT_ITEM_SEPARATOR_WITH_INDENT = ",";
     static constexpr const char* DEFAULT_KEY_SEPARATOR = ": ";
 
-    explicit JsonWriter(std::ostream& out,
-            const std::string& itemSeparator = DEFAULT_ITEM_SEPARATOR,
-            const std::string& keySeparator = DEFAULT_KEY_SEPARATOR);
-    JsonWriter(std::ostream& out, uint8_t indent,
-            const std::string& itemSeparator = DEFAULT_ITEM_SEPARATOR_WITH_INDENT,
-            const std::string& keySeparator = DEFAULT_KEY_SEPARATOR);
-    JsonWriter(std::ostream& out, const std::string& indent,
-            const std::string& itemSeparator = DEFAULT_ITEM_SEPARATOR_WITH_INDENT,
-            const std::string& keySeparator = DEFAULT_KEY_SEPARATOR);
+    explicit JsonWriter(std::ostream& out);
+    JsonWriter(std::ostream& out, uint8_t indent);
+    JsonWriter(std::ostream& out, const std::string& indent);
+
+    void setItemSeparator(const std::string& itemSeparator);
+    void setKeySeparator(const std::string& keySeparator);
 
     virtual void beginRoot(const IReflectablePtr& compound) override;
     virtual void endRoot(const IReflectablePtr& compound) override;
@@ -43,8 +40,7 @@ public:
             size_t elementIndex) override;
 
 private:
-    JsonWriter(std::ostream& out, InplaceOptionalHolder<std::string>&& optionalIndent,
-            const std::string& itemSeparator, const std::string& keySeparator);
+    JsonWriter(std::ostream& out, InplaceOptionalHolder<std::string>&& optionalIndent);
 
     void beginItem();
     void endItem();

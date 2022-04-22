@@ -149,8 +149,12 @@ class JsonWriter(WalkObserver):
         self._begin_object()
         self._begin_item()
         self._write_key("buffer")
-        json_value = self._json_encoder.encode(value.buffer, member_info.type_info)
-        self._io.write(json_value)
+        self._begin_array()
+        for byte in value.buffer:
+            self._begin_item()
+            self._io.write(self._json_encoder.encode_value(byte))
+            self._end_item()
+        self._end_array()
         self._end_item()
         self._begin_item()
         self._write_key("bitSize")
@@ -173,16 +177,28 @@ class JsonEncoder:
 
     def encode(self, value: typing.Any, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> str:
         """
-        Encodes zserio value to Json string representation.
+        Encodes zserio value to JSON string representation.
+
+        :param value: Value to encode.
+        :param type_info: Type info of the value.
+
+        :returns: Value encoded to string as a valid JSON value.
         """
 
         if TypeAttribute.ENUM_ITEMS in type_info.attributes:
-            return self._encoder.encode(value.value)
+            return self.encode_value(value.value)
         elif TypeAttribute.BITMASK_VALUES in type_info.attributes:
-            return self._encoder.encode(value.value)
-        elif isinstance(value, bytes):
-            return self._encoder.encode(f"{value!r}")
-        elif isinstance(value, str):
-            return self._encoder.encode(value)
+            return self.encode_value(value.value)
         else:
-            return self._encoder.encode(value)
+            return self.encode_value(value)
+
+    def encode_value(self, value: typing.Any) -> str:
+        """
+        Encoded python value to Json string representation.
+
+        :param value: Value to encode.
+
+        :returns: Value encoded to string as a valid JSON value.
+        """
+
+        return self._encoder.encode(value)

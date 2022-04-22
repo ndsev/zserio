@@ -67,7 +67,7 @@ public:
      * \param name Field schema name.
      * \param value Value to set. The type must exactly match the type of the zserio field mapped to C++!
      *
-     * \throw CppRuntimeException When the reflected object is not a compuind type or when the field with
+     * \throw CppRuntimeException When the reflected object is not a compound type or when the field with
      *                            the given name doesn't exist or when the provided value is of a wrong type
      *                            or when the field setter itself throws.
      */

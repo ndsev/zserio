@@ -41,11 +41,12 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/HashCodeUtilTest.cpp
     zserio/HeapOptionalHolderTest.cpp
     zserio/InplaceOptionalHolderTest.cpp
-    zserio/ReflectableTest.cpp
+    zserio/JsonWriterTest.cpp
     zserio/FileUtilTest.cpp
     zserio/MemoryResourceTest.cpp
     zserio/NewDeleteResourceTest.cpp
     zserio/PolymorphicAllocatorTest.cpp
+    zserio/ReflectableTest.cpp
     zserio/SerializeUtilTest.cpp
     zserio/SpanTest.cpp
     zserio/SqliteConnectionTest.cpp

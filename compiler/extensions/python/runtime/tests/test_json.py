@@ -6,28 +6,32 @@ from zserio.typeinfo import TypeInfo, MemberInfo, ItemInfo, TypeAttribute, Membe
 
 class JsonWriterTest(unittest.TestCase):
 
-    def test_null(self):
+    def test_empty(self):
         json_writer = JsonWriter()
         self.assertEqual("", json_writer.get_io().getvalue())
 
-    def test_simple_field(self):
+    def test_null_value(self):
         json_writer = JsonWriter()
-        none_element_index = None
-        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)), none_element_index)
+        json_writer.visit_value(None, MemberInfo("text", TypeInfo("string", str)))
+        # note that this is not valid JSON
+        self.assertEqual("\"text\": null", json_writer.get_io().getvalue())
+
+    def test_value(self):
+        json_writer = JsonWriter()
+        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
         # note that this is not valid JSON
         self.assertEqual("\"text\": \"test\"", json_writer.get_io().getvalue())
 
     def test_compound(self):
         json_writer = JsonWriter()
-        none_element_index = None
         json_writer.begin_root(object())
-        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)), none_element_index)
-        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)), none_element_index)
-        json_writer.visit_value(BitBuffer(bytes([0x1F]), 5), MemberInfo("data", TypeInfo("extern", BitBuffer)),
-                                none_element_index)
+        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)))
+        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
+        json_writer.visit_value(BitBuffer(bytes([0x1F,0xFF]), 13),
+                                MemberInfo("data", TypeInfo("extern", BitBuffer)))
         json_writer.end_root(object())
         self.assertEqual(
-            "{\"identifier\": 13, \"text\": \"test\", \"data\": {\"buffer\": \"b'\\\\x1f'\", \"bitSize\": 5}}",
+            "{\"identifier\": 13, \"text\": \"test\", \"data\": {\"buffer\": [31, 255], \"bitSize\": 13}}",
             json_writer.get_io().getvalue())
 
     def test_nested_compound(self):
@@ -41,7 +45,7 @@ class JsonWriterTest(unittest.TestCase):
         self._walk_array(json_writer)
         self.assertEqual("{\"array\": [1, 2]}", json_writer.get_io().getvalue())
 
-    def test_array_indent(self):
+    def test_array_with_indent(self):
         json_writer = JsonWriter(indent=2)
         self._walk_array(json_writer)
         self.assertEqual("{\n  \"array\": [\n    1,\n    2\n  ]\n}", json_writer.get_io().getvalue())
@@ -72,14 +76,13 @@ class JsonWriterTest(unittest.TestCase):
 
     @staticmethod
     def _walk_nested(json_writer):
-        dummy_type_info = TypeInfo("dummy", object)
-        none_element_index = None
+        dummy_type_info = TypeInfo("Dummy", object)
 
         json_writer.begin_root(object())
-        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)), none_element_index)
-        json_writer.begin_compound(object(), MemberInfo("nested", dummy_type_info), none_element_index)
-        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)), none_element_index)
-        json_writer.end_compound(object(), MemberInfo("nested", dummy_type_info), none_element_index)
+        json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)))
+        json_writer.begin_compound(object(), MemberInfo("nested", dummy_type_info))
+        json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
+        json_writer.end_compound(object(), MemberInfo("nested", dummy_type_info))
         json_writer.end_root(object())
 
     @staticmethod
@@ -122,11 +125,6 @@ class JsonEncoderTest(unittest.TestCase):
 
         json_encoder = JsonEncoder()
         self.assertEqual("0", json_encoder.encode(DummyBitmask(), dummy_bitmask_type_info))
-
-    def test_encode_bytes(self):
-        json_encoder = JsonEncoder()
-        self.assertEqual("\"b'\\\\x1f\\\\x11\\\\xab'\"",
-                         json_encoder.encode(bytes([0x1F, 0x11, 0xAB]), TypeInfo("bytes", bytes)))
 
     def test_encode_str(self):
         json_encoder = JsonEncoder()

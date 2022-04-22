@@ -6,25 +6,33 @@ using namespace zserio::literals;
 namespace zserio
 {
 
-JsonWriter::JsonWriter(std::ostream& out,
-        const std::string& itemSeparator, const std::string& keySeparator) :
-        JsonWriter(out, NullOpt, itemSeparator, keySeparator)
+JsonWriter::JsonWriter(std::ostream& out) :
+        JsonWriter(out, NullOpt)
 {}
 
-JsonWriter::JsonWriter(std::ostream& out, uint8_t indent,
-        const std::string& itemSeparator, const std::string& keySeparator) :
-        JsonWriter(out, std::string(indent, ' '), itemSeparator, keySeparator)
+JsonWriter::JsonWriter(std::ostream& out, uint8_t indent) :
+        JsonWriter(out, std::string(indent, ' '))
 {}
 
-JsonWriter::JsonWriter(std::ostream& out, const std::string& indent,
-        const std::string& itemSeparator, const std::string& keySeparator) :
-        JsonWriter(out, InplaceOptionalHolder<std::string>(indent), itemSeparator, keySeparator)
+JsonWriter::JsonWriter(std::ostream& out, const std::string& indent) :
+        JsonWriter(out, InplaceOptionalHolder<std::string>(indent))
 {}
 
-JsonWriter::JsonWriter(std::ostream& out, InplaceOptionalHolder<std::string>&& optionalIndent,
-        const std::string& itemSeparator, const std::string& keySeparator) :
-        m_out(out), m_indent(optionalIndent), m_itemSeparator(itemSeparator), m_keySeparator(keySeparator)
+JsonWriter::JsonWriter(std::ostream& out, InplaceOptionalHolder<std::string>&& optionalIndent) :
+        m_out(out), m_indent(optionalIndent),
+        m_itemSeparator(m_indent.hasValue() ? DEFAULT_ITEM_SEPARATOR_WITH_INDENT : DEFAULT_ITEM_SEPARATOR),
+        m_keySeparator(DEFAULT_KEY_SEPARATOR)
 {}
+
+void JsonWriter::setItemSeparator(const std::string& itemSeparator)
+{
+    m_itemSeparator = itemSeparator;
+}
+
+void JsonWriter::setKeySeparator(const std::string& keySeparator)
+{
+    m_keySeparator = keySeparator;
+}
 
 void JsonWriter::beginRoot(const IReflectablePtr&)
 {
@@ -202,7 +210,9 @@ void JsonWriter::writeValue(const IReflectablePtr& reflectable)
     case CppType::STRING:
     {
         StringView stringValue = reflectable->getString();
+        m_out.put('\"');
         m_out.write(stringValue.data(), stringValue.size());
+        m_out.put('\"');
         break;
     }
     case CppType::BIT_BUFFER:

@@ -1398,7 +1398,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         return zserio.BitBuffer(bytes([0xCA, 0xFE]), 15)
 
     def _checkExternDataJson(self, externData):
-        self.assertEqual("b'\\xca\\xfe'", externData["buffer"])
+        self.assertEqual([202, 254], externData["buffer"])
         self.assertEqual(15, externData["bitSize"])
         self.assertEqual(2, len(externData.keys()))
 
