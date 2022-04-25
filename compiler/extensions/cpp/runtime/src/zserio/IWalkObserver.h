@@ -12,11 +12,15 @@ namespace zserio
 /**
  * Interface for observers which are called by the walker.
  */
-class IWalkObserver
+template <typename ALLOC = std::allocator<uint8_t>>
+class IBasicWalkObserver
 {
 public:
+    /** Shared pointer to the walk observer interface. */
+    using Ptr = std::shared_ptr<IBasicWalkObserver>;
+
     /** Destructor. */
-    virtual ~IWalkObserver() {}
+    virtual ~IBasicWalkObserver() {}
 
     /**
      * Called for the root compound zserio object which is to be walked-through.
@@ -86,7 +90,14 @@ public:
 };
 
 /** Typedef to IWalkObserver smart pointer. */
-using IWalkObserverPtr = std::shared_ptr<IWalkObserver>;
+template <typename ALLOC = std::allocator<uint8_t>>
+using IBasicWalkObserverPtr = typename IBasicWalkObserver<ALLOC>::Ptr;
+
+/** Typedefs to walk observer interface provided for convenience - using default std::allocator<uint8_t>. */
+/** \{ */
+using IWalkObserver = IBasicWalkObserver<>;
+using IWalkObserverPtr = IBasicWalkObserverPtr<>;
+/** \} */
 
 } // namespace zserio
 

@@ -12,11 +12,15 @@ namespace zserio
 /**
  * Interface for filters which can influence the walking.
  */
-class IWalkFilter
+template <typename ALLOC = std::allocator<uint8_t>>
+class IBasicWalkFilter
 {
 public:
+    /** Shared pointer to the walk filter interface. */
+    using Ptr = std::shared_ptr<IBasicWalkFilter>;
+
     /** Destructor. */
-    virtual ~IWalkFilter() {}
+    virtual ~IBasicWalkFilter() {}
 
     /**
      * Called before an array.
@@ -95,7 +99,14 @@ public:
 };
 
 /** Typedef to IWalkFilter smart pointer. */
-using IWalkFilterPtr = std::shared_ptr<IWalkFilter>;
+template <typename ALLOC = std::allocator<uint8_t>>
+using IBasicWalkFilterPtr = typename IBasicWalkFilter<ALLOC>::Ptr;
+
+/** Typedefs to walk filter interface provided for convenience - using default std::allocator<uint8_t>. */
+/** \{ */
+using IWalkFilter = IBasicWalkFilter<>;
+using IWalkFilterPtr = IBasicWalkFilterPtr<>;
+/** \} */
 
 } // namespace zserio
 

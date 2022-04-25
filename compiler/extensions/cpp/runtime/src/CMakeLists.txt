@@ -73,7 +73,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/IValidationObserver.h
     zserio/IWalkFilter.h
     zserio/IWalkObserver.h
-    zserio/JsonWriter.cpp
     zserio/JsonWriter.h
     zserio/OptionalHolder.h
     zserio/PackingContext.h
@@ -96,7 +95,6 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/ValidationSqliteUtil.h
     zserio/VarSizeUtil.cpp
     zserio/VarSizeUtil.h
-    zserio/Walker.cpp
     zserio/Walker.h
     zserio/WalkerConst.h
 )
