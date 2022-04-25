@@ -147,10 +147,10 @@ inline const char* convertBoolToString(bool value)
  * \return String representation of the given integral value.
  */
 template <typename ALLOC, typename T>
-string<RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLOC())
+string<ALLOC> toString(T value, const ALLOC& allocator = ALLOC())
 {
     char buffer[24];
-    return string<RebindAlloc<ALLOC, char>>(convertIntToString(buffer, value), allocator);
+    return string<ALLOC>(convertIntToString(buffer, value), allocator);
 }
 
 /**
@@ -163,9 +163,9 @@ string<RebindAlloc<ALLOC, char>> toString(T value, const ALLOC& allocator = ALLO
  * \param allocator Allocator to use for the string allocation.
  */
 template <typename ALLOC>
-string<RebindAlloc<ALLOC, char>> toString(bool value, const ALLOC& allocator = ALLOC())
+string<ALLOC> toString(bool value, const ALLOC& allocator = ALLOC())
 {
-    return string<RebindAlloc<ALLOC, char>>(convertBoolToString(value), allocator);
+    return string<ALLOC>(convertBoolToString(value), allocator);
 }
 
 /**
@@ -175,7 +175,7 @@ string<RebindAlloc<ALLOC, char>> toString(bool value, const ALLOC& allocator = A
  * \param allocator Allocator to use for the string allocation.
  */
 template <typename ALLOC>
-string<RebindAlloc<ALLOC, char>> toString(StringView value, const ALLOC& allocator = ALLOC())
+string<ALLOC> toString(StringView value, const ALLOC& allocator = ALLOC())
 {
     return stringViewToString(value, allocator);
 }

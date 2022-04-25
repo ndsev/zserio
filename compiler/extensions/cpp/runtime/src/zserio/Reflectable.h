@@ -82,7 +82,7 @@ public:
     virtual int64_t toInt() const override;
     virtual uint64_t toUInt() const override;
     virtual double toDouble() const override;
-    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override;
+    virtual string<ALLOC> toString(const ALLOC& allocator = ALLOC()) const override;
 
 private:
     const ITypeInfo& m_typeInfo;
@@ -164,9 +164,9 @@ public:
         return static_cast<double>(Base::getValue());
     }
 
-    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator) const override
+    virtual string<ALLOC> toString(const ALLOC& allocator) const override
     {
-        return ::zserio::toString<RebindAlloc<ALLOC, char>>(Base::getValue(), allocator);
+        return ::zserio::toString<ALLOC>(Base::getValue(), allocator);
     }
 
     virtual void write(BitStreamWriter& writer) override
@@ -681,7 +681,7 @@ public:
         return Base::getValue();
     }
 
-    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator) const override
+    virtual string<ALLOC> toString(const ALLOC& allocator) const override
     {
         return zserio::toString(getString(), allocator);
     }
@@ -881,7 +881,7 @@ struct ReflectableTraits<ALLOC, double>
 };
 
 template <typename ALLOC>
-struct ReflectableTraits<ALLOC, string<RebindAlloc<ALLOC, char>>>
+struct ReflectableTraits<ALLOC, string<ALLOC>>
 {
     using Type = StringReflectable<ALLOC>;
 };
@@ -947,7 +947,7 @@ public:
     virtual int64_t toInt() const override;
     virtual uint64_t toUInt() const override;
     virtual double toDouble() const override;
-    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override;
+    virtual string<ALLOC> toString(const ALLOC& allocator = ALLOC()) const override;
 
     virtual void write(BitStreamWriter& writer) override;
     virtual size_t bitSizeOf(size_t) const override;
@@ -1249,7 +1249,7 @@ public:
     }
 
     static IBasicReflectablePtr<ALLOC> getString(
-            const string<RebindAlloc<ALLOC, char>>& value, const ALLOC& allocator = ALLOC())
+            const string<ALLOC>& value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<StringReflectable<ALLOC>>(
                 allocator, BuiltinTypeInfo::getString(), value);
@@ -1712,7 +1712,7 @@ double ReflectableBase<ALLOC>::toDouble() const
 }
 
 template <typename ALLOC>
-string<RebindAlloc<ALLOC, char>> ReflectableBase<ALLOC>::toString(const ALLOC&) const
+string<ALLOC> ReflectableBase<ALLOC>::toString(const ALLOC&) const
 {
     throw CppRuntimeException("Conversion from '") + getTypeInfo().getSchemaName() +
             "' to string is not available!";
@@ -1845,7 +1845,7 @@ double ReflectableArrayBase<ALLOC>::toDouble() const
 }
 
 template <typename ALLOC>
-string<RebindAlloc<ALLOC, char>> ReflectableArrayBase<ALLOC>::toString(const ALLOC&) const
+string<ALLOC> ReflectableArrayBase<ALLOC>::toString(const ALLOC&) const
 {
     throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }

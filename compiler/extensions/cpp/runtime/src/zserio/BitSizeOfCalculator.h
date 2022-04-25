@@ -104,19 +104,6 @@ size_t bitSizeOfVarSize(uint32_t value);
 size_t bitSizeOfString(StringView stringValue);
 
 /**
- * Calculates bit size of the string.
- *
- * \param stringValue String for which to calculate bit size.
- *
- * \return Bit size of the given string.
- */
-template <typename ALLOC>
-size_t bitSizeOfString(const string<ALLOC>& stringValue)
-{
-    return bitSizeOfString(StringView(stringValue));
-}
-
-/**
  * Calculates bit size of the bit buffer.
  *
  * \param bitBuffer Bit buffer for which to calculate bit size.

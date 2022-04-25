@@ -75,42 +75,22 @@ public:
     sqlite3* getConnection();
 
     /**
-     * Executes a query which doesn't need to return anything - e.g. DML.
+     * Executes a single query which doesn't need to return anything - e.g. DML.
      *
-     * \param query The query string.
+     * \param sqlQuery The query string.
      */
-    void executeUpdate(const char* query);
-
-    /**
-     * Executes a query which doesn't need to return anything - e.g. DML.
-     *
-     * \param query The query string.
-     */
-    template <typename ALLOC>
-    void executeUpdate(const zserio::string<ALLOC>& query);
+    void executeUpdate(StringView sqlQuery);
 
     /**
      * Prepares the SQLite statement for the given query.
      *
      * Note that the user is responsible to proper statement finalization using sqlite3_finalize!
      *
-     * \param query The query string.
+     * \param sqlQuery The query string.
      *
      * \return Prepared SQLite statement.
      */
-    sqlite3_stmt* prepareStatement(const char* query);
-
-    /**
-     * Prepares the SQLite statement for the given query.
-     *
-     * Note that the user is responsible to proper statement finalization using sqlite3_finalize!
-     *
-     * \param query The query string.
-     *
-     * \return Prepared SQLite statement.
-     */
-    template <typename ALLOC>
-    sqlite3_stmt* prepareStatement(const zserio::string<ALLOC>& query);
+    sqlite3_stmt* prepareStatement(StringView sqlQuery);
 
     /**
      * Starts a new transaction if a transaction is not already started.
@@ -171,32 +151,28 @@ inline sqlite3* SqliteConnection::getConnection()
     return m_connection;
 }
 
-template <typename ALLOC>
-inline void SqliteConnection::executeUpdate(const zserio::string<ALLOC>& sqlQuery)
+inline void SqliteConnection::executeUpdate(StringView sqlQuery)
 {
-    executeUpdate(sqlQuery.c_str());
-}
-
-inline void SqliteConnection::executeUpdate(const char* sqlQuery)
-{
-    const int result = sqlite3_exec(m_connection, sqlQuery, nullptr, nullptr, nullptr);
+    sqlite3_stmt* statement = prepareStatement(sqlQuery);
+    int result = sqlite3_step(statement);
+    if (result != SQLITE_DONE)
+    {
+        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_step failed: ") +
+                SqliteErrorCode(result);
+    }
+    result = sqlite3_finalize(statement);
     if (result != SQLITE_OK)
     {
-        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_exec failed: ") +
+        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_finalize failed: ") +
                 SqliteErrorCode(result);
     }
 }
 
-template <typename ALLOC>
-inline sqlite3_stmt* SqliteConnection::prepareStatement(const zserio::string<ALLOC>& sqlQuery)
-{
-    return prepareStatement(sqlQuery.c_str());
-}
-
-inline sqlite3_stmt* SqliteConnection::prepareStatement(const char* sqlQuery)
+inline sqlite3_stmt* SqliteConnection::prepareStatement(StringView sqlQuery)
 {
     sqlite3_stmt* statement = nullptr;
-    const int result = sqlite3_prepare_v2(m_connection, sqlQuery, -1, &statement, nullptr);
+    const int result = sqlite3_prepare_v2(m_connection, sqlQuery.data(), static_cast<int>(sqlQuery.size()),
+            &statement, nullptr);
     if (result != SQLITE_OK)
     {
         throw SqliteException("SqliteConnection::prepareStatement(): sqlite3_prepare_v2() failed: ") +

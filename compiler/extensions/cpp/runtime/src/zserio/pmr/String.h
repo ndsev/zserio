@@ -9,6 +9,9 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to std::string provided for convenience - using PropagatingPolymorphicAllocator<char>.
+ */
 using string = zserio::string<PropagatingPolymorphicAllocator<char>>;
 
 } // namespace pmr

@@ -97,7 +97,7 @@ namespace zserio
             const std::basic_string<char, std::char_traits<char>, ALLOC>& stringValue)
     {
         uint32_t result = seedValue;
-        for (typename std::basic_string<char, std::char_traits<char>, ALLOC>::value_type element : stringValue)
+        for (auto element : stringValue)
             result = calcHashCode(result, element);
 
         return result;
@@ -127,9 +127,9 @@ namespace zserio
      * \return Calculated hash code.
      */
     template <typename OBJECT>
-    inline typename std::enable_if<!std::is_enum<OBJECT>::value && !std::is_integral<OBJECT>::value, uint32_t>::type
-        calcHashCode(uint32_t seedValue,
-            const OBJECT& object)
+    inline
+    typename std::enable_if<!std::is_enum<OBJECT>::value && !std::is_integral<OBJECT>::value, uint32_t>::type
+    calcHashCode(uint32_t seedValue, const OBJECT& object)
     {
         return calcHashCode(seedValue, object.hashCode());
     }

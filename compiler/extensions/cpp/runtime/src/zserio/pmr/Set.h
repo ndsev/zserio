@@ -9,6 +9,9 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to std::set provided for convenience - using PropagatingPolymorphicAllocator.
+ */
 template <typename T, typename COMPARE = std::less<T>>
 using set = std::set<T, COMPARE, PropagatingPolymorphicAllocator<T>>;
 

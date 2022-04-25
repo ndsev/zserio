@@ -9,6 +9,9 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to HeapOptionalHolder provided for convenience - using PropagatingPolymorphicAllocator.
+ */
 template <typename T>
 using HeapOptionalHolder = zserio::HeapOptionalHolder<T, PropagatingPolymorphicAllocator<T>>;
 

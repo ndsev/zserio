@@ -195,17 +195,6 @@ public:
     /**
      * Writes UTF-8 string.
      *
-     * \param data String to write.
-     */
-    template <typename ALLOC>
-    void writeString(const string<ALLOC>& data)
-    {
-        writeString(StringView(data));
-    }
-
-    /**
-     * Writes UTF-8 string.
-     *
      * \param data String view to write.
      */
     void writeString(StringView data);

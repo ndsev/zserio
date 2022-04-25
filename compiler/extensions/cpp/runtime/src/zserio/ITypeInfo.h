@@ -21,7 +21,7 @@ enum class CppType
     UINT64, /**< C++ int64_t type */
     FLOAT, /**< C++ float type */
     DOUBLE, /**< C++ double type */
-    STRING, /**< C++ std::string type */
+    STRING, /**< C++ string type */
     BIT_BUFFER, /**< C++ zserio::BitBuffer type */
     ENUM, /**< C++ enumeration generated from zserio enumeration type */
     BITMASK, /**< C++ object generated from zserio bitmask type */

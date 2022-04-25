@@ -9,6 +9,9 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to BitBuffer provided for convenience - using PropagatingPolymorphicAllocator<uint8_t>.
+ */
 using BitBuffer = BasicBitBuffer<PropagatingPolymorphicAllocator<uint8_t>>;
 
 } // namespace pmr

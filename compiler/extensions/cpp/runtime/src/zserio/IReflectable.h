@@ -315,7 +315,7 @@ public:
      *
      * \return String value representing the reflected object.
      */
-    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const = 0;
+    virtual string<ALLOC> toString(const ALLOC& allocator = ALLOC()) const = 0;
 
     /**
      * Writes the reflected object to a bit stream using the given bit stream writer.

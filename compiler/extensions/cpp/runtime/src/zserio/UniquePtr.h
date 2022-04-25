@@ -12,6 +12,9 @@ namespace zserio
 namespace detail
 {
 
+/**
+ * Custom deleter to ensure proper deallocation of the unique_ptr.
+ */
 template <class ALLOC_T>
 struct UniquePtrDeleter : public AllocatorHolder<ALLOC_T>
 {
@@ -39,6 +42,11 @@ struct UniquePtrDeleter : public AllocatorHolder<ALLOC_T>
 
 } // namespace detail
 
+/**
+ * Typedef to std::unique_ptr provided for convenience - using std::allocator.
+ *
+ * Uses custom deleter to ensure proper deallocation.
+ */
 template <typename T, typename ALLOC = std::allocator<T>>
 using unique_ptr = std::unique_ptr<T, detail::UniquePtrDeleter<ALLOC>>;
 

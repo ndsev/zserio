@@ -9,6 +9,9 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to AnyHolder provided for convenience - using PropagatingPolymorphicAllocator<uint8_t>.
+ */
 using AnyHolder = zserio::AnyHolder<PropagatingPolymorphicAllocator<uint8_t>>;
 
 } // namespace pmr

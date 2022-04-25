@@ -9,6 +9,7 @@
 #include "zserio/Types.h"
 #include "zserio/HashCodeUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {
@@ -62,7 +63,7 @@ public:
      *
      * \param buffer STL vector of bytes from which the bit buffer should be created.
      */
-    explicit BasicBitBuffer(const std::vector<uint8_t, ALLOC>& buffer);
+    explicit BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer);
 
     /**
      * Constructor from STL vector and bit size.
@@ -72,14 +73,14 @@ public:
      *
      * \throw CppRuntimeException If given bit size is out of range for given vector.
      */
-    explicit BasicBitBuffer(const std::vector<uint8_t, ALLOC>& buffer, size_t bitSize);
+    explicit BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer, size_t bitSize);
 
     /**
      * Constructor from moved STL vector.
      *
      * \param buffer STL vector of bytes from which the bit buffer should be created.
      */
-    explicit BasicBitBuffer(std::vector<uint8_t, ALLOC>&& buffer);
+    explicit BasicBitBuffer(vector<uint8_t, ALLOC>&& buffer);
 
     /**
      * Constructor from moved STL vector and bit size.
@@ -89,7 +90,7 @@ public:
      *
      * \throw CppRuntimeException If given bit size is out of range for given vector.
      */
-    explicit BasicBitBuffer(std::vector<uint8_t, ALLOC>&& buffer, size_t bitSize);
+    explicit BasicBitBuffer(vector<uint8_t, ALLOC>&& buffer, size_t bitSize);
 
     /**
      * Constructor from raw pointer.
@@ -165,12 +166,12 @@ public:
      *
      * \return Reference to the underlying vector of bytes.
      */
-    const std::vector<uint8_t, ALLOC>& getBytes() const;
+    const vector<uint8_t, ALLOC>& getBytes() const;
 
 private:
     uint8_t getMaskedLastByte() const;
 
-    std::vector<uint8_t, ALLOC> m_buffer;
+    vector<uint8_t, ALLOC> m_buffer;
     size_t m_bitSize;
 };
 
@@ -187,13 +188,13 @@ BasicBitBuffer<ALLOC>::BasicBitBuffer(size_t bitSize, const ALLOC& allocator) :
 }
 
 template <typename ALLOC>
-BasicBitBuffer<ALLOC>::BasicBitBuffer(const std::vector<uint8_t, ALLOC>& buffer) :
+BasicBitBuffer<ALLOC>::BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer) :
         m_buffer(buffer), m_bitSize(8 * buffer.size())
 {
 }
 
 template <typename ALLOC>
-BasicBitBuffer<ALLOC>::BasicBitBuffer(const std::vector<uint8_t, ALLOC>& buffer, size_t bitSize) :
+BasicBitBuffer<ALLOC>::BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer, size_t bitSize) :
         m_buffer(buffer.get_allocator()), m_bitSize(bitSize)
 {
     const size_t byteSize = (bitSize + 7) / 8;
@@ -207,13 +208,13 @@ BasicBitBuffer<ALLOC>::BasicBitBuffer(const std::vector<uint8_t, ALLOC>& buffer,
 }
 
 template <typename ALLOC>
-BasicBitBuffer<ALLOC>::BasicBitBuffer(std::vector<uint8_t, ALLOC>&& buffer) :
+BasicBitBuffer<ALLOC>::BasicBitBuffer(vector<uint8_t, ALLOC>&& buffer) :
         m_buffer(std::move(buffer)), m_bitSize(8 * m_buffer.size())
 {
 }
 
 template <typename ALLOC>
-BasicBitBuffer<ALLOC>::BasicBitBuffer(std::vector<uint8_t, ALLOC>&& buffer, size_t bitSize) :
+BasicBitBuffer<ALLOC>::BasicBitBuffer(vector<uint8_t, ALLOC>&& buffer, size_t bitSize) :
         m_buffer(std::move(buffer)), m_bitSize(bitSize)
 {
     const size_t byteSize = (bitSize + 7) / 8;
@@ -311,7 +312,7 @@ size_t BasicBitBuffer<ALLOC>::getByteSize() const
 }
 
 template <typename ALLOC>
-const std::vector<uint8_t, ALLOC>& BasicBitBuffer<ALLOC>::getBytes() const
+const vector<uint8_t, ALLOC>& BasicBitBuffer<ALLOC>::getBytes() const
 {
     return m_buffer;
 }

@@ -232,9 +232,9 @@ public:
      * \return Read string.
      */
     template <typename ALLOC = std::allocator<char>>
-    string<RebindAlloc<ALLOC, char>> readString(const ALLOC& alloc = ALLOC())
+    string<ALLOC> readString(const ALLOC& alloc = ALLOC())
     {
-        string<RebindAlloc<ALLOC, char>> value{alloc};
+        string<ALLOC> value{alloc};
         const size_t len = static_cast<size_t>(readVarSize());
         value.reserve(len);
         for (size_t i = 0; i < len; ++i)

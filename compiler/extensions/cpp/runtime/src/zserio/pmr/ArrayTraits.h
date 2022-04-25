@@ -9,8 +9,14 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to StringArrayTraits provided for convenience - using PropagatingPolymorphicAllocator.
+ */
 using StringArrayTraits = BasicStringArrayTraits<PropagatingPolymorphicAllocator>;
 
+/**
+ * Typedef to BitBufferArrayTraits provided for convenience - using PropagatingPolymorphicAllocator.
+ */
 using BitBufferArrayTraits = BasicBitBufferArrayTraits<PropagatingPolymorphicAllocator>;
 
 } // namespace pmr

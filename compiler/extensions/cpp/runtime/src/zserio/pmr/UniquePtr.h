@@ -9,6 +9,9 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef to std::unique_ptr provided for convenience - using PropagatingPolymorphicAllocator<uint8_t>.
+ */
 template <typename T>
 using unique_ptr = zserio::unique_ptr<T, PropagatingPolymorphicAllocator<T>>;
 

@@ -16,7 +16,7 @@ namespace zserio
 template <typename ALLOC>
 struct ValidationSqliteUtil
 {
-    using string_type = zserio::string<RebindAlloc<ALLOC, char>>;
+    using string_type = string<ALLOC>;
     using Statement = std::unique_ptr<sqlite3_stmt, SqliteFinalizer>;
 
     /**

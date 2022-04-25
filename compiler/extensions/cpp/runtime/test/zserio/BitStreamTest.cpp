@@ -619,10 +619,10 @@ TEST_F(BitStreamTest, readString)
     };
 
     std::function<void (BitStreamWriter&, const std::string&)> writerFunc =
-            &BitStreamWriter::writeString<std::allocator<char>>;
+            &BitStreamWriter::writeString;
     std::function<std::string (BitStreamReader&)> readerFunc =
-            std::bind(&BitStreamReader::readString<
-                    std::allocator<char>>, std::placeholders::_1, std::allocator<char>());
+            std::bind(&BitStreamReader::readString<std::allocator<char>>,
+                    std::placeholders::_1, std::allocator<char>());
 
     testBitStreamValues(values, m_externalWriter, writerFunc, readerFunc);
     testBitStreamValues(values, m_dummyWriter, writerFunc, readerFunc);
