@@ -10,7 +10,7 @@ namespace struct_templated_type_argument
 {
 
 using allocator_type = StructTemplatedTypeArgument::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(StructTemplatedTypeArgumentTest, readWrite)
 {

@@ -10,7 +10,7 @@ namespace choice_templated_selector
 {
 
 using allocator_type = ChoiceTemplatedSelector::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(ChoiceTemplatedSelectorTest, readWrite)
 {

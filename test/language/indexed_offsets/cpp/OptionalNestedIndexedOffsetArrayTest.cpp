@@ -13,9 +13,9 @@ namespace optional_nested_indexed_offset_array
 {
 
 using allocator_type = OptionalNestedIndexedOffsetArray::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class OptionalNestedIndexedOffsetArrayTest : public ::testing::Test
 {

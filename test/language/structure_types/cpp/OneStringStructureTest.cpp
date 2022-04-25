@@ -11,7 +11,7 @@ namespace one_string_structure
 {
 
 using allocator_type = OneStringStructure::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 class OneStringStructureTest : public ::testing::Test
 {

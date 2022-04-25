@@ -17,9 +17,9 @@ namespace simple_virtual_columns
 {
 
 using allocator_type = SimpleVirtualColumnsDb::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class SimpleVirtualColumnsTest : public ::testing::Test
 {

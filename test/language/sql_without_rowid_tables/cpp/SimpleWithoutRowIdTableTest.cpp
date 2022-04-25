@@ -16,7 +16,7 @@ namespace simple_without_rowid_table
 {
 
 using allocator_type = SimpleWithoutRowIdDb::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 template <typename T, typename COMPARE = std::less<T>>
 using set_type = std::set<T, COMPARE, zserio::RebindAlloc<allocator_type, T>>;
 

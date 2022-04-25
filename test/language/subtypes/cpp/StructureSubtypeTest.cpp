@@ -15,7 +15,7 @@ namespace structure_subtype
 {
 
 using allocator_type = Student::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(StructureSubtypeTest, testSubtype)
 {

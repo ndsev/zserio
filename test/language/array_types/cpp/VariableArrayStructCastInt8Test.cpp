@@ -12,9 +12,9 @@ namespace variable_array_struct_cast_int8
 {
 
 using allocator_type = VariableArray::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class VariableArrayStructCastInt8Test : public ::testing::Test
 {

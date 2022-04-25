@@ -13,7 +13,7 @@ namespace instantiate_sql_table
 
 using allocator_type = U32Table::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 static const char SQLITE3_MEM_DB[] = ":memory:";
 

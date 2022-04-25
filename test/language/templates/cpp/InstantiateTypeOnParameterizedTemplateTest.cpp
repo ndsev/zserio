@@ -11,7 +11,7 @@ namespace instantiate_type_on_parameterized_template
 
 using allocator_type = InstantiateTypeOnParameterizedTemplate::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 TEST(InstantiateTypeOnParameterizedTemplateTest, readWrite)
 {

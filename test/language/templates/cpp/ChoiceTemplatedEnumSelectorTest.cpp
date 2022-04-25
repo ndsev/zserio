@@ -10,7 +10,7 @@ namespace choice_templated_enum_selector
 {
 
 using allocator_type = ChoiceTemplatedEnumSelector::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(ChoiceTemplatedEnumSelectorTest, readWrite)
 {

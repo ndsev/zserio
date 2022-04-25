@@ -16,7 +16,7 @@ namespace table_with_implicit_array
 
 using allocator_type = DbWithImplicitArray::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class TableWithImplicitArrayTest : public ::testing::Test
 {

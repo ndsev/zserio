@@ -16,7 +16,7 @@ namespace pubsub_allocation
 {
 
 using allocator_type = GreetingPubsub::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 class PubsubAllocationTest : public ::testing::Test
 {

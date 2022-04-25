@@ -15,8 +15,8 @@ public class TypesContext
 
         if (allocator.equals(STD_ALLOCATOR))
         {
-            vector = new NativeTypeDefinition(STD_PACKAGE_NAME, "vector",
-                    true, false, "vector");
+            vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector",
+                    true, false, "zserio/Vector.h");
             array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "Array",
                     true, false, "zserio/Array.h");
             string = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "string",
@@ -93,7 +93,7 @@ public class TypesContext
         }
         else
         {
-            vector = new NativeTypeDefinition(STD_PACKAGE_NAME, "vector",
+            vector = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "vector",
                     true, true, "vector");
             array = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicArray",
                     true, true, "zserio/Array.h");

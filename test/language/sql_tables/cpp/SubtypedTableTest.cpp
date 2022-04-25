@@ -15,7 +15,7 @@ namespace subtyped_table
 {
 
 using allocator_type = TestDb::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 class SubtypedTableTest : public ::testing::Test
 {

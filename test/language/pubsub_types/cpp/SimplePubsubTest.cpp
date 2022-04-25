@@ -18,7 +18,7 @@ namespace simple_pubsub
 {
 
 using allocator_type = SimplePubsub::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 class SimplePubsubTest : public ::testing::Test
 {

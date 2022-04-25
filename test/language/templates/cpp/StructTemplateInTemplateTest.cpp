@@ -10,7 +10,7 @@ namespace struct_template_in_template
 {
 
 using allocator_type = StructTemplateInTemplate::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(StructTemplateInTemplateTest, readWrite)
 {

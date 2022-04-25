@@ -14,7 +14,7 @@ namespace packed_auto_array_struct_with_extern
 
 using allocator_type = PackedAutoArray::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 

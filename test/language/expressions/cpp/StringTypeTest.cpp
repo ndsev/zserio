@@ -17,7 +17,7 @@ namespace string_type
 {
 
 using allocator_type = StringTypeExpression::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 class StringTypeTest : public ::testing::Test
 {

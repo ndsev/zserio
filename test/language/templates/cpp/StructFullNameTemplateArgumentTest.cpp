@@ -10,7 +10,7 @@ namespace struct_full_name_template_argument
 {
 
 using allocator_type = StructFullNameTemplateArgument::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(StructFullNameTemplateArgumentTest, readWrite)
 {

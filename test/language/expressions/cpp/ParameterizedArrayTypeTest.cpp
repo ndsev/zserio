@@ -13,7 +13,7 @@ namespace parameterized_array_type
 
 using allocator_type = ParameterizedArrayTypeExpression::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 TEST(ParameterizedArrayTypeTest, bitSizeOfWithOptional)
 {

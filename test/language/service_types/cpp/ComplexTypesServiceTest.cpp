@@ -19,7 +19,7 @@ namespace complex_types_service
 
 using allocator_type = ComplexTypesService::Client::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
 
 namespace

@@ -11,7 +11,7 @@ namespace fixed_and_variable_param
 
 using allocator_type = FixedAndVariableParam::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class FixedAndVariableParamTest : public ::testing::Test
 {

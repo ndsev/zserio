@@ -12,7 +12,7 @@ namespace auto_array_uint8
 
 using allocator_type = AutoArray::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class AutoArrayUInt8Test : public ::testing::Test
 {

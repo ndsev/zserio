@@ -12,7 +12,7 @@ namespace function_templated_return_type
 {
 
 using allocator_type = FunctionTemplatedReturnType::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(FunctionTemplatedReturnTypeTest, readWrite)
 {

@@ -13,8 +13,6 @@ namespace literal_constraint
 {
 
 using allocator_type = LiteralConstraint::allocator_type;
-template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
 
 class LiteralConstraintTest : public ::testing::Test
 {

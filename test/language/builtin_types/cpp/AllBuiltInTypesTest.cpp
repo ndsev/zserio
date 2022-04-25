@@ -14,9 +14,7 @@ namespace all_builtin_types
 {
 
 using allocator_type = AllBuiltInTypes::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
-template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using string_type = zserio::string<allocator_type>;
 
 using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 

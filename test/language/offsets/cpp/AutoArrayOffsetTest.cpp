@@ -13,7 +13,7 @@ namespace auto_array_offset
 
 using allocator_type = AutoArrayHolder::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class AutoArrayOffsetTest : public ::testing::Test
 {

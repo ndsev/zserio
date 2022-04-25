@@ -13,7 +13,7 @@ namespace union_with_parameterized_field
 
 using allocator_type = TestUnion::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class UnionWithParameterizedFieldTest : public ::testing::Test
 {

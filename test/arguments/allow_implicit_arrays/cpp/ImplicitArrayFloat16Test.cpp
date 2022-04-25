@@ -12,7 +12,7 @@ namespace implicit_array_float16
 
 using allocator_type = ImplicitArray::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class ImplicitArrayFloat16Test : public ::testing::Test
 {

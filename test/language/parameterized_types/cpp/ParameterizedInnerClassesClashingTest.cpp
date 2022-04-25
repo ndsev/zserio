@@ -14,7 +14,7 @@ namespace parameterized_inner_classes_clashing
 
 using allocator_type = ElementFactory_array::allocator_type;
 template <typename T>
-using vector_type = std::vector<T, zserio::RebindAlloc<allocator_type, T>>;
+using vector_type = zserio::vector<T, allocator_type>;
 
 class ParameterizedInnerClassesClashingTest : public ::testing::Test
 {

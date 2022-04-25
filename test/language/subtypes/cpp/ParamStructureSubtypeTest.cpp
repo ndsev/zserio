@@ -52,16 +52,16 @@ template <>
 struct MethodNames<::std::allocator<uint8_t>>
 {
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY =
-            "::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+            "::zserio::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
                     "getParameterizedSubtypeArray()";
     static constexpr const char* GET_PARAMETERIZED_SUBTYPE_ARRAY_CONST =
-            "const ::std::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
+            "const ::zserio::vector<::subtypes::param_structure_subtype::ParameterizedSubtype>& "
                     "getParameterizedSubtypeArray() const";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY =
-            "void setParameterizedSubtypeArray(const ::std::vector<::subtypes::param_structure_subtype::"
+            "void setParameterizedSubtypeArray(const ::zserio::vector<::subtypes::param_structure_subtype::"
                     "ParameterizedSubtype>& parameterizedSubtypeArray_)";
     static constexpr const char* SET_PARAMETERIZED_SYBTYPE_ARRAY_RVALUE =
-            "void setParameterizedSubtypeArray(::std::vector<::subtypes::param_structure_subtype::"
+            "void setParameterizedSubtypeArray(::zserio::vector<::subtypes::param_structure_subtype::"
                     "ParameterizedSubtype>&& parameterizedSubtypeArray_)";
 };
 

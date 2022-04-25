@@ -10,7 +10,7 @@ namespace struct_recursive_template
 {
 
 using allocator_type = StructRecursiveTemplate::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(StructRecursiveTemplateTest, readWrite)
 {

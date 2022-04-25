@@ -12,7 +12,7 @@ namespace service_allocation
 {
 
 using allocator_type = GreetingService::Client::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 using LocalServiceClient = test_utils::LocalServiceClient<allocator_type>;
 
 class ServiceAllocationTest : public ::testing::Test

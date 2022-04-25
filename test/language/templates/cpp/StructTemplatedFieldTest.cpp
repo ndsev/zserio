@@ -10,7 +10,7 @@ namespace struct_templated_field
 {
 
 using allocator_type = StructTemplatedField::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 TEST(StructTemplatedFieldTest, readWrite)
 {

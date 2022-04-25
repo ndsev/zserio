@@ -14,7 +14,7 @@ namespace simple_union
 {
 
 using allocator_type = SimpleUnion::allocator_type;
-using string_type = zserio::string<zserio::RebindAlloc<allocator_type, char>>;
+using string_type = zserio::string<allocator_type>;
 
 class SimpleUnionTest : public ::testing::Test
 {
