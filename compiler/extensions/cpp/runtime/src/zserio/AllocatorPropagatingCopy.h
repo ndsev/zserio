@@ -137,9 +137,14 @@ zserio::AnyHolder<ALLOC> allocatorPropagatingCopyImpl(
         const zserio::AnyHolder<ALLOC>& source, const ALLOC2& allocator)
 {
     if (source.hasValue())
-        return zserio::AnyHolder<ALLOC>(allocatorPropagatingCopy(source.template get<T>(), allocator), allocator);
+    {
+        return zserio::AnyHolder<ALLOC>(allocatorPropagatingCopy(source.template get<T>(), allocator),
+                allocator);
+    }
     else
+    {
         return zserio::AnyHolder<ALLOC>(allocator);
+    }
 }
 
 template <typename T, typename ALLOC, typename ALLOC2>

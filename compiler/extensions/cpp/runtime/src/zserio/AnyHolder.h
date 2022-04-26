@@ -360,8 +360,8 @@ public:
      *
      * \return Reference to this.
      */
-    template <typename T,
-            typename std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
+    template <typename T, typename
+            std::enable_if<!std::is_same<typename std::decay<T>::type, AnyHolder>::value, int>::type = 0>
     AnyHolder& operator=(T&& value)
     {
         set(std::forward<T>(value));
@@ -503,7 +503,8 @@ private:
         }
 
         return createHolderImpl<T>(std::integral_constant<bool,
-            sizeof(detail::NonHeapHolder<T, ALLOC>) <= sizeof(typename detail::UntypedHolder<ALLOC>::MaxInPlaceType) &&
+            sizeof(detail::NonHeapHolder<T, ALLOC>) <=
+                    sizeof(typename detail::UntypedHolder<ALLOC>::MaxInPlaceType) &&
             std::is_nothrow_move_constructible<T>::value &&
             alignof(T) <= alignof(typename detail::UntypedHolder<ALLOC>::MaxInPlaceType)>());
     }

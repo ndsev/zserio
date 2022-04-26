@@ -357,8 +357,8 @@ bool BasicWalker<ALLOC>::walkField(const IBasicReflectablePtr<ALLOC>& reflectabl
 }
 
 template <typename ALLOC>
-bool BasicWalker<ALLOC>::walkFieldValue(const IBasicReflectablePtr<ALLOC>& reflectable, const FieldInfo& fieldInfo,
-        size_t elementIndex)
+bool BasicWalker<ALLOC>::walkFieldValue(const IBasicReflectablePtr<ALLOC>& reflectable,
+        const FieldInfo& fieldInfo, size_t elementIndex)
 {
     const ITypeInfo& typeInfo = fieldInfo.typeInfo;
     if (reflectable && TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
@@ -561,7 +561,8 @@ BasicRegexWalkFilter<ALLOC>::BasicRegexWalkFilter(const char* pathRegex, const A
 {}
 
 template <typename ALLOC>
-bool BasicRegexWalkFilter<ALLOC>::beforeArray(const IBasicReflectablePtr<ALLOC>& array, const FieldInfo& fieldInfo)
+bool BasicRegexWalkFilter<ALLOC>::beforeArray(const IBasicReflectablePtr<ALLOC>& array,
+        const FieldInfo& fieldInfo)
 {
     m_currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size(), m_allocator);
 
@@ -590,8 +591,8 @@ bool BasicRegexWalkFilter<ALLOC>::afterArray(const IBasicReflectablePtr<ALLOC>&,
 }
 
 template <typename ALLOC>
-bool BasicRegexWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-        size_t elementIndex)
+bool BasicRegexWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>& compound,
+        const FieldInfo& fieldInfo, size_t elementIndex)
 {
     appendPath(fieldInfo, elementIndex);
     if (std::regex_match(getCurrentPath(), m_pathRegex))
@@ -609,8 +610,8 @@ bool BasicRegexWalkFilter<ALLOC>::afterCompound(const IBasicReflectablePtr<ALLOC
 }
 
 template <typename ALLOC>
-bool BasicRegexWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo,
-        size_t elementIndex)
+bool BasicRegexWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>& value,
+        const FieldInfo& fieldInfo, size_t elementIndex)
 {
     appendPath(fieldInfo, elementIndex);
     return matchSubtree(value, fieldInfo);
@@ -643,7 +644,8 @@ string<ALLOC> BasicRegexWalkFilter<ALLOC>::getCurrentPath() const
 }
 
 template <typename ALLOC>
-bool BasicRegexWalkFilter<ALLOC>::matchSubtree(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo) const
+bool BasicRegexWalkFilter<ALLOC>::matchSubtree(const IBasicReflectablePtr<ALLOC>& value,
+        const FieldInfo& fieldInfo) const
 {
     if (value != nullptr && TypeInfoUtil::isCompound(fieldInfo.typeInfo.getSchemaType()))
     {
@@ -679,25 +681,29 @@ bool BasicArrayLengthWalkFilter<ALLOC>::afterArray(const IBasicReflectablePtr<AL
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t elementIndex)
+bool BasicArrayLengthWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>&,
+        const FieldInfo&, size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::afterCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t elementIndex)
+bool BasicArrayLengthWalkFilter<ALLOC>::afterCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&,
+        size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t elementIndex)
+bool BasicArrayLengthWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&,
+        size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::afterValue(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t elementIndex)
+bool BasicArrayLengthWalkFilter<ALLOC>::afterValue(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&,
+        size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
@@ -714,7 +720,8 @@ BasicAndWalkFilter<ALLOC>::BasicAndWalkFilter(const BasicAndWalkFilter::WalkFilt
 {}
 
 template <typename ALLOC>
-bool BasicAndWalkFilter<ALLOC>::beforeArray(const IBasicReflectablePtr<ALLOC>& array, const FieldInfo& fieldInfo)
+bool BasicAndWalkFilter<ALLOC>::beforeArray(const IBasicReflectablePtr<ALLOC>& array,
+        const FieldInfo& fieldInfo)
 {
     return applyFilters(&IWalkFilter::beforeArray, array, fieldInfo);
 }
@@ -726,27 +733,31 @@ bool BasicAndWalkFilter<ALLOC>::afterArray(const IBasicReflectablePtr<ALLOC>& ar
 }
 
 template <typename ALLOC>
-bool BasicAndWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>& compound, const FieldInfo& fieldInfo,
+bool BasicAndWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>& compound,
+        const FieldInfo& fieldInfo,
         size_t elementIndex)
 {
     return applyFilters(&IWalkFilter::beforeCompound, compound, fieldInfo, elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicAndWalkFilter<ALLOC>::afterCompound(const IBasicReflectablePtr<ALLOC>& compound, const FieldInfo& fieldInfo,
+bool BasicAndWalkFilter<ALLOC>::afterCompound(const IBasicReflectablePtr<ALLOC>& compound,
+        const FieldInfo& fieldInfo,
         size_t elementIndex)
 {
     return applyFilters(&IWalkFilter::afterCompound, compound, fieldInfo, elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicAndWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo, size_t elementIndex)
+bool BasicAndWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>& value,
+        const FieldInfo& fieldInfo, size_t elementIndex)
 {
     return applyFilters(&IWalkFilter::beforeValue, value, fieldInfo, elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicAndWalkFilter<ALLOC>::afterValue(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo, size_t elementIndex)
+bool BasicAndWalkFilter<ALLOC>::afterValue(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo,
+        size_t elementIndex)
 {
     return applyFilters(&IWalkFilter::afterValue, value, fieldInfo, elementIndex);
 }

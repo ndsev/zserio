@@ -704,7 +704,8 @@ protected:
         ASSERT_EQ("dynamicBitFieldArray"_sv, dynamicBitFieldArrayField.schemaName);
 
         ASSERT_EQ("bit<>"_sv, dynamicBitFieldArrayField.typeInfo.getSchemaName());
-        ASSERT_EQ(zserio::SchemaType::DYNAMIC_UNSIGNED_BITFIELD, dynamicBitFieldArrayField.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::SchemaType::DYNAMIC_UNSIGNED_BITFIELD,
+                dynamicBitFieldArrayField.typeInfo.getSchemaType());
         ASSERT_EQ(zserio::CppType::UINT64, dynamicBitFieldArrayField.typeInfo.getCppType());
 
         ASSERT_EQ(1, dynamicBitFieldArrayField.typeArguments.size());

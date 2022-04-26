@@ -493,7 +493,8 @@ public:
                     if (!m_object.isOptionalUnionArraySet())
                         return nullptr;
 
-                    return ReflectableFactory::getCompoundArray(m_object.getOptionalUnionArray(), get_allocator());
+                    return ReflectableFactory::getCompoundArray(
+                            m_object.getOptionalUnionArray(), get_allocator());
                 }
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
             }

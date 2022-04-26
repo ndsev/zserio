@@ -467,8 +467,8 @@ private:
     }
 
     template <typename RAW_ARRAY, typename ARRAY_TRAITS, typename ELEMENT_FACTORY>
-    void testArrayAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, size_t expectedBitSize,
-            const ELEMENT_FACTORY& elementFactory)
+    void testArrayAlignedAuto(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
+            size_t expectedBitSize, const ELEMENT_FACTORY& elementFactory)
     {
         for (uint8_t i = 0; i < 8; ++i)
         {

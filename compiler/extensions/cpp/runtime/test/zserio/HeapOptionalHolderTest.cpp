@@ -35,14 +35,14 @@ protected:
 TEST_F(HeapOptionalHolderTest, emptyConstructor)
 {
     TrackingAllocator<int> alloc;
-    HeapOptionalHolder<int, TrackingAllocator<int>> optional{ alloc };
+    HeapOptionalHolder<int, TrackingAllocator<int>> optional{alloc};
     ASSERT_EQ(alloc, optional.get_allocator());
 }
 
 TEST_F(HeapOptionalHolderTest, nullOptConstructor)
 {
     TrackingAllocator<int> alloc;
-    HeapOptionalHolder<int, TrackingAllocator<int>> optional{ zserio::NullOpt, alloc };
+    HeapOptionalHolder<int, TrackingAllocator<int>> optional{zserio::NullOpt, alloc};
     ASSERT_EQ(alloc, optional.get_allocator());
 }
 
@@ -50,14 +50,15 @@ TEST_F(HeapOptionalHolderTest, lvalueConstructor)
 {
     TrackingAllocator<std::vector<int>> alloc;
 
-    std::vector<int> values{ 1, 2, 3 };
+    std::vector<int> values{1, 2, 3};
     void* origAddress = &values[0];
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{ values, alloc };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{values, alloc};
     ASSERT_NE(origAddress, &(*optional)[0]);
     ASSERT_EQ(values, *optional);
 
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalFromList{ { 1, 2, 3 }, alloc };
-    std::vector<int> listValues{ 1, 2, 3 };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalFromList{
+            {1, 2, 3}, alloc};
+    std::vector<int> listValues{1, 2, 3};
     ASSERT_EQ(listValues, *optionalFromList);
 
     ASSERT_GE(alloc.numAllocs(), 2u);
@@ -67,10 +68,11 @@ TEST_F(HeapOptionalHolderTest, rvalueConstructor)
 {
     TrackingAllocator<std::vector<int>> alloc;
 
-    std::vector<int> values{ 1, 2, 3 };
+    std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{ values };
     void* origAddress = &values[0];
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{ std::move(values), alloc };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{
+            std::move(values), alloc};
     ASSERT_EQ(origAddress, &(*optional)[0]);
     ASSERT_EQ(origValues, *optional);
 
@@ -81,8 +83,9 @@ TEST_F(HeapOptionalHolderTest, forwardingConstructor)
 {
     TrackingAllocator<std::vector<int>> alloc;
 
-    std::vector<int> src = { 0, 13, 42 };
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{ alloc, src.begin(), src.end() };
+    std::vector<int> src = {0, 13, 42};
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{
+            alloc, src.begin(), src.end()};
     ASSERT_EQ(src, *optional);
 
     ASSERT_GE(alloc.numAllocs(), 1u);
@@ -107,9 +110,11 @@ TEST_F(HeapOptionalHolderTest, copyConstructor)
     ASSERT_EQ(optionalObject, optionalObjectCopy);
     ASSERT_EQ(optionalObject.get_allocator(), optionalObjectCopy.get_allocator());
 
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{ std::vector<int>{1, 2, 3}, allocVec };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
+            std::vector<int>{1, 2, 3}, allocVec};
     void* origAddress = &(*optionalVector)[0];
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy{ optionalVector };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy{
+            optionalVector};
     ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     ASSERT_EQ(optionalVector.get_allocator(), optionalVectorCopy.get_allocator());
@@ -137,9 +142,11 @@ TEST_F(HeapOptionalHolderTest, copyConstructorAllocator)
     ASSERT_EQ(optional.get_allocator(), alloc1);
     ASSERT_EQ(optionalCopy.get_allocator(), alloc2);
 
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{ std::vector<int>{1, 2, 3}, allocVec1 };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
+            std::vector<int>{1, 2, 3}, allocVec1};
     void* origAddress = &(*optionalVector)[0];
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy{ optionalVector, allocVec2 };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy{
+            optionalVector, allocVec2};
     ASSERT_NE(origAddress, &(*optionalVectorCopy)[0]);
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
     ASSERT_NE(optionalVector.get_allocator(), optionalVectorCopy.get_allocator());
@@ -201,11 +208,10 @@ TEST_F(HeapOptionalHolderTest, copyAssignmentOperator)
     ASSERT_EQ(optional.get_allocator(), optionalCopy.get_allocator());
     ASSERT_EQ(optional.get_allocator(), alloc);
 
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>>
-        optionalVector{ std::vector<int>{1, 2, 3}, allocVec };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
+            std::vector<int>{1, 2, 3}, allocVec};
     void* origAddress = &((*optionalVector)[0]);
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>>
-        optionalVectorCopy;
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorCopy;
     optionalVectorCopy = optionalVector;
     ASSERT_NE(origAddress, &((*optionalVectorCopy)[0]));
     ASSERT_EQ(*optionalVector, *optionalVectorCopy);
@@ -231,12 +237,11 @@ TEST_F(HeapOptionalHolderTest, moveAssignmentOperator)
 {
     TrackingAllocator<std::vector<int>> allocVec;
 
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>>
-        optionalVector{ std::vector<int>{ 1, 2, 3 }, allocVec };
-    std::vector<int> origValues{ *optionalVector };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVector{
+            std::vector<int>{1, 2, 3}, allocVec};
+    std::vector<int> origValues{*optionalVector};
     void* origAddress = &(*optionalVector)[0];
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>>
-        optionalVectorMoved;
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optionalVectorMoved;
     optionalVectorMoved = std::move(optionalVector);
     ASSERT_EQ(origAddress, &(*optionalVectorMoved)[0]);
     ASSERT_EQ(origValues, *optionalVectorMoved);
@@ -264,7 +269,7 @@ TEST_F(HeapOptionalHolderTest, lvalueAssignmentOperator)
 {
     TrackingAllocator<std::vector<int>> allocVec;
 
-    std::vector<int> values{ 1, 2, 3 };
+    std::vector<int> values{1, 2, 3};
     void* origAddress = &values[0];
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional(allocVec);
     optional = values;
@@ -288,7 +293,7 @@ TEST_F(HeapOptionalHolderTest, rvalueAssignmentOperator)
 {
     TrackingAllocator<std::vector<int>> allocVec;
 
-    std::vector<int> values{ 1, 2, 3 };
+    std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{ values };
     void* origAddress = &values[0];
     HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional(allocVec);
@@ -315,8 +320,8 @@ TEST_F(HeapOptionalHolderTest, reset)
 {
     TrackingAllocator<std::vector<int>> allocVec;
 
-    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>>
-        optional{ std::vector<int>{1, 2, 3}, allocVec };
+    HeapOptionalHolder<std::vector<int>, TrackingAllocator<std::vector<int>>> optional{
+            std::vector<int>{1, 2, 3}, allocVec};
     ASSERT_TRUE(optional.hasValue());
     ASSERT_EQ(1, (*optional)[0]);
     ASSERT_EQ(allocVec.numAllocs(), 1u);
@@ -325,7 +330,7 @@ TEST_F(HeapOptionalHolderTest, reset)
     ASSERT_EQ(allocVec.numAllocs(), 0);
     ASSERT_FALSE(optional.hasValue());
 
-    optional = std::vector<int>{ 3, 2, 1 };
+    optional = std::vector<int>{3, 2, 1};
     ASSERT_EQ(allocVec.numAllocs(), 1u);
     ASSERT_TRUE(optional.hasValue());
     ASSERT_EQ(3, (*optional)[0]);

@@ -138,9 +138,12 @@ TEST_F(Uint64BitmaskTest, write)
 
 TEST_F(Uint64BitmaskTest, toString)
 {
-    ASSERT_EQ(std::string("0[nonePermission]"), Permission(Permission::Values::nonePermission).toString().c_str());
-    ASSERT_EQ(std::string("2[READ_PERMISSION]"), Permission(Permission::Values::READ_PERMISSION).toString().c_str());
-    ASSERT_EQ(std::string("4[write_permission]"), Permission(Permission::Values::write_permission).toString().c_str());
+    ASSERT_EQ(std::string("0[nonePermission]"),
+            Permission(Permission::Values::nonePermission).toString().c_str());
+    ASSERT_EQ(std::string("2[READ_PERMISSION]"),
+            Permission(Permission::Values::READ_PERMISSION).toString().c_str());
+    ASSERT_EQ(std::string("4[write_permission]"),
+            Permission(Permission::Values::write_permission).toString().c_str());
     ASSERT_EQ(std::string("6[READ_PERMISSION | write_permission]"),
             (Permission::Values::READ_PERMISSION | Permission::Values::write_permission).toString().c_str());
     ASSERT_EQ(std::string("7[READ_PERMISSION | write_permission]"), Permission(7).toString().c_str());

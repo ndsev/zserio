@@ -151,7 +151,8 @@ void BasicJsonWriter<ALLOC>::endArray(const IBasicReflectablePtr<ALLOC>&, const 
 }
 
 template <typename ALLOC>
-void BasicJsonWriter<ALLOC>::beginCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo& fieldInfo, size_t elementIndex)
+void BasicJsonWriter<ALLOC>::beginCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo& fieldInfo,
+        size_t elementIndex)
 {
     beginItem();
 

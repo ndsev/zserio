@@ -44,8 +44,9 @@ public:
         return *this;
     }
 
-    RegularWithAllocatorSupport(PropagateAllocatorT, const RegularWithAllocatorSupport&, const allocator_type& allocator)
-        : m_allocator(allocator)
+    RegularWithAllocatorSupport(PropagateAllocatorT, const RegularWithAllocatorSupport&,
+            const allocator_type& allocator) :
+            m_allocator(allocator)
     {}
 
 private:

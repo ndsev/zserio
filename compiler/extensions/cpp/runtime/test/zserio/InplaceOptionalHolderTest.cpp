@@ -109,7 +109,7 @@ TEST_F(InplaceOptionalHolderTest, copyAssignmentOperator)
 
 TEST_F(InplaceOptionalHolderTest, moveConstructor)
 {
-    InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{ 1, 2, 3 }};
+    InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
     std::vector<int> origValues{*optionalVector};
     void* origAddress = &((*optionalVector)[0]);
     InplaceOptionalHolder<std::vector<int>> optionalVectorMoved{std::move(optionalVector)};
@@ -119,14 +119,14 @@ TEST_F(InplaceOptionalHolderTest, moveConstructor)
 
 TEST_F(InplaceOptionalHolderTest, forwardingConstructor)
 {
-    std::vector<int> src = { 0, 13, 42 };
+    std::vector<int> src = {0, 13, 42};
     InplaceOptionalHolder<std::vector<int>> optional{ zserio::InPlace, src.begin(), src.end() };
     ASSERT_EQ(src, *optional);
 }
 
 TEST_F(InplaceOptionalHolderTest, moveAssignmentOperator)
 {
-    InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{ 1, 2, 3 }};
+    InplaceOptionalHolder<std::vector<int>> optionalVector{std::vector<int>{1, 2, 3}};
     std::vector<int> origValues{*optionalVector};
     void* origAddress = &(*optionalVector)[0];
     InplaceOptionalHolder<std::vector<int>> optionalVectorMoved;
@@ -137,7 +137,7 @@ TEST_F(InplaceOptionalHolderTest, moveAssignmentOperator)
 
 TEST_F(InplaceOptionalHolderTest, lvalueAssignmentOperator)
 {
-    std::vector<int> values{ 1, 2, 3 };
+    std::vector<int> values{1, 2, 3};
     void* origAddress = &values[0];
     InplaceOptionalHolder<std::vector<int>> optional;
     optional = values;
@@ -147,7 +147,7 @@ TEST_F(InplaceOptionalHolderTest, lvalueAssignmentOperator)
 
 TEST_F(InplaceOptionalHolderTest, rvalueAssignmentOperator)
 {
-    std::vector<int> values{ 1, 2, 3 };
+    std::vector<int> values{1, 2, 3};
     std::vector<int> origValues{values};
     void* origAddress = &values[0];
     InplaceOptionalHolder<std::vector<int>> optional;

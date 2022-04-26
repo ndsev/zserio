@@ -32,7 +32,8 @@ public:
      * \param connection Pointer to the SQLite connection.
      * \param connectionType Type of the connection. Default is INTERNAL_CONNECTION.
      */
-    explicit SqliteConnection(sqlite3* connection = nullptr, ConnectionType connectionType = INTERNAL_CONNECTION);
+    explicit SqliteConnection(sqlite3* connection = nullptr,
+            ConnectionType connectionType = INTERNAL_CONNECTION);
 
     /**
      * Destructor.

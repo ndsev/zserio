@@ -4,7 +4,7 @@ constVariable:*/src/zserio/TypeInfo.cpp:431
 constVariable:*/src/zserio/TypeInfo.cpp:509
 ignoredReturnValue:*/test/zserio/CppRuntimeExceptionTest.cpp:44
 ignoredReturnValue:*/test/zserio/CppRuntimeExceptionTest.cpp:51
-knownConditionTrueFalse:*/test/zserio/HeapOptionalHolderTest.cpp:210
+knownConditionTrueFalse:*/test/zserio/HeapOptionalHolderTest.cpp:216
 knownConditionTrueFalse:*/test/zserio/InplaceOptionalHolderTest.cpp:106
 mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:111
 mismatchingContainers:*/test/zserio/AnyHolderTest.cpp:152
