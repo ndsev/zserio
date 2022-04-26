@@ -55,14 +55,6 @@ generate_ant_file()
                 <Method name=\"detachDatabases\"/>
             </Or>
         </Match>
-        <!-- Confusing method names. -->
-        <Match>
-            <Bug code=\"Nm\"/>
-        </Match>
-        <!-- Method uses the same code for two switch clauses. -->
-        <Match>
-            <Bug code=\"DB\"/>
-        </Match>
         "
     fi
 
@@ -148,6 +140,7 @@ EOF
             <Method name="initializeOffsets"/>
             <Method name="bitSizeOf"/>
             <Method name="read"/>
+            <Method name="write"/>
         </Or>
     </Match>
     <Match>
