@@ -53,7 +53,7 @@ zserio_add_library(TARGET with_type_info_code_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withTypeInfoCode -allowImplicitArrays -withoutSourcesAmalgamation
+    ZSERIO_OPTIONS -withTypeInfoCode -allowImplicitArrays -withoutSourcesAmalgamation -withReflectionCode
 )
 
 target_include_directories(with_type_info_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
@@ -63,3 +63,9 @@ add_test_sources(
 )
 
 add_test_dependencies(with_type_info_code_zs)
+
+add_custom_command(TARGET with_type_info_code_zs POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
+                           ${CMAKE_CURRENT_BINARY_DIR}/data
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/data
+                   COMMENT "Copying data directory for with_type_info_code test")
