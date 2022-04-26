@@ -32,8 +32,8 @@ public:
      * \param walkObserver Observer to use during walking.
      * \param walkFilter Walk filter to use.
      */
-    BasicWalker(const IBasicWalkObserverPtr<ALLOC>& walkObserver,
-            const IBasicWalkFilterPtr<ALLOC>& walkFilter);
+    explicit BasicWalker(const IBasicWalkObserverPtr<ALLOC>& walkObserver,
+            const IBasicWalkFilterPtr<ALLOC>& walkFilter = nullptr, const ALLOC& allocator = ALLOC());
 
     /**
      * Walks given relfectable zserio compound object.
@@ -276,8 +276,9 @@ using AndWalkFilter = BasicAndWalkFilter<>;
 
 template <typename ALLOC>
 BasicWalker<ALLOC>::BasicWalker(const IBasicWalkObserverPtr<ALLOC>& walkObserver,
-        const IBasicWalkFilterPtr<ALLOC>& walkFilter) :
-        m_walkObserver(walkObserver), m_walkFilter(walkFilter)
+        const IBasicWalkFilterPtr<ALLOC>& walkFilter, const ALLOC& allocator) :
+        m_walkObserver(walkObserver),
+        m_walkFilter(walkFilter ? walkFilter : std::allocate_shared<BasicDefaultWalkFilter<ALLOC>>(allocator))
 {}
 
 template <typename ALLOC>
