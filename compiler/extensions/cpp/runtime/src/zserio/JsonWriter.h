@@ -62,8 +62,8 @@ private:
 
     void writeIndent();
     void writeKey(StringView key);
-    void writeValue(const IReflectablePtr& value);
-    void writeBitBuffer(const BitBuffer& bitBuffer);
+    void writeValue(const IBasicReflectablePtr<ALLOC>& value);
+    void writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer);
 
     std::shared_ptr<std::ostream> m_out;
     InplaceOptionalHolder<string<ALLOC>> m_indent;
@@ -273,7 +273,7 @@ void BasicJsonWriter<ALLOC>::writeKey(StringView key)
 }
 
 template <typename ALLOC>
-void BasicJsonWriter<ALLOC>::writeValue(const IReflectablePtr& reflectable)
+void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectablePtr<ALLOC>& reflectable)
 {
     // TODO[Mi-L@]: Ensure that all types are printed as valid JSON values! (floats, doubles, strings, ...)
 
@@ -336,11 +336,11 @@ void BasicJsonWriter<ALLOC>::writeValue(const IReflectablePtr& reflectable)
 }
 
 template <typename ALLOC>
-void BasicJsonWriter<ALLOC>::writeBitBuffer(const BitBuffer& bitBuffer)
+void BasicJsonWriter<ALLOC>::writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer)
 {
     beginObject();
     beginItem();
-    writeKey("buffer"_sv);
+    writeKey(zserio::makeStringView("buffer"));
     beginArray();
     const uint8_t* buffer = bitBuffer.getBuffer();
     for (size_t i = 0; i < bitBuffer.getByteSize(); ++i)
@@ -352,7 +352,7 @@ void BasicJsonWriter<ALLOC>::writeBitBuffer(const BitBuffer& bitBuffer)
     endArray();
     endItem();
     beginItem();
-    writeKey("bitSize"_sv);
+    writeKey(zserio::makeStringView("bitSize"));
     out() << bitBuffer.getBitSize();
     endItem();
     endObject();

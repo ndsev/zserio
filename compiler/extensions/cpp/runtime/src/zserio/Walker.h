@@ -255,7 +255,7 @@ private:
     bool applyFilters(FilterFunc filterFunc, Args... args)
     {
         bool result = true;
-        for (const IWalkFilterPtr& walkFilter : m_walkFilters)
+        for (const auto& walkFilter : m_walkFilters)
             result &= ((*walkFilter).*filterFunc)(args...);
         return result;
     }
@@ -645,7 +645,8 @@ bool BasicRegexWalkFilter<ALLOC>::matchSubtree(const IBasicReflectablePtr<ALLOC>
         // is a not null compound, try to find match within its subtree
         auto subtreeFilter = std::allocate_shared<detail::SubtreeRegexWalkFilter<ALLOC>>(
                 m_allocator, m_currentPath, m_pathRegex, m_allocator);
-        Walker walker(std::allocate_shared<BasicDefaultWalkObserver<ALLOC>>(m_allocator), subtreeFilter);
+        BasicWalker<ALLOC> walker(
+                std::allocate_shared<BasicDefaultWalkObserver<ALLOC>>(m_allocator), subtreeFilter);
         walker.walk(value);
         return subtreeFilter->matches();
     }
@@ -716,13 +717,13 @@ template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::beforeArray(const IBasicReflectablePtr<ALLOC>& array,
         const FieldInfo& fieldInfo)
 {
-    return applyFilters(&IWalkFilter::beforeArray, array, fieldInfo);
+    return applyFilters(&IBasicWalkFilter<ALLOC>::beforeArray, array, fieldInfo);
 }
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::afterArray(const IBasicReflectablePtr<ALLOC>& array, const FieldInfo& fieldInfo)
 {
-    return applyFilters(&IWalkFilter::afterArray, array, fieldInfo);
+    return applyFilters(&IBasicWalkFilter<ALLOC>::afterArray, array, fieldInfo);
 }
 
 template <typename ALLOC>
@@ -730,7 +731,7 @@ bool BasicAndWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>
         const FieldInfo& fieldInfo,
         size_t elementIndex)
 {
-    return applyFilters(&IWalkFilter::beforeCompound, compound, fieldInfo, elementIndex);
+    return applyFilters(&IBasicWalkFilter<ALLOC>::beforeCompound, compound, fieldInfo, elementIndex);
 }
 
 template <typename ALLOC>
@@ -738,21 +739,21 @@ bool BasicAndWalkFilter<ALLOC>::afterCompound(const IBasicReflectablePtr<ALLOC>&
         const FieldInfo& fieldInfo,
         size_t elementIndex)
 {
-    return applyFilters(&IWalkFilter::afterCompound, compound, fieldInfo, elementIndex);
+    return applyFilters(&IBasicWalkFilter<ALLOC>::afterCompound, compound, fieldInfo, elementIndex);
 }
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>& value,
         const FieldInfo& fieldInfo, size_t elementIndex)
 {
-    return applyFilters(&IWalkFilter::beforeValue, value, fieldInfo, elementIndex);
+    return applyFilters(&IBasicWalkFilter<ALLOC>::beforeValue, value, fieldInfo, elementIndex);
 }
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::afterValue(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo,
         size_t elementIndex)
 {
-    return applyFilters(&IWalkFilter::afterValue, value, fieldInfo, elementIndex);
+    return applyFilters(&IBasicWalkFilter<ALLOC>::afterValue, value, fieldInfo, elementIndex);
 }
 
 } // namespace zserio

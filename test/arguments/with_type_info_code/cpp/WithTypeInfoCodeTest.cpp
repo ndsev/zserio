@@ -25,6 +25,14 @@ using vector_type = zserio::vector<T, allocator_type>;
 
 using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
 
+using Walker = zserio::BasicWalker<allocator_type>;
+using JsonWriter = zserio::BasicJsonWriter<allocator_type>;
+using IWalkFilterPtr = zserio::IBasicWalkFilterPtr<allocator_type>;
+using ArrayLengthWalkFilter = zserio::BasicArrayLengthWalkFilter<allocator_type>;
+using DepthWalkFilter = zserio::BasicDepthWalkFilter<allocator_type>;
+using RegexWalkFilter = zserio::BasicRegexWalkFilter<allocator_type>;
+using AndWalkFilter = zserio::BasicAndWalkFilter<allocator_type>;
+
 class WithTypeInfoCodeTest : public ::testing::Test
 {
 protected:
@@ -1694,10 +1702,8 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithOptionals)
     std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_OPTIONALS,
             std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
-            indent);
-    // TODO[mikir] DefaultWalkFilter could be by default
-    zserio::Walker walker(jsonWriterPtr, std::make_shared<zserio::DefaultWalkFilter>());
+    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
+    Walker walker(jsonWriterPtr);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_OPTIONALS);
 }
@@ -1712,10 +1718,8 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithoutOptionals)
     std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITHOUT_OPTIONALS,
             std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
-            indent);
-    // TODO[mikir] DefaultWalkFilter could be by default
-    zserio::Walker walker(jsonWriterPtr, std::make_shared<zserio::DefaultWalkFilter>());
+    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
+    Walker walker(jsonWriterPtr);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
 }
@@ -1733,11 +1737,9 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithArrayLengthFilter)
         std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(jsonFileName,
                 std::ios::out | std::ios::trunc);
         const uint8_t indent = 4;
-        std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
-                indent);
-        std::shared_ptr<zserio::ArrayLengthWalkFilter> walkFilterPtr =
-                std::make_shared<zserio::ArrayLengthWalkFilter>(i);
-        zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+        std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
+        std::shared_ptr<ArrayLengthWalkFilter> walkFilterPtr = std::make_shared<ArrayLengthWalkFilter>(i);
+        Walker walker(jsonWriterPtr, walkFilterPtr);
         walker.walk(withTypeInfoCode.reflectable());
         checkJsonFile(jsonFileName);
     }
@@ -1752,10 +1754,10 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth0Filter)
     std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_DEPTH0_FILTER,
             std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr,
             indent);
-    std::shared_ptr<zserio::DepthWalkFilter> walkFilterPtr = std::make_shared<zserio::DepthWalkFilter>(0);
-    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    std::shared_ptr<DepthWalkFilter> walkFilterPtr = std::make_shared<DepthWalkFilter>(0);
+    Walker walker(jsonWriterPtr, walkFilterPtr);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
 }
@@ -1769,12 +1771,13 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth1ArrayLength0Filter)
     std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(
             JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
-            indent);
-    const std::vector<zserio::IWalkFilterPtr> walkFilters = {std::make_shared<zserio::DepthWalkFilter>(1),
-            std::make_shared<zserio::ArrayLengthWalkFilter>(0)};
-    std::shared_ptr<zserio::AndWalkFilter> walkFilterPtr = std::make_shared<zserio::AndWalkFilter>(walkFilters);
-    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
+    const vector_type<IWalkFilterPtr> walkFilters = {
+        std::make_shared<DepthWalkFilter>(1),
+        std::make_shared<ArrayLengthWalkFilter>(0)
+    };
+    std::shared_ptr<AndWalkFilter> walkFilterPtr = std::make_shared<AndWalkFilter>(walkFilters);
+    Walker walker(jsonWriterPtr, walkFilterPtr);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
 }
@@ -1788,10 +1791,9 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth5Filter)
     std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_DEPTH5_FILTER,
             std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
-            indent);
-    std::shared_ptr<zserio::DepthWalkFilter> walkFilterPtr = std::make_shared<zserio::DepthWalkFilter>(5);
-    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
+    std::shared_ptr<DepthWalkFilter> walkFilterPtr = std::make_shared<DepthWalkFilter>(5);
+    Walker walker(jsonWriterPtr, walkFilterPtr);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
 }
@@ -1806,11 +1808,9 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithRegexFilter)
     std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_REGEX_FILTER,
             std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
-            indent);
-    std::shared_ptr<zserio::RegexWalkFilter> walkFilterPtr =
-            std::make_shared<zserio::RegexWalkFilter>(".*fieldOffset");
-    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
+    std::shared_ptr<RegexWalkFilter> walkFilterPtr = std::make_shared<RegexWalkFilter>(".*fieldOffset");
+    Walker walker(jsonWriterPtr, walkFilterPtr);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
 }

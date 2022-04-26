@@ -33,7 +33,7 @@ public:
      *
      * \return True when the walking should continue to the array.
      */
-    virtual bool beforeArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) = 0;
+    virtual bool beforeArray(const IBasicReflectablePtr<ALLOC>& array, const FieldInfo& fieldInfo) = 0;
 
     /**
      * Called after an array.
@@ -44,7 +44,7 @@ public:
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    virtual bool afterArray(const IReflectablePtr& array, const FieldInfo& fieldInfo) = 0;
+    virtual bool afterArray(const IBasicReflectablePtr<ALLOC>& array, const FieldInfo& fieldInfo) = 0;
 
     /**
      * Called before a compound object.
@@ -58,7 +58,7 @@ public:
      *
      * \return True when the walking should continue into the compound object, false otherwise.
      */
-    virtual bool beforeCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+    virtual bool beforeCompound(const IBasicReflectablePtr<ALLOC>& compound, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
@@ -70,7 +70,7 @@ public:
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    virtual bool afterCompound(const IReflectablePtr& compound, const FieldInfo& fieldInfo,
+    virtual bool afterCompound(const IBasicReflectablePtr<ALLOC>& compound, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
@@ -82,7 +82,7 @@ public:
 
      * \return True when the walking should continue to the simple value, false otherwise.
      */
-    virtual bool beforeValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
+    virtual bool beforeValue(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
@@ -94,7 +94,7 @@ public:
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    virtual bool afterValue(const IReflectablePtr& value, const FieldInfo& fieldInfo,
+    virtual bool afterValue(const IBasicReflectablePtr<ALLOC>& value, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 };
 
