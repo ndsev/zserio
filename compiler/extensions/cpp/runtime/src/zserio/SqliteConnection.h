@@ -3,8 +3,10 @@
 
 #include "sqlite3.h"
 
+#include <memory>
+
 #include "zserio/SqliteException.h"
-#include "zserio/String.h"
+#include "zserio/SqliteFinalizer.h"
 
 namespace zserio
 {
@@ -154,17 +156,11 @@ inline sqlite3* SqliteConnection::getConnection()
 
 inline void SqliteConnection::executeUpdate(StringView sqlQuery)
 {
-    sqlite3_stmt* statement = prepareStatement(sqlQuery);
-    int result = sqlite3_step(statement);
+    std::unique_ptr<sqlite3_stmt, SqliteFinalizer> statement(prepareStatement(sqlQuery));
+    int result = sqlite3_step(statement.get());
     if (result != SQLITE_DONE)
     {
         throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_step failed: ") +
-                SqliteErrorCode(result);
-    }
-    result = sqlite3_finalize(statement);
-    if (result != SQLITE_OK)
-    {
-        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_finalize failed: ") +
                 SqliteErrorCode(result);
     }
 }
