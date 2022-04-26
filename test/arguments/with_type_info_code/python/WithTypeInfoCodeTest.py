@@ -2,7 +2,7 @@ import unittest
 import os
 import json
 import zserio
-import filecmp
+import itertools
 
 from zserio.typeinfo import TypeAttribute, MemberAttribute, TypeInfo
 
@@ -1419,7 +1419,11 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         createdJsonBaseName = os.path.basename(createdJsonFileName)
         jsonDataFileName = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data",
                                         createdJsonBaseName)
-        self.assertTrue(filecmp.cmp(jsonDataFileName, createdJsonFileName))
+
+        with open(createdJsonFileName, encoding="utf-8") as jsonCreatedFile:
+            with open(jsonDataFileName, encoding="utf-8") as jsonExpectedFile:
+                for createdLine, expectedLine in itertools.zip_longest(jsonCreatedFile, jsonExpectedFile):
+                    self.assertEqual(expectedLine, createdLine)
 
     BLOB_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
                                             "with_type_info_code_optionals.blob")
