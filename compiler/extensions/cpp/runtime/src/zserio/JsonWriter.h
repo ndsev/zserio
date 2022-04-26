@@ -301,10 +301,12 @@ void BasicJsonWriter<ALLOC>::writeValue(const IReflectablePtr& reflectable)
         out() << reflectable->toUInt();
         break;
     case CppType::FLOAT:
-        out() << reflectable->getFloat();
+        // TODO[mikir] hot fix to have the same behavior as python (1.0)
+        out() << std::fixed << std::setprecision(1) << reflectable->getFloat();
         break;
     case CppType::DOUBLE:
-        out() << reflectable->getDouble();
+        // TODO[mikir] hot fix to have the same behavior as python (1.0)
+        out() << std::fixed << std::setprecision(1) << reflectable->getDouble();
         break;
     case CppType::STRING:
     {

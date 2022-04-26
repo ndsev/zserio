@@ -1,9 +1,14 @@
 #include <vector>
+#include <fstream>
+#include <memory>
+#include <string>
 
 #include "gtest/gtest.h"
 
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
+#include "zserio/JsonWriter.h"
+#include "zserio/Walker.h"
 
 #include "with_type_info_code/SqlDatabase.h"
 #include "with_type_info_code/SimplePubsub.h"
@@ -1590,8 +1595,36 @@ protected:
         templatedParameterizedStruct_TS32.setArray(array);
     }
 
+    std::string getJsonNameWithArrayLengthFilter(size_t arrayLength)
+    {
+        return std::string("arguments/with_type_info_code/with_type_info_code_array_length_") +
+                std::to_string(arrayLength) + ".json";
+    }
+
+    void checkJsonFile(const std::string& createdJsonFileName)
+    {
+        const std::string& createdJsonBaseName = createdJsonFileName.substr(
+                createdJsonFileName.find_last_of("/") + 1);
+        const std::string jsonDataFileName("arguments/with_type_info_code/data/" + createdJsonBaseName);
+
+        std::ifstream jsonCreatedFile(createdJsonFileName);
+        std::ifstream jsonExpectedFile(jsonDataFileName);
+        std::string createdLine;
+        std::string expectedLine;
+        while (std::getline(jsonCreatedFile, createdLine) && std::getline(jsonExpectedFile, expectedLine))
+            ASSERT_EQ(expectedLine, createdLine);
+        ASSERT_TRUE(jsonCreatedFile.eof());
+        ASSERT_TRUE(jsonExpectedFile.eof());
+    }
+
     static const std::string BLOB_NAME_WITH_OPTIONALS;
     static const std::string BLOB_NAME_WITHOUT_OPTIONALS;
+    static const std::string JSON_NAME_WITH_OPTIONALS;
+    static const std::string JSON_NAME_WITHOUT_OPTIONALS;
+    static const std::string JSON_NAME_WITH_DEPTH0_FILTER;
+    static const std::string JSON_NAME_WITH_DEPTH5_FILTER;
+    static const std::string JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER;
+    static const std::string JSON_NAME_WITH_REGEX_FILTER;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
@@ -1600,6 +1633,18 @@ const std::string WithTypeInfoCodeTest::BLOB_NAME_WITH_OPTIONALS =
         "arguments/with_type_info_code/with_type_info_code_optionals.blob";
 const std::string WithTypeInfoCodeTest::BLOB_NAME_WITHOUT_OPTIONALS =
         "arguments/with_type_info_code/with_type_info_code.blob";
+const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_OPTIONALS =
+        "arguments/with_type_info_code/with_type_info_code_optionals.json";
+const std::string WithTypeInfoCodeTest::JSON_NAME_WITHOUT_OPTIONALS =
+        "arguments/with_type_info_code/with_type_info_code.json";
+const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_DEPTH0_FILTER =
+        "arguments/with_type_info_code/with_type_info_code_depth0.json";
+const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_DEPTH5_FILTER =
+        "arguments/with_type_info_code/with_type_info_code_depth5.json";
+const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER =
+        "arguments/with_type_info_code/with_type_info_code_depth1_array_length0.json";
+const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_REGEX_FILTER =
+        "arguments/with_type_info_code/with_type_info_code_regex.json";
 
 TEST_F(WithTypeInfoCodeTest, checkSqlDatabase)
 {
@@ -1636,6 +1681,137 @@ TEST_F(WithTypeInfoCodeTest, writeReadFileWithoutOptionals)
     const WithTypeInfoCode readWithTypeInfoCode =
             zserio::deserializeFromFile<WithTypeInfoCode>(BLOB_NAME_WITHOUT_OPTIONALS);
     ASSERT_EQ(withTypeInfoCode, readWithTypeInfoCode);
+}
+
+TEST_F(WithTypeInfoCodeTest, jsonWriterWithOptionals)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    const bool createOptionals = true;
+    fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
+    withTypeInfoCode.initializeOffsets(0);
+
+    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_OPTIONALS,
+            std::ios::out | std::ios::trunc);
+    const uint8_t indent = 4;
+    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+            indent);
+    // TODO[mikir] DefaultWalkFilter could be by default
+    zserio::Walker walker(jsonWriterPtr, std::make_shared<zserio::DefaultWalkFilter>());
+    walker.walk(withTypeInfoCode.reflectable());
+    checkJsonFile(JSON_NAME_WITH_OPTIONALS);
+}
+
+TEST_F(WithTypeInfoCodeTest, jsonWriterWithoutOptionals)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    const bool createOptionals = false;
+    fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
+    withTypeInfoCode.initializeOffsets(0);
+
+    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITHOUT_OPTIONALS,
+            std::ios::out | std::ios::trunc);
+    const uint8_t indent = 4;
+    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+            indent);
+    // TODO[mikir] DefaultWalkFilter could be by default
+    zserio::Walker walker(jsonWriterPtr, std::make_shared<zserio::DefaultWalkFilter>());
+    walker.walk(withTypeInfoCode.reflectable());
+    checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
+}
+
+TEST_F(WithTypeInfoCodeTest, jsonWriterWithArrayLengthFilter)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    fillWithTypeInfoCode(withTypeInfoCode);
+    withTypeInfoCode.initializeOffsets(0);
+
+    for (size_t i = 0; i < 11; ++i)
+    {
+        const std::string jsonFileName = getJsonNameWithArrayLengthFilter(i);
+
+        std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(jsonFileName,
+                std::ios::out | std::ios::trunc);
+        const uint8_t indent = 4;
+        std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+                indent);
+        std::shared_ptr<zserio::ArrayLengthWalkFilter> walkFilterPtr =
+                std::make_shared<zserio::ArrayLengthWalkFilter>(i);
+        zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+        walker.walk(withTypeInfoCode.reflectable());
+        checkJsonFile(jsonFileName);
+    }
+}
+
+TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth0Filter)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    fillWithTypeInfoCode(withTypeInfoCode);
+    withTypeInfoCode.initializeOffsets(0);
+
+    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_DEPTH0_FILTER,
+            std::ios::out | std::ios::trunc);
+    const uint8_t indent = 4;
+    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+            indent);
+    std::shared_ptr<zserio::DepthWalkFilter> walkFilterPtr = std::make_shared<zserio::DepthWalkFilter>(0);
+    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    walker.walk(withTypeInfoCode.reflectable());
+    checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
+}
+
+TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth1ArrayLength0Filter)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    fillWithTypeInfoCode(withTypeInfoCode);
+    withTypeInfoCode.initializeOffsets(0);
+
+    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(
+            JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, std::ios::out | std::ios::trunc);
+    const uint8_t indent = 4;
+    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+            indent);
+    const std::vector<zserio::IWalkFilterPtr> walkFilters = {std::make_shared<zserio::DepthWalkFilter>(1),
+            std::make_shared<zserio::ArrayLengthWalkFilter>(0)};
+    std::shared_ptr<zserio::AndWalkFilter> walkFilterPtr = std::make_shared<zserio::AndWalkFilter>(walkFilters);
+    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    walker.walk(withTypeInfoCode.reflectable());
+    checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
+}
+
+TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth5Filter)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    fillWithTypeInfoCode(withTypeInfoCode);
+    withTypeInfoCode.initializeOffsets(0);
+
+    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_DEPTH5_FILTER,
+            std::ios::out | std::ios::trunc);
+    const uint8_t indent = 4;
+    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+            indent);
+    std::shared_ptr<zserio::DepthWalkFilter> walkFilterPtr = std::make_shared<zserio::DepthWalkFilter>(5);
+    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    walker.walk(withTypeInfoCode.reflectable());
+    checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
+}
+
+TEST_F(WithTypeInfoCodeTest, jsonWriterWithRegexFilter)
+{
+    WithTypeInfoCode withTypeInfoCode;
+    const bool createOptionals = false;
+    fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
+    withTypeInfoCode.initializeOffsets(0);
+
+    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_REGEX_FILTER,
+            std::ios::out | std::ios::trunc);
+    const uint8_t indent = 4;
+    std::shared_ptr<zserio::JsonWriter> jsonWriterPtr = std::make_shared<zserio::JsonWriter>(jsonFilePtr,
+            indent);
+    std::shared_ptr<zserio::RegexWalkFilter> walkFilterPtr =
+            std::make_shared<zserio::RegexWalkFilter>(".*fieldOffset");
+    zserio::Walker walker(jsonWriterPtr, walkFilterPtr);
+    walker.walk(withTypeInfoCode.reflectable());
+    checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
 }
 
 } // namespace with_type_info_code
