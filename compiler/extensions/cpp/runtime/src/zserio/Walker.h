@@ -708,7 +708,7 @@ bool BasicArrayLengthWalkFilter<ALLOC>::filterArrayElement(size_t elementIndex)
 }
 
 template <typename ALLOC>
-BasicAndWalkFilter<ALLOC>::BasicAndWalkFilter(const BasicAndWalkFilter::WalkFilters& walkFilters) :
+BasicAndWalkFilter<ALLOC>::BasicAndWalkFilter(const WalkFilters& walkFilters) :
         m_walkFilters(walkFilters)
 {}
 
