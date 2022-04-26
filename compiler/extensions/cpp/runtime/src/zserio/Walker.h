@@ -318,15 +318,7 @@ void BasicWalker<ALLOC>::walkFields(const IBasicReflectablePtr<ALLOC>& compound,
     {
         for (const FieldInfo& fieldInfo : typeInfo.getFields())
         {
-            IBasicReflectablePtr<ALLOC> fieldReflectable = nullptr;
-            try // TODO[Mi-L@]: Hack needed because we don't generate isOptionalFieldSet() (the actual value)
-            {
-                fieldReflectable = compound->getField(fieldInfo.schemaName);
-            }
-            catch (CppRuntimeException&)
-            {}
-
-            if (!walkField(fieldReflectable, fieldInfo))
+            if (!walkField(compound->getField(fieldInfo.schemaName), fieldInfo))
                 break;
         }
     }

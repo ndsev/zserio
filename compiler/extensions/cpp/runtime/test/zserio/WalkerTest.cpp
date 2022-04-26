@@ -835,8 +835,9 @@ TEST(WalkerTest, walk)
     ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(6));
 }
 
-TEST(WalkerTest, walkWrongCondition)
+TEST(WalkerTest, walkWrongOptionalCondition)
 {
+    // use case: optional condition states that the optional is used, but it is not set!
     auto observer = std::make_shared<TestWalkObserver>();
     Walker walker(observer, std::make_shared<DefaultWalkFilter>());
     DummyObject dummyObject = createDummyObject(13, false);
