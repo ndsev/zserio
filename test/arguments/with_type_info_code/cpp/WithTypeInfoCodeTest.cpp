@@ -1521,7 +1521,7 @@ protected:
             complexStruct.setParamStructArray(paramStructArray);
         }
 
-        complexStruct.setDynamicBitField(7);
+        complexStruct.setDynamicBitField(8);
 
         vector_type<uint64_t> dynamicBitFieldArray;
         for (uint64_t i = 1; i < 65536; i += 2)

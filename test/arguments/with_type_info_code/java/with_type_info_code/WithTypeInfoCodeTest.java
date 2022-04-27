@@ -1690,7 +1690,7 @@ public class WithTypeInfoCodeTest
             new byte[] {3, 2, 1},
             (createOptionals) ? new ParameterizedStruct[] { createParameterizedStruct(simpleStruct),
                     createParameterizedStruct(simpleStruct) } : null,
-            BigInteger.valueOf(7),
+            BigInteger.valueOf(8),
             dynamicBitFieldArray);
 
         return complexStruct;

@@ -1247,7 +1247,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             list(range(3, 0, -1)),
             [self._createParameterizedStruct(simpleStruct),
              self._createParameterizedStruct(simpleStruct)] if createOptionals else None,
-            7,
+            8,
             list(range(1, 65536, 2)))
 
         return complexStruct
@@ -1277,7 +1277,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         else:
             self.assertEqual(None, complexStruct["paramStructArray"])
 
-        self.assertEqual(7, complexStruct["dynamicBitField"])
+        self.assertEqual(8, complexStruct["dynamicBitField"])
 
         dynamicBitFieldArrayLength = 65536 if (maxArrayLength is None or
                                                maxArrayLength > 65536 // 2) else maxArrayLength * 2
