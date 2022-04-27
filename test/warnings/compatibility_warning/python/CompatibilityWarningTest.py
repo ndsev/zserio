@@ -27,6 +27,6 @@ class CompatibilityWarningTest(unittest.TestCase):
             "compatibility_warning/root_without_compatibility_warning.zs",
             [
                 "subpackage.zs:1:30: "
-                "Package specifies compatibility version '2.4.2' while root package specifies nothing"
+                "Package specifies compatibility version '2.4.2' while root package specifies nothing!"
             ]
         )

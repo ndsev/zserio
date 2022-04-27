@@ -26,7 +26,7 @@ TEST_F(CompatibilityWarningTest, rootWithDiffCompatibility)
 TEST_F(CompatibilityWarningTest, rootWithoutCompatibility)
 {
     const std::string error = "subpackage.zs:1:30: "
-            "Package specifies compatibility version '2.4.2' while root package specifies nothing";
+            "Package specifies compatibility version '2.4.2' while root package specifies nothing!";
 
     ASSERT_TRUE(zserioWarnings.isPresent(error));
 }
