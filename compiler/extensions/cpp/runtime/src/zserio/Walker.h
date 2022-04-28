@@ -429,12 +429,12 @@ string<ALLOC> getCurrentPathImpl(
 {
     string<ALLOC> currentPathStr(allocator);
     for (auto it = currentPath.begin(); it != currentPath.end(); ++it)
-        {
-            if (!currentPathStr.empty())
-                currentPathStr += ".";
-            currentPathStr += *it;
-        }
-        return currentPathStr;
+    {
+        if (!currentPathStr.empty())
+            currentPathStr += ".";
+        currentPathStr += *it;
+    }
+    return currentPathStr;
 }
 
 template <typename ALLOC>

@@ -7,7 +7,7 @@ import typing
 import json
 
 from zserio.bitbuffer import BitBuffer
-from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo
+from zserio.typeinfo import TypeAttribute, MemberInfo
 from zserio.walker import WalkObserver
 
 class JsonWriter(WalkObserver):
@@ -136,30 +136,34 @@ class JsonWriter(WalkObserver):
         self._io.write("]")
 
     def _write_key(self, key: str) -> None:
-        self._io.write(f"\"{key}\"{self._key_separator}")
+        self._io.write(f"{self._json_encoder.encode(key)}{self._key_separator}")
 
     def _write_value(self, value: typing.Any, member_info: MemberInfo) -> None:
         if isinstance(value, BitBuffer):
-            self._write_bitbuffer(value, member_info)
+            self._write_bitbuffer(value)
         else:
-            json_value = self._json_encoder.encode(value, member_info.type_info)
+            type_info = member_info.type_info
+            if (TypeAttribute.ENUM_ITEMS in type_info.attributes or
+                TypeAttribute.BITMASK_VALUES in type_info.attributes):
+                json_value = self._json_encoder.encode(value.value)
+            else:
+                json_value = self._json_encoder.encode(value)
             self._io.write(json_value)
 
-    def _write_bitbuffer(self, value: typing.Any, member_info: MemberInfo):
+    def _write_bitbuffer(self, value: typing.Any):
         self._begin_object()
         self._begin_item()
         self._write_key("buffer")
         self._begin_array()
         for byte in value.buffer:
             self._begin_item()
-            self._io.write(self._json_encoder.encode_value(byte))
+            self._io.write(self._json_encoder.encode(byte))
             self._end_item()
         self._end_array()
         self._end_item()
         self._begin_item()
         self._write_key("bitSize")
-        json_value = self._json_encoder.encode(value.bitsize, member_info.type_info)
-        self._io.write(json_value)
+        self._io.write(self._json_encoder.encode(value.bitsize))
         self._end_item()
         self._end_object()
 
@@ -173,28 +177,11 @@ class JsonEncoder:
         Constructor.
         """
 
-        self._encoder = json.JSONEncoder()
+        self._encoder = json.JSONEncoder(ensure_ascii=False)
 
-    def encode(self, value: typing.Any, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> str:
+    def encode(self, value: typing.Any) -> str:
         """
-        Encodes zserio value to JSON string representation.
-
-        :param value: Value to encode.
-        :param type_info: Type info of the value.
-
-        :returns: Value encoded to string as a valid JSON value.
-        """
-
-        if TypeAttribute.ENUM_ITEMS in type_info.attributes:
-            return self.encode_value(value.value)
-        elif TypeAttribute.BITMASK_VALUES in type_info.attributes:
-            return self.encode_value(value.value)
-        else:
-            return self.encode_value(value)
-
-    def encode_value(self, value: typing.Any) -> str:
-        """
-        Encoded python value to Json string representation.
+        Encodes value to JSON string representation.
 
         :param value: Value to encode.
 

@@ -7,6 +7,7 @@
 #include "zserio/IWalkObserver.h"
 #include "zserio/OptionalHolder.h"
 #include "zserio/TypeInfoUtil.h"
+#include "zserio/JsonEncoder.h"
 
 namespace zserio
 {
@@ -265,9 +266,7 @@ void BasicJsonWriter<ALLOC>::writeIndent()
 template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::writeKey(StringView key)
 {
-    out().put('\"');
-    out().write(key.data(), static_cast<std::streamsize>(key.size()));
-    out().put('\"');
+    JsonEncoder::encodeString(out(), key);
     out().write(m_keySeparator.data(), static_cast<std::streamsize>(m_keySeparator.size()));
     out().flush();
 }
@@ -275,11 +274,9 @@ void BasicJsonWriter<ALLOC>::writeKey(StringView key)
 template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectablePtr<ALLOC>& reflectable)
 {
-    // TODO[Mi-L@]: Ensure that all types are printed as valid JSON values! (floats, doubles, strings, ...)
-
     if (!reflectable)
     {
-        out() << "null";
+        JsonEncoder::encodeNull(out());
         return;
     }
 
@@ -287,45 +284,38 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectablePtr<ALLOC>& refle
     switch (typeInfo.getCppType())
     {
     case CppType::BOOL:
-        out() << zserio::toString(reflectable->getBool());
+        JsonEncoder::encodeBool(out(), reflectable->getBool());
         break;
     case CppType::INT8:
     case CppType::INT16:
     case CppType::INT32:
     case CppType::INT64:
-        out() << reflectable->toInt();
+        JsonEncoder::encodeIntegral(out(), reflectable->toInt());
         break;
     case CppType::UINT8:
     case CppType::UINT16:
     case CppType::UINT32:
     case CppType::UINT64:
-        out() << reflectable->toUInt();
+        JsonEncoder::encodeIntegral(out(), reflectable->toUInt());
         break;
     case CppType::FLOAT:
-        // TODO[mikir] hot fix to have the same behavior as python (1.0)
-        out() << std::fixed << std::setprecision(1) << reflectable->getFloat();
+        JsonEncoder::encodeFloatingPoint(out(), reflectable->getFloat());
         break;
     case CppType::DOUBLE:
-        // TODO[mikir] hot fix to have the same behavior as python (1.0)
-        out() << std::fixed << std::setprecision(1) << reflectable->getDouble();
+        JsonEncoder::encodeFloatingPoint(out(), reflectable->getDouble());
         break;
     case CppType::STRING:
-    {
-        StringView stringValue = reflectable->getString();
-        out().put('\"');
-        out().write(stringValue.data(), static_cast<std::streamsize>(stringValue.size()));
-        out().put('\"');
+        JsonEncoder::encodeString(out(), reflectable->getString());
         break;
-    }
     case CppType::BIT_BUFFER:
         writeBitBuffer(reflectable->getBitBuffer());
         break;
     case CppType::ENUM:
     case CppType::BITMASK:
         if (TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()))
-            out() << reflectable->toInt();
+            JsonEncoder::encodeIntegral(out(), reflectable->toInt());
         else
-            out() << reflectable->toUInt();
+            JsonEncoder::encodeIntegral(out(), reflectable->toUInt());
         break;
     default:
         throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '") +

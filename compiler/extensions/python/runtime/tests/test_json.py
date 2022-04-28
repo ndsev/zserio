@@ -3,6 +3,7 @@ import unittest
 from zserio import JsonWriter, BitBuffer
 from zserio.json import JsonEncoder
 from zserio.typeinfo import TypeInfo, MemberInfo, ItemInfo, TypeAttribute, MemberAttribute
+from zserio.limits import INT64_MIN, UINT64_MAX
 
 class JsonWriterTest(unittest.TestCase):
 
@@ -21,6 +22,40 @@ class JsonWriterTest(unittest.TestCase):
         json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
         # note that this is not valid JSON
         self.assertEqual("\"text\": \"test\"", json_writer.get_io().getvalue())
+
+    def test_enum(self):
+        class DummyEnum:
+            @property
+            def value(self):
+                return 0
+
+        dummy_enum_type_info = TypeInfo("DummyEnum", DummyEnum, attributes={
+            TypeAttribute.ENUM_ITEMS : [ItemInfo("ZERO", 0)]
+        })
+
+        dummy_enum_member_info = MemberInfo("dummyEnum", dummy_enum_type_info)
+
+        json_writer = JsonWriter()
+        json_writer.visit_value(DummyEnum(), dummy_enum_member_info)
+        # note that this is not valid JSON
+        self.assertEqual("\"dummyEnum\": 0", json_writer.get_io().getvalue())
+
+    def test_bitmask(self):
+        class DummyBitmask:
+            @property
+            def value(self):
+                return 0
+
+        dummy_bitmask_type_info = TypeInfo("DummyBitmask", DummyBitmask, attributes={
+            TypeAttribute.BITMASK_VALUES : [ItemInfo("ZERO", 0)]
+        })
+
+        dummy_bitmask_member_info = MemberInfo("dummyBitmask", dummy_bitmask_type_info)
+
+        json_writer = JsonWriter()
+        json_writer.visit_value(DummyBitmask(), dummy_bitmask_member_info)
+        # note that this is not valid JSON
+        self.assertEqual("\"dummyBitmask\": 0", json_writer.get_io().getvalue())
 
     def test_compound(self):
         json_writer = JsonWriter()
@@ -100,32 +135,57 @@ class JsonWriterTest(unittest.TestCase):
 
 class JsonEncoderTest(unittest.TestCase):
 
-    def test_encode_enum(self):
-        class DummyEnum:
-            @property
-            def value(self):
-                return 0
-
-        dummy_enum_type_info = TypeInfo("DummyEnum", DummyEnum, attributes={
-            TypeAttribute.ENUM_ITEMS : [ItemInfo("ZERO", 0)]
-        })
-
+    def test_encode_null(self):
         json_encoder = JsonEncoder()
-        self.assertEqual("0", json_encoder.encode(DummyEnum(), dummy_enum_type_info))
+        self.assertEqual("null", json_encoder.encode(None))
 
-    def test_encode_bitmask(self):
-        class DummyBitmask:
-            @property
-            def value(self):
-                return 0
-
-        dummy_bitmask_type_info = TypeInfo("DummyBitmask", DummyBitmask, attributes={
-            TypeAttribute.BITMASK_VALUES : [ItemInfo("ZERO", 0)]
-        })
-
+    def test_encode_bool(self):
         json_encoder = JsonEncoder()
-        self.assertEqual("0", json_encoder.encode(DummyBitmask(), dummy_bitmask_type_info))
+        self.assertEqual("true", json_encoder.encode(True))
+        self.assertEqual("false", json_encoder.encode(False))
 
-    def test_encode_str(self):
+    def test_encode_integral(self):
         json_encoder = JsonEncoder()
-        self.assertEqual("\"value\"", json_encoder.encode("value", TypeInfo("string", str)))
+        self.assertEqual("-9223372036854775808", json_encoder.encode(INT64_MIN))
+        self.assertEqual("-1000", json_encoder.encode(-1000))
+        self.assertEqual("0", json_encoder.encode(0))
+        self.assertEqual("1000", json_encoder.encode(1000))
+        self.assertEqual("18446744073709551615", json_encoder.encode(UINT64_MAX))
+
+    def test_encode_floating_point(self):
+        json_encoder = JsonEncoder()
+        self.assertEqual("-1.0", json_encoder.encode(-1.0))
+        self.assertEqual("0.0", json_encoder.encode(0.0))
+        self.assertEqual("1.0", json_encoder.encode(1.0))
+
+        self.assertEqual("3.5", json_encoder.encode(3.5))
+        self.assertEqual("9.875", json_encoder.encode(9.875))
+        self.assertEqual("0.6171875", json_encoder.encode(0.6171875))
+
+        self.assertEqual("1e+20", json_encoder.encode(1e20))
+
+        self.assertEqual("NaN", json_encoder.encode(float('nan')))
+        self.assertEqual("Infinity", json_encoder.encode(float('inf')))
+        self.assertEqual("-Infinity", json_encoder.encode(float('-inf')))
+
+    def test_encode_string(self):
+        json_encoder = JsonEncoder()
+        self.assertEqual("\"\"", json_encoder.encode(""))
+        self.assertEqual("\"test\"", json_encoder.encode("test"))
+        self.assertEqual("\"München\"", json_encoder.encode("München"))
+        self.assertEqual("\"€\"", json_encoder.encode("€"))
+
+        # escapes
+        self.assertEqual("\"\\b\"", json_encoder.encode("\b"))
+        self.assertEqual("\"\\f\"", json_encoder.encode("\f"))
+        self.assertEqual("\"\\n\"", json_encoder.encode("\n"))
+        self.assertEqual("\"\\r\"", json_encoder.encode("\r"))
+        self.assertEqual("\"\\t\"", json_encoder.encode("\t"))
+        self.assertEqual("\"\\\"\"", json_encoder.encode("\""))
+        self.assertEqual("\"\\\\\"", json_encoder.encode("\\"))
+
+        self.assertEqual("\"\\n\\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\\\\\"'Hello World2\"",
+                         json_encoder.encode("\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"'Hello World2"))
+
+        # <= 0x1F -> unicode escape
+        self.assertEqual("\"\\u0019\"", json_encoder.encode("\x19"))

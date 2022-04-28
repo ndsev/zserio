@@ -618,8 +618,7 @@ TEST_F(BitStreamTest, readString)
         "Price: \xE2\x82\xAC 3 what's this? -> \xC2\xA2" /* '€' '¢' */
     };
 
-    std::function<void (BitStreamWriter&, const std::string&)> writerFunc =
-            &BitStreamWriter::writeString;
+    std::function<void (BitStreamWriter&, const std::string&)> writerFunc = &BitStreamWriter::writeString;
     std::function<std::string (BitStreamReader&)> readerFunc =
             std::bind(&BitStreamReader::readString<std::allocator<char>>,
                     std::placeholders::_1, std::allocator<char>());
