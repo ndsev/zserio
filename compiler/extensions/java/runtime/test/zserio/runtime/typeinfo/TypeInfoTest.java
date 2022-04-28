@@ -630,7 +630,8 @@ public class TypeInfoTest
                             "", // initializer
                             true, // isOptional
                             "", // optionalCondition
-                            "isRecursiveUsed", // indicatorName
+                            "isRecursiveUsed", // isUsedindicatorName
+                            "isRecursiveSet", // isSetindicatorName
                             "", // constraint
                             false, // isArray
                             "", // arrayLength

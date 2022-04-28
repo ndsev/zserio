@@ -23,13 +23,23 @@ public class OptionalRecursionTest
     }
 
     @Test
-    public void isNextDataUsed()
+    public void isNextDataSetAndUsed()
     {
         final Block block1 = createBlock(BLOCK1_DATA);
+        assertFalse(block1.isNextDataSet());
         assertFalse(block1.isNextDataUsed());
 
+        block1.setBlockTerminator((short)1); // used but not set
+        assertFalse(block1.isNextDataSet());
+        assertTrue(block1.isNextDataUsed());
+
         final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertTrue(block12.isNextDataSet());
         assertTrue(block12.isNextDataUsed());
+
+        block12.setBlockTerminator((short)0); // set but not used
+        assertTrue(block12.isNextDataSet());
+        assertFalse(block12.isNextDataUsed());
     }
 
     @Test

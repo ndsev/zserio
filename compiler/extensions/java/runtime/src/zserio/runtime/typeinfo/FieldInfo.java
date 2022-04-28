@@ -21,7 +21,8 @@ public class FieldInfo
      * @param initializer Field initializer.
      * @param isOptional Flag whether the field is optional.
      * @param optionalCondition Field optional condition.
-     * @param indicatorName Field indicator name.
+     * @param isUsedIndicatorName Field "is used" indicator name.
+     * @param isSetIndicatorName Field "is set" indicator name.
      * @param constraint Field constraint.
      * @param isArray Flag whether the field is an array.
      * @param arrayLength Array length.
@@ -30,8 +31,8 @@ public class FieldInfo
      */
     public FieldInfo(String schemaName, String getterName, String setterName, TypeInfo typeInfo,
             List<String> typeArguments, String alignment, String offset, String initializer, boolean isOptional,
-            String optionalCondition, String indicatorName, String constraint, boolean isArray,
-            String arrayLength, boolean isPacked, boolean isImplicit)
+            String optionalCondition, String isUsedIndicatorName, String isSetIndicatorName, String constraint,
+            boolean isArray, String arrayLength, boolean isPacked, boolean isImplicit)
     {
         this.schemaName = schemaName;
         this.getterName = getterName;
@@ -43,7 +44,8 @@ public class FieldInfo
         this.initializer = initializer;
         this.isOptional = isOptional;
         this.optionalCondition = optionalCondition;
-        this.indicatorName = indicatorName;
+        this.isUsedIndicatorName = isUsedIndicatorName;
+        this.isSetIndicatorName = isSetIndicatorName;
         this.constraint = constraint;
         this.isArray = isArray;
         this.arrayLength = arrayLength;
@@ -152,13 +154,23 @@ public class FieldInfo
     }
 
     /**
-     * Gets field indicator name.
+     * Gets field "is used" indicator name.
      *
-     * @return Name of the field indicator as is in generated code.
+     * @return Name of the field "is used" indicator as is in generated code.
      */
-    public String getIndicatorName()
+    public String getIsUsedIndicatorName()
     {
-        return indicatorName;
+        return isUsedIndicatorName;
+    }
+
+    /**
+     * Gets field "is set" indicator name.
+     *
+     * @return Name of the field "is set" indicator as is in generated code.
+     */
+    public String getIsSetIndicatorName()
+    {
+        return isSetIndicatorName;
     }
 
     /**
@@ -221,7 +233,8 @@ public class FieldInfo
     private final String initializer;
     private final boolean isOptional;
     private final String optionalCondition;
-    private final String indicatorName;
+    private final String isUsedIndicatorName;
+    private final String isSetIndicatorName;
     private final String constraint;
     private final boolean isArray;
     private final String arrayLength;

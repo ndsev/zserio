@@ -57,6 +57,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testItemMethods(self):
         userType = self.api.Item
 
+        self._assertMethodNotPresent(userType, "is_extra_param_set")
         self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
         self._assertMethodNotPresent(userType, "from_fields")
@@ -103,6 +104,8 @@ class WithoutWriterCodeTest(unittest.TestCase):
     def testTileMethods(self):
         userType = self.api.Tile
 
+        self._assertMethodNotPresent(userType, "is_version_set")
+        self._assertMethodNotPresent(userType, "is_version_string_set")
         self._assertMethodNotPresent(userType, "initialize_offsets")
         self._assertMethodNotPresent(userType, "write")
         self._assertMethodNotPresent(userType, "from_fields")

@@ -28,30 +28,48 @@ public class OptionalExpressionTest
     }
 
     @Test
-    public void isNumBlackTonesUsed()
+    public void isNumBlackTonesSetAndUsed()
     {
         final Container container = new Container();
         container.setBasicColor(BasicColor.WHITE);
+        assertFalse(container.isNumBlackTonesSet());
         assertFalse(container.isNumBlackTonesUsed());
 
         container.setBasicColor(BasicColor.BLACK);
         container.setNumBlackTones(NUM_BLACK_TONES);
+        assertTrue(container.isNumBlackTonesSet());
         assertTrue(container.isNumBlackTonesUsed());
         assertEquals(NUM_BLACK_TONES, (short)container.getNumBlackTones());
+
+        container.setBasicColor(BasicColor.WHITE); // set but not used
+        assertTrue(container.isNumBlackTonesSet());
+        assertFalse(container.isNumBlackTonesUsed());
+
+        container.setBasicColor(BasicColor.BLACK);
+        container.setNumBlackTones(null); // used but not set
+        assertFalse(container.isNumBlackTonesSet());
+        assertTrue(container.isNumBlackTonesUsed());
     }
 
     @Test
-    public void isBlackColorUsed()
+    public void isBlackColorSetAndUsed()
     {
         final Container container = new Container();
         container.setBasicColor(BasicColor.WHITE);
+        assertFalse(container.isBlackColorSet());
         assertFalse(container.isBlackColorUsed());
 
         container.setBasicColor(BasicColor.BLACK);
         final BlackColor blackColor = createBlackColor(NUM_BLACK_TONES);
         container.setBlackColor(blackColor);
+        assertTrue(container.isBlackColorSet());
         assertTrue(container.isBlackColorUsed());
         assertTrue(blackColor.equals(container.getBlackColor()));
+
+        container.setBlackColor(null); // used but not set
+        assertFalse(container.isBlackColorSet());
+        assertTrue(container.isBlackColorUsed());
+        assertEquals(null, container.getBlackColor());
     }
 
     @Test
@@ -116,7 +134,9 @@ public class OptionalExpressionTest
         checkContainerInFile(whiteContainerFile, BasicColor.WHITE, NUM_BLACK_TONES);
         Container readContainer = new Container(whiteContainerFile);
         assertEquals(BasicColor.WHITE, readContainer.getBasicColor());
+        assertFalse(readContainer.isNumBlackTonesSet());
         assertFalse(readContainer.isNumBlackTonesUsed());
+        assertFalse(readContainer.isBlackColorSet());
         assertFalse(readContainer.isBlackColorUsed());
 
         container.setBasicColor(BasicColor.BLACK);
@@ -130,7 +150,9 @@ public class OptionalExpressionTest
         assertEquals(BasicColor.BLACK, readContainer.getBasicColor());
         assertEquals(NUM_BLACK_TONES, (short)readContainer.getNumBlackTones());
         assertTrue(blackColor.equals(readContainer.getBlackColor()));
+        assertTrue(readContainer.isNumBlackTonesSet());
         assertTrue(readContainer.isNumBlackTonesUsed());
+        assertTrue(readContainer.isBlackColorSet());
         assertTrue(readContainer.isBlackColorUsed());
     }
 

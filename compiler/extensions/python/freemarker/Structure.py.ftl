@@ -156,8 +156,13 @@ ${I}<#rt>
     </#if>
     <#if field.optional??>
 
-    def ${field.optional.indicatorName}(self) -> bool:
-        return <#if field.optional.clause??>${field.optional.clause}<#else>not self.<@field_member_name field/> is None</#if>
+    def ${field.optional.isUsedIndicatorName}(self) -> bool:
+        return <#if field.optional.clause??>${field.optional.clause}<#else>self.${field.optional.isSetIndicatorName}()</#if>
+        <#if withWriterCode>
+
+    def ${field.optional.isSetIndicatorName}(self) -> bool:
+        return not self.<@field_member_name field/> is None
+        </#if>
     </#if>
 </#list>
 <#list compoundFunctionsData.list as function>

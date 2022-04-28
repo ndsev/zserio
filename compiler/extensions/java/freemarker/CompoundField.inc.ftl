@@ -106,10 +106,6 @@ new ${field.typeInfo.arrayableInfo.arrayTraits.name}(<#rt>
     </#if>
 </#macro>
 
-<#macro field_optional_condition field>
-    <#if field.optional.clause??>${field.optional.clause}<#else><@compound_get_field field/> != null</#if><#t>
-</#macro>
-
 <#macro compound_read_field_offset_check field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}in.alignTo(java.lang.Byte.SIZE);
@@ -203,7 +199,7 @@ ${I}}
 <#macro compound_write_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
-${I}if (<@field_optional_condition field/>)
+${I}if (${field.optional.isUsedIndicatorName}())
 ${I}{
         <#if !field.optional.clause??>
 ${I}    out.writeBool(true);
@@ -258,7 +254,7 @@ ${I}<@compound_get_field field/>.write(out, false);
 <#macro compound_check_constraint_field field compoundName indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.constraint??>
-${I}if (<#if field.optional??>(<@field_optional_condition field/>) && </#if>!(${field.constraint}))
+${I}if (<#if field.optional??>${field.optional.isUsedIndicatorName}() && </#if>!(${field.constraint}))
 ${I}    throw new zserio.runtime.ConstraintError("Constraint violated at ${compoundName}.${field.name}!");
     </#if>
 </#macro>
@@ -339,7 +335,7 @@ ${I}endBitPosition = zserio.runtime.BitPositionUtil.alignTo(java.lang.Byte.SIZE,
             <#-- auto optional field -->
 ${I}endBitPosition += 1;
         </#if>
-${I}if (<@field_optional_condition field/>)
+${I}if (${field.optional.isUsedIndicatorName}())
 ${I}{
         <@compound_bitsizeof_field_inner field, indent+1, packed, index/>
 ${I}}
@@ -378,7 +374,7 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
             <#-- auto optional field -->
 ${I}endBitPosition += 1;
                 </#if>
-${I}if (<@field_optional_condition field/>)
+${I}if (${field.optional.isUsedIndicatorName}())
 ${I}{
         <@compound_initialize_offsets_field_inner field, indent+1, packed, index/>
 ${I}}
@@ -467,7 +463,7 @@ ${I}        ((<@compound_get_field field/> == null) ? 0 : <@compound_get_field f
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isPackable && !field.array??>
         <#if field.optional??>
-${I}if (<@field_optional_condition field/>)
+${I}if (${field.optional.isUsedIndicatorName}())
 ${I}{
         <@compound_init_packing_context_field_inner field, index, indent+1/>
 ${I}}

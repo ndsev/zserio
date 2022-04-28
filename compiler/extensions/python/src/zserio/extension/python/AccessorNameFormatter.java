@@ -12,10 +12,16 @@ import zserio.ast.ServiceMethod;
  */
 class AccessorNameFormatter
 {
-    public static String getIndicatorName(Field field)
+    public static String getIsUsedIndicatorName(Field field)
     {
         return INDICATOR_NAME_PREFIX + PythonSymbolConverter.toLowerSnakeCase(field.getName()) +
-                INDICATOR_NAME_SUFFIX;
+                IS_USED_INDICATOR_NAME_SUFFIX;
+    }
+
+    public static String getIsSetIndicatorName(Field field)
+    {
+        return INDICATOR_NAME_PREFIX + PythonSymbolConverter.toLowerSnakeCase(field.getName()) +
+                IS_SET_INDICATOR_NAME_SUFFIX;
     }
 
     public static String getFunctionName(Function function)
@@ -44,5 +50,6 @@ class AccessorNameFormatter
     }
 
     private static final String INDICATOR_NAME_PREFIX = "is_";
-    private static final String INDICATOR_NAME_SUFFIX = "_used";
+    private static final String IS_USED_INDICATOR_NAME_SUFFIX = "_used";
+    private static final String IS_SET_INDICATOR_NAME_SUFFIX = "_set";
 }

@@ -57,10 +57,20 @@ class OptionalRecursionTest(unittest.TestCase):
 
     def testHasNextData(self):
         block1 = self._createBlock(self.BLOCK1_DATA)
+        self.assertFalse(block1.is_next_data_set())
         self.assertFalse(block1.is_next_data_used())
 
+        block1.block_terminator = 1 # used but not set
+        self.assertFalse(block1.is_next_data_set())
+        self.assertTrue(block1.is_next_data_used())
+
         block12 = self._createBlock12(self.BLOCK1_DATA, self.BLOCK2_DATA)
+        self.assertTrue(block12.is_next_data_set())
         self.assertTrue(block12.is_next_data_used())
+
+        block12.block_terminator = 0 # set but not used
+        self.assertTrue(block12.is_next_data_set())
+        self.assertFalse(block12.is_next_data_used())
 
     def testBitSizeOf(self):
         block1 = self._createBlock(self.BLOCK1_DATA)

@@ -98,6 +98,7 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "initializeOffsets(");
         assertMethodNotPresent(methods, "write(");
         assertMethodNotPresent(methods, "setExtraParam(");
+        assertMethodNotPresent(methods, "isExtraParamSet(");
         assertMethodNotPresent(methods, "setParam(");
 
         assertMethodPresent(methods, "Item(java.io.File");
@@ -169,7 +170,10 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "initializeOffsets(");
         assertMethodNotPresent(methods, "write(");
         assertMethodNotPresent(methods, "setVersion(");
+        assertMethodNotPresent(methods, "isVersionSet(");
         assertMethodNotPresent(methods, "setNumElementsOffset(");
+        assertMethodNotPresent(methods, "setVersionString(");
+        assertMethodNotPresent(methods, "isVersionStringSet(");
         assertMethodNotPresent(methods, "setNumElements(");
         assertMethodNotPresent(methods, "setData(");
 

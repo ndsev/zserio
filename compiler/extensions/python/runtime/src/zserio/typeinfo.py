@@ -277,6 +277,14 @@ class MemberInfo:
           * denotes that the member is an optional, when the value is None, then it's an auto optional,
             otherwise it contains the optional clause
 
+        * `(MemberAttribute.IS_USED_INDICATOR_NAME, 'is_field_used)`
+
+          * if the member is an optional, the value contains the "is_used" indicator name generated in Python
+
+        * `(MemberAttribute.IS_SET_INDICATOR_NAME, 'is_field_set)`
+
+          * if the member is an optional, the value contains the "is_set" indicator name generated in Python
+
         * `(MemberAttribute.CONSTRAINT, 'field > 10')`
 
           * denotes that the member has a constraint, the value contains the constraint expression
@@ -352,6 +360,8 @@ class MemberAttribute(enum.Enum):
     OFFSET = enum.auto()
     INITIALIZER = enum.auto()
     OPTIONAL = enum.auto()
+    IS_USED_INDICATOR_NAME = enum.auto()
+    IS_SET_INDICATOR_NAME = enum.auto()
     CONSTRAINT = enum.auto()
     FUNCTION_NAME = enum.auto()
     FUNCTION_RESULT = enum.auto()

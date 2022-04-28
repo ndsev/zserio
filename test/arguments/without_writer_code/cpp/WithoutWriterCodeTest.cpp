@@ -404,7 +404,10 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     const char* type = "Item";
 
     assertMethodNotPresent(type, " Item()", "Item::Item()");
+    assertMethodNotPresent(type, "void setExtraParam(", "void Item::setExtraParam(");
+    assertMethodNotPresent(type, "bool isExtraParamSet(", "bool Item::isExtraParamSet(");
     assertMethodNotPresent(type, "void resetExtraParam(", "void Item::resetExtraParam(");
+    assertMethodNotPresent(type, "void setParam(", "void Item::setParam(");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Item::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Item::write(");
     assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
@@ -427,7 +430,6 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodPresent(type, "ItemType getItemType() const", "ItemType Item::getItemType() const");
     assertMethodPresent(type, "uint16_t getParam(", "uint16_t Item::getParam(");
     assertMethodPresent(type, "& getExtraParam(", "& Item::getExtraParam(");
-    assertMethodPresent(type, "bool isExtraParamSet(", "bool Item::isExtraParamSet(");
     assertMethodPresent(type, "bool isExtraParamUsed(", "bool Item::isExtraParamUsed(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Item::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool Item::operator==(");
@@ -510,8 +512,15 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     const char* type = "Tile";
 
     assertMethodNotPresent(type, " Tile()", "Tile::Tile()");
+    assertMethodNotPresent(type, "void setVersion(", "void Tile::setVersion(");
+    assertMethodNotPresent(type, "bool isVersionSet(", "bool Tile::isVersionSet(");
     assertMethodNotPresent(type, "void resetVersion(", "void Tile::resetVersion(");
+    assertMethodNotPresent(type, "void setNumElementOffset(", "void Tile::setNumElementOffset(");
+    assertMethodNotPresent(type, "void setVersionString(", "void Tile::setVersionString(");
+    assertMethodNotPresent(type, "bool isVersionStringSet(", "bool Tile::isVersionStringSet(");
     assertMethodNotPresent(type, "void resetVersionString(", "void Tile::resetVersionString(");
+    assertMethodNotPresent(type, "void setNumElements(", "void Tile::setNumElements(");
+    assertMethodNotPresent(type, "void setData(", "void Tile::setData(");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Tile::write(");
     assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
@@ -533,11 +542,9 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodPresent(type, "VersionAvailability getVersionAvailability() const",
             "VersionAvailability Tile::getVersionAvailability() const");
     assertMethodPresent(type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
-    assertMethodPresent(type, "bool isVersionSet(", "bool Tile::isVersionSet(");
     assertMethodPresent(type, "bool isVersionUsed(", "bool Tile::isVersionUsed(");
     assertMethodPresent(type, MethodNames<allocator_type>::GET_VERSION_STRING_DECLARATION,
             MethodNames<allocator_type>::GET_VERSION_STRING_DEFINITION);
-    assertMethodPresent(type, "bool isVersionStringSet(", "bool Tile::isVersionStringSet(");
     assertMethodPresent(type, "bool isVersionStringUsed(", "bool Tile::isVersionStringUsed(");
     assertMethodPresent(type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
     assertMethodPresent(type, "uint32_t getNumElements(", "uint32_t Tile::getNumElements(");

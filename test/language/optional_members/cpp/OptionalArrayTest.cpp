@@ -20,6 +20,12 @@ TEST(OptionalArrayTest, data8)
     test.setHasData8(true);
     test.setData8(vector_type<Data8>(4));
     ASSERT_EQ(4, test.getData8().size());
+
+    ASSERT_FALSE(test.isData16Set());
+    ASSERT_FALSE(test.isData16Used());
+    test.setData16(vector_type<int16_t>(4));
+    ASSERT_TRUE(test.isData16Set());
+    ASSERT_FALSE(test.isData16Used());
 }
 
 TEST(OptionalArrayTest, autoData8)
@@ -39,6 +45,12 @@ TEST(OptionalArrayTest, data16)
     test.setHasData8(false);
     test.setData16(vector_type<int16_t>(4));
     ASSERT_EQ(4, test.getData16().size());
+
+    ASSERT_FALSE(test.isData8Set());
+    ASSERT_FALSE(test.isData8Used());
+    test.setData8(vector_type<Data8>(4));
+    ASSERT_TRUE(test.isData8Set());
+    ASSERT_FALSE(test.isData8Used());
 }
 
 TEST(OptionalArrayTest, autoData16)

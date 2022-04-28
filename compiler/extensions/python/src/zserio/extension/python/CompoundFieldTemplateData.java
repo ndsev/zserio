@@ -198,15 +198,15 @@ public final class CompoundFieldTemplateData
 
     public static class Optional
     {
-        public Optional(Field field, ExpressionFormatter pythonExpressionFormatter,
-                boolean isRecursive) throws ZserioExtensionException
+        public Optional(Field field, ExpressionFormatter pythonExpressionFormatter, boolean isRecursive)
+                throws ZserioExtensionException
         {
-            final String indicatorName = AccessorNameFormatter.getIndicatorName(field);
             final Expression optionalClauseExpression = field.getOptionalClauseExpr();
             clause = (optionalClauseExpression == null) ? null :
                 pythonExpressionFormatter.formatGetter(optionalClauseExpression);
 
-            this.indicatorName = indicatorName;
+            this.isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
+            this.isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
             this.isRecursive = isRecursive;
         }
 
@@ -215,9 +215,14 @@ public final class CompoundFieldTemplateData
             return clause;
         }
 
-        public String getIndicatorName()
+        public String getIsUsedIndicatorName()
         {
-            return indicatorName;
+            return isUsedIndicatorName;
+        }
+
+        public String getIsSetIndicatorName()
+        {
+            return isSetIndicatorName;
         }
 
         public boolean getIsRecursive()
@@ -226,7 +231,8 @@ public final class CompoundFieldTemplateData
         }
 
         private final String clause;
-        private final String indicatorName;
+        private final String isUsedIndicatorName;
+        private final String isSetIndicatorName;
         private final boolean isRecursive;
     }
 

@@ -226,11 +226,17 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         member_info = fields[1]
         self.assertEqual("optionalSimpleStruct", member_info.schema_name)
         self._checkSimpleStruct(member_info.type_info)
-        self.assertEqual(2, len(member_info.attributes))
+        self.assertEqual(4, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("optional_simple_struct", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
         self.assertIsNone(member_info.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_simple_struct_used",
+                         member_info.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_simple_struct_set",
+                         member_info.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # array
         member_info = fields[2]
@@ -252,23 +258,35 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("int:5", member_info.type_info.schema_name)
         self.assertEqual(int, member_info.type_info.py_type)
         self.assertFalse(member_info.type_info.attributes)
-        self.assertEqual(3, len(member_info.attributes))
+        self.assertEqual(5, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("array_with_len", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
         self.assertEqual("self.array[0]", member_info.attributes[MemberAttribute.ARRAY_LENGTH])
         self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
         self.assertEqual("self.array[0] > 0", member_info.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_array_with_len_used",
+                         member_info.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_array_with_len_set",
+                         member_info.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # paramStructArray
         member_info = fields[4]
         self.assertEqual("paramStructArray", member_info.schema_name)
         self._checkParameterizedStruct(member_info.type_info)
-        self.assertEqual(4, len(member_info.attributes))
+        self.assertEqual(6, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("param_struct_array", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
         self.assertEqual(None, member_info.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_param_struct_array_used",
+                         member_info.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_param_struct_array_set",
+                         member_info.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
         self.assertIn(MemberAttribute.TYPE_ARGUMENTS, member_info.attributes)
         self.assertEqual(["self.simple_struct"], member_info.attributes[MemberAttribute.TYPE_ARGUMENTS])
         self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
@@ -374,11 +392,17 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(type_info.py_type, member_info.type_info.py_type)
         self.assertEqual(len(type_info.attributes[TypeAttribute.FIELDS]),
                          len(member_info.type_info.attributes[TypeAttribute.FIELDS]))
-        self.assertEqual(2, len(member_info.attributes))
+        self.assertEqual(4, len(member_info.attributes))
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
         self.assertEqual("field_recursion", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
         self.assertIsNone(member_info.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_field_recursion_used",
+                         member_info.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_field_recursion_set",
+                         member_info.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
 
         # arrayRecursion
         member_info = fields[2]

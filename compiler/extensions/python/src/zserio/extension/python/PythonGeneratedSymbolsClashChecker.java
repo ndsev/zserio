@@ -133,7 +133,10 @@ class PythonGeneratedSymbolsClashChecker extends DefaultTreeWalker
             for (Field field : compoundType.getFields())
             {
                 if (field.isOptional())
-                    indicatorNames.put(AccessorNameFormatter.getIndicatorName(field), field);
+                {
+                    indicatorNames.put(AccessorNameFormatter.getIsUsedIndicatorName(field), field);
+                    indicatorNames.put(AccessorNameFormatter.getIsSetIndicatorName(field), field);
+                }
             }
         }
 

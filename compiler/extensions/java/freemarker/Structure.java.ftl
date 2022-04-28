@@ -150,11 +150,18 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     </#if>
     <#if field.optional??>
-    public boolean ${field.optional.indicatorName}()
+    public boolean ${field.optional.isUsedIndicatorName}()
     {
-        return (<@field_optional_condition field/>);
+        return <#if field.optional.clause??>(${field.optional.clause});<#else>${field.optional.isSetIndicatorName}();</#if>
     }
 
+        <#if withWriterCode>
+    public boolean ${field.optional.isSetIndicatorName}()
+    {
+        return (<@field_member_name field/> != null);
+    }
+
+        </#if>
     </#if>
 </#list>
 <@compound_functions compoundFunctionsData/>

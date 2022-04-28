@@ -140,6 +140,10 @@ ${I})<#if comma>,</#if>
     <#if field.optional??>
         <#local optionalClause><#if field.optional.clause??>'${field.optional.clause}'<#else>None</#if></#local>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.OPTIONAL : ${optionalClause}"]>
+        <#local attributes+=["zserio.typeinfo.MemberAttribute.IS_USED_INDICATOR_NAME : '${field.optional.isUsedIndicatorName}'"]>
+        <#if withWriterCode>
+            <#local attributes+=["zserio.typeinfo.MemberAttribute.IS_SET_INDICATOR_NAME : '${field.optional.isSetIndicatorName}'"]>
+        </#if>
     </#if>
     <#if field.constraint??>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.CONSTRAINT : '${field.constraint}'"]>

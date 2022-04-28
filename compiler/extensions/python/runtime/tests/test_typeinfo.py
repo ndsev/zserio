@@ -32,6 +32,8 @@ class TypeInfoTest(unittest.TestCase):
                 MemberInfo("member_1", type_info_1),
                 MemberInfo("member_2", type_info_1,
                            attributes={MemberAttribute.OPTIONAL : None,
+                                       MemberAttribute.IS_USED_INDICATOR_NAME : "is_member_2_used",
+                                       MemberAttribute.IS_SET_INDICATOR_NAME : "is_member_2_set",
                                        MemberAttribute.PROPERTY_NAME : "member_2_prop_name"})
             ]}
         )
@@ -49,9 +51,13 @@ class TypeInfoTest(unittest.TestCase):
         member_2 = fields[1]
         self.assertEqual("member_2", member_2.schema_name)
         self.assertEqual(type_info_1, member_2.type_info)
-        self.assertEqual(2, len(member_2.attributes))
+        self.assertEqual(4, len(member_2.attributes))
         self.assertIn(MemberAttribute.OPTIONAL, member_2.attributes)
         self.assertIsNone(member_2.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_2.attributes)
+        self.assertEqual("is_member_2_used", member_2.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_2.attributes)
+        self.assertEqual("is_member_2_set", member_2.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
         self.assertIn(MemberAttribute.PROPERTY_NAME, member_2.attributes)
         self.assertEqual("member_2_prop_name", member_2.attributes[MemberAttribute.PROPERTY_NAME])
 

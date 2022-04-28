@@ -199,23 +199,23 @@ void ${name}::${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_ar
 
     </#if>
     <#if field.optional??>
+bool ${name}::${field.optional.isUsedIndicatorName}() const
+{
+    return (<@field_optional_condition field/>);
+}
+
         <#if withWriterCode>
+bool ${name}::${field.optional.isSetIndicatorName}() const
+{
+    return <@field_member_name field/>.hasValue();
+}
+
 void ${name}::${field.optional.resetterName}()
 {
     <@field_member_name field/>.reset();
 }
 
         </#if>
-bool ${name}::${field.optional.isSetIndicatorName}() const
-{
-    return <@field_member_name field/>.hasValue();
-}
-
-bool ${name}::${field.optional.isUsedIndicatorName}() const
-{
-    return (<@field_optional_condition field/>);
-}
-
     </#if>
 </#list>
 <@compound_functions_definition name, compoundFunctionsData/>

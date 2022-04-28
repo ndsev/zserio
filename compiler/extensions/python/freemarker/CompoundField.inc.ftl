@@ -1,12 +1,12 @@
 <#include "ArrayTraits.inc.ftl"/>
 <#macro compound_compare_field field>
-    <#if field.optional??>(not self.${field.optional.indicatorName}() or </#if><#t>
+    <#if field.optional??>(not self.${field.optional.isUsedIndicatorName}() or </#if><#t>
 self.<@field_member_name field/> == other.<@field_member_name field/><#if field.optional??>)</#if><#rt>
 </#macro>
 
 <#macro compound_hashcode_field field>
     <#if field.optional??>
-        if self.${field.optional.indicatorName}():
+        if self.${field.optional.isUsedIndicatorName}():
             <@compound_hashcode_field_inner field, 3/>
     <#else>
         <@compound_hashcode_field_inner field, 2/>
@@ -57,7 +57,7 @@ ${I}self.<@field_member_name field/> = <@field_argument_name field/>
             <#-- auto optional field -->
 ${I}end_bitposition += 1
         </#if>
-${I}if self.${field.optional.indicatorName}():
+${I}if self.${field.optional.isUsedIndicatorName}():
 <@compound_bitsizeof_field_inner field, indent + 1, packed, index/>
     <#else>
 <@compound_bitsizeof_field_inner field, indent, packed, index/>
@@ -105,7 +105,7 @@ ${I}end_bitposition = zserio.bitposition.alignto(8, end_bitposition)
             <#-- auto optional field -->
 ${I}end_bitposition += 1
         </#if>
-${I}if self.${field.optional.indicatorName}():
+${I}if self.${field.optional.isUsedIndicatorName}():
     <@compound_initialize_offsets_field_inner field, indent + 1, packed, index/>
     <#else>
 <@compound_initialize_offsets_field_inner field, indent, packed, index/>
@@ -145,7 +145,7 @@ ${I}end_bitposition = self.<@field_member_name field/>.initialize_offsets(end_bi
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
         <#if field.optional.clause??>
-${I}if self.${field.optional.indicatorName}():
+${I}if self.${field.optional.isUsedIndicatorName}():
         <#else>
 ${I}if zserio_reader.read_bool():
         </#if>
@@ -237,7 +237,7 @@ ${I}self.<@field_member_name field/> = ${field.typeInfo.typeFullName}.from_reade
 <#macro compound_write_field field compoundName indent packed=false index=0>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.optional??>
-${I}if self.${field.optional.indicatorName}():
+${I}if self.${field.optional.isUsedIndicatorName}():
         <#if !field.optional.clause??>
 ${I}    zserio_writer.write_bool(True)
         </#if>
@@ -486,7 +486,7 @@ ${I}                                        f"<{lowerbound}, {upperbound}>!")
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if field.isPackable && !field.array??>
         <#if field.optional??>
-${I}if self.${field.optional.indicatorName}():
+${I}if self.${field.optional.isUsedIndicatorName}():
     <@compound_init_packing_context_field_inner field, index, indent+1/>
         <#else>
 <@compound_init_packing_context_field_inner field, index, indent/>

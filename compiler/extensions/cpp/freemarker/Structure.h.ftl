@@ -104,11 +104,11 @@ public:
 <#list fieldList as field>
     <@compound_field_accessors_declaration field/>
     <#if field.optional??>
+    bool ${field.optional.isUsedIndicatorName}() const;
         <#if withWriterCode>
+    bool ${field.optional.isSetIndicatorName}() const;
     void ${field.optional.resetterName}();
         </#if>
-    bool ${field.optional.isSetIndicatorName}() const;
-    bool ${field.optional.isUsedIndicatorName}() const;
     </#if>
 
 </#list>

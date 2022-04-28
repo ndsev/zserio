@@ -1,4 +1,4 @@
-package generated_symbols.structure_indicator_function_clash_error;
+package generated_symbols.structure_is_used_indicator_function_clash_error;
 
 struct TestStructure
 {

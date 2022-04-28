@@ -185,9 +185,9 @@ public class CompoundFieldTemplateData
 
     public static class Optional
     {
-        public Optional(Expression optionalClauseExpression, String resetterName,
-                String isSetIndicatorName, String isUsedIndicatorName,
-                ExpressionFormatter cppExpressionFormatter, boolean isRecursive) throws ZserioExtensionException
+        public Optional(Expression optionalClauseExpression, String resetterName, String isSetIndicatorName,
+                String isUsedIndicatorName, ExpressionFormatter cppExpressionFormatter, boolean isRecursive)
+                        throws ZserioExtensionException
         {
             clause = (optionalClauseExpression == null) ? null :
                 cppExpressionFormatter.formatGetter(optionalClauseExpression);

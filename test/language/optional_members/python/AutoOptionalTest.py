@@ -47,12 +47,14 @@ class AutoOptionalTest(unittest.TestCase):
         container2.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
         self.assertEqual(hash(container1), hash(container2))
 
-    def testIsAutoOptionalIntUsed(self):
+    def testIsAutoOptionalIntSetAndUsed(self):
         container = self.api.Container()
         container.non_optional_int = self.NON_OPTIONAL_INT_VALUE
+        self.assertFalse(container.is_auto_optional_int_set())
         self.assertFalse(container.is_auto_optional_int_used())
 
         container.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
+        self.assertTrue(container.is_auto_optional_int_set())
         self.assertTrue(container.is_auto_optional_int_used())
 
     def testBitSizeOf(self):
@@ -84,6 +86,7 @@ class AutoOptionalTest(unittest.TestCase):
         reader.bitposition = 0
         readNonOptionalContainer = self.api.Container.from_reader(reader)
         self.assertEqual(self.NON_OPTIONAL_INT_VALUE, readNonOptionalContainer.non_optional_int)
+        self.assertFalse(readNonOptionalContainer.is_auto_optional_int_set())
         self.assertFalse(readNonOptionalContainer.is_auto_optional_int_used())
 
         container.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
@@ -94,6 +97,7 @@ class AutoOptionalTest(unittest.TestCase):
         reader.bitposition = 0
         readAutoOptionalContainer = self.api.Container.from_reader(reader)
         self.assertEqual(self.NON_OPTIONAL_INT_VALUE, readAutoOptionalContainer.non_optional_int)
+        self.assertTrue(readAutoOptionalContainer.is_auto_optional_int_set())
         self.assertTrue(readAutoOptionalContainer.is_auto_optional_int_used())
         self.assertEqual(self.AUTO_OPTIONAL_INT_VALUE, readAutoOptionalContainer.auto_optional_int)
 

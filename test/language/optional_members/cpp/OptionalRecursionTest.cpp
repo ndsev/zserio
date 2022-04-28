@@ -107,14 +107,14 @@ TEST_F(OptionalRecursionTest, isNextDataSetAndUsed)
     ASSERT_FALSE(block1.isNextDataSet());
     ASSERT_FALSE(block1.isNextDataUsed());
 
+    block1.setBlockTerminator(1); // used but not set
+    ASSERT_FALSE(block1.isNextDataSet());
+    ASSERT_TRUE(block1.isNextDataUsed());
+
     Block block12;
     fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
     ASSERT_TRUE(block12.isNextDataSet());
     ASSERT_TRUE(block12.isNextDataUsed());
-
-    block1.setBlockTerminator(1); // used but not set
-    ASSERT_FALSE(block1.isNextDataSet());
-    ASSERT_TRUE(block1.isNextDataUsed());
 
     block12.setBlockTerminator(0); // set but not used
     ASSERT_TRUE(block12.isNextDataSet());

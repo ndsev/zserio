@@ -25,14 +25,25 @@ public class OptionalArrayRecursionTest
     }
 
     @Test
-    public void isTeamMembersUsed()
+    public void isTeamMembersSetAndUsed()
     {
         final Employee employee = createEmployee(EMPLOYEE_DEVELOPER1_NAME, EMPLOYEE_DEVELOPER1_SALARY,
                 Title.DEVELOPER);
+        assertFalse(employee.isTeamMembersSet());
         assertFalse(employee.isTeamMembersUsed());
 
+        employee.setTitle(Title.TEAM_LEAD);
+        employee.setTeamMembers(null); // used but not set
+        assertFalse(employee.isTeamMembersSet());
+        assertTrue(employee.isTeamMembersUsed());
+
         final Employee teamLead = createTeamLead();
+        assertTrue(teamLead.isTeamMembersSet());
         assertTrue(teamLead.isTeamMembersUsed());
+
+        teamLead.setTitle(Title.DEVELOPER); // set but not used
+        assertTrue(teamLead.isTeamMembersSet());
+        assertFalse(teamLead.isTeamMembersUsed());
     }
 
     @Test
