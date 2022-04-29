@@ -107,7 +107,8 @@ TEST(JsonEncoderTest, encodeFloatingPoint)
 
     os.str("");
     JsonEncoder::encodeFloatingPoint(os, 1e20);
-    ASSERT_EQ("1e+20", os.str());
+    ASSERT_TRUE("1e+20" == os.str() || "1e+020" == os.str())
+            << "Value '" << os.str() << "' does not match to neither '1e+20' nor '1e+020'";
 
     os.str("");
     JsonEncoder::encodeFloatingPoint(os, static_cast<double>(NAN));
