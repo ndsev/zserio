@@ -299,7 +299,7 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectablePtr<ALLOC>& refle
         JsonEncoder::encodeIntegral(out(), reflectable->toUInt());
         break;
     case CppType::FLOAT:
-        JsonEncoder::encodeFloatingPoint(out(), reflectable->getFloat());
+        JsonEncoder::encodeFloatingPoint(out(), static_cast<double>(reflectable->getFloat()));
         break;
     case CppType::DOUBLE:
         JsonEncoder::encodeFloatingPoint(out(), reflectable->getDouble());

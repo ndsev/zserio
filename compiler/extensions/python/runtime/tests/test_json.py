@@ -23,7 +23,7 @@ class JsonWriterTest(unittest.TestCase):
         # note that this is not valid JSON
         self.assertEqual("\"text\": \"test\"", json_writer.get_io().getvalue())
 
-    def test_enum(self):
+    def test_enum_value(self):
         class DummyEnum:
             @property
             def value(self):
@@ -40,7 +40,7 @@ class JsonWriterTest(unittest.TestCase):
         # note that this is not valid JSON
         self.assertEqual("\"dummyEnum\": 0", json_writer.get_io().getvalue())
 
-    def test_bitmask(self):
+    def test_bitmask_value(self):
         class DummyBitmask:
             @property
             def value(self):

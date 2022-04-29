@@ -14,6 +14,26 @@ namespace zserio
 namespace
 {
 
+const FieldInfo BOOL_FIELD_INFO{
+    "boolField"_sv, BuiltinTypeInfo::getBool(),
+    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+};
+
+const FieldInfo INT_FIELD_INFO{
+    "intField"_sv, BuiltinTypeInfo::getInt32(),
+    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+};
+
+const FieldInfo FLOAT_FIELD_INFO{
+    "floatField"_sv, BuiltinTypeInfo::getFloat32(),
+    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+};
+
+const FieldInfo DOUBLE_FIELD_INFO{
+    "doubleField"_sv, BuiltinTypeInfo::getFloat64(),
+    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+};
+
 const FieldInfo TEXT_FIELD_INFO{
     "text"_sv, BuiltinTypeInfo::getString(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
@@ -41,6 +61,28 @@ const FieldInfo NESTED_FIELD_INFO{
 const FieldInfo ARRAY_FIELD_INFO{
     "array", BuiltinTypeInfo::getUInt32(),
     {}, {}, {}, {}, false, {}, {}, true, {}, false, false
+};
+
+const std::array<ItemInfo, 1> ENUM_ITEMS{ItemInfo{"ZERO"_sv, "0"_sv}};
+
+const EnumTypeInfo ENUM_TYPE_INFO{
+    "DummyEnum"_sv, BuiltinTypeInfo::getInt8(), {}, ENUM_ITEMS
+};
+
+const FieldInfo ENUM_FIELD_INFO{
+    "dummyEnum"_sv, ENUM_TYPE_INFO,
+    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+};
+
+const std::array<ItemInfo, 1> BITMASK_ITEMS{ItemInfo{"ZERO"_sv, "0"_sv}};
+
+const BitmaskTypeInfo BITMASK_TYPE_INFO{
+    "DummyBitmask"_sv, BuiltinTypeInfo::getUInt32(), {}, BITMASK_ITEMS
+};
+
+const FieldInfo BITMASK_FIELD_INFO{
+    "dummyBitmask"_sv, BITMASK_TYPE_INFO,
+    {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
 void walkNested(IWalkObserver& observer)
@@ -85,7 +127,7 @@ TEST(JsonWriterTest, nullValue)
     ASSERT_EQ("\"text\": null", os->str());
 }
 
-TEST(JsonWriterTest, value)
+TEST(JsonWriterTest, textValue)
 {
     auto os = std::make_shared<std::ostringstream>();
     JsonWriter jsonWriter(os);
@@ -95,6 +137,122 @@ TEST(JsonWriterTest, value)
 
     // note that this is not valid json
     ASSERT_EQ("\"text\": \"test\"", os->str());
+}
+
+TEST(JsonWriterTest, boolValue)
+{
+    auto os = std::make_shared<std::ostringstream>();
+    JsonWriter jsonWriter(os);
+    IWalkObserver& observer = jsonWriter;
+
+    observer.visitValue(ReflectableFactory::getBool(true), BOOL_FIELD_INFO);
+
+    // note that this is not valid json
+    ASSERT_EQ("\"boolField\": true", os->str());
+}
+
+TEST(JsonWriterTest, intValue)
+{
+    auto os = std::make_shared<std::ostringstream>();
+    JsonWriter jsonWriter(os);
+    IWalkObserver& observer = jsonWriter;
+
+    observer.visitValue(ReflectableFactory::getInt32(-13), INT_FIELD_INFO);
+
+    // note that this is not valid json
+    ASSERT_EQ("\"intField\": -13", os->str());
+}
+
+TEST(JsonWriterTest, floatValue)
+{
+    auto os = std::make_shared<std::ostringstream>();
+    JsonWriter jsonWriter(os);
+    IWalkObserver& observer = jsonWriter;
+
+    observer.visitValue(ReflectableFactory::getFloat32(3.5f), FLOAT_FIELD_INFO);
+
+    // note that this is not valid json
+    ASSERT_EQ("\"floatField\": 3.5", os->str());
+}
+
+TEST(JsonWriterTest, doubleValue)
+{
+    auto os = std::make_shared<std::ostringstream>();
+    JsonWriter jsonWriter(os);
+    IWalkObserver& observer = jsonWriter;
+
+    observer.visitValue(ReflectableFactory::getFloat64(9.875), DOUBLE_FIELD_INFO);
+
+    // note that this is not valid json
+    ASSERT_EQ("\"doubleField\": 9.875", os->str());
+}
+
+TEST(JsonWriterTest, enumValue)
+{
+    auto os = std::make_shared<std::ostringstream>();
+    JsonWriter jsonWriter(os);
+    IWalkObserver& observer = jsonWriter;
+
+    class DummyEnumReflectable : public ReflectableBase<std::allocator<uint8_t>>
+    {
+    public:
+        explicit DummyEnumReflectable() :
+                ReflectableBase<std::allocator<uint8_t>>(ENUM_TYPE_INFO)
+        {}
+
+        virtual int64_t toInt() const override
+        {
+            return 0;
+        }
+
+        virtual void write(BitStreamWriter&) override
+        {
+        }
+
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return 0;
+        }
+    };
+
+    observer.visitValue(std::make_shared<DummyEnumReflectable>(), ENUM_FIELD_INFO);
+
+    // note that this is not valid json
+    ASSERT_EQ("\"dummyEnum\": 0", os->str());
+}
+
+TEST(JsonWriterTest, bitmaskValue)
+{
+    auto os = std::make_shared<std::ostringstream>();
+    JsonWriter jsonWriter(os);
+    IWalkObserver& observer = jsonWriter;
+
+    class DummyBitmaskReflectable : public ReflectableBase<std::allocator<uint8_t>>
+    {
+    public:
+        explicit DummyBitmaskReflectable() :
+                ReflectableBase<std::allocator<uint8_t>>(BITMASK_TYPE_INFO)
+        {}
+
+        virtual uint64_t toUInt() const override
+        {
+            return 0;
+        }
+
+        virtual void write(BitStreamWriter&) override
+        {
+        }
+
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return 0;
+        }
+    };
+
+    observer.visitValue(std::make_shared<DummyBitmaskReflectable>(), BITMASK_FIELD_INFO);
+
+    // note that this is not valid json
+    ASSERT_EQ("\"dummyBitmask\": 0", os->str());
 }
 
 TEST(JsonWriterTest, compound)

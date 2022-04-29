@@ -110,13 +110,13 @@ TEST(JsonEncoderTest, encodeFloatingPoint)
     ASSERT_EQ("1e+20", os.str());
 
     os.str("");
-    JsonEncoder::encodeFloatingPoint(os, std::nan(""));
+    JsonEncoder::encodeFloatingPoint(os, static_cast<double>(NAN));
     ASSERT_EQ("NaN", os.str());
     os.str("");
-    JsonEncoder::encodeFloatingPoint(os, 1.0/0.0);
+    JsonEncoder::encodeFloatingPoint(os, static_cast<double>(INFINITY));
     ASSERT_EQ("Infinity", os.str());
     os.str("");
-    JsonEncoder::encodeFloatingPoint(os, -1.0/0.0);
+    JsonEncoder::encodeFloatingPoint(os, -static_cast<double>(INFINITY));
     ASSERT_EQ("-Infinity", os.str());
 }
 
