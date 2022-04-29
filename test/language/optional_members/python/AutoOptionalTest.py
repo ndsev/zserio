@@ -34,6 +34,9 @@ class AutoOptionalTest(unittest.TestCase):
         container2.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
         self.assertTrue(container1 == container2)
 
+        container1.auto_optional_int = None
+        self.assertFalse(container1 == container2)
+
     def testHash(self):
         container1 = self.api.Container()
         container2 = self.api.Container()
@@ -46,6 +49,9 @@ class AutoOptionalTest(unittest.TestCase):
 
         container2.auto_optional_int = self.AUTO_OPTIONAL_INT_VALUE
         self.assertEqual(hash(container1), hash(container2))
+
+        container1.auto_optional_int = None
+        self.assertTrue(hash(container1) != hash(container2))
 
     def testIsAutoOptionalIntSetAndUsed(self):
         container = self.api.Container()

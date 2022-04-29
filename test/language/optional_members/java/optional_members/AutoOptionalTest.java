@@ -50,6 +50,9 @@ public class AutoOptionalTest
 
         container2.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
         assertTrue(container1.equals(container2));
+
+        container1.setAutoOptionalInt(null);
+        assertFalse(container1.equals(container2));
     }
 
     @Test
@@ -66,6 +69,9 @@ public class AutoOptionalTest
 
         container2.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
         assertEquals(container1.hashCode(), container2.hashCode());
+
+        container1.setAutoOptionalInt(null);
+        assertTrue(container1.hashCode() != container2.hashCode());
     }
 
     @Test

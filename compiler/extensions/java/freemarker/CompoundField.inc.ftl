@@ -313,7 +313,7 @@ java.lang.Double.doubleToLongBits(<@compound_get_field field/>) == java.lang.Dou
         <#-- enum type: compare by getValue() and == -->
 ((<@compound_get_field field/> == null) ? that.<@compound_get_field field/> == null : <@compound_get_field field/>.getValue() == that.<@compound_get_field field/>.getValue())<#rt>
     <#else>
-        <#-- complex type: compare by equals() but account for possible null -->
+        <#-- complex type: compare by equals() but check for possible null -->
 ((<@compound_get_field field/> == null) ? that.<@compound_get_field field/> == null : <@compound_get_field field/>.equals(that.<@compound_get_field field/>))<#rt>
     </#if>
 </#macro>

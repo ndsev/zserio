@@ -178,9 +178,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
                     <@compound_compare_parameter parameter/><#if parameter_has_next || fieldList?has_content> &&<#else>;</#if>
     </#list>
     <#list fieldList as field>
-        <#if field.optional?? && field.optional.clause??>
-                    (!(${field.optional.clause}) ||
-                    <@compound_compare_field field/>)<#if field_has_next> &&<#else>;</#if>
+        <#if field.optional??>
+            <#-- if optional is not auto and is used the that should be is used as well because all previous paramaters and fields were the same. -->
+                    ((!${field.optional.isUsedIndicatorName}()) ? !that.${field.optional.isUsedIndicatorName}() :
+                        <@compound_compare_field field/>)<#if field_has_next> &&<#else>;</#if>
         <#else>
                     <@compound_compare_field field/><#if field_has_next> &&<#else>;</#if>
         </#if>
@@ -202,8 +203,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         <@compound_hashcode_parameter parameter/>
 </#list>
 <#list fieldList as field>
-    <#if field.optional?? && field.optional.clause??>
-        if (${field.optional.clause})
+    <#if field.optional??>
+        if (${field.optional.isUsedIndicatorName}())
             <@compound_hashcode_field field, 3/>
     <#else>
         <@compound_hashcode_field field, 2/>

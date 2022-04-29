@@ -36,9 +36,7 @@ class OptionalExpressionTest(unittest.TestCase):
         container2.black_color = self._createBlackColor(self.NUM_BLACK_TONES)
         self.assertFalse(container1 == container2)
 
-        container2.basic_color = self.api.BasicColor.WHITE
-        container2.num_black_tones = None
-        container2.black_color = None
+        container2.basic_color = self.api.BasicColor.WHITE # set but not used
         self.assertTrue(container1 == container2)
 
     def testHash(self):

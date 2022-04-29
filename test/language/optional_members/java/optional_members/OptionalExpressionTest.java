@@ -85,9 +85,7 @@ public class OptionalExpressionTest
         container2.setBlackColor(createBlackColor(NUM_BLACK_TONES));
         assertFalse(container1.equals(container2));
 
-        container2.setBasicColor(BasicColor.WHITE);
-        container2.setNumBlackTones(null);
-        container2.setBlackColor(null);
+        container2.setBasicColor(BasicColor.WHITE); // set but not used
         assertTrue(container1.equals(container2));
     }
 

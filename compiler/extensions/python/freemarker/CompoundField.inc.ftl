@@ -1,7 +1,8 @@
 <#include "ArrayTraits.inc.ftl"/>
 <#macro compound_compare_field field>
-    <#if field.optional??>(not self.${field.optional.isUsedIndicatorName}() or </#if><#t>
-self.<@field_member_name field/> == other.<@field_member_name field/><#if field.optional??>)</#if><#rt>
+    <#-- if optional is not auto and is used the other should be is used as well because all previous paramaters and fields were the same. -->
+    <#if field.optional??>(not other.${field.optional.isUsedIndicatorName}() if not self.${field.optional.isUsedIndicatorName}() else </#if><#t>
+(self.<@field_member_name field/> == other.<@field_member_name field/>)<#if field.optional??>)</#if><#rt>
 </#macro>
 
 <#macro compound_hashcode_field field>

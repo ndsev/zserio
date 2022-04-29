@@ -120,6 +120,9 @@ TEST_F(AutoOptionalTest, operatorEquality)
 
     container2.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
     ASSERT_TRUE(container1 == container2);
+
+    container1.resetAutoOptionalInt();
+    ASSERT_FALSE(container1 == container2);
 }
 
 TEST_F(AutoOptionalTest, hashCode)
@@ -134,6 +137,9 @@ TEST_F(AutoOptionalTest, hashCode)
 
     container2.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
     ASSERT_EQ(container1.hashCode(), container2.hashCode());
+
+    container1.resetAutoOptionalInt();
+    ASSERT_NE(container1.hashCode(), container2.hashCode());
 }
 
 TEST_F(AutoOptionalTest, write)

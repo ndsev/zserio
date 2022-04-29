@@ -307,8 +307,11 @@ bool ${name}::operator==(const ${name}&<#if compoundParametersData.list?has_cont
         return
                 <@compound_parameter_comparison compoundParametersData, fieldList?has_content/>
     <#list fieldList as field>
-        <#if field.optional?? && field.optional.clause??>
-                (!(${field.optional.clause}) || <@field_member_name field/> == other.<@field_member_name field/>)<#if field?has_next> &&<#else>;</#if>
+        <#if field.optional??>
+                <#-- if optional is not auto and is used the other should be is used as well because all previous paramaters
+                and fields were the same. -->
+                ((!${field.optional.isUsedIndicatorName}()) ? !other.${field.optional.isUsedIndicatorName}() : <#rt>
+                <#lt>(<@field_member_name field/> == other.<@field_member_name field/>))<#if field?has_next> &&<#else>;</#if>
         <#else>
                 (<@field_member_name field/> == other.<@field_member_name field/>)<#if field?has_next> &&<#else>;</#if>
         </#if>
@@ -325,8 +328,8 @@ uint32_t ${name}::hashCode() const
 
     <@compound_parameter_hash_code compoundParametersData/>
 <#list fieldList as field>
-    <#if field.optional?? && field.optional.clause??>
-    if (${field.optional.clause})
+    <#if field.optional??>
+    if (${field.optional.isUsedIndicatorName}())
         result = ::zserio::calcHashCode(result, <@field_member_name field/>);
     <#else>
     result = ::zserio::calcHashCode(result, <@field_member_name field/>);
