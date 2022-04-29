@@ -1,8 +1,6 @@
 #ifndef ZSERIO_I_WALK_FILTER_H_INC
 #define ZSERIO_I_WALK_FILTER_H_INC
 
-#include <memory>
-
 #include "zserio/WalkerConst.h"
 #include "zserio/IReflectable.h"
 
@@ -16,9 +14,6 @@ template <typename ALLOC = std::allocator<uint8_t>>
 class IBasicWalkFilter
 {
 public:
-    /** Shared pointer to the walk filter interface. */
-    using Ptr = std::shared_ptr<IBasicWalkFilter>;
-
     /** Destructor. */
     virtual ~IBasicWalkFilter() {}
 
@@ -98,14 +93,9 @@ public:
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 };
 
-/** Typedef to IWalkFilter smart pointer. */
-template <typename ALLOC = std::allocator<uint8_t>>
-using IBasicWalkFilterPtr = typename IBasicWalkFilter<ALLOC>::Ptr;
-
 /** Typedefs to walk filter interface provided for convenience - using default std::allocator<uint8_t>. */
 /** \{ */
 using IWalkFilter = IBasicWalkFilter<>;
-using IWalkFilterPtr = IBasicWalkFilterPtr<>;
 /** \} */
 
 } // namespace zserio

@@ -109,87 +109,87 @@ void walkArray(IWalkObserver& observer)
 
 TEST(JsonWriterTest, empty)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
 
-    ASSERT_EQ("", os->str());
+    ASSERT_EQ("", os.str());
 }
 
 TEST(JsonWriterTest, nullValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(nullptr, TEXT_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"text\": null", os->str());
+    ASSERT_EQ("\"text\": null", os.str());
 }
 
 TEST(JsonWriterTest, textValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"text\": \"test\"", os->str());
+    ASSERT_EQ("\"text\": \"test\"", os.str());
 }
 
 TEST(JsonWriterTest, boolValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(ReflectableFactory::getBool(true), BOOL_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"boolField\": true", os->str());
+    ASSERT_EQ("\"boolField\": true", os.str());
 }
 
 TEST(JsonWriterTest, intValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(ReflectableFactory::getInt32(-13), INT_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"intField\": -13", os->str());
+    ASSERT_EQ("\"intField\": -13", os.str());
 }
 
 TEST(JsonWriterTest, floatValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(ReflectableFactory::getFloat32(3.5f), FLOAT_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"floatField\": 3.5", os->str());
+    ASSERT_EQ("\"floatField\": 3.5", os.str());
 }
 
 TEST(JsonWriterTest, doubleValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
     observer.visitValue(ReflectableFactory::getFloat64(9.875), DOUBLE_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"doubleField\": 9.875", os->str());
+    ASSERT_EQ("\"doubleField\": 9.875", os.str());
 }
 
 TEST(JsonWriterTest, enumValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
@@ -218,12 +218,12 @@ TEST(JsonWriterTest, enumValue)
     observer.visitValue(std::make_shared<DummyEnumReflectable>(), ENUM_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"dummyEnum\": 0", os->str());
+    ASSERT_EQ("\"dummyEnum\": 0", os.str());
 }
 
 TEST(JsonWriterTest, bitmaskValue)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
@@ -252,12 +252,12 @@ TEST(JsonWriterTest, bitmaskValue)
     observer.visitValue(std::make_shared<DummyBitmaskReflectable>(), BITMASK_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"dummyBitmask\": 0", os->str());
+    ASSERT_EQ("\"dummyBitmask\": 0", os.str());
 }
 
 TEST(JsonWriterTest, compound)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
@@ -269,79 +269,79 @@ TEST(JsonWriterTest, compound)
     observer.endRoot(nullptr);
 
     ASSERT_EQ("{\"identifier\": 13, \"text\": \"test\", \"data\": "
-            "{\"buffer\": [31], \"bitSize\": 5}}", os->str());
+            "{\"buffer\": [31], \"bitSize\": 5}}", os.str());
 }
 
 TEST(JsonWriterTest, nested_compound)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}", os->str());
+    ASSERT_EQ("{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}", os.str());
 }
 
 TEST(JsonWriterTest, array)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
 
     walkArray(jsonWriter);
 
-    ASSERT_EQ("{\"array\": [1, 2]}", os->str());
+    ASSERT_EQ("{\"array\": [1, 2]}", os.str());
 }
 
 TEST(JsonWriterTest, arrayWithIndent)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os, 2);
 
     walkArray(jsonWriter);
 
-    ASSERT_EQ("{\n  \"array\": [\n    1,\n    2\n  ]\n}", os->str());
+    ASSERT_EQ("{\n  \"array\": [\n    1,\n    2\n  ]\n}", os.str());
 }
 
 TEST(JsonWriterTest, emptyIndent)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os, "");
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}", os->str());
+    ASSERT_EQ("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}", os.str());
 }
 
 TEST(JsonWriterTest, strIndent)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os, "  ");
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os->str());
+    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os.str());
 }
 
 TEST(JsonWriterTest, intIndent)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os, 2);
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os->str());
+    ASSERT_EQ("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}", os.str());
 }
 
 TEST(JsonWriterTest, compactSeparators)
 {
-    auto os = std::make_shared<std::ostringstream>();
+    std::ostringstream os;
     JsonWriter jsonWriter(os);
     jsonWriter.setItemSeparator(",");
     jsonWriter.setKeySeparator(":");
 
     walkNested(jsonWriter);
 
-    ASSERT_EQ("{\"identifier\":13,\"nested\":{\"text\":\"test\"}}", os->str());
+    ASSERT_EQ("{\"identifier\":13,\"nested\":{\"text\":\"test\"}}", os.str());
 }
 
 } // namespace zserio

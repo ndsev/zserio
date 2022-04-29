@@ -1,6 +1,5 @@
 #include <vector>
 #include <fstream>
-#include <memory>
 #include <string>
 
 #include "gtest/gtest.h"
@@ -27,7 +26,7 @@ using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uin
 
 using Walker = zserio::BasicWalker<allocator_type>;
 using JsonWriter = zserio::BasicJsonWriter<allocator_type>;
-using IWalkFilterPtr = zserio::IBasicWalkFilterPtr<allocator_type>;
+using IWalkFilter = zserio::IBasicWalkFilter<allocator_type>;
 using ArrayLengthWalkFilter = zserio::BasicArrayLengthWalkFilter<allocator_type>;
 using DepthWalkFilter = zserio::BasicDepthWalkFilter<allocator_type>;
 using RegexWalkFilter = zserio::BasicRegexWalkFilter<allocator_type>;
@@ -1699,11 +1698,10 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithOptionals)
     fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
     withTypeInfoCode.initializeOffsets(0);
 
-    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_OPTIONALS,
-            std::ios::out | std::ios::trunc);
+    std::ofstream jsonFile(JSON_NAME_WITH_OPTIONALS, std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
-    Walker walker(jsonWriterPtr);
+    JsonWriter jsonWriter(jsonFile, indent);
+    Walker walker(jsonWriter);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_OPTIONALS);
 }
@@ -1715,11 +1713,10 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithoutOptionals)
     fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
     withTypeInfoCode.initializeOffsets(0);
 
-    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITHOUT_OPTIONALS,
-            std::ios::out | std::ios::trunc);
+    std::ofstream jsonFile(JSON_NAME_WITHOUT_OPTIONALS, std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
-    Walker walker(jsonWriterPtr);
+    JsonWriter jsonWriter(jsonFile, indent);
+    Walker walker(jsonWriter);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
 }
@@ -1734,12 +1731,11 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithArrayLengthFilter)
     {
         const std::string jsonFileName = getJsonNameWithArrayLengthFilter(i);
 
-        std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(jsonFileName,
-                std::ios::out | std::ios::trunc);
+        std::ofstream jsonFile(jsonFileName, std::ios::out | std::ios::trunc);
         const uint8_t indent = 4;
-        std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
-        std::shared_ptr<ArrayLengthWalkFilter> walkFilterPtr = std::make_shared<ArrayLengthWalkFilter>(i);
-        Walker walker(jsonWriterPtr, walkFilterPtr);
+        JsonWriter jsonWriter(jsonFile, indent);
+        ArrayLengthWalkFilter walkFilter(i);
+        Walker walker(jsonWriter, walkFilter);
         walker.walk(withTypeInfoCode.reflectable());
         checkJsonFile(jsonFileName);
     }
@@ -1751,13 +1747,11 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth0Filter)
     fillWithTypeInfoCode(withTypeInfoCode);
     withTypeInfoCode.initializeOffsets(0);
 
-    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_DEPTH0_FILTER,
-            std::ios::out | std::ios::trunc);
+    std::ofstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER, std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr,
-            indent);
-    std::shared_ptr<DepthWalkFilter> walkFilterPtr = std::make_shared<DepthWalkFilter>(0);
-    Walker walker(jsonWriterPtr, walkFilterPtr);
+    JsonWriter jsonWriter(jsonFile, indent);
+    DepthWalkFilter walkFilter(0);
+    Walker walker(jsonWriter, walkFilter);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
 }
@@ -1768,16 +1762,13 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth1ArrayLength0Filter)
     fillWithTypeInfoCode(withTypeInfoCode);
     withTypeInfoCode.initializeOffsets(0);
 
-    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(
-            JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, std::ios::out | std::ios::trunc);
+    std::ofstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
-    const vector_type<IWalkFilterPtr> walkFilters = {
-        std::make_shared<DepthWalkFilter>(1),
-        std::make_shared<ArrayLengthWalkFilter>(0)
-    };
-    std::shared_ptr<AndWalkFilter> walkFilterPtr = std::make_shared<AndWalkFilter>(walkFilters);
-    Walker walker(jsonWriterPtr, walkFilterPtr);
+    JsonWriter jsonWriter(jsonFile, indent);
+    DepthWalkFilter depthFilter(1);
+    ArrayLengthWalkFilter arrayLengthFilter(0);
+    AndWalkFilter walkFilter({std::ref(depthFilter), std::ref(arrayLengthFilter)});
+    Walker walker(jsonWriter, walkFilter);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
 }
@@ -1788,12 +1779,11 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth5Filter)
     fillWithTypeInfoCode(withTypeInfoCode);
     withTypeInfoCode.initializeOffsets(0);
 
-    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_DEPTH5_FILTER,
-            std::ios::out | std::ios::trunc);
+    std::ofstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER, std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
-    std::shared_ptr<DepthWalkFilter> walkFilterPtr = std::make_shared<DepthWalkFilter>(5);
-    Walker walker(jsonWriterPtr, walkFilterPtr);
+    JsonWriter jsonWriter(jsonFile, indent);
+    DepthWalkFilter walkFilter(5);
+    Walker walker(jsonWriter, walkFilter);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
 }
@@ -1805,12 +1795,11 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithRegexFilter)
     fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
     withTypeInfoCode.initializeOffsets(0);
 
-    std::shared_ptr<std::ofstream> jsonFilePtr = std::make_shared<std::ofstream>(JSON_NAME_WITH_REGEX_FILTER,
-            std::ios::out | std::ios::trunc);
+    std::ofstream jsonFile(JSON_NAME_WITH_REGEX_FILTER, std::ios::out | std::ios::trunc);
     const uint8_t indent = 4;
-    std::shared_ptr<JsonWriter> jsonWriterPtr = std::make_shared<JsonWriter>(jsonFilePtr, indent);
-    std::shared_ptr<RegexWalkFilter> walkFilterPtr = std::make_shared<RegexWalkFilter>(".*fieldOffset");
-    Walker walker(jsonWriterPtr, walkFilterPtr);
+    JsonWriter jsonWriter(jsonFile, indent);
+    RegexWalkFilter walkFilter(".*fieldOffset");
+    Walker walker(jsonWriter, walkFilter);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
 }

@@ -787,7 +787,9 @@ TEST(WalkerTest, dummyObject)
 
 TEST(WalkerTest, walkNonCompound)
 {
-    Walker walker(std::make_shared<DefaultWalkObserver>(), std::make_shared<DefaultWalkFilter>());
+    DefaultWalkObserver defaultObserver;
+    DefaultWalkFilter defaultFilter;
+    Walker walker(defaultObserver, defaultFilter);
     DummyBitmask dummyBitmask;
 
     ASSERT_THROW(walker.walk(dummyBitmask.reflectable()), CppRuntimeException);
@@ -795,194 +797,196 @@ TEST(WalkerTest, walkNonCompound)
 
 TEST(WalkerTest, walk)
 {
-    auto observer = std::make_shared<TestWalkObserver>();
-    Walker walker(observer, std::make_shared<DefaultWalkFilter>());
+    TestWalkObserver observer;
+    DefaultWalkFilter defaultFilter;
+    Walker walker(observer, defaultFilter);
     DummyObject dummyObject = createDummyObject();
     walker.walk(dummyObject.reflectable());
 
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer->getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginArray"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(2, observer.getCaptures("beginArray"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("beginArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer->getCaptures("endArray"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(2, observer.getCaptures("endArray"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(5, observer->getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginCompound"_sv).at(4)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(5, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("beginCompound"_sv).at(4)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(5, observer->getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(4)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(5, observer.getCaptures("endCompound"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endCompound"_sv).at(4)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(7, observer->getCaptures("visitValue"_sv).size());
-    ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
-    ASSERT_EQ("nested", observer->getCaptures("visitValue"_sv).at(1)->toString());
-    ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(2)->toString());
-    ASSERT_EQ("1", observer->getCaptures("visitValue"_sv).at(3)->toString());
-    ASSERT_EQ(2, observer->getCaptures("visitValue"_sv).at(4)->toUInt());
-    ASSERT_EQ("nestedArray", observer->getCaptures("visitValue"_sv).at(5)->toString());
-    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(6));
+    ASSERT_EQ(7, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
+    ASSERT_EQ("nested", observer.getCaptures("visitValue"_sv).at(1)->toString());
+    ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(2)->toString());
+    ASSERT_EQ("1", observer.getCaptures("visitValue"_sv).at(3)->toString());
+    ASSERT_EQ(2, observer.getCaptures("visitValue"_sv).at(4)->toUInt());
+    ASSERT_EQ("nestedArray", observer.getCaptures("visitValue"_sv).at(5)->toString());
+    ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(6));
 }
 
 TEST(WalkerTest, walkWrongOptionalCondition)
 {
     // use case: optional condition states that the optional is used, but it is not set!
-    auto observer = std::make_shared<TestWalkObserver>();
-    Walker walker(observer, std::make_shared<DefaultWalkFilter>());
+    TestWalkObserver observer;
+    DefaultWalkFilter defaultFilter;
+    Walker walker(observer, defaultFilter);
     DummyObject dummyObject = createDummyObject(13, false);
     walker.walk(dummyObject.reflectable());
 
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer->getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginArray"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(2, observer.getCaptures("beginArray"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("beginArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer->getCaptures("endArray"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(2, observer.getCaptures("endArray"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endArray"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(4, observer->getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(4, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginCompound"_sv).at(2)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("beginCompound"_sv).at(3)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(4, observer->getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(4, observer.getCaptures("endCompound"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("endCompound"_sv).at(2)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endCompound"_sv).at(3)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(7, observer->getCaptures("visitValue"_sv).size());
-    ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
-    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(1));
-    ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(2)->toString());
-    ASSERT_EQ("1", observer->getCaptures("visitValue"_sv).at(3)->toString());
-    ASSERT_EQ(2, observer->getCaptures("visitValue"_sv).at(4)->toUInt());
-    ASSERT_EQ("nestedArray", observer->getCaptures("visitValue"_sv).at(5)->toString());
-    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(6));
+    ASSERT_EQ(7, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
+    ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(1));
+    ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(2)->toString());
+    ASSERT_EQ("1", observer.getCaptures("visitValue"_sv).at(3)->toString());
+    ASSERT_EQ(2, observer.getCaptures("visitValue"_sv).at(4)->toUInt());
+    ASSERT_EQ("nestedArray", observer.getCaptures("visitValue"_sv).at(5)->toString());
+    ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(6));
 }
 
 TEST(WalkerTest, walkSkipCompound)
 {
-    auto observer = std::make_shared<TestWalkObserver>();
-    auto testFilter = std::make_shared<TestWalkFilter>();
-    testFilter->beforeCompound(false);
-    Walker walker(observer, testFilter);
+    TestWalkObserver observer;
+    TestWalkFilter filter;
+    filter.beforeCompound(false);
+    Walker walker(observer, filter);
     DummyObject dummyObject = createDummyObject();
     walker.walk(dummyObject.reflectable());
 
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(1, observer->getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(1, observer.getCaptures("beginArray"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(1, observer->getCaptures("endArray"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(1, observer.getCaptures("endArray"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_TRUE(observer->getCaptures("beginCompound"_sv).empty());
-    ASSERT_TRUE(observer->getCaptures("endCompound"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("beginCompound"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("endCompound"_sv).empty());
 
-    ASSERT_EQ(3, observer->getCaptures("visitValue"_sv).size());
-    ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
-    ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(1)->toString());
-    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(2));
+    ASSERT_EQ(3, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
+    ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(1)->toString());
+    ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(2));
 }
 
 TEST(WalkerTest, walkSkipSiblings)
 {
-    auto observer = std::make_shared<TestWalkObserver>();
-    auto testFilter = std::make_shared<TestWalkFilter>();
-    testFilter->afterValue(false);
-    Walker walker(observer, testFilter);
+    TestWalkObserver observer;
+    TestWalkFilter filter;
+    filter.afterValue(false);
+    Walker walker(observer, filter);
     DummyObject dummyObject = createDummyObject();
     walker.walk(dummyObject.reflectable());
 
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_TRUE(observer->getCaptures("beginArray"_sv).empty());
-    ASSERT_TRUE(observer->getCaptures("endArray"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("beginArray"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("endArray"_sv).empty());
 
-    ASSERT_TRUE(observer->getCaptures("beginCompound"_sv).empty());
-    ASSERT_TRUE(observer->getCaptures("endCompound"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("beginCompound"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("endCompound"_sv).empty());
 
-    ASSERT_EQ(1, observer->getCaptures("visitValue"_sv).size());
-    ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
+    ASSERT_EQ(1, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
 }
 
 TEST(WalkerTest, walkSkipAfterNested)
 {
-    auto observer = std::make_shared<TestWalkObserver>();
-    auto testFilter = std::make_shared<TestWalkFilter>();
-    testFilter->afterCompound(false);
-    Walker walker(observer, testFilter);
+    TestWalkObserver observer;
+    TestWalkFilter filter;
+    filter.afterCompound(false);
+    Walker walker(observer, filter);
     DummyObject dummyObject = createDummyObject();
     walker.walk(dummyObject.reflectable());
 
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_TRUE(observer->getCaptures("beginArray"_sv).empty());
-    ASSERT_TRUE(observer->getCaptures("endArray"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("beginArray"_sv).empty());
+    ASSERT_TRUE(observer.getCaptures("endArray"_sv).empty());
 
-    ASSERT_EQ(1, observer->getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(1, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(1, observer->getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(1, observer.getCaptures("endCompound"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer->getCaptures("visitValue"_sv).size());
-    ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
-    ASSERT_EQ("nested", observer->getCaptures("visitValue"_sv).at(1)->toString());
+    ASSERT_EQ(2, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
+    ASSERT_EQ("nested", observer.getCaptures("visitValue"_sv).at(1)->toString());
 }
 
 TEST(WalkerTest, walkOnlyFirstElement)
 {
-    auto observer = std::make_shared<TestWalkObserver>();
-    auto testFilter = std::make_shared<TestWalkFilter>();
-    testFilter->onlyFirstElement(true);
-    Walker walker(observer, testFilter);
+    TestWalkObserver observer;
+    TestWalkFilter filter;
+    filter.onlyFirstElement(true);
+    Walker walker(observer, filter);
     DummyObject dummyObject = createDummyObject();
     walker.walk(dummyObject.reflectable());
 
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyObject"_sv, observer->getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("beginRoot"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyObject"_sv, observer.getCaptures("endRoot"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(1, observer->getCaptures("beginArray"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(1, observer.getCaptures("beginArray"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(1, observer->getCaptures("endArray"_sv).size());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(1, observer.getCaptures("endArray"_sv).size());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endArray"_sv).at(0)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer->getCaptures("beginCompound"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(2, observer.getCaptures("beginCompound"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("beginCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("beginCompound"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(2, observer->getCaptures("endCompound"_sv).size());
-    ASSERT_EQ("DummyNested"_sv, observer->getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
-    ASSERT_EQ("DummyUnion"_sv, observer->getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
+    ASSERT_EQ(2, observer.getCaptures("endCompound"_sv).size());
+    ASSERT_EQ("DummyNested"_sv, observer.getCaptures("endCompound"_sv).at(0)->getTypeInfo().getSchemaName());
+    ASSERT_EQ("DummyUnion"_sv, observer.getCaptures("endCompound"_sv).at(1)->getTypeInfo().getSchemaName());
 
-    ASSERT_EQ(5, observer->getCaptures("visitValue"_sv).size());
-    ASSERT_EQ(13, observer->getCaptures("visitValue"_sv).at(0)->toUInt());
-    ASSERT_EQ("nested", observer->getCaptures("visitValue"_sv).at(1)->toString());
-    ASSERT_EQ("test", observer->getCaptures("visitValue"_sv).at(2)->toString());
-    ASSERT_EQ("1", observer->getCaptures("visitValue"_sv).at(3)->toString());
-    ASSERT_EQ(nullptr, observer->getCaptures("visitValue"_sv).at(4));
+    ASSERT_EQ(5, observer.getCaptures("visitValue"_sv).size());
+    ASSERT_EQ(13, observer.getCaptures("visitValue"_sv).at(0)->toUInt());
+    ASSERT_EQ("nested", observer.getCaptures("visitValue"_sv).at(1)->toString());
+    ASSERT_EQ("test", observer.getCaptures("visitValue"_sv).at(2)->toString());
+    ASSERT_EQ("1", observer.getCaptures("visitValue"_sv).at(3)->toString());
+    ASSERT_EQ(nullptr, observer.getCaptures("visitValue"_sv).at(4));
 }
 
 TEST(DefaultWalkObserverTest, allMethods)
@@ -1254,7 +1258,9 @@ TEST(AndWalkFilterTest, empty)
 
 TEST(AndWalkFilterTest, trueTrue)
 {
-    AndWalkFilter andWalkFilter({std::make_shared<TestWalkFilter>(), std::make_shared<TestWalkFilter>()});
+    TestWalkFilter trueFilter1;
+    TestWalkFilter trueFilter2;
+    AndWalkFilter andWalkFilter({std::ref(trueFilter1), std::ref(trueFilter2)});
     IWalkFilter& walkFilter = andWalkFilter;
     IReflectablePtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
@@ -1270,21 +1276,21 @@ TEST(AndWalkFilterTest, trueTrue)
 
 TEST(AndWalkFilterTest, falseFalse)
 {
-    auto falseFilter1 = std::make_shared<TestWalkFilter>();
-    falseFilter1->beforeArray(false);
-    falseFilter1->afterArray(false);
-    falseFilter1->beforeCompound(false);
-    falseFilter1->afterCompound(false);
-    falseFilter1->beforeValue(false);
-    falseFilter1->afterValue(false);
-    auto falseFilter2 = std::make_shared<TestWalkFilter>();
-    falseFilter2->beforeArray(false);
-    falseFilter2->afterArray(false);
-    falseFilter2->beforeCompound(false);
-    falseFilter2->afterCompound(false);
-    falseFilter2->beforeValue(false);
-    falseFilter2->afterValue(false);
-    AndWalkFilter andWalkFilter({falseFilter1, falseFilter2});
+    TestWalkFilter falseFilter1;
+    falseFilter1.beforeArray(false);
+    falseFilter1.afterArray(false);
+    falseFilter1.beforeCompound(false);
+    falseFilter1.afterCompound(false);
+    falseFilter1.beforeValue(false);
+    falseFilter1.afterValue(false);
+    TestWalkFilter falseFilter2;
+    falseFilter2.beforeArray(false);
+    falseFilter2.afterArray(false);
+    falseFilter2.beforeCompound(false);
+    falseFilter2.afterCompound(false);
+    falseFilter2.beforeValue(false);
+    falseFilter2.afterValue(false);
+    AndWalkFilter andWalkFilter({std::ref(falseFilter1), std::ref(falseFilter2)});
     IWalkFilter& walkFilter = andWalkFilter;
     IReflectablePtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
@@ -1300,15 +1306,15 @@ TEST(AndWalkFilterTest, falseFalse)
 
 TEST(AndWalkFilterTest, trueFalse)
 {
-    auto trueFilter = std::make_shared<TestWalkFilter>();
-    auto falseFilter = std::make_shared<TestWalkFilter>();
-    falseFilter->beforeArray(false);
-    falseFilter->afterArray(false);
-    falseFilter->beforeCompound(false);
-    falseFilter->afterCompound(false);
-    falseFilter->beforeValue(false);
-    falseFilter->afterValue(false);
-    AndWalkFilter andWalkFilter({trueFilter, falseFilter});
+    TestWalkFilter trueFilter;
+    TestWalkFilter falseFilter;
+    falseFilter.beforeArray(false);
+    falseFilter.afterArray(false);
+    falseFilter.beforeCompound(false);
+    falseFilter.afterCompound(false);
+    falseFilter.beforeValue(false);
+    falseFilter.afterValue(false);
+    AndWalkFilter andWalkFilter({std::ref(trueFilter), std::ref(falseFilter)});
     IWalkFilter& walkFilter = andWalkFilter;
     IReflectablePtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];

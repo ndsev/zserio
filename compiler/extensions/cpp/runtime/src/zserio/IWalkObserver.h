@@ -1,8 +1,6 @@
 #ifndef ZSERIO_I_WALK_OBSERVER_H_INC
 #define ZSERIO_I_WALK_OBSERVER_H_INC
 
-#include <memory>
-
 #include "zserio/WalkerConst.h"
 #include "zserio/IReflectable.h"
 
@@ -16,9 +14,6 @@ template <typename ALLOC = std::allocator<uint8_t>>
 class IBasicWalkObserver
 {
 public:
-    /** Shared pointer to the walk observer interface. */
-    using Ptr = std::shared_ptr<IBasicWalkObserver>;
-
     /** Destructor. */
     virtual ~IBasicWalkObserver() {}
 
@@ -89,14 +84,9 @@ public:
             size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 };
 
-/** Typedef to IWalkObserver smart pointer. */
-template <typename ALLOC = std::allocator<uint8_t>>
-using IBasicWalkObserverPtr = typename IBasicWalkObserver<ALLOC>::Ptr;
-
 /** Typedefs to walk observer interface provided for convenience - using default std::allocator<uint8_t>. */
 /** \{ */
 using IWalkObserver = IBasicWalkObserver<>;
-using IWalkObserverPtr = IBasicWalkObserverPtr<>;
 /** \} */
 
 } // namespace zserio

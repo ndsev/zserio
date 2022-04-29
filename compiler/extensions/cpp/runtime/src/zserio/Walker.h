@@ -18,6 +18,9 @@
 namespace zserio
 {
 
+template <typename ALLOC>
+class BasicDefaultWalkFilter;
+
 /**
  * Walker through zserio objects, based on generated type info (see -withTypeInfoCode) and
  * reflectable interface (see -withReflectionCode).
@@ -27,16 +30,22 @@ class BasicWalker
 {
 public:
     /**
+     * Constructor using default walk filter.
+     *
+     * \param walkObserver Observer to use during walking.
+     */
+    explicit BasicWalker(IBasicWalkObserver<ALLOC>& walkObserver);
+
+    /**
      * Constructor.
      *
      * \param walkObserver Observer to use during walking.
      * \param walkFilter Walk filter to use.
      */
-    explicit BasicWalker(const IBasicWalkObserverPtr<ALLOC>& walkObserver,
-            const IBasicWalkFilterPtr<ALLOC>& walkFilter = nullptr, const ALLOC& allocator = ALLOC());
+    explicit BasicWalker(IBasicWalkObserver<ALLOC>& walkObserver, IBasicWalkFilter<ALLOC>& walkFilter);
 
     /**
-     * Walks given relfectable zserio compound object.
+     * Walks given reflectable zserio compound object.
      *
      * \param reflectable Zserio compound object to walk.
      */
@@ -48,8 +57,9 @@ private:
     bool walkFieldValue(const IBasicReflectablePtr<ALLOC>& reflectable, const FieldInfo& fieldInfo,
             size_t elementIndex = WALKER_NOT_ELEMENT);
 
-    IBasicWalkObserverPtr<ALLOC> m_walkObserver;
-    IBasicWalkFilterPtr<ALLOC> m_walkFilter;
+    IBasicWalkObserver<ALLOC>& m_walkObserver;
+    BasicDefaultWalkFilter<ALLOC> m_defaultWalkFilter;
+    IBasicWalkFilter<ALLOC>& m_walkFilter;
 };
 
 /**
@@ -228,7 +238,8 @@ template <typename ALLOC = std::allocator<uint8_t>>
 class BasicAndWalkFilter : public IBasicWalkFilter<ALLOC>
 {
 public:
-    using WalkFilters = vector<IBasicWalkFilterPtr<ALLOC>, ALLOC>;
+    using WalkFilterRef = std::reference_wrapper<IBasicWalkFilter<ALLOC>>;
+    using WalkFilters = vector<WalkFilterRef, ALLOC>;
 
     /**
      * Constructor.
@@ -255,8 +266,8 @@ private:
     bool applyFilters(FilterFunc filterFunc, Args... args)
     {
         bool result = true;
-        for (const auto& walkFilter : m_walkFilters)
-            result &= ((*walkFilter).*filterFunc)(args...);
+        for (IBasicWalkFilter<ALLOC>& walkFilter : m_walkFilters)
+            result &= (walkFilter.*filterFunc)(args...);
         return result;
     }
 
@@ -275,10 +286,13 @@ using AndWalkFilter = BasicAndWalkFilter<>;
 /** \} */
 
 template <typename ALLOC>
-BasicWalker<ALLOC>::BasicWalker(const IBasicWalkObserverPtr<ALLOC>& walkObserver,
-        const IBasicWalkFilterPtr<ALLOC>& walkFilter, const ALLOC& allocator) :
-        m_walkObserver(walkObserver),
-        m_walkFilter(walkFilter ? walkFilter : std::allocate_shared<BasicDefaultWalkFilter<ALLOC>>(allocator))
+BasicWalker<ALLOC>::BasicWalker(IBasicWalkObserver<ALLOC>& walkObserver) :
+        m_walkObserver(walkObserver), m_walkFilter(m_defaultWalkFilter)
+{}
+
+template <typename ALLOC>
+BasicWalker<ALLOC>::BasicWalker(IBasicWalkObserver<ALLOC>& walkObserver, IBasicWalkFilter<ALLOC>& walkFilter) :
+        m_walkObserver(walkObserver), m_walkFilter(walkFilter)
 {}
 
 template <typename ALLOC>
@@ -291,9 +305,9 @@ void BasicWalker<ALLOC>::walk(const IBasicReflectablePtr<ALLOC>& compound)
                 "' is not a compound type!";
     }
 
-    m_walkObserver->beginRoot(compound);
+    m_walkObserver.beginRoot(compound);
     walkFields(compound, typeInfo);
-    m_walkObserver->endRoot(compound);
+    m_walkObserver.endRoot(compound);
 }
 
 template <typename ALLOC>
@@ -330,18 +344,18 @@ bool BasicWalker<ALLOC>::walkField(const IBasicReflectablePtr<ALLOC>& reflectabl
 {
     if (reflectable && reflectable->isArray())
     {
-        if (m_walkFilter->beforeArray(reflectable, fieldInfo))
+        if (m_walkFilter.beforeArray(reflectable, fieldInfo))
         {
-            m_walkObserver->beginArray(reflectable, fieldInfo);
+            m_walkObserver.beginArray(reflectable, fieldInfo);
             for (size_t i = 0; i < reflectable->size(); ++i)
             {
                 if (!walkFieldValue(reflectable->at(i), fieldInfo, i))
                     break;
             }
-            m_walkObserver->endArray(reflectable, fieldInfo);
+            m_walkObserver.endArray(reflectable, fieldInfo);
 
         }
-        return m_walkFilter->afterArray(reflectable, fieldInfo);
+        return m_walkFilter.afterArray(reflectable, fieldInfo);
     }
     else
     {
@@ -356,19 +370,19 @@ bool BasicWalker<ALLOC>::walkFieldValue(const IBasicReflectablePtr<ALLOC>& refle
     const ITypeInfo& typeInfo = fieldInfo.typeInfo;
     if (reflectable && TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
-        if (m_walkFilter->beforeCompound(reflectable, fieldInfo, elementIndex))
+        if (m_walkFilter.beforeCompound(reflectable, fieldInfo, elementIndex))
         {
-            m_walkObserver->beginCompound(reflectable, fieldInfo, elementIndex);
+            m_walkObserver.beginCompound(reflectable, fieldInfo, elementIndex);
             walkFields(reflectable, typeInfo);
-            m_walkObserver->endCompound(reflectable, fieldInfo, elementIndex);
+            m_walkObserver.endCompound(reflectable, fieldInfo, elementIndex);
         }
-        return m_walkFilter->afterCompound(reflectable, fieldInfo, elementIndex);
+        return m_walkFilter.afterCompound(reflectable, fieldInfo, elementIndex);
     }
     else
     {
-        if (m_walkFilter->beforeValue(reflectable, fieldInfo, elementIndex))
-            m_walkObserver->visitValue(reflectable, fieldInfo, elementIndex);
-        return m_walkFilter->afterValue(reflectable, fieldInfo, elementIndex);
+        if (m_walkFilter.beforeValue(reflectable, fieldInfo, elementIndex))
+            m_walkObserver.visitValue(reflectable, fieldInfo, elementIndex);
+        return m_walkFilter.afterValue(reflectable, fieldInfo, elementIndex);
     }
 }
 
@@ -643,12 +657,11 @@ bool BasicRegexWalkFilter<ALLOC>::matchSubtree(const IBasicReflectablePtr<ALLOC>
     if (value != nullptr && TypeInfoUtil::isCompound(fieldInfo.typeInfo.getSchemaType()))
     {
         // is a not null compound, try to find match within its subtree
-        auto subtreeFilter = std::allocate_shared<detail::SubtreeRegexWalkFilter<ALLOC>>(
-                m_allocator, m_currentPath, m_pathRegex, m_allocator);
-        BasicWalker<ALLOC> walker(
-                std::allocate_shared<BasicDefaultWalkObserver<ALLOC>>(m_allocator), subtreeFilter);
+        BasicDefaultWalkObserver<ALLOC> defaultObserver;
+        detail::SubtreeRegexWalkFilter<ALLOC> subtreeFilter(m_currentPath, m_pathRegex, m_allocator);
+        BasicWalker<ALLOC> walker(defaultObserver, subtreeFilter);
         walker.walk(value);
-        return subtreeFilter->matches();
+        return subtreeFilter.matches();
     }
     else
     {
