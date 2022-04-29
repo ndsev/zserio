@@ -1767,7 +1767,7 @@ TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth1ArrayLength0Filter)
     JsonWriter jsonWriter(jsonFile, indent);
     DepthWalkFilter depthFilter(1);
     ArrayLengthWalkFilter arrayLengthFilter(0);
-    AndWalkFilter walkFilter({std::ref(depthFilter), std::ref(arrayLengthFilter)});
+    AndWalkFilter walkFilter({std::ref<IWalkFilter>(depthFilter), std::ref<IWalkFilter>(arrayLengthFilter)});
     Walker walker(jsonWriter, walkFilter);
     walker.walk(withTypeInfoCode.reflectable());
     checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);

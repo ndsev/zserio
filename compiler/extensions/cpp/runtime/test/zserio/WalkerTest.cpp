@@ -1260,7 +1260,7 @@ TEST(AndWalkFilterTest, trueTrue)
 {
     TestWalkFilter trueFilter1;
     TestWalkFilter trueFilter2;
-    AndWalkFilter andWalkFilter({std::ref(trueFilter1), std::ref(trueFilter2)});
+    AndWalkFilter andWalkFilter({std::ref<IWalkFilter>(trueFilter1), std::ref<IWalkFilter>(trueFilter2)});
     IWalkFilter& walkFilter = andWalkFilter;
     IReflectablePtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
@@ -1290,7 +1290,7 @@ TEST(AndWalkFilterTest, falseFalse)
     falseFilter2.afterCompound(false);
     falseFilter2.beforeValue(false);
     falseFilter2.afterValue(false);
-    AndWalkFilter andWalkFilter({std::ref(falseFilter1), std::ref(falseFilter2)});
+    AndWalkFilter andWalkFilter({std::ref<IWalkFilter>(falseFilter1), std::ref<IWalkFilter>(falseFilter2)});
     IWalkFilter& walkFilter = andWalkFilter;
     IReflectablePtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
@@ -1314,7 +1314,7 @@ TEST(AndWalkFilterTest, trueFalse)
     falseFilter.afterCompound(false);
     falseFilter.beforeValue(false);
     falseFilter.afterValue(false);
-    AndWalkFilter andWalkFilter({std::ref(trueFilter), std::ref(falseFilter)});
+    AndWalkFilter andWalkFilter({std::ref<IWalkFilter>(trueFilter), std::ref<IWalkFilter>(falseFilter)});
     IWalkFilter& walkFilter = andWalkFilter;
     IReflectablePtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
