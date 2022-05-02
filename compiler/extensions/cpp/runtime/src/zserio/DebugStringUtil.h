@@ -24,7 +24,7 @@ namespace detail
 // Implementations needs to be in detail because old MSVC compiler 2015 has problems with calling overload.
 
 template <typename T, typename WALK_FILTER, typename ALLOC>
-void toDebugStream(std::ostream& os, T& object, uint8_t indent, WALK_FILTER&& walkFilter,
+void toDebugStream(T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator)
 {
     JsonWriter jsonWriter(os, indent);
@@ -36,19 +36,19 @@ template <typename T, typename WALK_FILTER, typename ALLOC>
 string<ALLOC> toDebugString(T& object, uint8_t indent, WALK_FILTER&& walkFilter, const ALLOC& allocator)
 {
     std::ostringstream os = std::ostringstream(string<ALLOC>(allocator));
-    detail::toDebugStream(os, object, indent, walkFilter, allocator);
+    detail::toDebugStream(object, os, indent, walkFilter, allocator);
     return os.str();
 }
 
 template <typename T, typename WALK_FILTER, typename ALLOC>
-void toDebugFile(const std::string& fileName, T& object, uint8_t indent, WALK_FILTER&& walkFilter,
+void toDebugFile(T& object, const std::string& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator)
 {
     std::ofstream os = std::ofstream(fileName.c_str(), std::ofstream::out);
     if (!os)
         throw CppRuntimeException("toDebugFile: Failed to open '" + fileName +"' for writing!");
 
-    detail::toDebugStream(os, object, indent, walkFilter, allocator);
+    detail::toDebugStream(object, os, indent, walkFilter, allocator);
 
     if (!os)
         throw CppRuntimeException("toDebugFile: Failed to write '" + fileName +"'!");
@@ -59,53 +59,53 @@ void toDebugFile(const std::string& fileName, T& object, uint8_t indent, WALK_FI
 /**
  * Writes contents of given zserio object to debug stream in JSON format using zserio Walker with JsonWriter.
  *
- * \param os Output stream to use.
  * \param object Zserio object to use.
+ * \param os Output stream to use.
  * \param allocator Allocator to use.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toDebugStream(std::ostream& os, T& object, const ALLOC& allocator = ALLOC())
+void toDebugStream(T& object, std::ostream& os, const ALLOC& allocator = ALLOC())
 {
-    detail::toDebugStream(os, object, 4, DefaultWalkFilter(), allocator);
+    detail::toDebugStream(object, os, 4, DefaultWalkFilter(), allocator);
 }
 
 /**
  * Writes contents of given zserio object to debug stream in JSON format using zserio Walker with JsonWriter.
  *
- * \param os Output stream to use.
  * \param object Zserio object to use.
+ * \param os Output stream to use.
  * \param indent Indent argument for JsonWriter.
  * \param allocator Allocator to use.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toDebugStream(std::ostream& os, T& object, uint8_t indent, const ALLOC& allocator = ALLOC())
+void toDebugStream(T& object, std::ostream& os, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
-    detail::toDebugStream(os, object, indent, DefaultWalkFilter(), allocator);
+    detail::toDebugStream(object, os, indent, DefaultWalkFilter(), allocator);
 }
 
 /**
  * Writes contents of given zserio object to debug stream in JSON format using zserio Walker with JsonWriter.
  *
- * \param os Output stream to use.
  * \param object Zserio object to use.
+ * \param os Output stream to use.
  * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<std::is_base_of<IWalkFilter,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
-void toDebugStream(std::ostream& os, T& object, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
+void toDebugStream(T& object, std::ostream& os, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
 {
-    detail::toDebugStream(os, object, 4, walkFilter, allocator);
+    detail::toDebugStream(object, os, 4, walkFilter, allocator);
 }
 
 /**
  * Writes contents of given zserio object to debug stream in JSON format using zserio Walker with JsonWriter.
  *
- * \param os Output stream to use.
  * \param object Zserio object to use.
+ * \param os Output stream to use.
  * \param indent Indent argument for JsonWriter.
  * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
@@ -113,10 +113,10 @@ void toDebugStream(std::ostream& os, T& object, WALK_FILTER&& walkFilter, const 
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<std::is_base_of<IWalkFilter,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
-void toDebugStream(std::ostream& os, T& object, uint8_t indent, WALK_FILTER&& walkFilter,
+void toDebugStream(T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
-    detail::toDebugStream(os, object, indent, walkFilter, allocator);
+    detail::toDebugStream(object, os, indent, walkFilter, allocator);
 }
 
 /**
@@ -189,56 +189,56 @@ string<ALLOC> toDebugString(T& object, uint8_t indent, WALK_FILTER&& walkFilter,
 /**
  * Writes contents of given zserio object to debug file in JSON format using zserio Walker with JsonWriter.
  *
- * \param fileName File name to write.
  * \param object Zserio object to use.
+ * \param fileName File name to write.
  * \param indent Indent argument for JsonWriter.
  * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toDebugFile(const std::string& fileName, T& object, const ALLOC& allocator = ALLOC())
+void toDebugFile(T& object, const std::string& fileName, const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugFile(fileName, object, 4, DefaultWalkFilter(), allocator);
+    return detail::toDebugFile(object, fileName, 4, DefaultWalkFilter(), allocator);
 }
 
 /**
  * Writes contents of given zserio object to debug file in JSON format using zserio Walker with JsonWriter.
  *
- * \param fileName File name to write.
  * \param object Zserio object to use.
+ * \param fileName File name to write.
  * \param indent Indent argument for JsonWriter.
  * \param allocator Allocator to use.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toDebugFile(const std::string& fileName, T& object, uint8_t indent, const ALLOC& allocator = ALLOC())
+void toDebugFile(T& object, const std::string& fileName, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugFile(fileName, object, indent, DefaultWalkFilter(), allocator);
+    return detail::toDebugFile(object, fileName, indent, DefaultWalkFilter(), allocator);
 }
 
 /**
  * Writes contents of given zserio object to debug file in JSON format using zserio Walker with JsonWriter.
  *
- * \param fileName File name to write.
  * \param object Zserio object to use.
+ * \param fileName File name to write.
  * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<std::is_base_of<IWalkFilter,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
-void toDebugFile(const std::string& fileName, T& object, WALK_FILTER&& walkFilter,
+void toDebugFile(T& object, const std::string& fileName, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugFile(fileName, object, 4, walkFilter, allocator);
+    return detail::toDebugFile(object, fileName, 4, walkFilter, allocator);
 }
 
 /**
  * Writes contents of given zserio object to debug file in JSON format using zserio Walker with JsonWriter.
  *
- * \param fileName File name to write.
  * \param object Zserio object to use.
+ * \param fileName File name to write.
  * \param indent Indent argument for JsonWriter.
  * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
@@ -246,10 +246,10 @@ void toDebugFile(const std::string& fileName, T& object, WALK_FILTER&& walkFilte
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<std::is_base_of<IWalkFilter,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
-void toDebugFile(const std::string& fileName, T& object, uint8_t indent, WALK_FILTER&& walkFilter,
+void toDebugFile(T& object, const std::string& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugFile(fileName, object, indent, walkFilter, allocator);
+    return detail::toDebugFile(object, fileName, indent, walkFilter, allocator);
 }
 
 } // namespace zserio

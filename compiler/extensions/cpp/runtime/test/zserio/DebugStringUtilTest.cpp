@@ -67,7 +67,7 @@ TEST(DebugStringUtilTest, toDebugStreamDefault)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject);
+    toDebugStream(dummyObject, os);
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
 }
 
@@ -75,7 +75,7 @@ TEST(DebugStringUtilTest, toDebugStreamDefaultWithAlloc)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject, std::allocator<uint8_t>());
+    toDebugStream(dummyObject, os, std::allocator<uint8_t>());
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
 }
 
@@ -83,7 +83,7 @@ TEST(DebugStringUtilTest, toDebugStreamIndent2)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject, 2);
+    toDebugStream(dummyObject, os, 2);
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
 }
 
@@ -91,7 +91,7 @@ TEST(DebugStringUtilTest, toDebugStreamIndent2WithAlloc)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject, 2, std::allocator<uint8_t>());
+    toDebugStream(dummyObject, os, 2, std::allocator<uint8_t>());
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
 }
 
@@ -99,7 +99,7 @@ TEST(DebugStringUtilTest, toDebugStreamDefaultFilter)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject, DepthWalkFilter(0));
+    toDebugStream(dummyObject, os, DepthWalkFilter(0));
     ASSERT_EQ("{\n}", os.str());
 }
 
@@ -107,7 +107,7 @@ TEST(DebugStringUtilTest, toDebugStreamDefaultFilterWithAlloc)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject, DefaultWalkFilter(), std::allocator<uint8_t>());
+    toDebugStream(dummyObject, os, DefaultWalkFilter(), std::allocator<uint8_t>());
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
 }
 
@@ -115,7 +115,7 @@ TEST(DebugStringUtilTest, toDebugStreamIndent2DefaultFilter)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject, 2, DefaultWalkFilter());
+    toDebugStream(dummyObject, os, 2, DefaultWalkFilter());
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
 }
 
@@ -123,7 +123,7 @@ TEST(DebugStringUtilTest, toDebugStreamIndent2DefaultFilterWithAlloc)
 {
     std::ostringstream os;
     DummyObject dummyObject;
-    toDebugStream(os, dummyObject, 2, DepthWalkFilter(0), std::allocator<uint8_t>());
+    toDebugStream(dummyObject, os, 2, DepthWalkFilter(0), std::allocator<uint8_t>());
     ASSERT_EQ("{\n}", os.str());
 }
 
@@ -180,7 +180,7 @@ TEST(DebugStringUtilTest, toDebugStringIndent2DefaultFilterWithAlloc)
 TEST(DebugStringUtilTest, toDebugFileDefault)
 {
     DummyObject dummyObject;
-    toDebugFile(TEST_FILE_NAME, dummyObject);
+    toDebugFile(dummyObject, TEST_FILE_NAME);
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
@@ -191,7 +191,7 @@ TEST(DebugStringUtilTest, toDebugFileDefault)
 TEST(DebugStringUtilTest, toDebugFileDefaultWithAlloc)
 {
     DummyObject dummyObject;
-    toDebugFile(TEST_FILE_NAME, dummyObject, std::allocator<uint8_t>());
+    toDebugFile(dummyObject, TEST_FILE_NAME, std::allocator<uint8_t>());
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
@@ -202,7 +202,7 @@ TEST(DebugStringUtilTest, toDebugFileDefaultWithAlloc)
 TEST(DebugStringUtilTest, toDebugFileIndent2)
 {
     DummyObject dummyObject;
-    toDebugFile(TEST_FILE_NAME, dummyObject, 2);
+    toDebugFile(dummyObject, TEST_FILE_NAME, 2);
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
@@ -213,7 +213,7 @@ TEST(DebugStringUtilTest, toDebugFileIndent2)
 TEST(DebugStringUtilTest, toDebugFileIndent2WithAlloc)
 {
     DummyObject dummyObject;
-    toDebugFile(TEST_FILE_NAME, dummyObject, 2, std::allocator<uint8_t>());
+    toDebugFile(dummyObject, TEST_FILE_NAME, 2, std::allocator<uint8_t>());
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
@@ -224,7 +224,7 @@ TEST(DebugStringUtilTest, toDebugFileIndent2WithAlloc)
 TEST(DebugStringUtilTest, toDebugFileDefaultFilter)
 {
     DummyObject dummyObject;
-    toDebugFile(TEST_FILE_NAME, dummyObject, DefaultWalkFilter());
+    toDebugFile(dummyObject, TEST_FILE_NAME, DefaultWalkFilter());
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
@@ -236,7 +236,7 @@ TEST(DebugStringUtilTest, toDebugFileDefaultFilterWithAlloc)
 {
     DummyObject dummyObject;
     DefaultWalkFilter defaultWalkFilter;
-    toDebugFile(TEST_FILE_NAME, dummyObject, defaultWalkFilter, std::allocator<uint8_t>());
+    toDebugFile(dummyObject, TEST_FILE_NAME, defaultWalkFilter, std::allocator<uint8_t>());
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
@@ -248,7 +248,7 @@ TEST(DebugStringUtilTest, toDebugFileIndent2DefaultFilter)
 {
     DummyObject dummyObject;
     DepthWalkFilter depthWalkFilter(0);
-    toDebugFile(TEST_FILE_NAME, dummyObject, 2, depthWalkFilter);
+    toDebugFile(dummyObject, TEST_FILE_NAME, 2, depthWalkFilter);
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
@@ -260,7 +260,7 @@ TEST(DebugStringUtilTest, toDebugFileIndent2DefaultFilterWithAlloc)
 {
     DummyObject dummyObject;
     DefaultWalkFilter defaultWalkFilter;
-    toDebugFile(TEST_FILE_NAME, dummyObject, 2, defaultWalkFilter, std::allocator<uint8_t>());
+    toDebugFile(dummyObject, TEST_FILE_NAME, 2, defaultWalkFilter, std::allocator<uint8_t>());
 
     std::ifstream is(TEST_FILE_NAME);
     std::stringstream ss;
