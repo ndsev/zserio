@@ -55,7 +55,6 @@ public class DepthWalkFilter implements WalkFilter
         return true;
     }
 
-    // TODO[mikir] Change it in C++ and Python as well?
     private boolean enterDepthLevel()
     {
         final boolean enter = (depth <= maxDepth);

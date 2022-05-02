@@ -147,6 +147,9 @@ public:
             size_t elementIndex) override;
 
 private:
+    bool enterDepthLevel();
+    bool leaveDepthLevel();
+
     size_t m_maxDepth;
     size_t m_depth;
 };
@@ -394,31 +397,25 @@ BasicDepthWalkFilter<ALLOC>::BasicDepthWalkFilter(size_t maxDepth) :
 template <typename ALLOC>
 bool BasicDepthWalkFilter<ALLOC>::beforeArray(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&)
 {
-    const bool enter = m_depth <= m_maxDepth;
-    m_depth += 1;
-    return enter;
+    return enterDepthLevel();
 }
 
 template <typename ALLOC>
 bool BasicDepthWalkFilter<ALLOC>::afterArray(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&)
 {
-    m_depth -= 1;
-    return true;
+    return leaveDepthLevel();
 }
 
 template <typename ALLOC>
 bool BasicDepthWalkFilter<ALLOC>::beforeCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t)
 {
-    const bool enter = m_depth <= m_maxDepth;
-    m_depth += 1;
-    return enter;
+    return enterDepthLevel();
 }
 
 template <typename ALLOC>
 bool BasicDepthWalkFilter<ALLOC>::afterCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t)
 {
-    m_depth -= 1;
-    return true;
+    return leaveDepthLevel();
 }
 
 template <typename ALLOC>
@@ -430,6 +427,21 @@ bool BasicDepthWalkFilter<ALLOC>::beforeValue(const IBasicReflectablePtr<ALLOC>&
 template <typename ALLOC>
 bool BasicDepthWalkFilter<ALLOC>::afterValue(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t)
 {
+    return true;
+}
+
+template <typename ALLOC>
+bool BasicDepthWalkFilter<ALLOC>::enterDepthLevel()
+{
+    const bool enter = (m_depth <= m_maxDepth);
+    m_depth += 1;
+    return enter;
+}
+
+template <typename ALLOC>
+bool BasicDepthWalkFilter<ALLOC>::leaveDepthLevel()
+{
+    m_depth -= 1;
     return true;
 }
 
@@ -583,9 +595,9 @@ bool BasicRegexWalkFilter<ALLOC>::beforeArray(const IBasicReflectablePtr<ALLOC>&
 
         if (matchSubtree(array->at(i), fieldInfo))
             return true;
-
-        m_currentPath.back() = toString(fieldInfo.schemaName, m_allocator);
     }
+
+    m_currentPath.back() = toString(fieldInfo.schemaName, m_allocator);
 
     return false;
 }

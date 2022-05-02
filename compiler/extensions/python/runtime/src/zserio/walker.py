@@ -323,24 +323,18 @@ class DepthWalkFilter(WalkFilter):
         self._depth = 1
 
     def before_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
-        enter = self._depth <= self._max_depth
-        self._depth += 1
-        return enter
+        return self._enter_depth_level()
 
     def after_array(self, _array: typing.List[typing.Any], _member_info: MemberInfo) -> bool:
-        self._depth -= 1
-        return True
+        return self._leave_depth_level()
 
     def before_compound(self, _compound: typing.Any, _member_info: MemberInfo,
                         _element_index: typing.Optional[int] = None) -> bool:
-        enter = self._depth <= self._max_depth
-        self._depth += 1
-        return enter
+        return self._enter_depth_level()
 
     def after_compound(self, _compound: typing.Any, _member_info: MemberInfo,
                        _element_index: typing.Optional[int] = None) -> bool:
-        self._depth -= 1
-        return True
+        return self._leave_depth_level()
 
     def before_value(self, _value: typing.Any, _member_info: MemberInfo,
                      _element_index: typing.Optional[int] = None) -> bool:
@@ -348,6 +342,15 @@ class DepthWalkFilter(WalkFilter):
 
     def after_value(self, _value: typing.Any, _member_info: MemberInfo,
                     _element_index: typing.Optional[int] = None) -> bool:
+        return True
+
+    def _enter_depth_level(self) -> bool:
+        enter = self._depth <= self._max_depth
+        self._depth += 1
+        return enter
+
+    def _leave_depth_level(self) -> bool:
+        self._depth -= 1
         return True
 
 class RegexWalkFilter(WalkFilter):
@@ -512,10 +515,10 @@ class RegexWalkFilter(WalkFilter):
             return RegexWalkFilter._get_current_path_impl(self._current_path)
 
         def _append_path(self, member_info: MemberInfo, element_index: typing.Optional[int]) -> None:
-            return RegexWalkFilter._append_path_impl(self._current_path, member_info, element_index)
+            RegexWalkFilter._append_path_impl(self._current_path, member_info, element_index)
 
         def _pop_path(self, member_info: MemberInfo, element_index: typing.Optional[int]) -> None:
-            return RegexWalkFilter._pop_path_impl(self._current_path, member_info, element_index)
+            RegexWalkFilter._pop_path_impl(self._current_path, member_info, element_index)
 
 class ArrayLengthWalkFilter(WalkFilter):
     """

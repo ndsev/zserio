@@ -38,4 +38,4 @@ unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:29
 unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:30
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:101
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:150
-useStlAlgorithm:*/src/zserio/Walker.h:270
+useStlAlgorithm:*/src/zserio/Walker.h:273
