@@ -36,6 +36,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/BitStreamWriterTest.cpp
     zserio/BuildInOperatorsTest.cpp
     zserio/CppRuntimeExceptionTest.cpp
+    zserio/DebugStringUtilTest.cpp
     zserio/EnumsTest.cpp
     zserio/FloatUtilTest.cpp
     zserio/HashCodeUtilTest.cpp

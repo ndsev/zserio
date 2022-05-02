@@ -42,7 +42,7 @@ public:
      * \param walkObserver Observer to use during walking.
      * \param walkFilter Walk filter to use.
      */
-    explicit BasicWalker(IBasicWalkObserver<ALLOC>& walkObserver, IBasicWalkFilter<ALLOC>& walkFilter);
+    BasicWalker(IBasicWalkObserver<ALLOC>& walkObserver, IBasicWalkFilter<ALLOC>& walkFilter);
 
     /**
      * Walks given reflectable zserio compound object.
@@ -265,8 +265,8 @@ public:
             size_t elementIndex) override;
 
 private:
-    template <typename FilterFunc, typename ...Args>
-    bool applyFilters(FilterFunc filterFunc, Args... args)
+    template <typename FILTER_FUNC, typename ...ARGS>
+    bool applyFilters(FILTER_FUNC filterFunc, ARGS... args)
     {
         bool result = true;
         for (IBasicWalkFilter<ALLOC>& walkFilter : m_walkFilters)
@@ -301,6 +301,9 @@ BasicWalker<ALLOC>::BasicWalker(IBasicWalkObserver<ALLOC>& walkObserver, IBasicW
 template <typename ALLOC>
 void BasicWalker<ALLOC>::walk(const IBasicReflectablePtr<ALLOC>& compound)
 {
+    if (!compound)
+        throw CppRuntimeException("Walker: Root object cannot be NULL!");
+
     const ITypeInfo& typeInfo = compound->getTypeInfo();
     if (!TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {

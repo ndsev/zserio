@@ -7,70 +7,16 @@
 #ifndef ZSERIO_SERIALIZE_UTIL_H_INC
 #define ZSERIO_SERIALIZE_UTIL_H_INC
 
-#include <type_traits>
-
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/FileUtil.h"
+#include "zserio/Traits.h"
 
 namespace zserio
 {
 
 namespace detail
 {
-
-// These decltype's wrappers are needed because of old MSVC compiler 2015.
-template <typename T, typename U = decltype(&T::initialize)>
-struct decltype_initialize
-{
-    using type = U;
-};
-
-template <typename T, typename U = decltype(&T::initializeChildren)>
-struct decltype_initialize_children
-{
-    using type = U;
-};
-
-template <typename T, typename U = decltype(&T::allocate)>
-struct decltype_allocate
-{
-    using type = U;
-};
-
-template <typename T, typename U = decltype(&T::deallocate)>
-struct decltype_deallocate
-{
-    using type = U;
-};
-
-template <typename ...T>
-using void_t = void;
-
-template <typename T, typename = void>
-struct is_allocator : std::false_type
-{};
-
-template <typename T>
-struct is_allocator<T, void_t<typename decltype_allocate<T>::type,
-        typename decltype_deallocate<T>::type>> : std::true_type
-{};
-
-template <typename ...ARGS>
-struct is_first_allocator : std::false_type
-{};
-
-template <typename T, typename ...ARGS>
-struct is_first_allocator<T, ARGS...> : is_allocator<T>
-{};
-
-template <typename T, typename = void>
-struct has_initialize_children : std::false_type
-{};
-
-template <typename T>
-struct has_initialize_children<T, void_t<typename decltype_initialize_children<T>::type>> : std::true_type
-{};
 
 template <typename T>
 void initializeChildrenImpl(std::true_type, T& object)
@@ -87,14 +33,6 @@ void initializeChildren(T& object)
 {
     initializeChildrenImpl(has_initialize_children<T>(), object);
 }
-
-template <typename T, typename = void>
-struct has_initialize : std::false_type
-{};
-
-template <typename T>
-struct has_initialize<T, void_t<typename decltype_initialize<T>::type>> : std::true_type
-{};
 
 template <typename T, typename ...ARGS>
 void initializeImpl(std::true_type, T& object, ARGS&&... arguments)
@@ -139,8 +77,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  * \throw CppRuntimeException When serialization fails.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
-        typename std::enable_if<!std::is_enum<T>::value &&
-        detail::is_allocator<ALLOC>::value, int>::type = 0>
+        typename std::enable_if<!std::is_enum<T>::value && is_allocator<ALLOC>::value, int>::type = 0>
 BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arguments)
 {
     return detail::serialize(object, allocator, std::forward<ARGS>(arguments)...);
@@ -158,7 +95,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
         typename std::enable_if<!std::is_enum<T>::value &&
-        !detail::is_first_allocator<typename std::decay<ARGS>::type...>::value, int>::type = 0>
+                !is_first_allocator<typename std::decay<ARGS>::type...>::value, int>::type = 0>
 BasicBitBuffer<ALLOC> serialize(T& object, ARGS&&... arguments)
 {
     return detail::serialize(object, ALLOC(), std::forward<ARGS>(arguments)...);

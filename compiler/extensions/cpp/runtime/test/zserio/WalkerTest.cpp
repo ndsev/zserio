@@ -785,11 +785,17 @@ TEST(WalkerTest, dummyObject)
     ASSERT_NO_THROW(bitmaskReflectable->write(dummyWriter));
 }
 
+TEST(WalkerTest, walkNull)
+{
+    DefaultWalkObserver defaultObserver;
+    Walker walker(defaultObserver);
+    ASSERT_THROW(walker.walk(nullptr), CppRuntimeException);
+}
+
 TEST(WalkerTest, walkNonCompound)
 {
     DefaultWalkObserver defaultObserver;
-    DefaultWalkFilter defaultFilter;
-    Walker walker(defaultObserver, defaultFilter);
+    Walker walker(defaultObserver);
     DummyBitmask dummyBitmask;
 
     ASSERT_THROW(walker.walk(dummyBitmask.reflectable()), CppRuntimeException);

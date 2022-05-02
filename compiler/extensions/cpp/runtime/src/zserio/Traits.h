@@ -13,6 +13,93 @@ struct PropagateAllocatorT;
 template <typename>
 class BasicPackingContextNode;
 
+namespace detail
+{
+
+// These decltype's wrappers are needed because of old MSVC compiler 2015.
+template <typename T, typename U = decltype(&T::initialize)>
+struct decltype_initialize
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::initializeChildren)>
+struct decltype_initialize_children
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::allocate)>
+struct decltype_allocate
+{
+    using type = U;
+};
+
+template <typename T, typename U = decltype(&T::deallocate)>
+struct decltype_deallocate
+{
+    using type = U;
+};
+
+template <typename ...T>
+using void_t = void;
+
+} // namespace detail
+
+/**
+ * Trait used to check whether the type T is an allocator.
+ * \{
+ */
+template <typename T, typename = void>
+struct is_allocator : std::false_type
+{};
+
+template <typename T>
+struct is_allocator<T, detail::void_t<typename detail::decltype_allocate<T>::type,
+        typename detail::decltype_deallocate<T>::type>> : std::true_type
+{};
+/** \} */
+
+/**
+ * Trait used to check whether the first type of ARGS is an allocator.
+ * \{
+ */
+template <typename ...ARGS>
+struct is_first_allocator : std::false_type
+{};
+
+template <typename T, typename ...ARGS>
+struct is_first_allocator<T, ARGS...> : is_allocator<T>
+{};
+/** \} */
+
+/**
+ * Trait used to check whether the type T has initializeChildren method.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_initialize_children : std::false_type
+{};
+
+template <typename T>
+struct has_initialize_children<T,
+        detail::void_t<typename detail::decltype_initialize_children<T>::type>> : std::true_type
+{};
+/** \} */
+
+/**
+ * Trait used to check whether the type T has initialize method.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_initialize : std::false_type
+{};
+
+template <typename T>
+struct has_initialize<T, detail::void_t<typename detail::decltype_initialize<T>::type>> : std::true_type
+{};
+/** \} */
+
 /**
  * Trait used to enable field constructor only for suitable compound types (using SFINAE).
  */
