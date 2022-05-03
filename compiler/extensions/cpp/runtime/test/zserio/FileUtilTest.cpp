@@ -9,7 +9,7 @@ namespace zserio
 
 TEST(FileUtilTest, writeReadByteBufferBitSize)
 {
-    const std::string fileName = "FileUtilTest.bin";
+    const std::string fileName = "FileUtilTest_byteBufferBitSize.bin";
 
     auto buffer = std::vector<uint8_t>{0xAB, 0xCD, 0xF0};
     writeBufferToFile(&buffer[0], 20, BitsTag(), fileName);
@@ -24,7 +24,7 @@ TEST(FileUtilTest, writeReadByteBufferBitSize)
 
 TEST(FileUtilTest, writeReadByteBufferByteSize)
 {
-    const std::string fileName = "FileUtilTest.bin";
+    const std::string fileName = "FileUtilTest_byteBufferByteSize.bin";
 
     auto buffer = std::vector<uint8_t>{0xAB, 0xCD, 0xF0};
     writeBufferToFile(&buffer[0], buffer.size(), fileName);
@@ -39,7 +39,7 @@ TEST(FileUtilTest, writeReadByteBufferByteSize)
 
 TEST(FileUtilTest, writeReadBitBuffer)
 {
-    const std::string fileName = "FileUtilTest.bin";
+    const std::string fileName = "FileUtilTest_bitBuffer.bin";
 
     BitBuffer bitBuffer({0xAB, 0xCD, 0xF0}, 20);
     writeBufferToFile(bitBuffer, fileName);
@@ -54,7 +54,7 @@ TEST(FileUtilTest, writeReadBitBuffer)
 
 TEST(FileUtilTest, writeReadBitStreamWriter)
 {
-    const std::string fileName = "FileUtilTest.bin";
+    const std::string fileName = "FileUtilTest_bitStreamWriter.bin";
 
     BitBuffer bitBuffer(20);
     BitStreamWriter writer(bitBuffer);

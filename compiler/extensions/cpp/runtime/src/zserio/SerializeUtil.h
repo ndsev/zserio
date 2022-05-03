@@ -76,7 +76,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  *
  * \throw CppRuntimeException When serialization fails.
  */
-template <typename T, typename ALLOC = std::allocator<uint8_t>, typename ...ARGS,
+template <typename T, typename ALLOC, typename ...ARGS,
         typename std::enable_if<!std::is_enum<T>::value && is_allocator<ALLOC>::value, int>::type = 0>
 BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arguments)
 {

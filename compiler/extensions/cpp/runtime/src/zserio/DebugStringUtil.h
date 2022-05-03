@@ -27,15 +27,16 @@ template <typename T, typename WALK_FILTER, typename ALLOC>
 void toDebugStream(T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator)
 {
-    JsonWriter jsonWriter(os, indent);
-    Walker walker(jsonWriter, walkFilter);
+    BasicJsonWriter<ALLOC> jsonWriter(os, indent);
+    BasicWalker<ALLOC> walker(jsonWriter, walkFilter);
     walker.walk(object.reflectable(allocator));
 }
 
 template <typename T, typename WALK_FILTER, typename ALLOC>
 string<ALLOC> toDebugString(T& object, uint8_t indent, WALK_FILTER&& walkFilter, const ALLOC& allocator)
 {
-    std::ostringstream os = std::ostringstream(string<ALLOC>(allocator));
+    auto os = std::basic_ostringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>>(
+            string<ALLOC>(allocator));
     detail::toDebugStream(object, os, indent, walkFilter, allocator);
     return os.str();
 }
@@ -67,7 +68,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 void toDebugStream(T& object, std::ostream& os, const ALLOC& allocator = ALLOC())
 {
-    detail::toDebugStream(object, os, 4, DefaultWalkFilter(), allocator);
+    detail::toDebugStream(object, os, 4, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -82,7 +83,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 void toDebugStream(T& object, std::ostream& os, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
-    detail::toDebugStream(object, os, indent, DefaultWalkFilter(), allocator);
+    detail::toDebugStream(object, os, indent, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -94,7 +95,7 @@ void toDebugStream(T& object, std::ostream& os, uint8_t indent, const ALLOC& all
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
-        typename std::enable_if<std::is_base_of<IWalkFilter,
+        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
 void toDebugStream(T& object, std::ostream& os, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
 {
@@ -111,7 +112,7 @@ void toDebugStream(T& object, std::ostream& os, WALK_FILTER&& walkFilter, const 
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
-        typename std::enable_if<std::is_base_of<IWalkFilter,
+        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
 void toDebugStream(T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
@@ -131,7 +132,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 string<ALLOC> toDebugString(T& object, const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugString(object, 4, DefaultWalkFilter(), allocator);
+    return detail::toDebugString(object, 4, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -147,7 +148,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 string<ALLOC> toDebugString(T& object, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugString(object, indent, DefaultWalkFilter(), allocator);
+    return detail::toDebugString(object, indent, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -160,7 +161,7 @@ string<ALLOC> toDebugString(T& object, uint8_t indent, const ALLOC& allocator = 
  * \return Debug string in JSON.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
-        typename std::enable_if<std::is_base_of<IWalkFilter,
+        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
 string<ALLOC> toDebugString(T& object, WALK_FILTER&& walkFilter, const ALLOC& allocator = ALLOC())
 {
@@ -178,7 +179,7 @@ string<ALLOC> toDebugString(T& object, WALK_FILTER&& walkFilter, const ALLOC& al
  * \return Debug string in JSON.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
-        typename std::enable_if<std::is_base_of<IWalkFilter,
+        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
 string<ALLOC> toDebugString(T& object, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
@@ -197,7 +198,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 void toDebugFile(T& object, const std::string& fileName, const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugFile(object, fileName, 4, DefaultWalkFilter(), allocator);
+    return detail::toDebugFile(object, fileName, 4, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -212,7 +213,7 @@ template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
 void toDebugFile(T& object, const std::string& fileName, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
-    return detail::toDebugFile(object, fileName, indent, DefaultWalkFilter(), allocator);
+    return detail::toDebugFile(object, fileName, indent, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
 
 /**
@@ -224,7 +225,7 @@ void toDebugFile(T& object, const std::string& fileName, uint8_t indent, const A
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
-        typename std::enable_if<std::is_base_of<IWalkFilter,
+        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
 void toDebugFile(T& object, const std::string& fileName, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
@@ -242,7 +243,7 @@ void toDebugFile(T& object, const std::string& fileName, WALK_FILTER&& walkFilte
  * \param allocator Allocator to use.
  */
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
-        typename std::enable_if<std::is_base_of<IWalkFilter,
+        typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
 void toDebugFile(T& object, const std::string& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
