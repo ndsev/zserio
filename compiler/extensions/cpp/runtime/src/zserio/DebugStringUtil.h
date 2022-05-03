@@ -191,8 +191,6 @@ string<ALLOC> toDebugString(T& object, uint8_t indent, WALK_FILTER&& walkFilter,
  *
  * \param object Zserio object to use.
  * \param fileName File name to write.
- * \param indent Indent argument for JsonWriter.
- * \param walkFilter WalkFilter to use by Walker.
  * \param allocator Allocator to use.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
