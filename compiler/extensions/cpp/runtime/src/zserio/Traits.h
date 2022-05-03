@@ -29,13 +29,14 @@ struct decltype_initialize_children
     using type = U;
 };
 
-template <typename T, typename U = decltype(&T::allocate)>
+// declval is needed because otherwise MSVC 2015 states that std::allocator<int> does NOT have allocate method!
+template <typename T, typename U = decltype(std::declval<T>().allocate(0))>
 struct decltype_allocate
 {
     using type = U;
 };
 
-template <typename T, typename U = decltype(&T::deallocate)>
+template <typename T, typename U = decltype(std::declval<T>().deallocate(nullptr, 0))>
 struct decltype_deallocate
 {
     using type = U;
