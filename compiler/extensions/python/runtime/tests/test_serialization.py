@@ -62,7 +62,7 @@ class SerializationTest(unittest.TestCase):
 
     def test_to_file_from_file(self):
         dummy_object = DummyObject(0xAB, 0xDEAD)
-        filename = "serialization.bin"
+        filename = "SerializationTest.bin"
         serialize_to_file(dummy_object, filename)
         read_dummy_object = deserialize_from_file(DummyObject, filename, 0xAB)
         self.assertEqual(dummy_object.get_value(), read_dummy_object.get_value())

@@ -95,7 +95,7 @@ TEST(DebugStringUtilTest, toDebugStreamIndent2WithAlloc)
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
 }
 
-TEST(DebugStringUtilTest, toDebugStreamDefaultFilter)
+TEST(DebugStringUtilTest, toDebugStreamFilter)
 {
     std::ostringstream os;
     DummyObject dummyObject;
@@ -103,7 +103,7 @@ TEST(DebugStringUtilTest, toDebugStreamDefaultFilter)
     ASSERT_EQ("{\n}", os.str());
 }
 
-TEST(DebugStringUtilTest, toDebugStreamDefaultFilterWithAlloc)
+TEST(DebugStringUtilTest, toDebugStreamFilterWithAlloc)
 {
     std::ostringstream os;
     DummyObject dummyObject;
@@ -111,7 +111,7 @@ TEST(DebugStringUtilTest, toDebugStreamDefaultFilterWithAlloc)
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
 }
 
-TEST(DebugStringUtilTest, toDebugStreamIndent2DefaultFilter)
+TEST(DebugStringUtilTest, toDebugStreamIndent2Filter)
 {
     std::ostringstream os;
     DummyObject dummyObject;
@@ -119,7 +119,7 @@ TEST(DebugStringUtilTest, toDebugStreamIndent2DefaultFilter)
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", os.str());
 }
 
-TEST(DebugStringUtilTest, toDebugStreamIndent2DefaultFilterWithAlloc)
+TEST(DebugStringUtilTest, toDebugStreamIndent2FilterWithAlloc)
 {
     std::ostringstream os;
     DummyObject dummyObject;
@@ -151,26 +151,26 @@ TEST(DebugStringUtilTest, toDebugStringIndent2WithAlloc)
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", toDebugString(dummyObject, 2, std::allocator<uint8_t>()));
 }
 
-TEST(DebugStringUtilTest, toDebugStringDefaultFilter)
+TEST(DebugStringUtilTest, toDebugStringFilter)
 {
     DummyObject dummyObject;
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", toDebugString(dummyObject, DefaultWalkFilter()));
 }
 
-TEST(DebugStringUtilTest, toDebugStringDefaultFilterWithAlloc)
+TEST(DebugStringUtilTest, toDebugStringFilterWithAlloc)
 {
     DummyObject dummyObject;
     ASSERT_EQ("{\n    \"text\": \"test\"\n}",
             toDebugString(dummyObject, DefaultWalkFilter(), std::allocator<uint8_t>()));
 }
 
-TEST(DebugStringUtilTest, toDebugStringIndent2DefaultFilter)
+TEST(DebugStringUtilTest, toDebugStringIndent2Filter)
 {
     DummyObject dummyObject;
     ASSERT_EQ("{\n}", toDebugString(dummyObject, 2, DepthWalkFilter(0)));
 }
 
-TEST(DebugStringUtilTest, toDebugStringIndent2DefaultFilterWithAlloc)
+TEST(DebugStringUtilTest, toDebugStringIndent2FilterWithAlloc)
 {
     DummyObject dummyObject;
     ASSERT_EQ("{\n  \"text\": \"test\"\n}",
@@ -221,7 +221,7 @@ TEST(DebugStringUtilTest, toDebugFileIndent2WithAlloc)
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
 }
 
-TEST(DebugStringUtilTest, toDebugFileDefaultFilter)
+TEST(DebugStringUtilTest, toDebugFileFilter)
 {
     DummyObject dummyObject;
     toDebugFile(dummyObject, TEST_FILE_NAME, DefaultWalkFilter());
@@ -232,7 +232,7 @@ TEST(DebugStringUtilTest, toDebugFileDefaultFilter)
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
 }
 
-TEST(DebugStringUtilTest, toDebugFileDefaultFilterWithAlloc)
+TEST(DebugStringUtilTest, toDebugFileFilterWithAlloc)
 {
     DummyObject dummyObject;
     DefaultWalkFilter defaultWalkFilter;
@@ -244,7 +244,7 @@ TEST(DebugStringUtilTest, toDebugFileDefaultFilterWithAlloc)
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
 }
 
-TEST(DebugStringUtilTest, toDebugFileIndent2DefaultFilter)
+TEST(DebugStringUtilTest, toDebugFileIndent2Filter)
 {
     DummyObject dummyObject;
     DepthWalkFilter depthWalkFilter(0);
@@ -256,7 +256,7 @@ TEST(DebugStringUtilTest, toDebugFileIndent2DefaultFilter)
     ASSERT_EQ("{\n}", ss.str());
 }
 
-TEST(DebugStringUtilTest, toDebugFileIndent2DefaultFilterWithAlloc)
+TEST(DebugStringUtilTest, toDebugFileIndent2FilterWithAlloc)
 {
     DummyObject dummyObject;
     DefaultWalkFilter defaultWalkFilter;

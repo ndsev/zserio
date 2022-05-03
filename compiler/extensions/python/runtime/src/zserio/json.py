@@ -15,7 +15,7 @@ class JsonWriter(WalkObserver):
     Walker observer which dumps zserio objects to JSON format.
     """
 
-    def __init__(self, *, text_io: typing.Optional[io.TextIOBase] = None,
+    def __init__(self, *, text_io: typing.Optional[typing.TextIO] = None,
                  item_separator: str = None, key_separator: str = None,
                  indent: typing.Union[str, int] = None) -> None:
         """
@@ -36,7 +36,7 @@ class JsonWriter(WalkObserver):
         self._level = 0
         self._json_encoder = JsonEncoder()
 
-    def get_io(self) -> io.TextIOBase:
+    def get_io(self) -> typing.TextIO:
         """
         Gets the underlying text stream.
 
