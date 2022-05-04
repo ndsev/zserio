@@ -40,8 +40,6 @@ struct has_get_value<T, void_t<typename decltype_get_value<T>::type>> : std::tru
 class CppRuntimeException : public std::exception
 {
 public:
-    static constexpr size_t BUFFER_SIZE = 512;
-
     /**
      * Constructor.
      *
@@ -142,6 +140,9 @@ protected:
     }
 
 private:
+    // Note: If you move this to public section, old MSVC 2015 compiler will fail with internal compiler error!
+    static constexpr size_t BUFFER_SIZE = 512;
+
     void appendImpl(const char* message, size_t size);
 
     char m_buffer[BUFFER_SIZE];

@@ -44,12 +44,13 @@ TEST(CppRuntimeExceptionTest, appendCString)
     testMessage += appendix;
     ASSERT_EQ(testMessage, exception.what());
 
-    static const size_t max_len = CppRuntimeException::BUFFER_SIZE - 1;
+    const size_t exceptionBufferSize = 512;
+    const size_t maxLen = exceptionBufferSize - 1;
     for (int i = 0; i < 100; ++i)
     {
         exception = exception + appendix.c_str();
         testMessage += appendix;
-        const size_t len = std::min(testMessage.size(), max_len);
+        const size_t len = std::min(testMessage.size(), maxLen);
         ASSERT_EQ(testMessage.substr(0, len), exception.what());
     }
 }
