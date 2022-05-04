@@ -64,7 +64,7 @@ public class Walker
             final Method typeInfoMethod = zserioObject.getClass().getMethod("typeInfo", new Class<?>[0]);
             if (!typeInfoMethod.getReturnType().equals(TypeInfo.class))
                 throw new ZserioError("Walker: Zserio object has wrong typeInfo method!");
-            final TypeInfo typeInfo = (TypeInfo)typeInfoMethod.invoke(null, new Object[0]);
+            final TypeInfo typeInfo = (TypeInfo)typeInfoMethod.invoke(zserioObject, new Object[0]);
 
             return typeInfo;
         }
@@ -83,7 +83,7 @@ public class Walker
             final Method choiceTagMethod = zserioObject.getClass().getMethod("choiceTag", new Class<?>[0]);
             if (!choiceTagMethod.getReturnType().equals(Integer.TYPE))
                 throw new ZserioError("Walker: Zserio object has wrong choiceTag method!");
-            final int choiceTag = (Integer)choiceTagMethod.invoke(null, new Object[0]);
+            final int choiceTag = (Integer)choiceTagMethod.invoke(zserioObject, new Object[0]);
 
             return choiceTag;
         }
@@ -99,7 +99,7 @@ public class Walker
         try
         {
             final Field undefinedChoiceField = zserioObject.getClass().getField("UNDEFINED_CHOICE");
-            final int undefinedChoice = undefinedChoiceField.getInt(null);
+            final int undefinedChoice = undefinedChoiceField.getInt(zserioObject);
 
             return undefinedChoice;
         }
@@ -115,7 +115,7 @@ public class Walker
         try
         {
             final Method getterMethod = zserioObject.getClass().getMethod(getterName, new Class<?>[0]);
-            final Object result = getterMethod.invoke(null, new Object[0]);
+            final Object result = getterMethod.invoke(zserioObject, new Object[0]);
 
             return result;
         }
@@ -182,18 +182,17 @@ public class Walker
     private boolean walkFieldValue(Object field, FieldInfo fieldInfo, int elementIndex)
     {
         final TypeInfo typeInfo = fieldInfo.getTypeInfo();
-        if (TypeInfoUtil.isCompound(typeInfo.getSchemaType()))
+        if (field != null && TypeInfoUtil.isCompound(typeInfo.getSchemaType()))
         {
-            if (walkFilter.beforeCompound(field, typeInfo, elementIndex))
+            if (walkFilter.beforeCompound(field, fieldInfo, elementIndex))
             {
-                walkObserver.beginCompound(field, typeInfo, elementIndex);
+                walkObserver.beginCompound(field, fieldInfo, elementIndex);
                 walkFields(field, typeInfo);
-                walkObserver.endCompound(field, typeInfo, elementIndex);
+                walkObserver.endCompound(field, fieldInfo, elementIndex);
             }
 
-            return walkFilter.afterCompound(field, typeInfo, elementIndex);
+            return walkFilter.afterCompound(field, fieldInfo, elementIndex);
         }
-
         else
         {
             if (walkFilter.beforeValue(field, fieldInfo, elementIndex))

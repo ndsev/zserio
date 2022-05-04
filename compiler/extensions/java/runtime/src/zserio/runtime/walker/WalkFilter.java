@@ -1,7 +1,6 @@
 package zserio.runtime.walker;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.TypeInfo;
 
 /**
  * Interface for filters which can influence the walking.
@@ -34,23 +33,23 @@ public interface WalkFilter
      * Note that for uninitialized compounds (i.e. null) the before_value method is called instead!
      *
      * @param compound Compound zserio object.
-     * @param typeInfo Compound type info.
+     * @param fieldInfo Compound field info.
      * @param elementIndex Element index in array or NOT_ELEMENT if the compound is not in array.
      *
      * @return True when the walking should continue into the compound object, false otherwise.
      */
-    public boolean beforeCompound(Object compound, TypeInfo typeInfo, int elementIndex);
+    public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex);
 
     /**
      * Called after a compound object.
      *
      * @param compound Compound zserio object.
-     * @param typeInfo Compound type info.
+     * @param fieldInfo Compound field info.
      * @param elementIndex Element index in array or NOT_ELEMENT if the compound is not in array.
      *
      * @return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    public boolean afterCompound(Object compound, TypeInfo typeInfo, int elementIndex);
+    public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex);
 
     /**
      * Called before a simple (or an unset compound - i.e. null) value.

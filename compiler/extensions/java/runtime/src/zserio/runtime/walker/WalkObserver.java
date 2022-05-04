@@ -1,7 +1,6 @@
 package zserio.runtime.walker;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.TypeInfo;
 
 /**
  * Interface for observers which are called by the walker.
@@ -44,19 +43,19 @@ public interface WalkObserver
      * Note that for uninitialized compounds (i.e. null) the visit_value method is called instead!
      *
      * @param compound Compound zserio object.
-     * @param typeInfo Compound type info.
+     * @param fieldInfo Compound field info.
      * @param elementIndex Element index in array or NOT_ELEMENT if the compound is not in array.
      */
-    public void beginCompound(Object compound, TypeInfo typeInfo, int elementIndex);
+    public void beginCompound(Object compound, FieldInfo fieldInfo, int elementIndex);
 
     /**
      * Called at the end of just walked compound object.
      *
      * @param compound Compound zserio object.
-     * @param typeInfo Compound type info.
+     * @param fieldInfo Compound field info.
      * @param elementIndex Element index in array or NOT_ELEMENT if the compound is not in array.
      */
-    public void endCompound(Object compound, TypeInfo typeInfo, int elementIndex);
+    public void endCompound(Object compound, FieldInfo fieldInfo, int elementIndex);
 
     /**
      * Called when a simple (or an unset compound - i.e. None) value is reached.

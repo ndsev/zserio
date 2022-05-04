@@ -3,7 +3,6 @@ package zserio.runtime.walker;
 import java.util.List;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.TypeInfo;
 
 /**
  * Walk filter which implements composition of particular filters.
@@ -44,21 +43,21 @@ public class AndWalkFilter implements WalkFilter
     }
 
     @Override
-    public boolean beforeCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
         boolean result = true;
         for (WalkFilter walkFilter : walkFilters)
-            result &= walkFilter.beforeCompound(compound, typeInfo, elementIndex);
+            result &= walkFilter.beforeCompound(compound, fieldInfo, elementIndex);
 
         return result;
     }
 
     @Override
-    public boolean afterCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
         boolean result = true;
         for (WalkFilter walkFilter : walkFilters)
-            result &= walkFilter.afterCompound(compound, typeInfo, elementIndex);
+            result &= walkFilter.afterCompound(compound, fieldInfo, elementIndex);
 
         return result;
     }

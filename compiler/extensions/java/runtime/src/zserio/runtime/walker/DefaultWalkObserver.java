@@ -1,7 +1,6 @@
 package zserio.runtime.walker;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.TypeInfo;
 
 /**
  * Default walk observer which just does nothing.
@@ -29,12 +28,12 @@ public class DefaultWalkObserver implements WalkObserver
     }
 
     @Override
-    public void beginCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public void beginCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
     }
 
     @Override
-    public void endCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public void endCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
     }
 

@@ -1,7 +1,6 @@
 package zserio.runtime.walker;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.TypeInfo;
 
 /**
  * Default walk filter which filters nothing.
@@ -21,13 +20,13 @@ public class DefaultWalkFilter implements WalkFilter
     }
 
     @Override
-    public boolean beforeCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
         return true;
     }
 
     @Override
-    public boolean afterCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
         return true;
     }

@@ -5,7 +5,6 @@ import java.util.Stack;
 import java.util.regex.Pattern;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.TypeInfo;
 import zserio.runtime.typeinfo.TypeInfoUtil;
 
 /**
@@ -43,7 +42,7 @@ public class RegexWalkFilter implements WalkFilter
         {
             currentPath.set(currentPath.size() - 1, fieldInfo.getSchemaName() + "[" + i + "]");
             final Object element = Array.get(array, i);
-            if (matchSubtree(element, fieldInfo.getTypeInfo()))
+            if (matchSubtree(element, fieldInfo))
                 return true;
         }
         currentPath.set(currentPath.size() - 1, fieldInfo.getSchemaName());
@@ -59,40 +58,39 @@ public class RegexWalkFilter implements WalkFilter
     }
 
     @Override
-    public boolean beforeCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
-        appendPath(typeInfo, elementIndex);
+        appendPath(fieldInfo, elementIndex);
         if (Pattern.matches(pathRegex, getCurrentPath()))
             return true; // the compound itself matches
 
-        return matchSubtree(compound, typeInfo);
+        return matchSubtree(compound, fieldInfo);
     }
 
     @Override
-    public boolean afterCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
-        popPath(typeInfo, elementIndex);
+        popPath(fieldInfo, elementIndex);
         return true;
     }
 
     @Override
     public boolean beforeValue(Object value, FieldInfo fieldInfo, int elementIndex)
     {
-        final TypeInfo typeInfo = fieldInfo.getTypeInfo();
-        appendPath(typeInfo, elementIndex);
-        return matchSubtree(value, typeInfo);
+        appendPath(fieldInfo, elementIndex);
+        return matchSubtree(value, fieldInfo);
     }
 
     @Override
     public boolean afterValue(Object value, FieldInfo fieldInfo, int elementIndex)
     {
-        popPath(fieldInfo.getTypeInfo(), elementIndex);
+        popPath(fieldInfo, elementIndex);
         return true;
     }
 
-    boolean matchSubtree(Object member, TypeInfo typeInfo)
+    boolean matchSubtree(Object member, FieldInfo fieldInfo)
     {
-        if (member != null && TypeInfoUtil.isCompound(typeInfo.getSchemaType()))
+        if (member != null && TypeInfoUtil.isCompound(fieldInfo.getTypeInfo().getSchemaType()))
         {
             // is a not null compound, try to find match within its subtree
             final DefaultWalkObserver defaultObserver = new DefaultWalkObserver();
@@ -113,14 +111,14 @@ public class RegexWalkFilter implements WalkFilter
         return getCurrentPathImpl(currentPath);
     }
 
-    private void appendPath(TypeInfo typeInfo, int elementIndex)
+    private void appendPath(FieldInfo fieldInfo, int elementIndex)
     {
-        appendPathImpl(currentPath, typeInfo, elementIndex);
+        appendPathImpl(currentPath, fieldInfo, elementIndex);
     }
 
-    private void popPath(TypeInfo typeInfo, int elementIndex)
+    private void popPath(FieldInfo fieldInfo, int elementIndex)
     {
-        popPathImpl(currentPath, typeInfo, elementIndex);
+        popPathImpl(currentPath, fieldInfo, elementIndex);
     }
 
     private static String getCurrentPathImpl(Stack<String> currentPath)
@@ -128,20 +126,20 @@ public class RegexWalkFilter implements WalkFilter
         return String.join(".", currentPath);
     }
 
-    private static void appendPathImpl(Stack<String> currentPath, TypeInfo typeInfo, int elementIndex)
+    private static void appendPathImpl(Stack<String> currentPath, FieldInfo fieldInfo, int elementIndex)
     {
         if (elementIndex == WalkerConst.NOT_ELEMENT)
-            currentPath.push(typeInfo.getSchemaName());
+            currentPath.push(fieldInfo.getSchemaName());
         else
-            currentPath.set(currentPath.size() - 1, typeInfo.getSchemaName() + "[" + elementIndex + "]");
+            currentPath.set(currentPath.size() - 1, fieldInfo.getSchemaName() + "[" + elementIndex + "]");
     }
 
-    private static void popPathImpl(Stack<String> currentPath, TypeInfo typeInfo, int elementIndex)
+    private static void popPathImpl(Stack<String> currentPath, FieldInfo fieldInfo, int elementIndex)
     {
         if (elementIndex == WalkerConst.NOT_ELEMENT)
             currentPath.pop();
         else
-            currentPath.set(currentPath.size() -1, typeInfo.getSchemaName());
+            currentPath.set(currentPath.size() -1, fieldInfo.getSchemaName());
     }
 
     /**
@@ -183,9 +181,9 @@ public class RegexWalkFilter implements WalkFilter
         }
 
         @Override
-        public boolean beforeCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+        public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
         {
-            appendPath(typeInfo, elementIndex);
+            appendPath(fieldInfo, elementIndex);
             matches = Pattern.matches(pathRegex, getCurrentPath());
 
             //  terminate when the match is already found (note that compound is never None here)
@@ -193,9 +191,9 @@ public class RegexWalkFilter implements WalkFilter
         }
 
         @Override
-        public boolean afterCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+        public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
         {
-            popPath(typeInfo, elementIndex);
+            popPath(fieldInfo, elementIndex);
 
             // terminate when the match is already found
             return !matches;
@@ -204,7 +202,7 @@ public class RegexWalkFilter implements WalkFilter
         @Override
         public boolean beforeValue(Object value, FieldInfo fieldInfo, int elementIndex)
         {
-            appendPath(fieldInfo.getTypeInfo(), elementIndex);
+            appendPath(fieldInfo, elementIndex);
             matches = Pattern.matches(pathRegex, getCurrentPath());
 
             // terminate when the match is already found
@@ -214,7 +212,7 @@ public class RegexWalkFilter implements WalkFilter
         @Override
         public boolean afterValue(Object value, FieldInfo fieldInfo, int elementIndex)
         {
-            popPath(fieldInfo.getTypeInfo(), elementIndex);
+            popPath(fieldInfo, elementIndex);
 
             // terminate when the match is already found
             return !matches;
@@ -225,14 +223,14 @@ public class RegexWalkFilter implements WalkFilter
             return RegexWalkFilter.getCurrentPathImpl(currentPath);
         }
 
-        private void appendPath(TypeInfo typeInfo, int elementIndex)
+        private void appendPath(FieldInfo fieldInfo, int elementIndex)
         {
-            RegexWalkFilter.appendPathImpl(currentPath, typeInfo, elementIndex);
+            RegexWalkFilter.appendPathImpl(currentPath, fieldInfo, elementIndex);
         }
 
-        private void popPath(TypeInfo typeInfo, int elementIndex)
+        private void popPath(FieldInfo fieldInfo, int elementIndex)
         {
-            RegexWalkFilter.popPathImpl(currentPath, typeInfo, elementIndex);
+            RegexWalkFilter.popPathImpl(currentPath, fieldInfo, elementIndex);
         }
 
         private final Stack<String> currentPath;

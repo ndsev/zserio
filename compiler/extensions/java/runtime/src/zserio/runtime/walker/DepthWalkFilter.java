@@ -1,7 +1,6 @@
 package zserio.runtime.walker;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.typeinfo.TypeInfo;
 
 /**
  * Walk filter which allows to walk only to the given maximum depth.
@@ -32,13 +31,13 @@ public class DepthWalkFilter implements WalkFilter
     }
 
     @Override
-    public boolean beforeCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean beforeCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
         return enterDepthLevel();
     }
 
     @Override
-    public boolean afterCompound(Object compound, TypeInfo typeInfo, int elementIndex)
+    public boolean afterCompound(Object compound, FieldInfo fieldInfo, int elementIndex)
     {
         return leaveDepthLevel();
     }
