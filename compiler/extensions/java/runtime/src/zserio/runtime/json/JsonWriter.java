@@ -272,7 +272,8 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         for (byte byteValue : bitBuffer.getBuffer())
         {
             beginItem();
-            JsonEncoder.encodeIntegral(out, byteValue);
+            // note that we don't want to have negative numbers in bit buffer
+            JsonEncoder.encodeIntegral(out, Byte.toUnsignedInt(byteValue));
             endItem();
         }
         endArray();
