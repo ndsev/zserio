@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.walker.WalkFilter;
 
 public class AndWalkFilterTest
 {

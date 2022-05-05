@@ -1,7 +1,6 @@
 package zserio.runtime.walker;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.walker.WalkFilter;
 
 public class TestWalkFilter implements WalkFilter
 {

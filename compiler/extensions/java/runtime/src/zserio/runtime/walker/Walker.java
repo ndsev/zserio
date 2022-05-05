@@ -61,10 +61,10 @@ public class Walker
     {
         try
         {
-            final Method typeInfoMethod = zserioObject.getClass().getMethod("typeInfo", new Class<?>[0]);
+            final Method typeInfoMethod = zserioObject.getClass().getMethod("typeInfo");
             if (!typeInfoMethod.getReturnType().equals(TypeInfo.class))
                 throw new ZserioError("Walker: Zserio object has wrong typeInfo method!");
-            final TypeInfo typeInfo = (TypeInfo)typeInfoMethod.invoke(zserioObject, new Object[0]);
+            final TypeInfo typeInfo = (TypeInfo)typeInfoMethod.invoke(zserioObject);
 
             return typeInfo;
         }
@@ -80,10 +80,10 @@ public class Walker
     {
         try
         {
-            final Method choiceTagMethod = zserioObject.getClass().getMethod("choiceTag", new Class<?>[0]);
+            final Method choiceTagMethod = zserioObject.getClass().getMethod("choiceTag");
             if (!choiceTagMethod.getReturnType().equals(Integer.TYPE))
                 throw new ZserioError("Walker: Zserio object has wrong choiceTag method!");
-            final int choiceTag = (Integer)choiceTagMethod.invoke(zserioObject, new Object[0]);
+            final int choiceTag = (Integer)choiceTagMethod.invoke(zserioObject);
 
             return choiceTag;
         }
@@ -114,7 +114,7 @@ public class Walker
         final String getterName = fieldInfo.getGetterName();
         try
         {
-            final Method getterMethod = zserioObject.getClass().getMethod(getterName, new Class<?>[0]);
+            final Method getterMethod = zserioObject.getClass().getMethod(getterName);
             final Object result = getterMethod.invoke(zserioObject, new Object[0]);
 
             return result;

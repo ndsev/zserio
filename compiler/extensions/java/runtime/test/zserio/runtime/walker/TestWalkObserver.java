@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import zserio.runtime.typeinfo.FieldInfo;
-import zserio.runtime.walker.WalkObserver;
 
 public class TestWalkObserver implements WalkObserver
 {
