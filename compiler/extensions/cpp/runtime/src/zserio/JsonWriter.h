@@ -18,15 +18,63 @@ template <typename ALLOC = std::allocator<uint8_t>>
 class BasicJsonWriter : public IBasicWalkObserver<ALLOC>
 {
 public:
+    /**
+     * Default item separator used when indent is not set.
+     */
     static constexpr const char* DEFAULT_ITEM_SEPARATOR = ", ";
+
+    /**
+     * Default item separator used when indent is set.
+     */
     static constexpr const char* DEFAULT_ITEM_SEPARATOR_WITH_INDENT = ",";
+
+    /**
+     * Default key separator.
+     */
     static constexpr const char* DEFAULT_KEY_SEPARATOR = ": ";
 
+    /**
+     * Constructor.
+     *
+     * \param out Stream to use for writing.
+     * \param allocator Allocator to use.
+     */
     explicit BasicJsonWriter(std::ostream& out, const ALLOC& allocator = ALLOC());
+
+    /**
+     * Constructor.
+     *
+     * \param out Stream to use for writing.
+     * \param indent Indent as a number of ' ' to be used for indentation.
+     * \param allocator Allocator to use.
+     */
     BasicJsonWriter(std::ostream& out, uint8_t indent, const ALLOC& allocator = ALLOC());
+
+    /**
+     * Constructor.
+     *
+     * \param out Stream to use for writing.
+     * \param indent Indent as a string to be used for indentation.
+     * \param allocator Allocator to use.
+     */
     BasicJsonWriter(std::ostream& out, const string<ALLOC>& indent, const ALLOC& allocator = ALLOC());
 
+    /**
+     * Sets custom item separator.
+     *
+     * Use with caution since setting of a wrong separator can lead to invalid JSON output.
+     *
+     * \param itemSeparator Item separator to set.
+     */
     void setItemSeparator(const string<ALLOC>& itemSeparator);
+
+    /**
+     * Sets custom key separator.
+     *
+     * Use with caution since setting of a wrong separator can lead to invalid JSON output.
+     *
+     * \param keySeparator Key separator to set.
+     */
     void setKeySeparator(const string<ALLOC>& keySeparator);
 
     virtual void beginRoot(const IBasicReflectablePtr<ALLOC>& compound) override;
@@ -136,8 +184,6 @@ void BasicJsonWriter<ALLOC>::beginArray(const IBasicReflectablePtr<ALLOC>&, cons
 template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::endArray(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&)
 {
-    m_isFirst = false;
-
     endArray();
 
     endItem();
@@ -158,8 +204,6 @@ void BasicJsonWriter<ALLOC>::beginCompound(const IBasicReflectablePtr<ALLOC>&, c
 template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::endCompound(const IBasicReflectablePtr<ALLOC>&, const FieldInfo&, size_t)
 {
-    m_isFirst = false;
-
     endObject();
 
     endItem();
@@ -328,14 +372,14 @@ void BasicJsonWriter<ALLOC>::writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuff
     for (size_t i = 0; i < bitBuffer.getByteSize(); ++i)
     {
         beginItem();
-        m_out << static_cast<int>(buffer[i]);
+        JsonEncoder::encodeIntegral(m_out, buffer[i]);
         endItem();
     }
     endArray();
     endItem();
     beginItem();
     writeKey(zserio::makeStringView("bitSize"));
-    m_out << bitBuffer.getBitSize();
+    JsonEncoder::encodeIntegral(m_out, bitBuffer.getBitSize());
     endItem();
     endObject();
 }

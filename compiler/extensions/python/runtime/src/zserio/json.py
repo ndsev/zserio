@@ -59,8 +59,6 @@ class JsonWriter(WalkObserver):
         self._begin_array()
 
     def end_array(self, array: typing.List[typing.Any], member_info: MemberInfo) -> None:
-        self._is_first = False
-
         self._end_array()
 
         self._end_item()
@@ -76,8 +74,6 @@ class JsonWriter(WalkObserver):
 
     def end_compound(self, compound: typing.Any, member_info: MemberInfo,
                      _element_index: typing.Optional[int] = None) -> None:
-        self._is_first = False
-
         self._end_object()
 
         self._end_item()
@@ -169,7 +165,7 @@ class JsonWriter(WalkObserver):
 
 class JsonEncoder:
     """
-    Converts zserio values to/from Json string representation.
+    Converts zserio values to Json string representation.
     """
 
     def __init__(self):

@@ -46,7 +46,7 @@ void JsonEncoder::encodeFloatingPoint(std::ostream& os, double value)
 
 void JsonEncoder::encodeString(std::ostream& os, StringView value)
 {
-    static const char* HEX = "0123456789ABCDEF";
+    static const char* HEX = "0123456789abcdef";
 
     os.put('"');
     for (char ch : value)
@@ -54,9 +54,6 @@ void JsonEncoder::encodeString(std::ostream& os, StringView value)
         switch (ch)
         {
         case '\\':
-            os.put('\\');
-            os.put(ch);
-            break;
         case '"':
             os.put('\\');
             os.put(ch);

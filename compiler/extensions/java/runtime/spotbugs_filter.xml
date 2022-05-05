@@ -61,6 +61,7 @@
             <Class name="zserio.runtime.io.ByteArrayBitStreamVarNumTest"/>
             <Class name="zserio.runtime.io.ByteArrayBitStreamWriterTest"/>
             <Class name="zserio.runtime.io.ByteArrayBitStreamReaderTest"/>
+            <Class name="~zserio.runtime.json.JsonWriterTest\$.*Dummy(Enum|Bitmask)"/>
         </Or>
     </Match>
     <Match>
@@ -70,5 +71,11 @@
             <Class name="zserio.runtime.io.ByteArrayBitStreamVarNumTest"/>
             <Class name="zserio.runtime.io.ByteArrayBitStreamWriterTest"/>
         </Or>
+    </Match>
+    <Match>
+        <!-- *$SWITCH_TABLE$* is a volatile reference to an array - probably spotbugs issue #1296 -->
+        <Bug code="VO"/>
+        <Class name="zserio.runtime.json.JsonWriter"/>
+        <Field name="$SWITCH_TABLE$zserio$runtime$typeinfo$JavaType"/>
     </Match>
 </FindBugsFilter>

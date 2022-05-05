@@ -138,6 +138,12 @@ TEST(JsonEncoderTest, encodeString)
 
     // escapes
     os.str("");
+    JsonEncoder::encodeString(os, "\\");
+    ASSERT_EQ("\"\\\\\"", os.str());
+    os.str("");
+    JsonEncoder::encodeString(os, "\"");
+    ASSERT_EQ("\"\\\"\"", os.str());
+    os.str("");
     JsonEncoder::encodeString(os, "\b");
     ASSERT_EQ("\"\\b\"", os.str());
     os.str("");
@@ -152,12 +158,7 @@ TEST(JsonEncoderTest, encodeString)
     os.str("");
     JsonEncoder::encodeString(os, "\t");
     ASSERT_EQ("\"\\t\"", os.str());
-    os.str("");
-    JsonEncoder::encodeString(os, "\"");
-    ASSERT_EQ("\"\\\"\"", os.str());
-    os.str("");
-    JsonEncoder::encodeString(os, "\\");
-    ASSERT_EQ("\"\\\\\"", os.str());
+
 
     os.str("");
     JsonEncoder::encodeString(os, "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2");
@@ -165,8 +166,8 @@ TEST(JsonEncoderTest, encodeString)
 
     // <= 0x1F -> unicode escape
     os.str("");
-    JsonEncoder::encodeString(os, "\x19");
-    ASSERT_EQ("\"\\u0019\"", os.str());
+    JsonEncoder::encodeString(os, "\x1F");
+    ASSERT_EQ("\"\\u001f\"", os.str());
 }
 
 } // namespace zserio

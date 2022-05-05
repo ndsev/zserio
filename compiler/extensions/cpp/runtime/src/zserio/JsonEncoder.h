@@ -11,18 +11,52 @@
 namespace zserio
 {
 
+/**
+ * Converts zserio values to Json string representation.
+ */
 class JsonEncoder
 {
 public:
+    /**
+     * Encodes JSON null value to the given stream.
+     *
+     * \param os Stream to use.
+     */
     static void encodeNull(std::ostream& os);
 
+    /**
+     * Encodes JSON boolean value to the given stream.
+     *
+     * \param os Stream to use.
+     * \param value Value to encode.
+     */
     static void encodeBool(std::ostream& os, bool value);
 
+    /**
+     * Encodes JSON integral value to the given stream.
+     *
+     * \param os Stream to use.
+     * \param value Value to encode.
+     */
     template <typename T>
     static void encodeIntegral(std::ostream& os, T value);
 
+    /**
+     * Encodes JSON floating-point value to the given stream.
+     *
+     * \param os Stream to use.
+     * \param value Value to encode.
+     */
     static void encodeFloatingPoint(std::ostream& os, double value);
 
+    /**
+     * Encodes JSON string value to the given stream.
+     *
+     * Note that this method performs escaping necessary to get a proper JSON string.
+     *
+     * \param os Stream to use.
+     * \param value Value to encode.
+     */
     static void encodeString(std::ostream& os, StringView value);
 };
 

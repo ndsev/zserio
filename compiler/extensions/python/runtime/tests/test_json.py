@@ -176,16 +176,16 @@ class JsonEncoderTest(unittest.TestCase):
         self.assertEqual("\"€\"", json_encoder.encode("€"))
 
         # escapes
+        self.assertEqual("\"\\\\\"", json_encoder.encode("\\"))
+        self.assertEqual("\"\\\"\"", json_encoder.encode("\""))
         self.assertEqual("\"\\b\"", json_encoder.encode("\b"))
         self.assertEqual("\"\\f\"", json_encoder.encode("\f"))
         self.assertEqual("\"\\n\"", json_encoder.encode("\n"))
         self.assertEqual("\"\\r\"", json_encoder.encode("\r"))
         self.assertEqual("\"\\t\"", json_encoder.encode("\t"))
-        self.assertEqual("\"\\\"\"", json_encoder.encode("\""))
-        self.assertEqual("\"\\\\\"", json_encoder.encode("\\"))
 
         self.assertEqual("\"\\n\\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\\\\\"'Hello World2\"",
                          json_encoder.encode("\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"'Hello World2"))
 
         # <= 0x1F -> unicode escape
-        self.assertEqual("\"\\u0019\"", json_encoder.encode("\x19"))
+        self.assertEqual("\"\\u001f\"", json_encoder.encode("\x1f"))

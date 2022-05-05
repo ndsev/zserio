@@ -157,10 +157,10 @@ TEST(JsonWriterTest, intValue)
     JsonWriter jsonWriter(os);
     IWalkObserver& observer = jsonWriter;
 
-    observer.visitValue(ReflectableFactory::getInt32(-13), INT_FIELD_INFO);
+    observer.visitValue(ReflectableFactory::getInt32(INT32_MIN), INT_FIELD_INFO);
 
     // note that this is not valid json
-    ASSERT_EQ("\"intField\": -13", os.str());
+    ASSERT_EQ("\"intField\": " + std::to_string(INT32_MIN), os.str());
 }
 
 TEST(JsonWriterTest, floatValue)
@@ -272,7 +272,7 @@ TEST(JsonWriterTest, compound)
             "{\"buffer\": [31], \"bitSize\": 5}}", os.str());
 }
 
-TEST(JsonWriterTest, nested_compound)
+TEST(JsonWriterTest, nestedCompound)
 {
     std::ostringstream os;
     JsonWriter jsonWriter(os);
