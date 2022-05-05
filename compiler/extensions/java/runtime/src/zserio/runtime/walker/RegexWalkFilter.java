@@ -33,7 +33,7 @@ public class RegexWalkFilter implements WalkFilter
     public boolean beforeArray(Object array, FieldInfo fieldInfo)
     {
         currentPath.push(fieldInfo.getSchemaName());
-        if (!Pattern.matches(pathRegex, getCurrentPath()))
+        if (Pattern.matches(pathRegex, getCurrentPath()))
             return true; // the array itself matches
 
         // try to find match in each element and continue into the array only if some match is found
