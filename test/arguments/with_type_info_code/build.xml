@@ -30,7 +30,13 @@
     </target>
 
     <target name="run" depends="spotbugs">
-        <testRun testName="with_type_info_code"/>
+        <testRun testName="with_type_info_code">
+            <resources>
+                <copy todir="${with_type_info_code.run_dir}/data">
+                    <fileset dir="${with_type_info_code.base_dir}/data"/>
+                </copy>
+            </resources>
+        </testRun>
     </target>
 
     <target name="clean">
