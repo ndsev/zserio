@@ -115,7 +115,7 @@ public class Walker
         try
         {
             final Method getterMethod = zserioObject.getClass().getMethod(getterName);
-            final Object result = getterMethod.invoke(zserioObject, new Object[0]);
+            final Object result = getterMethod.invoke(zserioObject);
 
             return result;
         }
