@@ -37,4 +37,4 @@ from zserio import service
 from zserio import typeinfo
 from zserio import walker
 
-VERSION_STRING = "2.5.1"
+VERSION_STRING = "2.6.0"
