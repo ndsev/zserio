@@ -2,10 +2,9 @@ package zserio.runtime.json;
 
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 
+import zserio.runtime.ZserioBitmask;
 import zserio.runtime.ZserioEnum;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -253,7 +252,7 @@ public class JsonWriter implements WalkObserver, AutoCloseable
             JsonEncoder.encodeIntegral(out, ((ZserioEnum)value).getGenericValue());
             break;
         case BITMASK:
-            writeBitmask(value, fieldInfo);
+            JsonEncoder.encodeIntegral(out, ((ZserioBitmask)value).getGenericValue());
             break;
         default:
             throw new ZserioError("JsonWriter: Unexpected not-null value of type '" +
@@ -283,30 +282,6 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         JsonEncoder.encodeIntegral(out, bitBuffer.getBitSize());
         endItem();
         endObject();
-    }
-
-    private void writeBitmask(Object bitmaskValue, FieldInfo fieldInfo)
-    {
-        try
-        {
-            final Method method = bitmaskValue.getClass().getDeclaredMethod("getValue");
-            final Object result = method.invoke(bitmaskValue);
-            if (result instanceof Number)
-            {
-                JsonEncoder.encodeIntegral(out, (Number)result);
-            }
-            else
-            {
-                throw new ZserioError("JsonWriter: Unexpected value type for Bitmask '" +
-                        fieldInfo.getTypeInfo().getSchemaName() + "'!");
-            }
-        }
-        catch (NoSuchMethodException | SecurityException |
-                IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-        {
-            throw new ZserioError("JsonWriter: Failed to get value from zserio Bitmask '" +
-                    fieldInfo.getTypeInfo().getSchemaName() + "'!");
-        }
     }
 
     private void flush()

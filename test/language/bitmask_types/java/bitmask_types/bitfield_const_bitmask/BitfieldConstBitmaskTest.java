@@ -129,6 +129,14 @@ public class BitfieldConstBitmaskTest
     }
 
     @Test
+    public void getGenericValue()
+    {
+        assertEquals(NONE_VALUE, Permission.Values.NONE.getGenericValue());
+        assertEquals(READ_VALUE, Permission.Values.READ.getGenericValue());
+        assertEquals(WRITE_VALUE, Permission.Values.WRITE.getGenericValue());
+    }
+
+    @Test
     public void or()
     {
         final Permission read = Permission.Values.READ;

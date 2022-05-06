@@ -136,6 +136,14 @@ public class UInt64BitmaskTest
     }
 
     @Test
+    public void getGenericValue()
+    {
+        assertEquals(NONE_PERMISSION_VALUE, Permission.Values.nonePermission.getGenericValue());
+        assertEquals(READ_PERMISSION_VALUE, Permission.Values.READ_PERMISSION.getGenericValue());
+        assertEquals(WRITE_PERMISSION_VALUE, Permission.Values.write_permission.getGenericValue());
+    }
+
+    @Test
     public void or()
     {
         final Permission read = Permission.Values.READ_PERMISSION;

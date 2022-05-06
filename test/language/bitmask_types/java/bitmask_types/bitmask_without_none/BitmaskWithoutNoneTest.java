@@ -133,6 +133,15 @@ public class BitmaskWithoutNoneTest
     }
 
     @Test
+    public void getGenericValue()
+    {
+        assertEquals(READ_VALUE, Permission.Values.READ.getGenericValue());
+        assertEquals(WRITE_VALUE, Permission.Values.WRITE.getGenericValue());
+        assertEquals((byte)(READ_VALUE | WRITE_VALUE),
+                Permission.Values.READ.or(Permission.Values.WRITE).getGenericValue());
+    }
+
+    @Test
     public void or()
     {
         final Permission none = new Permission();

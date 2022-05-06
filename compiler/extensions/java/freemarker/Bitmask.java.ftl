@@ -9,7 +9,8 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
         )<#t>
 </#macro>
 
-public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter, </#if>zserio.runtime.SizeOf
+public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
+        </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioBitmask
 {
     public ${name}()
     {
@@ -192,6 +193,12 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#if>
 
     public ${underlyingTypeInfo.typeFullName} getValue()
+    {
+        return value;
+    }
+
+    @Override
+    public java.lang.Number getGenericValue()
     {
         return value;
     }

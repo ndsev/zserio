@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import zserio.runtime.ZserioBitmask;
 import zserio.runtime.ZserioEnum;
 import zserio.runtime.io.BitBuffer;
 import zserio.runtime.typeinfo.FieldInfo;
@@ -178,15 +179,14 @@ public class JsonWriterTest
     @Test
     public void bitmaskValue()
     {
-        class DummyBitmask
+        class DummyBitmask implements ZserioBitmask
         {
-            public byte getValue()
+            @Override
+            public Number getGenericValue()
             {
                 return 0;
             }
         }
-
-        assertEquals(0, new DummyBitmask().getValue());
 
         StringWriter stringWriter = new StringWriter();
         try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
@@ -203,15 +203,14 @@ public class JsonWriterTest
     {
         final BigInteger uint64Max = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
 
-        class DummyBitmask
+        class DummyBitmask implements ZserioBitmask
         {
-            public BigInteger getValue()
+            @Override
+            public Number getGenericValue()
             {
                 return uint64Max;
             }
         }
-
-        assertEquals(uint64Max, new DummyBitmask().getValue());
 
         StringWriter stringWriter = new StringWriter();
         try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
