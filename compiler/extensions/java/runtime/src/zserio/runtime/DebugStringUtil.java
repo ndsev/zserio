@@ -1,6 +1,6 @@
 package zserio.runtime;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -30,11 +30,10 @@ public class DebugStringUtil
      */
     public static void toJsonStream(Object zserioObject, Writer writer, int indent, WalkFilter walkFilter)
     {
-        try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-        {
-            final Walker walker = new Walker(jsonWriter, walkFilter);
-            walker.walk(zserioObject);
-        }
+        // do not close the output stream to allow usage e.g. of System.out
+        final JsonWriter jsonWriter = new JsonWriter(writer, indent);
+        final Walker walker = new Walker(jsonWriter, walkFilter);
+        walker.walk(zserioObject);
     }
 
     /**
@@ -134,14 +133,18 @@ public class DebugStringUtil
      * @param indent Indent argument for JsonWriter.
      * @param walkFilter WalkFilter to use by Walker.
      *
-     * @throws FileNotFoundException When the output file cannot be created.
+     * @throws IOException When the output file cannot be created correctly.
      */
     public static void toJsonFile(Object zserioObject, String fileName, int indent, WalkFilter walkFilter)
-            throws FileNotFoundException
+            throws IOException
     {
-        final OutputStream outputStream = new FileOutputStream(fileName);
-        final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        toJsonStream(zserioObject, writer, indent, walkFilter);
+        try (
+            final OutputStream outputStream = new FileOutputStream(fileName);
+            final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        )
+        {
+            toJsonStream(zserioObject, writer, indent, walkFilter);
+        }
     }
 
     /**
@@ -151,9 +154,9 @@ public class DebugStringUtil
      * @param fileName Name of file to write.
      * @param indent Indent argument for JsonWriter.
      *
-     * @throws FileNotFoundException When the output file cannot be created.
+     * @throws IOException When the output file cannot be created correctly.
      */
-    public static void toJsonFile(Object zserioObject, String fileName, int indent) throws FileNotFoundException
+    public static void toJsonFile(Object zserioObject, String fileName, int indent) throws IOException
     {
         toJsonFile(zserioObject, fileName, indent, new DefaultWalkFilter());
     }
@@ -165,10 +168,10 @@ public class DebugStringUtil
      * @param fileName Name of file to write.
      * @param walkFilter WalkFilter to use by Walker.
      *
-     * @throws FileNotFoundException When the output file cannot be created.
+     * @throws IOException When the output file cannot be created correctly.
      */
     public static void toJsonFile(Object zserioObject, String fileName, WalkFilter walkFilter)
-            throws FileNotFoundException
+            throws IOException
     {
         toJsonFile(zserioObject, fileName, DEFAULT_INDENT, walkFilter);
     }
@@ -179,9 +182,9 @@ public class DebugStringUtil
      * @param zserioObject Zserio object to use.
      * @param fileName Name of file to write.
      *
-     * @throws FileNotFoundException When the output file cannot be created.
+     * @throws IOException When the output file cannot be created correctly.
      */
-    public static void toJsonFile(Object zserioObject, String fileName) throws FileNotFoundException
+    public static void toJsonFile(Object zserioObject, String fileName) throws IOException
     {
         toJsonFile(zserioObject, fileName, DEFAULT_INDENT);
     }
