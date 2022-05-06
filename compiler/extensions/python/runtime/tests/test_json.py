@@ -62,11 +62,11 @@ class JsonWriterTest(unittest.TestCase):
         json_writer.begin_root(object())
         json_writer.visit_value(13, MemberInfo("identifier", TypeInfo("uint32", int)))
         json_writer.visit_value("test", MemberInfo("text", TypeInfo("string", str)))
-        json_writer.visit_value(BitBuffer(bytes([0x1F,0xFF]), 13),
+        json_writer.visit_value(BitBuffer(bytes([0xFF,0x1F]), 13),
                                 MemberInfo("data", TypeInfo("extern", BitBuffer)))
         json_writer.end_root(object())
         self.assertEqual(
-            "{\"identifier\": 13, \"text\": \"test\", \"data\": {\"buffer\": [31, 255], \"bitSize\": 13}}",
+            "{\"identifier\": 13, \"text\": \"test\", \"data\": {\"buffer\": [255, 31], \"bitSize\": 13}}",
             json_writer.get_io().getvalue())
 
     def test_nested_compound(self):

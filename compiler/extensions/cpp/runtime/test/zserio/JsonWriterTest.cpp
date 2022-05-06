@@ -264,12 +264,12 @@ TEST(JsonWriterTest, compound)
     observer.beginRoot(nullptr);
     observer.visitValue(ReflectableFactory::getUInt32(13), IDENTIFIER_FIELD_INFO);
     observer.visitValue(ReflectableFactory::getString("test"_sv), TEXT_FIELD_INFO);
-    BitBuffer bitBuffer({0x1F}, 5);
+    BitBuffer bitBuffer({0xFF, 0x1F}, 13);
     observer.visitValue(ReflectableFactory::getBitBuffer(bitBuffer), DATA_FIELD_INFO);
     observer.endRoot(nullptr);
 
     ASSERT_EQ("{\"identifier\": 13, \"text\": \"test\", \"data\": "
-            "{\"buffer\": [31], \"bitSize\": 5}}", os.str());
+            "{\"buffer\": [255, 31], \"bitSize\": 13}}", os.str());
 }
 
 TEST(JsonWriterTest, nestedCompound)

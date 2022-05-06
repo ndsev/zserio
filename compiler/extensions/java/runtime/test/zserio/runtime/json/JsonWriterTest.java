@@ -232,12 +232,12 @@ public class JsonWriterTest
             jsonWriter.beginRoot(null);
             jsonWriter.visitValue(13, IDENTIFIER_FIELD_INFO, WalkerConst.NOT_ELEMENT);
             jsonWriter.visitValue("test", TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);
-            jsonWriter.visitValue(new BitBuffer(new byte[] {0x1F}, (long)5), DATA_FIELD_INFO,
+            jsonWriter.visitValue(new BitBuffer(new byte[] {(byte)0xFF, 0x1F}, (long)13), DATA_FIELD_INFO,
                     WalkerConst.NOT_ELEMENT);
             jsonWriter.endRoot(null);
 
             assertEquals("{\"identifier\": 13, \"text\": \"test\", \"data\": " +
-                    "{\"buffer\": [31], \"bitSize\": 5}}", stringWriter.toString());
+                    "{\"buffer\": [255, 31], \"bitSize\": 13}}", stringWriter.toString());
         }
     }
 
