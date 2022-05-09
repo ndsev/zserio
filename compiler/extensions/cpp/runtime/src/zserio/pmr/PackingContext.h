@@ -9,6 +9,9 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Typedef for PackingContextNode provided for convenience - using PropagatingPolymorphicAllocator<uint8_t>.
+ */
 using PackingContextNode = BasicPackingContextNode<PropagatingPolymorphicAllocator<uint8_t>>;
 
 } // namespace pmr

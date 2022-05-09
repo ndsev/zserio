@@ -42,6 +42,12 @@ struct decltype_deallocate
     using type = U;
 };
 
+template <typename T, typename U = decltype(std::declval<T>().getValue())>
+struct decltype_get_value
+{
+    using type = U;
+};
+
 template <typename ...T>
 using void_t = void;
 
@@ -100,6 +106,21 @@ template <typename T>
 struct has_initialize<T, detail::void_t<typename detail::decltype_initialize<T>::type>> : std::true_type
 {};
 /** \} */
+
+/**
+ * Trait used to check whether the type T has getValue method - i.e. whether it's a bitmask.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_get_value : std::false_type
+{};
+
+template <typename T>
+struct has_get_value<T, detail::void_t<typename detail::decltype_get_value<T>::type>> : std::true_type
+{};
+/**
+ * \}
+ */
 
 /**
  * Trait used to enable field constructor only for suitable compound types (using SFINAE).

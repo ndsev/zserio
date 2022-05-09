@@ -11,13 +11,42 @@ namespace zserio
 namespace pmr
 {
 
+/**
+ * Abstract base class for memory resources which are to be used by polymorphic allocators defined by zserio.
+ */
 class MemoryResource
 {
 public:
     // this empty constructor is necessary for gcc 9.3.0 bug which causes test coverage failure
+    /**
+     * Constructor.
+     */
     MemoryResource() {}
+
+    /**
+     * Destructor.
+     */
     virtual ~MemoryResource() = default;
 
+    /**
+     * Copying and moving is disallowed!
+     * \{
+     */
+    MemoryResource(const MemoryResource& other) = delete;
+    MemoryResource(MemoryResource&& other) = delete;
+
+    MemoryResource& operator=(const MemoryResource& other) = delete;
+    MemoryResource& operator=(MemoryResource&& other) = delete;
+    /** \} */
+
+    /**
+     * Allocates storage with a size of at least bytes bytes, aligned to the specified alignment.
+     *
+     * \param bytes Minimum number of bytes to allocate.
+     * \param alignment Requested alignment.
+     *
+     * \return Pointer to the allocated storage.
+     */
     void* allocate(size_t bytes, size_t alignment = alignof(max_align_t))
     {
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
@@ -30,6 +59,15 @@ public:
 #endif
     }
 
+    /**
+     * Deallocates the storage pointed to by p.
+     *
+     * Arguments shall match to prior call to allocate!
+     *
+     * \param p Pointer to the storage to deallocate.
+     * \param bytes Number of bytes to deallocate.
+     * \param alignment Requested alignment.
+     */
     void deallocate(void* p, size_t bytes, size_t alignment = alignof(max_align_t))
     {
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
@@ -39,6 +77,16 @@ public:
         doDeallocate(p, bytes, alignment);
     }
 
+    /**
+     * Compares *this for equality with other.
+     *
+     * Two memory resources  compare equal if and only if memory allocated from one memory resource
+     * can be deallocated from the other and vice versa.
+     *
+     * \param other Other memory resource to compare.
+     *
+     * \return True when the two resources are equal, false otherwise.
+     */
     bool isEqual(const MemoryResource& other) const noexcept
     {
 #ifdef ZSERIO_MEMORY_RESOURCE_TRACING
@@ -48,16 +96,61 @@ public:
     }
 
 private:
+    /**
+     * Allocates storage with a size of at least bytes bytes, aligned to the specified alignment.
+     *
+     * \param bytes Minimum number of bytes to allocate.
+     * \param alignment Requested alignment.
+     *
+     * \return Pointer to the allocated storage.
+     */
     virtual void* doAllocate(size_t bytes, size_t alignment) = 0;
+
+    /**
+     * Deallocates the storage pointed to by p.
+     *
+     * Arguments shall match to prior call to doAllocate!
+     *
+     * \param p Pointer to the storage to deallocate.
+     * \param bytes Number of bytes to deallocate.
+     * \param alignment Requested alignment.
+     */
     virtual void doDeallocate(void* p, size_t bytes, size_t alignment) = 0;
+
+    /**
+     * Compares *this for equality with other.
+     *
+     * Two memory resources  compare equal if and only if memory allocated from one memory resource
+     * can be deallocated from the other and vice versa.
+     *
+     * \param other Other memory resource to compare.
+     *
+     * \return True when the two resources are equal, false otherwise.
+     */
     virtual bool doIsEqual(const MemoryResource& other) const noexcept = 0;
 };
 
+/**
+ * Compares the memory resources lhs and rhs for equality.
+ *
+ * \param lhs First memory resource to compare.
+ * \param rhs Second memory resource to compare.
+ *
+ * \return True when the two resources are equal, false otherwise.
+ */
 inline bool operator==(const MemoryResource& lhs, const MemoryResource& rhs)
 {
     return &lhs == &rhs || lhs.isEqual(rhs);
 }
 
+/**
+ * Compares the memory resources lhs and rhs for non-equality.
+ *
+ * \param lhs First memory resource to compare.
+ * \param rhs Second memory resource to compare.
+ *
+ * \return True when the two resources are NOT equal, false otherwise.
+ */
 inline bool operator!=(const MemoryResource& lhs, const MemoryResource& rhs)
 {
     return !(lhs == rhs);

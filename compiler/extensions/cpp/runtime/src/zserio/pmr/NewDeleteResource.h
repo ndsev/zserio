@@ -11,6 +11,9 @@ namespace pmr
 namespace detail
 {
 
+/**
+ * Default memory resource which will be used by polymorphic allocators defined by zserio.
+ */
 class NewDeleteResource : public MemoryResource
 {
 private:
@@ -32,6 +35,9 @@ private:
 
 } // namespace detail
 
+/**
+ * Gets pointer to (default) new delete resource.
+ */
 MemoryResource* getNewDeleteResource() noexcept;
 
 } // namespace pmr
