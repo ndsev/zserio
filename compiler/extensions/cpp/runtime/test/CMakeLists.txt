@@ -54,6 +54,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
     zserio/StringViewTest.cpp
+    zserio/TraitsTest.cpp
     zserio/TypeInfoTest.cpp
     zserio/TypeInfoUtilTest.cpp
     zserio/UniquePtrTest.cpp
