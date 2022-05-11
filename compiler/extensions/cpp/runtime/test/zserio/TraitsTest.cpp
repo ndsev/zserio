@@ -9,6 +9,7 @@
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/PackingContext.h"
+#include "zserio/Reflectable.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
 namespace zserio
@@ -28,18 +29,29 @@ void assertFalse(bool value)
     ASSERT_FALSE(value);
 }
 
-class DummyObjectInitializeChildren
-{
-public:
-    void initializeChildren() {}
-};
-
 class DummyObjectInitialize
 {
 public:
     DummyObjectInitialize() {}
 
     void initialize() {}
+};
+
+class DummyObjectInitializeChildren
+{
+public:
+    void initializeChildren() {}
+};
+
+class DummyObjectReflectable
+{
+public:
+    DummyObjectReflectable() {}
+
+    IReflectablePtr reflectable()
+    {
+        return nullptr;
+    }
 };
 
 class DummyBitmask
@@ -92,6 +104,16 @@ TEST(TraitsTest, isFirstAllocator)
     assertFalse(is_first_allocator<char, pmr::PolymorphicAllocator<uint8_t>>::value);
 }
 
+TEST(TraitsTest, hasInitialize)
+{
+    ASSERT_TRUE(has_initialize<DummyObjectInitialize>::value);
+    DummyObjectInitialize().initialize();
+    ASSERT_FALSE(has_initialize<DummyObjectInitializeChildren>::value);
+    ASSERT_FALSE(has_initialize<DummyBitmask>::value);
+    ASSERT_FALSE(has_initialize<std::string>::value);
+    ASSERT_FALSE(has_initialize<std::vector<uint8_t>>::value);
+}
+
 TEST(TraitsTest, hasInitializeChildren)
 {
     ASSERT_TRUE(has_initialize_children<DummyObjectInitializeChildren>::value);
@@ -102,14 +124,14 @@ TEST(TraitsTest, hasInitializeChildren)
     ASSERT_FALSE(has_initialize_children<std::vector<uint8_t>>::value);
 }
 
-TEST(TraitsTest, hasInitialize)
+TEST(TraitsTest, hasReflectable)
 {
-    ASSERT_TRUE(has_initialize<DummyObjectInitialize>::value);
-    DummyObjectInitialize().initialize();
-    ASSERT_FALSE(has_initialize<DummyObjectInitializeChildren>::value);
-    ASSERT_FALSE(has_initialize<DummyBitmask>::value);
-    ASSERT_FALSE(has_initialize<std::string>::value);
-    ASSERT_FALSE(has_initialize<std::vector<uint8_t>>::value);
+    ASSERT_TRUE(has_reflectable<DummyObjectReflectable>::value);
+    ASSERT_EQ(nullptr, DummyObjectReflectable().reflectable());
+    ASSERT_FALSE(has_reflectable<DummyObjectInitialize>::value);
+    ASSERT_FALSE(has_reflectable<DummyBitmask>::value);
+    ASSERT_FALSE(has_reflectable<std::string>::value);
+    ASSERT_FALSE(has_reflectable<std::vector<uint8_t>>::value);
 }
 
 TEST(TraitsTest, hasGetValue)

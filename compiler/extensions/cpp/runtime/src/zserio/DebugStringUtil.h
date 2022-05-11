@@ -27,6 +27,9 @@ template <typename T, typename WALK_FILTER, typename ALLOC>
 void toJsonStream(T& object, std::ostream& os, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator)
 {
+    static_assert(has_reflectable<T>::value, "DebugStringUtil.toJsonStream: "
+            "Zserio object must have reflections enabled (see zserio option -withReflectionCode)!");
+
     BasicJsonWriter<ALLOC> jsonWriter(os, indent);
     BasicWalker<ALLOC> walker(jsonWriter, walkFilter);
     walker.walk(object.reflectable(allocator));

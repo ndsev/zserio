@@ -29,6 +29,12 @@ struct decltype_initialize_children
     using type = U;
 };
 
+template <typename T, typename U = decltype(std::declval<T>().reflectable())>
+struct decltype_reflectable
+{
+    using type = U;
+};
+
 // declval is needed because otherwise MSVC 2015 states that std::allocator<int> does NOT have allocate method!
 template <typename T, typename U = decltype(std::declval<T>().allocate(0))>
 struct decltype_allocate
@@ -81,6 +87,19 @@ struct is_first_allocator<T, ARGS...> : is_allocator<T>
 /** \} */
 
 /**
+ * Trait used to check whether the type T has initialize method.
+ * \{
+ */
+template <typename T, typename = void>
+struct has_initialize : std::false_type
+{};
+
+template <typename T>
+struct has_initialize<T, detail::void_t<typename detail::decltype_initialize<T>::type>> : std::true_type
+{};
+/** \} */
+
+/**
  * Trait used to check whether the type T has initializeChildren method.
  * \{
  */
@@ -95,17 +114,18 @@ struct has_initialize_children<T,
 /** \} */
 
 /**
- * Trait used to check whether the type T has initialize method.
+ * Trait used to check whether the type T has reflectable method.
  * \{
  */
 template <typename T, typename = void>
-struct has_initialize : std::false_type
+struct has_reflectable : std::false_type
 {};
 
 template <typename T>
-struct has_initialize<T, detail::void_t<typename detail::decltype_initialize<T>::type>> : std::true_type
+struct has_reflectable<T, detail::void_t<typename detail::decltype_reflectable<T>::type>> : std::true_type
 {};
 /** \} */
+
 
 /**
  * Trait used to check whether the type T has getValue method - i.e. whether it's a bitmask.
