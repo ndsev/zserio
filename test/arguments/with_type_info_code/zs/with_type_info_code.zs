@@ -22,6 +22,9 @@ struct ComplexStruct
     optional ParameterizedStruct(simpleStruct) paramStructArray[];
     bit<simpleStruct.fieldU32> dynamicBitField;
     packed bit<dynamicBitField * 2> dynamicBitFieldArray[];
+    optional TestEnum optionalEnum;
+    optional TestBitmask optionalBitmask;
+    optional extern optionalExtern;
 
     function uint32 firstArrayElement()
     {

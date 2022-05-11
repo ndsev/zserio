@@ -75,7 +75,16 @@
             11,
             13,
             15
-        ]
+        ],
+        "optionalEnum": 6,
+        "optionalBitmask": 1,
+        "optionalExtern": {
+            "buffer": [
+                203,
+                240
+            ],
+            "bitSize": 12
+        }
     },
     "parameterizedStruct": {
         "array": [

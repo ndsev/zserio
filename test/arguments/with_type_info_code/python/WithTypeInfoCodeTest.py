@@ -209,7 +209,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(2, len(type_info.attributes))
         self.assertIn(TypeAttribute.FIELDS, type_info.attributes)
         fields = type_info.attributes[TypeAttribute.FIELDS]
-        self.assertEqual(7, len(fields))
+        self.assertEqual(10, len(fields))
         self.assertIn(TypeAttribute.FUNCTIONS, type_info.attributes)
         functions = type_info.attributes[TypeAttribute.FUNCTIONS]
         self.assertEqual(1, len(functions))
@@ -322,6 +322,55 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.ARRAY_LENGTH, member_info.attributes)
         self.assertEqual(None, member_info.attributes[MemberAttribute.ARRAY_LENGTH])
 
+        # optionalEnum
+        member_info = fields[7]
+        self.assertEqual("optionalEnum", member_info.schema_name)
+        self._checkTestEnum(member_info.type_info)
+        self.assertEqual(4, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("optional_enum", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
+        self.assertIsNone(member_info.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_enum_used",
+                         member_info.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_enum_set",
+                         member_info.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+
+        # optionalBitmask
+        member_info = fields[8]
+        self.assertEqual("optionalBitmask", member_info.schema_name)
+        self._checkTestBitmask(member_info.type_info)
+        self.assertEqual(4, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("optional_bitmask", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
+        self.assertIsNone(member_info.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_bitmask_used",
+                         member_info.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_bitmask_set",
+                         member_info.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+
+        # optionalExtern
+        member_info = fields[9]
+        self.assertEqual("optionalExtern", member_info.schema_name)
+        self.assertEqual("extern", member_info.type_info.schema_name)
+        self.assertEqual(zserio.BitBuffer, member_info.type_info.py_type)
+        self.assertEqual(4, len(member_info.attributes))
+        self.assertIn(MemberAttribute.PROPERTY_NAME, member_info.attributes)
+        self.assertEqual("optional_extern", member_info.attributes[MemberAttribute.PROPERTY_NAME])
+        self.assertIn(MemberAttribute.OPTIONAL, member_info.attributes)
+        self.assertIsNone(member_info.attributes[MemberAttribute.OPTIONAL])
+        self.assertIn(MemberAttribute.IS_USED_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_extern_used",
+                         member_info.attributes[MemberAttribute.IS_USED_INDICATOR_NAME])
+        self.assertIn(MemberAttribute.IS_SET_INDICATOR_NAME, member_info.attributes)
+        self.assertEqual("is_optional_extern_set",
+                         member_info.attributes[MemberAttribute.IS_SET_INDICATOR_NAME])
+
         # firstArrayElement
         member_info = functions[0]
         self.assertEqual("firstArrayElement", member_info.schema_name)
@@ -334,7 +383,6 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.FUNCTION_RESULT, member_info.attributes)
         self.assertEqual("(self.array[0]) if (len(self.array) > 0) else (0)",
                          member_info.attributes[MemberAttribute.FUNCTION_RESULT])
-
 
     def _checkParameterizedStruct(self, type_info):
         self.assertEqual("with_type_info_code.ParameterizedStruct", type_info.schema_name)
@@ -1272,7 +1320,10 @@ class WithTypeInfoCodeTest(unittest.TestCase):
             [self._createParameterizedStruct(simpleStruct),
              self._createParameterizedStruct(simpleStruct)] if createOptionals else None,
             8,
-            list(range(1, 65536, 2)))
+            list(range(1, 65536, 2)),
+            self.api.TestEnum.ITEM_THREE if createOptionals else None,
+            self.api.TestBitmask.Values.RED if createOptionals else None,
+            self._createOptionalExternData() if createOptionals else None)
 
         return complexStruct
 
@@ -1307,7 +1358,16 @@ class WithTypeInfoCodeTest(unittest.TestCase):
                                                maxArrayLength > 65536 // 2) else maxArrayLength * 2
         self.assertEqual(list(range(1, dynamicBitFieldArrayLength, 2)), complexStruct["dynamicBitFieldArray"])
 
-        self.assertEqual(7, len(complexStruct.keys()))
+        if createdOptionals:
+            self.assertEqual(self.api.TestEnum.ITEM_THREE.value, complexStruct["optionalEnum"])
+            self.assertEqual(self.api.TestBitmask.Values.RED.value, complexStruct["optionalBitmask"])
+            self._checkOptionalExternDataJson(complexStruct["optionalExtern"])
+        else:
+            self.assertEqual(None, complexStruct["optionalEnum"])
+            self.assertEqual(None, complexStruct["optionalBitmask"])
+            self.assertEqual(None, complexStruct["optionalExtern"])
+
+        self.assertEqual(10, len(complexStruct.keys()))
 
     def _createParameterizedStruct(self, simpleStruct):
         parameterizedStruct = self.api.ParameterizedStruct(
@@ -1432,6 +1492,15 @@ class WithTypeInfoCodeTest(unittest.TestCase):
     def _checkExternDataJson(self, externData):
         self.assertEqual([202, 254], externData["buffer"])
         self.assertEqual(15, externData["bitSize"])
+        self.assertEqual(2, len(externData.keys()))
+
+    @staticmethod
+    def _createOptionalExternData():
+        return zserio.BitBuffer(bytes([0xCB, 0xF0]), 12)
+
+    def _checkOptionalExternDataJson(self, externData):
+        self.assertEqual([203, 240], externData["buffer"])
+        self.assertEqual(12, externData["bitSize"])
         self.assertEqual(2, len(externData.keys()))
 
     @staticmethod

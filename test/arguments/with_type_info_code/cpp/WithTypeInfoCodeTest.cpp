@@ -586,7 +586,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(7, fields.size());
+        ASSERT_EQ(10, fields.size());
 
         // simpleStruct
         const zserio::FieldInfo& simpleStructField = fields[0];
@@ -728,6 +728,62 @@ protected:
         ASSERT_EQ(""_sv, dynamicBitFieldArrayField.arrayLength);
         ASSERT_EQ(true, dynamicBitFieldArrayField.isPacked);
         ASSERT_EQ(false, dynamicBitFieldArrayField.isImplicit);
+
+        // optionalEnum
+        const zserio::FieldInfo& optionalEnumField = fields[7];
+        ASSERT_EQ("optionalEnum"_sv, optionalEnumField.schemaName);
+
+        checkTestEnum(optionalEnumField.typeInfo);
+
+        ASSERT_EQ(0, optionalEnumField.typeArguments.size());
+        ASSERT_EQ(""_sv, optionalEnumField.alignment);
+        ASSERT_EQ(""_sv, optionalEnumField.offset);
+        ASSERT_EQ(""_sv, optionalEnumField.initializer);
+        ASSERT_EQ(true, optionalEnumField.isOptional);
+        ASSERT_EQ(""_sv, optionalEnumField.optionalCondition);
+        ASSERT_EQ(""_sv, optionalEnumField.constraint);
+        ASSERT_EQ(false, optionalEnumField.isArray);
+        ASSERT_EQ(""_sv, optionalEnumField.arrayLength);
+        ASSERT_EQ(false, optionalEnumField.isPacked);
+        ASSERT_EQ(false, optionalEnumField.isImplicit);
+
+        // optionalBitmask
+        const zserio::FieldInfo& optionalBitmaskField = fields[8];
+        ASSERT_EQ("optionalBitmask"_sv, optionalBitmaskField.schemaName);
+
+        checkTestBitmask(optionalBitmaskField.typeInfo);
+
+        ASSERT_EQ(0, optionalBitmaskField.typeArguments.size());
+        ASSERT_EQ(""_sv, optionalBitmaskField.alignment);
+        ASSERT_EQ(""_sv, optionalBitmaskField.offset);
+        ASSERT_EQ(""_sv, optionalBitmaskField.initializer);
+        ASSERT_EQ(true, optionalBitmaskField.isOptional);
+        ASSERT_EQ(""_sv, optionalBitmaskField.optionalCondition);
+        ASSERT_EQ(""_sv, optionalBitmaskField.constraint);
+        ASSERT_EQ(false, optionalBitmaskField.isArray);
+        ASSERT_EQ(""_sv, optionalBitmaskField.arrayLength);
+        ASSERT_EQ(false, optionalBitmaskField.isPacked);
+        ASSERT_EQ(false, optionalBitmaskField.isImplicit);
+
+        // optionalExtern
+        const zserio::FieldInfo& optionalExternField = fields[9];
+        ASSERT_EQ("optionalExtern"_sv, optionalExternField.schemaName);
+
+        ASSERT_EQ("extern"_sv, optionalExternField.typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::EXTERN, optionalExternField.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::BIT_BUFFER, optionalExternField.typeInfo.getCppType());
+
+        ASSERT_EQ(0, optionalExternField.typeArguments.size());
+        ASSERT_EQ(""_sv, optionalExternField.alignment);
+        ASSERT_EQ(""_sv, optionalExternField.offset);
+        ASSERT_EQ(""_sv, optionalExternField.initializer);
+        ASSERT_EQ(true, optionalExternField.isOptional);
+        ASSERT_EQ(""_sv, optionalExternField.optionalCondition);
+        ASSERT_EQ(""_sv, optionalExternField.constraint);
+        ASSERT_EQ(false, optionalExternField.isArray);
+        ASSERT_EQ(""_sv, optionalExternField.arrayLength);
+        ASSERT_EQ(false, optionalExternField.isPacked);
+        ASSERT_EQ(false, optionalExternField.isImplicit);
     }
 
     void checkParameterizedStruct(const zserio::ITypeInfo& typeInfo)
@@ -1526,6 +1582,14 @@ protected:
         for (uint64_t i = 1; i < 65536; i += 2)
             dynamicBitFieldArray.push_back(i);
         complexStruct.setDynamicBitFieldArray(dynamicBitFieldArray);
+
+        if (createOptionals)
+        {
+            complexStruct.setOptionalEnum(TestEnum::ItemThree);
+            complexStruct.setOptionalBitmask(TestBitmask::Values::RED);
+            const vector_type<uint8_t> buffer = {0xCB, 0xF0};
+            complexStruct.setOptionalExtern(BitBuffer(buffer, 12));
+        }
     }
 
     void fillParameterizedStruct(ParameterizedStruct& parameterizedStruct, const SimpleStruct& simpleStruct)

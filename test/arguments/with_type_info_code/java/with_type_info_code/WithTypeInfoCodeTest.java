@@ -1011,7 +1011,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(7, fields.size());
+        assertEquals(10, fields.size());
 
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
@@ -1180,6 +1180,74 @@ public class WithTypeInfoCodeTest
         assertEquals("", dynamicBitFieldArrayField.getArrayLength());
         assertTrue(dynamicBitFieldArrayField.isPacked());
         assertFalse(dynamicBitFieldArrayField.isImplicit());
+
+        // optionalEnum
+        final FieldInfo optionalEnumField = fields.get(7);
+        assertEquals("optionalEnum", optionalEnumField.getSchemaName());
+        assertEquals("getOptionalEnum", optionalEnumField.getGetterName());
+        assertEquals("setOptionalEnum", optionalEnumField.getSetterName());
+
+        checkTestEnum(optionalEnumField.getTypeInfo());
+
+        assertEquals(0, optionalEnumField.getTypeArguments().size());
+        assertEquals("", optionalEnumField.getAlignment());
+        assertEquals("", optionalEnumField.getOffset());
+        assertEquals("", optionalEnumField.getInitializer());
+        assertTrue(optionalEnumField.isOptional());
+        assertEquals("", optionalEnumField.getOptionalCondition());
+        assertEquals("isOptionalEnumUsed", optionalEnumField.getIsUsedIndicatorName());
+        assertEquals("isOptionalEnumSet", optionalEnumField.getIsSetIndicatorName());
+        assertEquals("", optionalEnumField.getConstraint());
+        assertFalse(optionalEnumField.isArray());
+        assertEquals("", optionalEnumField.getArrayLength());
+        assertFalse(optionalEnumField.isPacked());
+        assertFalse(optionalEnumField.isImplicit());
+
+        // optionalBitmask
+        final FieldInfo optionalBitmaskField = fields.get(8);
+        assertEquals("optionalBitmask", optionalBitmaskField.getSchemaName());
+        assertEquals("getOptionalBitmask", optionalBitmaskField.getGetterName());
+        assertEquals("setOptionalBitmask", optionalBitmaskField.getSetterName());
+
+        checkTestBitmask(optionalBitmaskField.getTypeInfo());
+
+        assertEquals(0, optionalBitmaskField.getTypeArguments().size());
+        assertEquals("", optionalBitmaskField.getAlignment());
+        assertEquals("", optionalBitmaskField.getOffset());
+        assertEquals("", optionalBitmaskField.getInitializer());
+        assertTrue(optionalBitmaskField.isOptional());
+        assertEquals("", optionalBitmaskField.getOptionalCondition());
+        assertEquals("isOptionalBitmaskUsed", optionalBitmaskField.getIsUsedIndicatorName());
+        assertEquals("isOptionalBitmaskSet", optionalBitmaskField.getIsSetIndicatorName());
+        assertEquals("", optionalBitmaskField.getConstraint());
+        assertFalse(optionalBitmaskField.isArray());
+        assertEquals("", optionalBitmaskField.getArrayLength());
+        assertFalse(optionalBitmaskField.isPacked());
+        assertFalse(optionalBitmaskField.isImplicit());
+
+        // optionalExtern
+        final FieldInfo optionalExternField = fields.get(9);
+        assertEquals("optionalExtern", optionalExternField.getSchemaName());
+        assertEquals("getOptionalExtern", optionalExternField.getGetterName());
+        assertEquals("setOptionalExtern", optionalExternField.getSetterName());
+
+        assertEquals("extern", optionalExternField.getTypeInfo().getSchemaName());
+        assertEquals(SchemaType.EXTERN, optionalExternField.getTypeInfo().getSchemaType());
+        assertEquals(JavaType.BIT_BUFFER, optionalExternField.getTypeInfo().getJavaType());
+
+        assertEquals(0, optionalExternField.getTypeArguments().size());
+        assertEquals("", optionalExternField.getAlignment());
+        assertEquals("", optionalExternField.getOffset());
+        assertEquals("", optionalExternField.getInitializer());
+        assertTrue(optionalExternField.isOptional());
+        assertEquals("", optionalExternField.getOptionalCondition());
+        assertEquals("isOptionalExternUsed", optionalExternField.getIsUsedIndicatorName());
+        assertEquals("isOptionalExternSet", optionalExternField.getIsSetIndicatorName());
+        assertEquals("", optionalExternField.getConstraint());
+        assertFalse(optionalExternField.isArray());
+        assertEquals("", optionalExternField.getArrayLength());
+        assertFalse(optionalExternField.isPacked());
+        assertFalse(optionalExternField.isImplicit());
     }
 
     private void checkParameterizedStruct(TypeInfo typeInfo)
@@ -1854,7 +1922,7 @@ public class WithTypeInfoCodeTest
             createSimpleChoice(testEnum),
             ts32,
             createTemplatedParameterizedStruct_TS32(ts32),
-            createExternData(),
+            new BitBuffer(new byte[]{(byte)0xCA, (byte)0xFE}, 15),
             new long[] {1, 4, 6, 4, 6, 1});
 
         return withTypeInfoCode;
@@ -1884,7 +1952,10 @@ public class WithTypeInfoCodeTest
             (createOptionals) ? new ParameterizedStruct[] { createParameterizedStruct(simpleStruct),
                     createParameterizedStruct(simpleStruct) } : null,
             BigInteger.valueOf(8),
-            dynamicBitFieldArray);
+            dynamicBitFieldArray,
+            (createOptionals) ? TestEnum.ItemThree : null,
+            (createOptionals) ? TestBitmask.Values.RED : null,
+            (createOptionals) ? new BitBuffer(new byte[]{(byte)0xCB, (byte)0xF0}, 12) : null);
 
         return complexStruct;
     }
@@ -1975,11 +2046,6 @@ public class WithTypeInfoCodeTest
                 new TemplatedParameterizedStruct_TS32(ts32, array);
 
         return templatedParameterizedStruct_TS32;
-    }
-
-    private BitBuffer createExternData()
-    {
-        return new BitBuffer(new byte[]{(byte)0xCA, (byte)0xFE}, 15);
     }
 
     private String getJsonNameWithArrayLengthFilter(int arrayLength)

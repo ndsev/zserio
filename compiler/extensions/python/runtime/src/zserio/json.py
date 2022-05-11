@@ -135,6 +135,10 @@ class JsonWriter(WalkObserver):
         self._io.write(f"{self._json_encoder.encode(key)}{self._key_separator}")
 
     def _write_value(self, value: typing.Any, member_info: MemberInfo) -> None:
+        if value is None:
+            self._io.write(self._json_encoder.encode(None))
+            return
+
         if isinstance(value, BitBuffer):
             self._write_bitbuffer(value)
         else:

@@ -32802,7 +32802,10 @@
             65531,
             65533,
             65535
-        ]
+        ],
+        "optionalEnum": null,
+        "optionalBitmask": null,
+        "optionalExtern": null
     },
     "parameterizedStruct": {
         "array": [

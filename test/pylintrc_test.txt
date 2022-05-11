@@ -19,7 +19,7 @@ disable=no-else-return,
 max-line-length=112
 
 # Maximum number of lines in a module.
-max-module-lines=1500
+max-module-lines=1536
 
 [BASIC]
 
@@ -68,4 +68,4 @@ max-public-methods=30
 max-returns=10
 
 # Maximum number of statements in function / method body.
-max-statements=128
+max-statements=160
