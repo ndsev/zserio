@@ -151,30 +151,6 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 }
 
     <#if withReflectionCode>
-${types.reflectablePtr.name} ${name}::reflectable(const allocator_type& allocator)
-{
-    class Reflectable : public ::zserio::ReflectableAllocatorHolderBase<allocator_type>
-    {
-    public:
-        explicit Reflectable(${fullName}& object, const allocator_type& allocator) :
-                ::zserio::ReflectableAllocatorHolderBase<allocator_type>(${fullName}::typeInfo(), allocator),
-                m_object(object)
-        {}
-    <#if fieldList?has_content>
-
-        <@reflectable_get_field name, fieldList/>
-
-        <@reflectable_set_field name, fieldList/>
-    </#if>
-    <#if compoundParametersData.list?has_content>
-
-        <@reflectable_get_parameter name, compoundParametersData.list/>
-    </#if>
-    <#if compoundFunctionsData.list?has_content>
-
-        <@reflectable_call_function name, compoundFunctionsData.list/>
-    </#if>
-
 <#macro choice_get_choice member packed index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
@@ -187,6 +163,45 @@ ${I}return {};
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}return {};
 </#macro>
+<#macro choice_reflectable isConst>
+<#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> ${name}::reflectable(<#rt>
+        <#lt>const allocator_type& allocator)<#if isConst> const</#if>
+{
+    class Reflectable : public ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>
+    {
+    public:
+        explicit Reflectable(<#if isConst>const </#if>${fullName}& object, const allocator_type& allocator) :
+                ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>(<#rt>
+                        <#lt>${fullName}::typeInfo(), allocator),
+                m_object(object)
+        {}
+    <#if fieldList?has_content>
+
+        <@reflectable_get_field name, fieldList, true/>
+        <#if !isConst>
+
+        <@reflectable_get_field name, fieldList, false/>
+
+        <@reflectable_set_field name, fieldList/>
+        </#if>
+    </#if>
+    <#if compoundParametersData.list?has_content>
+
+        <@reflectable_get_parameter name, compoundParametersData.list, true/>
+        <#if !isConst>
+
+        <@reflectable_get_parameter name, compoundParametersData.list, false/>
+        </#if>
+    </#if>
+    <#if compoundFunctionsData.list?has_content>
+
+        <@reflectable_call_function name, compoundFunctionsData.list, true/>
+        <#if !isConst>
+
+        <@reflectable_call_function name, compoundFunctionsData.list, false/>
+        </#if>
+    </#if>
+
         virtual ::zserio::StringView getChoice() const override
         {
         <#if fieldList?has_content>
@@ -196,7 +211,7 @@ ${I}return {};
         </#if>
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) override
+        virtual void write(::zserio::BitStreamWriter& writer) const override
         {
             m_object.write(writer);
         }
@@ -207,11 +222,15 @@ ${I}return {};
         }
 
     private:
-        ${fullName}& m_object;
+        <#if isConst>const </#if>${fullName}& m_object;
     };
 
     return std::allocate_shared<Reflectable>(allocator, *this, allocator);
 }
+</#macro>
+<@choice_reflectable true/>
+
+<@choice_reflectable false/>
 
     </#if>
 </#if>

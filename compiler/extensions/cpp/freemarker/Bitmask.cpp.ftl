@@ -59,7 +59,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 }
     <#if withReflectionCode>
 
-${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.default}& allocator)
+${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.default}& allocator) const
 {
     class Reflectable : public ::zserio::ReflectableBase<${types.allocator.default}>
     {
@@ -91,7 +91,7 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             return m_bitmask.toString(allocator);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) override
+        virtual void write(::zserio::BitStreamWriter& writer) const override
         {
             m_bitmask.write(writer);
         }

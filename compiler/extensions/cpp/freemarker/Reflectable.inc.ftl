@@ -1,7 +1,8 @@
 <#include "TypeInfo.inc.ftl">
-<#macro reflectable_get_field compoundName fieldList indent=2>
+<#macro reflectable_get_field compoundName fieldList isConst indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual ${types.reflectablePtr.name} getField(::zserio::StringView name) const override
+${I}virtual <#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> getField(<#rt>
+        <#lt>::zserio::StringView name) <#if isConst>const </#if>override
 ${I}{
     <#list fieldList as field>
 ${I}    if (name == ::zserio::makeStringView("${field.name}"))
@@ -37,9 +38,10 @@ ${I}    }
 ${I}}
 </#macro>
 
-<#macro reflectable_get_parameter compoundName parametersList indent=2>
+<#macro reflectable_get_parameter compoundName parametersList isConst indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual ${types.reflectablePtr.name} getParameter(::zserio::StringView name) const override
+${I}virtual <#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> getParameter(<#rt>
+        <#lt>::zserio::StringView name) <#if isConst>const </#if>override
 ${I}{
     <#list parametersList as parameter>
 ${I}    if (name == ::zserio::makeStringView("${parameter.name}"))
@@ -54,9 +56,10 @@ ${I}    }
 ${I}}
 </#macro>
 
-<#macro reflectable_call_function compoundName functionList indent=2>
+<#macro reflectable_call_function compoundName functionList isConst indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}virtual ${types.reflectablePtr.name} callFunction(::zserio::StringView name) const override
+${I}virtual <#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> callFunction(<#rt>
+        <#lt>::zserio::StringView name) <#if isConst>const </#if>override
 ${I}{
     <#list functionList as function>
 ${I}    if (name == ::zserio::makeStringView("${function.schemaName}"))

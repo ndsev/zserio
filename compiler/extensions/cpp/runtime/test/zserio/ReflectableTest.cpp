@@ -75,7 +75,7 @@ public:
         return typeInfo;
     }
 
-    IReflectablePtr reflectable(const std::allocator<uint8_t>& allocator = std::allocator<uint8_t>())
+    IReflectablePtr reflectable(const std::allocator<uint8_t>& allocator = std::allocator<uint8_t>()) const
     {
         class Reflectable : public ReflectableBase<std::allocator<uint8_t>>
         {
@@ -106,7 +106,7 @@ public:
                 return m_bitmask.toString(allocator);
             }
 
-            virtual void write(BitStreamWriter& writer) override
+            virtual void write(BitStreamWriter& writer) const override
             {
                 m_bitmask.write(writer);
             }
@@ -217,17 +217,17 @@ public:
         return typeInfo;
     }
 
-    IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
+    IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
     {
-        class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
+        class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
         {
         public:
-            explicit Reflectable(DummyChild& object, const allocator_type& allocator) :
-                    ReflectableAllocatorHolderBase<allocator_type>(DummyChild::typeInfo(), allocator),
+            explicit Reflectable(const DummyChild& object, const allocator_type& allocator) :
+                    ReflectableConstAllocatorHolderBase<allocator_type>(DummyChild::typeInfo(), allocator),
                     m_object(object)
             {}
 
-            virtual IReflectablePtr getField(StringView name) const override
+            virtual IReflectableConstPtr getField(StringView name) const override
             {
                 if (name == makeStringView("value"))
                 {
@@ -240,7 +240,7 @@ public:
                 }
             }
 
-            virtual IReflectablePtr getParameter(StringView name) const override
+            virtual IReflectableConstPtr getParameter(StringView name) const override
             {
                 if (name == makeStringView("dummyParam"))
                 {
@@ -254,7 +254,122 @@ public:
                 }
             }
 
-            virtual IReflectablePtr callFunction(StringView name) const override
+            virtual IReflectableConstPtr callFunction(StringView name) const override
+            {
+                if (name == makeStringView("getValue"))
+                {
+                    return ReflectableFactory::getFixedUnsignedBitField(
+                            31, m_object.funcGetValue(), get_allocator());
+                }
+                else if (name == makeStringView("throwingFunction"))
+                {
+                    throw CppRuntimeException("Testing throw from function call");
+                }
+                else
+                {
+                    throw CppRuntimeException("Function '") + name + "' doesn't exist in 'DummyChild'!";
+                }
+            }
+
+            virtual void write(BitStreamWriter& writer) const override
+            {
+                m_object.write(writer);
+            }
+
+            virtual size_t bitSizeOf(size_t bitPosition) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
+        private:
+            const DummyChild& m_object;
+        };
+
+        return std::allocate_shared<Reflectable>(allocator, *this, allocator);
+    }
+
+    IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
+    {
+        class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
+        {
+        public:
+            explicit Reflectable(DummyChild& object, const allocator_type& allocator) :
+                    ReflectableAllocatorHolderBase<allocator_type>(DummyChild::typeInfo(), allocator),
+                    m_object(object)
+            {}
+
+            virtual IReflectableConstPtr getField(StringView name) const override
+            {
+                if (name == makeStringView("value"))
+                {
+                    return ReflectableFactory::getFixedUnsignedBitField(
+                            31, m_object.getValue(), get_allocator());
+                }
+                else
+                {
+                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyChild'!";
+                }
+            }
+
+            virtual IReflectablePtr getField(StringView name) override
+            {
+                if (name == makeStringView("value"))
+                {
+                    return ReflectableFactory::getFixedUnsignedBitField(
+                            31, m_object.getValue(), get_allocator());
+                }
+                else
+                {
+                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyChild'!";
+                }
+            }
+
+            virtual IReflectableConstPtr getParameter(StringView name) const override
+            {
+                if (name == makeStringView("dummyParam"))
+                {
+                    // dummyParam is just a hack to test more code in runtime
+                    return ReflectableFactory::getFixedUnsignedBitField(
+                            31, m_object.getValue(), get_allocator());
+                }
+                else
+                {
+                    throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                }
+            }
+
+            virtual IReflectablePtr getParameter(StringView name) override
+            {
+                if (name == makeStringView("dummyParam"))
+                {
+                    // dummyParam is just a hack to test more code in runtime
+                    return ReflectableFactory::getFixedUnsignedBitField(
+                            31, m_object.getValue(), get_allocator());
+                }
+                else
+                {
+                    throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                }
+            }
+
+            virtual IReflectableConstPtr callFunction(StringView name) const override
+            {
+                if (name == makeStringView("getValue"))
+                {
+                    return ReflectableFactory::getFixedUnsignedBitField(
+                            31, m_object.funcGetValue(), get_allocator());
+                }
+                else if (name == makeStringView("throwingFunction"))
+                {
+                    throw CppRuntimeException("Testing throw from function call");
+                }
+                else
+                {
+                    throw CppRuntimeException("Function '") + name + "' doesn't exist in 'DummyChild'!";
+                }
+            }
+
+            virtual IReflectablePtr callFunction(StringView name) override
             {
                 if (name == makeStringView("getValue"))
                 {
@@ -284,7 +399,7 @@ public:
                 }
             }
 
-            virtual void write(BitStreamWriter& writer) override
+            virtual void write(BitStreamWriter& writer) const override
             {
                 m_object.write(writer);
             }
@@ -321,7 +436,7 @@ public:
         m_value = value;
     }
 
-    void write(BitStreamWriter& writer)
+    void write(BitStreamWriter& writer) const
     {
         writer.writeBits(m_value, 31);
     }
@@ -383,6 +498,45 @@ public:
         return typeInfo;
     }
 
+    IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
+    {
+        class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
+        {
+        public:
+            explicit Reflectable(const DummyParent& object, const allocator_type& allocator) :
+                    ReflectableConstAllocatorHolderBase<allocator_type>(DummyParent::typeInfo(), allocator),
+                    m_object(object)
+            {}
+
+            virtual IReflectableConstPtr getField(StringView name) const override
+            {
+                if (name == makeStringView("dummyChild"))
+                {
+                    return m_object.getDummyChild().reflectable(get_allocator());
+                }
+                else
+                {
+                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                }
+            }
+
+            virtual void write(BitStreamWriter& writer) const override
+            {
+                m_object.write(writer);
+            }
+
+            virtual size_t bitSizeOf(size_t bitPosition) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
+        private:
+            const DummyParent& m_object;
+        };
+
+        return std::allocate_shared<Reflectable>(allocator, *this, allocator);
+    }
+
     IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
     {
         class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
@@ -393,7 +547,19 @@ public:
                     m_object(object)
             {}
 
-            virtual IReflectablePtr getField(StringView name) const override
+            virtual IReflectableConstPtr getField(StringView name) const override
+            {
+                if (name == makeStringView("dummyChild"))
+                {
+                    return m_object.getDummyChild().reflectable(get_allocator());
+                }
+                else
+                {
+                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                }
+            }
+
+            virtual IReflectablePtr getField(StringView name) override
             {
                 if (name == makeStringView("dummyChild"))
                 {
@@ -417,7 +583,7 @@ public:
                 }
             }
 
-            virtual void write(BitStreamWriter& writer) override
+            virtual void write(BitStreamWriter& writer) const override
             {
                 m_object.write(writer);
             }
@@ -454,7 +620,7 @@ public:
         m_dummyChild = dummyChild;
     }
 
-    void write(BitStreamWriter& out)
+    void write(BitStreamWriter& out) const
     {
         m_dummyChild.write(out);
     }
@@ -584,7 +750,7 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
             return string<>(enumToString(m_value), allocator);
         }
 
-        virtual void write(BitStreamWriter& writer) override
+        virtual void write(BitStreamWriter& writer) const override
         {
             zserio::write(writer, m_value);
         }
@@ -604,8 +770,8 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
 class ReflectableTest : public ::testing::Test
 {
 protected:
-    template <typename RAW_ARRAY, typename ELEMENT_CHECKER>
-    void checkArray(const RAW_ARRAY& rawArray, const IReflectablePtr& reflectable,
+    template <typename RAW_ARRAY, typename REFLECTABLE_PTR, typename ELEMENT_CHECKER>
+    void checkArray(const RAW_ARRAY& rawArray, const REFLECTABLE_PTR& reflectable,
             const ELEMENT_CHECKER& elementChecker)
     {
         ASSERT_TRUE(reflectable->isArray());
@@ -637,6 +803,8 @@ protected:
         ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
         ASSERT_THROW(reflectable->toString(), CppRuntimeException);
 
+        ASSERT_THROW(reflectable->bitSizeOf(0), CppRuntimeException);
+
         BitBuffer bitBuffer(0);
         BitStreamWriter writer(bitBuffer);
         ASSERT_THROW(reflectable->write(writer), CppRuntimeException);
@@ -644,8 +812,8 @@ protected:
         checkNonCompound(reflectable);
     }
 
-    template <typename T, typename READ_FUNC>
-    void checkWriteRead(T value, const IReflectablePtr& reflectable, const READ_FUNC& readFunc,
+    template <typename T, typename REFLECTABLE_PTR, typename READ_FUNC>
+    void checkWriteRead(T value, const REFLECTABLE_PTR& reflectable, const READ_FUNC& readFunc,
             size_t bitBufferSize)
     {
         BitBuffer bitBuffer(bitBufferSize);
@@ -659,7 +827,8 @@ protected:
         ASSERT_EQ(bitSizeOfValue, reader.getBitPosition());
     }
 
-    void checkNonArray(const IReflectablePtr& reflectable)
+    template <typename REFLECTABLE_PTR>
+    void checkNonArray(const REFLECTABLE_PTR& reflectable)
     {
         ASSERT_FALSE(reflectable->isArray());
         ASSERT_THROW(reflectable->size(), CppRuntimeException);
@@ -667,10 +836,10 @@ protected:
         ASSERT_THROW((*reflectable)[0], CppRuntimeException);
     }
 
-    void checkNonCompound(const IReflectablePtr& reflectable)
+    template <typename REFLECTABLE_PTR>
+    void checkNonCompoundConstMethods(const REFLECTABLE_PTR& reflectable)
     {
         ASSERT_THROW(reflectable->getField("field"), CppRuntimeException);
-        ASSERT_THROW(reflectable->setField("field", AnyHolder<>{}), CppRuntimeException);
         ASSERT_THROW(reflectable->getParameter("parameter"), CppRuntimeException);
         ASSERT_THROW(reflectable->callFunction("function"), CppRuntimeException);
         ASSERT_THROW(reflectable->getChoice(), CppRuntimeException);
@@ -679,8 +848,20 @@ protected:
         ASSERT_EQ(nullptr, (*reflectable)["some.field"]);
     }
 
-    template <typename T, typename GETTER>
-    void checkArithmeticCppTypeGetter(T value, const IReflectablePtr& reflectable,
+    void checkNonCompound(const IReflectablePtr& reflectable)
+    {
+        ASSERT_THROW(reflectable->setField("field", AnyHolder<>{}), CppRuntimeException);
+
+        checkNonCompoundConstMethods(reflectable);
+    }
+
+    void checkNonCompound(const IReflectableConstPtr& reflectable)
+    {
+        checkNonCompoundConstMethods(reflectable);
+    }
+
+    template <typename T, typename REFLECTABLE_PTR, typename GETTER>
+    void checkArithmeticCppTypeGetter(T value, const REFLECTABLE_PTR& reflectable,
             CppType cppType, const GETTER& getter, bool& match)
     {
         if (reflectable->getTypeInfo().getCppType() == cppType)
@@ -694,8 +875,8 @@ protected:
         }
     }
 
-    template <typename T>
-    void checkArithmeticCppTypeGetters(T value, const IReflectablePtr& reflectable)
+    template <typename T, typename REFLECTABLE_PTR>
+    void checkArithmeticCppTypeGetters(T value, const REFLECTABLE_PTR& reflectable)
     {
         const ITypeInfo& typeInfo = reflectable->getTypeInfo();
         bool match = false;
@@ -738,10 +919,9 @@ protected:
         ASSERT_TRUE(match);
     }
 
-    template <typename T, typename GETTER, typename READ_FUNC>
-    void checkFloatingPoint(T value, const IReflectablePtr& reflectable,
-            const GETTER& getter, const READ_FUNC& readFunc,
-            size_t bitSize = sizeof(T) * 8)
+    template <typename T, typename REFLECTABLE_PTR, typename GETTER, typename READ_FUNC>
+    void checkFloatingPoint(T value, const REFLECTABLE_PTR& reflectable,
+            const GETTER& getter, const READ_FUNC& readFunc, size_t bitSize = sizeof(T) * 8)
     {
         ASSERT_EQ(value, ((*reflectable).*getter)());
 
@@ -769,8 +949,8 @@ protected:
         checkWriteRead(value, reflectable, readFunc, bitSize);
     }
 
-    template <typename T, typename GETTER, typename READ_FUNC>
-    void checkIntegral(T value, const IReflectablePtr& reflectable,
+    template <typename T, typename REFLECTABLE_PTR, typename GETTER, typename READ_FUNC>
+    void checkIntegral(T value, const REFLECTABLE_PTR& reflectable,
             const GETTER& getter, const READ_FUNC& readFunc, size_t bitSize)
     {
         ASSERT_EQ(value, ((*reflectable).*getter)());
@@ -791,8 +971,8 @@ protected:
         checkWriteRead(value, reflectable, readFunc, bitSize);
     }
 
-    template <typename T, typename GETTER, typename READ_FUNC>
-    void checkSignedIntegral(T value, const IReflectablePtr& reflectable,
+    template <typename T, typename REFLECTABLE_PTR, typename GETTER, typename READ_FUNC>
+    void checkSignedIntegral(T value, const REFLECTABLE_PTR& reflectable,
             const GETTER& getter, const READ_FUNC& readFunc, size_t bitSize = sizeof(T) * 8)
     {
         ASSERT_EQ(value, reflectable->toInt());
@@ -802,8 +982,8 @@ protected:
         checkIntegral(value, reflectable, getter, readFunc, bitSize);
     }
 
-    template <typename T, typename GETTER, typename READ_FUNC>
-    void checkUnsignedIntegral(T value, const IReflectablePtr& reflectable,
+    template <typename T, typename REFLECTABLE_PTR, typename GETTER, typename READ_FUNC>
+    void checkUnsignedIntegral(T value, const REFLECTABLE_PTR& reflectable,
             const GETTER& getter, const READ_FUNC& readFunc, size_t bitSize = sizeof(T) * 8)
     {
         ASSERT_EQ(value, reflectable->toUInt());
@@ -812,7 +992,8 @@ protected:
         checkIntegral(value, reflectable, getter, readFunc, bitSize);
     }
 
-    void checkStringReflectable(StringView value, const IReflectablePtr& reflectable)
+    template <typename REFLECTABLE_PTR>
+    void checkString(StringView value, const REFLECTABLE_PTR& reflectable)
     {
         ASSERT_EQ(value, reflectable->getString());
 
@@ -842,7 +1023,8 @@ protected:
                 bitSizeOfVarSize(convertSizeToUInt32(value.size())) + value.size() * 8);
     }
 
-    void checkBitmaskReflectable(DummyBitmask bitmask, const IReflectablePtr& reflectable)
+    template <typename REFLECTABLE_PTR>
+    void checkBitmask(DummyBitmask bitmask, const REFLECTABLE_PTR& reflectable)
     {
         ASSERT_EQ(bitmask.getValue(), reflectable->getUInt8());
 
@@ -861,7 +1043,8 @@ protected:
         );
     }
 
-    void checkEnumReflectable(DummyEnum enumeration, const IReflectablePtr& reflectable)
+    template <typename REFLECTABLE_PTR>
+    void checkEnum(DummyEnum enumeration, const REFLECTABLE_PTR& reflectable)
     {
         ASSERT_EQ(enumToValue(enumeration), reflectable->getInt8());
 
@@ -880,7 +1063,8 @@ protected:
         );
     }
 
-    void checkCompoundReflectable(const DummyParent& dummyParent, const IReflectablePtr& reflectable)
+    template <typename REFLECTABLE_PTR>
+    void checkCompoundConstMethods(const DummyParent& dummyParent, const REFLECTABLE_PTR& reflectable)
     {
         ASSERT_TRUE(TypeInfoUtil::isCompound(reflectable->getTypeInfo().getSchemaType()));
 
@@ -910,15 +1094,6 @@ protected:
         ASSERT_EQ(nullptr, reflectable->find("dummyChild.getValue.nonexistent"));
         // find failed because the underlying code throws
         ASSERT_EQ(nullptr, reflectable->find("dummyChild.throwingFunction.nonexistent"));
-
-        // setter
-        reflectable->getField("dummyChild")->setField("value", AnyHolder<>(static_cast<uint32_t>(11)));
-        ASSERT_EQ(11, dummyParent.getDummyChild().getValue());
-        reflectable->setField("dummyChild", AnyHolder<>(DummyChild{42}));
-        ASSERT_EQ(42, dummyParent.getDummyChild().getValue());
-        ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
-        ASSERT_THROW(reflectable->find("dummyChild")->setField("nonexistent", AnyHolder<>()),
-                CppRuntimeException);
 
         ASSERT_THROW(reflectable->getBool(), CppRuntimeException);
         ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
@@ -951,6 +1126,26 @@ protected:
                     return DummyChild(reader);
                 }, 31
         );
+    }
+
+    void checkCompound(const DummyParent& dummyParent, const IReflectableConstPtr& reflectable)
+    {
+        checkCompoundConstMethods(dummyParent, reflectable);
+    }
+
+    void checkCompound(const DummyParent& dummyParent, const IReflectablePtr& reflectable)
+    {
+        checkCompoundConstMethods(dummyParent, reflectable);
+        checkCompoundConstMethods(dummyParent, static_cast<IReflectableConstPtr>(reflectable));
+
+        // setter
+        reflectable->getField("dummyChild")->setField("value", AnyHolder<>(static_cast<uint32_t>(11)));
+        ASSERT_EQ(11, dummyParent.getDummyChild().getValue());
+        reflectable->setField("dummyChild", AnyHolder<>(DummyChild{42}));
+        ASSERT_EQ(42, dummyParent.getDummyChild().getValue());
+        ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
+        ASSERT_THROW(reflectable->find("dummyChild")->setField("nonexistent", AnyHolder<>()),
+                CppRuntimeException);
     }
 };
 
@@ -1322,14 +1517,14 @@ TEST_F(ReflectableTest, stringReflectable)
 {
     const std::string value = "some longer string value to have a chance that some allocation hopefully occurs";
     auto reflectable = ReflectableFactory::getString(value);
-    checkStringReflectable(value, reflectable);
+    checkString(value, reflectable);
 }
 
 TEST_F(ReflectableTest, stringViewReflectable)
 {
     auto view = makeStringView("some text as a string view");
     auto reflectable = ReflectableFactory::getString(view);
-    checkStringReflectable(view, reflectable);
+    checkString(view, reflectable);
 }
 
 TEST_F(ReflectableTest, bitBufferReflectable)
@@ -1364,6 +1559,22 @@ TEST_F(ReflectableTest, bitBufferReflectable)
             bitSizeOfVarSize(convertSizeToUInt32(value.getBitSize())) + value.getBitSize());
 }
 
+TEST_F(ReflectableTest, uint8ConstArray)
+{
+    const auto rawArray = std::vector<uint8_t>{{10, 20, 30, 40}};
+    const ITypeInfo& typeInfo = BuiltinTypeInfo::getUInt8();
+    auto reflectable = ReflectableFactory::getBuiltinArray(typeInfo, rawArray);
+    checkArray(rawArray, reflectable,
+            [&](uint8_t value, const IReflectableConstPtr& elementReflectable) {
+                checkUnsignedIntegral(value, elementReflectable, &IReflectable::getUInt8,
+                        std::bind(&BitStreamReader::readBits, _1, 8));
+            }
+    );
+
+    // call version with dynamic bit size
+    ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray, 8), CppRuntimeException);
+}
+
 TEST_F(ReflectableTest, uint8Array)
 {
     auto rawArray = std::vector<uint8_t>{{10, 20, 30, 40}};
@@ -1375,9 +1586,33 @@ TEST_F(ReflectableTest, uint8Array)
                         std::bind(&BitStreamReader::readBits, _1, 8));
             }
     );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](uint8_t value, const IReflectableConstPtr& elementReflectable) {
+                checkUnsignedIntegral(value, elementReflectable, &IReflectable::getUInt8,
+                        std::bind(&BitStreamReader::readBits, _1, 8));
+            }
+    );
 
     // call version with dynamic bit size
     ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray, 8), CppRuntimeException);
+}
+
+TEST_F(ReflectableTest, dynamicSignedBitField5ConstArray)
+{
+    const uint8_t maxBitSize = 8;
+    const uint8_t numBits = 5;
+    const auto rawArray = std::vector<int8_t>{{-3, -1, 2, 4, 6}};
+    const ITypeInfo& typeInfo = BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize);
+    auto reflectable = ReflectableFactory::getBuiltinArray(typeInfo, rawArray, numBits);
+    checkArray(rawArray, reflectable,
+            [&](int8_t value, const IReflectableConstPtr& elementReflectable) {
+                checkSignedIntegral(value, elementReflectable, &IReflectable::getInt8,
+                        std::bind(&BitStreamReader::readSignedBits, _1, numBits), numBits);
+            }
+    );
+
+    // call version without dynamic bit size
+    ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, dynamicSignedBitField5Array)
@@ -1393,9 +1628,26 @@ TEST_F(ReflectableTest, dynamicSignedBitField5Array)
                         std::bind(&BitStreamReader::readSignedBits, _1, numBits), numBits);
             }
     );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](int8_t value, const IReflectableConstPtr& elementReflectable) {
+                checkSignedIntegral(value, elementReflectable, &IReflectable::getInt8,
+                        std::bind(&BitStreamReader::readSignedBits, _1, numBits), numBits);
+            }
+    );
 
     // call version without dynamic bit size
     ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray), CppRuntimeException);
+}
+
+TEST_F(ReflectableTest, stringConstArray)
+{
+    const auto rawArray = std::vector<std::string>{{"one", "two", "three"}};
+    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo::getString(), rawArray);
+    checkArray(rawArray, reflectable,
+            [&](StringView value, const IReflectableConstPtr& elementReflectable) {
+                checkString(value, elementReflectable);
+            }
+    );
 }
 
 TEST_F(ReflectableTest, stringArray)
@@ -1404,16 +1656,41 @@ TEST_F(ReflectableTest, stringArray)
     auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo::getString(), rawArray);
     checkArray(rawArray, reflectable,
             [&](StringView value, const IReflectablePtr& elementReflectable) {
-                checkStringReflectable(value, elementReflectable);
+                checkString(value, elementReflectable);
             }
     );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](StringView value, const IReflectableConstPtr& elementReflectable) {
+                checkString(value, elementReflectable);
+            }
+    );
+}
+
+TEST_F(ReflectableTest, bitmaskConst)
+{
+    const DummyBitmask bitmask = DummyBitmask::Values::WRITE;
+    auto reflectable = bitmask.reflectable();
+    checkBitmask(bitmask, reflectable);
 }
 
 TEST_F(ReflectableTest, bitmask)
 {
     DummyBitmask bitmask = DummyBitmask::Values::WRITE;
     auto reflectable = bitmask.reflectable();
-    checkBitmaskReflectable(bitmask, reflectable);
+    checkBitmask(bitmask, reflectable);
+}
+
+TEST_F(ReflectableTest, bitmaskConstArray)
+{
+    const auto rawArray = std::vector<DummyBitmask>{{
+            DummyBitmask::Values::WRITE, DummyBitmask::Values::CREATE, DummyBitmask::Values::READ
+    }};
+    auto reflectable = ReflectableFactory::getBitmaskArray(rawArray);
+    checkArray(rawArray, reflectable,
+            [&](DummyBitmask value, const IReflectableConstPtr& elementReflectable) {
+                checkBitmask(value, elementReflectable);
+            }
+    );
 }
 
 TEST_F(ReflectableTest, bitmaskArray)
@@ -1424,7 +1701,12 @@ TEST_F(ReflectableTest, bitmaskArray)
     auto reflectable = ReflectableFactory::getBitmaskArray(rawArray);
     checkArray(rawArray, reflectable,
             [&](DummyBitmask value, const IReflectablePtr& elementReflectable) {
-                checkBitmaskReflectable(value, elementReflectable);
+                checkBitmask(value, elementReflectable);
+            }
+    );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](DummyBitmask value, const IReflectableConstPtr& elementReflectable) {
+                checkBitmask(value, elementReflectable);
             }
     );
 }
@@ -1433,7 +1715,18 @@ TEST_F(ReflectableTest, enumeration)
 {
     const DummyEnum enumeration = DummyEnum::VALUE1;
     auto reflectable = enumReflectable(enumeration);
-    checkEnumReflectable(enumeration, reflectable);
+    checkEnum(enumeration, reflectable);
+}
+
+TEST_F(ReflectableTest, enumConstArray)
+{
+    const auto rawArray = std::vector<DummyEnum>{{DummyEnum::VALUE1, DummyEnum::VALUE2, DummyEnum::VALUE3}};
+    auto reflectable = ReflectableFactory::getEnumArray(rawArray);
+    checkArray(rawArray, reflectable,
+            [&](DummyEnum value, const IReflectableConstPtr& elementReflectable) {
+                checkEnum(value, elementReflectable);
+            }
+    );
 }
 
 TEST_F(ReflectableTest, enumArray)
@@ -1442,16 +1735,55 @@ TEST_F(ReflectableTest, enumArray)
     auto reflectable = ReflectableFactory::getEnumArray(rawArray);
     checkArray(rawArray, reflectable,
             [&](DummyEnum value, const IReflectablePtr& elementReflectable) {
-                checkEnumReflectable(value, elementReflectable);
+                checkEnum(value, elementReflectable);
             }
     );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](DummyEnum value, const IReflectableConstPtr& elementReflectable) {
+                checkEnum(value, elementReflectable);
+            }
+    );
+}
+
+TEST_F(ReflectableTest, compoundConst)
+{
+    const DummyParent dummyParent = DummyParent{DummyChild{13}};
+    auto reflectable = dummyParent.reflectable();
+    checkCompound(dummyParent, reflectable);
+
+    IReflectablePtr nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_NO_THROW(reflectable->getField("dummyChild"));
+    ASSERT_THROW(nonConstReflectable->getField("dummyChild"), CppRuntimeException);
+    IReflectableConstPtr childReflectable = reflectable->getField("dummyChild");
+    IReflectablePtr nonConstChildReflectable =std::const_pointer_cast<IReflectable>(childReflectable);
+    ASSERT_THROW(nonConstChildReflectable->setField("value", AnyHolder<>(static_cast<uint32_t>(11))),
+            CppRuntimeException);
+    ASSERT_NO_THROW(childReflectable->getParameter("dummyParam"));
+    ASSERT_THROW(nonConstChildReflectable->getParameter("dummyParam"), CppRuntimeException);
+    ASSERT_NO_THROW(childReflectable->callFunction("getValue"));
+    ASSERT_THROW(nonConstChildReflectable->callFunction("getValue"), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compound)
 {
     DummyParent dummyParent = DummyParent{DummyChild{13}};
     auto reflectable = dummyParent.reflectable();
-    checkCompoundReflectable(dummyParent, reflectable);
+    checkCompound(dummyParent, reflectable);
+}
+
+TEST_F(ReflectableTest, compoundConstArray)
+{
+    const auto rawArray = std::vector<DummyParent>{{DummyParent{DummyChild{13}}, DummyParent{DummyChild{42}}}};
+    auto reflectable = ReflectableFactory::getCompoundArray(rawArray);
+    checkArray(rawArray, reflectable,
+            [&](const DummyParent& value, const IReflectableConstPtr& elementReflectable) {
+                checkCompound(value, elementReflectable);
+            }
+    );
+
+    IReflectablePtr nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_THROW(nonConstReflectable->at(0), CppRuntimeException);
+    ASSERT_THROW((*nonConstReflectable)[0], CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compoundArray)
@@ -1460,7 +1792,12 @@ TEST_F(ReflectableTest, compoundArray)
     auto reflectable = ReflectableFactory::getCompoundArray(rawArray);
     checkArray(rawArray, reflectable,
             [&](const DummyParent& value, const IReflectablePtr& elementReflectable) {
-                checkCompoundReflectable(value, elementReflectable);
+                checkCompound(value, elementReflectable);
+            }
+    );
+    checkArray(rawArray, static_cast<IReflectableConstPtr>(reflectable),
+            [&](const DummyParent& value, const IReflectableConstPtr& elementReflectable) {
+                checkCompound(value, elementReflectable);
             }
     );
 }

@@ -78,7 +78,7 @@ ${types.reflectablePtr.name} enumReflectable(
             return ${types.string.name}(::zserio::enumToString(m_value), allocator);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) override
+        virtual void write(::zserio::BitStreamWriter& writer) const override
         {
             ::zserio::write(writer, m_value);
         }

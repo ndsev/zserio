@@ -43,6 +43,8 @@ public class TypesContext
                     false, false, "zserio/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IReflectablePtr",
                     false, false, "zserio/IReflectable.h");
+            reflectableConstPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IReflectableConstPtr",
+                    false, false, "zserio/IReflectable.h");
             service = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IService",
                     false, false, "zserio/IService.h");
             serviceClient = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IServiceClient",
@@ -82,6 +84,8 @@ public class TypesContext
                     false, false, "zserio/pmr/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IReflectablePtr",
                     false, false, "zserio/pmr/IReflectable.h");
+            reflectableConstPtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IReflectableConstPtr",
+                    false, false, "zserio/pmr/IReflectable.h");
             service = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IService",
                     false, false, "zserio/pmr/IService.h");
             serviceClient = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IServiceClient",
@@ -120,6 +124,8 @@ public class TypesContext
             reflectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicReflectableFactory",
                     true, true, "zserio/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicReflectablePtr",
+                    true, true, "zserio/IReflectable.h");
+            reflectableConstPtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicReflectableConstPtr",
                     true, true, "zserio/IReflectable.h");
             service = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicService",
                     true, true, "zserio/IService.h");
@@ -242,6 +248,11 @@ public class TypesContext
         return reflectablePtr;
     }
 
+    public NativeTypeDefinition getReflectableConstPtr()
+    {
+        return reflectableConstPtr;
+    }
+
     public NativeTypeDefinition getService()
     {
         return service;
@@ -321,6 +332,7 @@ public class TypesContext
     private final NativeTypeDefinition bitBufferArrayTraits;
     private final NativeTypeDefinition reflectableFactory;
     private final NativeTypeDefinition reflectablePtr;
+    private final NativeTypeDefinition reflectableConstPtr;
     private final NativeTypeDefinition service;
     private final NativeTypeDefinition serviceClient;
     private final NativeTypeDefinition serviceDataPtr;

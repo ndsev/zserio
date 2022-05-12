@@ -75,17 +75,17 @@ public:
         return typeInfo;
     }
 
-    IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
+    IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
     {
         class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
         {
         public:
-            explicit Reflectable(DummyNested& object, const allocator_type& allocator) :
+            explicit Reflectable(const DummyNested& object, const allocator_type& allocator) :
                     ReflectableAllocatorHolderBase<allocator_type>(DummyNested::typeInfo(), allocator),
                     m_object(object)
             {}
 
-            virtual IReflectablePtr getField(StringView name) const override
+            virtual IReflectableConstPtr getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
@@ -94,7 +94,7 @@ public:
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual void write(BitStreamWriter&) override
+            virtual void write(BitStreamWriter&) const override
             {
             }
 
@@ -104,7 +104,7 @@ public:
             }
 
         private:
-            DummyNested& m_object;
+            const DummyNested& m_object;
         };
 
         return std::allocate_shared<Reflectable>(allocator, *this, allocator);
@@ -211,17 +211,17 @@ public:
         return typeInfo;
     }
 
-    IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
+    IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
     {
         class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
         {
         public:
-            explicit Reflectable(DummyUnion& object, const allocator_type& allocator) :
+            explicit Reflectable(const DummyUnion& object, const allocator_type& allocator) :
                     ReflectableAllocatorHolderBase<allocator_type>(DummyUnion::typeInfo(), allocator),
                     m_object(object)
             {}
 
-            virtual IReflectablePtr getField(StringView name) const override
+            virtual IReflectableConstPtr getField(StringView name) const override
             {
                 if (name == makeStringView("value"))
                 {
@@ -253,7 +253,7 @@ public:
                 }
             }
 
-            virtual void write(BitStreamWriter&) override
+            virtual void write(BitStreamWriter&) const override
             {
             }
 
@@ -263,7 +263,7 @@ public:
             }
 
         private:
-            DummyUnion& m_object;
+            const DummyUnion& m_object;
         };
 
         return std::allocate_shared<Reflectable>(allocator, *this, allocator);
@@ -296,7 +296,7 @@ public:
         m_objectChoice = text_;
     }
 
-    ::std::vector<DummyNested>& getNestedArray()
+    const ::std::vector<DummyNested>& getNestedArray() const
     {
         return m_objectChoice.get<ZserioArrayType_nestedArray>().getRawArray();
     }
@@ -457,17 +457,17 @@ public:
         return typeInfo;
     }
 
-    IReflectablePtr reflectable(const allocator_type& allocator = allocator_type())
+    IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
     {
         class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
         {
         public:
-            explicit Reflectable(DummyObject& object, const allocator_type& allocator) :
+            explicit Reflectable(const DummyObject& object, const allocator_type& allocator) :
                     ReflectableAllocatorHolderBase<allocator_type>(DummyObject::typeInfo(), allocator),
                     m_object(object)
             {}
 
-            virtual IReflectablePtr getField(StringView name) const override
+            virtual IReflectableConstPtr getField(StringView name) const override
             {
                 if (name == makeStringView("identifier"))
                 {
@@ -499,7 +499,7 @@ public:
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
             }
 
-            virtual void write(BitStreamWriter&) override
+            virtual void write(BitStreamWriter&) const override
             {
             }
 
@@ -509,7 +509,7 @@ public:
             }
 
         private:
-            DummyObject& m_object;
+            const DummyObject& m_object;
         };
 
         return std::allocate_shared<Reflectable>(allocator, *this, allocator);
@@ -520,7 +520,7 @@ public:
         return m_identifier_;
     }
 
-    DummyNested& getNested()
+    const DummyNested& getNested() const
     {
         return m_nested_.value();
     }
@@ -535,12 +535,12 @@ public:
         return m_text_;
     }
 
-    ::std::vector<DummyUnion>& getUnionArray()
+    const ::std::vector<DummyUnion>& getUnionArray() const
     {
         return m_unionArray_.getRawArray();
     }
 
-    ::std::vector<DummyUnion>& getOptionalUnionArray()
+    const ::std::vector<DummyUnion>& getOptionalUnionArray() const
     {
         return m_optionalUnionArray_.value().getRawArray();
     }
@@ -578,7 +578,7 @@ DummyObject createDummyObject(uint32_t identifier = 13, bool createNested = true
 class TestWalkObserver : public IWalkObserver
 {
 public:
-    typedef std::map<StringView, std::vector<IReflectablePtr>> CapturesMap;
+    typedef std::map<StringView, std::vector<IReflectableConstPtr>> CapturesMap;
 
     TestWalkObserver()
     {
@@ -592,42 +592,42 @@ public:
         m_captures["visitValue"_sv];
     }
 
-    virtual void beginRoot(const IReflectablePtr& compound) override
+    virtual void beginRoot(const IReflectableConstPtr& compound) override
     {
         m_captures["beginRoot"_sv].push_back(compound);
     }
 
-    virtual void endRoot(const IReflectablePtr& compound) override
+    virtual void endRoot(const IReflectableConstPtr& compound) override
     {
         m_captures["endRoot"_sv].push_back(compound);
     }
 
-    virtual void beginArray(const IReflectablePtr& array, const FieldInfo&) override
+    virtual void beginArray(const IReflectableConstPtr& array, const FieldInfo&) override
     {
         m_captures["beginArray"_sv].push_back(array);
     }
 
-    virtual void endArray(const IReflectablePtr& array, const FieldInfo&) override
+    virtual void endArray(const IReflectableConstPtr& array, const FieldInfo&) override
     {
         m_captures["endArray"_sv].push_back(array);
     }
 
-    virtual void beginCompound(const IReflectablePtr& compound, const FieldInfo&, size_t) override
+    virtual void beginCompound(const IReflectableConstPtr& compound, const FieldInfo&, size_t) override
     {
         m_captures["beginCompound"_sv].push_back(compound);
     }
 
-    virtual void endCompound(const IReflectablePtr& compound, const FieldInfo&, size_t) override
+    virtual void endCompound(const IReflectableConstPtr& compound, const FieldInfo&, size_t) override
     {
         m_captures["endCompound"_sv].push_back(compound);
     }
 
-    virtual void visitValue(const IReflectablePtr& value, const FieldInfo&, size_t) override
+    virtual void visitValue(const IReflectableConstPtr& value, const FieldInfo&, size_t) override
     {
         m_captures["visitValue"_sv].push_back(value);
     }
 
-    const std::vector<IReflectablePtr>& getCaptures(StringView captureName) const
+    const std::vector<IReflectableConstPtr>& getCaptures(StringView captureName) const
     {
         return m_captures.find(captureName)->second;
     }
@@ -650,36 +650,36 @@ public:
     TestWalkFilter& beforeValue(bool beforeValue) { m_beforeValue = beforeValue; return *this; }
     TestWalkFilter& afterValue(bool afterValue) { m_afterValue = afterValue; return *this; }
 
-    virtual bool beforeArray(const IReflectablePtr&, const FieldInfo&) override
+    virtual bool beforeArray(const IReflectableConstPtr&, const FieldInfo&) override
     {
         m_isFirstElement = true;
         return m_beforeArray;
     }
 
-    virtual bool afterArray(const IReflectablePtr&, const FieldInfo&) override
+    virtual bool afterArray(const IReflectableConstPtr&, const FieldInfo&) override
     {
         m_isFirstElement = false;
         return m_afterArray;
     }
 
-    virtual bool beforeCompound(const IReflectablePtr&, const FieldInfo&, size_t) override
+    virtual bool beforeCompound(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         return m_beforeCompound;
     }
 
-    virtual bool afterCompound(const IReflectablePtr&, const FieldInfo&, size_t) override
+    virtual bool afterCompound(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         bool goToNext = !(m_onlyFirstElement && m_isFirstElement);
         m_isFirstElement = false;
         return goToNext && m_afterCompound;
     }
 
-    virtual bool beforeValue(const IReflectablePtr&, const FieldInfo&, size_t) override
+    virtual bool beforeValue(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         return m_beforeValue;
     }
 
-    virtual bool afterValue(const IReflectablePtr&, const FieldInfo&, size_t) override
+    virtual bool afterValue(const IReflectableConstPtr&, const FieldInfo&, size_t) override
     {
         return m_afterValue;
     }
@@ -711,7 +711,8 @@ public:
         return typeInfo;
     }
 
-    IReflectablePtr reflectable(const ::std::allocator<uint8_t>& allocator = ::std::allocator<uint8_t>())
+    IReflectableConstPtr reflectable(
+            const ::std::allocator<uint8_t>& allocator = ::std::allocator<uint8_t>()) const
     {
         class Reflectable : public ReflectableBase<::std::allocator<uint8_t>>
         {
@@ -720,7 +721,7 @@ public:
                     ReflectableBase<::std::allocator<uint8_t>>(DummyBitmask::typeInfo())
             {}
 
-            void write(BitStreamWriter&) override
+            void write(BitStreamWriter&) const override
             {}
 
             size_t bitSizeOf(size_t) const override
@@ -752,35 +753,35 @@ TEST(WalkerTest, dummyObject)
 
     BitStreamWriter dummyWriter(nullptr, 0);
 
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
     ASSERT_THROW(dummyReflectable->getField("nonexistent"), CppRuntimeException);
     ASSERT_EQ(0, dummyReflectable->bitSizeOf(0));
     ASSERT_NO_THROW(dummyReflectable->write(dummyWriter));
 
-    IReflectablePtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
+    IReflectableConstPtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
     ASSERT_NE(nullptr, optionalUnionArrayReflectable);
     ASSERT_EQ(2, optionalUnionArrayReflectable->size());
-    IReflectablePtr unionReflectable1 = optionalUnionArrayReflectable->at(0);
+    IReflectableConstPtr unionReflectable1 = optionalUnionArrayReflectable->at(0);
     ASSERT_NE(nullptr, unionReflectable1);
     ASSERT_THROW(unionReflectable1->getField("nonexistent"), CppRuntimeException);
     ASSERT_EQ(0, unionReflectable1->bitSizeOf(0));
     ASSERT_NO_THROW(unionReflectable1->write(dummyWriter));
 
-    IReflectablePtr unionReflectable2 = optionalUnionArrayReflectable->at(1);
+    IReflectableConstPtr unionReflectable2 = optionalUnionArrayReflectable->at(1);
     ASSERT_NE(nullptr, unionReflectable2);
     ASSERT_EQ(""_sv, unionReflectable2->getChoice());
 
-    IReflectablePtr nestedArrayReflectable = unionReflectable1->getField("nestedArray");
+    IReflectableConstPtr nestedArrayReflectable = unionReflectable1->getField("nestedArray");
     ASSERT_NE(nullptr, nestedArrayReflectable);
     ASSERT_EQ(1, nestedArrayReflectable->size());
-    IReflectablePtr nestedReflectable = nestedArrayReflectable->at(0);
+    IReflectableConstPtr nestedReflectable = nestedArrayReflectable->at(0);
     ASSERT_NE(nullptr, nestedReflectable);
     ASSERT_THROW(nestedReflectable->getField("nonexistent"), CppRuntimeException);
     ASSERT_EQ(0, nestedReflectable->bitSizeOf(0));
     ASSERT_NO_THROW(nestedReflectable->write(dummyWriter));
 
     DummyBitmask dummyBitmask;
-    IReflectablePtr bitmaskReflectable = dummyBitmask.reflectable();
+    IReflectableConstPtr bitmaskReflectable = dummyBitmask.reflectable();
     ASSERT_EQ(0, bitmaskReflectable->bitSizeOf(0));
     ASSERT_NO_THROW(bitmaskReflectable->write(dummyWriter));
 }
@@ -1093,18 +1094,18 @@ TEST(RegexWalkFilterTest, regexPrefixMatch)
     RegexWalkFilter regexWalkFilter("nested\\..*");
     IWalkFilter& walkFilter = regexWalkFilter;
     DummyObject dummyObject = createDummyObject();
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& identifierFieldInfo = dummyObject.typeInfo().getFields()[0];
-    IReflectablePtr identifierReflectable = dummyReflectable->getField("identifier");
+    IReflectableConstPtr identifierReflectable = dummyReflectable->getField("identifier");
     ASSERT_FALSE(walkFilter.beforeValue(identifierReflectable, identifierFieldInfo));
     ASSERT_TRUE(walkFilter.afterValue(identifierReflectable, identifierFieldInfo));
 
     const FieldInfo& nestedFieldInfo = dummyObject.typeInfo().getFields()[1];
-    IReflectablePtr nestedReflectable = dummyReflectable->getField("nested");
+    IReflectableConstPtr nestedReflectable = dummyReflectable->getField("nested");
     ASSERT_TRUE(walkFilter.beforeCompound(nestedReflectable, nestedFieldInfo));
     const FieldInfo& textFieldInfo = nestedFieldInfo.typeInfo.getFields()[0];
-    IReflectablePtr textReflectable = nestedReflectable->getField("text");
+    IReflectableConstPtr textReflectable = nestedReflectable->getField("text");
     ASSERT_TRUE(walkFilter.beforeValue(textReflectable, textFieldInfo));
     ASSERT_TRUE(walkFilter.afterValue(textReflectable, textFieldInfo));
     ASSERT_TRUE(walkFilter.afterCompound(nestedReflectable, nestedFieldInfo));
@@ -1112,7 +1113,7 @@ TEST(RegexWalkFilterTest, regexPrefixMatch)
     // ignore text
 
     const FieldInfo& unionArrayFieldInfo = dummyObject.typeInfo().getFields()[3];
-    IReflectablePtr unionArrayReflectable = dummyReflectable->getField("unionArray");
+    IReflectableConstPtr unionArrayReflectable = dummyReflectable->getField("unionArray");
     ASSERT_FALSE(walkFilter.beforeArray(unionArrayReflectable, unionArrayFieldInfo));
     ASSERT_TRUE(walkFilter.afterArray(unionArrayReflectable, unionArrayFieldInfo));
 }
@@ -1122,10 +1123,10 @@ TEST(RegexWalkFilterTest, regexArrayMatch)
     RegexWalkFilter regexWalkFilter("unionArray\\[\\d+\\]\\.nes.*");
     IWalkFilter& walkFilter = regexWalkFilter;
     DummyObject dummyObject = createDummyObject();
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& unionArrayFieldInfo = dummyObject.typeInfo().getFields()[3];
-    IReflectablePtr unionArrayReflectable = dummyReflectable->getField("unionArray");
+    IReflectableConstPtr unionArrayReflectable = dummyReflectable->getField("unionArray");
     ASSERT_TRUE(walkFilter.beforeArray(unionArrayReflectable, unionArrayFieldInfo));
 
     ASSERT_FALSE(walkFilter.beforeCompound(unionArrayReflectable->at(0), unionArrayFieldInfo, 0));
@@ -1149,10 +1150,10 @@ TEST(RegexWalkFilterTest, regexArrayNoMatch)
     unionArray.resize(1);
     unionArray[0].setNestedArray(std::vector<DummyNested>{{DummyNested{"nestedArray"}}});
     DummyObject dummyObject (13, DummyNested("nested"), "test", std::move(unionArray), NullOpt);
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& unionArrayFieldInfo = dummyObject.typeInfo().getFields()[3];
-    IReflectablePtr unionArrayReflectable = dummyReflectable->getField("unionArray");
+    IReflectableConstPtr unionArrayReflectable = dummyReflectable->getField("unionArray");
     ASSERT_FALSE(walkFilter.beforeArray(unionArrayReflectable, unionArrayFieldInfo));
     ASSERT_TRUE(walkFilter.afterArray(unionArrayReflectable, unionArrayFieldInfo));
 }
@@ -1163,10 +1164,10 @@ TEST(RegexWalkFilterTest, regexNullCompoundMatch)
     IWalkFilter& walkFilter = regexWalkFilter;
 
     DummyObject dummyObject = createDummyObject(0, false);
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& nestedFieldInfo = dummyObject.typeInfo().getFields()[1];
-    IReflectablePtr nestedReflectable = dummyReflectable->getField("nested");
+    IReflectableConstPtr nestedReflectable = dummyReflectable->getField("nested");
     ASSERT_EQ(nullptr, nestedReflectable);
     // note that the null compounds are processed as values!
     ASSERT_TRUE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo));
@@ -1179,10 +1180,10 @@ TEST(RegexWalkFilterTest, regexNullCompoundNoMatch)
     IWalkFilter& walkFilter = regexWalkFilter;
 
     DummyObject dummyObject = createDummyObject(0, false);
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& nestedFieldInfo = dummyObject.typeInfo().getFields()[1];
-    IReflectablePtr nestedReflectable = dummyReflectable->getField("nested");
+    IReflectableConstPtr nestedReflectable = dummyReflectable->getField("nested");
     ASSERT_EQ(nullptr, nestedReflectable);
     // note that the null compounds are processed as values!
     ASSERT_FALSE(walkFilter.beforeValue(nestedReflectable, nestedFieldInfo));
@@ -1195,10 +1196,10 @@ TEST(RegexWalkFilterTest, regexNullArrayMatch)
     IWalkFilter& walkFilter = regexWalkFilter;
 
     DummyObject dummyObject = createDummyObject();
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& optionalUnionArrayFieldInfo = dummyObject.typeInfo().getFields()[4];
-    IReflectablePtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
+    IReflectableConstPtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
     ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
     // note that the null arrays are processed as values!
     ASSERT_TRUE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
@@ -1211,10 +1212,10 @@ TEST(RegexWalkFilterTest, regexNullArrayNoMatch)
     IWalkFilter& walkFilter = regexWalkFilter;
 
     DummyObject dummyObject = createDummyObject();
-    IReflectablePtr dummyReflectable = dummyObject.reflectable();
+    IReflectableConstPtr dummyReflectable = dummyObject.reflectable();
 
     const FieldInfo& optionalUnionArrayFieldInfo = dummyObject.typeInfo().getFields()[4];
-    IReflectablePtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
+    IReflectableConstPtr optionalUnionArrayReflectable = dummyReflectable->getField("optionalUnionArray");
     ASSERT_EQ(nullptr, optionalUnionArrayReflectable);
     // note that the null arrays are processed as values!
     ASSERT_FALSE(walkFilter.beforeValue(optionalUnionArrayReflectable, optionalUnionArrayFieldInfo));
@@ -1225,7 +1226,7 @@ TEST(ArrayLengthWalkFilterTest, length0)
 {
     ArrayLengthWalkFilter arrayLengthWalkFilter(0);
     IWalkFilter& walkFilter = arrayLengthWalkFilter;
-    IReflectablePtr dummyReflectable = nullptr;
+    IReflectableConstPtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
     const FieldInfo& dummyArrayFieldInfo = DummyObject::typeInfo().getFields()[3];
 
@@ -1250,7 +1251,7 @@ TEST(AndWalkFilterTest, empty)
 {
     AndWalkFilter andWalkFilter({});
     IWalkFilter& walkFilter = andWalkFilter;
-    IReflectablePtr dummyReflectable = nullptr;
+    IReflectableConstPtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
     const FieldInfo& dummyArrayFieldInfo = DummyObject::typeInfo().getFields()[3];
 
@@ -1268,7 +1269,7 @@ TEST(AndWalkFilterTest, trueTrue)
     TestWalkFilter trueFilter2;
     AndWalkFilter andWalkFilter({std::ref<IWalkFilter>(trueFilter1), std::ref<IWalkFilter>(trueFilter2)});
     IWalkFilter& walkFilter = andWalkFilter;
-    IReflectablePtr dummyReflectable = nullptr;
+    IReflectableConstPtr dummyReflectable = nullptr;
     const FieldInfo& dummyFieldInfo = DummyObject::typeInfo().getFields()[0];
     const FieldInfo& dummyArrayFieldInfo = DummyObject::typeInfo().getFields()[3];
 

@@ -20,6 +20,7 @@ namespace pmr
 /** \{ */
 using IReflectable = IBasicReflectable<PropagatingPolymorphicAllocator<uint8_t>>;
 using IReflectablePtr = IBasicReflectablePtr<PropagatingPolymorphicAllocator<uint8_t>>;
+using IReflectableConstPtr = IBasicReflectableConstPtr<PropagatingPolymorphicAllocator<uint8_t>>;
 /** \} */
 
 } // namespace pmr

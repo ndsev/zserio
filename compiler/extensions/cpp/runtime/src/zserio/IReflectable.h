@@ -28,6 +28,9 @@ public:
     /** Shared pointer to the reflectable interface. */
     using Ptr = std::shared_ptr<IBasicReflectable>;
 
+    /** Shared pointer to the constant reflectable interface. */
+    using ConstPtr = std::shared_ptr<const IBasicReflectable>;
+
     /**
      * Destructor.
      */
@@ -59,7 +62,10 @@ public:
      * \throw CppRuntimeException When the reflected object is not a compound type or when the field with
      *                            the given name doesn't exist or when the field getter itself throws.
      */
-    virtual Ptr getField(StringView name) const = 0;
+    /** \{ */
+    virtual ConstPtr getField(StringView name) const = 0;
+    virtual Ptr getField(StringView name) = 0;
+    /** \} */
 
     /**
      * Sets the field (i.e. member) with the given schema name.
@@ -85,7 +91,10 @@ public:
      * \throw CppRuntimeException When the reflected object is not a compound type or when the paramter with
      *                            the given name doesn't exist or when the parameter getter itself throws.
      */
-    virtual Ptr getParameter(StringView name) const = 0;
+    /** \{ */
+    virtual ConstPtr getParameter(StringView name) const = 0;
+    virtual Ptr getParameter(StringView name) = 0;
+    /** \} */
 
     /**
      * Calls function with the given name on the reflected zserio object and gets reflectable view to its
@@ -100,7 +109,10 @@ public:
      * \throw CppRuntimeException When the reflected object is not a compound type or when the function with
      *                            the given name doesn't exist or the the function call itself throws.
      */
-    virtual Ptr callFunction(StringView name) const = 0;
+    /** \{ */
+    virtual ConstPtr callFunction(StringView name) const = 0;
+    virtual Ptr callFunction(StringView name) = 0;
+    /** \} */
 
     /**
      * Gets name of the field which is active in the reflected choice type.
@@ -129,14 +141,20 @@ public:
      * \return Reflectable view to the result of the given path. Returns nullptr when the path doesn't exist
      *         or when the requested operation throws CppRuntimeException.
      */
-    virtual Ptr find(StringView path) const = 0;
+    /** \{ */
+    virtual ConstPtr find(StringView path) const = 0;
+    virtual Ptr find(StringView path) = 0;
+    /** \} */
 
     /**
      * \copydoc IBasicReflectable::find
      *
      * Overloaded method provided for convenience.
      */
-    virtual Ptr operator[](StringView path) const = 0;
+    /** \{ */
+    virtual ConstPtr operator[](StringView path) const = 0;
+    virtual Ptr operator[](StringView path) = 0;
+    /** \} */
 
     /**
      * Gets size of the reflected array.
@@ -159,14 +177,20 @@ public:
      * \throw CppRuntimeException When the reflected object is not an array.
      * \throw std::out_of_range When the given index is out of bounds of the underlying array.
      */
-    virtual Ptr at(size_t index) const = 0;
+    /** \{ */
+    virtual ConstPtr at(size_t index) const = 0;
+    virtual Ptr at(size_t index) = 0;
+    /** \} */
 
     /**
      * \copydoc IBasicReflectable::at
      *
      * Overloaded method provided for convenience.
      */
-    virtual Ptr operator[](size_t index) const = 0;
+    /** \{ */
+    virtual ConstPtr operator[](size_t index) const = 0;
+    virtual Ptr operator[](size_t index) = 0;
+    /** \} */
 
     /**
      * Gets bool value of the bool reflectable.
@@ -326,7 +350,7 @@ public:
      *
      * \throw CppRuntimeException When the reflected object is an array.
      */
-    virtual void write(BitStreamWriter& writer) = 0;
+    virtual void write(BitStreamWriter& writer) const = 0;
 
     /**
      * Gets the number of bits needed for serialization of the reflected object.
@@ -343,13 +367,19 @@ public:
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */
+/** \{ */
 template <typename ALLOC = std::allocator<uint8_t>>
 using IBasicReflectablePtr = typename IBasicReflectable<ALLOC>::Ptr;
+
+template <typename ALLOC = std::allocator<uint8_t>>
+using IBasicReflectableConstPtr = typename IBasicReflectable<ALLOC>::ConstPtr;
+/** \} */
 
 /** Typedef to reflectable interface provided for convenience - using default std::allocator<uint8_t>. */
 /** \{ */
 using IReflectable = IBasicReflectable<>;
 using IReflectablePtr = IBasicReflectablePtr<>;
+using IReflectableConstPtr = IBasicReflectableConstPtr<>;
 /** \} */
 
 /**

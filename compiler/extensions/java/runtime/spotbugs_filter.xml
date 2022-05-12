@@ -75,7 +75,15 @@
     <Match>
         <!-- *$SWITCH_TABLE$* is a volatile reference to an array - probably spotbugs issue #1296 -->
         <Bug code="VO"/>
-        <Class name="zserio.runtime.json.JsonWriter"/>
-        <Field name="$SWITCH_TABLE$zserio$runtime$typeinfo$JavaType"/>
+        <Or>
+            <And>
+                <Class name="zserio.runtime.json.JsonWriter"/>
+                <Field name="$SWITCH_TABLE$zserio$runtime$typeinfo$JavaType"/>
+            </And>
+            <And>
+                <Class name="zserio.runtime.typeinfo.TypeInfoUtil"/>
+                <Field name="$SWITCH_TABLE$zserio$runtime$typeinfo$SchemaType"/>
+            </And>
+        </Or>
     </Match>
 </FindBugsFilter>

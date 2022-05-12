@@ -173,6 +173,7 @@ public abstract class CppTemplateData implements IncludeCollector
             packingContextNode = new TypeTemplateData(nativeMapper.getPackingContextNodeType());
             reflectableFactory = new TypeTemplateData(nativeMapper.getReflectableFactoryType());
             reflectablePtr = new TypeTemplateData(nativeMapper.getReflectablePtrType());
+            reflectableConstPtr = new TypeTemplateData(nativeMapper.getReflectableConstPtrType());
             service = new TypeTemplateData(nativeMapper.getServiceType());
             serviceClient = new TypeTemplateData(nativeMapper.getServiceClientType());
             serviceDataPtr = new TypeTemplateData(nativeMapper.getServiceDataPtrType());
@@ -242,6 +243,11 @@ public abstract class CppTemplateData implements IncludeCollector
         public TypeTemplateData getReflectablePtr()
         {
             return reflectablePtr;
+        }
+
+        public TypeTemplateData getReflectableConstPtr()
+        {
+            return reflectableConstPtr;
         }
 
         public TypeTemplateData getService()
@@ -362,6 +368,7 @@ public abstract class CppTemplateData implements IncludeCollector
         private final TypeTemplateData packingContextNode;
         private final TypeTemplateData reflectableFactory;
         private final TypeTemplateData reflectablePtr;
+        private final TypeTemplateData reflectableConstPtr;
         private final TypeTemplateData service;
         private final TypeTemplateData serviceClient;
         private final TypeTemplateData serviceDataPtr;

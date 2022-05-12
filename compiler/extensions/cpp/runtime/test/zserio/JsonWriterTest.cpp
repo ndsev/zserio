@@ -205,7 +205,7 @@ TEST(JsonWriterTest, enumValue)
             return 0;
         }
 
-        virtual void write(BitStreamWriter&) override
+        virtual void write(BitStreamWriter&) const override
         {
         }
 
@@ -239,7 +239,7 @@ TEST(JsonWriterTest, bitmaskValue)
             return 0;
         }
 
-        virtual void write(BitStreamWriter&) override
+        virtual void write(BitStreamWriter&) const override
         {
         }
 

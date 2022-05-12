@@ -61,7 +61,8 @@ public:
 
     static const ::zserio::ITypeInfo& typeInfo();
     <#if withReflectionCode>
-    ${types.reflectablePtr.name} reflectable(const ${types.allocator.default}& allocator = ${types.allocator.default}());
+    ${types.reflectablePtr.name} reflectable(<#rt>
+            <#lt>const ${types.allocator.default}& allocator = ${types.allocator.default}()) const;
     </#if>
 </#if>
 

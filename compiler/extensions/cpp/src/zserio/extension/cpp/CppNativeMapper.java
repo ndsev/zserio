@@ -76,6 +76,8 @@ public class CppNativeMapper
                 allocatorDefinition, stdUInt8Type);
         reflectablePtrType = new NativeRuntimeAllocType(typesContext.getReflectablePtr(), allocatorDefinition,
                 stdUInt8Type);
+        reflectableConstPtrType = new NativeRuntimeAllocType(typesContext.getReflectableConstPtr(),
+                allocatorDefinition, stdUInt8Type);
         serviceType = new NativeRuntimeAllocType(typesContext.getService(), allocatorDefinition, stdUInt8Type);
         serviceClientType = new NativeRuntimeAllocType(typesContext.getServiceClient(), allocatorDefinition,
                 stdUInt8Type);
@@ -220,6 +222,11 @@ public class CppNativeMapper
     public NativeRuntimeAllocType getReflectablePtrType()
     {
         return reflectablePtrType;
+    }
+
+    public NativeRuntimeAllocType getReflectableConstPtrType()
+    {
+        return reflectableConstPtrType;
     }
 
     public NativeRuntimeAllocType getServiceType()
@@ -545,6 +552,7 @@ public class CppNativeMapper
     private final NativeRuntimeAllocType packingContextNodeType;
     private final NativeRuntimeAllocType reflectableFactoryType;
     private final NativeRuntimeAllocType reflectablePtrType;
+    private final NativeRuntimeAllocType reflectableConstPtrType;
     private final NativeRuntimeAllocType serviceType;
     private final NativeRuntimeAllocType serviceClientType;
     private final NativeRuntimeAllocType serviceDataPtrType;
