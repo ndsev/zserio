@@ -27,7 +27,7 @@ noExplicitConstructor:*/src/zserio/Span.h:161
 noExplicitConstructor:*/src/zserio/StringView.h:53
 noExplicitConstructor:*/src/zserio/StringView.h:73
 noExplicitConstructor:*/test/zserio/TrackingAllocator.h:66
-uninitMemberVar:*/src/zserio/Reflectable.h:128
+uninitMemberVar:*/src/zserio/Reflectable.h:135
 unusedStructMember:*/src/zserio/BitStreamReader.h:55
 unusedStructMember:*/src/zserio/BitStreamReader.h:56
 unusedStructMember:*/src/zserio/ITypeInfo.h:362
@@ -38,4 +38,4 @@ unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:29
 unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:30
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:101
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:150
-useStlAlgorithm:*/src/zserio/Walker.h:409
+useStlAlgorithm:*/src/zserio/Walker.h:413
