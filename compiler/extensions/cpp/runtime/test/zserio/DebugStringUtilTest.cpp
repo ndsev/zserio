@@ -28,19 +28,23 @@ struct DummyObject
 {
     IBasicReflectableConstPtr<ALLOC> reflectable(const ALLOC& allocator = ALLOC()) const
     {
-        class Reflectable : public ReflectableAllocatorHolderBase<ALLOC>
+        class Reflectable : public ReflectableConstAllocatorHolderBase<ALLOC>
         {
         public:
+            using ReflectableConstAllocatorHolderBase<ALLOC>::get_allocator;
+            using ReflectableConstAllocatorHolderBase<ALLOC>::getField;
+            using ReflectableConstAllocatorHolderBase<ALLOC>::getParameter;
+            using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
+
             explicit Reflectable(const ALLOC& allocator) :
-                    ReflectableAllocatorHolderBase<ALLOC>(DUMMY_OBJECT_TYPE_INFO, allocator)
+                    ReflectableConstAllocatorHolderBase<ALLOC>(DUMMY_OBJECT_TYPE_INFO, allocator)
             {}
 
             virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
-                    return BasicReflectableFactory<ALLOC>::getString(m_text,
-                            ReflectableAllocatorHolderBase<ALLOC>::get_allocator());
+                    return BasicReflectableFactory<ALLOC>::getString(m_text, get_allocator());
                 }
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
             }

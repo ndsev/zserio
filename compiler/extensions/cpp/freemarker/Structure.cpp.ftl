@@ -120,6 +120,12 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     class Reflectable : public ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>
     {
     public:
+    <#if isConst>
+        using ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>::getField;
+        using ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>::getParameter;
+        using ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>::callFunction;
+
+    </#if>
         explicit Reflectable(<#if isConst>const </#if>${fullName}& object, const allocator_type& allocator) :
                 ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>(<#rt>
                         <#lt>${fullName}::typeInfo(), allocator),

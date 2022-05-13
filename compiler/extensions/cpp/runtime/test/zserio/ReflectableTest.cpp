@@ -221,9 +221,16 @@ public:
     {
         class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
         {
+        private:
+            using Base = ReflectableConstAllocatorHolderBase<allocator_type>;
+
         public:
+            using Base::getField;
+            using Base::getParameter;
+            using Base::callFunction;
+
             explicit Reflectable(const DummyChild& object, const allocator_type& allocator) :
-                    ReflectableConstAllocatorHolderBase<allocator_type>(DummyChild::typeInfo(), allocator),
+                    Base(DummyChild::typeInfo(), allocator),
                     m_object(object)
             {}
 
@@ -502,10 +509,16 @@ public:
     {
         class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
         {
+        private:
+            using Base = ReflectableConstAllocatorHolderBase<allocator_type>;
+
         public:
+            using Base::getField;
+            using Base::getParameter;
+            using Base::callFunction;
+
             explicit Reflectable(const DummyParent& object, const allocator_type& allocator) :
-                    ReflectableConstAllocatorHolderBase<allocator_type>(DummyParent::typeInfo(), allocator),
-                    m_object(object)
+                    Base(DummyParent::typeInfo(), allocator), m_object(object)
             {}
 
             virtual IReflectableConstPtr getField(StringView name) const override
