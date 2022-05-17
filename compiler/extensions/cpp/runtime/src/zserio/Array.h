@@ -8,6 +8,7 @@
 
 #include "zserio/AllocatorPropagatingCopy.h"
 #include "zserio/ArrayTraits.h"
+#include "zserio/Traits.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
 #include "zserio/BitPositionUtil.h"
@@ -66,8 +67,19 @@ void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
     arrayTraits.read(elementFactory, rawArray, in, index);
 }
 
+// helper traits to check if T has allocator_type typedef
+template <typename T, typename = void>
+struct is_allocator_based : std::false_type
+{};
+
+// specialization for types which have allocator_type typdef
+template <typename T>
+struct is_allocator_based<T, void_t<typename T::allocator_type>> : std::true_type
+{};
+
 // overload for DummyElementFactory which is used for array traits which don't need element factory
-template <typename RAW_ARRAY, typename ARRAY_TRAITS>
+template <typename RAW_ARRAY, typename ARRAY_TRAITS,
+        typename std::enable_if<!is_allocator_based<ARRAY_TRAITS>::value, int>::type = 0>
 void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, const detail::DummyElementFactory&,
         BitStreamReader& in, size_t)
 {
@@ -75,9 +87,9 @@ void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits, const
 }
 
 // overload for array traits which are based on allocator
-template <typename RAW_ARRAY, template <template <typename> class> class ARRAY_TRAITS,
-        template <typename> class ALLOC>
-void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS<ALLOC>& arrayTraits,
+template <typename RAW_ARRAY, typename ARRAY_TRAITS,
+        typename std::enable_if<is_allocator_based<ARRAY_TRAITS>::value, int>::type = 0>
+void arrayTraitsRead(RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits,
         const detail::DummyElementFactory&, BitStreamReader& in, size_t)
 {
     rawArray.push_back(arrayTraits.read(in, rawArray.get_allocator()));
