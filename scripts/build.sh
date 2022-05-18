@@ -55,7 +55,7 @@ test_python_runtime()
 
     echo "Running pylint on python runtime test sources."
 
-    PYLINT_ARGS+=("--disable=missing-docstring")
+    PYLINT_ARGS+=("--disable=missing-docstring,duplicate-code")
     PYTHONPATH="${SOURCES_DIR}" run_pylint "${PYLINT_RCFILE}" PYLINT_ARGS[@] "${TESTS_DIR}"/*
     if [ $? -ne 0 ]; then
         return 1

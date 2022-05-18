@@ -24,6 +24,13 @@ Zserio Python runtime library documentation
    :skip: PythonRuntimeException
    :skip: BitBuffer
 .. automodapi:: zserio.builtin
+.. automodapi:: zserio.creator
+    :skip: PythonRuntimeException
+    :skip: MemberAttribute
+    :skip: MemberInfo
+    :skip: TypeAttribute
+    :skip: TypeInfo
+    :skip: RecursiveTypeInfo
 .. automodapi:: zserio.debugstring
 .. automodapi:: zserio.exception
    :skip: PythonRuntimeException
