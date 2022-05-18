@@ -21,7 +21,7 @@ function(compiler_get_warnings_setup VARNAME)
                 "-Wno-covered-switch-default"
                 "-Wno-missing-noreturn"
                 "-Wno-switch-enum"
-                "-fcomment-block-commands=copydoc"
+                "-Wno-documentation-unknown-command"
         )
         string(REPLACE ";" " " WARNINGS_SETUP "${WARNINGS_SETUP_LIST}")
     elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
