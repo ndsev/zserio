@@ -38,6 +38,20 @@ set_release_global_variables()
             return 1
         fi
 
+        # GIT to use, defaults to "git" if not set
+        GIT="${GIT:-git}"
+        if [ ! -f "`which "${GIT}"`" ] ; then
+            stderr_echo "Cannot find git! Set GIT environment variable."
+            return 1
+        fi
+
+        # UNZIP to use, defaults to "unzip" if not set
+        UNZIP="${UNZIP:-unzip}"
+        if [ ! -f "`which "${UNZIP}"`" ] ; then
+            stderr_echo "Cannot find unzip! Set UNZIP environment variable."
+            return 1
+        fi
+
         # GPG to use, defaults to "gpg" if not set
         GPG="${GPG:-gpg}"
         if [ ! -f "`which "${GPG}"`" ] ; then
@@ -124,6 +138,8 @@ Uses the following environment variables for releasing:
     CMAKE    CMake executable to use. Default is "cmake".
     ANT      Ant executable to use. Default is "ant".
     MVN      Mvn executable to use. Default is "mvn".
+    GIT      Git executable to use. Default is "git".
+    UNZIP    Unzip executable to use. Default is "unzip".
     GPG      Gpg executable to use. Default is "gpg".
     JAVA_BIN Java executable to use. Default is "java".
     PYTHON   Python executable to use. Default is "python3".
@@ -257,12 +273,12 @@ update_extension_sample()
     echo "Done"
     echo
 
-    git -C "${EXTENSION_SAMPLE_DIR}" diff --exit-code > /dev/null
+    "${GIT}" -C "${EXTENSION_SAMPLE_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Extension Sample already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Extension Sample."
-        git -C "${EXTENSION_SAMPLE_DIR}" commit -a \
+        "${GIT}" -C "${EXTENSION_SAMPLE_DIR}" commit -a \
                 -m "Change expected zserio core version to ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
@@ -297,12 +313,12 @@ update_tutorial_cpp()
     fi
     echo
 
-    git -C "${TUTORIAL_CPP_DIR}" diff --exit-code > /dev/null
+    "${GIT}" -C "${TUTORIAL_CPP_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Tutorial Cpp already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Tutorial Cpp."
-        git -C "${TUTORIAL_CPP_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
+        "${GIT}" -C "${TUTORIAL_CPP_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -342,12 +358,12 @@ update_tutorial_java()
     fi
     echo
 
-    git -C "${TUTORIAL_JAVA_DIR}" diff --exit-code > /dev/null
+    "${GIT}" -C "${TUTORIAL_JAVA_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Tutorial Java already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Tutorial Java."
-        git -C "${TUTORIAL_JAVA_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
+        "${GIT}" -C "${TUTORIAL_JAVA_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -392,12 +408,12 @@ update_tutorial_python()
     fi
     echo
 
-    git -C "${TUTORIAL_PYTHON_DIR}" diff --exit-code > /dev/null
+    "${GIT}" -C "${TUTORIAL_PYTHON_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Tutorial Python already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Tutorial Python."
-        git -C "${TUTORIAL_PYTHON_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
+        "${GIT}" -C "${TUTORIAL_PYTHON_DIR}" commit -a -m "Update generated sources to version ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
@@ -428,18 +444,123 @@ update_streamlit()
     echo "Done"
     echo
 
-    git -C "${STREAMLIT_DIR}" diff --exit-code > /dev/null
+    "${GIT}" -C "${STREAMLIT_DIR}" diff --exit-code > /dev/null
     if [ $? -eq 0 ] ; then
         echo $'\e[1;33m'"Zserio Streamlit already up to date."$'\e[0m'
     else
         echo "Committing update of Zserio Streamlit."
-        git -C "${STREAMLIT_DIR}" commit -a \
+        "${GIT}" -C "${STREAMLIT_DIR}" commit -a \
                 -m "Change required zserio version to ${ZSERIO_VERSION}"
         local GIT_RESULT=$?
         if [ ${GIT_RESULT} -ne 0 ] ; then
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+    fi
+    echo
+
+    return 0
+}
+
+# Update Zserio Web Pages branch after new Zserio release.
+update_web_pages()
+{
+    exit_if_argc_ne $# 3
+    local ZSERIO_PROJECT_ROOT="$1"; shift
+    local ZSERIO_BUILD_DIR="$1"; shift
+    local ZSERIO_VERSION="$1"; shift
+
+    echo "Creating Zserio Web Pages branch."
+    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" fetch
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}!"
+        return 1
+    fi
+    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" checkout -f -B web-pages v${ZSERIO_VERSION}
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}!"
+        return 1
+    fi
+    echo
+
+    echo "Updating sources in Zserio Web Pages branch."
+    echo
+    local WEB_PAGES_BUILD_DIR="${ZSERIO_BUILD_DIR}/web_pages"
+    rm -rf "${WEB_PAGES_BUILD_DIR}"
+    mkdir -p "${WEB_PAGES_BUILD_DIR}"
+
+    echo -ne "Downloading Zserio runtime libraries from GitHub..."
+    get_zserio_runtime_libs ${ZSERIO_VERSION} "${WEB_PAGES_BUILD_DIR}" "runtime-libs.zip"
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+    echo "Done"
+
+    echo -ne "Unzipping Zserio runtime libraries..."
+    "${UNZIP}" -q "${WEB_PAGES_BUILD_DIR}"/runtime-libs.zip -d "${WEB_PAGES_BUILD_DIR}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Cannot unzip zserio runtime libraries to ${WEB_PAGES_BUILD_DIR}!"
+        return 1
+    fi
+    mkdir -p "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc
+    "${UNZIP}" -q "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_runtime_javadocs.jar \
+            -d "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc -x META-INF/* 
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Cannot unzip zserio runtime javadocs jar!"
+        return 1
+    fi
+    echo "Done"
+
+    echo -ne "Copying Zserio runtime libraries..."
+    mkdir -p "${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp
+    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/cpp/zserio_doc/* "${ZSERIO_PROJECT_ROOT}"/doc/runtime/cpp
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+    mkdir -p "${ZSERIO_PROJECT_ROOT}"/doc/runtime/java
+    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/java/zserio_doc/* "${ZSERIO_PROJECT_ROOT}"/doc/runtime/java
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+    mkdir -p "${ZSERIO_PROJECT_ROOT}"/doc/runtime/python
+    cp -r "${WEB_PAGES_BUILD_DIR}"/runtime_libs/python/zserio_doc/* "${ZSERIO_PROJECT_ROOT}"/doc/runtime/python
+    if [ $? -ne 0 ] ; then
+        return 1
+    fi
+    echo "Done"
+
+    # This is necessary because Jekyll ignores Python runtime doc directories that start with underscores.
+    echo -ne "Creating Jekyll configuration file..."
+    echo "theme: jekyll-theme-slate" > "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "exclude: 3rdparty" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "include:" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "  - _images" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "  - _modules" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "  - _static" >> "${ZSERIO_PROJECT_ROOT}"/_config.yml
+    echo "Done"
+
+    echo
+    echo "Committing changes to Zserio Web Pages branch."
+    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" add -A
+    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" commit -a -m "Add generated v${ZSERIO_VERSION} runtime documentation"
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}!"
+        return 1
+    fi
+    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" push --set-upstream origin web-pages --force
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}!"
+        return 1
+    fi
+    "${GIT}" -C "${ZSERIO_PROJECT_ROOT}" checkout master
+    local GIT_RESULT=$?
+    if [ ${GIT_RESULT} -ne 0 ] ; then
+        stderr_echo "Git failed with return code ${GIT_RESULT}!"
+        return 1
     fi
     echo
 
@@ -603,8 +724,8 @@ main()
         echo "Updating dependent repositories after new Zserio release ${ZSERIO_VERSION}."
         echo
 
+        local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
         if [[ ${SWITCH_JAVA_TUTORIAL_UPDATE} == 0 ]] ; then
-            local ZSERIO_BUILD_DIR="${PARAM_OUT_DIR}/build"
             upload_jars "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}"
             if [ $? -ne 0 ] ; then
                 return 1
@@ -638,6 +759,11 @@ main()
             fi
 
             update_streamlit "${ZSERIO_STREAMLIT_DIR}" "${ZSERIO_VERSION}"
+            if [ $? -ne 0 ] ; then
+                return 1
+            fi
+
+            update_web_pages "${ZSERIO_PROJECT_ROOT}" "${ZSERIO_BUILD_DIR}" "${ZSERIO_VERSION}"
             if [ $? -ne 0 ] ; then
                 return 1
             fi

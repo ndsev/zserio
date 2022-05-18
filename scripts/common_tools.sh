@@ -493,7 +493,7 @@ convert_to_absolute_path()
     return 0
 }
 
-# Get latest zserio release number
+# Get latest zserio release number from the GitHub.
 get_latest_zserio_version()
 {
     exit_if_argc_ne $# 1
@@ -507,6 +507,50 @@ get_latest_zserio_version()
     fi
 
     eval ${ZSERIO_VERSION_OUT}="'${ZSERIO_VERSION_GET_LATEST_ZSERIO}'"
+
+    return 0
+}
+
+# Get zserio binaries from the GitHub.
+get_zserio_bin()
+{
+    exit_if_argc_lt $# 2
+    local ZSERIO_VERSION="$1"; shift
+    local ZSERIO_BIN_OUT_DIR="$1"; shift
+    if [ $# -ne 0 ] ; then
+        local ZSERIO_BIN_ZIP_NAME="$1"; shift
+    else
+        local ZSERIO_BIN_ZIP_NAME="zserio-${ZSERIO_VERSION}-bin.zip"
+    fi
+
+    curl -L -s -f "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-bin.zip" \
+            -o "${ZSERIO_BIN_OUT_DIR}/${ZSERIO_BIN_ZIP_NAME}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to download Zserio binaries from GitHub!"
+        return 1
+    fi
+
+    return 0
+}
+
+# Get zserio runtime libraries from the GitHub.
+get_zserio_runtime_libs()
+{
+    exit_if_argc_lt $# 2
+    local ZSERIO_VERSION="$1"; shift
+    local ZSERIO_RUNTIME_LIBS_OUT_DIR="$1"; shift
+    if [ $# -ne 0 ] ; then
+        local ZSERIO_RUNTIME_LIBS_ZIP_NAME="$1"; shift
+    else
+        local ZSERIO_RUNTIME_LIBS_ZIP_NAME="zserio-${ZSERIO_VERSION}-runtime-libs.zip"
+    fi
+
+    curl -L -s -f "https://github.com/ndsev/zserio/releases/download/v${ZSERIO_VERSION}/zserio-${ZSERIO_VERSION}-runtime-libs.zip" \
+            -o "${ZSERIO_RUNTIME_LIBS_OUT_DIR}/${ZSERIO_RUNTIME_LIBS_ZIP_NAME}"
+    if [ $? -ne 0 ] ; then
+        stderr_echo "Failed to download Zserio runtime libraries from GitHub!"
+        return 1
+    fi
 
     return 0
 }

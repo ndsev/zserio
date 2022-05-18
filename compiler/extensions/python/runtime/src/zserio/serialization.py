@@ -16,6 +16,15 @@ def serialize(obj: typing.Any) -> BitBuffer:
     that not all bits of the last byte are used. In this case, only most significant bits of the corresponded
     size are used.
 
+    Example:
+
+    .. code:: python
+
+        import zserio
+
+        obj = SomeZserioObject()
+        bitbuffer = zserio.serialize(obj)
+
     :param obj: Generated object to serialize.
     :returns: Bit buffer which represents generated object in binary format.
     :raises PythonRuntimeException: Throws in case of any error during serialization.
@@ -29,6 +38,15 @@ def serialize(obj: typing.Any) -> BitBuffer:
 def deserialize(obj_class: typing.Type[typing.Any], bitbuffer: BitBuffer, *args) -> typing.Any:
     """
     Deserializes bit buffer to the generated object.
+
+    Example:
+
+    .. code:: python
+
+        import zserio
+
+        bitbuffer = zserio.BitBuffer(b'\\x00\\x01\\xBD\\x5A', 31)
+        obj = zserio.deserialize(SomeZserioObject, bitbuffer, 0xAB)
 
     :param obj_class: Class instance of the generated object to deserialize.
     :param bitbuffer: Bit buffer which represents generated object in binary format.
@@ -51,6 +69,15 @@ def serialize_to_bytes(obj: typing.Any) -> bytes:
     However, it's still possible that not all bits of the last byte are used. In this case, only most
     significant bits of the corresponding size are used.
 
+    Example:
+
+    .. code:: python
+
+        import zserio
+
+        obj = SomeZserioObject()
+        buffer = zserio.serialize_to_bytes(obj)
+
     :param obj: Generated object to serialize.
     :returns: Bytes which represents generated object in binary format.
     :raises PythonRuntimeException: Throws in case of any error during serialization.
@@ -67,6 +94,15 @@ def deserialize_bytes(obj_class: typing.Type[typing.Any], buffer: bytes, *args) 
     This method can potentially use all bits of the last byte even if not all of them were written during
     serialization (because there is no way how to specify exact number of bits). Thus, it could allow reading
     behind stream (possibly in case of damaged data).
+
+    Example:
+
+    .. code:: python
+
+        import zserio
+
+        buffer = b'\\x00\\x01\\xBD\\x5A'
+        obj = zserio.deserialize_bytes(SomeZserioObject, buffer, 0xAB)
 
     :param obj_class: Class instance of the generated object to deserialize.
     :param buffer: Byte buffer which represents generated object in binary format.
@@ -85,6 +121,15 @@ def serialize_to_file(obj: typing.Any, filename: str) -> None:
 
     This is a convenient method for users to easily write given generated object to file.
 
+    Example:
+
+    .. code:: python
+
+        import zserio
+
+        obj = SomeZserioObject()
+        buffer = zserio.serialize_to_file(obj, "file_name.bin")
+
     :param obj: Generated object to serialize.
     :param filename: File to write.
     :raises PythonRuntimeException: Throws in case of any error during serialization.
@@ -99,6 +144,14 @@ def deserialize_from_file(obj_class: typing.Type[typing.Any], filename: str, *ar
     Deserializes file to the generated object.
 
     This is a convenient method for users to easily read given generated object from file.
+
+    Example:
+
+    .. code:: python
+
+        import zserio
+
+        obj = zserio.deserialize_from_file(SomeZserioObject, "file_name.bin", 0xAB)
 
     :param obj_class: Class instance of the generated object to deserialize.
     :param filename: File which represents generated object in binary format.

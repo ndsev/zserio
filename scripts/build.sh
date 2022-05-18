@@ -8,7 +8,7 @@ test_python_runtime()
 {
     exit_if_argc_ne $# 2
     local PYTHON_RUNTIME_ROOT="${1}" ; shift
-    local BUILD_DIR="${1}"; shift
+    local BUILD_DIR="${1}" ; shift
 
     mkdir -p "${BUILD_DIR}"
     pushd "${BUILD_DIR}" > /dev/null
@@ -101,7 +101,7 @@ install_python_runtime()
     fi
 
     PYTHONPATH="${PYTHON_RUNTIME_SOURCES}" \
-    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" -Dgraphviz_dot="${DOT}" . zserio_apidoc
+    sphinx-build -Wa -b html -d . -Dhtml_logo="${ZSERIO_LOGO}" -Dgraphviz_dot="${DOT}" . zserio_doc
     if [ $? -ne 0 ] ; then
         popd > /dev/null
         return 1
@@ -131,7 +131,7 @@ install_python_runtime()
     done
 
     echo "Installing API documentation"
-    cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_apidoc" "${PYTHON_RUNTIME_DISTR_DIR}/"
+    cp -r "${PYTHON_RUNTIME_DOC_BUILD_DIR}/zserio_doc" "${PYTHON_RUNTIME_DISTR_DIR}/"
     if [ $? -ne 0 ] ; then
         stderr_echo "Failed to install documentation!"
         popd > /dev/null

@@ -4,6 +4,8 @@ Zserio extension which generates Java serialization API from the Zserio schema.
 
 For a **quick start** see the [Java Tutorial](https://github.com/ndsev/zserio-tutorial-java#zserio-java-quick-start-tutorial).
 
+For an **API documentation** see the [Java Runtime Library](https://zserio.org/doc/runtime/java).
+
 ## Compatibility check
 
 Java generator honors the `zserio_compatibility_version` specified in the schema. However note that only

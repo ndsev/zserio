@@ -4,6 +4,8 @@ Zserio extension which generates C++ serialization API from the Zserio schema.
 
 For a **quick start** see the [C++ Tutorial](https://github.com/ndsev/zserio-tutorial-cpp#zserio-c-quick-start-tutorial).
 
+For an **API documentation** see the [C++ Runtime Library](https://zserio.org/doc/runtime/cpp).
+
 ## Compatibility check
 
 C++ generator honors the `zserio_compatibility_version` specified in the schema. However note that only

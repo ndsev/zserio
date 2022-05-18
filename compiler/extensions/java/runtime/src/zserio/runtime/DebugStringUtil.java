@@ -15,13 +15,29 @@ import zserio.runtime.walker.Walker;
 
 /**
  * Zserio debug string utilities.
- *
- * Note that zserio objects must be generated with -withTypeInfoCode zserio option.
+ * <p>
+ * Note that zserio objects must be generated with <code>-withTypeInfoCode</code> zserio option to enable
+ * JSON debug string!
  */
 public class DebugStringUtil
 {
     /**
      * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * <p>
+     * This function allows setting of indentation of JSON output together with the walk filter.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonStream(zserioObject, writer, indent, walkFilter);
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param writer Writer to use.
@@ -38,6 +54,19 @@ public class DebugStringUtil
 
     /**
      * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * <p>
+     * This function allows setting of indentation of JSON output.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * DebugStringUtil.toJsonStream(zserioObject, writer, indent);
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param writer Writer to use.
@@ -50,6 +79,20 @@ public class DebugStringUtil
 
     /**
      * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * <p>
+     * This function allows setting of the walk filter.
+     * <p>
+     * The following example shows filtering of arrays up to 5 elements:
+     * <blockquote><pre>
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonStream(zserioObject, writer, walkFilter);
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param writer Writer to use.
@@ -62,6 +105,16 @@ public class DebugStringUtil
 
     /**
      * Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import java.io.StringWriter;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final StringWriter writer = new StringWriter();
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * DebugStringUtil.toJsonStream(zserioObject, writer);
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param writer Writer to use.
@@ -73,6 +126,19 @@ public class DebugStringUtil
 
     /**
      * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * <p>
+     * This function allows setting of indentation of JSON output together with the walk filter.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject, indent, walkFilter));
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param indent Indent argument for JsonWriter.
@@ -89,6 +155,17 @@ public class DebugStringUtil
 
     /**
      * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * <p>
+     * This function allows setting of indentation of JSON output.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject, indent));
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param indent Indent argument for JsonWriter.
@@ -102,6 +179,18 @@ public class DebugStringUtil
 
     /**
      * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * <p>
+     * This function allows setting of the walk filter.
+     * <p>
+     * The following example shows filtering of arrays up to 5 elements:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject, walkFilter));
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param walkFilter WalkFilter to use by Walker.
@@ -115,6 +204,14 @@ public class DebugStringUtil
 
     /**
      * Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * System.out.println(DebugStringUtil.toJsonString(zserioObject));
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      *
@@ -127,6 +224,19 @@ public class DebugStringUtil
 
     /**
      * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * <p>
+     * This function allows setting of indentation of JSON output together with the walk filter.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin", indent, walkFilter);
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param fileName Name of file to write.
@@ -149,6 +259,17 @@ public class DebugStringUtil
 
     /**
      * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * <p>
+     * This function allows setting of indentation of JSON output.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final int indent = 4;
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin", indent);
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param fileName Name of file to write.
@@ -163,6 +284,18 @@ public class DebugStringUtil
 
     /**
      * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * <p>
+     * This function allows setting of the walk filter.
+     * <p>
+     * The following example shows filtering of arrays up to 5 elements:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     * import zserio.runtime.walker.ArrayLengthWalkFilter;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin", walkFilter);
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param fileName Name of file to write.
@@ -178,6 +311,14 @@ public class DebugStringUtil
 
     /**
      * Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final SomeZserioObject zserioObject = new SomeZserioObject();
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin");
+     * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
      * @param fileName Name of file to write.

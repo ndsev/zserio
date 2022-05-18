@@ -4,6 +4,8 @@ Zserio extension which generates Python serialization API from the Zserio schema
 
 For a **quick start** see the [Python Tutorial](https://github.com/ndsev/zserio-tutorial-python#zserio-python-quick-start-tutorial).
 
+For an **API documentation** see the [Python Runtime Library](https://zserio.org/doc/runtime/python).
+
 ## Auto-generated API helper
 
 Python Generator generates each package symbol in its own Python module (i.e. file). It's necessary in order

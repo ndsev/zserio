@@ -95,7 +95,7 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
     </condition>
 
     <uptodate property="zserio_java_runtime.javadocs_up_to_date">
-        <srcfiles dir= "${zserio_java_runtime.src_dir}" includes="**/*.java"/>
+        <srcfiles dir= "${zserio_java_runtime.src_dir}" includes="**/*"/>
         <mapper type="merge" to="${zserio_java_runtime.javadocs_dir}/index.html"/>
     </uptodate>
 
@@ -132,10 +132,10 @@ spotbugs.home_dir               - Location of the spotbugs tool. If not set, spo
             <format property="timestamp" pattern="yyyy-MM-dd HH:mm:ss"/>
         </tstamp>
         <javadoc packagenames="zserio.runtime.*" destdir="${zserio_java_runtime.javadocs_dir}"
-            failonerror="true" failonwarning="true">
+            failonerror="true" failonwarning="true" Overview="${zserio_java_runtime.src_dir}/zserio/runtime/overview.html">
             <fileset refid="zserio_java_runtime.sources"/>
             <doctitle>
-                <![CDATA[<h1>Zserio Java Runtime Library</h1><h2>Version ${zserio_java_runtime.version}</h2]]>
+                <![CDATA[<h1>Zserio Java Runtime Library Documentation</h1><h2>Version ${zserio_java_runtime.version}</h2]]>
             </doctitle>
             <bottom>
                 <![CDATA[<i>Last updated ${timestamp}</i>]]>

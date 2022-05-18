@@ -82,9 +82,9 @@ cppcheck_add_custom_command(TARGET ZserioCppRuntime
 # build and install doxygen documentation
 find_package(Doxygen REQUIRED)
 add_custom_target(ZserioCppRuntime-doxygen ALL
-    ${CMAKE_COMMAND} -E env ZSERIO_CPP_RUNTIME_SOURCES="${CMAKE_CURRENT_SOURCE_DIR}/src"
+    ${CMAKE_COMMAND} -E env ZSERIO_CPP_RUNTIME_OUTPUT_DIR="${CMAKE_CURRENT_BINARY_DIR}"
     ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/doc/doxyfile
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
     COMMENT "Generating C++ runtime HTML documentation"
 )
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/zserio_doc DESTINATION cpp)

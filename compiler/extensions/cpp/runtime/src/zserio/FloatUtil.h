@@ -4,6 +4,7 @@
 #include "zserio/Types.h"
 
 /**
+ * \file
  * The module provides help methods for manipulation with float numbers.
  *
  * The following float formats defined by IEEE 754 standard are supported:

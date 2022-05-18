@@ -36,33 +36,6 @@ get_sources()
     return 0
 }
 
-# Download asset from zserio GitHub.
-download_zserio_asset()
-{
-    exit_if_argc_lt $# 2
-    local OUT_DIR="$1"; shift
-    local ASSET_PATH="$1"; shift
-    if [ $# -ne 0 ] ; then
-        local NAME="$1"; shift
-    else
-        local NAME="${ASSET_PATH##*/}"
-    fi
-
-    if [ -f ${OUT_DIR}/${NAME} ] ; then
-        echo "Asset \"${OUT_DIR}/${NAME}\" already present."
-    else
-        echo "Downloading https://github.com/ndsev/zserio/releases/download/${ASSET_PATH} as ${NAME}"
-
-        curl -L -s -f "https://github.com/ndsev/zserio/releases/download/${ASSET_PATH}" -o "${OUT_DIR}/${NAME}"
-        if [ $? -ne 0 ] ; then
-            stderr_echo "Failed to download asset \"${ASSET_PATH}\"!"
-            return 1
-        fi
-    fi
-
-    return 0
-}
-
 # Get release for the requested version.
 get_release()
 {
@@ -89,13 +62,11 @@ get_release()
             return 1
         fi
     else
-        download_zserio_asset "${TEST_OUT_DIR}" "v${VERSION_NUMBER}/zserio-${VERSION_NUMBER}-bin.zip" \
-                "zserio-${VERSION}-bin.zip"
+        get_zserio_bin ${VERSION_NUMBER} "${TEST_OUT_DIR}" "zserio-${VERSION}-bin.zip"
         if [ $? -ne 0 ] ; then
             return 1
         fi
-        download_zserio_asset "${TEST_OUT_DIR}" "v${VERSION_NUMBER}/zserio-${VERSION_NUMBER}-runtime-libs.zip" \
-                "zserio-${VERSION}-runtime-libs.zip"
+        get_zserio_runtime_libs ${VERSION_NUMBER} "${TEST_OUT_DIR}" "zserio-${VERSION}-runtime-libs.zip"
         if [ $? -ne 0 ] ; then
             return 1
         fi

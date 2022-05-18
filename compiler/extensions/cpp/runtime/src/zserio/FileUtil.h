@@ -1,5 +1,8 @@
 /**
- * FileUtil.h is not used by generated code and is provided only for user convenience.
+ * \file
+ * File utilities.
+ *
+ * These utilities are not used by generated code and they are provided only for user convenience.
  *
  * \note Please note that file operations allocate memory as needed and are not designed to use allocators.
  */

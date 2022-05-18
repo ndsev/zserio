@@ -2,6 +2,7 @@ Zserio Python runtime library documentation
 ===========================================
 
 .. automodapi:: zserio
+.. autodata:: VERSION_STRING
 .. automodapi:: zserio.array
    :no-inheritance-diagram: # there is no inheritance between classes
    :skip: PythonRuntimeException
@@ -36,6 +37,7 @@ Zserio Python runtime library documentation
 .. automodapi:: zserio.limits
 .. automodapi:: zserio.pubsub
    :skip: PythonRuntimeException
+.. automodapi:: zserio.serialization
 .. automodapi:: zserio.service
    :skip: PythonRuntimeException
    :skip: BitStreamWriter

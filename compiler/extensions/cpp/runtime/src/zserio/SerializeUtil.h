@@ -1,5 +1,8 @@
 /**
- * SerializeUtil.h is not used by generated code and is provided only for user convenience.
+ * \file
+ * It provides help methods for serialization and deserialization of generated objects.
+ *
+ * These utilities are not used by generated code and they are provided only for user convenience.
  *
  * \note Please note that file operations allocate memory as needed and are not designed to use allocators.
  */
@@ -68,6 +71,19 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
 /**
  * Serializes given generated object to bit buffer using given allocator.
  *
+ * Before serialization, the method properly calls on the given zserio object methods `initialize()`
+ * (if exits), `initializeChildren()` (if exists) and `%initializeOffsets()`.
+ *
+ * Example:
+ * \code{.cpp}
+ *     include <zserio/SerializeUtil.h>
+ *     include <zserio/pmr/PolymorphicAllocator.h>
+ *
+ *     const zserio::pmr::PolymorphicAllocator<> allocator;
+ *     SomeZserioObject object(allocator);
+ *     const zserio::BasicBitBuffer<zserio::pmr::PolymorphicAllocator<>> bitBuffer = zserio::serialize(object, allocator);
+ * \endcode
+ *
  * \param object Generated object to serialize.
  * \param allocator Allocator to use to allocate bit buffer.
  * \param arguments Object's actual parameters for initialize() method (optional).
@@ -86,6 +102,17 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
 /**
  * Serializes given generated object to bit buffer using default allocator 'std::allocator<uint8_t>'.
  *
+ * Before serialization, the method properly calls on the given zserio object methods `initialize()`
+ * (if exits), `initializeChildren()` (if exists) and `%initializeOffsets()`.
+ *
+ * Example:
+ * \code{.cpp}
+ *     include <zserio/SerializeUtil.h>
+ *
+ *     SomeZserioObject object;
+ *     const zserio::BitBuffer bitBuffer = zserio::serialize(object);
+ * \endcode
+ *
  * \param object Generated object to serialize.
  * \param arguments Object's actual parameters for initialize() method (optional).
  *
@@ -103,6 +130,14 @@ BasicBitBuffer<ALLOC> serialize(T& object, ARGS&&... arguments)
 
 /**
  * Serializes given generated enum to bit buffer.
+ *
+ * Example:
+ * \code{.cpp}
+ *     include <zserio/SerializeUtil.h>
+ *
+ *     const SomeZserioEnum enumValue = SomeZserioEnum::SomeEnumValue;
+ *     const zserio::BitBuffer bitBuffer = zserio::serialize(enumValue);
+ * \endcode
  *
  * \param enumValue Generated enum to serialize.
  * \param allocator Allocator to use to allocate bit buffer.
@@ -124,6 +159,15 @@ BasicBitBuffer<ALLOC> serialize(T enumValue, const ALLOC& allocator = ALLOC())
 /**
  * Deserializes given bit buffer to instance of generated object.
  *
+ * Example:
+ * \code{.cpp}
+ *     include <zserio/SerializeUtil.h>
+ *
+ *     SomeZserioObject object;
+ *     const zserio::BitBuffer bitBuffer = zserio::serialize(object);
+ *     SomeZserioObject readObject = zserio::deserialize<SomeZserioObject>(bitBuffer);
+ * \endcode
+ *
  * \param bitBuffer Bit buffer to use.
  * \param arguments Object's actual parameters together with allocator for object's read constructor (optional).
  *
@@ -142,6 +186,15 @@ typename std::enable_if<!std::is_enum<T>::value, T>::type deserialize(
 /**
  * Deserializes given bit buffer to instance of generated enum.
  *
+ * Example:
+ * \code{.cpp}
+ *     include <zserio/SerializeUtil.h>
+ *
+ *     const SomeZserioEnum enumValue = SomeZserioEnum::SomeEnumValue;
+ *     const zserio::BitBuffer bitBuffer = zserio::serialize(enumValue);
+ *     const SomeZserioEnum readEnumValue = zserio::deserialize<DummyEnum>(bitBuffer);
+ * \endcode
+ *
  * \param bitBuffer Bit buffer to use.
  *
  * \return Generated enum created from the given bit buffer.
@@ -157,6 +210,14 @@ typename std::enable_if<std::is_enum<T>::value, T>::type deserialize(const Basic
 
 /**
  * Serializes given generated object to file.
+ *
+ * Example:
+ * \code{.cpp}
+ *     include <zserio/SerializeUtil.h>
+ *
+ *     SomeZserioObject object;
+ *     zserio::serializeToFile(object, "FileName.bin");
+ * \endcode
  *
  * \note Please note that BitBuffer is always allocated using 'std::allocator<uint8_t>'.
  *
@@ -174,6 +235,16 @@ void serializeToFile(T& object, const std::string& fileName, ARGS&&... arguments
 
 /**
  * Deserializes given file contents to instance of generated object.
+ *
+ * Example:
+ * \code{.cpp}
+ *     include <zserio/SerializeUtil.h>
+ *
+ *     const std::string fileName = "FileName.bin";
+ *     SomeZserioObject object;
+ *     zserio::serializeToFile(object, fileName);
+ *     SomeZserioObject readObject = zserio::deserializeFromFile<SomeZserioObject>(fileName);
+ * \endcode
  *
  * \note Please note that BitBuffer is always allocated using 'std::allocator<uint8_t>'.
  *

@@ -1,9 +1,10 @@
 PROJECT_NAME           = Zserio
 PROJECT_NUMBER         = 2.6.0
 PROJECT_BRIEF          = "C++ runtime library"
-OUTPUT_DIRECTORY       = .
+OUTPUT_DIRECTORY       = "$(ZSERIO_CPP_RUNTIME_OUTPUT_DIR)"
 DISTRIBUTE_GROUP_DOC   = YES
 
+EXTRACT_ALL            = YES
 EXTRACT_LOCAL_CLASSES  = NO
 
 QUIET                  = YES
@@ -11,9 +12,9 @@ WARNINGS               = YES
 WARN_IF_UNDOCUMENTED   = YES
 WARN_IF_DOC_ERROR      = YES
 WARN_NO_PARAMDOC       = YES
-WARN_LOGFILE           = doxygen_err.log
+WARN_LOGFILE           = "$(ZSERIO_CPP_RUNTIME_OUTPUT_DIR)/doxygen_err.log"
 
-INPUT                  = $(ZSERIO_CPP_RUNTIME_SOURCES)
+INPUT                  = "."
 RECURSIVE              = YES
 EXCLUDE_SYMBOLS        = detail
 
@@ -25,8 +26,11 @@ GENERATE_HTML          = YES
 SEARCHENGINE           = YES
 HTML_OUTPUT            = zserio_doc
 HTML_FILE_EXTENSION    = .html
+GENERATE_TREEVIEW      = YES
 
 GENERATE_LATEX         = NO
 
-CLASS_DIAGRAMS         = NO
-HAVE_DOT               = NO
+CLASS_DIAGRAMS         = YES
+HAVE_DOT               = YES
+INCLUDED_BY_GRAPH      = NO
+INCLUDE_GRAPH          = NO
