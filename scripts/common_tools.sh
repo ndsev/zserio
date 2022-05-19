@@ -83,7 +83,8 @@ set_global_cpp_variables()
     fi
 
     MAKE_CMAKE_GENERATOR="${MAKE_CMAKE_GENERATOR:-Eclipse CDT4 - Unix Makefiles}"
-    MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 14 2015}"
+    MSVC_CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR:-Visual Studio 17 2022}"
+    MSVC_CMAKE_TOOLSET="${MSVC_CMAKE_TOOLSET:-v141}"
 
     # Extra arguments to be passed by CMake to a native build tool
     CMAKE_BUILD_OPTIONS="${CMAKE_BUILD_OPTIONS:-""}"
@@ -367,8 +368,11 @@ Uses the following environment variables for building:
     MAKE_CMAKE_GENERATOR   CMake generator to use for build using Makefiles. Default is
                            "Eclipse CDT4 - Unix Makefiles".
     MSVC_CMAKE_GENERATOR   CMake generator to use with MSVC compiler. Default is
-                           "Visual Studio 14 2015". Note that "Win64" suffix is
-                           added automatically for windows64-mscv target.
+                           "Visual Studio 17 2022". Note that CMake option "-A x64"
+                           is added automatically for windows64-mscv target. 
+    MSVC_CMAKE_TOOLSET     MSVC toolset specification for CMake generator.
+                           Default is "v141". Note that "v141" is for VS 2017,
+                           "v142" is for VS 2019.
     CLANG_VERSION_SUFFIX   Clang compilers version suffix. Default is empty.
                            Set e.g. "-8" to use "clang-8" instead of "clang".
     CMAKE_EXTRA_ARGS       Extra arguments to CMake. Default is empty string.
@@ -701,7 +705,8 @@ compile_cpp_for_target()
         if [[ ${MAKE_TARGET} == "all" ]] ; then
             CMAKE_BUILD_TARGET="ALL_BUILD" # all target doesn't exist in MSVC solution
         fi
-        local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR} Win64";
+        local CMAKE_GENERATOR="${MSVC_CMAKE_GENERATOR}";
+        CMAKE_ARGS=("${CMAKE_ARGS[@]}" "-A x64" "-T ${MSVC_CMAKE_TOOLSET}")
     else
         local CMAKE_GENERATOR="${MAKE_CMAKE_GENERATOR}"
         local CMAKE_BUILD_CONFIG=""
