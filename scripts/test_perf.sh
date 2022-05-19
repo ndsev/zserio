@@ -190,7 +190,7 @@ generate_cpp_files()
     posix_to_host_path "${BLOB_PATH}" HOST_BLOB_PATH ${DISABLE_SLASHES_CONVERSION}
 
     cat > "${BUILD_DIR}"/CMakeLists.txt << EOF
-cmake_minimum_required(VERSION 2.8.12.2)
+cmake_minimum_required(VERSION 3.1.0)
 project(PerformanceTest)
 
 enable_testing()
@@ -241,7 +241,7 @@ EOF
 
 #include <${BLOB_INCLUDE_PATH}>
 
-#if defined(WIN32)
+#if defined(_WIN32) || defined(_WIN64)
 #   include <windows.h>
 #else
 #   include <time.h>
@@ -252,7 +252,7 @@ class PerfTimer
 public:
     static uint64_t getMicroTime()
     {
-#if defined(WIN32)
+#if defined(_WIN32) || defined(_WIN64)
         FILETIME creation, exit, kernelTime, userTime;
         GetThreadTimes(GetCurrentThread(), &creation, &exit, &kernelTime, &userTime);
         return fileTimeToMicro(kernelTime) + fileTimeToMicro(userTime);
@@ -264,7 +264,7 @@ public:
     }
 
 private:
-#if defined(WIN32)
+#if defined(_WIN32) || defined(_WIN64)
     static uint64_t fileTimeToMicro(const FILETIME& time)
     {
         uint64_t value = time.dwHighDateTime;

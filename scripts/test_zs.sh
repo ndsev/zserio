@@ -193,7 +193,7 @@ compiler_set_warnings_as_errors()"
     fi
 
     cat > ${BUILD_DIR}/CMakeLists.txt << EOF
-cmake_minimum_required(VERSION 2.8.12.2)
+cmake_minimum_required(VERSION 3.1.0)
 project(test_zs_${TEST_NAME})
 
 enable_testing()
