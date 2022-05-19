@@ -38,9 +38,12 @@ Zserio Python runtime library documentation
 .. automodapi:: zserio.hashcode
 .. automodapi:: zserio.json
    :skip: BitBuffer
+   :skip: TypeInfo
    :skip: MemberInfo
    :skip: TypeAttribute
    :skip: WalkObserver
+   :skip: PythonRuntimeException
+   :skip: ZserioTreeCreator
 .. automodapi:: zserio.limits
 .. automodapi:: zserio.pubsub
    :skip: PythonRuntimeException
