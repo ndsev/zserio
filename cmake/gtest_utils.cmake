@@ -29,6 +29,10 @@ function(gtest_add_library GTEST_ROOT)
             LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/lib"
             ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/lib"
             PDB_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/googletest/bin")
+
+    # fix compilation for older compilator versions (e.g. for gcc 5.4.0)
+    set_target_properties(gtest PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
+    set_target_properties(gtest_main PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED YES CXX_EXTENSIONS NO)
 endfunction()
 
 # A function to add new test to gtest. It is copied from FindGTest.cmake module because include(FindGTest)
