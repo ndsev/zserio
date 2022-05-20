@@ -9,5 +9,5 @@ package zserio.extension.python;
 class PythonExtensionVersion
 {
     /** Python extension version string. */
-    public static final String VERSION_STRING = "2.6.0";
+    public static final String VERSION_STRING = "2.6.1";
 }
