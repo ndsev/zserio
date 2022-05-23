@@ -34,9 +34,9 @@ More documentation? Go to the [Documentation](#documentation).
 ## Language support
 
 At the moment the following code generators are available
-- [C++ Generator](compiler/extensions/cpp/README.md)
-- [Java Generator](compiler/extensions/java/README.md)
-- [Python Generator](compiler/extensions/python/README.md)
+- [C++ Generator](compiler/extensions/cpp/README.md) with [C++ Runtime Library](https://zserio.org/doc/runtime/cpp)
+- [Java Generator](compiler/extensions/java/README.md) with [Java Runtime Library](https://zserio.org/doc/runtime/java)
+- [Python Generator](compiler/extensions/python/README.md) with [Python Runtime Library](https://zserio.org/doc/runtime/python)
 
 In addition to these, zserio provides specialized text generators for documentation and export
 - [Doc Generator](compiler/extensions/doc/README.md)
