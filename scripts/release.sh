@@ -285,6 +285,10 @@ update_extension_sample()
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+        echo $'\e[1;33m'"Don't forget to check the Zserio Extension Sample repository!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        read -n 1 -s -r -p "Press any key to continue..."
+        echo
     fi
     echo
 
@@ -324,6 +328,10 @@ update_tutorial_cpp()
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+        echo $'\e[1;33m'"Don't forget to check the Zserio Tutorial Cpp repository!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        read -n 1 -s -r -p "Press any key to continue..."
+        echo
     fi
     echo
 
@@ -369,6 +377,10 @@ update_tutorial_java()
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+        echo $'\e[1;33m'"Don't forget to check the Zserio Tutorial Java repository!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        read -n 1 -s -r -p "Press any key to continue..."
+        echo
     fi
     echo
 
@@ -419,6 +431,10 @@ update_tutorial_python()
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+        echo $'\e[1;33m'"Don't forget to check the Zserio Tutorial Python repository!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        read -n 1 -s -r -p "Press any key to continue..."
+        echo
     fi
     echo
 
@@ -456,6 +472,10 @@ update_streamlit()
             stderr_echo "Git failed with return code ${GIT_RESULT}!"
             return 1
         fi
+        echo $'\e[1;33m'"Don't forget to check the Zserio Streamlit repository!"$'\e[0m'
+        echo $'\e[1;33m'"If it is ok, push changes to origin!"$'\e[0m'
+        read -n 1 -s -r -p "Press any key to continue..."
+        echo
     fi
     echo
 
