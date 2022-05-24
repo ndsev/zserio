@@ -251,102 +251,102 @@ class JsonParser:
 
             raise NotImplementedError()
 
-    def __init__(self, observer: Observer) -> None:
+    def __init__(self, text_io: typing.TextIO, observer: Observer) -> None:
         """
         Constructor.
 
+        :param text_io: Text stream to parse.
         :param observer: Json reader observer.
         """
 
+        self._tokenizer = JsonParser._Tokenizer(text_io)
         self._observer = observer
 
-    def parse(self, text_io: typing.TextIO):
+    def parse(self) -> bool:
         """
-        Parses JSON text stream.
+        Parses single JSON element from the text stream.
 
-        :param text_io: Text stream to parse.
+        :returns: True when end-of-file is reached, False otherwise (i.e. another JSON element is present).
         :raises PythonRuntimeException: When parsing fails.
         """
 
-        tokenizer = JsonParser._Tokenizer(text_io)
+        if self._tokenizer.get_token() == JsonParser._Tokenizer.BOF:
+            if self._tokenizer.next() == JsonParser._Tokenizer.EOF:
+                return True
 
-        if tokenizer.next() == JsonParser._Tokenizer.EOF:
-            return
+        self._parse_element()
 
-        self._parse_element(tokenizer)
+        return self._tokenizer.get_token() == JsonParser._Tokenizer.EOF
 
-        if tokenizer.get_token() != JsonParser._Tokenizer.EOF:
-            tokenizer.unexpected()
-
-    def _parse_object(self, tokenizer):
-        if tokenizer.get_token() == JsonParser._Tokenizer.BEGIN_OBJECT:
+    def _parse_object(self) -> None:
+        if self._tokenizer.get_token() == JsonParser._Tokenizer.BEGIN_OBJECT:
             self._observer.begin_object()
-            tokenizer.next()
-            self._parse_members(tokenizer)
-            if tokenizer.get_token() == JsonParser._Tokenizer.END_OBJECT:
+            self._tokenizer.next()
+            self._parse_members()
+            if self._tokenizer.get_token() == JsonParser._Tokenizer.END_OBJECT:
                 self._observer.end_object()
-                tokenizer.next()
+                self._tokenizer.next()
                 return
 
-        tokenizer.unexpected()
+        self._tokenizer.unexpected()
 
-    def _parse_members(self, tokenizer):
-        while tokenizer.get_token() == JsonParser._Tokenizer.VALUE:
-            self._parse_member(tokenizer)
-            if tokenizer.get_token() == JsonParser._Tokenizer.ITEM_SEPARATOR:
-                tokenizer.next()
+    def _parse_members(self) -> None:
+        while self._tokenizer.get_token() == JsonParser._Tokenizer.VALUE:
+            self._parse_member()
+            if self._tokenizer.get_token() == JsonParser._Tokenizer.ITEM_SEPARATOR:
+                self._tokenizer.next()
             else:
                 return
 
-    def _parse_member(self, tokenizer):
-        if tokenizer.get_token() == JsonParser._Tokenizer.VALUE:
-            key = tokenizer.get_value()
+    def _parse_member(self) -> None:
+        if self._tokenizer.get_token() == JsonParser._Tokenizer.VALUE:
+            key = self._tokenizer.get_value()
             if isinstance(key, str):
                 self._observer.visit_key(key)
-                if tokenizer.next() == JsonParser._Tokenizer.KEY_SEPARATOR:
-                    tokenizer.next()
-                    self._parse_element(tokenizer)
+                if self._tokenizer.next() == JsonParser._Tokenizer.KEY_SEPARATOR:
+                    self._tokenizer.next()
+                    self._parse_element()
                     return
 
-        tokenizer.unexpected()
+        self._tokenizer.unexpected()
 
-    def _parse_element(self, tokenizer):
-        token = tokenizer.get_token()
+    def _parse_element(self) -> None:
+        token = self._tokenizer.get_token()
         if token == JsonParser._Tokenizer.BEGIN_ARRAY:
-            self._parse_array(tokenizer)
+            self._parse_array()
             return
         elif token == JsonParser._Tokenizer.BEGIN_OBJECT:
-            self._parse_object(tokenizer)
+            self._parse_object()
             return
         elif token == JsonParser._Tokenizer.VALUE:
-            self._observer.visit_value(tokenizer.get_value())
-            tokenizer.next()
+            self._observer.visit_value(self._tokenizer.get_value())
+            self._tokenizer.next()
             return
 
-        tokenizer.unexpected()
+        self._tokenizer.unexpected()
 
-    def _parse_array(self, tokenizer):
-        if tokenizer.get_token() == JsonParser._Tokenizer.BEGIN_ARRAY:
+    def _parse_array(self) -> None:
+        if self._tokenizer.get_token() == JsonParser._Tokenizer.BEGIN_ARRAY:
             self._observer.begin_array()
-            tokenizer.next()
-            self._parse_elements(tokenizer)
-            if tokenizer.get_token() == JsonParser._Tokenizer.END_ARRAY:
+            self._tokenizer.next()
+            self._parse_elements()
+            if self._tokenizer.get_token() == JsonParser._Tokenizer.END_ARRAY:
                 self._observer.end_array()
-                tokenizer.next()
+                self._tokenizer.next()
                 return
 
-        tokenizer.unexpected()
+        self._tokenizer.unexpected()
 
-    def _parse_elements(self, tokenizer):
+    def _parse_elements(self) -> None:
         value_tokens = [
             JsonParser._Tokenizer.BEGIN_ARRAY,
             JsonParser._Tokenizer.BEGIN_OBJECT,
             JsonParser._Tokenizer.VALUE
         ]
-        while tokenizer.get_token() in value_tokens:
-            self._parse_element(tokenizer)
-            if tokenizer.get_token() == JsonParser._Tokenizer.ITEM_SEPARATOR:
-                tokenizer.next()
+        while self._tokenizer.get_token() in value_tokens:
+            self._parse_element()
+            if self._tokenizer.get_token() == JsonParser._Tokenizer.ITEM_SEPARATOR:
+                self._tokenizer.next()
             else:
                 return
 
@@ -358,7 +358,7 @@ class JsonParser:
             self._content = self._io.readline(JsonParser._Tokenizer.MAX_LINE_LEN)
             self._line_number = 0
             self._pos = 0
-            self._token = JsonParser._Tokenizer.UNKNOWN
+            self._token = JsonParser._Tokenizer.BOF
             self._value: typing.Any = None
 
         def next(self) -> int:
@@ -453,14 +453,15 @@ class JsonParser:
             return True
 
         UNKNOWN = -1
-        EOF=0
-        BEGIN_OBJECT = 1
-        END_OBJECT = 2
-        BEGIN_ARRAY = 3
-        END_ARRAY = 4
-        KEY_SEPARATOR = 5
-        ITEM_SEPARATOR = 6
-        VALUE = 7
+        BOF=0
+        EOF=1
+        BEGIN_OBJECT = 2
+        END_OBJECT = 3
+        BEGIN_ARRAY = 4
+        END_ARRAY = 5
+        KEY_SEPARATOR = 6
+        ITEM_SEPARATOR = 7
+        VALUE = 8
 
         WHITESPACE = re.compile(r'[ \t\n\r]*', re.VERBOSE | re.MULTILINE | re.DOTALL) # copied from json.decoder
         MAX_LINE_LEN = 64 * 1024
@@ -470,45 +471,55 @@ class JsonReader:
     Reads zserio object tree defined by type info from a text stream.
     """
 
-    def __init__(self, type_info: TypeInfo) -> None:
+    def __init__(self, text_io: typing.TextIO) -> None:
         """
         Constructor.
 
-        :param type_info: Type info defining the zserio object tree.
-        """
-
-        self._type_info = type_info
-
-    def read(self, text_io: typing.TextIO) -> typing.Any:
-        """
-        Reads a zserio object tree from the given text steam, which must contain the whole tree.
-
         :param text_io: Text stream to use for reading.
+        """
+
+        self._creator_adapter = JsonReader._CreatorAdapter()
+        self._parser = JsonParser(text_io, self._creator_adapter)
+
+    def read(self, type_info: TypeInfo) -> typing.Any:
+        """
+        Reads a zserio object tree defined by the given type_info from the text steam.
+
+        :param type_info: Type info defining the zserio object tree.
         :returns: Zserio object tree initialized using the JSON data.
         :raises PythonRuntimeException: When the JSON doesn't contain expected zserio object tree.
         """
 
-        creator_adapter = JsonReader._CreatorAdapter(ZserioTreeCreator(self._type_info))
-        parser = JsonParser(creator_adapter)
-        parser.parse(text_io)
+        self._creator_adapter.set_type(type_info)
+        self._parser.parse()
 
-        return creator_adapter.get()
+        return self._creator_adapter.get()
 
     class _CreatorAdapter(JsonParser.Observer):
         """
         The adapter which allows to use ZserioTreeCreator as an JsonReader observer.
         """
 
-        def __init__(self, creator: ZserioTreeCreator) -> None:
+        def __init__(self) -> None:
             """
             Constructor.
 
             :param creator: Creator to use.
             """
 
-            self._creator = creator
+            self._creator: typing.Optional[ZserioTreeCreator] = None
             self._key_stack: typing.List[str] = []
             self._object: typing.Any = None
+
+        def set_type(self, type_info: TypeInfo) -> None:
+            """
+            Sets type which shall be created next. Resets the current object.
+
+            :param type_info: Type info of the type which is to be created.
+            """
+
+            self._creator = ZserioTreeCreator(type_info)
+            self._object = None
 
         def get(self) -> typing.Any:
             """
@@ -524,6 +535,9 @@ class JsonReader:
             return self._object
 
         def begin_object(self) -> None:
+            if not self._creator:
+                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
             if not self._key_stack:
                 self._creator.begin_root()
             else:
@@ -533,8 +547,12 @@ class JsonReader:
                     self._creator.begin_compound_element()
 
         def end_object(self) -> None:
+            if not self._creator:
+                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
             if not self._key_stack:
                 self._object = self._creator.end_root()
+                self._creator = None
             else:
                 if self._key_stack[-1]:
                     self._creator.end_compound()
@@ -543,6 +561,9 @@ class JsonReader:
                     self._creator.end_compound_element()
 
         def begin_array(self) -> None:
+            if not self._creator:
+                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
             if not self._key_stack:
                 raise PythonRuntimeException("JsonReader: ZserioTreeCreator expects json object!")
 
@@ -551,15 +572,24 @@ class JsonReader:
             self._key_stack.append("")
 
         def end_array(self) -> None:
+            if not self._creator:
+                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
             self._creator.end_array()
 
             self._key_stack.pop() # finish array
             self._key_stack.pop() # finish member
 
         def visit_key(self, key: str) -> None:
+            if not self._creator:
+                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
             self._key_stack.append(key)
 
         def visit_value(self, value: typing.Any) -> None:
+            if not self._creator:
+                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
             if not self._key_stack:
                 raise PythonRuntimeException("JsonReader: ZserioTreeCreator expects json object!")
 

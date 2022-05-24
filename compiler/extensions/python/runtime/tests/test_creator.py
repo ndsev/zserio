@@ -372,10 +372,8 @@ class ZserioTreeCreatorTest(unittest.TestCase):
 
 class JsonReaderTest(unittest.TestCase):
 
-    def test_create_object(self):
-        json_reader = JsonReader(DummyObject.type_info())
-
-        text_io = io.StringIO(
+    def test_read_object(self):
+        json_reader = JsonReader(io.StringIO(
             "{\n"
             "    \"value\": 13,\n"
             "    \"nested\": {\n"
@@ -396,9 +394,9 @@ class JsonReaderTest(unittest.TestCase):
             "        \"array\"\n"
             "    ]\n"
             "}"
-        )
+        ))
 
-        obj = json_reader.read(text_io)
+        obj = json_reader.read(DummyObject.type_info())
 
         self.assertEqual(13, obj.value)
         self.assertEqual(13, obj.nested.param)
@@ -410,21 +408,46 @@ class JsonReaderTest(unittest.TestCase):
         self.assertEqual("nestedArray", obj.nested_array[0].text)
         self.assertEqual(["this", "is", "text", "array"], obj.text_array)
 
+    def test_read_two_objects(self):
+        json_reader = JsonReader(io.StringIO(
+            "{\"value\": 13}\n"
+            "{\"value\": 42, \"text\": \"test\"}\n"
+        ))
+
+        obj1 = json_reader.read(DummyObject.type_info())
+        self.assertEqual(13, obj1.value)
+        self.assertEqual("", obj1.text)
+
+        obj2 = json_reader.read(DummyObject.type_info())
+        self.assertEqual(42, obj2.value)
+        self.assertEqual("test", obj2.text)
+
     def test_json_array(self):
-        json_reader = JsonReader(DummyObject.type_info())
+        json_reader = JsonReader(io.StringIO("[1, 2]"))
 
         with self.assertRaises(PythonRuntimeException):
-            json_reader.read(io.StringIO("[1, 2]"))
+            json_reader.read(DummyObject.type_info())
 
     def test_json_value(self):
-        json_reader = JsonReader(DummyObject.type_info())
+        json_reader = JsonReader(io.StringIO("\"text\""))
 
         with self.assertRaises(PythonRuntimeException):
-            json_reader.read(io.StringIO("\"text\""))
+            json_reader.read(DummyObject.type_info())
 
-    def test_creator_adapter_unexpected_get(self):
-        creator = ZserioTreeCreator(DummyObject.type_info())
-        creator_adapter = JsonReader._CreatorAdapter(creator)
+    def test_creator_adapter_uninitialized_calls(self):
+        creator_adapter = JsonReader._CreatorAdapter()
 
         with self.assertRaises(PythonRuntimeException):
             creator_adapter.get()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.begin_object()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.end_object()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.begin_array()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.end_array()
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.visit_key("key")
+        with self.assertRaises(PythonRuntimeException):
+            creator_adapter.visit_value(None)

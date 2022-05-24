@@ -111,6 +111,16 @@ class JsonWriterTest(unittest.TestCase):
         self.assertEqual("{\"identifier\":13,\"nested\":{\"text\":\"test\"}}",
                          json_writer.get_io().getvalue())
 
+    def test_multiple_objects(self):
+        json_writer = JsonWriter()
+        self._walk_nested(json_writer)
+        self._walk_nested(json_writer)
+        self.assertEqual(
+            "{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}"
+            "{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}",
+            json_writer.get_io().getvalue()
+        )
+
     @staticmethod
     def _walk_nested(json_writer):
         dummy_type_info = TypeInfo("Dummy", object)
@@ -263,45 +273,30 @@ class JsonParserTest(unittest.TestCase):
     def test_empty(self):
         text_io = io.StringIO("")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
-        json_parser.parse(text_io)
+        json_parser = JsonParser(text_io, observer)
+        self.assertTrue(json_parser.parse())
         self.assertEqual([], observer.report)
 
     def test_str(self):
         text_io = io.StringIO("\"text\"")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
-        json_parser.parse(text_io)
+        json_parser = JsonParser(text_io, observer)
+        self.assertTrue(json_parser.parse())
         self.assertEqual(["visit_value: text"], observer.report)
 
-    def test_unexpected_str_line_0(self):
+    def test_two_strings(self):
         text_io = io.StringIO("\"text\"\"text\"")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
-        with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
-
-        self.assertTrue(str(error.exception).startswith("0:"), error.exception)
-
-        self.assertEqual(["visit_value: text"], observer.report)
-
-    def test_unexpected_str_line_2(self):
-        text_io = io.StringIO("\"text\"\n\n\"text\"")
-        observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
-        with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
-
-        self.assertTrue(str(error.exception).startswith("2:"), error.exception)
-
+        json_parser = JsonParser(text_io, observer)
+        self.assertFalse(json_parser.parse())
         self.assertEqual(["visit_value: text"], observer.report)
 
     def test_unexpected_object(self):
         text_io = io.StringIO("{\n\n{\n\n")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
+        json_parser = JsonParser(text_io, observer)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
+            json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("2:"), error.exception)
 
@@ -310,9 +305,9 @@ class JsonParserTest(unittest.TestCase):
     def test_missing_object_item_separator(self):
         text_io = io.StringIO("{\n\"item1\":\"text\"\n\"item2\":\"text\"\n}")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
+        json_parser = JsonParser(text_io, observer)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
+            json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("2:"), error.exception)
 
@@ -324,9 +319,9 @@ class JsonParserTest(unittest.TestCase):
     def test_wrong_key_type(self):
         text_io = io.StringIO("{\n10:\"text\"\n}")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
+        json_parser = JsonParser(text_io, observer)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
+            json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("1:"), error.exception)
 
@@ -335,9 +330,9 @@ class JsonParserTest(unittest.TestCase):
     def test_unexpected_element_token(self):
         text_io = io.StringIO("{\n\"item\":}")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
+        json_parser = JsonParser(text_io, observer)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
+            json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("1:"), error.exception)
 
@@ -346,9 +341,9 @@ class JsonParserTest(unittest.TestCase):
     def test_missing_array_item_separator(self):
         text_io = io.StringIO("{\n\"array\":\n[10\n20\n]}")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
+        json_parser = JsonParser(text_io, observer)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
+            json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("3:"), error.exception)
 
@@ -362,9 +357,9 @@ class JsonParserTest(unittest.TestCase):
     def test_unknown_token(self):
         text_io = io.StringIO("\\\n")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
+        json_parser = JsonParser(text_io, observer)
         with self.assertRaises(PythonRuntimeException) as error:
-            json_parser.parse(text_io)
+            json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("0:"), error.exception)
 
@@ -373,8 +368,8 @@ class JsonParserTest(unittest.TestCase):
     def test_parse(self):
         text_io = io.StringIO("{\"array\":\n[\n{\"key1\":\n10, \"key2\":\n\"text\"}, {}]}")
         observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(observer)
-        json_parser.parse(text_io)
+        json_parser = JsonParser(text_io, observer)
+        json_parser.parse()
 
         self.assertEqual([
             "begin_object",
