@@ -24,6 +24,11 @@ class AccessorNameFormatter
                 IS_SET_INDICATOR_NAME_SUFFIX;
     }
 
+    public static String getResetterName(Field field)
+    {
+        return RESETTER_NAME_PREFIX + PythonSymbolConverter.toLowerSnakeCase(field.getName());
+    }
+
     public static String getFunctionName(Function function)
     {
         return PythonSymbolConverter.toLowerSnakeCase(function.getName());
@@ -52,4 +57,5 @@ class AccessorNameFormatter
     private static final String INDICATOR_NAME_PREFIX = "is_";
     private static final String IS_USED_INDICATOR_NAME_SUFFIX = "_used";
     private static final String IS_SET_INDICATOR_NAME_SUFFIX = "_set";
+    private static final String RESETTER_NAME_PREFIX = "reset_";
 }

@@ -162,6 +162,9 @@ ${I}<#rt>
 
     def ${field.optional.isSetIndicatorName}(self) -> bool:
         return not self.<@field_member_name field/> is None
+
+    def ${field.optional.resetterName}(self) -> None:
+        self.<@field_member_name field/> = None
         </#if>
     </#if>
 </#list>

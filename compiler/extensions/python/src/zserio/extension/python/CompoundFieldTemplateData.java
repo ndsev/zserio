@@ -205,8 +205,9 @@ public final class CompoundFieldTemplateData
             clause = (optionalClauseExpression == null) ? null :
                 pythonExpressionFormatter.formatGetter(optionalClauseExpression);
 
-            this.isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
-            this.isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
+            isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
+            isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
+            resetterName = AccessorNameFormatter.getResetterName(field);
             this.isRecursive = isRecursive;
         }
 
@@ -225,6 +226,11 @@ public final class CompoundFieldTemplateData
             return isSetIndicatorName;
         }
 
+        public String getResetterName()
+        {
+            return resetterName;
+        }
+
         public boolean getIsRecursive()
         {
             return isRecursive;
@@ -233,6 +239,7 @@ public final class CompoundFieldTemplateData
         private final String clause;
         private final String isUsedIndicatorName;
         private final String isSetIndicatorName;
+        private final String resetterName;
         private final boolean isRecursive;
     }
 

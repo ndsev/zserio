@@ -63,18 +63,6 @@ TEST_F(AutoOptionalTest, fieldConstructor)
     ASSERT_FALSE(containerWithoutOptional.isAutoOptionalIntUsed());
 }
 
-TEST_F(AutoOptionalTest, resetAutoOptionalInt)
-{
-    Container container;
-    container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
-    ASSERT_TRUE(container.isAutoOptionalIntSet());
-    ASSERT_TRUE(container.isAutoOptionalIntUsed());
-
-    container.resetAutoOptionalInt();
-    ASSERT_FALSE(container.isAutoOptionalIntSet());
-    ASSERT_FALSE(container.isAutoOptionalIntUsed());
-}
-
 TEST_F(AutoOptionalTest, isAutoOptionalIntSetAndUsed)
 {
     Container container;
@@ -85,6 +73,18 @@ TEST_F(AutoOptionalTest, isAutoOptionalIntSetAndUsed)
     container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
     ASSERT_TRUE(container.isAutoOptionalIntSet());
     ASSERT_TRUE(container.isAutoOptionalIntUsed());
+}
+
+TEST_F(AutoOptionalTest, resetAutoOptionalInt)
+{
+    Container container;
+    container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
+    ASSERT_TRUE(container.isAutoOptionalIntSet());
+    ASSERT_TRUE(container.isAutoOptionalIntUsed());
+
+    container.resetAutoOptionalInt();
+    ASSERT_FALSE(container.isAutoOptionalIntSet());
+    ASSERT_FALSE(container.isAutoOptionalIntUsed());
 }
 
 TEST_F(AutoOptionalTest, bitSizeOf)

@@ -86,20 +86,6 @@ protected:
 const uint8_t OptionalRecursionTest::BLOCK1_DATA[] = {1, 2, 3, 4, 5, 6};
 const uint8_t OptionalRecursionTest::BLOCK2_DATA[] = {10, 9, 8, 7};
 
-TEST_F(OptionalRecursionTest, resetNextData)
-{
-    Block block12;
-    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
-    ASSERT_TRUE(block12.isNextDataSet());
-    ASSERT_TRUE(block12.isNextDataUsed());
-
-    ASSERT_NO_THROW(block12.getNextData());
-    block12.resetNextData(); // used but not set
-    ASSERT_FALSE(block12.isNextDataSet());
-    ASSERT_TRUE(block12.isNextDataUsed());
-    ASSERT_THROW(block12.getNextData(), zserio::CppRuntimeException);
-}
-
 TEST_F(OptionalRecursionTest, isNextDataSetAndUsed)
 {
     Block block1;
@@ -119,6 +105,19 @@ TEST_F(OptionalRecursionTest, isNextDataSetAndUsed)
     block12.setBlockTerminator(0); // set but not used
     ASSERT_TRUE(block12.isNextDataSet());
     ASSERT_FALSE(block12.isNextDataUsed());
+}
+
+TEST_F(OptionalRecursionTest, resetNextData)
+{
+    Block block12;
+    fillBlock(block12, BLOCK1_DATA, sizeof(BLOCK1_DATA), BLOCK2_DATA, sizeof(BLOCK2_DATA));
+    ASSERT_TRUE(block12.isNextDataSet());
+    ASSERT_TRUE(block12.isNextDataUsed());
+
+    block12.resetNextData(); // used but not set
+    ASSERT_FALSE(block12.isNextDataSet());
+    ASSERT_TRUE(block12.isNextDataUsed());
+    ASSERT_THROW(block12.getNextData(), zserio::CppRuntimeException);
 }
 
 TEST_F(OptionalRecursionTest, bitSizeOf)

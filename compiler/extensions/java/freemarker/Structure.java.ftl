@@ -161,6 +161,10 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         return (<@field_member_name field/> != null);
     }
 
+    public void ${field.optional.resetterName}()
+    {
+        <@field_member_name field/> = null;
+    }
         </#if>
     </#if>
 </#list>

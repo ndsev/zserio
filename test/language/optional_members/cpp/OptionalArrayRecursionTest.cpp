@@ -107,21 +107,6 @@ const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE = EMPTY_EMPLOYEE_BIT
 const size_t OptionalArrayRecursionTest::TEAM_LEAD_BIT_SIZE_UNUSED_TEAM_MEMBERS = EMPTY_EMPLOYEE_BIT_SIZE +
         (sizeof(OptionalArrayRecursionTest::EMPLOYEE_TEAM_LEAD_NAME) - 1) * 8;
 
-
-TEST_F(OptionalArrayRecursionTest, resetTeamMembers)
-{
-    Employee employee;
-    fillTeamLead(employee);
-    ASSERT_TRUE(employee.isTeamMembersSet());
-    ASSERT_TRUE(employee.isTeamMembersUsed());
-
-    ASSERT_NO_THROW(employee.getTeamMembers());
-    employee.resetTeamMembers(); // used but not set
-    ASSERT_FALSE(employee.isTeamMembersSet());
-    ASSERT_TRUE(employee.isTeamMembersUsed());
-    ASSERT_THROW(employee.getTeamMembers(), zserio::CppRuntimeException);
-}
-
 TEST_F(OptionalArrayRecursionTest, isTeamMembersSetAndUsed)
 {
     Employee employee(EMPTY_EMPLOYEE_NAME, EMPTY_EMPLOYEE_SALARY, Title::DEVELOPER, zserio::NullOpt);
@@ -140,6 +125,19 @@ TEST_F(OptionalArrayRecursionTest, isTeamMembersSetAndUsed)
     employee.resetTeamMembers(); // used but not set
     ASSERT_FALSE(employee.isTeamMembersSet());
     ASSERT_TRUE(employee.isTeamMembersUsed());
+}
+
+TEST_F(OptionalArrayRecursionTest, resetTeamMembers)
+{
+    Employee employee;
+    fillTeamLead(employee);
+    ASSERT_TRUE(employee.isTeamMembersSet());
+    ASSERT_TRUE(employee.isTeamMembersUsed());
+
+    employee.resetTeamMembers(); // used but not set
+    ASSERT_FALSE(employee.isTeamMembersSet());
+    ASSERT_TRUE(employee.isTeamMembersUsed());
+    ASSERT_THROW(employee.getTeamMembers(), zserio::CppRuntimeException);
 }
 
 TEST_F(OptionalArrayRecursionTest, bitSizeOf)

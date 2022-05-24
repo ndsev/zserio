@@ -157,14 +157,15 @@ public final class CompoundFieldTemplateData
 
     public static class Optional
     {
-        public Optional(Expression optionalClauseExpression, String isUsedIndicatorName,
-                String isSetIndicatorName, boolean isRecursive, ExpressionFormatter javaExpressionFormatter)
-                        throws ZserioExtensionException
+        public Optional(Field field, ExpressionFormatter javaExpressionFormatter, boolean isRecursive)
+                throws ZserioExtensionException
         {
+            final Expression optionalClauseExpression = field.getOptionalClauseExpr();
             clause = (optionalClauseExpression == null) ? null :
                 javaExpressionFormatter.formatGetter(optionalClauseExpression);
-            this.isUsedIndicatorName = isUsedIndicatorName;
-            this.isSetIndicatorName = isSetIndicatorName;
+            isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
+            isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
+            resetterName = AccessorNameFormatter.getResetterName(field);
             this.isRecursive = isRecursive;
         }
 
@@ -183,6 +184,11 @@ public final class CompoundFieldTemplateData
             return isSetIndicatorName;
         }
 
+        public String getResetterName()
+        {
+            return resetterName;
+        }
+
         public boolean getIsRecursive()
         {
             return isRecursive;
@@ -191,6 +197,7 @@ public final class CompoundFieldTemplateData
         private final String clause;
         private final String isUsedIndicatorName;
         private final String isSetIndicatorName;
+        private final String resetterName;
         private final boolean isRecursive;
     }
 
@@ -445,13 +452,9 @@ public final class CompoundFieldTemplateData
         if (!field.isOptional())
             return null;
 
-        final Expression optionalClauseExpression = field.getOptionalClauseExpr();
-        final String isUsedIndicatorName = AccessorNameFormatter.getIsUsedIndicatorName(field);
-        final String isSetIndicatorName = AccessorNameFormatter.getIsSetIndicatorName(field);
         final boolean isRecursive = fieldBaseType == parentType;
 
-        return new Optional(optionalClauseExpression, isUsedIndicatorName, isSetIndicatorName, isRecursive,
-                javaExpressionFormatter);
+        return new Optional(field, javaExpressionFormatter, isRecursive);
     }
 
     private static String createInitializer(Field field, ExpressionFormatter javaExpressionFormatter)

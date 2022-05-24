@@ -61,7 +61,7 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         self.assertFalse(employee.is_team_members_used())
 
         employee.title = self.api.Title.TEAM_LEAD
-        employee.team_members = None # used but not set
+        employee.reset_team_members() # used but not set
         self.assertFalse(employee.is_team_members_set())
         self.assertTrue(employee.is_team_members_used())
 
@@ -72,6 +72,16 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         teamLead.title = self.api.Title.DEVELOPER # set but not used
         self.assertTrue(teamLead.is_team_members_set())
         self.assertFalse(teamLead.is_team_members_used())
+
+    def testResetTeamMembers(self):
+        employee = self._createTeamLead()
+        self.assertTrue(employee.is_team_members_set())
+        self.assertTrue(employee.is_team_members_used())
+
+        employee.reset_team_members() # used but not set
+        self.assertFalse(employee.is_team_members_set())
+        self.assertTrue(employee.is_team_members_used())
+        self.assertEqual(None, employee.team_members)
 
     def testBitSizeOf(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,

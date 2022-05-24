@@ -64,21 +64,6 @@ TEST_F(OptionalExpressionTest, fieldConstructor)
     ASSERT_FALSE(containerWithoutOptionals.isBlackColorUsed());
 }
 
-TEST_F(OptionalExpressionTest, resetNumBlackTones)
-{
-    Container container;
-    container.setBasicColor(BasicColor::BLACK);
-    container.setNumBlackTones(NUM_BLACK_TONES);
-    ASSERT_TRUE(container.isNumBlackTonesSet());
-    ASSERT_TRUE(container.isNumBlackTonesUsed());
-
-    ASSERT_NO_THROW(container.getNumBlackTones());
-    container.resetNumBlackTones(); // used but not set
-    ASSERT_FALSE(container.isNumBlackTonesSet());
-    ASSERT_TRUE(container.isNumBlackTonesUsed());
-    ASSERT_THROW(container.getNumBlackTones(), zserio::CppRuntimeException);
-}
-
 TEST_F(OptionalExpressionTest, isNumBlackTonesSetAndUsed)
 {
     Container container;
@@ -103,21 +88,18 @@ TEST_F(OptionalExpressionTest, isNumBlackTonesSetAndUsed)
     ASSERT_TRUE(container.isNumBlackTonesUsed());
 }
 
-TEST_F(OptionalExpressionTest, resetBlackColor)
+TEST_F(OptionalExpressionTest, resetNumBlackTones)
 {
     Container container;
     container.setBasicColor(BasicColor::BLACK);
-    BlackColor blackColor;
-    fillBlackColor(blackColor, NUM_BLACK_TONES);
-    container.setBlackColor(blackColor);
-    ASSERT_TRUE(container.isBlackColorSet());
-    ASSERT_TRUE(container.isBlackColorUsed());
+    container.setNumBlackTones(NUM_BLACK_TONES);
+    ASSERT_TRUE(container.isNumBlackTonesSet());
+    ASSERT_TRUE(container.isNumBlackTonesUsed());
 
-    ASSERT_NO_THROW(container.getBlackColor());
-    container.resetBlackColor(); // used but not set
-    ASSERT_FALSE(container.isBlackColorSet());
-    ASSERT_TRUE(container.isBlackColorUsed());
-    ASSERT_THROW(container.getBlackColor(), zserio::CppRuntimeException);
+    container.resetNumBlackTones(); // used but not set
+    ASSERT_FALSE(container.isNumBlackTonesSet());
+    ASSERT_TRUE(container.isNumBlackTonesUsed());
+    ASSERT_THROW(container.getNumBlackTones(), zserio::CppRuntimeException);
 }
 
 TEST_F(OptionalExpressionTest, isBlackColorSetAndUsed)
@@ -142,6 +124,22 @@ TEST_F(OptionalExpressionTest, isBlackColorSetAndUsed)
     container.resetBlackColor(); // used but not set
     ASSERT_FALSE(container.isBlackColorSet());
     ASSERT_TRUE(container.isBlackColorUsed());
+}
+
+TEST_F(OptionalExpressionTest, resetBlackColor)
+{
+    Container container;
+    container.setBasicColor(BasicColor::BLACK);
+    BlackColor blackColor;
+    fillBlackColor(blackColor, NUM_BLACK_TONES);
+    container.setBlackColor(blackColor);
+    ASSERT_TRUE(container.isBlackColorSet());
+    ASSERT_TRUE(container.isBlackColorUsed());
+
+    container.resetBlackColor(); // used but not set
+    ASSERT_FALSE(container.isBlackColorSet());
+    ASSERT_TRUE(container.isBlackColorUsed());
+    ASSERT_THROW(container.getBlackColor(), zserio::CppRuntimeException);
 }
 
 TEST_F(OptionalExpressionTest, bitSizeOf)

@@ -46,9 +46,24 @@ public class OptionalExpressionTest
         assertFalse(container.isNumBlackTonesUsed());
 
         container.setBasicColor(BasicColor.BLACK);
-        container.setNumBlackTones(null); // used but not set
+        container.resetNumBlackTones(); // used but not set
         assertFalse(container.isNumBlackTonesSet());
         assertTrue(container.isNumBlackTonesUsed());
+    }
+
+    @Test
+    public void resetNumBlackTones()
+    {
+        final Container container = new Container();
+        container.setBasicColor(BasicColor.BLACK);
+        container.setNumBlackTones(NUM_BLACK_TONES);
+        assertTrue(container.isNumBlackTonesSet());
+        assertTrue(container.isNumBlackTonesUsed());
+
+        container.resetNumBlackTones(); // used but not set
+        assertFalse(container.isNumBlackTonesSet());
+        assertTrue(container.isNumBlackTonesUsed());
+        assertEquals(null, container.getNumBlackTones());
     }
 
     @Test
@@ -66,7 +81,23 @@ public class OptionalExpressionTest
         assertTrue(container.isBlackColorUsed());
         assertTrue(blackColor.equals(container.getBlackColor()));
 
-        container.setBlackColor(null); // used but not set
+        container.resetBlackColor(); // used but not set
+        assertFalse(container.isBlackColorSet());
+        assertTrue(container.isBlackColorUsed());
+        assertEquals(null, container.getBlackColor());
+    }
+
+    @Test
+    public void resetBlackColor()
+    {
+        final Container container = new Container();
+        container.setBasicColor(BasicColor.BLACK);
+        final BlackColor blackColor = createBlackColor(NUM_BLACK_TONES);
+        container.setBlackColor(blackColor);
+        assertTrue(container.isBlackColorSet());
+        assertTrue(container.isBlackColorUsed());
+
+        container.resetBlackColor(); // used but not set
         assertFalse(container.isBlackColorSet());
         assertTrue(container.isBlackColorUsed());
         assertEquals(null, container.getBlackColor());

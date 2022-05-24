@@ -21,6 +21,11 @@ final class AccessorNameFormatter
         return getAccessorName(INDICATOR_NAME_PREFIX, field.getName(), IS_SET_INDICATOR_NAME_SUFFIX);
     }
 
+    public static String getResetterName(Field field)
+    {
+        return getAccessorName(RESETTER_NAME_PREFIX, field.getName());
+    }
+
     public static String getGetterName(Field field)
     {
         return getAccessorName(GETTER_NAME_PREFIX, field.getName());
@@ -66,6 +71,7 @@ final class AccessorNameFormatter
     private static final String INDICATOR_NAME_PREFIX = "is";
     private static final String IS_USED_INDICATOR_NAME_SUFFIX = "Used";
     private static final String IS_SET_INDICATOR_NAME_SUFFIX = "Set";
+    private static final String RESETTER_NAME_PREFIX = "reset";
     private static final String GETTER_NAME_PREFIX = "get";
     private static final String SETTER_NAME_PREFIX = "set";
     private static final String FUNCTION_NAME_PREFIX = "func";

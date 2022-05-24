@@ -37,6 +37,19 @@ public class AutoOptionalTest
     }
 
     @Test
+    public void resetAutoOptionalInt()
+    {
+        final Container container = new Container();
+        container.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
+        assertTrue(container.isAutoOptionalIntSet());
+        assertTrue(container.isAutoOptionalIntUsed());
+
+        container.resetAutoOptionalInt();
+        assertFalse(container.isAutoOptionalIntSet());
+        assertFalse(container.isAutoOptionalIntUsed());
+    }
+
+    @Test
     public void equals()
     {
         final Container container1 = new Container();
@@ -51,7 +64,7 @@ public class AutoOptionalTest
         container2.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
         assertTrue(container1.equals(container2));
 
-        container1.setAutoOptionalInt(null);
+        container1.resetAutoOptionalInt();
         assertFalse(container1.equals(container2));
     }
 
@@ -70,7 +83,7 @@ public class AutoOptionalTest
         container2.setAutoOptionalInt(AUTO_OPTIONAL_INT_VALUE);
         assertEquals(container1.hashCode(), container2.hashCode());
 
-        container1.setAutoOptionalInt(null);
+        container1.resetAutoOptionalInt();
         assertTrue(container1.hashCode() != container2.hashCode());
     }
 

@@ -43,6 +43,19 @@ public class OptionalRecursionTest
     }
 
     @Test
+    public void resetNextData()
+    {
+        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertTrue(block12.isNextDataSet());
+        assertTrue(block12.isNextDataUsed());
+
+        block12.resetNextData(); // used but not set
+        assertFalse(block12.isNextDataSet());
+        assertTrue(block12.isNextDataUsed());
+        assertEquals(null, block12.getNextData());
+    }
+
+    @Test
     public void equals()
     {
         final Block emptyBlock1 = new Block((short)0);

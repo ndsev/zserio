@@ -72,9 +72,21 @@ class OptionalExpressionTest(unittest.TestCase):
         self.assertFalse(container.is_num_black_tones_used())
 
         container.basic_color = self.api.BasicColor.BLACK
-        container.num_black_tones = None # used but not set
+        container.reset_num_black_tones() # used but not set
         self.assertFalse(container.is_num_black_tones_set())
         self.assertTrue(container.is_num_black_tones_used())
+
+    def testResetNumBlackTones(self):
+        container = self.api.Container()
+        container.basic_color = self.api.BasicColor.BLACK
+        container.num_black_tones = self.NUM_BLACK_TONES
+        self.assertTrue(container.is_num_black_tones_set())
+        self.assertTrue(container.is_num_black_tones_used())
+
+        container.reset_num_black_tones() # used but not set
+        self.assertFalse(container.is_num_black_tones_set())
+        self.assertTrue(container.is_num_black_tones_used())
+        self.assertEqual(None, container.num_black_tones)
 
     def testIsBlackColorSetAndUsed(self):
         container = self.api.Container()
@@ -89,7 +101,20 @@ class OptionalExpressionTest(unittest.TestCase):
         self.assertTrue(container.is_black_color_used())
         self.assertTrue(blackColor == container.black_color)
 
-        container.black_color = None # used but not set
+        container.reset_black_color() # used but not set
+        self.assertFalse(container.is_black_color_set())
+        self.assertTrue(container.is_black_color_used())
+        self.assertEqual(None, container.black_color)
+
+    def testResetBlackColor(self):
+        container = self.api.Container()
+        container.basic_color = self.api.BasicColor.BLACK
+        blackColor = self._createBlackColor(self.NUM_BLACK_TONES)
+        container.black_color = blackColor
+        self.assertTrue(container.is_black_color_set())
+        self.assertTrue(container.is_black_color_used())
+
+        container.reset_black_color() # used but not set
         self.assertFalse(container.is_black_color_set())
         self.assertTrue(container.is_black_color_used())
         self.assertEqual(None, container.black_color)
