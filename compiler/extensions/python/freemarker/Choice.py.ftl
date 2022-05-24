@@ -127,7 +127,7 @@ class ${name}:
     <#if compoundFunctionsData.list?has_content>
             zserio.typeinfo.TypeAttribute.FUNCTIONS : function_list,
     </#if>
-            zserio.typeinfo.TypeAttribute.SELECTOR : '${selector}'<#if templateInstantiation??>,</#if>
+            zserio.typeinfo.TypeAttribute.SELECTOR : (lambda self: ${selector})<#if templateInstantiation??>,</#if>
     <#if templateInstantiation??>
             <@type_info_template_instantiation_attributes templateInstantiation/>
 

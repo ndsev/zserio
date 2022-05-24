@@ -56,9 +56,10 @@ class TypeInfo:
           * denotes that the type has an underlying type (e.g. enum or bitmask),
             the value is a TypeInfo of the underlying type
 
-        * `(TypeAttribute.UNDERLYING_TYPE_ARGUMENTS, ['5'])`
+        * `(TypeAttribute.UNDERLYING_TYPE_ARGUMENTS, [lambda: 5])`
 
-          * keeps type arguments of the underlying type when it is a dynamic bit field
+          * keeps type arguments of the underlying type when it is a dynamic bit field,
+            the value is a lambda function which returns the argument constant value
 
         * `(TypeAttribute.ENUM_ITEMS, [ItemInfo(...), ItemInfo(...), ...])`
 
@@ -83,10 +84,10 @@ class TypeInfo:
           * denotes that the compound type has functions, the value contains non-empty list of functions
             MemberInfo, for compounds without functions the attribute is not present
 
-        * `(TypeAttribute.SELECTOR, None`) `(TypeAttribute.SELECTOR, 'param1')`
+        * `(TypeAttribute.SELECTOR, None`) `(TypeAttribute.SELECTOR, lambda self: self.param1)`
 
           * denotes that the type is either a union (when the value is None) or choice when the
-            value contains the selector expression
+            value contains the selector expression as a lambda function taking single parent argument
 
         * `(TypeAttribute.CASES, [CaseInfo(...), CaseInfo(...), ...])`
 
@@ -259,23 +260,36 @@ class MemberInfo:
 
           * contains name of the property generated in Python
 
-        * `(MemberAttribute.TYPE_ARGUMENTS, ['field1', '10', ...])`
+        * `(MemberAttribute.TYPE_ARGUMENTS, [(lambda self, zserio_index: self.field1), ...])`
 
-          * keeps type arguments for parameterized types or dynamic bit fields, the value contains list of
-            strings containing particular arguments expressions
+          * for compound type members, keeps type arguments for parameterized types or dynamic bit fields,
+            the value contains list of lambda functions evaluating particular arguments expression,
+            where the lambdas take parent and an element index (which can be None if not used) as arguments
 
-        * `(MemberAttribute.ALIGN, '8')`
+          * for members of sql tables, keeps type arguments for columns, the value contains list of
+            lambdas where the lambdas take either single explicit parameter argument for explicit parameters or
+            single 'self' argument, which is an object providing property-like getters for column names
+            used in expressions
 
-          * denotes that the member field has an alignment, the value contains the alignment expression
+        * `(MemberAttribute.ALIGN, lambda: 8)`
 
-        * `(MemberAttribute.OFFSET, 'offsetField')`
+          * denotes that the member field has an alignment, the value is a lambda function which returns the
+            alignment constant value
+
+        * `(MemberAttribute.OFFSET, lambda self: self.offset_field)`
 
           * denotes that the member field has an offset, the value contains the offset expression
+            as a lambda function taking single parent argument
 
-        * `(MemberAttribute.OPTIONAL, None)`, `(MemberAttribute.OPTIONAL, 'field1 != 0')`
+        * `(MemberAttribute.INITIALIZER, lambda: 10)`
+
+          * denotes that the member field has an initializer, the value is a lambda function which returns the
+            the initializer constant value
+
+        * `(MemberAttribute.OPTIONAL, None)`, `(MemberAttribute.OPTIONAL, lambda self: self.field1 != 0)`
 
           * denotes that the member is an optional, when the value is None, then it's an auto optional,
-            otherwise it contains the optional clause
+            otherwise it contains the optional clause as a lambda function taking single parent argument
 
         * `(MemberAttribute.IS_USED_INDICATOR_NAME, 'is_field_used)`
 
@@ -285,22 +299,23 @@ class MemberInfo:
 
           * if the member is an optional, the value contains the "is_set" indicator name generated in Python
 
-        * `(MemberAttribute.CONSTRAINT, 'field > 10')`
+        * `(MemberAttribute.CONSTRAINT, lambda self: field > 10)`
 
           * denotes that the member has a constraint, the value contains the constraint expression
+            as a lambda function taking single parent argument
 
         * `(MemberAttribute.FUNCTION_NAME, 'function_name')`
 
           * keeps the generated function name
 
-        * `MemberAttribute.FUNCTION_RESULT, 'field1 + 5')`
+        * `MemberAttribute.FUNCTION_RESULT, lambda self: self.field1 + 5)`
 
-          * keeps the result expression of a function
+          * keeps the result expression of a function as a lambda function taking single parent argument
 
-        * `(MemberAttribute.ARRAY_LENGTH, None)`, `(MemberAttribute.ARRAY_LENGTH, 'field1 + 10')`
+        * `(MemberAttribute.ARRAY_LENGTH, None)`, `(MemberAttribute.ARRAY_LENGTH, lambda self: self.field1 + 1)`
 
           * denotes that the member is an array, when the value is None, then it's an auto array,
-            otherwise it contains the length expression
+            otherwise it contains the length expression as a lambda function taking single parent argument
 
         * `(MemberAttribute.IMPLICIT, None)`
 
@@ -382,7 +397,7 @@ class CaseInfo:
     Case info class which provides information about choice cases in generated choices.
     """
 
-    def __init__(self, case_expressions: typing.List[str], field: typing.Optional[MemberInfo]):
+    def __init__(self, case_expressions: typing.List[typing.Any], field: typing.Optional[MemberInfo]):
         """
         Constructor.
 
@@ -394,11 +409,11 @@ class CaseInfo:
         self._field = field
 
     @property
-    def case_expressions(self) -> typing.List[str]:
+    def case_expressions(self) -> typing.List[typing.Any]:
         """
         Gets case expressions in the choice case. An empty list denotes the default case.
 
-        :returns: List of case expressions.
+        :returns: List of case expressions as evaluated constant values.
         """
 
         return self._case_expressions

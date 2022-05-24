@@ -28,7 +28,7 @@ class ${name}(enum.Enum):
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingTypeInfo/>,
     <#if underlyingTypeInfo.isDynamicBitField>
-            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: ['${bitSize}'],
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: [(lambda: ${bitSize})],
     </#if>
             zserio.typeinfo.TypeAttribute.ENUM_ITEMS: [
     <#list items as item>

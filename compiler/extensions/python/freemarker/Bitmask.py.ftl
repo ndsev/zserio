@@ -40,7 +40,7 @@ class ${name}:
         attribute_list = {
             zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE : <@type_info underlyingTypeInfo/>,
     <#if underlyingTypeInfo.isDynamicBitField>
-            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: ['${bitSize}'],
+            zserio.typeinfo.TypeAttribute.UNDERLYING_TYPE_ARGUMENTS: [(lambda: ${bitSize})],
     </#if>
             zserio.typeinfo.TypeAttribute.BITMASK_VALUES: [
     <#list values as value>

@@ -183,7 +183,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 for (InstantiatedParameter instantiatedParameter :
                         parameterizedInstantiation.getInstantiatedParameters())
                 {
-                    parameters.add(new ParameterTemplateData(pythonNativeMapper,
+                    parameters.add(new ParameterTemplateData(pythonNativeMapper, pythonExpressionFormatter,
                             pythonSqlIndirectExpressionFormatter, parentType, instantiatedParameter,
                             importCollector));
                 }
@@ -265,6 +265,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public static class ParameterTemplateData
         {
             public ParameterTemplateData(PythonNativeMapper pythonNativeMapper,
+                    ExpressionFormatter pythonExpressionFormatter,
                     ExpressionFormatter pythonSqlIndirectExpressionFormatter, SqlTableType tableType,
                     InstantiatedParameter instantiatedParameter, ImportCollector importCollector)
                             throws ZserioExtensionException
@@ -280,6 +281,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
                 expression = pythonSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
+                expressionForTypeInfo = pythonExpressionFormatter.formatGetter(argumentExpression);
             }
 
             public NativeTypeInfoTemplateData getTypeInfo()
@@ -297,9 +299,15 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return expression;
             }
 
+            public String getExpressionForTypeInfo()
+            {
+                return expressionForTypeInfo;
+            }
+
             private final NativeTypeInfoTemplateData typeInfo;
             private final boolean isExplicit;
             private final String expression;
+            private final String expressionForTypeInfo;
         }
 
         private static String createBitSize(TypeInstantiation typeInstantiation,

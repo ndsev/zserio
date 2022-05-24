@@ -231,15 +231,10 @@ class ZserioTreeCreator:
     @staticmethod
     def _create_object(member_info: MemberInfo, parent: typing.Any,
                        element_index: typing.Optional[int]=None) -> typing.Any:
-        # TODO: use lambdas
-        locals_dict = { "self": parent }
-        if element_index is not None:
-            locals_dict["zserio_index"] = element_index
-
         args = []
         if MemberAttribute.TYPE_ARGUMENTS in member_info.attributes:
-            for argument in member_info.attributes[MemberAttribute.TYPE_ARGUMENTS]:
-                args.append(eval(argument, None, locals_dict))
+            for argument_lambda in member_info.attributes[MemberAttribute.TYPE_ARGUMENTS]:
+                args.append(argument_lambda(parent, element_index))
 
         return member_info.type_info.py_type(*args)
 

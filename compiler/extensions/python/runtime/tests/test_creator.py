@@ -91,7 +91,7 @@ class DummyObject:
                 'nested', DummyNested.type_info(),
                 attributes={
                     MemberAttribute.PROPERTY_NAME : 'nested',
-                    MemberAttribute.TYPE_ARGUMENTS : ['self.value']
+                    MemberAttribute.TYPE_ARGUMENTS : [(lambda self, zserio_index: self.value)]
                 }
             ),
             MemberInfo(
@@ -105,7 +105,7 @@ class DummyObject:
                 attributes={
                     MemberAttribute.PROPERTY_NAME : 'nested_array',
                     MemberAttribute.ARRAY_LENGTH : None,
-                    MemberAttribute.TYPE_ARGUMENTS : ['self.value']
+                    MemberAttribute.TYPE_ARGUMENTS : [(lambda self, zserio_index: self.value)]
                 }
             ),
             MemberInfo(
