@@ -247,26 +247,26 @@ class JsonParserTest(unittest.TestCase):
 
     def test_json_parser_tokenizer(self):
         text_io = io.StringIO("{\"array\":\n[\n{\"key\":\n10}]}")
-        tokenizer = JsonParser._Tokenizer(text_io)
+        tokenizer = JsonParser.Tokenizer(text_io)
         token = tokenizer.next()
         tokens = []
-        while token not in [JsonParser._Tokenizer.EOF, JsonParser._Tokenizer.UNKNOWN]:
+        while token not in [JsonParser.Token.EOF, JsonParser.Token.UNKNOWN]:
             tokens.append((token, tokenizer.get_value()))
             token = tokenizer.next()
 
         self.assertEqual(
             [
-                (JsonParser._Tokenizer.BEGIN_OBJECT, "{"),
-                (JsonParser._Tokenizer.VALUE, "array"),
-                (JsonParser._Tokenizer.KEY_SEPARATOR, ":"),
-                (JsonParser._Tokenizer.BEGIN_ARRAY, "["),
-                (JsonParser._Tokenizer.BEGIN_OBJECT, "{"),
-                (JsonParser._Tokenizer.VALUE, "key"),
-                (JsonParser._Tokenizer.KEY_SEPARATOR, ":"),
-                (JsonParser._Tokenizer.VALUE, 10),
-                (JsonParser._Tokenizer.END_OBJECT, "}"),
-                (JsonParser._Tokenizer.END_ARRAY, "]"),
-                (JsonParser._Tokenizer.END_OBJECT, "}")
+                (JsonParser.Token.BEGIN_OBJECT, "{"),
+                (JsonParser.Token.VALUE, "array"),
+                (JsonParser.Token.KEY_SEPARATOR, ":"),
+                (JsonParser.Token.BEGIN_ARRAY, "["),
+                (JsonParser.Token.BEGIN_OBJECT, "{"),
+                (JsonParser.Token.VALUE, "key"),
+                (JsonParser.Token.KEY_SEPARATOR, ":"),
+                (JsonParser.Token.VALUE, 10),
+                (JsonParser.Token.END_OBJECT, "}"),
+                (JsonParser.Token.END_ARRAY, "]"),
+                (JsonParser.Token.END_OBJECT, "}")
             ], tokens
         )
 
@@ -298,7 +298,7 @@ class JsonParserTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_parser.parse()
 
-        self.assertTrue(str(error.exception).startswith("2:"), error.exception)
+        self.assertTrue(str(error.exception).startswith("JsonParser line 3:"), error.exception)
 
         self.assertEqual(["begin_object"], observer.report)
 
@@ -309,7 +309,7 @@ class JsonParserTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_parser.parse()
 
-        self.assertTrue(str(error.exception).startswith("2:"), error.exception)
+        self.assertTrue(str(error.exception).startswith("JsonParser line 3:"), error.exception)
 
         self.assertEqual([
             "begin_object",
@@ -323,7 +323,7 @@ class JsonParserTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_parser.parse()
 
-        self.assertTrue(str(error.exception).startswith("1:"), error.exception)
+        self.assertTrue(str(error.exception).startswith("JsonParser line 2:"), error.exception)
 
         self.assertEqual(["begin_object"], observer.report)
 
@@ -334,7 +334,7 @@ class JsonParserTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_parser.parse()
 
-        self.assertTrue(str(error.exception).startswith("1:"), error.exception)
+        self.assertTrue(str(error.exception).startswith("JsonParser line 2:"), error.exception)
 
         self.assertEqual(["begin_object", "visit_key: item"], observer.report)
 
@@ -345,7 +345,7 @@ class JsonParserTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_parser.parse()
 
-        self.assertTrue(str(error.exception).startswith("3:"), error.exception)
+        self.assertTrue(str(error.exception).startswith("JsonParser line 4:"), error.exception)
 
         self.assertEqual([
             "begin_object",
@@ -361,7 +361,7 @@ class JsonParserTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_parser.parse()
 
-        self.assertTrue(str(error.exception).startswith("0:"), error.exception)
+        self.assertTrue(str(error.exception).startswith("JsonParser line 1:"), error.exception)
 
         self.assertEqual([], observer.report)
 

@@ -422,6 +422,30 @@ class JsonReaderTest(unittest.TestCase):
         self.assertEqual(42, obj2.value)
         self.assertEqual("test", obj2.text)
 
+    def test_json_parser_exception(self):
+        json_reader = JsonReader(io.StringIO("{\"value\"\n\"value\""))
+
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_reader.read(DummyObject.type_info())
+
+        self.assertTrue(str(error.exception).startswith("JsonParser line 2:"))
+
+    def test_wrong_key_exception(self):
+        json_reader = JsonReader(io.StringIO("{\"value\": 13,\n\"nonexisting\": 10}"))
+
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_reader.read(DummyObject.type_info())
+
+        self.assertTrue(str(error.exception).endswith("(JsonParser line 2)"))
+
+    def test_wrong_value_type_exception(self):
+        json_reader = JsonReader(io.StringIO("{\n  \"value\": \"13\"\n}"))
+
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_reader.read(DummyObject.type_info())
+
+        self.assertTrue(str(error.exception).endswith("(JsonParser line 2)"))
+
     def test_json_array(self):
         json_reader = JsonReader(io.StringIO("[1, 2]"))
 
