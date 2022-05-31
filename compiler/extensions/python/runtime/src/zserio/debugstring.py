@@ -8,10 +8,10 @@ import io
 import typing
 
 from zserio.walker import Walker, WalkFilter
-from zserio.json import JsonWriter
+from zserio.json import JsonWriter, JsonReader
 
 def to_json_stream(obj: typing.Any, text_io: typing.TextIO, *, indent: typing.Union[None, int, str] = 4,
-                    walk_filter: typing.Optional[WalkFilter] = None) -> None:
+                   walk_filter: typing.Optional[WalkFilter] = None) -> None:
     """
     Writes contents of given zserio object to debug stream in JSON format using Walker with JsonWriter.
 
@@ -50,7 +50,7 @@ def to_json_stream(obj: typing.Any, text_io: typing.TextIO, *, indent: typing.Un
     walker.walk(obj)
 
 def to_json_string(obj: typing.Any, *, indent: typing.Union[None, int, str] = 4,
-                    walk_filter: typing.Optional[WalkFilter] = None) -> str:
+                   walk_filter: typing.Optional[WalkFilter] = None) -> str:
     """
     Gets debug string in JSON format using Walker with JsonWriter for given zserio object.
 
@@ -86,7 +86,7 @@ def to_json_string(obj: typing.Any, *, indent: typing.Union[None, int, str] = 4,
     return text_io.getvalue()
 
 def to_json_file(obj: typing.Any, filename: str, *, indent: typing.Union[None, int, str] = 4,
-                  walk_filter: typing.Optional[WalkFilter] = None) -> None:
+                 walk_filter: typing.Optional[WalkFilter] = None) -> None:
     """
     Writes contents of given zserio object to debug file in JSON format using Walker with JsonWriter.
 
@@ -118,3 +118,74 @@ def to_json_file(obj: typing.Any, filename: str, *, indent: typing.Union[None, i
 
     with open(filename, "w", encoding="utf-8") as text_io:
         to_json_stream(obj, text_io, indent=indent, walk_filter=walk_filter)
+
+def from_json_stream(obj_class: typing.Type[typing.Any], text_io: typing.TextIO):
+    """
+    Parses JSON debug string from given text stream and creates instance of the requested zserio object
+    according to the data contained in the debug string.
+
+    .. note:: The created object can be only partially initialized depending on the data stored in the
+              JSON debug string.
+
+    .. code:: python
+
+        import io
+        import zserio
+
+        text_io = io.StringIO("{\\\"field1\\\": 13}")
+        obj = zserio.from_json_stream(SomeZserioObject, text_io)
+
+    :param obj_class: Class instance of the generated object to create.
+    :param text_io: Text stream to use.
+    :returns: Instance of the requested zserio object.
+    :raises PythonRuntimeException: In case of any error.
+    """
+
+    json_reader = JsonReader(text_io)
+    return json_reader.read(obj_class.type_info())
+
+def from_json_string(obj_class: typing.Type[typing.Any], json_string: str):
+    """
+    Parses JSON debug string and creates instance of the requested zserio object
+    according to the data contained in the debug string.
+
+    .. note:: The created object can be only partially initialized depending on the data stored in the
+              JSON debug string.
+
+    .. code:: python
+
+        import zserio
+
+        json_string = "{\\\"field1\\\": 13}"
+        obj = zserio.from_json_string(SomeZserioObject, json_string)
+
+    :param obj_class: Class instance of the generated object to create.
+    :param json_string: JSON debug string to parse.
+    :returns: Instance of the requested zserio object.
+    :raises PythonRuntimeException: In case of any error.
+    """
+
+    return from_json_stream(obj_class, io.StringIO(json_string))
+
+def from_json_file(obj_class: typing.Type[typing.Any], filename: str):
+    """
+    Parses JSON debug string from given file and creates instance of the requested zserio object
+    according to the data contained in the debug string.
+
+    .. note:: The created object can be only partially initialized depending on the data stored in the
+              JSON debug string.
+
+    .. code:: python
+
+        import zserio
+
+        obj = zserio.from_json_file(SomeZserioObject, "file_name.json")
+
+    :param obj_class: Class instance of the generated object to create.
+    :param filename: File name to read.
+    :returns: Instance of the requested zserio object.
+    :raises PythonRuntimeException: In case of any error.
+    """
+
+    with open(filename, "r", encoding="utf-8") as text_io:
+        return from_json_stream(obj_class, text_io)

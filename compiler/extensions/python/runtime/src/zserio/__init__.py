@@ -23,7 +23,8 @@ from zserio.walker import (WalkObserver, WalkFilter, Walker, DefaultWalkObserver
 
 from zserio.serialization import (serialize, deserialize, serialize_to_bytes, deserialize_bytes,
                                   serialize_to_file, deserialize_from_file)
-from zserio.debugstring import to_json_stream, to_json_string, to_json_file
+from zserio.debugstring import (to_json_stream, to_json_string, to_json_file,
+                                from_json_stream, from_json_string, from_json_file)
 
 from zserio import array
 from zserio import bitbuffer
