@@ -19,10 +19,7 @@ class ExpressionIntegerValue
      */
     public ExpressionIntegerValue()
     {
-        value = null;
-        lowerBound = null;
-        upperBound = null;
-        needsBigInteger = false;
+        this(null, null, null, false);
     }
 
     /**
@@ -32,11 +29,7 @@ class ExpressionIntegerValue
      */
     public ExpressionIntegerValue(BigInteger value)
     {
-        this.value = value;
-        lowerBound = value;
-        upperBound = value;
-        needsBigInteger = value.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0 ||
-                          value.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0;
+        this(value, value, value);
     }
 
     /**
@@ -47,11 +40,20 @@ class ExpressionIntegerValue
      */
     public ExpressionIntegerValue(BigInteger lowerBound, BigInteger upperBound)
     {
-        value = null;
-        this.lowerBound = lowerBound;
-        this.upperBound = upperBound;
-        needsBigInteger = upperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0 ||
-                lowerBound.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0;
+        this(null, lowerBound, upperBound);
+    }
+
+    /**
+     * Constructor from BigInteger value, lower and upper bounds.
+     *
+     * @param value      Value as a BigInteger.
+     * @param lowerBound Lower bound to construct from.
+     * @param upperBound Upper bound to construct from.
+     */
+    public ExpressionIntegerValue(BigInteger value, BigInteger lowerBound, BigInteger upperBound)
+    {
+        this(value, lowerBound, upperBound, upperBound.compareTo(BigInteger.valueOf(Long.MAX_VALUE)) > 0 ||
+                lowerBound.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0);
     }
 
     /**
@@ -264,7 +266,20 @@ class ExpressionIntegerValue
         if (value != null && operand.value != null)
             return new ExpressionIntegerValue(value.remainder(operand.value));
 
-        return new ExpressionIntegerValue(needsBigInteger || operand.needsBigInteger);
+        final boolean newNeedsBigInteger = needsBigInteger || operand.needsBigInteger;
+        final boolean isValueUnsigned = (lowerBound != null && lowerBound.compareTo(BigInteger.ZERO) >= 0);
+        final boolean isOperandUnsigned = (operand.lowerBound != null &&
+                operand.lowerBound.compareTo(BigInteger.ZERO) > 0);
+        if (isValueUnsigned && isOperandUnsigned)
+        {
+            final BigInteger newLowerBound = BigInteger.ZERO;
+            final BigInteger newUpperBound = (operand.upperBound == null) ? null :
+                    operand.upperBound.subtract(BigInteger.ONE);
+
+            return new ExpressionIntegerValue(newLowerBound, newUpperBound, newNeedsBigInteger);
+        }
+
+        return new ExpressionIntegerValue(newNeedsBigInteger);
     }
 
     /**
@@ -323,7 +338,18 @@ class ExpressionIntegerValue
         if (value != null && operand.value != null)
             return new ExpressionIntegerValue(value.and(operand.value));
 
-        return new ExpressionIntegerValue(needsBigInteger || operand.needsBigInteger);
+        final boolean newNeedsBigInteger = needsBigInteger || operand.needsBigInteger;
+        final boolean isOperandUnsigned = (operand.lowerBound != null &&
+                operand.lowerBound.compareTo(BigInteger.ZERO) >= 0);
+        if (isOperandUnsigned)
+        {
+            final BigInteger newLowerBound = BigInteger.ZERO;
+            final BigInteger newUpperBound = (operand.upperBound == null) ? null : operand.upperBound;
+
+            return new ExpressionIntegerValue(newLowerBound, newUpperBound, newNeedsBigInteger);
+        }
+
+        return new ExpressionIntegerValue(newNeedsBigInteger);
     }
 
     /**

@@ -130,8 +130,9 @@ public class DynamicBitFieldInstantiation extends TypeInstantiation
             }
             else
             {
+                // upper bound could be unknown (=null) (for example modulo operator for negative numbers)
                 final BigInteger upperBound = lengthExpression.getIntegerUpperBound();
-                maxBitSize = (upperBound.compareTo(BigInteger.valueOf(
+                maxBitSize = (upperBound == null || upperBound.compareTo(BigInteger.valueOf(
                         DynamicBitFieldType.MAX_DYNAMIC_BIT_FIELD_BIT_SIZE)) > 0) ?
                                 DynamicBitFieldType.MAX_DYNAMIC_BIT_FIELD_BIT_SIZE : upperBound.intValue();
             }

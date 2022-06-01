@@ -8,6 +8,9 @@ set(ZSERIO_GENERATED_SOURCES
 
     ${ZSERIO_GEN_DIR}/builtin_types/all_builtin_types/NUM_BITS.h
 
+    ${ZSERIO_GEN_DIR}/builtin_types/bitfield_function_length/Container.cpp
+    ${ZSERIO_GEN_DIR}/builtin_types/bitfield_function_length/Container.h
+
     ${ZSERIO_GEN_DIR}/builtin_types/bitfield_uint64_length/Container.cpp
     ${ZSERIO_GEN_DIR}/builtin_types/bitfield_uint64_length/Container.h
 )
@@ -24,6 +27,7 @@ zserio_add_library(TARGET builtin_types_zs
 
 add_test_sources(
     cpp/AllBuiltInTypesTest.cpp
+    cpp/BitFieldFunctionLengthTest.cpp
     cpp/BitFieldUInt64LengthTest.cpp
 )
 
