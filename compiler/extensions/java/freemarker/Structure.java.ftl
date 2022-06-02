@@ -165,6 +165,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     {
         <@field_member_name field/> = null;
     }
+
         </#if>
     </#if>
 </#list>

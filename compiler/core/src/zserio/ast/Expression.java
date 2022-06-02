@@ -555,19 +555,19 @@ public class Expression extends AstNodeBase
 
             switch (type)
             {
-                case ZserioParser.LPAREN:              // parenthesizedExpression
+                case ZserioParser.LPAREN:               // parenthesizedExpression
                     evaluateParenthesizedExpression();
                     break;
 
-                case ZserioParser.RPAREN:              // functionCallExpression
+                case ZserioParser.RPAREN:               // functionCallExpression
                     evaluateFunctionCallExpression(forcedEvaluationScope);
                     break;
 
-                case ZserioParser.LBRACKET:            // arrayExpression
+                case ZserioParser.LBRACKET:             // arrayExpression
                     evaluateArrayElement();
                     break;
 
-                case ZserioParser.DOT:                 // dotExpression
+                case ZserioParser.DOT:                  // dotExpression
                     evaluateDotExpression();
                     break;
 
@@ -583,101 +583,101 @@ public class Expression extends AstNodeBase
                     evaluateNumBitsOperator();          // numbitsExpression
                     break;
 
-                case ZserioParser.PLUS:                // unaryExpression or additiveExpression
+                case ZserioParser.PLUS:                 // unaryExpression or additiveExpression
                     if (operand2 == null)
                         evaluateUnaryPlusMinus(false);
                     else
                         evaluateArithmeticExpression();
                     break;
 
-                case ZserioParser.MINUS:               // unaryExpression or additiveExpression
+                case ZserioParser.MINUS:                // unaryExpression or additiveExpression
                     if (operand2 == null)
                         evaluateUnaryPlusMinus(true);
                     else
                         evaluateArithmeticExpression();
                     break;
 
-                case ZserioParser.BANG:                // unaryExpression
+                case ZserioParser.BANG:                 // unaryExpression
                     evaluateNegationOperator();
                     break;
 
-                case ZserioParser.TILDE:               // unaryExpression
+                case ZserioParser.TILDE:                // unaryExpression
                     evaluateBitNotExpression();
                     break;
 
-                case ZserioParser.MULTIPLY:            // multiplicativeExpression
+                case ZserioParser.MULTIPLY:             // multiplicativeExpression
                 case ZserioParser.DIVIDE:
                 case ZserioParser.MODULO:
                     evaluateArithmeticExpression();
                     break;
 
-                case ZserioParser.LSHIFT:              // shiftExpression
+                case ZserioParser.LSHIFT:               // shiftExpression
                 case ZserioParser.RSHIFT:
-                case ZserioParser.AND:                 // bitwiseAndExpression
-                case ZserioParser.XOR:                 // bitwiseXorExpression
-                case ZserioParser.OR:                  // bitwiseOrExpression
+                case ZserioParser.AND:                  // bitwiseAndExpression
+                case ZserioParser.XOR:                  // bitwiseXorExpression
+                case ZserioParser.OR:                   // bitwiseOrExpression
                     evaluateBitExpression();
                     break;
 
-                case ZserioParser.LT:                  // relationalExpression
+                case ZserioParser.LT:                   // relationalExpression
                 case ZserioParser.LE:
                 case ZserioParser.GT:
                 case ZserioParser.GE:
-                case ZserioParser.EQ:                  // equalityExpression
+                case ZserioParser.EQ:                   // equalityExpression
                 case ZserioParser.NE:
                     evaluateRelationalExpression();
                     break;
 
-                case ZserioParser.LOGICAL_AND:         // logicalAndExpression
-                case ZserioParser.LOGICAL_OR:          // logicalOrExpression
+                case ZserioParser.LOGICAL_AND:          // logicalAndExpression
+                case ZserioParser.LOGICAL_OR:           // logicalOrExpression
                     evaluateLogicalExpression();
                     break;
 
-                case ZserioParser.QUESTIONMARK:        // ternaryExpression
+                case ZserioParser.QUESTIONMARK:         // ternaryExpression
                     evaluateConditionalExpression();
                     break;
 
-                case ZserioParser.BINARY_LITERAL:      // literalExpression
+                case ZserioParser.BINARY_LITERAL:       // literalExpression
                     expressionType = ExpressionType.INTEGER;
                     final String binText = stripBinaryLiteral(getText());
                     expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(binText, 2));
                     break;
 
-                case ZserioParser.OCTAL_LITERAL:       // literalExpression
+                case ZserioParser.OCTAL_LITERAL:        // literalExpression
                     expressionType = ExpressionType.INTEGER;
                     expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText(), 8));
                     break;
 
-                case ZserioParser.DECIMAL_LITERAL:     // literalExpression
+                case ZserioParser.DECIMAL_LITERAL:      // literalExpression
                     expressionType = ExpressionType.INTEGER;
                     expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(getText()));
                     break;
 
-                case ZserioParser.HEXADECIMAL_LITERAL: // literalExpression
+                case ZserioParser.HEXADECIMAL_LITERAL:  // literalExpression
                     expressionType = ExpressionType.INTEGER;
                     final String hexText = stripHexadecimalLiteral(getText());
                     expressionIntegerValue = new ExpressionIntegerValue(new BigInteger(hexText, 16));
                     break;
 
-                case ZserioParser.BOOL_LITERAL:        // literalExpression
+                case ZserioParser.BOOL_LITERAL:         // literalExpression
                     expressionType = ExpressionType.BOOLEAN;
                     break;
 
-                case ZserioParser.STRING_LITERAL:      // literalExpression
+                case ZserioParser.STRING_LITERAL:       // literalExpression
                     expressionType = ExpressionType.STRING;
                     expressionStringValue = stripStringLiteral(getText());
                     break;
 
-                case ZserioParser.FLOAT_LITERAL:       // literalExpression
+                case ZserioParser.FLOAT_LITERAL:        // literalExpression
                 case ZserioParser.DOUBLE_LITERAL:
                     expressionType = ExpressionType.FLOAT;
                     break;
 
-                case ZserioParser.INDEX:               // indexExpression
+                case ZserioParser.INDEX:                // indexExpression
                     evaluateIndexExpression();
                     break;
 
-                case ZserioParser.ID:                  // identifierExpression
+                case ZserioParser.ID:                   // identifierExpression
                     evaluateIdentifier(forcedEvaluationScope);
                     break;
 
@@ -1012,7 +1012,11 @@ public class Expression extends AstNodeBase
         }
 
         evaluateExpressionType(function.getReturnTypeReference());
-        expressionIntegerValue = functionResultExpression.expressionIntegerValue;
+        expressionIntegerValue = new ExpressionIntegerValue(
+                functionResultExpression.expressionIntegerValue.getValue(),
+                functionResultExpression.expressionIntegerValue.getLowerBound(),
+                functionResultExpression.expressionIntegerValue.getUpperBound(),
+                expressionIntegerValue.needsBigInteger()); // needsBigInteger must be according to type
         expressionStringValue = functionResultExpression.expressionStringValue;
     }
 
@@ -1160,11 +1164,17 @@ public class Expression extends AstNodeBase
 
     private void evaluateLengthOfOperator()
     {
-        if (!(operand1.zserioType instanceof ArrayType))
+        if (!(operand1.symbolInstantiation instanceof ArrayInstantiation))
             throw new ParserException(operand1, "'" + operand1.text + "' is not an array!");
 
         expressionType = ExpressionType.INTEGER;
-        // length of result has default expressionIntegerValue
+
+        final Expression lengthExpr = ((ArrayInstantiation)operand1.symbolInstantiation).getLengthExpression();
+        if (lengthExpr != null && lengthExpr.getIntegerValue() != null)
+            expressionIntegerValue = new ExpressionIntegerValue(lengthExpr.getIntegerValue());
+        else
+            expressionIntegerValue = new ExpressionIntegerValue(VarIntegerType.VARSIZE_LOWER_BOUND,
+                    VarIntegerType.VARSIZE_UPPER_BOUND);
     }
 
     private void evaluateValueOfOperator()

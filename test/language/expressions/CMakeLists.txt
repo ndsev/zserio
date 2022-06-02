@@ -58,6 +58,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/lengthof_operator/LengthOfFunctions.cpp
     ${ZSERIO_GEN_DIR}/expressions/lengthof_operator/LengthOfFunctions.h
 
+    ${ZSERIO_GEN_DIR}/expressions/modulo_operator/ModuloFunction.cpp
+    ${ZSERIO_GEN_DIR}/expressions/modulo_operator/ModuloFunction.h
+
     ${ZSERIO_GEN_DIR}/expressions/negation_operator/NegationOperatorExpression.cpp
     ${ZSERIO_GEN_DIR}/expressions/negation_operator/NegationOperatorExpression.h
 
@@ -126,6 +129,7 @@ add_test_sources(
     cpp/FunctionTypeTest.cpp
     cpp/IndexOperatorTest.cpp
     cpp/LengthOfOperatorTest.cpp
+    cpp/ModuloOperatorTest.cpp
     cpp/NegationOperatorTest.cpp
     cpp/NumBitsOperatorTest.cpp
     cpp/ParameterTypeTest.cpp

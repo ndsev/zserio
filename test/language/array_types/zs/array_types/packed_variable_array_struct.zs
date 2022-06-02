@@ -68,8 +68,7 @@ struct TestStructure
 
     function bit:5 length()
     {
-        // TODO[mikir]: Should be '%' or '&' as soon as it will work
-        return id <= 385 ? (id / 0x07) + 9 : 64;
+        return id <= 374 ? (id / 17) + 9 : 31;
     }
 };
 
