@@ -48,7 +48,7 @@ public:
         static const ::std::array<FieldInfo, 1> fields = {
             FieldInfo{
                 makeStringView("text"), // schemaName
-                BuiltinTypeInfo::getString(), // typeInfo
+                BuiltinTypeInfo<>::getString(), // typeInfo
                 {}, // typeArguments
                 {}, // alignment
                 {}, // offset
@@ -67,7 +67,7 @@ public:
 
         static const Span<FunctionInfo> functions;
 
-        static const StructTypeInfo typeInfo = {
+        static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
             makeStringView("DummyNested"), templateName, templateArguments,
             fields, parameters, functions
         };
@@ -154,7 +154,7 @@ public:
         static const ::std::array<FieldInfo, 3> fields = {
             FieldInfo{
                 makeStringView("value"), // schemaName
-                BuiltinTypeInfo::getUInt32(), // typeInfo
+                BuiltinTypeInfo<>::getUInt32(), // typeInfo
                 {}, // typeArguments
                 {}, // alignment
                 {}, // offset
@@ -169,7 +169,7 @@ public:
             },
             FieldInfo{
                 makeStringView("text"), // schemaName
-                BuiltinTypeInfo::getString(), // typeInfo
+                BuiltinTypeInfo<>::getString(), // typeInfo
                 {}, // typeArguments
                 {}, // alignment
                 {}, // offset
@@ -203,7 +203,7 @@ public:
 
         static const Span<FunctionInfo> functions;
 
-        static const UnionTypeInfo typeInfo = {
+        static const UnionTypeInfo<std::allocator<uint8_t>> typeInfo = {
             makeStringView("DummyUnion"), templateName, templateArguments,
             fields, parameters, functions
         };
@@ -370,7 +370,7 @@ public:
         static const ::std::array<FieldInfo, 5> fields = {
             FieldInfo{
                 makeStringView("identifier"), // schemaName
-                BuiltinTypeInfo::getUInt32(), // typeInfo
+                BuiltinTypeInfo<>::getUInt32(), // typeInfo
                 {}, // typeArguments
                 {}, // alignment
                 {}, // offset
@@ -400,7 +400,7 @@ public:
             },
             FieldInfo{
                 makeStringView("text"), // schemaName
-                BuiltinTypeInfo::getString(), // typeInfo
+                BuiltinTypeInfo<>::getString(), // typeInfo
                 {}, // typeArguments
                 {}, // alignment
                 {}, // offset
@@ -449,7 +449,7 @@ public:
 
         static const Span<FunctionInfo> functions;
 
-        static const StructTypeInfo typeInfo = {
+        static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
             makeStringView("DummyObject"), templateName, templateArguments,
             fields, parameters, functions
         };
@@ -704,8 +704,8 @@ public:
             ItemInfo{"ZERO"_sv, "UINT32_C(0)"_sv}
         };
 
-        static const BitmaskTypeInfo typeInfo = {
-            "DummyBitmask"_sv, BuiltinTypeInfo::getUInt32(), {}, values
+        static const BitmaskTypeInfo<std::allocator<uint8_t>> typeInfo = {
+            "DummyBitmask"_sv, BuiltinTypeInfo<>::getUInt32(), {}, values
         };
 
         return typeInfo;

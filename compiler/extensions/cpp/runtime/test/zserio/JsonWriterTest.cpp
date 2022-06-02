@@ -15,41 +15,41 @@ namespace
 {
 
 const FieldInfo BOOL_FIELD_INFO{
-    "boolField"_sv, BuiltinTypeInfo::getBool(),
+    "boolField"_sv, BuiltinTypeInfo<>::getBool(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
 const FieldInfo INT_FIELD_INFO{
-    "intField"_sv, BuiltinTypeInfo::getInt32(),
+    "intField"_sv, BuiltinTypeInfo<>::getInt32(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
 const FieldInfo FLOAT_FIELD_INFO{
-    "floatField"_sv, BuiltinTypeInfo::getFloat32(),
+    "floatField"_sv, BuiltinTypeInfo<>::getFloat32(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
 const FieldInfo DOUBLE_FIELD_INFO{
-    "doubleField"_sv, BuiltinTypeInfo::getFloat64(),
+    "doubleField"_sv, BuiltinTypeInfo<>::getFloat64(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
 const FieldInfo TEXT_FIELD_INFO{
-    "text"_sv, BuiltinTypeInfo::getString(),
+    "text"_sv, BuiltinTypeInfo<>::getString(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
 const FieldInfo IDENTIFIER_FIELD_INFO{
-    "identifier", BuiltinTypeInfo::getUInt32(),
+    "identifier", BuiltinTypeInfo<>::getUInt32(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
 const FieldInfo DATA_FIELD_INFO{
-    "data"_sv, BuiltinTypeInfo::getBitBuffer(),
+    "data"_sv, BuiltinTypeInfo<>::getBitBuffer(),
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
-const StructTypeInfo DUMMY_TYPE_INFO{
+const StructTypeInfo<std::allocator<uint8_t>> DUMMY_TYPE_INFO{
     "Dummy"_sv, {}, {}, {}, {}, {}
 };
 
@@ -59,14 +59,14 @@ const FieldInfo NESTED_FIELD_INFO{
 };
 
 const FieldInfo ARRAY_FIELD_INFO{
-    "array", BuiltinTypeInfo::getUInt32(),
+    "array", BuiltinTypeInfo<>::getUInt32(),
     {}, {}, {}, {}, false, {}, {}, true, {}, false, false
 };
 
 const std::array<ItemInfo, 1> ENUM_ITEMS{ItemInfo{"ZERO"_sv, "0"_sv}};
 
-const EnumTypeInfo ENUM_TYPE_INFO{
-    "DummyEnum"_sv, BuiltinTypeInfo::getInt8(), {}, ENUM_ITEMS
+const EnumTypeInfo<std::allocator<uint8_t>> ENUM_TYPE_INFO{
+    "DummyEnum"_sv, BuiltinTypeInfo<>::getInt8(), {}, ENUM_ITEMS
 };
 
 const FieldInfo ENUM_FIELD_INFO{
@@ -76,8 +76,8 @@ const FieldInfo ENUM_FIELD_INFO{
 
 const std::array<ItemInfo, 1> BITMASK_ITEMS{ItemInfo{"ZERO"_sv, "0"_sv}};
 
-const BitmaskTypeInfo BITMASK_TYPE_INFO{
-    "DummyBitmask"_sv, BuiltinTypeInfo::getUInt32(), {}, BITMASK_ITEMS
+const BitmaskTypeInfo<std::allocator<uint8_t>> BITMASK_TYPE_INFO{
+    "DummyBitmask"_sv, BuiltinTypeInfo<>::getUInt32(), {}, BITMASK_ITEMS
 };
 
 const FieldInfo BITMASK_FIELD_INFO{

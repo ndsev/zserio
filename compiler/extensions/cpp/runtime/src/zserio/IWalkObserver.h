@@ -40,7 +40,8 @@ public:
      * \param array Reflectable zserio array.
      * \param fieldInfo Array field info.
      */
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) = 0;
+    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      * Called at the end of an array.
@@ -48,7 +49,8 @@ public:
      * \param array Reflectable zserio array.
      * \param fieldInfo Array field info.
      */
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) = 0;
+    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      *Called at the beginning of an compound field object.
@@ -60,8 +62,8 @@ public:
      * \param fieldInfo Compound field info.
      * \param elementIndex Element index in array or WALKER_NOT_ELEMENT if the compound is not in array.
      */
-    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
+    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
      * Called at the end of just walked compound object.
@@ -70,8 +72,8 @@ public:
      * \param fieldInfo Compound field info.
      * \param elementIndex Element index in array or WALKER_NOT_ELEMENT if the compound is not in array.
      */
-    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
+    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
      * Called when a simple (or an unset compound or array - i.e. nullptr) value is reached.
@@ -80,8 +82,8 @@ public:
      * \param fieldInfo Field info.
      * \param elementIndex Element index in array or WALKER_NOT_ELEMENT if the value is not in array.
      */
-    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
+    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 };
 
 /** Typedefs to walk observer interface provided for convenience - using default std::allocator<uint8_t>. */

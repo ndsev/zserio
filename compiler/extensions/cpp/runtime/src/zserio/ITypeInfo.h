@@ -75,16 +75,25 @@ enum class SchemaType
     PUBSUB /**< zserio pubsub type */
 };
 
-struct FieldInfo;
-struct ParameterInfo;
-struct FunctionInfo;
-struct CaseInfo;
-struct ColumnInfo;
-struct TableInfo;
+template <typename ALLOC>
+struct BasicFieldInfo;
+template <typename ALLOC>
+struct BasicParameterInfo;
+template <typename ALLOC>
+struct BasicFunctionInfo;
+template <typename ALLOC>
+struct BasicCaseInfo;
+template <typename ALLOC>
+struct BasicColumnInfo;
+template <typename ALLOC>
+struct BasicTableInfo;
 struct ItemInfo;
-struct TemplateArgumentInfo;
-struct MessageInfo;
-struct MethodInfo;
+template <typename ALLOC>
+struct BasicTemplateArgumentInfo;
+template <typename ALLOC>
+struct BasicMessageInfo;
+template <typename ALLOC>
+struct BasicMethodInfo;
 
 /**
  * Type information interface which is returned from the generated zserio objects.
@@ -95,13 +104,14 @@ struct MethodInfo;
  * Not all methods are implemented for all zserio objects. For example, the method getFields() is implemented
  * for compound types only. To check the zserio object type consider to use TypeInfoUtil helper methods.
  */
-class ITypeInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+class IBasicTypeInfo
 {
 public:
     /**
      * Virtual destructor.
      */
-    virtual ~ITypeInfo() {}
+    virtual ~IBasicTypeInfo() {}
 
     /**
      * Gets the schema name.
@@ -144,7 +154,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
-    virtual Span<const FieldInfo> getFields() const = 0;
+    virtual Span<const BasicFieldInfo<ALLOC>> getFields() const = 0;
 
     /**
      * Gets the type information for compound type parameters.
@@ -153,7 +163,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
-    virtual Span<const ParameterInfo> getParameters() const = 0;
+    virtual Span<const BasicParameterInfo<ALLOC>> getParameters() const = 0;
 
     /**
      * Gets the type information for compound type functions.
@@ -162,7 +172,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
-    virtual Span<const FunctionInfo> getFunctions() const = 0;
+    virtual Span<const BasicFunctionInfo<ALLOC>> getFunctions() const = 0;
 
     // methods for choice type
 
@@ -182,7 +192,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not choice type.
      */
-    virtual Span<const CaseInfo> getCases() const = 0;
+    virtual Span<const BasicCaseInfo<ALLOC>> getCases() const = 0;
 
     // methods for enumeration and bitmask types
 
@@ -193,7 +203,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not enumeration or bitmask type.
      */
-    virtual const ITypeInfo& getUnderlyingType() const = 0;
+    virtual const IBasicTypeInfo<ALLOC>& getUnderlyingType() const = 0;
 
     /**
      * Gets the reference to type information of underlying zserio type arguments.
@@ -231,7 +241,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not SQL table type.
      */
-    virtual Span<const ColumnInfo> getColumns() const = 0;
+    virtual Span<const BasicColumnInfo<ALLOC>> getColumns() const = 0;
 
     /**
      * Gets the SQL table constraint.
@@ -269,7 +279,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not SQL database type.
      */
-    virtual Span<const TableInfo> getTables() const = 0;
+    virtual Span<const BasicTableInfo<ALLOC>> getTables() const = 0;
 
     // methods for templatable types
 
@@ -289,7 +299,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not templatable.
      */
-    virtual Span<const TemplateArgumentInfo> getTemplateArguments() const = 0;
+    virtual Span<const BasicTemplateArgumentInfo<ALLOC>> getTemplateArguments() const = 0;
 
     // method for pubsub type
 
@@ -300,7 +310,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not pubsub type.
      */
-    virtual Span<const MessageInfo> getMessages() const = 0;
+    virtual Span<const BasicMessageInfo<ALLOC>> getMessages() const = 0;
 
     // method for service type
 
@@ -311,16 +321,17 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not service type.
      */
-    virtual Span<const MethodInfo> getMethods() const = 0;
+    virtual Span<const BasicMethodInfo<ALLOC>> getMethods() const = 0;
 };
 
 /**
  * Type information for compound type field.
  */
-struct FieldInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicFieldInfo
 {
     StringView schemaName; /**< field schema name */
-    const ITypeInfo& typeInfo; /**< reference to type information for a field type */
+    const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a field type */
     Span<const StringView> typeArguments; /**< sequence of field type arguments */
     StringView alignment; /**< field alignment or empty in case of no alignment */
     StringView offset; /**< field offset or empty in case of no alignment */
@@ -337,29 +348,32 @@ struct FieldInfo
 /**
  * Type information for compound type parameter.
  */
-struct ParameterInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicParameterInfo
 {
     StringView schemaName; /**< parameter schema name */
-    const ITypeInfo& typeInfo; /**< reference to type information for a parameter type */
+    const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a parameter type */
 };
 
 /**
  * Type information for compound type function.
  */
-struct FunctionInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicFunctionInfo
 {
     StringView schemaName; /**< function schema name */
-    const ITypeInfo& typeInfo; /**< reference to type information for a resulting function type */
+    const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a resulting function type */
     StringView functionResult; /**< specifies the function result */
 };
 
 /**
  * Type information for choice type case.
  */
-struct CaseInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicCaseInfo
 {
     Span<const StringView> caseExpressions; /**< sequence of case expressions */
-    const FieldInfo* field; /**< pointer to type information for a case field */
+    const BasicFieldInfo<ALLOC>* field; /**< pointer to type information for a case field */
 };
 
 /**
@@ -374,10 +388,11 @@ struct ItemInfo
 /**
  * Type information for SQL table column.
  */
-struct ColumnInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicColumnInfo
 {
     StringView schemaName; /**< column schema name */
-    const ITypeInfo& typeInfo; /**< reference to type information for a column type */
+    const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a column type */
     Span<const StringView> typeArguments; /** sequence of column type arguments */
     StringView sqlTypeName; /* column SQL type name */
     StringView sqlConstraint; /* column constraint or empty if column does not have any constraint */
@@ -387,27 +402,30 @@ struct ColumnInfo
 /**
  * Type information for SQL database table.
  */
-struct TableInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicTableInfo
 {
     StringView schemaName; /**< table schema name */
-    const ITypeInfo& typeInfo; /**< reference to type information for a table */
+    const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a table */
 };
 
 /**
  * Type information for template argument.
  */
-struct TemplateArgumentInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicTemplateArgumentInfo
 {
-    const ITypeInfo& typeInfo; /**< reference to type information for a template argument */
+    const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a template argument */
 };
 
 /**
  * Type information for pubsub message.
  */
-struct MessageInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicMessageInfo
 {
     StringView schemaName; /**< message schema name */
-    const ITypeInfo& typeInfo; /**< reference to type information for a message type */
+    const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a message type */
     bool isPublished; /**< true if the message is published */
     bool isSubscribed; /**< true if the message is subscribed */
     StringView topic; /**< pubsub topic for a message */
@@ -416,11 +434,12 @@ struct MessageInfo
 /**
  * Type information for service method.
  */
-struct MethodInfo
+template <typename ALLOC = std::allocator<uint8_t>>
+struct BasicMethodInfo
 {
     StringView schemaName; /**< service schema name */
-    const ITypeInfo& responseTypeInfo; /**< reference to type information for a method response type */
-    const ITypeInfo& requestTypeInfo; /**< reference to type information for a method request type */
+    const IBasicTypeInfo<ALLOC>& responseTypeInfo; /**< reference to type information for a method response type */
+    const IBasicTypeInfo<ALLOC>& requestTypeInfo; /**< reference to type information for a method request type */
 };
 
 /**
@@ -428,8 +447,22 @@ struct MethodInfo
  *
  * \return Enum type info.
  */
-template <typename T>
-const ITypeInfo& enumTypeInfo();
+template <typename T, typename ALLOC = std::allocator<uint8_t>>
+const IBasicTypeInfo<ALLOC>& enumTypeInfo();
+
+/** Typedef provided for convenience - using default std::allocator<uint8_t>. */
+/** \{ */
+using ITypeInfo = IBasicTypeInfo<>;
+using FieldInfo = BasicFieldInfo<>;
+using ParameterInfo = BasicParameterInfo<>;
+using FunctionInfo = BasicFunctionInfo<>;
+using CaseInfo = BasicCaseInfo<>;
+using ColumnInfo = BasicColumnInfo<>;
+using TableInfo = BasicTableInfo<>;
+using TemplateArgumentInfo = BasicTemplateArgumentInfo<>;
+using MessageInfo = BasicMessageInfo<>;
+using MethodInfo = BasicMethodInfo<>;
+/** \} */
 
 } // namespace zserio
 

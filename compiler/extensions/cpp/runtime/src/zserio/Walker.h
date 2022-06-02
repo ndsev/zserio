@@ -70,10 +70,10 @@ public:
     void walk(const IBasicReflectableConstPtr<ALLOC>& reflectable);
 
 private:
-    void walkFields(const IBasicReflectableConstPtr<ALLOC>& compound, const ITypeInfo& typeInfo);
-    bool walkField(const IBasicReflectableConstPtr<ALLOC>& reflectable, const FieldInfo& fieldInfo);
-    bool walkFieldValue(const IBasicReflectableConstPtr<ALLOC>& reflectable, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT);
+    void walkFields(const IBasicReflectableConstPtr<ALLOC>& compound, const IBasicTypeInfo<ALLOC>& typeInfo);
+    bool walkField(const IBasicReflectableConstPtr<ALLOC>& reflectable, const BasicFieldInfo<ALLOC>& fieldInfo);
+    bool walkFieldValue(const IBasicReflectableConstPtr<ALLOC>& reflectable,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT);
 
     IBasicWalkObserver<ALLOC>& m_walkObserver;
     BasicDefaultWalkFilter<ALLOC> m_defaultWalkFilter;
@@ -113,13 +113,18 @@ public:
     virtual void beginRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
     virtual void endRoot(const IBasicReflectableConstPtr<ALLOC>&) override {}
 
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&) override {}
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&) override {}
+    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&) override {}
+    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&) override {}
 
-    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t) override {}
-    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t) override {}
+    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&, size_t) override {}
+    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&, size_t) override {}
 
-    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t) override {}
+    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&, size_t) override {}
 };
 
 /**
@@ -152,32 +157,36 @@ public:
      * \}
      */
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&) override
+    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
     {
         return true;
     }
 
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&) override
+    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
     {
         return true;
     }
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t) override
+    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
     }
 
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t) override
+    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
     }
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t) override
+    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
     }
 
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t) override
+    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>&, size_t) override
     {
         return true;
     }
@@ -216,18 +225,19 @@ public:
      */
 
     virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const FieldInfo& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) override;
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
     bool enterDepthLevel();
@@ -276,24 +286,26 @@ public:
      */
 
     virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const FieldInfo& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) override;
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
-    void appendPath(const FieldInfo& fieldInfo, size_t elementIndex);
-    void popPath(const FieldInfo& fieldInfo, size_t elementIndex);
+    void appendPath(const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex);
+    void popPath(const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex);
     string<ALLOC> getCurrentPath() const;
-    bool matchSubtree(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo) const;
+    bool matchSubtree(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo) const;
 
     vector<string<ALLOC>, ALLOC> m_currentPath;
     std::regex m_pathRegex;
@@ -333,18 +345,19 @@ public:
      */
 
     virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const FieldInfo& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) override;
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
     bool filterArrayElement(size_t elementIndex);
@@ -391,18 +404,19 @@ public:
      */
 
     virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
-            const FieldInfo& fieldInfo) override;
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) override;
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex) override;
+    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
     template <typename FILTER_FUNC, typename ...ARGS>
@@ -444,7 +458,7 @@ void BasicWalker<ALLOC>::walk(const IBasicReflectableConstPtr<ALLOC>& compound)
     if (!compound)
         throw CppRuntimeException("Walker: Root object cannot be NULL!");
 
-    const ITypeInfo& typeInfo = compound->getTypeInfo();
+    const IBasicTypeInfo<ALLOC>& typeInfo = compound->getTypeInfo();
     if (!TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
         throw CppRuntimeException("Walker: Root object '") + typeInfo.getSchemaName() +
@@ -457,16 +471,17 @@ void BasicWalker<ALLOC>::walk(const IBasicReflectableConstPtr<ALLOC>& compound)
 }
 
 template <typename ALLOC>
-void BasicWalker<ALLOC>::walkFields(const IBasicReflectableConstPtr<ALLOC>& compound, const ITypeInfo& typeInfo)
+void BasicWalker<ALLOC>::walkFields(const IBasicReflectableConstPtr<ALLOC>& compound,
+        const IBasicTypeInfo<ALLOC>& typeInfo)
 {
     if (TypeInfoUtil::hasChoice(typeInfo.getSchemaType()))
     {
         StringView compoundChoice = compound->getChoice();
         if (!compoundChoice.empty())
         {
-            Span<const FieldInfo> fields = typeInfo.getFields();
+            Span<const BasicFieldInfo<ALLOC>> fields = typeInfo.getFields();
             auto fieldsIt = std::find_if(fields.begin(), fields.end(),
-                    [compoundChoice](const FieldInfo& fieldInfo) {
+                    [compoundChoice](const BasicFieldInfo<ALLOC>& fieldInfo) {
                             return fieldInfo.schemaName == compoundChoice; });
             if (fieldsIt != fields.end())
             {
@@ -477,7 +492,7 @@ void BasicWalker<ALLOC>::walkFields(const IBasicReflectableConstPtr<ALLOC>& comp
     }
     else
     {
-        for (const FieldInfo& fieldInfo : typeInfo.getFields())
+        for (const BasicFieldInfo<ALLOC>& fieldInfo : typeInfo.getFields())
         {
             if (!walkField(compound->getField(fieldInfo.schemaName), fieldInfo))
                 break;
@@ -487,7 +502,7 @@ void BasicWalker<ALLOC>::walkFields(const IBasicReflectableConstPtr<ALLOC>& comp
 
 template <typename ALLOC>
 bool BasicWalker<ALLOC>::walkField(
-        const IBasicReflectableConstPtr<ALLOC>& reflectable, const FieldInfo& fieldInfo)
+        const IBasicReflectableConstPtr<ALLOC>& reflectable, const BasicFieldInfo<ALLOC>& fieldInfo)
 {
     if (reflectable && reflectable->isArray())
     {
@@ -512,9 +527,9 @@ bool BasicWalker<ALLOC>::walkField(
 
 template <typename ALLOC>
 bool BasicWalker<ALLOC>::walkFieldValue(const IBasicReflectableConstPtr<ALLOC>& reflectable,
-        const FieldInfo& fieldInfo, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
-    const ITypeInfo& typeInfo = fieldInfo.typeInfo;
+    const IBasicTypeInfo<ALLOC>& typeInfo = fieldInfo.typeInfo;
     if (reflectable && TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
         if (m_walkFilter.beforeCompound(reflectable, fieldInfo, elementIndex))
@@ -539,39 +554,43 @@ BasicDepthWalkFilter<ALLOC>::BasicDepthWalkFilter(size_t maxDepth) :
 {}
 
 template <typename ALLOC>
-bool BasicDepthWalkFilter<ALLOC>::beforeArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&)
+bool BasicDepthWalkFilter<ALLOC>::beforeArray(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&)
 {
     return enterDepthLevel();
 }
 
 template <typename ALLOC>
-bool BasicDepthWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&)
+bool BasicDepthWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&)
 {
     return leaveDepthLevel();
 }
 
 template <typename ALLOC>
 bool BasicDepthWalkFilter<ALLOC>::beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
-        const FieldInfo&, size_t)
+        const BasicFieldInfo<ALLOC>&, size_t)
 {
     return enterDepthLevel();
 }
 
 template <typename ALLOC>
 bool BasicDepthWalkFilter<ALLOC>::afterCompound(const IBasicReflectableConstPtr<ALLOC>&,
-        const FieldInfo&, size_t)
+        const BasicFieldInfo<ALLOC>&, size_t)
 {
     return leaveDepthLevel();
 }
 
 template <typename ALLOC>
-bool BasicDepthWalkFilter<ALLOC>::beforeValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t)
+bool BasicDepthWalkFilter<ALLOC>::beforeValue(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&, size_t)
 {
     return m_depth <= m_maxDepth;
 }
 
 template <typename ALLOC>
-bool BasicDepthWalkFilter<ALLOC>::afterValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&, size_t)
+bool BasicDepthWalkFilter<ALLOC>::afterValue(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&, size_t)
 {
     return true;
 }
@@ -611,7 +630,7 @@ string<ALLOC> getCurrentPathImpl(
 
 template <typename ALLOC>
 void appendPathImpl(vector<string<ALLOC>, ALLOC>& currentPath,
-        const FieldInfo& fieldInfo, size_t elementIndex, const ALLOC& allocator)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex, const ALLOC& allocator)
 {
     if (elementIndex == WALKER_NOT_ELEMENT)
     {
@@ -626,7 +645,7 @@ void appendPathImpl(vector<string<ALLOC>, ALLOC>& currentPath,
 
 template <typename ALLOC>
 void popPathImpl(vector<string<ALLOC>, ALLOC>& currentPath,
-        const FieldInfo& fieldInfo, size_t elementIndex, const ALLOC& allocator)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex, const ALLOC& allocator)
 {
     if (elementIndex == WALKER_NOT_ELEMENT)
         currentPath.pop_back();
@@ -648,7 +667,8 @@ public:
         return m_matches;
     }
 
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo& fieldInfo) override
+    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>& fieldInfo) override
     {
         m_currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size());
         m_matches = std::regex_match(getCurrentPath(), m_pathRegex);
@@ -657,14 +677,14 @@ public:
         return !m_matches;
     }
 
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&) override
+    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>&) override
     {
         m_currentPath.pop_back();
         return !m_matches; // terminate when the match is already found
     }
 
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo& fieldInfo,
-            size_t elementIndex) override
+    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override
     {
         appendPath(fieldInfo, elementIndex);
         m_matches = std::regex_match(getCurrentPath(), m_pathRegex);
@@ -673,14 +693,14 @@ public:
         return !m_matches;
     }
 
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo& fieldInfo,
+    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
             size_t elementIndex) override
     {
         popPath(fieldInfo, elementIndex);
         return !m_matches; // terminate when the match is already found
     }
 
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo& fieldInfo,
+    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
             size_t elementIndex) override
     {
         appendPath(fieldInfo, elementIndex);
@@ -689,7 +709,7 @@ public:
         return !m_matches; // terminate when the match is already found
     }
 
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo& fieldInfo,
+    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>&, const BasicFieldInfo<ALLOC>& fieldInfo,
             size_t elementIndex) override
     {
         popPath(fieldInfo, elementIndex);
@@ -702,12 +722,12 @@ private:
         return detail::getCurrentPathImpl(m_currentPath, m_allocator);
     }
 
-    void appendPath(const FieldInfo& fieldInfo, size_t elementIndex)
+    void appendPath(const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
     {
         detail::appendPathImpl(m_currentPath, fieldInfo, elementIndex, m_allocator);
     }
 
-    void popPath(const FieldInfo& fieldInfo, size_t elementIndex)
+    void popPath(const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
     {
         detail::popPathImpl(m_currentPath, fieldInfo, elementIndex, m_allocator);
     }
@@ -727,7 +747,7 @@ BasicRegexWalkFilter<ALLOC>::BasicRegexWalkFilter(const char* pathRegex, const A
 
 template <typename ALLOC>
 bool BasicRegexWalkFilter<ALLOC>::beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
-        const FieldInfo& fieldInfo)
+        const BasicFieldInfo<ALLOC>& fieldInfo)
 {
     m_currentPath.emplace_back(fieldInfo.schemaName.data(), fieldInfo.schemaName.size(), m_allocator);
 
@@ -749,7 +769,8 @@ bool BasicRegexWalkFilter<ALLOC>::beforeArray(const IBasicReflectableConstPtr<AL
 }
 
 template <typename ALLOC>
-bool BasicRegexWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&)
+bool BasicRegexWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&)
 {
     m_currentPath.pop_back();
     return true;
@@ -757,7 +778,7 @@ bool BasicRegexWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALL
 
 template <typename ALLOC>
 bool BasicRegexWalkFilter<ALLOC>::beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
-        const FieldInfo& fieldInfo, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     appendPath(fieldInfo, elementIndex);
     if (std::regex_match(getCurrentPath(), m_pathRegex))
@@ -768,7 +789,7 @@ bool BasicRegexWalkFilter<ALLOC>::beforeCompound(const IBasicReflectableConstPtr
 
 template <typename ALLOC>
 bool BasicRegexWalkFilter<ALLOC>::afterCompound(const IBasicReflectableConstPtr<ALLOC>&,
-        const FieldInfo& fieldInfo, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     popPath(fieldInfo, elementIndex);
     return true;
@@ -776,7 +797,7 @@ bool BasicRegexWalkFilter<ALLOC>::afterCompound(const IBasicReflectableConstPtr<
 
 template <typename ALLOC>
 bool BasicRegexWalkFilter<ALLOC>::beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
-        const FieldInfo& fieldInfo, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     appendPath(fieldInfo, elementIndex);
     return matchSubtree(value, fieldInfo);
@@ -784,20 +805,20 @@ bool BasicRegexWalkFilter<ALLOC>::beforeValue(const IBasicReflectableConstPtr<AL
 
 template <typename ALLOC>
 bool BasicRegexWalkFilter<ALLOC>::afterValue(const IBasicReflectableConstPtr<ALLOC>&,
-        const FieldInfo& fieldInfo, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     popPath(fieldInfo, elementIndex);
     return true;
 }
 
 template <typename ALLOC>
-void BasicRegexWalkFilter<ALLOC>::appendPath(const FieldInfo& fieldInfo, size_t elementIndex)
+void BasicRegexWalkFilter<ALLOC>::appendPath(const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     detail::appendPathImpl(m_currentPath, fieldInfo, elementIndex, m_allocator);
 }
 
 template <typename ALLOC>
-void BasicRegexWalkFilter<ALLOC>::popPath(const FieldInfo& fieldInfo, size_t elementIndex)
+void BasicRegexWalkFilter<ALLOC>::popPath(const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     detail::popPathImpl(m_currentPath, fieldInfo, elementIndex, m_allocator);
 }
@@ -810,7 +831,7 @@ string<ALLOC> BasicRegexWalkFilter<ALLOC>::getCurrentPath() const
 
 template <typename ALLOC>
 bool BasicRegexWalkFilter<ALLOC>::matchSubtree(const IBasicReflectableConstPtr<ALLOC>& value,
-        const FieldInfo& fieldInfo) const
+        const BasicFieldInfo<ALLOC>& fieldInfo) const
 {
     if (value != nullptr && TypeInfoUtil::isCompound(fieldInfo.typeInfo.getSchemaType()))
     {
@@ -834,41 +855,43 @@ BasicArrayLengthWalkFilter<ALLOC>::BasicArrayLengthWalkFilter(size_t maxArrayLen
 {}
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::beforeArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&)
+bool BasicArrayLengthWalkFilter<ALLOC>::beforeArray(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&)
 {
     return true;
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&)
+bool BasicArrayLengthWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&)
 {
     return true;
 }
 
 template <typename ALLOC>
 bool BasicArrayLengthWalkFilter<ALLOC>::beforeCompound(const IBasicReflectableConstPtr<ALLOC>&,
-        const FieldInfo&, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>&, size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::afterCompound(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&,
-        size_t elementIndex)
+bool BasicArrayLengthWalkFilter<ALLOC>::afterCompound(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&, size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::beforeValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&,
-        size_t elementIndex)
+bool BasicArrayLengthWalkFilter<ALLOC>::beforeValue(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&, size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
 
 template <typename ALLOC>
-bool BasicArrayLengthWalkFilter<ALLOC>::afterValue(const IBasicReflectableConstPtr<ALLOC>&, const FieldInfo&,
-        size_t elementIndex)
+bool BasicArrayLengthWalkFilter<ALLOC>::afterValue(const IBasicReflectableConstPtr<ALLOC>&,
+        const BasicFieldInfo<ALLOC>&, size_t elementIndex)
 {
     return filterArrayElement(elementIndex);
 }
@@ -886,21 +909,21 @@ BasicAndWalkFilter<ALLOC>::BasicAndWalkFilter(const WalkFilters& walkFilters) :
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
-        const FieldInfo& fieldInfo)
+        const BasicFieldInfo<ALLOC>& fieldInfo)
 {
     return applyFilters(&IBasicWalkFilter<ALLOC>::beforeArray, array, fieldInfo);
 }
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
-        const FieldInfo& fieldInfo)
+        const BasicFieldInfo<ALLOC>& fieldInfo)
 {
     return applyFilters(&IBasicWalkFilter<ALLOC>::afterArray, array, fieldInfo);
 }
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
-        const FieldInfo& fieldInfo,
+        const BasicFieldInfo<ALLOC>& fieldInfo,
         size_t elementIndex)
 {
     return applyFilters(&IBasicWalkFilter<ALLOC>::beforeCompound, compound, fieldInfo, elementIndex);
@@ -908,7 +931,7 @@ bool BasicAndWalkFilter<ALLOC>::beforeCompound(const IBasicReflectableConstPtr<A
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
-        const FieldInfo& fieldInfo,
+        const BasicFieldInfo<ALLOC>& fieldInfo,
         size_t elementIndex)
 {
     return applyFilters(&IBasicWalkFilter<ALLOC>::afterCompound, compound, fieldInfo, elementIndex);
@@ -916,14 +939,14 @@ bool BasicAndWalkFilter<ALLOC>::afterCompound(const IBasicReflectableConstPtr<AL
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
-        const FieldInfo& fieldInfo, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     return applyFilters(&IBasicWalkFilter<ALLOC>::beforeValue, value, fieldInfo, elementIndex);
 }
 
 template <typename ALLOC>
 bool BasicAndWalkFilter<ALLOC>::afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
-        const FieldInfo& fieldInfo, size_t elementIndex)
+        const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex)
 {
     return applyFilters(&IBasicWalkFilter<ALLOC>::afterValue, value, fieldInfo, elementIndex);
 }

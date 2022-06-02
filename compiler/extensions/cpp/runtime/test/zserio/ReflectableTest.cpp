@@ -67,9 +67,9 @@ public:
             ItemInfo{ makeStringView("WRITE"), makeStringView("UINT8_C(4)") }
         };
 
-        static const BitmaskTypeInfo typeInfo = {
+        static const BitmaskTypeInfo<std::allocator<uint8_t>> typeInfo = {
             makeStringView("DummyBitmask"),
-            BuiltinTypeInfo::getUInt8(), underlyingTypeArguments, values
+            BuiltinTypeInfo<>::getUInt8(), underlyingTypeArguments, values
         };
 
         return typeInfo;
@@ -174,7 +174,7 @@ public:
         static const std::array<FieldInfo, 1> fields = {
             FieldInfo{
                 makeStringView("value"), // schemaName
-                BuiltinTypeInfo::getFixedUnsignedBitField(31), // typeInfo
+                BuiltinTypeInfo<>::getFixedUnsignedBitField(31), // typeInfo
                 {}, // typeArguments
                 {}, // alignment
                 {}, // offset
@@ -192,24 +192,24 @@ public:
         static const std::array<ParameterInfo, 1> parameters = {
             ParameterInfo{
                 makeStringView("dummyParam"),
-                BuiltinTypeInfo::getFixedSignedBitField(31)
+                BuiltinTypeInfo<>::getFixedSignedBitField(31)
             }
         };
 
         static const std::array<FunctionInfo, 2> functions = {
             FunctionInfo{
                 makeStringView("getValue"),
-                BuiltinTypeInfo::getFixedSignedBitField(31),
+                BuiltinTypeInfo<>::getFixedSignedBitField(31),
                 makeStringView("getValue()")
             },
             FunctionInfo{
                 makeStringView("throwingFunction"),
-                BuiltinTypeInfo::getFixedSignedBitField(31),
+                BuiltinTypeInfo<>::getFixedSignedBitField(31),
                 makeStringView("getValue()")
             }
         };
 
-        static const StructTypeInfo typeInfo = {
+        static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
             makeStringView("DummyChild"), templateName, templateArguments,
             fields, parameters, functions
         };
@@ -497,7 +497,7 @@ public:
 
         static const Span<FunctionInfo> functions;
 
-        static const StructTypeInfo typeInfo = {
+        static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
             makeStringView("DummyParent"), templateName, templateArguments,
             fields, parameters, functions
         };
@@ -723,9 +723,9 @@ const ITypeInfo& enumTypeInfo<DummyEnum>()
         ItemInfo{ makeStringView("VALUE3"), makeStringView("INT8_C(1)") }
     };
 
-    static const EnumTypeInfo typeInfo = {
+    static const EnumTypeInfo<std::allocator<uint8_t>> typeInfo = {
         makeStringView("DummyEnum"),
-        BuiltinTypeInfo::getInt8(), underlyingTypeArguments, items
+        BuiltinTypeInfo<>::getInt8(), underlyingTypeArguments, items
     };
 
     return typeInfo;
@@ -1575,7 +1575,7 @@ TEST_F(ReflectableTest, bitBufferReflectable)
 TEST_F(ReflectableTest, uint8ConstArray)
 {
     const auto rawArray = std::vector<uint8_t>{{10, 20, 30, 40}};
-    const ITypeInfo& typeInfo = BuiltinTypeInfo::getUInt8();
+    const ITypeInfo& typeInfo = BuiltinTypeInfo<>::getUInt8();
     auto reflectable = ReflectableFactory::getBuiltinArray(typeInfo, rawArray);
     checkArray(rawArray, reflectable,
             [&](uint8_t value, const IReflectableConstPtr& elementReflectable) {
@@ -1591,7 +1591,7 @@ TEST_F(ReflectableTest, uint8ConstArray)
 TEST_F(ReflectableTest, uint8Array)
 {
     auto rawArray = std::vector<uint8_t>{{10, 20, 30, 40}};
-    const ITypeInfo& typeInfo = BuiltinTypeInfo::getUInt8();
+    const ITypeInfo& typeInfo = BuiltinTypeInfo<>::getUInt8();
     auto reflectable = ReflectableFactory::getBuiltinArray(typeInfo, rawArray);
     checkArray(rawArray, reflectable,
             [&](uint8_t value, const IReflectablePtr& elementReflectable) {
@@ -1615,7 +1615,7 @@ TEST_F(ReflectableTest, dynamicSignedBitField5ConstArray)
     const uint8_t maxBitSize = 8;
     const uint8_t numBits = 5;
     const auto rawArray = std::vector<int8_t>{{-3, -1, 2, 4, 6}};
-    const ITypeInfo& typeInfo = BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize);
+    const ITypeInfo& typeInfo = BuiltinTypeInfo<>::getDynamicSignedBitField(maxBitSize);
     auto reflectable = ReflectableFactory::getBuiltinArray(typeInfo, rawArray, numBits);
     checkArray(rawArray, reflectable,
             [&](int8_t value, const IReflectableConstPtr& elementReflectable) {
@@ -1633,7 +1633,7 @@ TEST_F(ReflectableTest, dynamicSignedBitField5Array)
     const uint8_t maxBitSize = 8;
     const uint8_t numBits = 5;
     auto rawArray = std::vector<int8_t>{{-3, -1, 2, 4, 6}};
-    const ITypeInfo& typeInfo = BuiltinTypeInfo::getDynamicSignedBitField(maxBitSize);
+    const ITypeInfo& typeInfo = BuiltinTypeInfo<>::getDynamicSignedBitField(maxBitSize);
     auto reflectable = ReflectableFactory::getBuiltinArray(typeInfo, rawArray, numBits);
     checkArray(rawArray, reflectable,
             [&](int8_t value, const IReflectablePtr& elementReflectable) {
@@ -1655,7 +1655,7 @@ TEST_F(ReflectableTest, dynamicSignedBitField5Array)
 TEST_F(ReflectableTest, stringConstArray)
 {
     const auto rawArray = std::vector<std::string>{{"one", "two", "three"}};
-    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo::getString(), rawArray);
+    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getString(), rawArray);
     checkArray(rawArray, reflectable,
             [&](StringView value, const IReflectableConstPtr& elementReflectable) {
                 checkString(value, elementReflectable);
@@ -1666,7 +1666,7 @@ TEST_F(ReflectableTest, stringConstArray)
 TEST_F(ReflectableTest, stringArray)
 {
     auto rawArray = std::vector<std::string>{{"one", "two", "three"}};
-    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo::getString(), rawArray);
+    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getString(), rawArray);
     checkArray(rawArray, reflectable,
             [&](StringView value, const IReflectablePtr& elementReflectable) {
                 checkString(value, elementReflectable);

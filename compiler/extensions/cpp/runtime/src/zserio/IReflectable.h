@@ -41,7 +41,7 @@ public:
      *
      * \return Reference to the static instance of type info.
      */
-    virtual const ITypeInfo& getTypeInfo() const = 0;
+    virtual const IBasicTypeInfo<ALLOC>& getTypeInfo() const = 0;
 
     /**
      * Gets whether the reflected object is an array.

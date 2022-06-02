@@ -12,16 +12,18 @@ namespace zserio
 namespace
 {
 
-const std::array<FieldInfo, 1> FIELDS{
-    FieldInfo{
-        "text"_sv, BuiltinTypeInfo::getString(),
+template <typename ALLOC>
+const IBasicTypeInfo<ALLOC>& getDummyObjectTypeInfo()
+{
+    static const std::array<BasicFieldInfo<ALLOC>, 1> fields{BasicFieldInfo<ALLOC>{
+        "text"_sv, BuiltinTypeInfo<ALLOC>::getString(),
         {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-    }
-};
+    }};
 
-const StructTypeInfo DUMMY_OBJECT_TYPE_INFO{
-    "Dummy"_sv, {}, {}, FIELDS, {}, {}
-};
+    static const StructTypeInfo<ALLOC> typeInfo{"Dummy"_sv, {}, {}, fields, {}, {}};
+
+    return typeInfo;
+}
 
 template <typename ALLOC = std::allocator<uint8_t>>
 struct DummyObject
@@ -37,7 +39,7 @@ struct DummyObject
             using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
 
             explicit Reflectable(const ALLOC& allocator) :
-                    ReflectableConstAllocatorHolderBase<ALLOC>(DUMMY_OBJECT_TYPE_INFO, allocator)
+                    ReflectableConstAllocatorHolderBase<ALLOC>(getDummyObjectTypeInfo<ALLOC>(), allocator)
             {}
 
             virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override

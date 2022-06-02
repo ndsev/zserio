@@ -28,7 +28,8 @@ public:
      *
      * \return True when the walking should continue to the array.
      */
-    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) = 0;
+    virtual bool beforeArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      * Called after an array.
@@ -39,7 +40,8 @@ public:
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array, const FieldInfo& fieldInfo) = 0;
+    virtual bool afterArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) = 0;
 
     /**
      * Called before a compound object.
@@ -53,8 +55,8 @@ public:
      *
      * \return True when the walking should continue into the compound object, false otherwise.
      */
-    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
+    virtual bool beforeCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
      * Called after a compound object.
@@ -65,8 +67,8 @@ public:
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
+    virtual bool afterCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
      * Called before a simple (or an unset compound or array - i.e. nullptr) value.
@@ -77,8 +79,8 @@ public:
 
      * \return True when the walking should continue to the simple value, false otherwise.
      */
-    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
+    virtual bool beforeValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 
     /**
      * Called after a simple (or an unset compound or array - i.e. nullptr) value.
@@ -89,8 +91,8 @@ public:
      *
      * \return True when the walking should continue to a next sibling, false to return to the parent.
      */
-    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value, const FieldInfo& fieldInfo,
-            size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
+    virtual bool afterValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex = WALKER_NOT_ELEMENT) = 0;
 };
 
 /** Typedefs to walk filter interface provided for convenience - using default std::allocator<uint8_t>. */
