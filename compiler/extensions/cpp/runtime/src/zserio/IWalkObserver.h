@@ -3,6 +3,7 @@
 
 #include "zserio/WalkerConst.h"
 #include "zserio/IReflectable.h"
+#include "zserio/ITypeInfo.h"
 
 namespace zserio
 {

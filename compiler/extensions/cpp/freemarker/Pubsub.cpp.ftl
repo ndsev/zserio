@@ -48,9 +48,9 @@ ${name}::${name}(::zserio::IPubsub& pubsub, const ${types.allocator.default}& al
 }
 <#if withTypeInfoCode>
 
-const ::zserio::ITypeInfo& ${name}::typeInfo()
+const ${types.typeInfo.name}& ${name}::typeInfo()
 {
-    static const <@info_array_type "::zserio::MessageInfo", messageList?size/> messages<#rt>
+    static const <@info_array_type "::zserio::BasicMessageInfo<allocator_type>", messageList?size/> messages<#rt>
     <#if messageList?has_content>
         <#lt> = {
         <#list messageList as message>
@@ -61,7 +61,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
         <#lt>;
     </#if>
 
-    static const ::zserio::PubsubTypeInfo typeInfo = {
+    static const ::zserio::PubsubTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"), messages
     };
 

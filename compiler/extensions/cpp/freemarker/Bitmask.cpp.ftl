@@ -44,13 +44,15 @@ ${name}::${name}(underlying_type value) :
 </#if>
 <#if withTypeInfoCode>
 
-const ::zserio::ITypeInfo& ${name}::typeInfo()
+const ${types.typeInfo.name}& ${name}::typeInfo()
 {
+    using allocator_type = ${types.allocator.default};
+
     <@underlying_type_info_type_arguments_var "underlyingTypeArguments", bitSize!/>
 
     <@item_info_array_var "values", values/>
 
-    static const ::zserio::BitmaskTypeInfo typeInfo = {
+    static const ::zserio::BitmaskTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),
         <@type_info underlyingTypeInfo/>, underlyingTypeArguments, values
     };

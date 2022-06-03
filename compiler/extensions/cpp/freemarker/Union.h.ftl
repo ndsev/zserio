@@ -16,7 +16,7 @@
 #include <zserio/StringConvertUtil.h>
 #include <zserio/AllocatorPropagatingCopy.h>
 <#if withTypeInfoCode>
-#include <zserio/ITypeInfo.h>
+<@type_includes types.typeInfo/>
     <#if withReflectionCode>
 <@type_includes types.reflectablePtr/>
     </#if>
@@ -69,7 +69,7 @@ public:
     <@compound_allocator_propagating_copy_constructor_declaration compoundConstructorsData/>
 <#if withTypeInfoCode>
 
-    static const ::zserio::ITypeInfo& typeInfo();
+    static const ${types.typeInfo.name}& typeInfo();
     <#if withReflectionCode>
     ${types.reflectableConstPtr.name} reflectable(const allocator_type& allocator = allocator_type()) const;
     ${types.reflectablePtr.name} reflectable(const allocator_type& allocator = allocator_type());

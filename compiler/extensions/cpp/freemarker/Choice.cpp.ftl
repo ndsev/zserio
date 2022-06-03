@@ -121,7 +121,7 @@ ${I}}
     </#if>
 </#macro>
 <#if withTypeInfoCode>
-const ::zserio::ITypeInfo& ${name}::typeInfo()
+const ${types.typeInfo.name}& ${name}::typeInfo()
 {
     <@template_info_template_name_var "templateName", templateInstantiation!/>
     <@template_info_template_arguments_var "templateArguments", templateInstantiation!/>
@@ -141,7 +141,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     </#list>
     <@case_info_array_var "cases" caseMemberList defaultMember!/>
 
-    static const ::zserio::ChoiceTypeInfo typeInfo = {
+    static const ::zserio::ChoiceTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),
         templateName, templateArguments,
         fields, parameters, functions, ::zserio::makeStringView("${selectorExpression}"), cases

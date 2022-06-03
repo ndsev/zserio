@@ -9,14 +9,14 @@
 #include <zserio/AllocatorHolder.h>
 #include <zserio/ServiceException.h>
 <#if withTypeInfoCode>
-#include <zserio/ITypeInfo.h>
+<@type_includes types.typeInfo/>
 </#if>
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 <@namespace_begin [name]/>
 
 <#if withTypeInfoCode>
-const ::zserio::ITypeInfo& typeInfo();
+const ${types.typeInfo.name}& typeInfo();
 
 </#if>
 class Service :

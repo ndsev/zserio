@@ -1,6 +1,6 @@
 <#macro type_info typeInfo>
     <#if typeInfo.typeInfoGetter??>
-        ::zserio::BuiltinTypeInfo::get${typeInfo.typeInfoGetter.suffix}(<#t>
+        ::zserio::BuiltinTypeInfo<allocator_type>::get${typeInfo.typeInfoGetter.suffix}(<#t>
                 <#if typeInfo.typeInfoGetter.arg??>${typeInfo.typeInfoGetter.arg}</#if>)<#t>
     <#else>
         <#if typeInfo.isEnum>
@@ -26,7 +26,7 @@ See https://developercommunity.visualstudio.com/t/Empty-std::array-constructor-r
 
 <#macro field_info_array_var varName fieldList indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const <@info_array_type "::zserio::FieldInfo", fieldList?size/> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::BasicFieldInfo<allocator_type>", fieldList?size/> ${varName}<#rt>
     <#if fieldList?has_content>
         <#lt> = {
         <#list fieldList as field>
@@ -40,7 +40,7 @@ ${I}};
 
 <#macro parameter_info_array_var varName parameterList indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const <@info_array_type "::zserio::ParameterInfo", parameterList?size/> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::BasicParameterInfo<allocator_type>", parameterList?size/> ${varName}<#rt>
     <#if parameterList?has_content>
         <#lt> = {
         <#list parameterList as parameter>
@@ -54,7 +54,7 @@ ${I}};
 
 <#macro function_info_array_var varName functionList indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const <@info_array_type "::zserio::FunctionInfo", functionList?size/> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::BasicFunctionInfo<allocator_type>", functionList?size/> ${varName}<#rt>
     <#if functionList?has_content>
         <#lt> = {
         <#list functionList as function>
@@ -68,7 +68,7 @@ ${I}};
 
 <#macro case_info_array_var varName caseMemberList defaultMember indent=1>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}static const <@info_array_type "::zserio::CaseInfo", caseMemberList?size + (defaultMember?has_content)?then(1, 0)/> ${varName}<#rt>
+${I}static const <@info_array_type "::zserio::BasicCaseInfo<allocator_type>", caseMemberList?size + (defaultMember?has_content)?then(1, 0)/> ${varName}<#rt>
     <#if caseMemberList?has_content || defaultMember?has_content>
         <#lt> = {
         <@case_info_array caseMemberList, defaultMember, indent+1/>
@@ -106,7 +106,7 @@ ${I}};
 
 <#macro field_info field comma indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::FieldInfo{
+${I}::zserio::BasicFieldInfo<allocator_type>{
 ${I}    ::zserio::makeStringView("${field.name}"), // schemaName
     <#if (field.optional?? && field.optional.isRecursive) || (field.array?? && field.array.elementIsRecursive)>
 ${I}    <@field_info_recursive_type_info_var_name field/>, // typeInfo
@@ -142,10 +142,10 @@ ${I}}<#if comma>,</#if>
 
 <#macro field_info_recursive_type_info_var field>
     <#if field.optional?? && field.optional.isRecursive>
-    static const ::zserio::RecursiveTypeInfo <@field_info_recursive_type_info_var_name field/>(
+    static const ::zserio::RecursiveTypeInfo<allocator_type> <@field_info_recursive_type_info_var_name field/>(
             &${field.typeInfo.typeFullName}::typeInfo);
     <#elseif field.array?? && field.array.elementIsRecursive>
-    static const ::zserio::RecursiveTypeInfo <@field_info_recursive_type_info_var_name field/>(
+    static const ::zserio::RecursiveTypeInfo<allocator_type> <@field_info_recursive_type_info_var_name field/>(
             &${field.array.elementTypeInfo.typeFullName}::typeInfo);
     </#if>
 </#macro>
@@ -196,7 +196,7 @@ ${I}}<#if comma>,</#if>
 
 <#macro parameter_info parameter comma indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::ParameterInfo{
+${I}::zserio::BasicParameterInfo<allocator_type>{
 ${I}    ::zserio::makeStringView("${parameter.name}"),
 ${I}    <@type_info parameter.typeInfo/>
 ${I}}<#if comma>,</#if>
@@ -204,7 +204,7 @@ ${I}}<#if comma>,</#if>
 
 <#macro function_info function comma indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::FunctionInfo{
+${I}::zserio::BasicFunctionInfo<allocator_type>{
 ${I}    ::zserio::makeStringView("${function.schemaName}"),
 ${I}    <@type_info function.returnTypeInfo/>,
 ${I}    ::zserio::makeStringView("${function.resultExpression?j_string}")
@@ -229,13 +229,13 @@ ${I}};
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#local fieldIndex=0>
     <#list caseMemberList as caseMember>
-${I}::zserio::CaseInfo{
+${I}::zserio::BasicCaseInfo<allocator_type>{
 ${I}    <@case_info_case_expressions_var_name caseMember?index/>,
 ${I}    <#if caseMember.compoundField??>&fields[${fieldIndex}]<#local fieldIndex+=1><#else>nullptr</#if>
 ${I}}<#if caseMember?has_next || defaultMember?has_content>,</#if>
     </#list>
     <#if defaultMember?has_content>
-${I}::zserio::CaseInfo{
+${I}::zserio::BasicCaseInfo<allocator_type>{
 ${I}    {}, <#if defaultMember.compoundField??>&fields[${fieldIndex}]<#local fieldIndex+=1><#else>nullptr</#if>
 ${I}}
     </#if>
@@ -248,7 +248,7 @@ ${I}::zserio::ItemInfo{ ::zserio::makeStringView("${name}"), ::zserio::makeStrin
 
 <#macro column_info field comma indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::ColumnInfo{
+${I}::zserio::BasicColumnInfo<allocator_type>{
 ${I}    ::zserio::makeStringView("${field.name}"), // schemaName
 ${I}    <@type_info field.typeInfo/>, // typeInfo
     <#if column_info_type_arguments_count(field) != 0>
@@ -293,12 +293,13 @@ ${I}    ::zserio::makeStringView("<#if parameter.isExplicit>explicit </#if>${par
 
 <#macro table_info field comma indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::TableInfo{ ::zserio::makeStringView("${field.name}"), <@type_info field.typeInfo/> }<#if comma>,</#if>
+${I}::zserio::BasicTableInfo<allocator_type>{ <#rt>
+        <#lt>::zserio::makeStringView("${field.name}"), <@type_info field.typeInfo/> }<#if comma>,</#if>
 </#macro>
 
 <#macro message_info message comma indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::MessageInfo{
+${I}::zserio::BasicMessageInfo<allocator_type>{
 ${I}    ::zserio::makeStringView("${message.name}"), // schemaName
 ${I}    <@type_info message.typeInfo/>, // typeInfo
 ${I}    <#if message.isPublished>true<#else>false</#if>, // isPublished
@@ -309,7 +310,7 @@ ${I}}<#if comma>,</#if>
 
 <#macro method_info method comma indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::MethodInfo{
+${I}::zserio::BasicMethodInfo<allocator_type>{
 ${I}    ::zserio::makeStringView("${method.name}"), // schemaName
 ${I}    <@type_info method.responseTypeInfo/>, // responseTypeInfo
 ${I}    <@type_info method.requestTypeInfo/>, // requestTypeInfo
@@ -326,14 +327,14 @@ ${I}}<#if comma>,</#if>
 
 <#macro template_info_template_arguments_var varName, templateInstantiation>
     <#if templateInstantiation?has_content>
-    static const ::std::array<::zserio::TemplateArgumentInfo, ${templateInstantiation.templateArgumentTypeInfos?size}> <#rt>
-            <#lt>${varName} = {
+    static const ::std::array<::zserio::BasicTemplateArgumentInfo<allocator_type><#rt>
+            <#lt>, ${templateInstantiation.templateArgumentTypeInfos?size}> ${varName} = {
         <#list templateInstantiation.templateArgumentTypeInfos as typeInfo>
-        ::zserio::TemplateArgumentInfo{<@type_info typeInfo/>}<#if typeInfo?has_next>,</#if>
+        ::zserio::BasicTemplateArgumentInfo<allocator_type>{<@type_info typeInfo/>}<#if typeInfo?has_next>,</#if>
         </#list>
     };
     <#else>
     <#-- See comment in info_array_type macro.  -->
-    static const ::zserio::Span<::zserio::TemplateArgumentInfo> templateArguments;
+    static const ::zserio::Span<::zserio::BasicTemplateArgumentInfo<allocator_type>> templateArguments;
     </#if>
 </#macro>

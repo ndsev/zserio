@@ -3,6 +3,7 @@
 
 #include "zserio/Span.h"
 #include "zserio/StringView.h"
+#include "zserio/IReflectable.h"
 
 namespace zserio
 {
@@ -75,6 +76,7 @@ enum class SchemaType
     PUBSUB /**< zserio pubsub type */
 };
 
+// forward declarations
 template <typename ALLOC>
 struct BasicFieldInfo;
 template <typename ALLOC>
@@ -322,6 +324,15 @@ public:
      * \throw CppRuntimeException If the zserio type is not service type.
      */
     virtual Span<const BasicMethodInfo<ALLOC>> getMethods() const = 0;
+
+    /**
+     * Creates new instance of the zserio compound type.
+     *
+     * \return New instance of zserio compound type.
+     *
+     * \throw CppRuntimeException If the zserio type is not compound type.
+     */
+    virtual IBasicReflectablePtr<ALLOC> createInstance() const = 0;
 };
 
 /**

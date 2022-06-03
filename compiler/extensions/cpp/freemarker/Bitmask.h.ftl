@@ -9,7 +9,7 @@
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
 <#if withTypeInfoCode>
-#include <zserio/ITypeInfo.h>
+<@type_includes types.typeInfo/>
     <#if withReflectionCode>
 <@type_includes types.reflectablePtr/>
     </#if>
@@ -59,7 +59,7 @@ public:
     ${name}& operator=(${name}&&) = default;
 <#if withTypeInfoCode>
 
-    static const ::zserio::ITypeInfo& typeInfo();
+    static const ${types.typeInfo.name}& typeInfo();
     <#if withReflectionCode>
     ${types.reflectablePtr.name} reflectable(<#rt>
             <#lt>const ${types.allocator.default}& allocator = ${types.allocator.default}()) const;

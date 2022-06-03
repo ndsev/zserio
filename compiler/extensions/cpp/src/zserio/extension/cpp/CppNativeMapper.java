@@ -68,23 +68,26 @@ public class CppNativeMapper
         vectorType = new NativeRuntimeAllocType(typesContext.getVector(), allocatorDefinition);
         mapType = new NativeRuntimeAllocType(typesContext.getMap(), allocatorDefinition);
         setType = new NativeRuntimeAllocType(typesContext.getSet(), allocatorDefinition);
-        bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(), allocatorDefinition,
-                stdUInt8Type, typesContext.getBitBufferArrayTraits());
+        bitBufferType = new NativeRuntimeAllocArrayableType(typesContext.getBitBuffer(),
+                allocatorDefinition, stdUInt8Type, typesContext.getBitBufferArrayTraits());
         packingContextNodeType = new NativeRuntimeAllocType(typesContext.getPackingContextNode(),
+                allocatorDefinition, stdUInt8Type);
+        typeInfoType = new NativeRuntimeAllocType(typesContext.getTypeInfo(),
                 allocatorDefinition, stdUInt8Type);
         reflectableFactoryType = new NativeRuntimeAllocType(typesContext.getRelectableFactory(),
                 allocatorDefinition, stdUInt8Type);
-        reflectablePtrType = new NativeRuntimeAllocType(typesContext.getReflectablePtr(), allocatorDefinition,
-                stdUInt8Type);
+        reflectablePtrType = new NativeRuntimeAllocType(typesContext.getReflectablePtr(),
+                allocatorDefinition, stdUInt8Type);
         reflectableConstPtrType = new NativeRuntimeAllocType(typesContext.getReflectableConstPtr(),
                 allocatorDefinition, stdUInt8Type);
-        serviceType = new NativeRuntimeAllocType(typesContext.getService(), allocatorDefinition, stdUInt8Type);
-        serviceClientType = new NativeRuntimeAllocType(typesContext.getServiceClient(), allocatorDefinition,
-                stdUInt8Type);
-        serviceDataPtrType = new NativeRuntimeAllocType(typesContext.getServiceDataPtr(), allocatorDefinition,
-                stdUInt8Type);
-        serviceDataType = new NativeRuntimeAllocType(typesContext.getServiceData(), allocatorDefinition,
-                stdUInt8Type);
+        serviceType = new NativeRuntimeAllocType(typesContext.getService(),
+                allocatorDefinition, stdUInt8Type);
+        serviceClientType = new NativeRuntimeAllocType(typesContext.getServiceClient(),
+                allocatorDefinition, stdUInt8Type);
+        serviceDataPtrType = new NativeRuntimeAllocType(typesContext.getServiceDataPtr(),
+                allocatorDefinition, stdUInt8Type);
+        serviceDataType = new NativeRuntimeAllocType(typesContext.getServiceData(),
+                allocatorDefinition, stdUInt8Type);
     }
 
     public CppNativeSymbol getCppSymbol(AstNode symbol) throws ZserioExtensionException
@@ -212,6 +215,11 @@ public class CppNativeMapper
     public NativeRuntimeAllocType getPackingContextNodeType()
     {
         return packingContextNodeType;
+    }
+
+    public NativeRuntimeAllocType getTypeInfoType()
+    {
+        return typeInfoType;
     }
 
     public NativeRuntimeAllocType getReflectableFactoryType()
@@ -550,6 +558,7 @@ public class CppNativeMapper
     private final NativeRuntimeAllocType setType;
     private final NativeRuntimeAllocArrayableType bitBufferType;
     private final NativeRuntimeAllocType packingContextNodeType;
+    private final NativeRuntimeAllocType typeInfoType;
     private final NativeRuntimeAllocType reflectableFactoryType;
     private final NativeRuntimeAllocType reflectablePtrType;
     private final NativeRuntimeAllocType reflectableConstPtrType;

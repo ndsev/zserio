@@ -81,15 +81,15 @@ ${name}::~${name}()
 }
 <#if withTypeInfoCode>
 
-const ::zserio::ITypeInfo& ${name}::typeInfo()
+const ${types.typeInfo.name}& ${name}::typeInfo()
 {
-    static const std::array<::zserio::TableInfo, ${fields?size}> tables = {
+    static const std::array<::zserio::BasicTableInfo<allocator_type>, ${fields?size}> tables = {
     <#list fields as field>
         <@table_info field field?has_next/>
     </#list>
     };
 
-    static const ::zserio::SqlDatabaseTypeInfo typeInfo = {
+    static const ::zserio::SqlDatabaseTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"), tables
     };
 

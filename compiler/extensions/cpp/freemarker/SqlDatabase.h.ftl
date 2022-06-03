@@ -20,7 +20,7 @@
 #include <zserio/ISqliteDatabase<#if !withWriterCode>Reader</#if>.h>
 #include <zserio/SqliteConnection.h>
 <#if withTypeInfoCode>
-#include <zserio/ITypeInfo.h>
+<@type_includes types.typeInfo/>
 </#if>
 <#if withValidationCode>
 #include <zserio/IValidationObserver.h>
@@ -67,7 +67,7 @@ public:
     ${name}& operator=(${name}&&) = delete;
 <#if withTypeInfoCode>
 
-    static const ::zserio::ITypeInfo& typeInfo();
+    static const ${types.typeInfo.name}& typeInfo();
 </#if>
 
     ::zserio::SqliteConnection& connection() noexcept override;

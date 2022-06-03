@@ -29,13 +29,15 @@ constexpr ::std::array<${fullName}, ${items?size}> EnumTraits<${fullName}>::valu
 <#if withTypeInfoCode>
 
 template <>
-const ITypeInfo& enumTypeInfo<${fullName}>()
+const ${types.typeInfo.name}& enumTypeInfo<${fullName}, ${types.allocator.default}>()
 {
+    using allocator_type = ${types.allocator.default};
+
     <@underlying_type_info_type_arguments_var "underlyingTypeArguments", bitSize!/>
 
     <@item_info_array_var "items", items/>
 
-    static const ::zserio::EnumTypeInfo typeInfo = {
+    static const ::zserio::EnumTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),
         <@type_info underlyingTypeInfo/>, underlyingTypeArguments, items
     };
@@ -52,7 +54,8 @@ ${types.reflectablePtr.name} enumReflectable(
     {
     public:
         explicit Reflectable(${fullName} value) :
-                ::zserio::ReflectableBase<${types.allocator.default}>(::zserio::enumTypeInfo<${fullName}>()),
+                ::zserio::ReflectableBase<${types.allocator.default}>(
+                        ::zserio::enumTypeInfo<${fullName}, ${types.allocator.default}>()),
                 m_value(value)
         {}
 

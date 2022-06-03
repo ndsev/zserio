@@ -17,9 +17,11 @@
 <@namespace_begin [name]/>
 
 <#if withTypeInfoCode>
-const ::zserio::ITypeInfo& typeInfo()
+const ${types.typeInfo.name}& typeInfo()
 {
-    static const <@info_array_type "::zserio::MethodInfo", methodList?size/> methods<#rt>
+    using allocator_type = ${types.allocator.default};
+
+    static const <@info_array_type "::zserio::BasicMethodInfo<allocator_type>", methodList?size/> methods<#rt>
     <#if methodList?has_content>
         <#lt> = {
         <#list methodList as method>
@@ -30,7 +32,7 @@ const ::zserio::ITypeInfo& typeInfo()
         <#lt>;
     </#if>
 
-    static const ::zserio::ServiceTypeInfo typeInfo = {
+    static const ::zserio::ServiceTypeInfo<${types.allocator.default}> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"), methods
     };
 

@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "zserio/ITypeInfo.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/String.h"
 #include "zserio/RebindAlloc.h"
@@ -12,6 +11,10 @@
 
 namespace zserio
 {
+
+// forward declaration
+template <typename ALLOC>
+class IBasicTypeInfo;
 
 /**
  * Interface for reflectable view to instances of zserio objects.

@@ -171,6 +171,7 @@ public abstract class CppTemplateData implements IncludeCollector
             set = new TemplatedTypeTemplateData(setType, setType.needsAllocatorArgument());
             bitBuffer = new TypeTemplateData(nativeMapper.getBitBufferType());
             packingContextNode = new TypeTemplateData(nativeMapper.getPackingContextNodeType());
+            typeInfo = new TypeTemplateData(nativeMapper.getTypeInfoType());
             reflectableFactory = new TypeTemplateData(nativeMapper.getReflectableFactoryType());
             reflectablePtr = new TypeTemplateData(nativeMapper.getReflectablePtrType());
             reflectableConstPtr = new TypeTemplateData(nativeMapper.getReflectableConstPtrType());
@@ -233,6 +234,11 @@ public abstract class CppTemplateData implements IncludeCollector
         public TypeTemplateData getPackingContextNode()
         {
             return packingContextNode;
+        }
+
+        public TypeTemplateData getTypeInfo()
+        {
+            return typeInfo;
         }
 
         public TypeTemplateData getReflectableFactory()
@@ -366,6 +372,7 @@ public abstract class CppTemplateData implements IncludeCollector
         private final TemplatedTypeTemplateData set;
         private final TypeTemplateData bitBuffer;
         private final TypeTemplateData packingContextNode;
+        private final TypeTemplateData typeInfo;
         private final TypeTemplateData reflectableFactory;
         private final TypeTemplateData reflectablePtr;
         private final TypeTemplateData reflectableConstPtr;

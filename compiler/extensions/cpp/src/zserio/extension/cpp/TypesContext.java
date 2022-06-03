@@ -39,6 +39,8 @@ public class TypesContext
                     false, false, "zserio/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BitBufferArrayTraits",
                     false, false, "zserio/ArrayTraits.h");
+            typeInfo = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ITypeInfo",
+                    false, false, "zserio/ITypeInfo.h");
             reflectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ReflectableFactory",
                     false, false, "zserio/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IReflectablePtr",
@@ -80,6 +82,8 @@ public class TypesContext
                     false, false, "zserio/pmr/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "BitBufferArrayTraits",
                     false, false, "zserio/pmr/ArrayTraits.h");
+            typeInfo = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ITypeInfo",
+                    false, false, "zserio/pmr/ITypeInfo.h");
             reflectableFactory = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "ReflectableFactory",
                     false, false, "zserio/pmr/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PMR_PACKAGE_NAME, "IReflectablePtr",
@@ -121,6 +125,8 @@ public class TypesContext
                     true, true, "zserio/ArrayTraits.h");
             bitBufferArrayTraits = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicBitBufferArrayTraits",
                     true, true, "zserio/ArrayTraits.h");
+            typeInfo = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "ITypeInfo",
+                    true, true, "zserio/IBasicTypeInfo.h");
             reflectableFactory = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "BasicReflectableFactory",
                     true, true, "zserio/Reflectable.h");
             reflectablePtr = new NativeTypeDefinition(ZSERIO_PACKAGE_NAME, "IBasicReflectablePtr",
@@ -238,6 +244,11 @@ public class TypesContext
         return bitBufferArrayTraits;
     }
 
+    public NativeTypeDefinition getTypeInfo()
+    {
+        return typeInfo;
+    }
+
     public NativeTypeDefinition getRelectableFactory()
     {
         return reflectableFactory;
@@ -330,6 +341,7 @@ public class TypesContext
     private final NativeTypeDefinition packingContextNode;
     private final NativeTypeDefinition stringArrayTraits;
     private final NativeTypeDefinition bitBufferArrayTraits;
+    private final NativeTypeDefinition typeInfo;
     private final NativeTypeDefinition reflectableFactory;
     private final NativeTypeDefinition reflectablePtr;
     private final NativeTypeDefinition reflectableConstPtr;

@@ -54,7 +54,7 @@ ${name}::${name}(::zserio::SqliteConnection& db, ::zserio::StringView tableName,
 }
 
 <#if withTypeInfoCode>
-const ::zserio::ITypeInfo& ${name}::typeInfo()
+const ${types.typeInfo.name}& ${name}::typeInfo()
 {
     <@template_info_template_name_var "templateName", templateInstantiation!/>
     <@template_info_template_arguments_var "templateArguments", templateInstantiation!/>
@@ -62,7 +62,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
     <#list fields as field>
     <@column_info_type_arguments_var field/>
     </#list>
-    static const <@info_array_type "::zserio::ColumnInfo", fields?size/> columns<#rt>
+    static const <@info_array_type "::zserio::BasicColumnInfo<allocator_type>", fields?size/> columns<#rt>
     <#if fields?has_content>
         <#lt> = {
         <#list fields as field>
@@ -89,7 +89,7 @@ const ::zserio::ITypeInfo& ${name}::typeInfo()
 
     static const bool isWithoutRowId = <#if isWithoutRowId>true<#else>false</#if>;
 
-    static const ::zserio::SqlTableTypeInfo typeInfo = {
+    static const ::zserio::SqlTableTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"), templateName, templateArguments,
         columns, sqlConstraint, virtualTableUsing, isWithoutRowId
     };

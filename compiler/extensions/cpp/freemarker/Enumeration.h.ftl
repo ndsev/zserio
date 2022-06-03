@@ -12,7 +12,7 @@
 #include <zserio/BitSizeOfCalculator.h>
 </#if>
 <#if withTypeInfoCode>
-#include <zserio/ITypeInfo.h>
+<@type_includes types.typeInfo/>
     <#if withReflectionCode>
 <@type_includes types.reflectablePtr/>
     </#if>
@@ -52,7 +52,7 @@ struct EnumTraits<${fullName}>
 <#if withTypeInfoCode>
 
 template <>
-const ::zserio::ITypeInfo& enumTypeInfo<${fullName}>();
+const ${types.typeInfo.name}& enumTypeInfo<${fullName}, ${types.allocator.default}>();
     <#if withReflectionCode>
 
 template <>

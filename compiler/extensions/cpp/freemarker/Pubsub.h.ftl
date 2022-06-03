@@ -8,7 +8,7 @@
 #include <zserio/IPubsub.h>
 #include <zserio/PubsubException.h>
 <#if withTypeInfoCode>
-#include <zserio/ITypeInfo.h>
+<@type_includes types.typeInfo/>
 </#if>
 <@type_includes types.vector/>
 <@user_includes headerUserIncludes/>
@@ -27,7 +27,7 @@ public:
     ${name}& operator=(${name}&&) = delete;
 <#if withTypeInfoCode>
 
-    static const ::zserio::ITypeInfo& typeInfo();
+    static const ${types.typeInfo.name}& typeInfo();
 </#if>
 <#if hasSubscribing>
 
