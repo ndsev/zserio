@@ -309,7 +309,7 @@ private:
 
     vector<string<ALLOC>, ALLOC> m_currentPath;
     std::regex m_pathRegex;
-    ALLOC m_allocator; // TODO[Mi-L@]: Check how std::regex_match allocates when resutls are omitted!
+    ALLOC m_allocator; // TODO[Mi-L@]: Check how std::regex_match allocates when results are omitted!
 };
 
 /**

@@ -147,8 +147,8 @@ public final class ZserioIO
     }
 
     /**
-     * Finds a constructor for a given class matching a given argument list. For primitive paramter types,
-     * a boxed argument will be regarded as a a match, e.g. an Integer argument will match an int paramter.
+     * Finds a constructor for a given class matching a given argument list. For primitive parameter types,
+     * a boxed argument will be regarded as a a match, e.g. an Integer argument will match an int parameter.
      *
      * @param <E>     Class to be constructed.
      * @param clazz   Class instance of this class.

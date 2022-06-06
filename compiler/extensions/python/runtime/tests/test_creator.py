@@ -315,7 +315,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         self.assertEqual(13, obj.value)
         self.assertEqual("test", obj.text)
 
-    def test_create_object_set_nested(self):
+    def test_create_object_full(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
 
         creator.begin_root()

@@ -37,7 +37,8 @@ public:
         };
 
         static const StructTypeInfo<std::allocator<uint8_t>> structTypeInfo(
-                "RecursiveObject"_sv, ""_sv, {}, fields, {}, {});
+            "RecursiveObject"_sv, nullptr, ""_sv, {}, fields, {}, {}
+        );
         return structTypeInfo;
     }
 };
@@ -85,6 +86,8 @@ protected:
         ASSERT_THROW(typeInfo.getMethods(), CppRuntimeException);
     }
 };
+
+// TODO[Mi-L@]: Test all structures (e.g. FieldInfo).
 
 TEST_F(TypeInfoTest, builtinTypeInfo)
 {
@@ -239,7 +242,7 @@ TEST_F(TypeInfoTest, builtinTypeInfo)
 
 TEST_F(TypeInfoTest, structTypeInfo)
 {
-    const StructTypeInfo<std::allocator<uint8_t>> structTypeInfo(""_sv, ""_sv, {}, {}, {}, {});
+    const StructTypeInfo<std::allocator<uint8_t>> structTypeInfo(""_sv, nullptr, ""_sv, {}, {}, {}, {});
     ASSERT_EQ(""_sv, structTypeInfo.getSchemaName());
     ASSERT_EQ(SchemaType::STRUCT, structTypeInfo.getSchemaType());
     ASSERT_EQ(CppType::STRUCT, structTypeInfo.getCppType());
@@ -274,7 +277,7 @@ TEST_F(TypeInfoTest, structTypeInfo)
 
 TEST_F(TypeInfoTest, unionTypeInfo)
 {
-    const UnionTypeInfo<std::allocator<uint8_t>> unionTypeInfo(""_sv, ""_sv, {}, {}, {}, {});
+    const UnionTypeInfo<std::allocator<uint8_t>> unionTypeInfo(""_sv, nullptr, ""_sv, {}, {}, {}, {});
     ASSERT_EQ(""_sv, unionTypeInfo.getSchemaName());
     ASSERT_EQ(SchemaType::UNION, unionTypeInfo.getSchemaType());
     ASSERT_EQ(CppType::UNION, unionTypeInfo.getCppType());
@@ -309,7 +312,8 @@ TEST_F(TypeInfoTest, unionTypeInfo)
 
 TEST_F(TypeInfoTest, choiceTypeInfo)
 {
-    const ChoiceTypeInfo<std::allocator<uint8_t>> choiceTypeInfo(""_sv, ""_sv, {}, {}, {}, {}, ""_sv, {});
+    const ChoiceTypeInfo<std::allocator<uint8_t>> choiceTypeInfo(
+            ""_sv, nullptr, ""_sv, {}, {}, {}, {}, ""_sv, {});
     ASSERT_EQ(""_sv, choiceTypeInfo.getSchemaName());
     ASSERT_EQ(SchemaType::CHOICE, choiceTypeInfo.getSchemaType());
     ASSERT_EQ(CppType::CHOICE, choiceTypeInfo.getCppType());

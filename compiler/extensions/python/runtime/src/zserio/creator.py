@@ -34,7 +34,6 @@ class ZserioTreeCreator:
             raise PythonRuntimeException(f"ZserioTreeCreator: Cannot begin root in state '{self._state}'!")
 
         self._value_stack.append(self._type_info.py_type())
-
         self._state = ZserioTreeCreator._State.IN_COMPOUND
 
     def end_root(self) -> typing.Any:
@@ -56,7 +55,7 @@ class ZserioTreeCreator:
         Creates an array field within the current compound.
 
         :param name: Name of the array field.
-        :raises PythonRuntimeException: When the field doesn't exists or when the creator is not in a compound.
+        :raises PythonRuntimeException: When the field doesn't exist or when the creator is not in a compound.
         """
 
         if self._state != ZserioTreeCreator._State.IN_COMPOUND:
@@ -90,7 +89,7 @@ class ZserioTreeCreator:
         Creates a compound field within the current compound.
 
         :param name: Name of the compound field.
-        :raises PythonRuntimeException: When the field doesn't exits or when the creator is not in a compound.
+        :raises PythonRuntimeException: When the field doesn't exist or when the creator is not in a compound.
         """
 
         if self._state != ZserioTreeCreator._State.IN_COMPOUND:
@@ -130,8 +129,6 @@ class ZserioTreeCreator:
         value = self._value_stack.pop()
         setattr(self._value_stack[-1], member_info.attributes[MemberAttribute.PROPERTY_NAME], value)
 
-        self._state = ZserioTreeCreator._State.IN_COMPOUND
-
     def set_value(self, name: str, value: typing.Any):
         """
         Sets field value within the current compound.
@@ -139,7 +136,7 @@ class ZserioTreeCreator:
         :param name: Name of the field.
         :param value: Value to set.
 
-        :raises PythonRuntimeException: When the field doesn't exits or when the creator is not in a compound.
+        :raises PythonRuntimeException: When the field doesn't exist or when the creator is not in a compound.
         """
 
         if self._state != ZserioTreeCreator._State.IN_COMPOUND:
@@ -154,7 +151,7 @@ class ZserioTreeCreator:
 
             if not isinstance(value, member_info.type_info.py_type):
                 raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', "
-                                             f"expected {member_info.type_info.py_type}")
+                                             f"expecting {member_info.type_info.py_type}")
 
         setattr(self._value_stack[-1], member_info.attributes[MemberAttribute.PROPERTY_NAME], value)
 
@@ -203,7 +200,7 @@ class ZserioTreeCreator:
 
         if self._state != ZserioTreeCreator._State.IN_COMPOUND or not self._member_info_stack:
             raise PythonRuntimeException("ZserioTreeCreator: Cannot end compound element in state "
-                                         f"'{self._state}'!" +
+                                         f"'{self._state}'" +
                                          (", expecting end_root!" if not self._member_info_stack else "!"))
 
         if not MemberAttribute.ARRAY_LENGTH in self._member_info_stack[-1].attributes:
@@ -217,6 +214,7 @@ class ZserioTreeCreator:
         """
         Adds the value to the array.
 
+        :param value: Value to add.
         :raises PythonRuntimeException: When the creator is not in an array of simple values.
         """
 
@@ -226,7 +224,7 @@ class ZserioTreeCreator:
 
         member_info = self._member_info_stack[-1]
         if value is not None and not isinstance(value, member_info.type_info.py_type):
-            raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', expected "
+            raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', expecting "
                                          f"{member_info.type_info.py_type}")
 
         self._value_stack[-1].append(value)
@@ -271,4 +269,3 @@ class ZserioTreeCreator:
         BEFORE_ROOT = enum.auto()
         IN_COMPOUND = enum.auto()
         IN_ARRAY = enum.auto()
-        DONE = enum.auto()

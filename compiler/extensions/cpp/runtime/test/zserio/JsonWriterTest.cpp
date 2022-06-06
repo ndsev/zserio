@@ -50,7 +50,7 @@ const FieldInfo DATA_FIELD_INFO{
 };
 
 const StructTypeInfo<std::allocator<uint8_t>> DUMMY_TYPE_INFO{
-    "Dummy"_sv, {}, {}, {}, {}, {}
+    "Dummy"_sv, nullptr, {}, {}, {}, {}, {}
 };
 
 const FieldInfo NESTED_FIELD_INFO{

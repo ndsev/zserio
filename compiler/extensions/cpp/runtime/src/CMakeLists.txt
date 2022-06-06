@@ -99,6 +99,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/VarSizeUtil.h
     zserio/Walker.h
     zserio/WalkerConst.h
+    zserio/ZserioTreeCreator.h
 )
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)

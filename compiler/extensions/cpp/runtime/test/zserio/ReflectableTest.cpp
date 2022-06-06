@@ -30,6 +30,10 @@ public:
         static const DummyBitmask WRITE;
     };
 
+    DummyBitmask() :
+            m_value(0)
+    {}
+
     explicit DummyBitmask(BitStreamReader& in) :
         m_value(readValue(in))
     {}
@@ -163,6 +167,7 @@ class DummyChild
 public:
     using allocator_type = std::allocator<uint8_t>;
 
+    explicit DummyChild(const allocator_type& = allocator_type()) {}
     explicit DummyChild(uint32_t value) : m_value(value) {}
     explicit DummyChild(BitStreamReader& in) : m_value(readValue(in)) {}
 
@@ -210,7 +215,11 @@ public:
         };
 
         static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
-            makeStringView("DummyChild"), templateName, templateArguments,
+            makeStringView("DummyChild"),
+            [](const std::allocator<uint8_t>& allocator) -> IReflectablePtr {
+                return std::allocate_shared<ReflectableOwner<DummyChild>>(allocator, allocator);
+            },
+            templateName, templateArguments,
             fields, parameters, functions
         };
 
@@ -467,6 +476,7 @@ class DummyParent
 public:
     using allocator_type = std::allocator<uint8_t>;
 
+    explicit DummyParent(const allocator_type& allocator = allocator_type()) : m_dummyChild(allocator) {};
     explicit DummyParent(DummyChild dummyChild) : m_dummyChild(dummyChild) {}
     explicit DummyParent(BitStreamReader& in) : m_dummyChild(readDummyChild(in)) {}
 
@@ -498,7 +508,11 @@ public:
         static const Span<FunctionInfo> functions;
 
         static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
-            makeStringView("DummyParent"), templateName, templateArguments,
+            makeStringView("DummyParent"),
+            [](const std::allocator<uint8_t>& allocator) -> IReflectablePtr {
+                return std::allocate_shared<ReflectableOwner<DummyParent>>(allocator, allocator);
+            },
+            templateName, templateArguments,
             fields, parameters, functions
         };
 

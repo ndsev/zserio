@@ -332,7 +332,7 @@ public:
      *
      * \throw CppRuntimeException If the zserio type is not compound type.
      */
-    virtual IBasicReflectablePtr<ALLOC> createInstance() const = 0;
+    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const = 0;
 };
 
 /**

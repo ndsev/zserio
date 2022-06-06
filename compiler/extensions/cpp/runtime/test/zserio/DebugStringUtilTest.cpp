@@ -12,22 +12,31 @@ namespace zserio
 namespace
 {
 
-template <typename ALLOC>
-const IBasicTypeInfo<ALLOC>& getDummyObjectTypeInfo()
-{
-    static const std::array<BasicFieldInfo<ALLOC>, 1> fields{BasicFieldInfo<ALLOC>{
-        "text"_sv, BuiltinTypeInfo<ALLOC>::getString(),
-        {}, {}, {}, {}, false, {}, {}, false, {}, false, false
-    }};
-
-    static const StructTypeInfo<ALLOC> typeInfo{"Dummy"_sv, {}, {}, fields, {}, {}};
-
-    return typeInfo;
-}
-
 template <typename ALLOC = std::allocator<uint8_t>>
 struct DummyObject
 {
+    using allocator_type = ALLOC;
+
+    DummyObject(const allocator_type& = ALLOC()) {}
+
+    static const IBasicTypeInfo<ALLOC>& getDummyObjectTypeInfo()
+    {
+        static const std::array<BasicFieldInfo<ALLOC>, 1> fields{BasicFieldInfo<ALLOC>{
+            "text"_sv, BuiltinTypeInfo<ALLOC>::getString(),
+            {}, {}, {}, {}, false, {}, {}, false, {}, false, false
+        }};
+
+        static const StructTypeInfo<ALLOC> typeInfo{
+            "Dummy"_sv,
+            [](const ALLOC& allocator) -> IBasicReflectablePtr<ALLOC> {
+                return std::allocate_shared<ReflectableOwner<DummyObject>>(allocator, allocator);
+            },
+            {}, {}, fields, {}, {}
+        };
+
+        return typeInfo;
+    }
+
     IBasicReflectableConstPtr<ALLOC> reflectable(const ALLOC& allocator = ALLOC()) const
     {
         class Reflectable : public ReflectableConstAllocatorHolderBase<ALLOC>
@@ -39,10 +48,58 @@ struct DummyObject
             using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
 
             explicit Reflectable(const ALLOC& allocator) :
-                    ReflectableConstAllocatorHolderBase<ALLOC>(getDummyObjectTypeInfo<ALLOC>(), allocator)
+                    ReflectableConstAllocatorHolderBase<ALLOC>(getDummyObjectTypeInfo(), allocator)
             {}
 
             virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+            {
+                if (name == makeStringView("text"))
+                {
+                    return BasicReflectableFactory<ALLOC>::getString(m_text, get_allocator());
+                }
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {
+            }
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+        private:
+            const string<ALLOC> m_text = "test";
+        };
+
+        return std::allocate_shared<Reflectable>(allocator, allocator);
+    }
+
+    IBasicReflectablePtr<ALLOC> reflectable(const ALLOC& allocator = ALLOC())
+    {
+        class Reflectable : public ReflectableConstAllocatorHolderBase<ALLOC>
+        {
+        public:
+            using ReflectableConstAllocatorHolderBase<ALLOC>::get_allocator;
+            using ReflectableConstAllocatorHolderBase<ALLOC>::getField;
+            using ReflectableConstAllocatorHolderBase<ALLOC>::getParameter;
+            using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
+
+            explicit Reflectable(const ALLOC& allocator) :
+                    ReflectableConstAllocatorHolderBase<ALLOC>(getDummyObjectTypeInfo(), allocator)
+            {}
+
+            virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+            {
+                if (name == makeStringView("text"))
+                {
+                    return BasicReflectableFactory<ALLOC>::getString(m_text, get_allocator());
+                }
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+            }
+
+            virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
                 {

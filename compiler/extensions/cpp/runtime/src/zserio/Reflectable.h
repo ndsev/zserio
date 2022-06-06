@@ -49,8 +49,11 @@ public:
     virtual const IBasicTypeInfo<ALLOC>& getTypeInfo() const override;
     virtual bool isArray() const override;
 
+    virtual void initializeChildren() override;
+
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
+    virtual IBasicReflectablePtr<ALLOC> createOptionalField(StringView name) override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
@@ -65,10 +68,13 @@ public:
     virtual IBasicReflectablePtr<ALLOC> operator[](StringView path) override;
 
     virtual size_t size() const override;
+    virtual void resize(size_t size) override;
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override;
     virtual IBasicReflectablePtr<ALLOC> at(size_t index) override;
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override;
     virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override;
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override;
+    virtual void append(const AnyHolder<ALLOC>& value) override;
 
     // exact checked getters
     virtual bool getBool() const override;
@@ -1031,8 +1037,11 @@ public:
         return true;
     }
 
+    virtual void initializeChildren() override;
+
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
+    virtual IBasicReflectablePtr<ALLOC> createOptionalField(StringView name) override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
@@ -1079,8 +1088,11 @@ public:
     using Base::ReflectableArrayBase;
     using Base::getTypeInfo;
 
+    virtual void resize(size_t index) override;
     virtual IBasicReflectablePtr<ALLOC> at(size_t index) override;
     virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override;
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override;
+    virtual void append(const AnyHolder<ALLOC>& value) override;
 };
 
 /**
@@ -1144,6 +1156,11 @@ public:
         return m_rawArray.size();
     }
 
+    virtual void resize(size_t size) override
+    {
+        m_rawArray.resize(size);
+    }
+
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         return std::allocate_shared<BuiltinReflectable>(
@@ -1164,6 +1181,16 @@ public:
     virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
+    }
+
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index)
+    {
+        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+    }
+
+    virtual void append(const AnyHolder<ALLOC>& value)
+    {
+        m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
 
 private:
@@ -1237,6 +1264,11 @@ public:
         return m_rawArray.size();
     }
 
+    virtual void resize(size_t size) override
+    {
+        m_rawArray.resize(size);
+    }
+
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         return std::allocate_shared<IntegralReflectable>(
@@ -1257,6 +1289,16 @@ public:
     virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
+    }
+
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index)
+    {
+        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+    }
+
+    virtual void append(const AnyHolder<ALLOC>& value)
+    {
+        m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
 
 private:
@@ -1322,6 +1364,11 @@ public:
         return m_rawArray.size();
     }
 
+    virtual void resize(size_t size) override
+    {
+        m_rawArray.resize(size);
+    }
+
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         return m_rawArray.at(index).reflectable(Base::get_allocator());
@@ -1340,6 +1387,16 @@ public:
     virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
     {
         return at(index);
+    }
+
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    {
+        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+    }
+
+    virtual void append(const AnyHolder<ALLOC>& value)
+    {
+        m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
 
 private:
@@ -1411,6 +1468,11 @@ public:
         return m_rawArray.size();
     }
 
+    virtual void resize(size_t size) override
+    {
+        m_rawArray.resize(size);
+    }
+
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
         return enumReflectable(m_rawArray.at(index), Base::get_allocator());
@@ -1431,10 +1493,188 @@ public:
         return at(index);
     }
 
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    {
+        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+    }
+
+    virtual void append(const AnyHolder<ALLOC>& value)
+    {
+        m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
+    }
+
 private:
     RAW_ARRAY& m_rawArray;
 };
 /** \} */
+
+template <typename T, typename ALLOC = typename T::allocator_type>
+class ReflectableOwner : public IBasicReflectable<ALLOC>
+{
+public:
+    ReflectableOwner(const ALLOC& allocator = ALLOC()) :
+            m_object(allocator),
+            m_reflectable(m_object.reflectable(allocator))
+    {}
+
+    virtual const IBasicTypeInfo<ALLOC>& getTypeInfo() const override
+    {
+        return m_reflectable->getTypeInfo();
+    }
+
+    virtual bool isArray() const override
+    {
+        return m_reflectable->isArray();
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
+    {
+        return m_reflectable->getField(name);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
+    {
+        return m_reflectable->getField(name);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> createOptionalField(StringView name) override
+    {
+        return m_reflectable->createOptionalField(name);
+    }
+
+    virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override
+    {
+        m_reflectable->setField(name, value);
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
+    {
+        return m_reflectable->getParameter(name);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
+    {
+        return m_reflectable->getParameter(name);
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> callFunction(StringView name) const override
+    {
+        return m_reflectable->callFunction(name);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> callFunction(StringView name) override
+    {
+        return m_reflectable->callFunction(name);
+    }
+
+    virtual StringView getChoice() const override
+    {
+        return m_reflectable->getChoice();
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> find(StringView path) const override
+    {
+        return m_reflectable->find(path);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> find(StringView path) override
+    {
+        return m_reflectable->find(path);
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> operator[](StringView path) const override
+    {
+        return m_reflectable->operator[](path);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> operator[](StringView path) override
+    {
+        return m_reflectable->operator[](path);
+    }
+
+    virtual size_t size() const override
+    {
+        return m_reflectable->size();
+    }
+
+    virtual void resize(size_t size) override
+    {
+        m_reflectable->resize(size);
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    {
+        return m_reflectable->at(index);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    {
+        return m_reflectable->at(index);
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    {
+        return m_reflectable->operator[](index);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    {
+        return m_reflectable->operator[](index);
+    }
+
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    {
+        m_reflectable->setAt(value, index);
+    }
+
+    virtual void append(const AnyHolder<ALLOC>& value) override
+    {
+        m_reflectable->append(value);
+    }
+
+    // exact checked getters
+    virtual bool getBool() const override { return m_reflectable->getBool(); }
+    virtual int8_t getInt8() const override { return m_reflectable->getInt8(); }
+    virtual int16_t getInt16() const override { return m_reflectable->getInt16(); }
+    virtual int32_t getInt32() const override { return m_reflectable->getInt32(); }
+    virtual int64_t getInt64() const override { return m_reflectable->getInt64(); }
+    virtual uint8_t getUInt8() const override { return m_reflectable->getUInt8(); }
+    virtual uint16_t getUInt16() const override { return m_reflectable->getUInt16(); }
+    virtual uint32_t getUInt32() const override { return m_reflectable->getUInt32(); }
+    virtual uint64_t getUInt64() const override { return m_reflectable->getUInt64(); }
+    virtual float getFloat() const override { return m_reflectable->getFloat(); }
+    virtual double getDouble() const override { return m_reflectable->getDouble(); }
+    virtual StringView getString() const override { return m_reflectable->getString(); }
+    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override { return m_reflectable->getBitBuffer(); }
+
+    // convenience conversions
+    virtual int64_t toInt() const override { return m_reflectable->toInt(); }
+    virtual uint64_t toUInt() const override { return m_reflectable->toUInt(); }
+    virtual double toDouble() const override { return m_reflectable->toDouble(); }
+    virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override
+    {
+        return m_reflectable->toString(allocator);
+    }
+
+    virtual void initializeChildren() override
+    {
+        m_reflectable->initializeChildren();
+    }
+
+    virtual void write(BitStreamWriter& writer) const override
+    {
+        m_reflectable->write(writer);
+    }
+
+    virtual size_t bitSizeOf(size_t bitPosition = 0) const override
+    {
+        return m_reflectable->bitSizeOf(bitPosition);
+    }
+
+private:
+    T m_object;
+    IBasicReflectablePtr<ALLOC> m_reflectable;
+};
 
 /**
  * Factory used to make it easier to create reflectable instances.
@@ -1919,7 +2159,7 @@ public:
     }
 };
 
-/** Typedef to the reflectable factroy provided for convenience - using default std::allocator<uint8_t>. */
+/** Typedef to the reflectable factory provided for convenience - using default std::allocator<uint8_t>. */
 using ReflectableFactory = BasicReflectableFactory<std::allocator<uint8_t>>;
 
 template <typename ALLOC>
@@ -1944,6 +2184,12 @@ bool ReflectableBase<ALLOC>::isArray() const
 }
 
 template <typename ALLOC>
+void ReflectableBase<ALLOC>::initializeChildren()
+{
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not a compound type!";
+}
+
+template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView) const
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to get!";
@@ -1956,6 +2202,12 @@ IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView)
 }
 
 template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::createOptionalField(StringView)
+{
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to create!";
+}
+
+template <typename ALLOC>
 void ReflectableBase<ALLOC>::setField(StringView, const AnyHolder<ALLOC>&)
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to set!";
@@ -1964,13 +2216,13 @@ void ReflectableBase<ALLOC>::setField(StringView, const AnyHolder<ALLOC>&)
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::getParameter(StringView) const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no paramters to get!";
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no parameters to get!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::getParameter(StringView)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no paramters to get!";
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no parameters to get!";
 }
 
 template <typename ALLOC>
@@ -2022,6 +2274,12 @@ size_t ReflectableBase<ALLOC>::size() const
 }
 
 template <typename ALLOC>
+void ReflectableBase<ALLOC>::resize(size_t)
+{
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+}
+
+template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::at(size_t) const
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
@@ -2041,6 +2299,18 @@ IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::operator[](size_t) cons
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::operator[](size_t)
+{
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+}
+
+template <typename ALLOC>
+void ReflectableBase<ALLOC>::setAt(const AnyHolder<ALLOC>&, size_t)
+{
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+}
+
+template <typename ALLOC>
+void ReflectableBase<ALLOC>::append(const AnyHolder<ALLOC>&)
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
 }
@@ -2176,6 +2446,12 @@ IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::callFunc
 }
 
 template <typename ALLOC>
+void ReflectableArrayBase<ALLOC>::initializeChildren()
+{
+    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableArrayBase<ALLOC>::getField(StringView) const
 {
     throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
@@ -2183,6 +2459,12 @@ IBasicReflectableConstPtr<ALLOC> ReflectableArrayBase<ALLOC>::getField(StringVie
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::getField(StringView)
+{
+    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::createOptionalField(StringView)
 {
     throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }
@@ -2338,6 +2620,12 @@ size_t ReflectableArrayBase<ALLOC>::bitSizeOf(size_t) const
 }
 
 template <typename ALLOC>
+void ReflectableConstArrayBase<ALLOC>::resize(size_t)
+{
+    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+}
+
+template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstArrayBase<ALLOC>::at(size_t)
 {
     throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
@@ -2345,6 +2633,18 @@ IBasicReflectablePtr<ALLOC> ReflectableConstArrayBase<ALLOC>::at(size_t)
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstArrayBase<ALLOC>::operator[](size_t)
+{
+    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+}
+
+template <typename ALLOC>
+void ReflectableConstArrayBase<ALLOC>::setAt(const AnyHolder<ALLOC>&, size_t)
+{
+    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+}
+
+template <typename ALLOC>
+void ReflectableConstArrayBase<ALLOC>::append(const AnyHolder<ALLOC>&)
 {
     throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
 }

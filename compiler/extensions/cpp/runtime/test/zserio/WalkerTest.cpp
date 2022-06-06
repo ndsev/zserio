@@ -68,7 +68,8 @@ public:
         static const Span<FunctionInfo> functions;
 
         static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
-            makeStringView("DummyNested"), templateName, templateArguments,
+            makeStringView("DummyNested"), nullptr,
+            templateName, templateArguments,
             fields, parameters, functions
         };
 
@@ -204,7 +205,8 @@ public:
         static const Span<FunctionInfo> functions;
 
         static const UnionTypeInfo<std::allocator<uint8_t>> typeInfo = {
-            makeStringView("DummyUnion"), templateName, templateArguments,
+            makeStringView("DummyUnion"), nullptr,
+            templateName, templateArguments,
             fields, parameters, functions
         };
 
@@ -450,7 +452,8 @@ public:
         static const Span<FunctionInfo> functions;
 
         static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
-            makeStringView("DummyObject"), templateName, templateArguments,
+            makeStringView("DummyObject"), nullptr,
+            templateName, templateArguments,
             fields, parameters, functions
         };
 

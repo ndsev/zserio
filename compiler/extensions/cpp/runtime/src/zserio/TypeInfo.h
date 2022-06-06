@@ -77,6 +77,8 @@ public:
     virtual Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
     virtual Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
 
+    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+
 private:
     StringView m_schemaName;
     SchemaType m_schemaType;
@@ -461,6 +463,9 @@ template <typename ALLOC>
 class CompoundTypeInfoBase : public TemplatableTypeInfoBase<ALLOC>
 {
 public:
+    using TypeInfoBase<ALLOC>::getSchemaName;
+    using CreateInstanceFunc = IBasicReflectablePtr<ALLOC> (*)(const ALLOC&);
+
     /**
      * Constructor.
      *
@@ -473,7 +478,8 @@ public:
      * \param parameters The sequence of type informations for parameters.
      * \param functions The sequence of type informations for functions.
      */
-    CompoundTypeInfoBase(StringView schemaName, SchemaType schemaType, CppType cppType,
+    CompoundTypeInfoBase(StringView schemaName, CreateInstanceFunc createInstanceFunc,
+            SchemaType schemaType, CppType cppType,
             StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
             Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
             Span<const BasicFunctionInfo<ALLOC>> functions);
@@ -484,7 +490,10 @@ public:
     virtual Span<const BasicParameterInfo<ALLOC>> getParameters() const override;
     virtual Span<const BasicFunctionInfo<ALLOC>> getFunctions() const override;
 
+    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+
 private:
+    CreateInstanceFunc m_createInstanceFunc;
     Span<const BasicFieldInfo<ALLOC>> m_fields;
     Span<const BasicParameterInfo<ALLOC>> m_parameters;
     Span<const BasicFunctionInfo<ALLOC>> m_functions;
@@ -497,6 +506,8 @@ template <typename ALLOC>
 class StructTypeInfo : public CompoundTypeInfoBase<ALLOC>
 {
 public:
+    using CreateInstanceFunc = typename CompoundTypeInfoBase<ALLOC>::CreateInstanceFunc;
+
     /**
      * Constructor.
      *
@@ -507,7 +518,7 @@ public:
      * \param parameters The sequence of type informations for parameters.
      * \param functions The sequence of type informations for functions.
      */
-    StructTypeInfo(StringView schemaName,
+    StructTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc,
             StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
             Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
             Span<const BasicFunctionInfo<ALLOC>> functions);
@@ -520,6 +531,8 @@ template <typename ALLOC>
 class UnionTypeInfo : public CompoundTypeInfoBase<ALLOC>
 {
 public:
+    using CreateInstanceFunc = typename CompoundTypeInfoBase<ALLOC>::CreateInstanceFunc;
+
     /**
      * Constructor.
      *
@@ -530,7 +543,7 @@ public:
      * \param parameters The sequence of type informations for parameters.
      * \param functions The sequence of type informations for functions.
      */
-    UnionTypeInfo(StringView schemaName,
+    UnionTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc,
             StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
             Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
             Span<const BasicFunctionInfo<ALLOC>> functions);
@@ -543,6 +556,8 @@ template <typename ALLOC>
 class ChoiceTypeInfo : public CompoundTypeInfoBase<ALLOC>
 {
 public:
+    using CreateInstanceFunc = typename CompoundTypeInfoBase<ALLOC>::CreateInstanceFunc;
+
     /**
      * Constructor.
      *
@@ -555,7 +570,7 @@ public:
      * \param selector The selector expression.
      * \param cases The sequence of type informations for cases.
      */
-    ChoiceTypeInfo(StringView schemaName,
+    ChoiceTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc,
             StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
             Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
             Span<const BasicFunctionInfo<ALLOC>> functions, StringView selector,
@@ -805,6 +820,8 @@ public:
     virtual Span<const BasicMessageInfo<ALLOC>> getMessages() const override;
     virtual Span<const BasicMethodInfo<ALLOC>> getMethods() const override;
 
+    virtual IBasicReflectablePtr<ALLOC> createInstance(const ALLOC& allocator) const override;
+
 private:
     TypeInfoFunc m_typeInfoFunc;
 };
@@ -949,6 +966,12 @@ template <typename ALLOC>
 Span<const BasicMethodInfo<ALLOC>> TypeInfoBase<ALLOC>::getMethods() const
 {
     throw CppRuntimeException("Type '") + getSchemaName() + "' is not a service type!";
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> TypeInfoBase<ALLOC>::createInstance(const ALLOC&) const
+{
+    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a compound type!";
 }
 
 template <typename ALLOC>
@@ -1528,11 +1551,13 @@ Span<const BasicTemplateArgumentInfo<ALLOC>> TemplatableTypeInfoBase<ALLOC>::get
 }
 
 template <typename ALLOC>
-CompoundTypeInfoBase<ALLOC>::CompoundTypeInfoBase(StringView schemaName, SchemaType schemaType, CppType cppType,
+CompoundTypeInfoBase<ALLOC>::CompoundTypeInfoBase(StringView schemaName, CreateInstanceFunc createInstanceFunc,
+        SchemaType schemaType, CppType cppType,
         StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
         Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
         Span<const BasicFunctionInfo<ALLOC>> functions) :
         TemplatableTypeInfoBase<ALLOC>(schemaName, schemaType, cppType, templateName, templateArguments),
+        m_createInstanceFunc(createInstanceFunc),
         m_fields(fields), m_parameters(parameters), m_functions(functions)
 {}
 
@@ -1559,30 +1584,38 @@ Span<const BasicFunctionInfo<ALLOC>> CompoundTypeInfoBase<ALLOC>::getFunctions()
 }
 
 template <typename ALLOC>
-StructTypeInfo<ALLOC>::StructTypeInfo(StringView schemaName,
+IBasicReflectablePtr<ALLOC> CompoundTypeInfoBase<ALLOC>::createInstance(const ALLOC& allocator) const
+{
+    if (!m_createInstanceFunc)
+        throw CppRuntimeException("Cannot create reflectable instance of '") + getSchemaName() + "'!";
+    return m_createInstanceFunc(allocator);
+}
+
+template <typename ALLOC>
+StructTypeInfo<ALLOC>::StructTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc,
         StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
         Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
         Span<const BasicFunctionInfo<ALLOC>> functions) :
-        CompoundTypeInfoBase<ALLOC>(schemaName, SchemaType::STRUCT, CppType::STRUCT,
+        CompoundTypeInfoBase<ALLOC>(schemaName, createInstanceFunc, SchemaType::STRUCT, CppType::STRUCT,
                 templateName, templateArguments, fields, parameters, functions)
 {}
 
 template <typename ALLOC>
-UnionTypeInfo<ALLOC>::UnionTypeInfo(StringView schemaName,
+UnionTypeInfo<ALLOC>::UnionTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc,
         StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
         Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
         Span<const BasicFunctionInfo<ALLOC>> functions) :
-        CompoundTypeInfoBase<ALLOC>(schemaName, SchemaType::UNION, CppType::UNION,
+        CompoundTypeInfoBase<ALLOC>(schemaName, createInstanceFunc, SchemaType::UNION, CppType::UNION,
                 templateName, templateArguments, fields, parameters, functions)
 {}
 
 template <typename ALLOC>
-ChoiceTypeInfo<ALLOC>::ChoiceTypeInfo(StringView schemaName,
+ChoiceTypeInfo<ALLOC>::ChoiceTypeInfo(StringView schemaName, CreateInstanceFunc createInstanceFunc,
         StringView templateName, Span<const BasicTemplateArgumentInfo<ALLOC>> templateArguments,
         Span<const BasicFieldInfo<ALLOC>> fields, Span<const BasicParameterInfo<ALLOC>> parameters,
         Span<const BasicFunctionInfo<ALLOC>> functions,
         StringView selector, Span<const BasicCaseInfo<ALLOC>> cases) :
-        CompoundTypeInfoBase<ALLOC>(schemaName, SchemaType::CHOICE, CppType::CHOICE,
+        CompoundTypeInfoBase<ALLOC>(schemaName, createInstanceFunc, SchemaType::CHOICE, CppType::CHOICE,
                 templateName, templateArguments, fields, parameters, functions),
         m_selector(selector), m_cases(cases)
 {}
@@ -1847,6 +1880,12 @@ template <typename ALLOC>
 Span<const BasicMethodInfo<ALLOC>> RecursiveTypeInfo<ALLOC>::getMethods() const
 {
     return m_typeInfoFunc().getMethods();
+}
+
+template <typename ALLOC>
+IBasicReflectablePtr<ALLOC> RecursiveTypeInfo<ALLOC>::createInstance(const ALLOC& allocator) const
+{
+    return m_typeInfoFunc().createInstance(allocator);
 }
 
 } // namespace zserio

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "zserio/BitBuffer.h"
+#include "zserio/Span.h"
 #include "zserio/String.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/AnyHolder.h"
@@ -54,6 +55,17 @@ public:
     virtual bool isArray() const = 0;
 
     /**
+     * Initializes children of the reflected compound. Calls initializeChildren method on the generated
+     * C++ object, which recursively initialzes the whole object tree. When nothing within the object tree is
+     * parameterized, does nothing.
+     *
+     * \note This method is designed to be called on the top level object (i.e. root).
+     *
+     * \throw CppRuntimeException When the reflected object is not a compound type.
+     */
+    virtual void initializeChildren() = 0;
+
+    /**
      * Gets reflectable view to the field (i.e. member) with the given schema name.
      *
      * \note Can be called only when the reflected object is a zserio compound type.
@@ -83,15 +95,27 @@ public:
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) = 0;
 
     /**
+     * Creates an optional field within current object and returns reflectable pointer to it.
+     *
+     * \param name Name of the optional field to create.
+     *
+     * \return Reflectable to just created object.
+     *
+     * \throw CppRuntimeException When the reflected object is not a compound type or when the field with
+     *                            the given name doesn't exists or is not an optional or is already created!
+     */
+    virtual Ptr createOptionalField(StringView name) = 0;
+
+    /**
      * Gets reflectable view to the parameter (i.e. member) with the given schema name.
      *
      * \note Can be called only when the reflected object is a zserio compound type.
      *
      * \param name Parameter schema name.
      *
-     * \return Reflectable view to the requested paramter.
+     * \return Reflectable view to the requested parameter.
      *
-     * \throw CppRuntimeException When the reflected object is not a compound type or when the paramter with
+     * \throw CppRuntimeException When the reflected object is not a compound type or when the parameter with
      *                            the given name doesn't exist or when the parameter getter itself throws.
      */
     /** \{ */
@@ -132,10 +156,10 @@ public:
      * Universal accessor to zserio entities within the zserio sub-tree represented by the reflected object.
      *
      * Supports dot notation corresponding to the tree defined in zserio language. Can access fields or
-     * paramters or call functions within the zserio sub-tree.
+     * parameters or call functions within the zserio sub-tree.
      *
      * Examples:
-     * * 'fieldA.param' - Gets reflectable view to parameter 'param' whithin the parameterized field 'fieldA'.
+     * * 'fieldA.param' - Gets reflectable view to parameter 'param' within the parameterized field 'fieldA'.
      * * 'child.getValue' - Gets reflectable view to result of the function called on field ̈́'child'.
      * * 'child.nonexisting.field' - Gets nullptr since the path doesn't represent a valid entity.
      *
@@ -171,6 +195,17 @@ public:
     virtual size_t size() const = 0;
 
     /**
+     * Resizes the reflected array.
+     *
+     * \note Can be called only when the reflected object is an array.
+     *
+     * \param size New array size.
+     *
+     * \throws CppRuntimeException When the reflected object is not an array.
+     */
+    virtual void resize(size_t size) = 0;
+
+    /**
      * Gets reflectable view to an array element.
      *
      * \note Can be called only when the reflected object is an array.
@@ -194,6 +229,25 @@ public:
     virtual ConstPtr operator[](size_t index) const = 0;
     virtual Ptr operator[](size_t index) = 0;
     /** \} */
+
+    /**
+     * Sets an element value at the given index within the reflected array.
+     *
+     * \param value Value to set.
+     * \param index Index of the element to set.
+     *
+     * \throws CppRuntimeException When the reflected object is not an array.
+     */
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) = 0;
+
+    /**
+     * Appends an element at the given index within the reflected array.
+     *
+     * \param value Value to append.
+     *
+     * \throws CppRuntimeException When the reflected object is not an array.
+     */
+    virtual void append(const AnyHolder<ALLOC>& value) = 0;
 
     /**
      * Gets bool value of the bool reflectable.
