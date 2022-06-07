@@ -1,17 +1,15 @@
-#include <vector>
 #include <fstream>
-#include <string>
 
 #include "gtest/gtest.h"
 
 #include "zserio/RebindAlloc.h"
 #include "zserio/SerializeUtil.h"
-#include "zserio/JsonWriter.h"
-#include "zserio/Walker.h"
 
 #include "with_type_info_code/SqlDatabase.h"
 #include "with_type_info_code/SimplePubsub.h"
 #include "with_type_info_code/SimpleService.h"
+
+#include "WithTypeInfoCodeCreator.h"
 
 using namespace zserio::literals;
 
@@ -23,14 +21,6 @@ template <typename T>
 using vector_type = zserio::vector<T, allocator_type>;
 
 using BitBuffer = zserio::BasicBitBuffer<zserio::RebindAlloc<allocator_type, uint8_t>>;
-
-using Walker = zserio::BasicWalker<allocator_type>;
-using JsonWriter = zserio::BasicJsonWriter<allocator_type>;
-using IWalkFilter = zserio::IBasicWalkFilter<allocator_type>;
-using ArrayLengthWalkFilter = zserio::BasicArrayLengthWalkFilter<allocator_type>;
-using DepthWalkFilter = zserio::BasicDepthWalkFilter<allocator_type>;
-using RegexWalkFilter = zserio::BasicRegexWalkFilter<allocator_type>;
-using AndWalkFilter = zserio::BasicAndWalkFilter<allocator_type>;
 
 class WithTypeInfoCodeTest : public ::testing::Test
 {
@@ -173,7 +163,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(12, fields.size());
+        ASSERT_EQ(13, fields.size());
 
         // simpleStruct
         const zserio::FieldInfo& simpleStructField = fields[0];
@@ -380,8 +370,28 @@ protected:
         ASSERT_EQ(false, externDataField.isPacked);
         ASSERT_EQ(false, externDataField.isImplicit);
 
+        // externArray
+        const zserio::FieldInfo& externArrayField = fields[11];
+        ASSERT_EQ("externArray"_sv, externArrayField.schemaName);
+
+        ASSERT_EQ("extern"_sv, externArrayField.typeInfo.getSchemaName());
+        ASSERT_EQ(zserio::SchemaType::EXTERN, externArrayField.typeInfo.getSchemaType());
+        ASSERT_EQ(zserio::CppType::BIT_BUFFER, externArrayField.typeInfo.getCppType());
+
+        ASSERT_EQ(0, externArrayField.typeArguments.size());
+        ASSERT_EQ(""_sv, externArrayField.alignment);
+        ASSERT_EQ(""_sv, externArrayField.offset);
+        ASSERT_EQ(""_sv, externArrayField.initializer);
+        ASSERT_EQ(false, externArrayField.isOptional);
+        ASSERT_EQ(""_sv, externArrayField.optionalCondition);
+        ASSERT_EQ(""_sv, externArrayField.constraint);
+        ASSERT_EQ(true, externArrayField.isArray);
+        ASSERT_EQ(""_sv, externArrayField.arrayLength);
+        ASSERT_EQ(false, externArrayField.isPacked);
+        ASSERT_EQ(false, externArrayField.isImplicit);
+
         // implicitArray
-        const zserio::FieldInfo& implicitArrayField = fields[11];
+        const zserio::FieldInfo& implicitArrayField = fields[12];
         ASSERT_EQ("implicitArray"_sv, implicitArrayField.schemaName);
 
         ASSERT_EQ("uint32"_sv, implicitArrayField.typeInfo.getSchemaName());
@@ -586,7 +596,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const zserio::FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(10, fields.size());
+        ASSERT_EQ(11, fields.size());
 
         // simpleStruct
         const zserio::FieldInfo& simpleStructField = fields[0];
@@ -606,8 +616,26 @@ protected:
         ASSERT_EQ(false, simpleStructField.isPacked);
         ASSERT_EQ(false, simpleStructField.isImplicit);
 
+        // anotherSimpleStruct
+        const zserio::FieldInfo& anotherSimpleStructField = fields[1];
+        ASSERT_EQ("anotherSimpleStruct"_sv, anotherSimpleStructField.schemaName);
+
+        checkSimpleStruct(anotherSimpleStructField.typeInfo);
+
+        ASSERT_EQ(0, anotherSimpleStructField.typeArguments.size());
+        ASSERT_EQ(""_sv, anotherSimpleStructField.alignment);
+        ASSERT_EQ(""_sv, anotherSimpleStructField.offset);
+        ASSERT_EQ(""_sv, anotherSimpleStructField.initializer);
+        ASSERT_EQ(false, anotherSimpleStructField.isOptional);
+        ASSERT_EQ(""_sv, anotherSimpleStructField.optionalCondition);
+        ASSERT_EQ(""_sv, anotherSimpleStructField.constraint);
+        ASSERT_EQ(false, anotherSimpleStructField.isArray);
+        ASSERT_EQ(""_sv, anotherSimpleStructField.arrayLength);
+        ASSERT_EQ(false, anotherSimpleStructField.isPacked);
+        ASSERT_EQ(false, anotherSimpleStructField.isImplicit);
+
         // optionalSimpleStruct
-        const zserio::FieldInfo& optionalSimpleStructField = fields[1];
+        const zserio::FieldInfo& optionalSimpleStructField = fields[2];
         ASSERT_EQ("optionalSimpleStruct"_sv, optionalSimpleStructField.schemaName);
 
         checkSimpleStruct(optionalSimpleStructField.typeInfo);
@@ -625,7 +653,7 @@ protected:
         ASSERT_EQ(false, optionalSimpleStructField.isImplicit);
 
         // array
-        const zserio::FieldInfo& arrayField = fields[2];
+        const zserio::FieldInfo& arrayField = fields[3];
         ASSERT_EQ("array"_sv, arrayField.schemaName);
 
         ASSERT_EQ("uint32"_sv, arrayField.typeInfo.getSchemaName());
@@ -646,7 +674,7 @@ protected:
         ASSERT_EQ(false, arrayField.isImplicit);
 
         // arrayWithLen
-        const zserio::FieldInfo& arrayWithLenField = fields[3];
+        const zserio::FieldInfo& arrayWithLenField = fields[4];
         ASSERT_EQ("arrayWithLen"_sv, arrayWithLenField.schemaName);
 
         ASSERT_EQ("int:5"_sv, arrayWithLenField.typeInfo.getSchemaName());
@@ -667,13 +695,14 @@ protected:
         ASSERT_EQ(false, arrayWithLenField.isImplicit);
 
         // paramStructArray
-        const zserio::FieldInfo& paramStructArrayField = fields[4];
+        const zserio::FieldInfo& paramStructArrayField = fields[5];
         ASSERT_EQ("paramStructArray"_sv, paramStructArrayField.schemaName);
 
         checkParameterizedStruct(paramStructArrayField.typeInfo);
 
         ASSERT_EQ(1, paramStructArrayField.typeArguments.size());
-        ASSERT_EQ("getSimpleStruct()"_sv, paramStructArrayField.typeArguments[0]);
+        ASSERT_EQ("((index % 2) == 0) ? getSimpleStruct() : getAnotherSimpleStruct()"_sv,
+                paramStructArrayField.typeArguments[0]);
         ASSERT_EQ(""_sv, paramStructArrayField.alignment);
         ASSERT_EQ(""_sv, paramStructArrayField.offset);
         ASSERT_EQ(""_sv, paramStructArrayField.initializer);
@@ -686,7 +715,7 @@ protected:
         ASSERT_EQ(false, paramStructArrayField.isImplicit);
 
         // dynamicBitField
-        const zserio::FieldInfo& dynamicBitFieldField = fields[5];
+        const zserio::FieldInfo& dynamicBitFieldField = fields[6];
         ASSERT_EQ("dynamicBitField"_sv, dynamicBitFieldField.schemaName);
 
         ASSERT_EQ("bit<>"_sv, dynamicBitFieldField.typeInfo.getSchemaName());
@@ -707,7 +736,7 @@ protected:
         ASSERT_EQ(false, dynamicBitFieldField.isImplicit);
 
         // dynamicBitFieldArray
-        const zserio::FieldInfo& dynamicBitFieldArrayField = fields[6];
+        const zserio::FieldInfo& dynamicBitFieldArrayField = fields[7];
         ASSERT_EQ("dynamicBitFieldArray"_sv, dynamicBitFieldArrayField.schemaName);
 
         ASSERT_EQ("bit<>"_sv, dynamicBitFieldArrayField.typeInfo.getSchemaName());
@@ -730,7 +759,7 @@ protected:
         ASSERT_EQ(false, dynamicBitFieldArrayField.isImplicit);
 
         // optionalEnum
-        const zserio::FieldInfo& optionalEnumField = fields[7];
+        const zserio::FieldInfo& optionalEnumField = fields[8];
         ASSERT_EQ("optionalEnum"_sv, optionalEnumField.schemaName);
 
         checkTestEnum(optionalEnumField.typeInfo);
@@ -748,7 +777,7 @@ protected:
         ASSERT_EQ(false, optionalEnumField.isImplicit);
 
         // optionalBitmask
-        const zserio::FieldInfo& optionalBitmaskField = fields[8];
+        const zserio::FieldInfo& optionalBitmaskField = fields[9];
         ASSERT_EQ("optionalBitmask"_sv, optionalBitmaskField.schemaName);
 
         checkTestBitmask(optionalBitmaskField.typeInfo);
@@ -766,7 +795,7 @@ protected:
         ASSERT_EQ(false, optionalBitmaskField.isImplicit);
 
         // optionalExtern
-        const zserio::FieldInfo& optionalExternField = fields[9];
+        const zserio::FieldInfo& optionalExternField = fields[10];
         ASSERT_EQ("optionalExtern"_sv, optionalExternField.schemaName);
 
         ASSERT_EQ("extern"_sv, optionalExternField.typeInfo.getSchemaName());
@@ -1523,183 +1552,8 @@ protected:
         checkSimpleUnion(getSimpleStructMethod.requestTypeInfo);
     }
 
-    void fillWithTypeInfoCode(WithTypeInfoCode& withTypeInfoCode, bool createOptionals = true)
-    {
-        fillSimpleStruct(withTypeInfoCode.getSimpleStruct());
-        fillComplexStruct(withTypeInfoCode.getComplexStruct(), createOptionals);
-        fillParameterizedStruct(withTypeInfoCode.getParameterizedStruct(), withTypeInfoCode.getSimpleStruct());
-        fillRecursiveStruct(withTypeInfoCode.getRecursiveStruct());
-        fillRecursiveUnion(withTypeInfoCode.getRecursiveUnion());
-        fillRecursiveChoice(withTypeInfoCode.getRecursiveChoice(), true, false);
-        withTypeInfoCode.setSelector(TestEnum::TWO);
-        fillSimpleChoice(withTypeInfoCode.getSimpleChoice(), withTypeInfoCode.getSelector());
-        fillTS32(withTypeInfoCode.getTemplatedStruct());
-        fillTemplatedParameterizedStruct_TS32(withTypeInfoCode.getTemplatedParameterizedStruct(),
-                withTypeInfoCode.getTemplatedStruct());
-        const vector_type<uint8_t> buffer = {0xCA, 0xFE};
-        withTypeInfoCode.setExternData(BitBuffer(buffer, 15));
-        const vector_type<uint32_t> implicitArray = {1, 4, 6, 4, 6, 1};
-        withTypeInfoCode.setImplicitArray(implicitArray);
-
-        withTypeInfoCode.initializeChildren();
-    }
-
-    void fillSimpleStruct(SimpleStruct& simpleStruct)
-    {
-        simpleStruct.setFieldOffset(0);
-        simpleStruct.setFieldFloat32(4.0);
-    }
-
-    void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals)
-    {
-        fillSimpleStruct(complexStruct.getSimpleStruct());
-
-        if (createOptionals)
-        {
-            SimpleStruct simpleStruct;
-            fillSimpleStruct(simpleStruct);
-            complexStruct.setOptionalSimpleStruct(simpleStruct);
-        }
-
-        const vector_type<uint32_t> array = {3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5};
-        complexStruct.setArray(array);
-
-        const vector_type<int8_t> arrayWithLen = {3, 2, 1};
-        complexStruct.setArrayWithLen(arrayWithLen);
-
-        if (createOptionals)
-        {
-            ParameterizedStruct parameterizedStruct;
-            fillParameterizedStruct(parameterizedStruct, complexStruct.getSimpleStruct());
-            const vector_type<ParameterizedStruct> paramStructArray = {parameterizedStruct,
-                    parameterizedStruct};
-            complexStruct.setParamStructArray(paramStructArray);
-        }
-
-        complexStruct.setDynamicBitField(8);
-
-        vector_type<uint64_t> dynamicBitFieldArray;
-        for (uint64_t i = 1; i < 65536; i += 2)
-            dynamicBitFieldArray.push_back(i);
-        complexStruct.setDynamicBitFieldArray(dynamicBitFieldArray);
-
-        if (createOptionals)
-        {
-            complexStruct.setOptionalEnum(TestEnum::ItemThree);
-            complexStruct.setOptionalBitmask(TestBitmask::Values::RED);
-            const vector_type<uint8_t> buffer = {0xCB, 0xF0};
-            complexStruct.setOptionalExtern(BitBuffer(buffer, 12));
-        }
-    }
-
-    void fillParameterizedStruct(ParameterizedStruct& parameterizedStruct, const SimpleStruct& simpleStruct)
-    {
-        vector_type<uint8_t> array;
-        for (uint8_t i = 0; i < simpleStruct.getFieldU32(); i++)
-            array.push_back(i);
-        parameterizedStruct.setArray(array);
-    }
-
-    void fillRecursiveStruct(RecursiveStruct& recursiveStruct)
-    {
-        recursiveStruct.setFieldU32(0xDEAD1);
-        recursiveStruct.setFieldRecursion(RecursiveStruct(0xDEAD2, zserio::NullOpt,
-                vector_type<RecursiveStruct>()));
-        const vector_type<RecursiveStruct> arrayRecursion = {
-                RecursiveStruct(0xDEAD3, zserio::NullOpt, vector_type<RecursiveStruct>()),
-                RecursiveStruct(0xDEAD4, zserio::NullOpt, vector_type<RecursiveStruct>())};
-        recursiveStruct.setArrayRecursion(arrayRecursion);
-    }
-
-    void fillRecursiveUnion(RecursiveUnion& recursiveUnion)
-    {
-        RecursiveUnion recursiveUnionFieldU32;
-        recursiveUnionFieldU32.setFieldU32(0xDEAD);
-        const vector_type<RecursiveUnion> recursive = {recursiveUnionFieldU32};
-        recursiveUnion.setRecursive(recursive);
-    }
-
-    void fillRecursiveChoice(RecursiveChoice& recursiveChoice, bool param1, bool param2)
-    {
-        if (param1)
-        {
-            RecursiveChoice recursiveChoiceFalse;
-            fillRecursiveChoice(recursiveChoiceFalse, param2, false);
-            const vector_type<RecursiveChoice> recursive = {recursiveChoiceFalse};
-            recursiveChoice.setRecursive(recursive);
-        }
-        else
-        {
-            recursiveChoice.setFieldU32(0xDEAD);
-        }
-    }
-
-    void fillSimpleUnion(SimpleUnion& simpleUnion)
-    {
-        simpleUnion.setTestBitmask(TestBitmask::Values::Green);
-    }
-
-    void fillSimpleChoice(SimpleChoice& simpleChoice, const TestEnum& testEnum)
-    {
-        if (testEnum == TestEnum::TWO)
-        {
-            SimpleUnion simpleUnion;
-            fillSimpleUnion(simpleUnion);
-            simpleChoice.setFieldTwo(simpleUnion);
-        }
-        else
-        {
-            simpleChoice.setFieldDefault("text");
-        }
-    }
-
-    void fillTS32(TS32& ts32)
-    {
-        ts32.setField(0xDEAD);
-    }
-
-    void fillTemplatedParameterizedStruct_TS32(
-            TemplatedParameterizedStruct_TS32& templatedParameterizedStruct_TS32, const TS32& ts32)
-    {
-        vector_type<uint32_t> array;
-        for (uint32_t i = ts32.getField(); i > 0; --i)
-            array.push_back(i);
-        templatedParameterizedStruct_TS32.setArray(array);
-    }
-
-    std::string getJsonNameWithArrayLengthFilter(size_t arrayLength)
-    {
-        return std::string("arguments/with_type_info_code/with_type_info_code_array_length_") +
-                std::to_string(arrayLength) + ".json";
-    }
-
-    void checkJsonFile(const std::string& createdJsonFileName)
-    {
-        const std::string& createdJsonBaseName = createdJsonFileName.substr(
-                createdJsonFileName.find_last_of("/") + 1);
-        const std::string jsonDataFileName("arguments/with_type_info_code/data/" + createdJsonBaseName);
-
-        std::ifstream jsonCreatedFile(createdJsonFileName);
-        std::ifstream jsonExpectedFile(jsonDataFileName);
-        std::string createdLine;
-        std::string expectedLine;
-        while (std::getline(jsonCreatedFile, createdLine) && std::getline(jsonExpectedFile, expectedLine))
-            ASSERT_EQ(expectedLine, createdLine);
-        ASSERT_TRUE(jsonCreatedFile.eof());
-        ASSERT_TRUE(jsonExpectedFile.eof());
-    }
-
     static const std::string BLOB_NAME_WITH_OPTIONALS;
     static const std::string BLOB_NAME_WITHOUT_OPTIONALS;
-    static const std::string JSON_NAME_WRITE_READ_WITH_OPTIONALS;
-    static const std::string JSON_NAME_WRITE_READ_WITHOUT_OPTIONALS;
-    static const std::string JSON_NAME_WITH_OPTIONALS;
-    static const std::string JSON_NAME_WITHOUT_OPTIONALS;
-    static const std::string JSON_NAME_WITH_DEPTH0_FILTER;
-    static const std::string JSON_NAME_WITH_DEPTH5_FILTER;
-    static const std::string JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER;
-    static const std::string JSON_NAME_WITH_REGEX_FILTER;
-    static constexpr uint8_t JSON_INDENT = 4;
 
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
@@ -1708,22 +1562,6 @@ const std::string WithTypeInfoCodeTest::BLOB_NAME_WITH_OPTIONALS =
         "arguments/with_type_info_code/with_type_info_code_optionals.blob";
 const std::string WithTypeInfoCodeTest::BLOB_NAME_WITHOUT_OPTIONALS =
         "arguments/with_type_info_code/with_type_info_code.blob";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WRITE_READ_WITH_OPTIONALS =
-        "arguments/with_type_info_code/with_type_info_code_write_read_optionals.json";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WRITE_READ_WITHOUT_OPTIONALS =
-        "arguments/with_type_info_code/with_type_info_code_write_read.json";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_OPTIONALS =
-        "arguments/with_type_info_code/with_type_info_code_optionals.json";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WITHOUT_OPTIONALS =
-        "arguments/with_type_info_code/with_type_info_code.json";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_DEPTH0_FILTER =
-        "arguments/with_type_info_code/with_type_info_code_depth0.json";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_DEPTH5_FILTER =
-        "arguments/with_type_info_code/with_type_info_code_depth5.json";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER =
-        "arguments/with_type_info_code/with_type_info_code_depth1_array_length0.json";
-const std::string WithTypeInfoCodeTest::JSON_NAME_WITH_REGEX_FILTER =
-        "arguments/with_type_info_code/with_type_info_code_regex.json";
 
 TEST_F(WithTypeInfoCodeTest, checkSqlDatabase)
 {
@@ -1742,19 +1580,12 @@ TEST_F(WithTypeInfoCodeTest, checkSimpleService)
 
 TEST_F(WithTypeInfoCodeTest, writeReadFileWithOptionals)
 {
-
     WithTypeInfoCode withTypeInfoCode;
     fillWithTypeInfoCode(withTypeInfoCode);
     zserio::serializeToFile(withTypeInfoCode, BLOB_NAME_WITH_OPTIONALS);
     const WithTypeInfoCode readWithTypeInfoCode =
             zserio::deserializeFromFile<WithTypeInfoCode>(BLOB_NAME_WITH_OPTIONALS);
     ASSERT_EQ(withTypeInfoCode, readWithTypeInfoCode);
-
-    std::ofstream jsonFile(JSON_NAME_WRITE_READ_WITH_OPTIONALS, std::ios::out | std::ios::trunc);
-    JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-    Walker walker(jsonWriter);
-    walker.walk(readWithTypeInfoCode.reflectable());
-    checkJsonFile(JSON_NAME_WRITE_READ_WITH_OPTIONALS);
 }
 
 TEST_F(WithTypeInfoCodeTest, writeReadFileWithoutOptionals)
@@ -1766,202 +1597,6 @@ TEST_F(WithTypeInfoCodeTest, writeReadFileWithoutOptionals)
     const WithTypeInfoCode readWithTypeInfoCode =
             zserio::deserializeFromFile<WithTypeInfoCode>(BLOB_NAME_WITHOUT_OPTIONALS);
     ASSERT_EQ(withTypeInfoCode, readWithTypeInfoCode);
-
-    std::ofstream jsonFile(JSON_NAME_WRITE_READ_WITHOUT_OPTIONALS, std::ios::out | std::ios::trunc);
-    JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-    Walker walker(jsonWriter);
-    walker.walk(readWithTypeInfoCode.reflectable());
-    checkJsonFile(JSON_NAME_WRITE_READ_WITHOUT_OPTIONALS);
-}
-
-TEST_F(WithTypeInfoCodeTest, jsonWriterWithOptionals)
-{
-    WithTypeInfoCode withTypeInfoCode;
-    const bool createOptionals = true;
-    fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
-    withTypeInfoCode.initializeOffsets(0);
-
-    {
-        std::ofstream jsonFile(JSON_NAME_WITH_OPTIONALS, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        Walker walker(jsonWriter);
-        walker.walk(withTypeInfoCode.reflectable());
-        checkJsonFile(JSON_NAME_WITH_OPTIONALS);
-    }
-    {
-        // constant reflectable
-        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-        std::ofstream jsonFile(JSON_NAME_WITH_OPTIONALS, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        Walker walker(jsonWriter);
-        walker.walk(withTypeInfoCodeConst.reflectable());
-        checkJsonFile(JSON_NAME_WITH_OPTIONALS);
-    }
-}
-
-TEST_F(WithTypeInfoCodeTest, jsonWriterWithoutOptionals)
-{
-    WithTypeInfoCode withTypeInfoCode;
-    const bool createOptionals = false;
-    fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
-    withTypeInfoCode.initializeOffsets(0);
-
-    {
-        std::ofstream jsonFile(JSON_NAME_WITHOUT_OPTIONALS, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        Walker walker(jsonWriter);
-        walker.walk(withTypeInfoCode.reflectable());
-        checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
-    }
-    {
-        // constant reflectable
-        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-        std::ofstream jsonFile(JSON_NAME_WITHOUT_OPTIONALS, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        Walker walker(jsonWriter);
-        walker.walk(withTypeInfoCodeConst.reflectable());
-        checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
-    }
-}
-
-TEST_F(WithTypeInfoCodeTest, jsonWriterWithArrayLengthFilter)
-{
-    WithTypeInfoCode withTypeInfoCode;
-    fillWithTypeInfoCode(withTypeInfoCode);
-    withTypeInfoCode.initializeOffsets(0);
-
-    for (size_t i = 0; i < 11; ++i)
-    {
-        const std::string jsonFileName = getJsonNameWithArrayLengthFilter(i);
-
-        {
-            std::ofstream jsonFile(jsonFileName, std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            ArrayLengthWalkFilter walkFilter(i);
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode.reflectable());
-            checkJsonFile(jsonFileName);
-        }
-        {
-            // constant reflectable
-            const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-            std::ofstream jsonFile(jsonFileName, std::ios::out | std::ios::trunc);
-            JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-            ArrayLengthWalkFilter walkFilter(i);
-            Walker walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCodeConst.reflectable());
-            checkJsonFile(jsonFileName);
-        }
-    }
-}
-
-TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth0Filter)
-{
-    WithTypeInfoCode withTypeInfoCode;
-    fillWithTypeInfoCode(withTypeInfoCode);
-    withTypeInfoCode.initializeOffsets(0);
-
-    {
-        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        DepthWalkFilter walkFilter(0);
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCode.reflectable());
-        checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
-    }
-    {
-        // constant reflectable
-        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        DepthWalkFilter walkFilter(0);
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCodeConst.reflectable());
-        checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
-    }
-}
-
-TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth1ArrayLength0Filter)
-{
-    WithTypeInfoCode withTypeInfoCode;
-    fillWithTypeInfoCode(withTypeInfoCode);
-    withTypeInfoCode.initializeOffsets(0);
-
-    {
-        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        DepthWalkFilter depthFilter(1);
-        ArrayLengthWalkFilter arrayLengthFilter(0);
-        AndWalkFilter walkFilter({std::ref<IWalkFilter>(depthFilter), std::ref<IWalkFilter>(arrayLengthFilter)});
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCode.reflectable());
-        checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
-    }
-    {
-        // constant reflectable
-        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        DepthWalkFilter depthFilter(1);
-        ArrayLengthWalkFilter arrayLengthFilter(0);
-        AndWalkFilter walkFilter({std::ref<IWalkFilter>(depthFilter), std::ref<IWalkFilter>(arrayLengthFilter)});
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCodeConst.reflectable());
-        checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
-    }
-}
-
-TEST_F(WithTypeInfoCodeTest, jsonWriterWithDepth5Filter)
-{
-    WithTypeInfoCode withTypeInfoCode;
-    fillWithTypeInfoCode(withTypeInfoCode);
-    withTypeInfoCode.initializeOffsets(0);
-
-    {
-        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        DepthWalkFilter walkFilter(5);
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCode.reflectable());
-        checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
-    }
-    {
-        // constant reflectable
-        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-        std::ofstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        DepthWalkFilter walkFilter(5);
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCodeConst.reflectable());
-        checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
-    }
-}
-
-TEST_F(WithTypeInfoCodeTest, jsonWriterWithRegexFilter)
-{
-    WithTypeInfoCode withTypeInfoCode;
-    const bool createOptionals = false;
-    fillWithTypeInfoCode(withTypeInfoCode, createOptionals);
-    withTypeInfoCode.initializeOffsets(0);
-
-    {
-        std::ofstream jsonFile(JSON_NAME_WITH_REGEX_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        RegexWalkFilter walkFilter(".*fieldOffset");
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCode.reflectable());
-        checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
-    }
-    {
-        // constant reflectable
-        const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
-        std::ofstream jsonFile(JSON_NAME_WITH_REGEX_FILTER, std::ios::out | std::ios::trunc);
-        JsonWriter jsonWriter(jsonFile, JSON_INDENT);
-        RegexWalkFilter walkFilter(".*fieldOffset");
-        Walker walker(jsonWriter, walkFilter);
-        walker.walk(withTypeInfoCodeConst.reflectable());
-        checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
-    }
 }
 
 } // namespace with_type_info_code

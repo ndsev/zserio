@@ -59,6 +59,9 @@ zserio_add_library(TARGET with_type_info_code_zs
 target_include_directories(with_type_info_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})
 
 add_test_sources(
+    cpp/DebugStringTest.cpp
+    cpp/WithTypeInfoCodeCreator.cpp
+    cpp/WithTypeInfoCodeCreator.h
     cpp/WithTypeInfoCodeTest.cpp
 )
 

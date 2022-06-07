@@ -3,31 +3,11 @@ package with_type_info_code;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.BufferedReader;
-
-import with_type_info_code.SqlDatabase;
-import with_type_info_code.SimplePubsub;
-import with_type_info_code.SimpleService;
-import with_type_info_code.TestBitmask;
 
 import zserio.runtime.typeinfo.TypeInfo;
-import zserio.runtime.walker.AndWalkFilter;
-import zserio.runtime.walker.ArrayLengthWalkFilter;
-import zserio.runtime.walker.DepthWalkFilter;
-import zserio.runtime.walker.RegexWalkFilter;
-import zserio.runtime.walker.Walker;
-import zserio.runtime.walker.WalkFilter;
 import zserio.runtime.typeinfo.SchemaType;
 import zserio.runtime.typeinfo.JavaType;
 import zserio.runtime.typeinfo.TableInfo;
@@ -39,12 +19,9 @@ import zserio.runtime.typeinfo.CaseInfo;
 import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.MessageInfo;
 import zserio.runtime.typeinfo.MethodInfo;
-
 import zserio.runtime.ZserioError;
-import zserio.runtime.io.BitBuffer;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamWriter;
-import zserio.runtime.json.JsonWriter;
 
 public class WithTypeInfoCodeTest
 {
@@ -87,7 +64,7 @@ public class WithTypeInfoCodeTest
     @Test
     public void writeReadFileWithOptionals() throws IOException
     {
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode();
+        final WithTypeInfoCode withTypeInfoCode = WithTypeInfoCodeCreator.createWithTypeInfoCode();
         final File file = new File(BLOB_NAME_WITH_OPTIONALS);
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         withTypeInfoCode.write(writer);
@@ -101,7 +78,8 @@ public class WithTypeInfoCodeTest
     public void writeReadFileWithoutOptionals() throws IOException
     {
         final boolean createdOptionals = false;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
+        final WithTypeInfoCode withTypeInfoCode =
+                WithTypeInfoCodeCreator.createWithTypeInfoCode(createdOptionals);
         final File file = new File(BLOB_NAME_WITHOUT_OPTIONALS);
         final BitStreamWriter writer = new FileBitStreamWriter(file);
         withTypeInfoCode.write(writer);
@@ -109,144 +87,6 @@ public class WithTypeInfoCodeTest
 
         final WithTypeInfoCode readWithTypeInfoCode = new WithTypeInfoCode(file);
         assertEquals(withTypeInfoCode, readWithTypeInfoCode);
-    }
-
-    @Test
-    public void jsonWriterWithOptionals() throws IOException
-    {
-        final boolean createdOptionals = true;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
-
-        final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_OPTIONALS);
-        final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        final int indent = 4;
-        try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-        {
-            final Walker walker = new Walker(jsonWriter);
-            walker.walk(withTypeInfoCode);
-        }
-        checkJsonFile(JSON_NAME_WITH_OPTIONALS);
-    }
-
-    @Test
-    public void jsonWriterWithoutOptionals() throws IOException
-    {
-        final boolean createdOptionals = false;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
-
-        final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITHOUT_OPTIONALS);
-        final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        final int indent = 4;
-        try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-        {
-            final Walker walker = new Walker(jsonWriter);
-            walker.walk(withTypeInfoCode);
-        }
-        checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
-    }
-
-    @Test
-    public void jsonWriterWithArrayLengthFilter() throws IOException
-    {
-        final boolean createdOptionals = true;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
-
-        for (int i = 0; i < 11; ++i)
-        {
-            final String jsonFileName = getJsonNameWithArrayLengthFilter(i);
-            final OutputStream outputStream = new FileOutputStream(jsonFileName);
-            final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-            final WalkFilter walkFilter = new ArrayLengthWalkFilter(i);
-            final int indent = 4;
-            try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-            {
-                final Walker walker = new Walker(jsonWriter, walkFilter);
-                walker.walk(withTypeInfoCode);
-            }
-            checkJsonFile(jsonFileName);
-        }
-    }
-
-    @Test
-    public void jsonWriterWithDepth0Filter() throws IOException
-    {
-        final boolean createdOptionals = true;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
-
-        final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_DEPTH0_FILTER);
-        final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        final WalkFilter walkFilter = new DepthWalkFilter(0);
-        final int indent = 4;
-        try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-        {
-            final Walker walker = new Walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode);
-        }
-        checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
-    }
-
-    @Test
-    public void jsonWriterWithDepth1ArrayLength0Filter() throws IOException
-    {
-        final boolean createdOptionals = true;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
-
-        final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
-        final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        final ArrayList<WalkFilter> walkFilters = new ArrayList<WalkFilter>();
-        walkFilters.add(new DepthWalkFilter(1));
-        walkFilters.add(new ArrayLengthWalkFilter(0));
-        final WalkFilter walkFilter = new AndWalkFilter(walkFilters);
-        final int indent = 4;
-        try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-        {
-            final Walker walker = new Walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode);
-        }
-        checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
-    }
-
-    @Test
-    public void jsonWriterWithDepth5Filter() throws IOException
-    {
-        final boolean createdOptionals = true;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
-
-        final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_DEPTH5_FILTER);
-        final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        final WalkFilter walkFilter = new DepthWalkFilter(5);
-        final int indent = 4;
-        try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-        {
-            final Walker walker = new Walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode);
-        }
-        checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
-    }
-
-    @Test
-    public void jsonWriterWithRegexFilter() throws IOException
-    {
-        final boolean createdOptionals = false;
-        final WithTypeInfoCode withTypeInfoCode = createWithTypeInfoCode(createdOptionals);
-        withTypeInfoCode.initializeOffsets(0);
-
-        final OutputStream outputStream = new FileOutputStream(JSON_NAME_WITH_REGEX_FILTER);
-        final OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        final WalkFilter walkFilter = new RegexWalkFilter(".*fieldOffset");
-        final int indent = 4;
-        try (final JsonWriter jsonWriter = new JsonWriter(writer, indent))
-        {
-            final Walker walker = new Walker(jsonWriter, walkFilter);
-            walker.walk(withTypeInfoCode);
-        }
-        checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
     }
 
     private void checkSqlDatabase(TypeInfo typeInfo)
@@ -522,7 +362,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(12, fields.size());
+        assertEquals(13, fields.size());
 
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
@@ -773,8 +613,32 @@ public class WithTypeInfoCodeTest
         assertFalse(externDataField.isPacked());
         assertFalse(externDataField.isImplicit());
 
+        // externArray
+        final FieldInfo externArrayField = fields.get(11);
+        assertEquals("externArray", externArrayField.getSchemaName());
+        assertEquals("getExternArray", externArrayField.getGetterName());
+        assertEquals("setExternArray", externArrayField.getSetterName());
+
+        assertEquals("extern", externArrayField.getTypeInfo().getSchemaName());
+        assertEquals(SchemaType.EXTERN, externArrayField.getTypeInfo().getSchemaType());
+        assertEquals(JavaType.BIT_BUFFER, externArrayField.getTypeInfo().getJavaType());
+
+        assertEquals(0, externArrayField.getTypeArguments().size());
+        assertEquals("", externArrayField.getAlignment());
+        assertEquals("", externArrayField.getOffset());
+        assertEquals("", externArrayField.getInitializer());
+        assertFalse(externArrayField.isOptional());
+        assertEquals("", externArrayField.getOptionalCondition());
+        assertEquals("", externArrayField.getIsUsedIndicatorName());
+        assertEquals("", externArrayField.getIsSetIndicatorName());
+        assertEquals("", externArrayField.getConstraint());
+        assertTrue(externArrayField.isArray());
+        assertEquals("", externArrayField.getArrayLength());
+        assertFalse(externArrayField.isPacked());
+        assertFalse(externArrayField.isImplicit());
+
         // implicitArray
-        final FieldInfo implicitArrayField = fields.get(11);
+        final FieldInfo implicitArrayField = fields.get(12);
         assertEquals("implicitArray", implicitArrayField.getSchemaName());
         assertEquals("getImplicitArray", implicitArrayField.getGetterName());
         assertEquals("setImplicitArray", implicitArrayField.getSetterName());
@@ -1011,7 +875,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(10, fields.size());
+        assertEquals(11, fields.size());
 
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
@@ -1035,8 +899,30 @@ public class WithTypeInfoCodeTest
         assertFalse(simpleStructField.isPacked());
         assertFalse(simpleStructField.isImplicit());
 
+        // anotherSimpleStruct
+        final FieldInfo anotherSimpleStructField = fields.get(1);
+        assertEquals("anotherSimpleStruct", anotherSimpleStructField.getSchemaName());
+        assertEquals("getAnotherSimpleStruct", anotherSimpleStructField.getGetterName());
+        assertEquals("setAnotherSimpleStruct", anotherSimpleStructField.getSetterName());
+
+        checkSimpleStruct(anotherSimpleStructField.getTypeInfo());
+
+        assertEquals(0, anotherSimpleStructField.getTypeArguments().size());
+        assertEquals("", anotherSimpleStructField.getAlignment());
+        assertEquals("", anotherSimpleStructField.getOffset());
+        assertEquals("", anotherSimpleStructField.getInitializer());
+        assertFalse(anotherSimpleStructField.isOptional());
+        assertEquals("", anotherSimpleStructField.getOptionalCondition());
+        assertEquals("", anotherSimpleStructField.getIsUsedIndicatorName());
+        assertEquals("", anotherSimpleStructField.getIsSetIndicatorName());
+        assertEquals("", anotherSimpleStructField.getConstraint());
+        assertFalse(anotherSimpleStructField.isArray());
+        assertEquals("", anotherSimpleStructField.getArrayLength());
+        assertFalse(anotherSimpleStructField.isPacked());
+        assertFalse(anotherSimpleStructField.isImplicit());
+
         // optionalSimpleStruct
-        final FieldInfo optionalSimpleStructField = fields.get(1);
+        final FieldInfo optionalSimpleStructField = fields.get(2);
         assertEquals("optionalSimpleStruct", optionalSimpleStructField.getSchemaName());
         assertEquals("getOptionalSimpleStruct", optionalSimpleStructField.getGetterName());
         assertEquals("setOptionalSimpleStruct", optionalSimpleStructField.getSetterName());
@@ -1058,7 +944,7 @@ public class WithTypeInfoCodeTest
         assertFalse(optionalSimpleStructField.isImplicit());
 
         // array
-        final FieldInfo arrayField = fields.get(2);
+        final FieldInfo arrayField = fields.get(3);
         assertEquals("array", arrayField.getSchemaName());
         assertEquals("getArray", arrayField.getGetterName());
         assertEquals("setArray", arrayField.getSetterName());
@@ -1083,7 +969,7 @@ public class WithTypeInfoCodeTest
         assertFalse(arrayField.isImplicit());
 
         // arrayWithLen
-        final FieldInfo arrayWithLenField = fields.get(3);
+        final FieldInfo arrayWithLenField = fields.get(4);
         assertEquals("arrayWithLen", arrayWithLenField.getSchemaName());
         assertEquals("getArrayWithLen", arrayWithLenField.getGetterName());
         assertEquals("setArrayWithLen", arrayWithLenField.getSetterName());
@@ -1108,7 +994,7 @@ public class WithTypeInfoCodeTest
         assertFalse(arrayWithLenField.isImplicit());
 
         // paramStructArray
-        final FieldInfo paramStructArrayField = fields.get(4);
+        final FieldInfo paramStructArrayField = fields.get(5);
         assertEquals("paramStructArray", paramStructArrayField.getSchemaName());
         assertEquals("getParamStructArray", paramStructArrayField.getGetterName());
         assertEquals("setParamStructArray", paramStructArrayField.getSetterName());
@@ -1116,7 +1002,8 @@ public class WithTypeInfoCodeTest
         checkParameterizedStruct(paramStructArrayField.getTypeInfo());
 
         assertEquals(1, paramStructArrayField.getTypeArguments().size());
-        assertEquals("getSimpleStruct()", paramStructArrayField.getTypeArguments().get(0));
+        assertEquals("((index % 2) == 0) ? getSimpleStruct() : getAnotherSimpleStruct()",
+                paramStructArrayField.getTypeArguments().get(0));
         assertEquals("", paramStructArrayField.getAlignment());
         assertEquals("", paramStructArrayField.getOffset());
         assertEquals("", paramStructArrayField.getInitializer());
@@ -1131,7 +1018,7 @@ public class WithTypeInfoCodeTest
         assertFalse(paramStructArrayField.isImplicit());
 
         // dynamicBitField
-        final FieldInfo dynamicBitFieldField = fields.get(5);
+        final FieldInfo dynamicBitFieldField = fields.get(6);
         assertEquals("dynamicBitField", dynamicBitFieldField.getSchemaName());
         assertEquals("getDynamicBitField", dynamicBitFieldField.getGetterName());
         assertEquals("setDynamicBitField", dynamicBitFieldField.getSetterName());
@@ -1156,7 +1043,7 @@ public class WithTypeInfoCodeTest
         assertFalse(dynamicBitFieldField.isImplicit());
 
         // dynamicBitFieldArray
-        final FieldInfo dynamicBitFieldArrayField = fields.get(6);
+        final FieldInfo dynamicBitFieldArrayField = fields.get(7);
         assertEquals("dynamicBitFieldArray", dynamicBitFieldArrayField.getSchemaName());
         assertEquals("getDynamicBitFieldArray", dynamicBitFieldArrayField.getGetterName());
         assertEquals("setDynamicBitFieldArray", dynamicBitFieldArrayField.getSetterName());
@@ -1182,7 +1069,7 @@ public class WithTypeInfoCodeTest
         assertFalse(dynamicBitFieldArrayField.isImplicit());
 
         // optionalEnum
-        final FieldInfo optionalEnumField = fields.get(7);
+        final FieldInfo optionalEnumField = fields.get(8);
         assertEquals("optionalEnum", optionalEnumField.getSchemaName());
         assertEquals("getOptionalEnum", optionalEnumField.getGetterName());
         assertEquals("setOptionalEnum", optionalEnumField.getSetterName());
@@ -1204,7 +1091,7 @@ public class WithTypeInfoCodeTest
         assertFalse(optionalEnumField.isImplicit());
 
         // optionalBitmask
-        final FieldInfo optionalBitmaskField = fields.get(8);
+        final FieldInfo optionalBitmaskField = fields.get(9);
         assertEquals("optionalBitmask", optionalBitmaskField.getSchemaName());
         assertEquals("getOptionalBitmask", optionalBitmaskField.getGetterName());
         assertEquals("setOptionalBitmask", optionalBitmaskField.getSetterName());
@@ -1226,7 +1113,7 @@ public class WithTypeInfoCodeTest
         assertFalse(optionalBitmaskField.isImplicit());
 
         // optionalExtern
-        final FieldInfo optionalExternField = fields.get(9);
+        final FieldInfo optionalExternField = fields.get(10);
         assertEquals("optionalExtern", optionalExternField.getSchemaName());
         assertEquals("getOptionalExtern", optionalExternField.getGetterName());
         assertEquals("setOptionalExtern", optionalExternField.getSetterName());
@@ -1901,185 +1788,6 @@ public class WithTypeInfoCodeTest
         checkSimpleUnion(getSimpleStructMethod.getRequestTypeInfo());
     }
 
-    private WithTypeInfoCode createWithTypeInfoCode()
-    {
-        return createWithTypeInfoCode(true);
-    }
-
-    private WithTypeInfoCode createWithTypeInfoCode(boolean createOptionals)
-    {
-        final SimpleStruct simpleStruct = createSimpleStruct();
-        final TestEnum testEnum = TestEnum.TWO;
-        final TS32 ts32 = createTS32();
-        final WithTypeInfoCode withTypeInfoCode = new WithTypeInfoCode(
-            simpleStruct,
-            createComplexStruct(createOptionals),
-            createParameterizedStruct(simpleStruct),
-            createRecursiveStruct(),
-            createRecursiveUnion(),
-            createRecursiveChoice(true, false),
-            testEnum,
-            createSimpleChoice(testEnum),
-            ts32,
-            createTemplatedParameterizedStruct_TS32(ts32),
-            new BitBuffer(new byte[]{(byte)0xCA, (byte)0xFE}, 15),
-            new long[] {1, 4, 6, 4, 6, 1});
-
-        return withTypeInfoCode;
-    }
-
-    private SimpleStruct createSimpleStruct()
-    {
-        final SimpleStruct simpleStruct = new SimpleStruct();
-        simpleStruct.setFieldOffset(0);
-        simpleStruct.setFieldFloat32(4.0f);
-
-        return simpleStruct;
-    }
-
-    private ComplexStruct createComplexStruct(boolean createOptionals)
-    {
-        final SimpleStruct simpleStruct = createSimpleStruct();
-        final BigInteger[] dynamicBitFieldArray = new BigInteger[65536 / 2];
-        for (int i = 0; i < dynamicBitFieldArray.length; i++)
-            dynamicBitFieldArray[i] = BigInteger.valueOf(2 * i + 1);
-
-        final ComplexStruct complexStruct = new ComplexStruct(
-            simpleStruct,
-            (createOptionals) ? createSimpleStruct() : null,
-            new long[] {3, 0xABCD2, 0xABCD3, 0xABCD4, 0xABCD5},
-            new byte[] {3, 2, 1},
-            (createOptionals) ? new ParameterizedStruct[] { createParameterizedStruct(simpleStruct),
-                    createParameterizedStruct(simpleStruct) } : null,
-            BigInteger.valueOf(8),
-            dynamicBitFieldArray,
-            (createOptionals) ? TestEnum.ItemThree : null,
-            (createOptionals) ? TestBitmask.Values.RED : null,
-            (createOptionals) ? new BitBuffer(new byte[]{(byte)0xCB, (byte)0xF0}, 12) : null);
-
-        return complexStruct;
-    }
-
-    private ParameterizedStruct createParameterizedStruct(SimpleStruct simpleStruct)
-    {
-        final short[] array = new short[(int)simpleStruct.getFieldU32()];
-        for (int i = 0; i < array.length; i++)
-            array[i] = (short)i;
-        final ParameterizedStruct parameterizedStruct = new ParameterizedStruct(
-            simpleStruct,
-            array);
-
-        return parameterizedStruct;
-    }
-
-    private RecursiveStruct createRecursiveStruct()
-    {
-        final RecursiveStruct recursiveStruct = new RecursiveStruct(
-            0xDEAD1,
-            new RecursiveStruct(0xDEAD2, null, new RecursiveStruct[0]),
-            new RecursiveStruct[] {new RecursiveStruct(0xDEAD3, null, new RecursiveStruct[0]),
-                    new RecursiveStruct(0xDEAD4, null, new RecursiveStruct[0])});
-
-        return recursiveStruct;
-    }
-
-    private RecursiveUnion createRecursiveUnion()
-    {
-        final RecursiveUnion recursiveUnionFieldU32 = new RecursiveUnion();
-        recursiveUnionFieldU32.setFieldU32(0xDEAD);
-        final RecursiveUnion[] recursive = new RecursiveUnion[] {recursiveUnionFieldU32};
-        final RecursiveUnion recursiveUnion = new RecursiveUnion();
-        recursiveUnion.setRecursive(recursive);
-
-        return recursiveUnion;
-    }
-
-    private RecursiveChoice createRecursiveChoice(boolean param1, boolean param2)
-    {
-        final RecursiveChoice recursiveChoice = new RecursiveChoice(param1, param2);
-        if (param1)
-        {
-            final RecursiveChoice recursiveChoiceFalse = createRecursiveChoice(param2, false);
-            final RecursiveChoice[] recursive = new RecursiveChoice[] {recursiveChoiceFalse};
-            recursiveChoice.setRecursive(recursive);
-        }
-        else
-        {
-            recursiveChoice.setFieldU32(0xDEAD);
-        }
-
-        return recursiveChoice;
-    }
-
-    private SimpleUnion createSimpleUnion()
-    {
-        final SimpleUnion simpleUnion = new SimpleUnion();
-        simpleUnion.setTestBitmask(TestBitmask.Values.Green);
-
-        return simpleUnion;
-    }
-
-    private SimpleChoice createSimpleChoice(TestEnum testEnum)
-    {
-        final SimpleChoice simpleChoice = new SimpleChoice(testEnum);
-        if (testEnum == TestEnum.TWO)
-            simpleChoice.setFieldTwo(createSimpleUnion());
-        else
-            simpleChoice.setFieldDefault("text");
-
-        return simpleChoice;
-    }
-
-    private TS32 createTS32()
-    {
-        final TS32 ts32 = new TS32(0xDEAD);
-
-        return ts32;
-    }
-
-    private TemplatedParameterizedStruct_TS32 createTemplatedParameterizedStruct_TS32(TS32 ts32)
-    {
-        final long[] array = new long[(int)ts32.getField()];
-        for (int i = array.length; i > 0; --i)
-            array[array.length - i] = i;
-        final TemplatedParameterizedStruct_TS32 templatedParameterizedStruct_TS32 =
-                new TemplatedParameterizedStruct_TS32(ts32, array);
-
-        return templatedParameterizedStruct_TS32;
-    }
-
-    private String getJsonNameWithArrayLengthFilter(int arrayLength)
-    {
-        return "with_type_info_code_array_length_" + arrayLength + ".json";
-    }
-
-    private void checkJsonFile(String createdJsonFileName) throws IOException
-    {
-        final String jsonDataFileName = "data" + File.separator + createdJsonFileName;
-
-        try (final BufferedReader jsonCreatedReader =
-                    Files.newBufferedReader(Paths.get(createdJsonFileName),StandardCharsets.UTF_8);
-             final BufferedReader jsonExpectedReader =
-                    Files.newBufferedReader(Paths.get(jsonDataFileName),StandardCharsets.UTF_8))
-        {
-            String createdLine;
-            String expectedLine;
-            do
-            {
-                createdLine = jsonCreatedReader.readLine();
-                expectedLine = jsonExpectedReader.readLine();
-                assertEquals(createdLine, expectedLine);
-            } while (createdLine != null && expectedLine != null);
-        }
-    }
-
     private static final String BLOB_NAME_WITH_OPTIONALS = "with_type_info_code_optionals.blob";
     private static final String BLOB_NAME_WITHOUT_OPTIONALS = "with_type_info_code.blob";
-    private static final String JSON_NAME_WITH_OPTIONALS = "with_type_info_code_optionals.json";
-    private static final String JSON_NAME_WITHOUT_OPTIONALS = "with_type_info_code.json";
-    private static final String JSON_NAME_WITH_DEPTH0_FILTER = "with_type_info_code_depth0.json";
-    private static final String JSON_NAME_WITH_DEPTH5_FILTER = "with_type_info_code_depth5.json";
-    private static final String JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER =
-            "with_type_info_code_depth1_array_length0.json";
-    private static final String JSON_NAME_WITH_REGEX_FILTER = "with_type_info_code_regex.json";
 }

@@ -18,9 +18,18 @@
             "fieldFloat32": 4.0,
             "fieldFloat64": 2.0
         },
-        "optionalSimpleStruct": {
+        "anotherSimpleStruct": {
             "fieldU32": 10,
             "fieldOffset": 72,
+            "fieldString": "MyString",
+            "fieldBool": false,
+            "fieldFloat16": 1.0,
+            "fieldFloat32": 4.0,
+            "fieldFloat64": 2.0
+        },
+        "optionalSimpleStruct": {
+            "fieldU32": 10,
+            "fieldOffset": 104,
             "fieldString": "MyString",
             "fieldBool": false,
             "fieldFloat16": 1.0,
@@ -173,6 +182,22 @@
         ],
         "bitSize": 15
     },
+    "externArray": [
+        {
+            "buffer": [
+                202,
+                254
+            ],
+            "bitSize": 15
+        },
+        {
+            "buffer": [
+                202,
+                254
+            ],
+            "bitSize": 15
+        }
+    ],
     "implicitArray": [
         1,
         4,

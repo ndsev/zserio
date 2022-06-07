@@ -16,10 +16,11 @@ fieldOffset:
 struct ComplexStruct
 {
     SimpleStruct simpleStruct;
+    SimpleStruct anotherSimpleStruct;
     optional SimpleStruct optionalSimpleStruct;
     uint32 array[] : lengthof(array) > 0;
     int:5 arrayWithLen[array[0]] if array[0] > 0;
-    optional ParameterizedStruct(simpleStruct) paramStructArray[];
+    optional ParameterizedStruct((@index % 2) == 0 ? simpleStruct : anotherSimpleStruct) paramStructArray[];
     bit<simpleStruct.fieldU32> dynamicBitField;
     packed bit<dynamicBitField * 2> dynamicBitFieldArray[];
     optional TestEnum optionalEnum;
@@ -127,6 +128,7 @@ struct WithTypeInfoCode
     TemplatedStruct<uint32> templatedStruct;
     TemplatedParameterizedStruct<TemplatedStruct<uint32>>(templatedStruct) templatedParameterizedStruct;
     extern externData;
+    extern externArray[];
     implicit uint32 implicitArray[];
 };
 

@@ -25,6 +25,8 @@
         ],
         "bitSize": 15
     },
+    "externArray": [
+    ],
     "implicitArray": [
     ]
 }
