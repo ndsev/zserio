@@ -1,18 +1,74 @@
 import io
 import typing
 import unittest
+import enum
 
 from zserio.exception import PythonRuntimeException
-from zserio.array import Array, ObjectArrayTraits, StringArrayTraits
+from zserio.array import Array, ObjectArrayTraits, StringArrayTraits, BitBufferArrayTraits
 from zserio.creator import ZserioTreeCreator
 from zserio.json import JsonReader
-from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute
+from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute, ItemInfo
+from zserio.bitbuffer import BitBuffer
+
+class DummyEnum(enum.Enum):
+    ONE = 0
+    TWO = 1
+
+    @staticmethod
+    def type_info():
+        attribute_list = {
+            TypeAttribute.UNDERLYING_TYPE : TypeInfo('uint8', int),
+            TypeAttribute.ENUM_ITEMS: [
+                ItemInfo('ONE', DummyEnum.ONE),
+                ItemInfo('TWO', DummyEnum.TWO)
+            ]
+        }
+
+        return TypeInfo('DummyEnum', DummyEnum, attributes=attribute_list)
+
+class DummyBitmask:
+    def __init__(self) -> None:
+        self._value = 0
+
+    @classmethod
+    def from_value(cls: typing.Type['DummyBitmask'], value: int) -> 'DummyBitmask':
+        instance = cls()
+        instance._value = value
+        return instance
+
+    @staticmethod
+    def type_info():
+        attribute_list = {
+            TypeAttribute.UNDERLYING_TYPE : TypeInfo('uint8', int),
+            TypeAttribute.BITMASK_VALUES: [
+                ItemInfo('READ', DummyBitmask.Values.READ),
+                ItemInfo('WRITE', DummyBitmask.Values.WRITE)
+            ]
+        }
+
+        return TypeInfo('DummyBitmask', DummyBitmask, attributes=attribute_list)
+
+    def __eq__(self, other: object) -> bool:
+        return self._value == other._value
+
+    class Values:
+        READ: 'DummyBitmask' = None
+        WRITE: 'DummyBitmask' = None
+
+DummyBitmask.Values.READ = DummyBitmask.from_value(1)
+DummyBitmask.Values.WRITE = DummyBitmask.from_value(2)
 
 class DummyNested:
-    def __init__(self, param_ : int, value_ : int = int(),  text_ : str = str()) -> None:
+    def __init__(self, param_ : int, value_ : int = int(),  text_ : str = str(),
+                 data_: typing.Union[BitBuffer, None] = None,
+                 dummy_enum_: typing.Union[DummyEnum, None] = None,
+                 dummy_bitmask_: typing.Union[DummyBitmask, None] = None) -> None:
         self._param_ = param_
         self._value_ = value_
         self._text_ = text_
+        self._data_ = data_
+        self._dummy_enum_ = dummy_enum_
+        self._dummy_bitmask_ = dummy_bitmask_
 
     @staticmethod
     def type_info() -> TypeInfo:
@@ -28,6 +84,24 @@ class DummyNested:
                 'text', TypeInfo('string', str),
                 attributes={
                     MemberAttribute.PROPERTY_NAME : 'text'
+                }
+            ),
+            MemberInfo(
+                'data', TypeInfo('extern', BitBuffer),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'data'
+                }
+            ),
+            MemberInfo(
+                'dummyEnum', DummyEnum.type_info(),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'dummy_enum'
+                }
+            ),
+            MemberInfo(
+                'dummyBitmask', DummyBitmask.type_info(),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'dummy_bitmask'
                 }
             )
         ]
@@ -66,17 +140,45 @@ class DummyNested:
     def text(self, text) -> None:
         self._text_ = text
 
+    @property
+    def data(self) -> typing.Union[BitBuffer, None]:
+        return self._data_
+
+    @data.setter
+    def data(self, data_: typing.Union[BitBuffer, None]) -> None:
+        self._data_ = data_
+
+    @property
+    def dummy_enum(self) -> typing.Union[DummyEnum, None]:
+        return self._dummy_enum_
+
+    @dummy_enum.setter
+    def dummy_enum(self, dummy_enum_: typing.Union[DummyEnum, None]) -> None:
+        self._dummy_enum_ = dummy_enum_
+
+    @property
+    def dummy_bitmask(self) -> typing.Union[DummyBitmask, None]:
+        return self._dummy_bitmask_
+
+    @dummy_bitmask.setter
+    def dummy_bitmask(self, dummy_bitmask_: typing.Union[DummyBitmask, None]) -> None:
+        self._dummy_bitmask_ = dummy_bitmask_
+
 class DummyObject:
     def __init__(self, value_: int = int(),
                  nested_: typing.Optional[DummyNested] = None,
                  text_: str = str(),
                  nested_array_: typing.List[DummyNested] = None,
-                 text_array_: typing.List[str] = None) -> None:
+                 text_array_: typing.List[str] = None,
+                 extern_array_: typing.List[BitBuffer] = None,
+                 optional_bool_: typing.Optional[bool] = None) -> None:
         self._value_ = value_
         self._nested_ = nested_
         self._text_ = text_
         self._nested_array_ = Array(ObjectArrayTraits(None, None, None), nested_array_, is_auto=True)
         self._text_array = Array(StringArrayTraits(), text_array_, is_auto=True)
+        self._extern_array_ = Array(BitBufferArrayTraits(), extern_array_, is_auto=True)
+        self._optional_bool_ = optional_bool_
 
     @staticmethod
     def type_info() -> TypeInfo:
@@ -113,6 +215,22 @@ class DummyObject:
                 attributes={
                     MemberAttribute.PROPERTY_NAME: 'text_array',
                     MemberAttribute.ARRAY_LENGTH: None
+                }
+            ),
+            MemberInfo(
+                'externArray', TypeInfo('extern', BitBuffer),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'extern_array',
+                    MemberAttribute.ARRAY_LENGTH : None
+                }
+            ),
+            MemberInfo(
+                'optionalBool', TypeInfo('bool', bool),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'optional_bool',
+                    MemberAttribute.OPTIONAL : None,
+                    MemberAttribute.IS_USED_INDICATOR_NAME : 'is_optional_bool_used',
+                    MemberAttribute.IS_SET_INDICATOR_NAME : 'is_optional_bool_set'
                 }
             )
         ]
@@ -161,6 +279,22 @@ class DummyObject:
     @text_array.setter
     def text_array(self, text_array_: typing.List[str]) -> None:
         self._text_array = Array(StringArrayTraits(), text_array_, is_auto=True)
+
+    @property
+    def extern_array(self) -> typing.List[BitBuffer]:
+        return self._extern_array_.raw_array
+
+    @extern_array.setter
+    def extern_array(self, extern_array_: typing.List[BitBuffer]) -> None:
+        self._extern_array_ = Array(BitBufferArrayTraits(), extern_array_, is_auto=True)
+
+    @property
+    def optional_bool(self) -> typing.Optional[bool]:
+        return self._optional_bool_
+
+    @optional_bool.setter
+    def optional_bool(self, optional_bool_: typing.Optional[bool]) -> None:
+        self._optional_bool_ = optional_bool_
 
 class ZserioTreeCreatorTest(unittest.TestCase):
 
@@ -237,7 +371,6 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException):
             creator.add_value_element(13)
 
-
     def test_exceptions_in_root(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
 
@@ -298,6 +431,8 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.end_compound_element()
         with self.assertRaises(PythonRuntimeException):
             creator.add_value_element(13)
+        with self.assertRaises(PythonRuntimeException):
+            creator.get_element_type()
 
     def test_exceptions_in_compound_array(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
@@ -320,6 +455,8 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.end_compound_element()
         with self.assertRaises(PythonRuntimeException):
             creator.add_value_element(13)
+        with self.assertRaises(PythonRuntimeException):
+            creator.get_member_type("nonexistent")
 
     def test_exceptions_in_simple_array(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
@@ -344,6 +481,8 @@ class ZserioTreeCreatorTest(unittest.TestCase):
             creator.end_compound_element()
         with self.assertRaises(PythonRuntimeException):
             creator.add_value_element(13) # wrong type
+        with self.assertRaises(PythonRuntimeException):
+            creator.get_member_type("nonexistent")
 
     def test_exceptions_in_compound_element(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
@@ -378,13 +517,31 @@ class JsonReaderTest(unittest.TestCase):
             "    \"value\": 13,\n"
             "    \"nested\": {\n"
             "        \"value\": 10,\n"
-            "        \"text\": \"nested\"\n"
+            "        \"text\": \"nested\",\n"
+            "        \"data\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ],\n"
+            "             \"bitSize\": 12\n"
+            "        },\n"
+            "        \"dummyEnum\": 0,\n"
+            "        \"dummyBitmask\": 1\n"
             "    },\n"
             "    \"text\": \"test\",\n"
             "    \"nestedArray\": [\n"
             "        {\n"
             "            \"value\": 5,\n"
-            "            \"text\": \"nestedArray\"\n"
+            "            \"text\": \"nestedArray\",\n"
+            "            \"data\": {\n"
+            "                 \"buffer\": [\n"
+            "                     202,\n"
+            "                     254\n"
+            "                 ],"
+            "                 \"bitSize\": 15\n"
+            "            },\n"
+            "            \"dummyEnum\": 1,\n"
+            "            \"dummyBitmask\": 2\n"
             "        }\n"
             "    ],\n"
             "    \"textArray\": [\n"
@@ -392,7 +549,17 @@ class JsonReaderTest(unittest.TestCase):
             "        \"is\",\n"
             "        \"text\",\n"
             "        \"array\"\n"
-            "    ]\n"
+            "    ],\n"
+            "    \"externArray\": [\n"
+            "        {\n"
+            "            \"buffer\": [\n"
+            "                222,\n"
+            "                209\n"
+            "            ],"
+            "            \"bitSize\": 13\n"
+            "        }\n"
+            "    ],\n"
+            "    \"optionalBool\": null\n"
             "}"
         ))
 
@@ -402,11 +569,19 @@ class JsonReaderTest(unittest.TestCase):
         self.assertEqual(13, obj.nested.param)
         self.assertEqual(10, obj.nested.value)
         self.assertEqual("nested", obj.nested.text)
+        self.assertEqual(BitBuffer(bytes([0xCB, 0xF0]), 12), obj.nested.data)
+        self.assertEqual(DummyEnum.ONE, obj.nested.dummy_enum)
+        self.assertEqual(DummyBitmask.Values.READ, obj.nested.dummy_bitmask)
         self.assertEqual("test", obj.text)
         self.assertEqual(1, len(obj.nested_array))
         self.assertEqual(5, obj.nested_array[0].value)
         self.assertEqual("nestedArray", obj.nested_array[0].text)
+        self.assertEqual(BitBuffer(bytes([0xCA, 0xFE]), 15), obj.nested_array[0].data)
+        self.assertEqual(DummyEnum.TWO, obj.nested_array[0].dummy_enum)
+        self.assertEqual(DummyBitmask.Values.WRITE, obj.nested_array[0].dummy_bitmask)
         self.assertEqual(["this", "is", "text", "array"], obj.text_array)
+        self.assertEqual([BitBuffer(bytes([0xDE, 0xD1]), 13)], obj.extern_array)
+        self.assertEqual(None, obj.optional_bool)
 
     def test_read_two_objects(self):
         json_reader = JsonReader(io.StringIO(
@@ -421,6 +596,36 @@ class JsonReaderTest(unittest.TestCase):
         obj2 = json_reader.read(DummyObject.type_info())
         self.assertEqual(42, obj2.value)
         self.assertEqual("test", obj2.text)
+
+    def test_read_unordered_bitbuffer(self):
+        json_reader = JsonReader(io.StringIO(
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"data\": {\n"
+            "             \"bitSize\": 12,\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ]\n"
+            "        },\n"
+            "        \"dummyEnum\": 0,\n"
+            "        \"dummyBitmask\": 1\n"
+            "    }\n"
+            "}"
+        ))
+
+        obj = json_reader.read(DummyObject.type_info())
+
+        self.assertEqual(13, obj.value)
+        self.assertEqual(13, obj.nested.param)
+        self.assertEqual(10, obj.nested.value)
+        self.assertEqual("nested", obj.nested.text)
+        self.assertEqual(BitBuffer(bytes([0xCB, 0xF0]), 12), obj.nested.data)
+        self.assertEqual(DummyEnum.ONE, obj.nested.dummy_enum)
+        self.assertEqual(DummyBitmask.Values.READ, obj.nested.dummy_bitmask)
 
     def test_json_parser_exception(self):
         json_reader = JsonReader(io.StringIO("{\"value\"\n\"value\""))
@@ -446,6 +651,52 @@ class JsonReaderTest(unittest.TestCase):
 
         self.assertTrue(str(error.exception).endswith("(JsonParser line 2)"))
 
+    def test_wrong_bitbuffer_exception(self):
+        json_reader = JsonReader(io.StringIO(
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"data\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ],\n"
+            "             \"bitSize\": {\n"
+            "             }\n"
+            "        }\n"
+            "    }\n"
+            "}"
+        ))
+
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_reader.read(DummyObject.type_info())
+
+        self.assertTrue(str(error.exception).endswith("(JsonParser line 12)"))
+
+    def test_partial_bitbuffer_exception(self):
+        json_reader = JsonReader(io.StringIO(
+            "{\n"
+            "    \"value\": 13,\n"
+            "    \"nested\": {\n"
+            "        \"value\": 10,\n"
+            "        \"text\": \"nested\",\n"
+            "        \"data\": {\n"
+            "             \"buffer\": [\n"
+            "                 203,\n"
+            "                 240\n"
+            "             ]\n"
+            "        }\n"
+            "    }\n"
+            "}"
+        ))
+
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_reader.read(DummyObject.type_info())
+
+        self.assertTrue(str(error.exception).endswith("(JsonParser line 12)"))
+
     def test_json_array(self):
         json_reader = JsonReader(io.StringIO("[1, 2]"))
 
@@ -457,6 +708,25 @@ class JsonReaderTest(unittest.TestCase):
 
         with self.assertRaises(PythonRuntimeException):
             json_reader.read(DummyObject.type_info())
+
+    def test_bitbuffer_adapter_uninitialized_calls(self):
+        bitbuffer_adapter = JsonReader._BitBufferAdapter()
+
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.begin_object()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.end_object()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.begin_array()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.end_array()
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.visit_key("nonexisting")
+        bitbuffer_adapter.visit_key("buffer")
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.visit_key("nonexisting")
+        with self.assertRaises(PythonRuntimeException):
+            bitbuffer_adapter.visit_value("BadValue")
 
     def test_creator_adapter_uninitialized_calls(self):
         creator_adapter = JsonReader._CreatorAdapter()

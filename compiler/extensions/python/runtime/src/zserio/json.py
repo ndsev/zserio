@@ -11,7 +11,7 @@ import typing
 from zserio.bitbuffer import BitBuffer
 from zserio.creator import ZserioTreeCreator
 from zserio.exception import PythonRuntimeException
-from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo
+from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo
 from zserio.walker import WalkObserver
 
 class JsonWriter(WalkObserver):
@@ -549,6 +549,80 @@ class JsonReader:
 
         return self._creator_adapter.get()
 
+    class _BitBufferAdapter(JsonParser.Observer):
+        """
+        The adapter which allows to parse Bit Buffer object from JSON.
+        """
+
+        def __init__(self) -> None:
+            """
+            Constructor.
+            """
+
+            self._state = JsonReader._BitBufferAdapter._State.VISIT_KEY
+            self._buffer: typing.Optional[typing.List[int]] = None
+            self._bit_size: typing.Optional[int] = None
+
+        def get(self) -> BitBuffer:
+            """
+            Gets the created Bit Buffer object.
+
+            :returns: Parser Bit Buffer object.
+            :raises PythonRuntimeException: In case of invalid use.
+            """
+
+            if self._buffer is None or self._bit_size is None:
+                raise PythonRuntimeException("JsonReader: Unexpected end in Bit Buffer!")
+            return BitBuffer(bytes(self._buffer), self._bit_size)
+
+        def begin_object(self) -> None:
+            raise PythonRuntimeException("JsonReader: Unexpected begin object in Bit Buffer!")
+
+        def end_object(self) -> None:
+            raise PythonRuntimeException("JsonReader: Unexpected end object in Bit Buffer!")
+
+        def begin_array(self) -> None:
+            if self._state == JsonReader._BitBufferAdapter._State.BEGIN_ARRAY_BUFFER:
+                self._state = JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER
+            else:
+                raise PythonRuntimeException("JsonReader: Unexpected begin array in Bit Buffer!")
+
+        def end_array(self) -> None:
+            if self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER:
+                self._state = JsonReader._BitBufferAdapter._State.VISIT_KEY
+            else:
+                raise PythonRuntimeException("JsonReader: Unexpected end array in Bit Buffer!")
+
+        def visit_key(self, key: str) -> None:
+            if self._state == JsonReader._BitBufferAdapter._State.VISIT_KEY:
+                if key == "buffer":
+                    self._state = JsonReader._BitBufferAdapter._State.BEGIN_ARRAY_BUFFER
+                elif key == "bitSize":
+                    self._state = JsonReader._BitBufferAdapter._State.VISIT_VALUE_BITSIZE
+                else:
+                    raise PythonRuntimeException(f"JsonReader: Unknown key '{key}' in Bit Buffer!")
+            else:
+                raise PythonRuntimeException(f"JsonReader: Unexpected key '{key}' in Bit Buffer!")
+
+        def visit_value(self, value: typing.Any) -> None:
+            if self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BUFFER and isinstance(value, int):
+                if self._buffer is None:
+                    self._buffer = [value]
+                else:
+                    self._buffer.append(value)
+            elif (self._state == JsonReader._BitBufferAdapter._State.VISIT_VALUE_BITSIZE and
+                                 isinstance(value, int)):
+                self._bit_size = value
+                self._state = JsonReader._BitBufferAdapter._State.VISIT_KEY
+            else:
+                raise PythonRuntimeException(f"JsonReader: Unexpected value '{value}' in Bit Buffer!")
+
+        class _State(enum.Enum):
+            VISIT_KEY = enum.auto()
+            BEGIN_ARRAY_BUFFER = enum.auto()
+            VISIT_VALUE_BUFFER = enum.auto()
+            VISIT_VALUE_BITSIZE = enum.auto()
+
     class _CreatorAdapter(JsonParser.Observer):
         """
         The adapter which allows to use ZserioTreeCreator as an JsonReader observer.
@@ -557,13 +631,12 @@ class JsonReader:
         def __init__(self) -> None:
             """
             Constructor.
-
-            :param creator: Creator to use.
             """
 
             self._creator: typing.Optional[ZserioTreeCreator] = None
             self._key_stack: typing.List[str] = []
             self._object: typing.Any = None
+            self._bitbuffer_adapter: typing.Optional[JsonReader._BitBufferAdapter] = None
 
         def set_type(self, type_info: TypeInfo) -> None:
             """
@@ -589,66 +662,107 @@ class JsonReader:
             return self._object
 
         def begin_object(self) -> None:
-            if not self._creator:
-                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
-
-            if not self._key_stack:
-                self._creator.begin_root()
+            if self._bitbuffer_adapter:
+                self._bitbuffer_adapter.begin_object()
             else:
-                if self._key_stack[-1]:
-                    self._creator.begin_compound(self._key_stack[-1])
+                if not self._creator:
+                    raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
+                if not self._key_stack:
+                    self._creator.begin_root()
                 else:
-                    self._creator.begin_compound_element()
+                    if self._key_stack[-1]:
+                        if self._creator.get_member_type(self._key_stack[-1]).py_type == BitBuffer:
+                            self._bitbuffer_adapter = JsonReader._BitBufferAdapter()
+                        else:
+                            self._creator.begin_compound(self._key_stack[-1])
+                    else:
+                        if self._creator.get_element_type().py_type == BitBuffer:
+                            self._bitbuffer_adapter = JsonReader._BitBufferAdapter()
+                        else:
+                            self._creator.begin_compound_element()
 
         def end_object(self) -> None:
-            if not self._creator:
-                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
-
-            if not self._key_stack:
-                self._object = self._creator.end_root()
-                self._creator = None
+            if self._bitbuffer_adapter:
+                bitbuffer = self._bitbuffer_adapter.get()
+                self._bitbuffer_adapter = None
+                self.visit_value(bitbuffer)
             else:
-                if self._key_stack[-1]:
-                    self._creator.end_compound()
-                    self._key_stack.pop() # finish member
+                if not self._creator:
+                    raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
+                if not self._key_stack:
+                    self._object = self._creator.end_root()
+                    self._creator = None
                 else:
-                    self._creator.end_compound_element()
+                    if self._key_stack[-1]:
+                        self._creator.end_compound()
+                        self._key_stack.pop() # finish member
+                    else:
+                        self._creator.end_compound_element()
 
         def begin_array(self) -> None:
-            if not self._creator:
-                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+            if self._bitbuffer_adapter:
+                self._bitbuffer_adapter.begin_array()
+            else:
+                if not self._creator:
+                    raise PythonRuntimeException("JsonReader: Adapter not initialized!")
 
-            if not self._key_stack:
-                raise PythonRuntimeException("JsonReader: ZserioTreeCreator expects json object!")
+                if not self._key_stack:
+                    raise PythonRuntimeException("JsonReader: ZserioTreeCreator expects json object!")
 
-            self._creator.begin_array(self._key_stack[-1])
+                self._creator.begin_array(self._key_stack[-1])
 
-            self._key_stack.append("")
+                self._key_stack.append("")
 
         def end_array(self) -> None:
-            if not self._creator:
-                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+            if self._bitbuffer_adapter:
+                self._bitbuffer_adapter.end_array()
+            else:
+                if not self._creator:
+                    raise PythonRuntimeException("JsonReader: Adapter not initialized!")
 
-            self._creator.end_array()
+                self._creator.end_array()
 
-            self._key_stack.pop() # finish array
-            self._key_stack.pop() # finish member
+                self._key_stack.pop() # finish array
+                self._key_stack.pop() # finish member
 
         def visit_key(self, key: str) -> None:
-            if not self._creator:
-                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+            if self._bitbuffer_adapter:
+                self._bitbuffer_adapter.visit_key(key)
+            else:
+                if not self._creator:
+                    raise PythonRuntimeException("JsonReader: Adapter not initialized!")
 
-            self._key_stack.append(key)
+                self._key_stack.append(key)
 
         def visit_value(self, value: typing.Any) -> None:
-            if not self._creator:
-                raise PythonRuntimeException("JsonReader: Adapter not initialized!")
-
-            if not self._key_stack:
-                raise PythonRuntimeException("JsonReader: ZserioTreeCreator expects json object!")
-
-            if self._key_stack[-1]:
-                self._creator.set_value(self._key_stack[-1], value)
-                self._key_stack.pop() # finish member
+            if self._bitbuffer_adapter:
+                self._bitbuffer_adapter.visit_value(value)
             else:
-                self._creator.add_value_element(value)
+                if not self._creator:
+                    raise PythonRuntimeException("JsonReader: Adapter not initialized!")
+
+                if not self._key_stack:
+                    raise PythonRuntimeException("JsonReader: ZserioTreeCreator expects json object!")
+
+                if self._key_stack[-1]:
+                    expected_type_info = self._creator.get_member_type(self._key_stack[-1])
+                    self._creator.set_value(self._key_stack[-1], self._convert_value(value, expected_type_info))
+                    self._key_stack.pop() # finish member
+                else:
+                    expected_type_info = self._creator.get_element_type()
+                    self._creator.add_value_element(self._convert_value(value, expected_type_info))
+
+        @staticmethod
+        def _convert_value(value: typing.Any,
+                           type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+            if value is None:
+                return None
+
+            if TypeAttribute.ENUM_ITEMS in type_info.attributes:
+                return type_info.py_type(value)
+            elif TypeAttribute.BITMASK_VALUES in type_info.attributes:
+                return type_info.py_type.from_value(value)
+            else:
+                return value

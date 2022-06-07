@@ -147,15 +147,30 @@ class ZserioTreeCreator:
 
         member_info = self._find_member_info(self._get_type_info(), name)
 
-        if MemberAttribute.ARRAY_LENGTH in member_info.attributes:
-            raise PythonRuntimeException("ZserioTreeCreator: Expecting array in member "
-                                         f"'{member_info.schema_name}'!")
+        if value is not None:
+            if MemberAttribute.ARRAY_LENGTH in member_info.attributes:
+                raise PythonRuntimeException("ZserioTreeCreator: Expecting array in member "
+                                             f"'{member_info.schema_name}'!")
 
-        if value is not None and not isinstance(value, member_info.type_info.py_type):
-            raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', expected "
-                                         f"{member_info.type_info.py_type}")
+            if not isinstance(value, member_info.type_info.py_type):
+                raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', "
+                                             f"expected {member_info.type_info.py_type}")
 
         setattr(self._value_stack[-1], member_info.attributes[MemberAttribute.PROPERTY_NAME], value)
+
+    def get_member_type(self, name: str) -> typing.Union[TypeInfo, RecursiveTypeInfo]:
+        """
+        Gets type info of the expected member.
+
+        :returns: Type info of the expected member.
+        :raises PythonRuntimeException: When the creator is not in a compound element.
+        """
+
+        if self._state != ZserioTreeCreator._State.IN_COMPOUND:
+            raise PythonRuntimeException(f"ZserioTreeCreator: Cannot get member type in state '{self._state}'!")
+
+        member_info = self._find_member_info(self._get_type_info(), name)
+        return member_info.type_info
 
     def begin_compound_element(self):
         """
@@ -216,11 +231,25 @@ class ZserioTreeCreator:
 
         self._value_stack[-1].append(value)
 
+    def get_element_type(self) -> typing.Union[TypeInfo, RecursiveTypeInfo]:
+        """
+        Gets type info of the expected array element.
+
+        :returns: Type info of the expected array element.
+        :raises PythonRuntimeException: When the creator is not in an array.
+        """
+
+        if self._state != ZserioTreeCreator._State.IN_ARRAY:
+            raise PythonRuntimeException("ZserioTreeCreator: Cannot get element type in state '{self._state}'!")
+
+        member_info = self._member_info_stack[-1]
+        return member_info.type_info
+
     def _get_type_info(self) -> typing.Union[TypeInfo, RecursiveTypeInfo]:
         return self._member_info_stack[-1].type_info if self._member_info_stack else self._type_info
 
     @staticmethod
-    def _find_member_info(type_info: typing.Union[TypeInfo, RecursiveTypeInfo], name: str):
+    def _find_member_info(type_info: typing.Union[TypeInfo, RecursiveTypeInfo], name: str) -> MemberInfo:
         members = type_info.attributes[TypeAttribute.FIELDS]
         for member in members:
             if member.schema_name == name:

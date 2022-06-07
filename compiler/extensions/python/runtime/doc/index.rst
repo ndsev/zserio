@@ -39,6 +39,7 @@ Zserio Python runtime library documentation
 .. automodapi:: zserio.json
    :skip: BitBuffer
    :skip: TypeInfo
+   :skip: RecursiveTypeInfo
    :skip: MemberInfo
    :skip: TypeAttribute
    :skip: WalkObserver
