@@ -132,7 +132,7 @@ ${I})<#if comma>,</#if>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.ALIGN : (lambda: ${field.alignmentValue})"]>
     </#if>
     <#if field.offset??>
-        <#local attributes+=["zserio.typeinfo.MemberAttribute.OFFSET : (lambda self: ${field.offset.getter})"]>
+        <#local attributes+=["zserio.typeinfo.MemberAttribute.OFFSET : (lambda self, zserio_index: ${field.offset.getter})"]>
     </#if>
     <#if field.initializer??>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.INITIALIZER : (lambda: ${field.initializer})"]>
