@@ -82,7 +82,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual("field_string", member_info.attributes[MemberAttribute.PROPERTY_NAME])
         self.assertIn(MemberAttribute.OFFSET, member_info.attributes)
         offset_lambda = member_info.attributes[MemberAttribute.OFFSET]
-        self.assertEqual(13, offset_lambda(self.api.SimpleStruct(field_offset_=13)))
+        self.assertEqual(13, offset_lambda(self.api.SimpleStruct(field_offset_=13), None))
         self.assertIn(MemberAttribute.INITIALIZER, member_info.attributes)
         initializer_lambda = member_info.attributes[MemberAttribute.INITIALIZER]
         self.assertEqual("MyString", initializer_lambda())
