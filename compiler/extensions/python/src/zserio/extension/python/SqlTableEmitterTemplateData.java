@@ -194,6 +194,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                     pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
             bitSize = createBitSize(fieldTypeInstantiation, pythonSqlIndirectExpressionFormatter);
+            lambdaBitSize = createBitSize(fieldTypeInstantiation, pythonExpressionFormatter);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
 
@@ -230,6 +231,11 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getBitSize()
         {
             return bitSize;
+        }
+
+        public String getLambdaBitSize()
+        {
+            return lambdaBitSize;
         }
 
         public SqlTypeTemplateData getSqlTypeData()
@@ -281,7 +287,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
                 expression = pythonSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
-                expressionForTypeInfo = pythonExpressionFormatter.formatGetter(argumentExpression);
+                lambdaExpression = pythonExpressionFormatter.formatGetter(argumentExpression);
             }
 
             public NativeTypeInfoTemplateData getTypeInfo()
@@ -299,15 +305,15 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return expression;
             }
 
-            public String getExpressionForTypeInfo()
+            public String getLambdaExpression()
             {
-                return expressionForTypeInfo;
+                return lambdaExpression;
             }
 
             private final NativeTypeInfoTemplateData typeInfo;
             private final boolean isExplicit;
             private final String expression;
-            private final String expressionForTypeInfo;
+            private final String lambdaExpression;
         }
 
         private static String createBitSize(TypeInstantiation typeInstantiation,
@@ -337,6 +343,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final List<ParameterTemplateData> parameters;
         private final String sqlConstraint;
         private final String bitSize;
+        private final String lambdaBitSize;
         private final SqlTypeTemplateData sqlTypeData;
     }
 

@@ -180,7 +180,7 @@ ${I}}
         <#local typeArguments><@member_info_table_field_type_arguments field/></#local>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.TYPE_ARGUMENTS : ${typeArguments}"]>
     <#elseif field.typeInfo.isDynamicBitField>
-        <#local attributes+=["zserio.typeinfo.MemberAttribute.TYPE_ARGUMENTS : [(lambda self, zserio_index: ${field.bitSize})]"]>
+        <#local attributes+=["zserio.typeinfo.MemberAttribute.TYPE_ARGUMENTS : [(lambda self, zserio_index: ${field.lambdaBitSize})]"]>
     </#if>
     <#if field.sqlConstraint??>
         <#local attributes+=["zserio.typeinfo.MemberAttribute.SQL_CONSTRAINT : ${field.sqlConstraint}"]>
@@ -232,9 +232,9 @@ ${I}}
     [<#t>
     <#list field.parameters as parameter>
         <#if parameter.isExplicit>
-            (lambda ${parameter.expressionForTypeInfo}: ${parameter.expressionForTypeInfo})<#t>
+            (lambda ${parameter.lambdaExpression}: ${parameter.lambdaExpression})<#t>
         <#else>
-            (lambda self: ${parameter.expressionForTypeInfo})<#t>
+            (lambda self: ${parameter.lambdaExpression})<#t>
         </#if>
         <#if parameter?has_next>,</#if><#t>
     </#list>
