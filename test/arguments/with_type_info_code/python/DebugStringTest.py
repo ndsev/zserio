@@ -56,6 +56,11 @@ class DebugStringTest(unittest.TestCase):
             self._checkWithTypeInfoCodeJson(jsonFileName, maxArrayLength=i)
             self._checkJsonFile(jsonFileName)
 
+            with open(jsonFileName, "r", encoding="utf-8") as jsonFile:
+                jsonReader = zserio.JsonReader(text_io=jsonFile)
+                readWithTypeInfoCode = jsonReader.read(self.api.WithTypeInfoCode.type_info())
+                self._checkWithTypeInfoCodeArrayLength(readWithTypeInfoCode, i)
+
     def testJsonWriterWithDepth0Filter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
         withTypeInfoCode.initialize_offsets(0)
@@ -68,6 +73,11 @@ class DebugStringTest(unittest.TestCase):
             jsonData = json.load(jsonFile)
         self.assertEqual({}, jsonData)
 
+        with open(self.JSON_NAME_WITH_DEPTH0_FILTER, "r", encoding="utf-8") as jsonFile:
+            jsonReader = zserio.JsonReader(text_io=jsonFile)
+            readWithTypeInfoCode = jsonReader.read(self.api.WithTypeInfoCode.type_info())
+            self._checkWithTypeInfoCodeDepth0(readWithTypeInfoCode)
+
     def testJsonWriterWithDepth1ArrayLength0Filter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
         withTypeInfoCode.initialize_offsets(0)
@@ -77,6 +87,11 @@ class DebugStringTest(unittest.TestCase):
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeDepth1ArrayLength0Json(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER)
         self._checkJsonFile(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER)
+
+        with open(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, "r", encoding="utf-8") as jsonFile:
+            jsonReader = zserio.JsonReader(text_io=jsonFile)
+            readWithTypeInfoCode = jsonReader.read(self.api.WithTypeInfoCode.type_info())
+            self._checkWithTypeInfoCodeDepth1ArrayLength0(readWithTypeInfoCode)
 
     def testJsonWriterWithDepth5Filter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
@@ -88,6 +103,11 @@ class DebugStringTest(unittest.TestCase):
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_DEPTH5_FILTER)
         self._checkJsonFile(self.JSON_NAME_WITH_DEPTH5_FILTER)
 
+        with open(self.JSON_NAME_WITH_DEPTH5_FILTER, "r", encoding="utf-8") as jsonFile:
+            jsonReader = zserio.JsonReader(text_io=jsonFile)
+            readWithTypeInfoCode = jsonReader.read(self.api.WithTypeInfoCode.type_info())
+            self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
+
     def testJsonWriterWithRegexFilter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=False)
         withTypeInfoCode.initialize_offsets(0)
@@ -97,6 +117,64 @@ class DebugStringTest(unittest.TestCase):
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeRegexJson(self.JSON_NAME_WITH_REGEX_FILTER)
         self._checkJsonFile(self.JSON_NAME_WITH_REGEX_FILTER)
+
+        with open(self.JSON_NAME_WITH_REGEX_FILTER, "r", encoding="utf-8") as jsonFile:
+            jsonReader = zserio.JsonReader(text_io=jsonFile)
+            readWithTypeInfoCode = jsonReader.read(self.api.WithTypeInfoCode.type_info())
+            self._checkWithTypeInfoCodeRegex(readWithTypeInfoCode)
+
+    def _checkWithTypeInfoCodeArrayLength(self, withTypeInfoCode, maxArrayLength):
+        self.assertLessEqual(len(withTypeInfoCode.complex_struct.array), maxArrayLength)
+        self.assertLessEqual(len(withTypeInfoCode.complex_struct.array_with_len), maxArrayLength)
+        self.assertLessEqual(len(withTypeInfoCode.complex_struct.param_struct_array), maxArrayLength)
+        for paramStruct in withTypeInfoCode.complex_struct.param_struct_array:
+            self.assertLessEqual(len(paramStruct.array), maxArrayLength)
+        self.assertLessEqual(len(withTypeInfoCode.complex_struct.dynamic_bit_field_array), maxArrayLength)
+
+        self.assertLessEqual(len(withTypeInfoCode.parameterized_struct.array), maxArrayLength)
+        self.assertLessEqual(len(withTypeInfoCode.templated_parameterized_struct.array), maxArrayLength)
+        self.assertLessEqual(len(withTypeInfoCode.extern_array), maxArrayLength)
+        self.assertLessEqual(len(withTypeInfoCode.implicit_array), maxArrayLength)
+
+    def _checkWithTypeInfoCodeDepth0(self, withTypeInfoCode):
+        self.assertEqual(None, withTypeInfoCode.simple_struct)
+        self.assertEqual(None, withTypeInfoCode.complex_struct)
+        self.assertEqual(None, withTypeInfoCode.parameterized_struct)
+        self.assertEqual(None, withTypeInfoCode.recursive_struct)
+        self.assertEqual(None, withTypeInfoCode.recursive_union)
+        self.assertEqual(None, withTypeInfoCode.recursive_choice)
+        self.assertEqual(None, withTypeInfoCode.selector)
+        self.assertEqual(None, withTypeInfoCode.simple_choice)
+        self.assertEqual(None, withTypeInfoCode.templated_struct)
+        self.assertEqual(None, withTypeInfoCode.templated_parameterized_struct)
+        self.assertEqual(None, withTypeInfoCode.extern_data)
+        self.assertEqual([], withTypeInfoCode.extern_array)
+        self.assertEqual([], withTypeInfoCode.implicit_array)
+
+    def _checkWithTypeInfoCodeDepth1ArrayLength0(self, withTypeInfoCode):
+        self.assertNotEqual(None, withTypeInfoCode.simple_struct)
+        self.assertEqual(None, withTypeInfoCode.complex_struct.simple_struct)
+        self.assertEqual(None, withTypeInfoCode.complex_struct.another_simple_struct)
+        self.assertEqual(None, withTypeInfoCode.complex_struct.optional_simple_struct)
+        self.assertEqual([], withTypeInfoCode.complex_struct.array)
+        self.assertEqual(0, withTypeInfoCode.complex_struct.dynamic_bit_field)
+        self.assertEqual([], withTypeInfoCode.complex_struct.dynamic_bit_field_array)
+        self.assertNotEqual(None, withTypeInfoCode.parameterized_struct)
+        self.assertNotEqual(None, withTypeInfoCode.recursive_struct)
+        self.assertNotEqual(None, withTypeInfoCode.recursive_union)
+        self.assertNotEqual(None, withTypeInfoCode.recursive_choice)
+        self.assertNotEqual(None, withTypeInfoCode.selector)
+        self.assertNotEqual(None, withTypeInfoCode.simple_choice)
+        self.assertNotEqual(None, withTypeInfoCode.templated_struct)
+        self.assertNotEqual(None, withTypeInfoCode.templated_parameterized_struct)
+        self.assertNotEqual(None, withTypeInfoCode.extern_data)
+        self.assertEqual([], withTypeInfoCode.extern_array)
+        self.assertEqual([], withTypeInfoCode.implicit_array)
+
+    def _checkWithTypeInfoCodeRegex(self, withTypeInfoCode):
+        self.assertNotEqual(0, withTypeInfoCode.simple_struct.field_offset)
+        self.assertNotEqual(0, withTypeInfoCode.complex_struct.simple_struct.field_offset)
+        self.assertNotEqual(0, withTypeInfoCode.complex_struct.another_simple_struct.field_offset)
 
     def _checkWithTypeInfoCodeJson(self, jsonFileName, *, createdOptionals = True, maxArrayLength = None):
         with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
