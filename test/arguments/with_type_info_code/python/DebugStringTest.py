@@ -17,32 +17,25 @@ class DebugStringTest(unittest.TestCase):
     def testJsonWriterWithOptionals(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=True)
         withTypeInfoCode.initialize_offsets(0)
-        with open(self.JSON_NAME_WITH_OPTIONALS, "w", encoding="utf-8") as jsonFile:
-            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4))
-            walker.walk(withTypeInfoCode)
+        zserio.to_json_file(withTypeInfoCode, self.JSON_NAME_WITH_OPTIONALS)
 
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_OPTIONALS, createdOptionals=True)
         self._checkJsonFile(self.JSON_NAME_WITH_OPTIONALS)
 
-        with open(self.JSON_NAME_WITH_OPTIONALS, "r", encoding="utf-8") as jsonFile:
-            jsonReader = zserio.JsonReader(text_io=jsonFile)
-            readWithTypeInfoCode = jsonReader.read(self.api.WithTypeInfoCode.type_info())
-            self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
+        readWithTypeInfoCode = zserio.from_json_file(self.api.WithTypeInfoCode, self.JSON_NAME_WITH_OPTIONALS)
+        self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
 
     def testJsonWriterWithoutOptionals(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api, createOptionals=False)
         withTypeInfoCode.initialize_offsets(0)
-        with open(self.JSON_NAME_WITHOUT_OPTIONALS, "w", encoding="utf-8") as jsonFile:
-            walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4))
-            walker.walk(withTypeInfoCode)
+        zserio.to_json_file(withTypeInfoCode, self.JSON_NAME_WITHOUT_OPTIONALS)
 
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITHOUT_OPTIONALS, createdOptionals=False)
         self._checkJsonFile(self.JSON_NAME_WITHOUT_OPTIONALS)
 
-        with open(self.JSON_NAME_WITHOUT_OPTIONALS, "r", encoding="utf-8") as jsonFile:
-            jsonReader = zserio.JsonReader(text_io=jsonFile)
-            readWithTypeInfoCode = jsonReader.read(self.api.WithTypeInfoCode.type_info())
-            self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
+        readWithTypeInfoCode = zserio.from_json_file(self.api.WithTypeInfoCode,
+                                                     self.JSON_NAME_WITHOUT_OPTIONALS)
+        self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
 
     def testJsonWriterWithArrayLengthFilter(self):
         withTypeInfoCode = createWithTypeInfoCode(self.api)
