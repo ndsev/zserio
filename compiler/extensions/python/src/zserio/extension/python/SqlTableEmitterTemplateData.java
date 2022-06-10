@@ -193,7 +193,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             sqlConstraint = (fieldSqlConstraint == null) ? null :
                     pythonExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
 
-            bitSize = createBitSize(fieldTypeInstantiation, pythonSqlIndirectExpressionFormatter);
             lambdaBitSize = createBitSize(fieldTypeInstantiation, pythonExpressionFormatter);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
         }
@@ -226,11 +225,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public String getSqlConstraint()
         {
             return sqlConstraint;
-        }
-
-        public String getBitSize()
-        {
-            return bitSize;
         }
 
         public String getLambdaBitSize()
@@ -342,7 +336,6 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final boolean isVirtual;
         private final List<ParameterTemplateData> parameters;
         private final String sqlConstraint;
-        private final String bitSize;
         private final String lambdaBitSize;
         private final SqlTypeTemplateData sqlTypeData;
     }
