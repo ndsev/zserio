@@ -51,7 +51,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
                 <@functions_info compoundFunctionsData.list/>
 
         return new zserio.runtime.typeinfo.TypeInfo.StructTypeInfo(
-                "${schemaTypeName}", templateName, templateArguments,
+                "${schemaTypeName}", ${name}.class, templateName, templateArguments,
                 fieldList, parameterList, functionList
         );
     }

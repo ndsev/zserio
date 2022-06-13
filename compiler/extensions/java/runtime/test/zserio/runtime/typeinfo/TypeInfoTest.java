@@ -1,6 +1,7 @@
 package zserio.runtime.typeinfo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
@@ -193,11 +194,12 @@ public class TypeInfoTest
     @Test
     public void structTypeInfo()
     {
-        final StructTypeInfo structTypeInfo = new StructTypeInfo("", "", new ArrayList<TypeInfo>(),
+        final StructTypeInfo structTypeInfo = new StructTypeInfo("", null, "", new ArrayList<TypeInfo>(),
                 new ArrayList<FieldInfo>(), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>());
         assertEquals("", structTypeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, structTypeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, structTypeInfo.getJavaType());
+        assertNull(structTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> structTypeInfo.getBitSize());
 
         assertEquals(0, structTypeInfo.getFields().size());
@@ -230,11 +232,12 @@ public class TypeInfoTest
     @Test
     public void unionTypeInfo()
     {
-        final UnionTypeInfo unionTypeInfo = new UnionTypeInfo("", "", new ArrayList<TypeInfo>(),
+        final UnionTypeInfo unionTypeInfo = new UnionTypeInfo("", null, "", new ArrayList<TypeInfo>(),
                 new ArrayList<FieldInfo>(), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>());
         assertEquals("", unionTypeInfo.getSchemaName());
         assertEquals(SchemaType.UNION, unionTypeInfo.getSchemaType());
         assertEquals(JavaType.UNION, unionTypeInfo.getJavaType());
+        assertNull(unionTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> unionTypeInfo.getBitSize());
 
         assertEquals(0, unionTypeInfo.getFields().size());
@@ -267,12 +270,13 @@ public class TypeInfoTest
     @Test
     public void choiceTypeInfo()
     {
-        final ChoiceTypeInfo choiceTypeInfo = new ChoiceTypeInfo("", "", new ArrayList<TypeInfo>(),
+        final ChoiceTypeInfo choiceTypeInfo = new ChoiceTypeInfo("", null, "", new ArrayList<TypeInfo>(),
                 new ArrayList<FieldInfo>(), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>(),
                 "", new ArrayList<CaseInfo>());
         assertEquals("", choiceTypeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, choiceTypeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, choiceTypeInfo.getJavaType());
+        assertNull(choiceTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> choiceTypeInfo.getBitSize());
 
         assertEquals(0, choiceTypeInfo.getFields().size());
@@ -305,11 +309,12 @@ public class TypeInfoTest
     @Test
     public void sqlTableTypeInfo()
     {
-        final SqlTableTypeInfo sqlTableTypeInfo = new SqlTableTypeInfo("", "", new ArrayList<TypeInfo>(),
+        final SqlTableTypeInfo sqlTableTypeInfo = new SqlTableTypeInfo("", null, "", new ArrayList<TypeInfo>(),
                 new ArrayList<ColumnInfo>(), "", "", false);
         assertEquals("", sqlTableTypeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, sqlTableTypeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, sqlTableTypeInfo.getJavaType());
+        assertNull(sqlTableTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getBitSize());
 
         assertThrows(ZserioError.class, () -> sqlTableTypeInfo.getFields());
@@ -342,10 +347,12 @@ public class TypeInfoTest
     @Test
     public void sqlDatabaseTypeInfo()
     {
-        final SqlDatabaseTypeInfo sqlDatabaseTypeInfo = new SqlDatabaseTypeInfo("", new ArrayList<TableInfo>());
+        final SqlDatabaseTypeInfo sqlDatabaseTypeInfo = new SqlDatabaseTypeInfo("", null,
+                new ArrayList<TableInfo>());
         assertEquals("", sqlDatabaseTypeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_DATABASE, sqlDatabaseTypeInfo.getSchemaType());
         assertEquals(JavaType.SQL_DATABASE, sqlDatabaseTypeInfo.getJavaType());
+        assertNull(sqlDatabaseTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getBitSize());
 
         assertThrows(ZserioError.class, () -> sqlDatabaseTypeInfo.getFields());
@@ -379,11 +386,12 @@ public class TypeInfoTest
     public void enumTypeInfo()
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
-        final EnumTypeInfo enumTypeInfo = new EnumTypeInfo("",
+        final EnumTypeInfo enumTypeInfo = new EnumTypeInfo("", null,
                 underlyingTypeInfo, new ArrayList<String>(), new ArrayList<ItemInfo>());
         assertEquals("", enumTypeInfo.getSchemaName());
         assertEquals(SchemaType.ENUM, enumTypeInfo.getSchemaType());
         assertEquals(JavaType.ENUM, enumTypeInfo.getJavaType());
+        assertNull(enumTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> enumTypeInfo.getBitSize());
 
         assertThrows(ZserioError.class, () -> enumTypeInfo.getFields());
@@ -417,11 +425,12 @@ public class TypeInfoTest
     public void bitmaskTypeInfo()
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
-        final BitmaskTypeInfo bitmaskTypeInfo = new BitmaskTypeInfo("",
+        final BitmaskTypeInfo bitmaskTypeInfo = new BitmaskTypeInfo("", null,
                 underlyingTypeInfo, new ArrayList<String>(), new ArrayList<ItemInfo>());
         assertEquals("", bitmaskTypeInfo.getSchemaName());
         assertEquals(SchemaType.BITMASK, bitmaskTypeInfo.getSchemaType());
         assertEquals(JavaType.BITMASK, bitmaskTypeInfo.getJavaType());
+        assertNull(bitmaskTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getBitSize());
 
         assertThrows(ZserioError.class, () -> bitmaskTypeInfo.getFields());
@@ -454,10 +463,11 @@ public class TypeInfoTest
     @Test
     public void pubsubTypeInfo()
     {
-        final PubsubTypeInfo pubsubTypeInfo = new PubsubTypeInfo("", new ArrayList<MessageInfo>());
+        final PubsubTypeInfo pubsubTypeInfo = new PubsubTypeInfo("", null, new ArrayList<MessageInfo>());
         assertEquals("", pubsubTypeInfo.getSchemaName());
         assertEquals(SchemaType.PUBSUB, pubsubTypeInfo.getSchemaType());
         assertEquals(JavaType.PUBSUB, pubsubTypeInfo.getJavaType());
+        assertNull(pubsubTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> pubsubTypeInfo.getBitSize());
 
         assertThrows(ZserioError.class, () -> pubsubTypeInfo.getFields());
@@ -490,10 +500,11 @@ public class TypeInfoTest
     @Test
     public void serviceTypeInfo()
     {
-        final ServiceTypeInfo serviceTypeInfo = new ServiceTypeInfo("", new ArrayList<MethodInfo>());
+        final ServiceTypeInfo serviceTypeInfo = new ServiceTypeInfo("", null, new ArrayList<MethodInfo>());
         assertEquals("", serviceTypeInfo.getSchemaName());
         assertEquals(SchemaType.SERVICE, serviceTypeInfo.getSchemaType());
         assertEquals(JavaType.SERVICE, serviceTypeInfo.getJavaType());
+        assertNull(serviceTypeInfo.getJavaClass());
         assertThrows(ZserioError.class, () -> serviceTypeInfo.getBitSize());
 
         assertThrows(ZserioError.class, () -> serviceTypeInfo.getFields());
@@ -625,6 +636,7 @@ public class TypeInfoTest
                             "setRecursive", // setterName
                             new RecursiveTypeInfo(new RecursiveTypeInfoGetter()), // typeInfo
                             new ArrayList<String>(), // typeArguments
+                            //!@#new ArrayList<Function<Object, Object>>(), // typeArgumentsGetters
                             "", // alignment
                             "", // offset
                             "", // initializer
@@ -640,7 +652,7 @@ public class TypeInfoTest
                     )
             );
 
-            return new StructTypeInfo("RecursiveObject", "", new ArrayList<TypeInfo>(),
+            return new StructTypeInfo("RecursiveObject", null, "", new ArrayList<TypeInfo>(),
                     fields, new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>());
         }
     }

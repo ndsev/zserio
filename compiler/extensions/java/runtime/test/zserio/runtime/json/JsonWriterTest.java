@@ -132,7 +132,7 @@ public class JsonWriterTest
     @Test
     public void enumValue()
     {
-        class DummyEnum implements ZserioEnum
+        class ZeroDummyEnum implements ZserioEnum
         {
             @Override
             public Number getGenericValue()
@@ -144,7 +144,7 @@ public class JsonWriterTest
         final StringWriter stringWriter = new StringWriter();
         try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new DummyEnum(), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            jsonWriter.visitValue(new ZeroDummyEnum(), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
             assertEquals("\"enumField\": 0", stringWriter.toString());
@@ -156,7 +156,7 @@ public class JsonWriterTest
     {
         final BigInteger uint64Max = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
 
-        class DummyEnum implements ZserioEnum
+        class UInt64MaxDummyEnum implements ZserioEnum
         {
             @Override
             public Number getGenericValue()
@@ -169,7 +169,7 @@ public class JsonWriterTest
         StringWriter stringWriter = new StringWriter();
         try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new DummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            jsonWriter.visitValue(new UInt64MaxDummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
             assertEquals("\"enum64Field\": " + uint64Max.toString(), stringWriter.toString());
@@ -179,7 +179,7 @@ public class JsonWriterTest
     @Test
     public void bitmaskValue()
     {
-        class DummyBitmask implements ZserioBitmask
+        class ZeroDummyBitmask implements ZserioBitmask
         {
             @Override
             public Number getGenericValue()
@@ -191,7 +191,7 @@ public class JsonWriterTest
         StringWriter stringWriter = new StringWriter();
         try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new DummyBitmask(), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            jsonWriter.visitValue(new ZeroDummyBitmask(), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
             assertEquals("\"bitmaskField\": 0", stringWriter.toString());
@@ -203,7 +203,7 @@ public class JsonWriterTest
     {
         final BigInteger uint64Max = BigInteger.ONE.shiftLeft(64).subtract(BigInteger.ONE);
 
-        class DummyBitmask implements ZserioBitmask
+        class UInt64MaxDummyBitmask implements ZserioBitmask
         {
             @Override
             public Number getGenericValue()
@@ -215,7 +215,7 @@ public class JsonWriterTest
         StringWriter stringWriter = new StringWriter();
         try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new DummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            jsonWriter.visitValue(new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
             assertEquals("\"bitmask64Field\": " + uint64Max.toString(), stringWriter.toString());
@@ -470,15 +470,25 @@ public class JsonWriterTest
             false // isImplicit
     );
 
+    private static class DummyEnum implements ZserioEnum
+    {
+        @Override
+        public Number getGenericValue()
+        {
+            return 0;
+        }
+    }
+
     private static final FieldInfo ENUM_FIELD_INFO = new FieldInfo(
             "enumField", // schemaName
             "getEnumField", // getterName
             "setEnumField", // setterName
             new EnumTypeInfo(
-                    "DummyEnum",
-                    BuiltinTypeInfo.getInt8(),
+                    "DummyEnum", // schemaName
+                    DummyEnum.class, // javaClass
+                    BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<String>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("ZERO", "0"))
+                    Arrays.asList(new ItemInfo("ZERO", "0")) // enumItems
             ),
             new ArrayList<String>(), // typeArguments
             "", // alignment
@@ -500,10 +510,11 @@ public class JsonWriterTest
             "getEnum64Field", // getterName
             "setEnum64Field", // setterName
             new EnumTypeInfo(
-                    "DummyEnum",
-                    BuiltinTypeInfo.getUInt64(),
+                    "DummyEnum", // schemaName
+                    DummyEnum.class, // javaClass
+                    BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<String>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615"))
+                    Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615")) // enumItems
             ),
             new ArrayList<String>(), // typeArguments
             "", // alignment
@@ -520,15 +531,25 @@ public class JsonWriterTest
             false // isImplicit
     );
 
+    private static class DummyBitmask implements ZserioBitmask
+    {
+        @Override
+        public Number getGenericValue()
+        {
+            return 0;
+        }
+    }
+
     private static final FieldInfo BITMASK_FIELD_INFO = new FieldInfo(
             "bitmaskField", // schemaName
             "getBitmaskField", // getterName
             "setBitmaskField", // setterName
             new BitmaskTypeInfo(
-                    "DummyBitmask",
-                    BuiltinTypeInfo.getInt8(),
+                    "DummyBitmask", // schemaName
+                    DummyBitmask.class, // javaClass
+                    BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<String>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("ZERO", "0"))
+                    Arrays.asList(new ItemInfo("ZERO", "0")) // bitmaskValues
             ),
             new ArrayList<String>(), // typeArguments
             "", // alignment
@@ -550,10 +571,11 @@ public class JsonWriterTest
             "getBitmask64Field", // getterName
             "setBitmask64Field", // setterName
             new BitmaskTypeInfo(
-                    "DummyEnum",
-                    BuiltinTypeInfo.getUInt64(),
+                    "DummyBitmask", // schemaName
+                    DummyBitmask.class, // javaClass
+                    BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<String>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615"))
+                    Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615")) // bitmaskValues
             ),
             new ArrayList<String>(), // typeArguments
             "", // alignment
@@ -610,9 +632,18 @@ public class JsonWriterTest
             false // isImplicit
     );
 
+    private static class Dummy
+    {
+    }
+
     private static final TypeInfo DUMMY_TYPE_INFO = new StructTypeInfo(
-            "Dummy", "", new ArrayList<TypeInfo>(),
-            new ArrayList<FieldInfo>(), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>()
+            "Dummy", // schemaName
+            Dummy.class, // javaClass
+            "", // templateName
+            new ArrayList<TypeInfo>(), // templateArguments
+            new ArrayList<FieldInfo>(), // fields
+            new ArrayList<ParameterInfo>(), // parameters
+            new ArrayList<FunctionInfo>() // functions
     );
 
     private static final FieldInfo NESTED_FIELD_INFO = new FieldInfo(

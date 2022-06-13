@@ -1,9 +1,11 @@
 package zserio.runtime.typeinfo;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 
 import zserio.runtime.ZserioError;
+import zserio.runtime.io.BitBuffer;
 
 /**
  * Type information interface which is returned from the generated zserio objects.
@@ -36,6 +38,13 @@ public interface TypeInfo
      * @return The Java type to which zserio type is mapped.
      */
     JavaType getJavaType();
+
+    /**
+     * Gets the Java Class object.
+     *
+     * @return The Java Class object.
+     */
+    Class<?> getJavaClass();
 
     /**
      * Gets the bit size of the fixed size integral schema type.
@@ -238,12 +247,14 @@ public interface TypeInfo
          * @param schemaName The schema name to be stored in type information.
          * @param schemaType The schema type to be stored in type information.
          * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          */
-        public TypeInfoBase(String schemaName, SchemaType schemaType, JavaType javaType)
+        public TypeInfoBase(String schemaName, SchemaType schemaType, JavaType javaType, Class<?> javaClass)
         {
             this.schemaName = schemaName;
             this.schemaType = schemaType;
             this.javaType = javaType;
+            this.javaClass = javaClass;
         }
 
         @Override
@@ -262,6 +273,12 @@ public interface TypeInfo
         public JavaType getJavaType()
         {
             return javaType;
+        }
+
+        @Override
+        public Class<?> getJavaClass()
+        {
+            return javaClass;
         }
 
         @Override
@@ -381,6 +398,7 @@ public interface TypeInfo
         private final String schemaName;
         private final SchemaType schemaType;
         private final JavaType javaType;
+        private final Class<?> javaClass;
     }
 
     /**
@@ -394,10 +412,12 @@ public interface TypeInfo
          * @param schemaName The schema name to be stored in type information.
          * @param schemaType The schema type to be stored in type information.
          * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          */
-        public BuiltinTypeInfo(String schemaName, SchemaType schemaType, JavaType javaType)
+        public BuiltinTypeInfo(String schemaName, SchemaType schemaType, JavaType javaType,
+                Class<?> javaClass)
         {
-            super(schemaName, schemaType, javaType);
+            super(schemaName, schemaType, javaType, javaClass);
         }
 
         /**
@@ -670,13 +690,25 @@ public interface TypeInfo
             }
 
             if (maxBitSize <= 8)
-                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.BYTE);
+            {
+                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.BYTE,
+                        byte.class);
+            }
             else if (maxBitSize <= 16)
-                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.SHORT);
+            {
+                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.SHORT,
+                        short.class);
+            }
             else if (maxBitSize <= 32)
-                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.INT);
+            {
+                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.INT,
+                        int.class);
+            }
             else
-                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.LONG);
+            {
+                return new BuiltinTypeInfo("int<>", SchemaType.DYNAMIC_SIGNED_BITFIELD, JavaType.LONG,
+                        long.class);
+            }
         }
 
         /**
@@ -695,42 +727,57 @@ public interface TypeInfo
             }
 
             if (maxBitSize < 8)
-                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BYTE);
+            {
+                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BYTE,
+                        byte.class);
+            }
             else if (maxBitSize < 16)
-                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.SHORT);
+            {
+                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.SHORT,
+                        short.class);
+            }
             else if (maxBitSize < 32)
-                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.INT);
+            {
+                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.INT,
+                        int.class);
+            }
             else if (maxBitSize < 64)
-                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.LONG);
+            {
+                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.LONG,
+                        long.class);
+            }
             else
-                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BIG_INTEGER);
+            {
+                return new BuiltinTypeInfo("bit<>", SchemaType.DYNAMIC_UNSIGNED_BITFIELD, JavaType.BIG_INTEGER,
+                        BigInteger.class);
+            }
         }
 
         private static final BuiltinTypeInfo VARINT16 =
-                new BuiltinTypeInfo("varint16", SchemaType.VARINT16, JavaType.SHORT);
+                new BuiltinTypeInfo("varint16", SchemaType.VARINT16, JavaType.SHORT, short.class);
         private static final BuiltinTypeInfo VARINT32 =
-                new BuiltinTypeInfo("varint32", SchemaType.VARINT32, JavaType.INT);
+                new BuiltinTypeInfo("varint32", SchemaType.VARINT32, JavaType.INT, int.class);
         private static final BuiltinTypeInfo VARINT64 =
-                new BuiltinTypeInfo("varint64", SchemaType.VARINT64, JavaType.LONG);
+                new BuiltinTypeInfo("varint64", SchemaType.VARINT64, JavaType.LONG, long.class);
         private static final BuiltinTypeInfo VARINT =
-                new BuiltinTypeInfo("varint", SchemaType.VARINT, JavaType.LONG);
+                new BuiltinTypeInfo("varint", SchemaType.VARINT, JavaType.LONG, long.class);
 
         private static final BuiltinTypeInfo VARUINT16 =
-                new BuiltinTypeInfo("varuint16", SchemaType.VARUINT16, JavaType.SHORT);
+                new BuiltinTypeInfo("varuint16", SchemaType.VARUINT16, JavaType.SHORT, short.class);
         private static final BuiltinTypeInfo VARUINT32 =
-                new BuiltinTypeInfo("varuint32", SchemaType.VARUINT32, JavaType.INT);
+                new BuiltinTypeInfo("varuint32", SchemaType.VARUINT32, JavaType.INT, int.class);
         private static final BuiltinTypeInfo VARUINT64 =
-                new BuiltinTypeInfo("varuint64", SchemaType.VARUINT64, JavaType.LONG);
+                new BuiltinTypeInfo("varuint64", SchemaType.VARUINT64, JavaType.LONG, long.class);
         private static final BuiltinTypeInfo VARUINT =
-                new BuiltinTypeInfo("varuint", SchemaType.VARUINT, JavaType.BIG_INTEGER);
+                new BuiltinTypeInfo("varuint", SchemaType.VARUINT, JavaType.BIG_INTEGER, BigInteger.class);
 
         private static final BuiltinTypeInfo VARSIZE =
-                new BuiltinTypeInfo("varsize", SchemaType.VARSIZE, JavaType.INT);
+                new BuiltinTypeInfo("varsize", SchemaType.VARSIZE, JavaType.INT, int.class);
 
         private static final BuiltinTypeInfo STRING =
-                new BuiltinTypeInfo("string", SchemaType.STRING, JavaType.STRING);
+                new BuiltinTypeInfo("string", SchemaType.STRING, JavaType.STRING, String.class);
         private static final BuiltinTypeInfo BIT_BUFFER =
-                new BuiltinTypeInfo("extern", SchemaType.EXTERN, JavaType.BIT_BUFFER);
+                new BuiltinTypeInfo("extern", SchemaType.EXTERN, JavaType.BIT_BUFFER, BitBuffer.class);
     }
 
     /**
@@ -744,12 +791,13 @@ public interface TypeInfo
          * @param schemaName The schema name to be stored in type information.
          * @param schemaType The schema type to be stored in type information.
          * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param bitSize The bit size of the fixed size integral schema type.
          */
         public FixedSizeBuiltinTypeInfo(String schemaName, SchemaType schemaType, JavaType javaType,
-                byte bitSize)
+                Class<?> javaClass, byte bitSize)
         {
-            super(schemaName, schemaType, javaType);
+            super(schemaName, schemaType, javaType, javaClass);
 
             this.bitSize = bitSize;
         }
@@ -898,23 +946,23 @@ public interface TypeInfo
             final String schemaName = "int:" + bitSize;
             if (bitSize <= 8)
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.BYTE, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_SIGNED_BITFIELD,
+                        JavaType.BYTE, byte.class, bitSize);
             }
             else if (bitSize <= 16)
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.SHORT, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_SIGNED_BITFIELD,
+                        JavaType.SHORT, short.class, bitSize);
             }
             else if (bitSize <= 32)
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.INT, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_SIGNED_BITFIELD,
+                        JavaType.INT, int.class, bitSize);
             }
             else // bitSize <= 64
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_SIGNED_BITFIELD, JavaType.LONG, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_SIGNED_BITFIELD,
+                        JavaType.LONG, long.class, bitSize);
             }
         }
 
@@ -937,57 +985,57 @@ public interface TypeInfo
             if (bitSize < 8)
             {
                 return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BYTE, bitSize);
+                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BYTE, byte.class, bitSize);
             }
             else if (bitSize < 16)
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.SHORT, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD,
+                        JavaType.SHORT, short.class, bitSize);
             }
             else if (bitSize < 32)
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.INT, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD,
+                        JavaType.INT, int.class, bitSize);
             }
             else if (bitSize < 64)
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.LONG, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD,
+                        JavaType.LONG, long.class, bitSize);
             }
             else // bitSize == 64
             {
-                return new FixedSizeBuiltinTypeInfo(
-                        schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD, JavaType.BIG_INTEGER, bitSize);
+                return new FixedSizeBuiltinTypeInfo(schemaName, SchemaType.FIXED_UNSIGNED_BITFIELD,
+                        JavaType.BIG_INTEGER, BigInteger.class, bitSize);
             }
         }
 
-        private static final FixedSizeBuiltinTypeInfo BOOL =
-                new FixedSizeBuiltinTypeInfo("bool", SchemaType.BOOL, JavaType.BOOLEAN, (byte)1);
+        private static final FixedSizeBuiltinTypeInfo BOOL = new FixedSizeBuiltinTypeInfo(
+                "bool", SchemaType.BOOL, JavaType.BOOLEAN, boolean.class, (byte)1);
 
-        private static final FixedSizeBuiltinTypeInfo INT8 =
-                new FixedSizeBuiltinTypeInfo("int8", SchemaType.INT8, JavaType.BYTE, (byte)8);
-        private static final FixedSizeBuiltinTypeInfo INT16 =
-                new FixedSizeBuiltinTypeInfo("int16", SchemaType.INT16, JavaType.SHORT, (byte)16);
-        private static final FixedSizeBuiltinTypeInfo INT32 =
-                new FixedSizeBuiltinTypeInfo("int32", SchemaType.INT32, JavaType.INT, (byte)32);
-        private static final FixedSizeBuiltinTypeInfo INT64 =
-                new FixedSizeBuiltinTypeInfo("int64", SchemaType.INT64, JavaType.LONG, (byte)64);
+        private static final FixedSizeBuiltinTypeInfo INT8 = new FixedSizeBuiltinTypeInfo(
+                "int8", SchemaType.INT8, JavaType.BYTE, byte.class, (byte)8);
+        private static final FixedSizeBuiltinTypeInfo INT16 = new FixedSizeBuiltinTypeInfo(
+                "int16", SchemaType.INT16, JavaType.SHORT, short.class, (byte)16);
+        private static final FixedSizeBuiltinTypeInfo INT32 = new FixedSizeBuiltinTypeInfo(
+                "int32", SchemaType.INT32, JavaType.INT, int.class, (byte)32);
+        private static final FixedSizeBuiltinTypeInfo INT64 = new FixedSizeBuiltinTypeInfo(
+                "int64", SchemaType.INT64, JavaType.LONG, long.class, (byte)64);
 
-        private static final FixedSizeBuiltinTypeInfo UINT8 =
-                new FixedSizeBuiltinTypeInfo("uint8", SchemaType.UINT8, JavaType.SHORT, (byte)8);
-        private static final FixedSizeBuiltinTypeInfo UINT16 =
-                new FixedSizeBuiltinTypeInfo("uint16", SchemaType.UINT16, JavaType.INT, (byte)16);
-        private static final FixedSizeBuiltinTypeInfo UINT32 =
-                new FixedSizeBuiltinTypeInfo("uint32", SchemaType.UINT32, JavaType.LONG, (byte)32);
-        private static final FixedSizeBuiltinTypeInfo UINT64 =
-                new FixedSizeBuiltinTypeInfo("uint64", SchemaType.UINT64, JavaType.BIG_INTEGER, (byte)64);
+        private static final FixedSizeBuiltinTypeInfo UINT8 = new FixedSizeBuiltinTypeInfo(
+                "uint8", SchemaType.UINT8, JavaType.SHORT, short.class, (byte)8);
+        private static final FixedSizeBuiltinTypeInfo UINT16 = new FixedSizeBuiltinTypeInfo(
+                "uint16", SchemaType.UINT16, JavaType.INT, int.class, (byte)16);
+        private static final FixedSizeBuiltinTypeInfo UINT32 = new FixedSizeBuiltinTypeInfo(
+                "uint32", SchemaType.UINT32, JavaType.LONG, long.class, (byte)32);
+        private static final FixedSizeBuiltinTypeInfo UINT64 = new FixedSizeBuiltinTypeInfo(
+                "uint64", SchemaType.UINT64, JavaType.BIG_INTEGER, BigInteger.class, (byte)64);
 
-        private static final FixedSizeBuiltinTypeInfo FLOAT16 =
-                new FixedSizeBuiltinTypeInfo("float16", SchemaType.FLOAT16, JavaType.FLOAT, (byte)16);
-        private static final FixedSizeBuiltinTypeInfo FLOAT32 =
-                new FixedSizeBuiltinTypeInfo("float32", SchemaType.FLOAT32, JavaType.FLOAT, (byte)32);
-        private static final FixedSizeBuiltinTypeInfo FLOAT64 =
-                new FixedSizeBuiltinTypeInfo("float64", SchemaType.FLOAT64, JavaType.DOUBLE, (byte)64);
+        private static final FixedSizeBuiltinTypeInfo FLOAT16 = new FixedSizeBuiltinTypeInfo(
+                "float16", SchemaType.FLOAT16, JavaType.FLOAT, float.class, (byte)16);
+        private static final FixedSizeBuiltinTypeInfo FLOAT32 = new FixedSizeBuiltinTypeInfo(
+                "float32", SchemaType.FLOAT32, JavaType.FLOAT, float.class, (byte)32);
+        private static final FixedSizeBuiltinTypeInfo FLOAT64 = new FixedSizeBuiltinTypeInfo(
+                "float64", SchemaType.FLOAT64, JavaType.DOUBLE, double.class, (byte)64);
 
         private final byte bitSize;
     }
@@ -1003,13 +1051,14 @@ public interface TypeInfo
          * @param schemaName The schema name to be stored in type information.
          * @param schemaType The schema type to be stored in type information.
          * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param templateName The full schema template name.
          * @param templateArguments The sequence of type informations for template arguments.
          */
-        public TemplatableTypeInfoBase(String schemaName, SchemaType schemaType, JavaType javaType,
-                String templateName, List<TypeInfo> templateArguments)
+        public TemplatableTypeInfoBase(String schemaName, SchemaType schemaType,
+                JavaType javaType, Class<?> javaClass, String templateName, List<TypeInfo> templateArguments)
         {
-            super(schemaName, schemaType, javaType);
+            super(schemaName, schemaType, javaType, javaClass);
 
             this.templateName = templateName;
             this.templateArguments = templateArguments;
@@ -1042,17 +1091,18 @@ public interface TypeInfo
          * @param schemaName The schema name to be stored in type information.
          * @param schemaType The schema type to be stored in type information.
          * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param templateName The full schema template name.
          * @param templateArguments The sequence of type informations for template arguments.
          * @param fields The sequence of type informations for fields.
          * @param parameters The sequence of type informations for parameters.
          * @param functions The sequence of type informations for functions.
          */
-        public CompoundTypeInfoBase(String schemaName, SchemaType schemaType, JavaType javaType,
-            String templateName, List<TypeInfo> templateArguments, List<FieldInfo> fields,
-            List<ParameterInfo> parameters, List<FunctionInfo> functions)
+        public CompoundTypeInfoBase(String schemaName, SchemaType schemaType,
+                JavaType javaType, Class<?> javaClass, String templateName, List<TypeInfo> templateArguments,
+                List<FieldInfo> fields, List<ParameterInfo> parameters, List<FunctionInfo> functions)
         {
-            super(schemaName, schemaType, javaType, templateName, templateArguments);
+            super(schemaName, schemaType, javaType, javaClass, templateName, templateArguments);
 
             this.fields = fields;
             this.parameters = parameters;
@@ -1091,16 +1141,18 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param templateName The full schema template name.
          * @param templateArguments The sequence of type informations for template arguments.
          * @param fields The sequence of type informations for fields.
          * @param parameters The sequence of type informations for parameters.
          * @param functions The sequence of type informations for functions.
          */
-        public StructTypeInfo(String schemaName, String templateName, List<TypeInfo> templateArguments,
+        public StructTypeInfo(String schemaName, Class<?> javaClass,
+                String templateName, List<TypeInfo> templateArguments,
                 List<FieldInfo> fields, List<ParameterInfo> parameters, List<FunctionInfo> functions)
         {
-            super(schemaName, SchemaType.STRUCT, JavaType.STRUCT, templateName, templateArguments,
+            super(schemaName, SchemaType.STRUCT, JavaType.STRUCT, javaClass, templateName, templateArguments,
                     fields, parameters, functions);
         }
     }
@@ -1114,16 +1166,18 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param templateName The full schema template name.
          * @param templateArguments The sequence of type informations for template arguments.
          * @param fields The sequence of type informations for fields.
          * @param parameters The sequence of type informations for parameters.
          * @param functions The sequence of type informations for functions.
          */
-        public UnionTypeInfo(String schemaName, String templateName, List<TypeInfo> templateArguments,
+        public UnionTypeInfo(String schemaName, Class<?> javaClass,
+                String templateName, List<TypeInfo> templateArguments,
                 List<FieldInfo> fields, List<ParameterInfo> parameters, List<FunctionInfo> functions)
         {
-            super(schemaName, SchemaType.UNION, JavaType.UNION, templateName, templateArguments,
+            super(schemaName, SchemaType.UNION, JavaType.UNION, javaClass, templateName, templateArguments,
                     fields, parameters, functions);
         }
     }
@@ -1137,6 +1191,7 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param templateName The full schema template name.
          * @param templateArguments The sequence of type informations for template arguments.
          * @param fields The sequence of type informations for fields.
@@ -1145,11 +1200,12 @@ public interface TypeInfo
          * @param selector The selector expression.
          * @param cases The sequence of type informations for cases.
          */
-        public ChoiceTypeInfo(String schemaName, String templateName, List<TypeInfo> templateArguments,
+        public ChoiceTypeInfo(String schemaName, Class<?> javaClass,
+                String templateName, List<TypeInfo> templateArguments,
                 List<FieldInfo> fields, List<ParameterInfo> parameters, List<FunctionInfo> functions,
                 String selector, List<CaseInfo> cases)
         {
-            super(schemaName, SchemaType.CHOICE, JavaType.CHOICE, templateName, templateArguments,
+            super(schemaName, SchemaType.CHOICE, JavaType.CHOICE, javaClass, templateName, templateArguments,
                     fields, parameters, functions);
 
             this.selector = selector;
@@ -1183,13 +1239,15 @@ public interface TypeInfo
          * @param schemaName The schema name to be stored in type information.
          * @param schemaType The schema type to be stored in type information.
          * @param javaType The Java type to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param underlyingType The reference to type information of underlying zserio type.
          * @param underlyingTypeArguments The underlying zserio type arguments.
          */
-        public TypeInfoWithUnderlyingTypeBase(String schemaName, SchemaType schemaType, JavaType javaType,
+        public TypeInfoWithUnderlyingTypeBase(String schemaName, SchemaType schemaType,
+                JavaType javaType, Class<?> javaClass,
                 TypeInfo underlyingType, List<String> underlyingTypeArguments)
         {
-            super(schemaName, schemaType, javaType);
+            super(schemaName, schemaType, javaType, javaClass);
 
             this.underlyingType= underlyingType;
             this.underlyingTypeArguments = underlyingTypeArguments;
@@ -1220,14 +1278,16 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param underlyingType The reference to type information of underlying zserio type.
          * @param underlyingTypeArguments The underlying zserio type arguments.
          * @param enumItems The sequence of type informations for enumeration items.
          */
-        public EnumTypeInfo(String schemaName, TypeInfo underlyingType, List<String> underlyingTypeArguments,
-                List<ItemInfo> enumItems)
+        public EnumTypeInfo(String schemaName, Class<?> javaClass,
+                TypeInfo underlyingType, List<String> underlyingTypeArguments, List<ItemInfo> enumItems)
         {
-            super(schemaName, SchemaType.ENUM, JavaType.ENUM, underlyingType, underlyingTypeArguments);
+            super(schemaName, SchemaType.ENUM, JavaType.ENUM, javaClass,
+                    underlyingType, underlyingTypeArguments);
 
             this.enumItems = enumItems;
         }
@@ -1250,14 +1310,16 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param underlyingType The reference to type information of underlying zserio type.
          * @param underlyingTypeArguments The underlying zserio type arguments.
          * @param bitmaskValues The sequence of type informations for bitmask values.
          */
-        public BitmaskTypeInfo(String schemaName, TypeInfo underlyingType, List<String> underlyingTypeArguments,
-                List<ItemInfo> bitmaskValues)
+        public BitmaskTypeInfo(String schemaName, Class<?> javaClass,
+                TypeInfo underlyingType, List<String> underlyingTypeArguments, List<ItemInfo> bitmaskValues)
         {
-            super(schemaName, SchemaType.BITMASK, JavaType.BITMASK, underlyingType, underlyingTypeArguments);
+            super(schemaName, SchemaType.BITMASK, JavaType.BITMASK, javaClass,
+                    underlyingType, underlyingTypeArguments);
 
             this.bitmaskValues = bitmaskValues;
         }
@@ -1280,6 +1342,7 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param templateName The full schema template name.
          * @param templateArguments The sequence of type informations for template arguments.
          * @param columns The sequence of type informations for columns.
@@ -1287,11 +1350,13 @@ public interface TypeInfo
          * @param virtualTableUsing The SQL virtual table using specification.
          * @param isWithoutRowId True if SQL table is without row id table, otherwise false.
          */
-        public SqlTableTypeInfo(String schemaName, String templateName, List<TypeInfo> templateArguments,
+        public SqlTableTypeInfo(String schemaName, Class<?> javaClass,
+                String templateName, List<TypeInfo> templateArguments,
                 List<ColumnInfo> columns, String sqlConstraint, String virtualTableUsing,
                 boolean isWithoutRowId)
         {
-            super(schemaName, SchemaType.SQL_TABLE, JavaType.SQL_TABLE, templateName, templateArguments);
+            super(schemaName, SchemaType.SQL_TABLE, JavaType.SQL_TABLE, javaClass,
+                    templateName, templateArguments);
 
             this.columns = columns;
             this.sqlConstraint = sqlConstraint;
@@ -1338,11 +1403,12 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param tables The sequence of type informations for tables.
          */
-        public SqlDatabaseTypeInfo(String schemaName, List<TableInfo> tables)
+        public SqlDatabaseTypeInfo(String schemaName, Class<?> javaClass, List<TableInfo> tables)
         {
-            super(schemaName, SchemaType.SQL_DATABASE, JavaType.SQL_DATABASE);
+            super(schemaName, SchemaType.SQL_DATABASE, JavaType.SQL_DATABASE, javaClass);
 
             this.tables = tables;
         }
@@ -1365,11 +1431,12 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param messages The sequence of type informations for pubsub messages.
          */
-        public PubsubTypeInfo(String schemaName, List<MessageInfo> messages)
+        public PubsubTypeInfo(String schemaName, Class<?> javaClass, List<MessageInfo> messages)
         {
-            super(schemaName, SchemaType.PUBSUB, JavaType.PUBSUB);
+            super(schemaName, SchemaType.PUBSUB, JavaType.PUBSUB, javaClass);
 
             this.messages = messages;
         }
@@ -1392,11 +1459,12 @@ public interface TypeInfo
          * Constructor.
          *
          * @param schemaName The schema name to be stored in type information.
+         * @param javaClass The Java class object to be stored in type information.
          * @param methods The sequence of type informations for service methods.
          */
-        public ServiceTypeInfo(String schemaName, List<MethodInfo> methods)
+        public ServiceTypeInfo(String schemaName, Class<?> javaClass, List<MethodInfo> methods)
         {
-            super(schemaName, SchemaType.SERVICE, JavaType.SERVICE);
+            super(schemaName, SchemaType.SERVICE, JavaType.SERVICE, javaClass);
 
             this.methods = methods;
         }
@@ -1455,6 +1523,12 @@ public interface TypeInfo
         public JavaType getJavaType()
         {
             return getTypeInfo().getJavaType();
+        }
+
+        @Override
+        public Class<?> getJavaClass()
+        {
+            return getTypeInfo().getJavaClass();
         }
 
         @Override

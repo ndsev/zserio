@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.io.IOException;
 import java.io.File;
+import java.math.BigInteger;
 
 import zserio.runtime.typeinfo.TypeInfo;
 import zserio.runtime.typeinfo.SchemaType;
@@ -22,6 +23,7 @@ import zserio.runtime.typeinfo.MethodInfo;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitStreamWriter;
 import zserio.runtime.io.FileBitStreamWriter;
+import zserio.runtime.io.BitBuffer;
 
 public class WithTypeInfoCodeTest
 {
@@ -94,6 +96,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.SqlDatabase", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_DATABASE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_DATABASE, typeInfo.getJavaType());
+        assertEquals(SqlDatabase.class, typeInfo.getJavaClass());
 
         final List<TableInfo> tables = typeInfo.getTables();
         assertEquals(5, tables.size());
@@ -129,6 +132,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.SqlTable", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
+        assertEquals(SqlTable.class, typeInfo.getJavaClass());
 
         assertEquals("", typeInfo.getSqlConstraint());
         assertEquals("", typeInfo.getVirtualTableUsing());
@@ -147,6 +151,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", pkColumn.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, pkColumn.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, pkColumn.getTypeInfo().getJavaType());
+        assertEquals(long.class, pkColumn.getTypeInfo().getJavaClass());
         assertEquals(32, pkColumn.getTypeInfo().getBitSize());
 
         assertEquals(0, pkColumn.getTypeArguments().size());
@@ -161,6 +166,7 @@ public class WithTypeInfoCodeTest
         assertEquals("string", textColumn.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.STRING, textColumn.getTypeInfo().getSchemaType());
         assertEquals(JavaType.STRING, textColumn.getTypeInfo().getJavaType());
+        assertEquals(String.class, textColumn.getTypeInfo().getJavaClass());
 
         assertEquals(0, textColumn.getTypeArguments().size());
         assertEquals("TEXT", textColumn.getSqlTypeName());
@@ -173,6 +179,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.TemplatedSqlTable_uint32", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
+        assertEquals(TemplatedSqlTable_uint32.class, typeInfo.getJavaClass());
 
         assertEquals("PRIMARY KEY(pk)", typeInfo.getSqlConstraint());
         assertEquals("", typeInfo.getVirtualTableUsing());
@@ -185,6 +192,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", templateArg0Info.getSchemaName());
         assertEquals(SchemaType.UINT32, templateArg0Info.getSchemaType());
         assertEquals(JavaType.LONG, templateArg0Info.getJavaType());
+        assertEquals(long.class, templateArg0Info.getJavaClass());
         assertEquals(32, templateArg0Info.getBitSize());
 
         final List<ColumnInfo> columns = typeInfo.getColumns();
@@ -197,6 +205,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", pkColumn.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, pkColumn.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, pkColumn.getTypeInfo().getJavaType());
+        assertEquals(long.class, pkColumn.getTypeInfo().getJavaClass());
         assertEquals(32, pkColumn.getTypeInfo().getBitSize());
 
         assertEquals(0, pkColumn.getTypeArguments().size());
@@ -219,6 +228,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.TemplatedSqlTableU8", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
+        assertEquals(TemplatedSqlTableU8.class, typeInfo.getJavaClass());
 
         assertEquals("PRIMARY KEY(pk)", typeInfo.getSqlConstraint());
         assertEquals("", typeInfo.getVirtualTableUsing());
@@ -231,6 +241,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint8", templateArg0Info.getSchemaName());
         assertEquals(SchemaType.UINT8, templateArg0Info.getSchemaType());
         assertEquals(JavaType.SHORT, templateArg0Info.getJavaType());
+        assertEquals(short.class, templateArg0Info.getJavaClass());
         assertEquals(8, templateArg0Info.getBitSize());
 
         final List<ColumnInfo> columns = typeInfo.getColumns();
@@ -243,6 +254,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint8", pkColumn.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT8, pkColumn.getTypeInfo().getSchemaType());
         assertEquals(JavaType.SHORT, pkColumn.getTypeInfo().getJavaType());
+        assertEquals(short.class, pkColumn.getTypeInfo().getJavaClass());
         assertEquals(8, pkColumn.getTypeInfo().getBitSize());
 
         assertEquals(0, pkColumn.getTypeArguments().size());
@@ -265,6 +277,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.Fts4Table", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
+        assertEquals(Fts4Table.class, typeInfo.getJavaClass());
 
         assertEquals("", typeInfo.getSqlConstraint());
         assertEquals("fts4", typeInfo.getVirtualTableUsing());
@@ -283,6 +296,7 @@ public class WithTypeInfoCodeTest
         assertEquals("int64", docIdColumn.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.INT64, docIdColumn.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, docIdColumn.getTypeInfo().getJavaType());
+        assertEquals(long.class, docIdColumn.getTypeInfo().getJavaClass());
         assertEquals(64, docIdColumn.getTypeInfo().getBitSize());
 
         assertEquals(0, docIdColumn.getTypeArguments().size());
@@ -297,6 +311,7 @@ public class WithTypeInfoCodeTest
         assertEquals("string", searchTagsColumn.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.STRING, searchTagsColumn.getTypeInfo().getSchemaType());
         assertEquals(JavaType.STRING, searchTagsColumn.getTypeInfo().getJavaType());
+        assertEquals(String.class, searchTagsColumn.getTypeInfo().getJavaClass());
 
         assertEquals(0, searchTagsColumn.getTypeArguments().size());
         assertEquals("TEXT", searchTagsColumn.getSqlTypeName());
@@ -309,6 +324,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.WithoutRowIdTable", typeInfo.getSchemaName());
         assertEquals(SchemaType.SQL_TABLE, typeInfo.getSchemaType());
         assertEquals(JavaType.SQL_TABLE, typeInfo.getJavaType());
+        assertEquals(WithoutRowIdTable.class, typeInfo.getJavaClass());
 
         assertEquals("PRIMARY KEY(pk1, pk2)", typeInfo.getSqlConstraint());
         assertEquals("", typeInfo.getVirtualTableUsing());
@@ -327,6 +343,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", pk1Column.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, pk1Column.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, pk1Column.getTypeInfo().getJavaType());
+        assertEquals(long.class, pk1Column.getTypeInfo().getJavaClass());
         assertEquals(32, pk1Column.getTypeInfo().getBitSize());
 
         assertEquals(0, pk1Column.getTypeArguments().size());
@@ -341,6 +358,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", pk2Column.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, pk2Column.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, pk2Column.getTypeInfo().getJavaType());
+        assertEquals(long.class, pk2Column.getTypeInfo().getJavaClass());
         assertEquals(32, pk2Column.getTypeInfo().getBitSize());
 
         assertEquals(0, pk2Column.getTypeArguments().size());
@@ -354,6 +372,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.WithTypeInfoCode", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
+        assertEquals(WithTypeInfoCode.class, typeInfo.getJavaClass());
 
         assertEquals(0, typeInfo.getParameters().size());
         assertEquals(0, typeInfo.getFunctions().size());
@@ -598,6 +617,7 @@ public class WithTypeInfoCodeTest
         assertEquals("extern", externDataField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.EXTERN, externDataField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BIT_BUFFER, externDataField.getTypeInfo().getJavaType());
+        assertEquals(BitBuffer.class, externDataField.getTypeInfo().getJavaClass());
 
         assertEquals(0, externDataField.getTypeArguments().size());
         assertEquals("", externDataField.getAlignment());
@@ -622,6 +642,7 @@ public class WithTypeInfoCodeTest
         assertEquals("extern", externArrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.EXTERN, externArrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BIT_BUFFER, externArrayField.getTypeInfo().getJavaType());
+        assertEquals(BitBuffer.class, externArrayField.getTypeInfo().getJavaClass());
 
         assertEquals(0, externArrayField.getTypeArguments().size());
         assertEquals("", externArrayField.getAlignment());
@@ -646,6 +667,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", implicitArrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, implicitArrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, implicitArrayField.getTypeInfo().getJavaType());
+        assertEquals(long.class, implicitArrayField.getTypeInfo().getJavaClass());
         assertEquals(32, implicitArrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, implicitArrayField.getTypeArguments().size());
@@ -668,6 +690,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.SimpleStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
+        assertEquals(SimpleStruct.class, typeInfo.getJavaClass());
 
         assertEquals(0, typeInfo.getParameters().size());
         assertEquals(0, typeInfo.getFunctions().size());
@@ -687,6 +710,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, fieldU32Field.getTypeInfo().getJavaType());
+        assertEquals(long.class, fieldU32Field.getTypeInfo().getJavaClass());
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
@@ -712,6 +736,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", fieldOffsetField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldOffsetField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, fieldOffsetField.getTypeInfo().getJavaType());
+        assertEquals(long.class, fieldOffsetField.getTypeInfo().getJavaClass());
         assertEquals(32, fieldOffsetField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldOffsetField.getTypeArguments().size());
@@ -737,6 +762,7 @@ public class WithTypeInfoCodeTest
         assertEquals("string", fieldStringField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.STRING, fieldStringField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.STRING, fieldStringField.getTypeInfo().getJavaType());
+        assertEquals(String.class, fieldStringField.getTypeInfo().getJavaClass());
 
         assertEquals(0, fieldStringField.getTypeArguments().size());
         assertEquals("", fieldStringField.getAlignment());
@@ -761,6 +787,7 @@ public class WithTypeInfoCodeTest
         assertEquals("bool", fieldBoolField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.BOOL, fieldBoolField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BOOLEAN, fieldBoolField.getTypeInfo().getJavaType());
+        assertEquals(boolean.class, fieldBoolField.getTypeInfo().getJavaClass());
         assertEquals(1, fieldBoolField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldBoolField.getTypeArguments().size());
@@ -786,6 +813,7 @@ public class WithTypeInfoCodeTest
         assertEquals("float16", fieldFloat16Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FLOAT16, fieldFloat16Field.getTypeInfo().getSchemaType());
         assertEquals(JavaType.FLOAT, fieldFloat16Field.getTypeInfo().getJavaType());
+        assertEquals(float.class, fieldFloat16Field.getTypeInfo().getJavaClass());
         assertEquals(16, fieldFloat16Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat16Field.getTypeArguments().size());
@@ -811,6 +839,7 @@ public class WithTypeInfoCodeTest
         assertEquals("float32", fieldFloat32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FLOAT32, fieldFloat32Field.getTypeInfo().getSchemaType());
         assertEquals(JavaType.FLOAT, fieldFloat32Field.getTypeInfo().getJavaType());
+        assertEquals(float.class, fieldFloat32Field.getTypeInfo().getJavaClass());
         assertEquals(32, fieldFloat32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat32Field.getTypeArguments().size());
@@ -836,6 +865,7 @@ public class WithTypeInfoCodeTest
         assertEquals("float64", fieldFloat64Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FLOAT64, fieldFloat64Field.getTypeInfo().getSchemaType());
         assertEquals(JavaType.DOUBLE, fieldFloat64Field.getTypeInfo().getJavaType());
+        assertEquals(double.class, fieldFloat64Field.getTypeInfo().getJavaClass());
         assertEquals(64, fieldFloat64Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat64Field.getTypeArguments().size());
@@ -858,6 +888,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.ComplexStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
+        assertEquals(ComplexStruct.class, typeInfo.getJavaClass());
 
         assertEquals(0, typeInfo.getParameters().size());
         final List<FunctionInfo> functions = typeInfo.getFunctions();
@@ -868,6 +899,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", function0.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, function0.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, function0.getTypeInfo().getJavaType());
+        assertEquals(long.class, function0.getTypeInfo().getJavaClass());
         assertEquals(32, function0.getTypeInfo().getBitSize());
         assertEquals("(getArray().length > 0) ? getArray()[0] : 0", function0.getFunctionResult());
 
@@ -952,6 +984,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", arrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, arrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, arrayField.getTypeInfo().getJavaType());
+        assertEquals(long.class, arrayField.getTypeInfo().getJavaClass());
         assertEquals(32, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
@@ -977,6 +1010,7 @@ public class WithTypeInfoCodeTest
         assertEquals("int:5", arrayWithLenField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.FIXED_SIGNED_BITFIELD, arrayWithLenField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BYTE, arrayWithLenField.getTypeInfo().getJavaType());
+        assertEquals(byte.class, arrayWithLenField.getTypeInfo().getJavaClass());
         assertEquals(5, arrayWithLenField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayWithLenField.getTypeArguments().size());
@@ -1026,6 +1060,7 @@ public class WithTypeInfoCodeTest
         assertEquals("bit<>", dynamicBitFieldField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD, dynamicBitFieldField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BIG_INTEGER, dynamicBitFieldField.getTypeInfo().getJavaType());
+        assertEquals(BigInteger.class, dynamicBitFieldField.getTypeInfo().getJavaClass());
 
         assertEquals(1, dynamicBitFieldField.getTypeArguments().size());
         assertEquals("getSimpleStruct().getFieldU32()", dynamicBitFieldField.getTypeArguments().get(0));
@@ -1051,6 +1086,7 @@ public class WithTypeInfoCodeTest
         assertEquals("bit<>", dynamicBitFieldArrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD, dynamicBitFieldArrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BIG_INTEGER, dynamicBitFieldArrayField.getTypeInfo().getJavaType());
+        assertEquals(BigInteger.class, dynamicBitFieldArrayField.getTypeInfo().getJavaClass());
 
         assertEquals(1, dynamicBitFieldArrayField.getTypeArguments().size());
         assertEquals("(getDynamicBitField().multiply(new java.math.BigInteger(\"2\"))).longValue()",
@@ -1121,6 +1157,7 @@ public class WithTypeInfoCodeTest
         assertEquals("extern", optionalExternField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.EXTERN, optionalExternField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BIT_BUFFER, optionalExternField.getTypeInfo().getJavaType());
+        assertEquals(BitBuffer.class, optionalExternField.getTypeInfo().getJavaClass());
 
         assertEquals(0, optionalExternField.getTypeArguments().size());
         assertEquals("", optionalExternField.getAlignment());
@@ -1142,6 +1179,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.ParameterizedStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
+        assertEquals(ParameterizedStruct.class, typeInfo.getJavaClass());
 
         final List<ParameterInfo> parameters = typeInfo.getParameters();
         assertEquals(1, parameters.size());
@@ -1167,6 +1205,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint8", arrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT8, arrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.SHORT, arrayField.getTypeInfo().getJavaType());
+        assertEquals(short.class, arrayField.getTypeInfo().getJavaClass());
         assertEquals(8, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
@@ -1189,6 +1228,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.RecursiveStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
+        assertEquals(RecursiveStruct.class, typeInfo.getJavaClass());
 
         assertEquals(0, typeInfo.getParameters().size());
         assertEquals(0, typeInfo.getFunctions().size());
@@ -1208,6 +1248,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, fieldU32Field.getTypeInfo().getJavaType());
+        assertEquals(long.class, fieldU32Field.getTypeInfo().getJavaClass());
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
@@ -1233,6 +1274,7 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getSchemaName(), fieldRecursion.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), fieldRecursion.getTypeInfo().getSchemaType());
         assertEquals(typeInfo.getJavaType(), fieldRecursion.getTypeInfo().getJavaType());
+        assertEquals(typeInfo.getJavaClass(), fieldRecursion.getTypeInfo().getJavaClass());
         assertEquals(typeInfo.getFields().size(), fieldRecursion.getTypeInfo().getFields().size());
 
         assertEquals(0, fieldRecursion.getTypeArguments().size());
@@ -1258,6 +1300,7 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getSchemaName(), arrayRecursion.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), arrayRecursion.getTypeInfo().getSchemaType());
         assertEquals(typeInfo.getJavaType(), arrayRecursion.getTypeInfo().getJavaType());
+        assertEquals(typeInfo.getJavaClass(), arrayRecursion.getTypeInfo().getJavaClass());
         assertEquals(typeInfo.getFields().size(), arrayRecursion.getTypeInfo().getFields().size());
 
         assertEquals(0, arrayRecursion.getTypeArguments().size());
@@ -1280,6 +1323,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.RecursiveUnion", typeInfo.getSchemaName());
         assertEquals(SchemaType.UNION, typeInfo.getSchemaType());
         assertEquals(JavaType.UNION, typeInfo.getJavaType());
+        assertEquals(RecursiveUnion.class, typeInfo.getJavaClass());
 
         final List<FieldInfo> fields = typeInfo.getFields();
         assertEquals(2, fields.size());
@@ -1293,6 +1337,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, fieldU32Field.getTypeInfo().getJavaType());
+        assertEquals(long.class, fieldU32Field.getTypeInfo().getJavaClass());
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
@@ -1318,6 +1363,7 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getSchemaName(), recursive.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), recursive.getTypeInfo().getSchemaType());
         assertEquals(typeInfo.getJavaType(), recursive.getTypeInfo().getJavaType());
+        assertEquals(typeInfo.getJavaClass(), recursive.getTypeInfo().getJavaClass());
         assertEquals(typeInfo.getFields().size(), recursive.getTypeInfo().getFields().size());
 
         assertEquals(0, recursive.getTypeArguments().size());
@@ -1340,6 +1386,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.RecursiveChoice", typeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, typeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, typeInfo.getJavaType());
+        assertEquals(RecursiveChoice.class, typeInfo.getJavaClass());
 
         final List<ParameterInfo> parameters = typeInfo.getParameters();
         assertEquals(2, parameters.size());
@@ -1350,6 +1397,7 @@ public class WithTypeInfoCodeTest
         assertEquals("bool", param1.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.BOOL, param1.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BOOLEAN, param1.getTypeInfo().getJavaType());
+        assertEquals(boolean.class, param1.getTypeInfo().getJavaClass());
         assertEquals(1, param1.getTypeInfo().getBitSize());
 
         // param2
@@ -1358,6 +1406,7 @@ public class WithTypeInfoCodeTest
         assertEquals("bool", param2.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.BOOL, param2.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BOOLEAN, param2.getTypeInfo().getJavaType());
+        assertEquals(boolean.class, param2.getTypeInfo().getJavaClass());
         assertEquals(1, param2.getTypeInfo().getBitSize());
 
         final List<FieldInfo> fields = typeInfo.getFields();
@@ -1372,6 +1421,7 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getSchemaName(), recursive.getTypeInfo().getSchemaName());
         assertEquals(typeInfo.getSchemaType(), recursive.getTypeInfo().getSchemaType());
         assertEquals(typeInfo.getJavaType(), recursive.getTypeInfo().getJavaType());
+        assertEquals(typeInfo.getJavaClass(), recursive.getTypeInfo().getJavaClass());
         assertEquals(typeInfo.getFields().size(), recursive.getTypeInfo().getFields().size());
 
         assertEquals(2, recursive.getTypeArguments().size());
@@ -1399,6 +1449,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", fieldU32Field.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldU32Field.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, fieldU32Field.getTypeInfo().getJavaType());
+        assertEquals(long.class, fieldU32Field.getTypeInfo().getJavaClass());
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
@@ -1421,10 +1472,12 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.TestEnum", typeInfo.getSchemaName());
         assertEquals(SchemaType.ENUM, typeInfo.getSchemaType());
         assertEquals(JavaType.ENUM, typeInfo.getJavaType());
+        assertEquals(TestEnum.class, typeInfo.getJavaClass());
 
         assertEquals("uint16", typeInfo.getUnderlyingType().getSchemaName());
         assertEquals(SchemaType.UINT16, typeInfo.getUnderlyingType().getSchemaType());
         assertEquals(JavaType.INT, typeInfo.getUnderlyingType().getJavaType());
+        assertEquals(int.class, typeInfo.getUnderlyingType().getJavaClass());
         assertEquals(16, typeInfo.getUnderlyingType().getBitSize());
         assertEquals(0, typeInfo.getUnderlyingTypeArguments().size());
 
@@ -1452,6 +1505,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.SimpleChoice", typeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, typeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, typeInfo.getJavaType());
+        assertEquals(SimpleChoice.class, typeInfo.getJavaClass());
 
         final List<ParameterInfo> parameters = typeInfo.getParameters();
         assertEquals(1, parameters.size());
@@ -1468,6 +1522,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", function0.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, function0.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, function0.getTypeInfo().getJavaType());
+        assertEquals(long.class, function0.getTypeInfo().getJavaClass());
         assertEquals(32, function0.getTypeInfo().getBitSize());
         assertEquals("getFieldTwo().funcSimpleStructFieldU32()", function0.getFunctionResult());
 
@@ -1510,6 +1565,7 @@ public class WithTypeInfoCodeTest
         assertEquals("string", fieldDefaultField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.STRING, fieldDefaultField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.STRING, fieldDefaultField.getTypeInfo().getJavaType());
+        assertEquals(String.class, fieldDefaultField.getTypeInfo().getJavaClass());
 
         assertEquals(0, fieldDefaultField.getTypeArguments().size());
         assertEquals("", fieldDefaultField.getAlignment());
@@ -1551,6 +1607,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.SimpleUnion", typeInfo.getSchemaName());
         assertEquals(SchemaType.UNION, typeInfo.getSchemaType());
         assertEquals(JavaType.UNION, typeInfo.getJavaType());
+        assertEquals(SimpleUnion.class, typeInfo.getJavaClass());
 
         assertEquals(0, typeInfo.getParameters().size());
 
@@ -1562,6 +1619,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", function0.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, function0.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, function0.getTypeInfo().getJavaType());
+        assertEquals(long.class, function0.getTypeInfo().getJavaClass());
         assertEquals(32, function0.getTypeInfo().getBitSize());
         assertEquals("getSimpleStruct().getFieldU32()", function0.getFunctionResult());
 
@@ -1621,10 +1679,12 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.TestBitmask", typeInfo.getSchemaName());
         assertEquals(SchemaType.BITMASK, typeInfo.getSchemaType());
         assertEquals(JavaType.BITMASK, typeInfo.getJavaType());
+        assertEquals(TestBitmask.class, typeInfo.getJavaClass());
 
         assertEquals("bit<>", typeInfo.getUnderlyingType().getSchemaName());
         assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD, typeInfo.getUnderlyingType().getSchemaType());
         assertEquals(JavaType.SHORT, typeInfo.getUnderlyingType().getJavaType());
+        assertEquals(short.class, typeInfo.getUnderlyingType().getJavaClass());
         assertEquals(1, typeInfo.getUnderlyingTypeArguments().size());
         assertEquals("10", typeInfo.getUnderlyingTypeArguments().get(0));
 
@@ -1652,6 +1712,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.TS32", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
+        assertEquals(TS32.class, typeInfo.getJavaClass());
 
         assertEquals(0, typeInfo.getParameters().size());
         assertEquals(0, typeInfo.getFunctions().size());
@@ -1664,6 +1725,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", templateArgument0.getSchemaName());
         assertEquals(SchemaType.UINT32, templateArgument0.getSchemaType());
         assertEquals(JavaType.LONG, templateArgument0.getJavaType());
+        assertEquals(long.class, templateArgument0.getJavaClass());
         assertEquals(32, templateArgument0.getBitSize());
 
         final List<FieldInfo> fields = typeInfo.getFields();
@@ -1678,6 +1740,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", fieldField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, fieldField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, fieldField.getTypeInfo().getJavaType());
+        assertEquals(long.class, fieldField.getTypeInfo().getJavaClass());
         assertEquals(32, fieldField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldField.getTypeArguments().size());
@@ -1701,6 +1764,7 @@ public class WithTypeInfoCodeTest
                 typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
+        assertEquals(TemplatedParameterizedStruct_TS32.class, typeInfo.getJavaClass());
 
         assertEquals(1, typeInfo.getParameters().size());
         final ParameterInfo parameter0 = typeInfo.getParameters().get(0);
@@ -1728,6 +1792,7 @@ public class WithTypeInfoCodeTest
         assertEquals("uint32", arrayField.getTypeInfo().getSchemaName());
         assertEquals(SchemaType.UINT32, arrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.LONG, arrayField.getTypeInfo().getJavaType());
+        assertEquals(long.class, arrayField.getTypeInfo().getJavaClass());
         assertEquals(32, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
@@ -1750,6 +1815,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.SimplePubsub", typeInfo.getSchemaName());
         assertEquals(SchemaType.PUBSUB, typeInfo.getSchemaType());
         assertEquals(JavaType.PUBSUB, typeInfo.getJavaType());
+        assertEquals(SimplePubsub.class, typeInfo.getJavaClass());
 
         final List<MessageInfo> messages = typeInfo.getMessages();
         assertEquals(2, messages.size());
@@ -1776,6 +1842,7 @@ public class WithTypeInfoCodeTest
         assertEquals("with_type_info_code.SimpleService", typeInfo.getSchemaName());
         assertEquals(SchemaType.SERVICE, typeInfo.getSchemaType());
         assertEquals(JavaType.SERVICE, typeInfo.getJavaType());
+        assertEquals(SimpleService.class, typeInfo.getJavaClass());
 
         final List<MethodInfo> methods = typeInfo.getMethods();
         assertEquals(1, methods.size());

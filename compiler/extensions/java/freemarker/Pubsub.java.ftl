@@ -14,6 +14,7 @@ public class ${name}
     {
         return new zserio.runtime.typeinfo.TypeInfo.PubsubTypeInfo(
                 "${schemaTypeName}",
+                ${name}.class,
                 <@messages_info messageList/>
         );
     }

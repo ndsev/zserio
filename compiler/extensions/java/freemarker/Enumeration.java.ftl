@@ -37,6 +37,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
     {
         return new zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo(
                 "${schemaTypeName}",
+                ${name}.class,
                 <@type_info underlyingTypeInfo/>,
                 <@underlying_type_info_type_arguments bitSize!/>,
                 java.util.Arrays.asList(

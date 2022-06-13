@@ -80,7 +80,7 @@ public class TestObject
                     new java.util.ArrayList<zserio.runtime.typeinfo.FunctionInfo>();
 
             return new zserio.runtime.typeinfo.TypeInfo.StructTypeInfo(
-                    "DummyNested", templateName, templateArguments,
+                    "DummyNested", DummyNested.class, templateName, templateArguments,
                     fieldList, parameterList, functionList
             );
         }
@@ -301,7 +301,7 @@ public class TestObject
                     new java.util.ArrayList<zserio.runtime.typeinfo.FunctionInfo>();
 
             return new zserio.runtime.typeinfo.TypeInfo.UnionTypeInfo(
-                    "DummyUnion", templateName, templateArguments,
+                    "DummyUnion", DummyUnion.class, templateName, templateArguments,
                     fieldList, parameterList, functionList
             );
         }
@@ -813,7 +813,7 @@ public class TestObject
                     new java.util.ArrayList<zserio.runtime.typeinfo.FunctionInfo>();
 
             return new zserio.runtime.typeinfo.TypeInfo.StructTypeInfo(
-                    "DummyObject", templateName, templateArguments,
+                    "DummyObject", DummyObject.class, templateName, templateArguments,
                     fieldList, parameterList, functionList
             );
         }
@@ -1271,7 +1271,7 @@ public class TestObject
         public static zserio.runtime.typeinfo.TypeInfo typeInfo()
         {
             return new zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo(
-                    "DummyBitmask",
+                    "DummyBitmask", DummyBitmask.class,
                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt32(),
                     new java.util.ArrayList<java.lang.String>(),
                     java.util.Arrays.asList(

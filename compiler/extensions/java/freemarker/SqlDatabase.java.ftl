@@ -104,7 +104,7 @@ public class ${name} implements zserio.runtime.SqlDatabase<#if !withWriterCode>R
                 <@tables_info fields/>
 
         return new zserio.runtime.typeinfo.TypeInfo.SqlDatabaseTypeInfo(
-            "${schemaTypeName}", tableList
+            "${schemaTypeName}", ${name}.class, tableList
         );
     }
 </#if>

@@ -12,6 +12,7 @@ public final class ${name}
     {
         return new zserio.runtime.typeinfo.TypeInfo.ServiceTypeInfo(
                 "${schemaTypeName}",
+                ${name}.class,
                 <@methods_info methodList/>
         );
     }

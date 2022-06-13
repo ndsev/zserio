@@ -112,7 +112,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
                 <@cases_info caseMemberList, defaultMember!, isSwitchAllowed/>
 
         return new zserio.runtime.typeinfo.TypeInfo.ChoiceTypeInfo(
-                "${schemaTypeName}", templateName, templateArguments,
+                "${schemaTypeName}", ${name}.class, templateName, templateArguments,
                 fieldList, parameterList, functionList, "${selectorExpression?j_string}", caseList
         );
     }

@@ -48,7 +48,7 @@ public class ${name}
                 <@columns_info fields/>
 
         return new zserio.runtime.typeinfo.TypeInfo.SqlTableTypeInfo(
-                "${schemaTypeName}", templateName, templateArguments,
+                "${schemaTypeName}", ${name}.class, templateName, templateArguments,
                 columnList, ${sqlConstraint!"\"\""}, "${virtualTableUsing!""}", ${isWithoutRowId?c}
         );
     }

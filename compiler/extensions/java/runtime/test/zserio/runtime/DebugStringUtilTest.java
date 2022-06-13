@@ -149,7 +149,7 @@ public class DebugStringUtilTest
     );
 
     private static final TypeInfo DUMMY_OBJECT_TYPE_INFO = new StructTypeInfo(
-            "DummyObject", "", new ArrayList<TypeInfo>(),
+            "DummyObject", DummyObject.class, "", new ArrayList<TypeInfo>(),
             Arrays.asList(TEXT_FIELD_INFO), new ArrayList<ParameterInfo>(), new ArrayList<FunctionInfo>()
     );
 

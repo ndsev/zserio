@@ -54,6 +54,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     {
         return new zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo(
                 "${schemaTypeName}",
+                ${name}.class,
                 <@type_info underlyingTypeInfo/>,
                 <@underlying_type_info_type_arguments bitSize!/>,
                 java.util.Arrays.asList(
