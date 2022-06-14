@@ -14,46 +14,80 @@ namespace detail
 
 template <typename T, typename U, typename ALLOC,
         typename std::enable_if<std::is_arithmetic<typename std::decay<U>::type>::value, int>::type = 0>
-static AnyHolder<ALLOC> makeAnyArithmeticValue(U value, const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyArithmeticValue(U value, const ALLOC& allocator)
 {
     return AnyHolder<ALLOC>(static_cast<T>(value), allocator);
 }
 
 template <typename T, typename U, typename ALLOC,
         typename std::enable_if<!std::is_arithmetic<typename std::decay<U>::type>::value, int>::type = 0>
-static AnyHolder<ALLOC> makeAnyArithmeticValue(const U&, const ALLOC&)
+AnyHolder<ALLOC> makeAnyArithmeticValue(const U&, const ALLOC&)
 {
     throw CppRuntimeException("ZserioTreeCreator: Trying to make integral any value from non-integral type!");
 }
 
 template <typename ALLOC>
-static AnyHolder<ALLOC> makeAnyStringValue(const string<ALLOC>& value, const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyStringValue(const string<ALLOC>& value, const ALLOC& allocator)
 {
     return AnyHolder<ALLOC>(value, allocator);
 }
 
 template <typename ALLOC>
-static AnyHolder<ALLOC> makeAnyStringValue(string<ALLOC>&& value, const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyStringValue(string<ALLOC>&& value, const ALLOC& allocator)
 {
     return AnyHolder<ALLOC>(std::move(value), allocator);
 }
 
 template <typename ALLOC>
-static AnyHolder<ALLOC> makeAnyStringValue(StringView value, const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyStringValue(StringView value, const ALLOC& allocator)
 {
     return AnyHolder<ALLOC>(stringViewToString(value, allocator), allocator);
 }
 
 template <typename ALLOC>
-static AnyHolder<ALLOC> makeAnyStringValue(const char* value, const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyStringValue(const char* value, const ALLOC& allocator)
 {
     return makeAnyStringValue(StringView(value), allocator);
 }
 
 template <typename T, typename ALLOC>
-static AnyHolder<ALLOC> makeAnyStringValue(const T&, const ALLOC&)
+AnyHolder<ALLOC> makeAnyStringValue(const T&, const ALLOC&)
 {
     throw CppRuntimeException("ZserioTreeCreator: Trying to make any string value from unsupported type!");
+}
+
+template <typename T, typename ALLOC>
+AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, const ALLOC& allocator)
+{
+    switch (typeInfo.getCppType())
+    {
+    case CppType::BOOL:
+        return makeAnyArithmeticValue<bool>(std::forward<T>(value), allocator);
+    case CppType::UINT8:
+        return makeAnyArithmeticValue<uint8_t>(std::forward<T>(value), allocator);
+    case CppType::UINT16:
+        return makeAnyArithmeticValue<uint16_t>(std::forward<T>(value), allocator);
+    case CppType::UINT32:
+        return makeAnyArithmeticValue<uint32_t>(std::forward<T>(value), allocator);
+    case CppType::UINT64:
+        return makeAnyArithmeticValue<uint64_t>(std::forward<T>(value), allocator);
+    case CppType::INT8:
+        return makeAnyArithmeticValue<int8_t>(std::forward<T>(value), allocator);
+    case CppType::INT16:
+        return makeAnyArithmeticValue<int16_t>(std::forward<T>(value), allocator);
+    case CppType::INT32:
+        return makeAnyArithmeticValue<int32_t>(std::forward<T>(value), allocator);
+    case CppType::INT64:
+        return makeAnyArithmeticValue<int64_t>(std::forward<T>(value), allocator);
+    case CppType::FLOAT:
+        return makeAnyArithmeticValue<float>(std::forward<T>(value), allocator);
+    case CppType::DOUBLE:
+        return makeAnyArithmeticValue<double>(std::forward<T>(value), allocator);
+    case CppType::STRING:
+        return makeAnyStringValue(std::forward<T>(value), allocator);
+    default:
+        return AnyHolder<ALLOC>(std::forward<T>(value), allocator);
+    }
 }
 
 } // namespace detail
@@ -70,7 +104,7 @@ public:
      *
      * \param typeInfo Type info defining the tree.
      */
-    BasicZserioTreeCreator(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator = ALLOC());
+    explicit BasicZserioTreeCreator(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator = ALLOC());
 
     /**
      * Creates the top level compound element and move to state of building its children.
@@ -158,8 +192,7 @@ private:
     {
         BEFORE_ROOT,
         IN_COMPOUND,
-        IN_ARRAY,
-        DONE
+        IN_ARRAY
     };
 
     const IBasicTypeInfo<ALLOC>& getTypeInfo() const;
@@ -176,13 +209,9 @@ private:
             return "BEFORE_ROOT";
         case State::IN_COMPOUND:
             return "IN_COMPOUND";
-        case State::IN_ARRAY:
+        default: // State::IN_ARRAY:
             return "IN_ARRAY";
-        case State::DONE:
-            return "DONE";
         }
-
-        return "UNKNOWN";
     }
 
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
@@ -229,15 +258,22 @@ void BasicZserioTreeCreator<ALLOC>::beginArray(const std::string& name)
     if (m_state != State::IN_COMPOUND)
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin array in state '") + state() + "'!";
 
-    const auto& fieldInfo = findFieldInfo(getTypeInfo(), name);
+    const auto& parentTypeInfo = getTypeInfo();
+    const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
     if (!fieldInfo.isArray)
         throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "' is not an array!";
 
     m_fieldInfoStack.push_back(fieldInfo);
-    auto field = m_valueStack.back()->getField(name);
-    if (!field)
-        field = m_valueStack.back()->createOptionalField(name);
-    m_valueStack.push_back(field);
+    if (TypeInfoUtil::hasChoice(parentTypeInfo.getCppType()) || fieldInfo.isOptional)
+    {
+        // optional field, or field within choice or union -> create the new compound
+        m_valueStack.push_back(m_valueStack.back()->createField(name));
+    }
+    else
+    {
+        m_valueStack.push_back(m_valueStack.back()->getField(name));
+    }
+
     m_state = State::IN_ARRAY;
 }
 
@@ -248,7 +284,6 @@ void BasicZserioTreeCreator<ALLOC>::endArray()
         throw CppRuntimeException("ZserioTreeCreator: Cannot end array in state '") + state() + "'!";
 
     m_fieldInfoStack.pop_back();
-    auto value = m_valueStack.back();
     m_valueStack.pop_back();
     m_state = State::IN_COMPOUND;
 }
@@ -259,18 +294,25 @@ void BasicZserioTreeCreator<ALLOC>::beginCompound(const std::string& name)
     if (m_state != State::IN_COMPOUND)
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound in state '") + state() + "'!";
 
-    const auto& fieldInfo = findFieldInfo(getTypeInfo(), name);
+    const auto& parentTypeInfo = getTypeInfo();
+    const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
     if (fieldInfo.isArray)
-        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "is an array!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "' is an array!";
 
     if (!TypeInfoUtil::isCompound(fieldInfo.typeInfo.getCppType()))
-        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "is not a compound!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "' is not a compound!";
 
     m_fieldInfoStack.push_back(fieldInfo);
-    auto compound = m_valueStack.back()->getField(name);
-    if (!compound)
-        compound = m_valueStack.back()->createOptionalField(name);
-    m_valueStack.push_back(compound);
+    if (TypeInfoUtil::hasChoice(parentTypeInfo.getCppType()) || fieldInfo.isOptional)
+    {
+        // optional field, or field within choice or union -> create the new compound
+        m_valueStack.push_back(m_valueStack.back()->createField(name));
+    }
+    else
+    {
+        m_valueStack.push_back(m_valueStack.back()->getField(name));
+    }
+
     m_state = State::IN_COMPOUND;
 }
 
@@ -372,14 +414,15 @@ const BasicFieldInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::findFieldInfo(
         const IBasicTypeInfo<ALLOC>& typeInfo, StringView name) const
 {
     Span<const BasicFieldInfo<ALLOC>> fields = typeInfo.getFields();
-    for (const auto& field : fields)
+    auto found_it = find_if(fields.begin(), fields.end(),
+            [name](const BasicFieldInfo<ALLOC>& field){ return field.schemaName == name; });
+    if (found_it == fields.end())
     {
-        if (field.schemaName == name)
-            return field;
+        throw CppRuntimeException("ZserioTreeCreator: Member '") + name +  "' not found in '" +
+                typeInfo.getSchemaName() + "'!";
     }
 
-    throw CppRuntimeException("ZserioTreeCreator: Member '") + name +  "' not found in '" +
-            typeInfo.getSchemaName() + "'!";
+    return *found_it;
 }
 
 template <typename ALLOC>
@@ -387,35 +430,7 @@ template <typename T>
 AnyHolder<ALLOC> BasicZserioTreeCreator<ALLOC>::makeAnyValue(
         const IBasicTypeInfo<ALLOC>& typeInfo, T&& value) const
 {
-    switch (typeInfo.getCppType())
-    {
-    case CppType::BOOL:
-        return detail::makeAnyArithmeticValue<bool>(std::forward<T>(value), m_allocator);
-    case CppType::UINT8:
-        return detail::makeAnyArithmeticValue<uint8_t>(std::forward<T>(value), m_allocator);
-    case CppType::UINT16:
-        return detail::makeAnyArithmeticValue<uint16_t>(std::forward<T>(value), m_allocator);
-    case CppType::UINT32:
-        return detail::makeAnyArithmeticValue<uint32_t>(std::forward<T>(value), m_allocator);
-    case CppType::UINT64:
-        return detail::makeAnyArithmeticValue<uint64_t>(std::forward<T>(value), m_allocator);
-    case CppType::INT8:
-        return detail::makeAnyArithmeticValue<int8_t>(std::forward<T>(value), m_allocator);
-    case CppType::INT16:
-        return detail::makeAnyArithmeticValue<int16_t>(std::forward<T>(value), m_allocator);
-    case CppType::INT32:
-        return detail::makeAnyArithmeticValue<int32_t>(std::forward<T>(value), m_allocator);
-    case CppType::INT64:
-        return detail::makeAnyArithmeticValue<int64_t>(std::forward<T>(value), m_allocator);
-    case CppType::FLOAT:
-        return detail::makeAnyArithmeticValue<float>(std::forward<T>(value), m_allocator);
-    case CppType::DOUBLE:
-        return detail::makeAnyArithmeticValue<double>(std::forward<T>(value), m_allocator);
-    case CppType::STRING:
-        return detail::makeAnyStringValue(std::forward<T>(value), m_allocator);
-    default:
-        return AnyHolder<ALLOC>(std::forward<T>(value), m_allocator);
-    }
+    return detail::makeAnyValue(typeInfo, std::forward<T>(value), m_allocator);
 }
 
 } // namespace zserio

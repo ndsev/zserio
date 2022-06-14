@@ -143,6 +143,14 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
 
     static const ::zserio::ChoiceTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),
+    <#if withReflectionCode>
+        [](const allocator_type& allocator) -> ${types.reflectablePtr.name}
+        {
+            return std::allocate_shared<::zserio::ReflectableOwner<${name}>>(allocator, allocator);
+        },
+    <#else>
+        nullptr,
+    </#if>
         templateName, templateArguments,
         fields, parameters, functions, ::zserio::makeStringView("${selectorExpression}"), cases
     };
@@ -182,6 +190,15 @@ ${I}return {};
                 m_object(object)
         {}
     <#if fieldList?has_content>
+        <#if !isConst>
+
+        virtual void initializeChildren() override
+        {
+            <#if needsChildrenInitialization>
+            m_object.initializeChildren();
+            </#if>
+        }
+        </#if>
 
         <@reflectable_get_field name, fieldList, true/>
         <#if !isConst>
@@ -189,6 +206,8 @@ ${I}return {};
         <@reflectable_get_field name, fieldList, false/>
 
         <@reflectable_set_field name, fieldList/>
+
+        <@reflectable_create_field name, fieldList/>
         </#if>
     </#if>
     <#if compoundParametersData.list?has_content>

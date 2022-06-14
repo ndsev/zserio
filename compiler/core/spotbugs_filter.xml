@@ -8,4 +8,10 @@
         <Class name="zserio.ast.ParserStackedException"/>
         <Field name="messageStack"/>
     </Match>
+    <Match>
+        <!-- *$SWITCH_TABLE$* is a volatile reference to an array - probably spotbugs issue #1296 -->
+        <Bug code="VO"/>
+        <Class name="zserio.extension.common.sql.SqlLiteralFormatter"/>
+        <Field name="$SWITCH_TABLE$zserio$ast$Expression$ExpressionType"/>
+    </Match>
 </FindBugsFilter>

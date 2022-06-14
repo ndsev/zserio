@@ -167,7 +167,7 @@ class DummyChild
 public:
     using allocator_type = std::allocator<uint8_t>;
 
-    explicit DummyChild(const allocator_type& = allocator_type()) {}
+    explicit DummyChild(const allocator_type& = allocator_type()) : m_value(uint32_t()) {}
     explicit DummyChild(uint32_t value) : m_value(value) {}
     explicit DummyChild(BitStreamReader& in) : m_value(readValue(in)) {}
 
@@ -312,6 +312,9 @@ public:
             explicit Reflectable(DummyChild& object, const allocator_type& allocator) :
                     ReflectableAllocatorHolderBase<allocator_type>(DummyChild::typeInfo(), allocator),
                     m_object(object)
+            {}
+
+            virtual void initializeChildren() override
             {}
 
             virtual IReflectableConstPtr getField(StringView name) const override
@@ -476,7 +479,7 @@ class DummyParent
 public:
     using allocator_type = std::allocator<uint8_t>;
 
-    explicit DummyParent(const allocator_type& allocator = allocator_type()) : m_dummyChild(allocator) {};
+    explicit DummyParent(const allocator_type& allocator = allocator_type()) : m_dummyChild(allocator) {}
     explicit DummyParent(DummyChild dummyChild) : m_dummyChild(dummyChild) {}
     explicit DummyParent(BitStreamReader& in) : m_dummyChild(readDummyChild(in)) {}
 
@@ -541,10 +544,8 @@ public:
                 {
                     return m_object.getDummyChild().reflectable(get_allocator());
                 }
-                else
-                {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
-                }
+
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
             }
 
             virtual void write(BitStreamWriter& writer) const override
@@ -574,16 +575,17 @@ public:
                     m_object(object)
             {}
 
+            virtual void initializeChildren() override
+            {}
+
             virtual IReflectableConstPtr getField(StringView name) const override
             {
                 if (name == makeStringView("dummyChild"))
                 {
                     return m_object.getDummyChild().reflectable(get_allocator());
                 }
-                else
-                {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
-                }
+
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
             }
 
             virtual IReflectablePtr getField(StringView name) override
@@ -592,10 +594,19 @@ public:
                 {
                     return m_object.getDummyChild().reflectable(get_allocator());
                 }
-                else
+
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+            }
+
+            virtual IReflectablePtr createField(StringView name) override
+            {
+                if (name == makeStringView("dummyChild"))
                 {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                    m_object.setDummyChild(DummyChild());
+                    return m_object.getDummyChild().reflectable(get_allocator());
                 }
+
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
             }
 
             virtual void setField(StringView name, const AnyHolder<allocator_type>& value) override
@@ -603,11 +614,10 @@ public:
                 if (name == makeStringView("dummyChild"))
                 {
                     m_object.setDummyChild(value.get<DummyChild>());
+                    return;
                 }
-                else
-                {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
-                }
+
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
             }
 
             virtual void write(BitStreamWriter& writer) const override
@@ -685,26 +695,15 @@ inline size_t enumToOrdinal<DummyEnum>(DummyEnum value)
         return 0;
     case DummyEnum::VALUE2:
         return 1;
-    case DummyEnum::VALUE3:
+    default: // DummyEnum::VALUE3:
         return 2;
-    default:
-        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") +
-                static_cast<uint8_t>(value) + "!";
     }
 }
 
 template <>
 inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawValue)
 {
-    switch (rawValue)
-    {
-    case INT8_C(-1):
-    case INT8_C(0):
-    case INT8_C(1):
-        return DummyEnum(rawValue);
-    default:
-        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") + rawValue + "!";
-    }
+    return DummyEnum(rawValue);
 }
 
 template <>
@@ -854,13 +853,23 @@ protected:
         ASSERT_EQ(bitSizeOfValue, reader.getBitPosition());
     }
 
-    template <typename REFLECTABLE_PTR>
-    void checkNonArray(const REFLECTABLE_PTR& reflectable)
+
+    void checkNonArray(const IReflectableConstPtr& reflectable)
     {
         ASSERT_FALSE(reflectable->isArray());
         ASSERT_THROW(reflectable->size(), CppRuntimeException);
         ASSERT_THROW(reflectable->at(0), CppRuntimeException);
         ASSERT_THROW((*reflectable)[0], CppRuntimeException);
+    }
+
+    void checkNonArray(const IReflectablePtr& reflectable)
+    {
+        checkNonArray(static_cast<IReflectableConstPtr>(reflectable));
+
+        ASSERT_THROW(reflectable->at(0), CppRuntimeException);
+        ASSERT_THROW((*reflectable)[0], CppRuntimeException);
+        ASSERT_THROW(reflectable->resize(1), CppRuntimeException);
+        ASSERT_THROW(reflectable->setAt(AnyHolder<>(), 0), CppRuntimeException);
     }
 
     template <typename REFLECTABLE_PTR>
@@ -877,6 +886,7 @@ protected:
 
     void checkNonCompound(const IReflectablePtr& reflectable)
     {
+        ASSERT_THROW(reflectable->initializeChildren(), CppRuntimeException);
         ASSERT_THROW(reflectable->setField("field", AnyHolder<>{}), CppRuntimeException);
 
         checkNonCompoundConstMethods(reflectable);
@@ -1133,6 +1143,7 @@ protected:
         ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
         ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getString(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
         ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
@@ -1166,6 +1177,7 @@ protected:
         checkCompoundConstMethods(dummyParent, static_cast<IReflectableConstPtr>(reflectable));
 
         // setter
+        reflectable->initializeChildren();
         reflectable->getField("dummyChild")->setField("value", AnyHolder<>(static_cast<uint32_t>(11)));
         ASSERT_EQ(11, dummyParent.getDummyChild().getValue());
         reflectable->setField("dummyChild", AnyHolder<>(DummyChild{42}));
@@ -1173,6 +1185,9 @@ protected:
         ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
         ASSERT_THROW(reflectable->find("dummyChild")->setField("nonexistent", AnyHolder<>()),
                 CppRuntimeException);
+
+        reflectable->createField("dummyChild");
+        ASSERT_EQ(uint32_t(), dummyParent.getDummyChild().getValue());
     }
 };
 
@@ -1622,6 +1637,17 @@ TEST_F(ReflectableTest, uint8Array)
 
     // call version with dynamic bit size
     ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray, 8), CppRuntimeException);
+
+    reflectable->resize(0);
+    ASSERT_EQ(0, reflectable->size());
+    reflectable->append(AnyHolder<>(static_cast<uint8_t>(13)));
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(13, reflectable->at(0)->getUInt8());
+    reflectable->setAt(AnyHolder<>(static_cast<uint8_t>(42)), 0);
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(42, reflectable->at(0)->getUInt8());
+    reflectable->resize(2);
+    ASSERT_EQ(2, reflectable->size());
 }
 
 TEST_F(ReflectableTest, dynamicSignedBitField5ConstArray)
@@ -1664,6 +1690,17 @@ TEST_F(ReflectableTest, dynamicSignedBitField5Array)
 
     // call version without dynamic bit size
     ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray), CppRuntimeException);
+
+    reflectable->resize(0);
+    ASSERT_EQ(0, reflectable->size());
+    reflectable->append(AnyHolder<>(static_cast<int8_t>(13)));
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(13, reflectable->at(0)->getInt8());
+    reflectable->setAt(AnyHolder<>(static_cast<int8_t>(42)), 0);
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(42, reflectable->at(0)->getInt8());
+    reflectable->resize(2);
+    ASSERT_EQ(2, reflectable->size());
 }
 
 TEST_F(ReflectableTest, stringConstArray)
@@ -1691,6 +1728,17 @@ TEST_F(ReflectableTest, stringArray)
                 checkString(value, elementReflectable);
             }
     );
+
+    reflectable->resize(0);
+    ASSERT_EQ(0, reflectable->size());
+    reflectable->append(AnyHolder<>(std::string("appended")));
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ("appended"_sv, reflectable->at(0)->getString());
+    reflectable->setAt(AnyHolder<>(std::string("set")), 0);
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ("set"_sv, reflectable->at(0)->getString());
+    reflectable->resize(2);
+    ASSERT_EQ(2, reflectable->size());
 }
 
 TEST_F(ReflectableTest, bitmaskConst)
@@ -1736,6 +1784,17 @@ TEST_F(ReflectableTest, bitmaskArray)
                 checkBitmask(value, elementReflectable);
             }
     );
+
+    reflectable->resize(0);
+    ASSERT_EQ(0, reflectable->size());
+    reflectable->append(AnyHolder<>(DummyBitmask::Values::READ));
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(DummyBitmask::Values::READ, DummyBitmask(reflectable->at(0)->getUInt8()));
+    reflectable->setAt(AnyHolder<>(DummyBitmask::Values::CREATE), 0);
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(DummyBitmask::Values::CREATE, DummyBitmask(reflectable->at(0)->getUInt8()));
+    reflectable->resize(2);
+    ASSERT_EQ(2, reflectable->size());
 }
 
 TEST_F(ReflectableTest, enumeration)
@@ -1770,6 +1829,17 @@ TEST_F(ReflectableTest, enumArray)
                 checkEnum(value, elementReflectable);
             }
     );
+
+    reflectable->resize(0);
+    ASSERT_EQ(0, reflectable->size());
+    reflectable->append(AnyHolder<>(DummyEnum::VALUE3));
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(enumToValue(DummyEnum::VALUE3), reflectable->at(0)->getInt8());
+    reflectable->setAt(AnyHolder<>(DummyEnum::VALUE2), 0);
+    ASSERT_EQ(1, reflectable->size());
+    ASSERT_EQ(enumToValue(DummyEnum::VALUE2), reflectable->at(0)->getInt8());
+    reflectable->resize(2);
+    ASSERT_EQ(2, reflectable->size());
 }
 
 TEST_F(ReflectableTest, compoundConst)
@@ -1779,6 +1849,7 @@ TEST_F(ReflectableTest, compoundConst)
     checkCompound(dummyParent, reflectable);
 
     IReflectablePtr nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_THROW(nonConstReflectable->initializeChildren(), CppRuntimeException);
     ASSERT_NO_THROW(reflectable->getField("dummyChild"));
     ASSERT_THROW(nonConstReflectable->getField("dummyChild"), CppRuntimeException);
     IReflectableConstPtr childReflectable = reflectable->getField("dummyChild");
@@ -1811,6 +1882,9 @@ TEST_F(ReflectableTest, compoundConstArray)
     IReflectablePtr nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
     ASSERT_THROW(nonConstReflectable->at(0), CppRuntimeException);
     ASSERT_THROW((*nonConstReflectable)[0], CppRuntimeException);
+    ASSERT_THROW(nonConstReflectable->resize(nonConstReflectable->size() + 1), CppRuntimeException);
+    ASSERT_THROW(nonConstReflectable->setAt(AnyHolder<>(DummyParent{DummyChild{0}}), 0), CppRuntimeException);
+    ASSERT_THROW(nonConstReflectable->append(AnyHolder<>(DummyParent{DummyChild{0}})), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compoundArray)
@@ -1827,6 +1901,75 @@ TEST_F(ReflectableTest, compoundArray)
                 checkCompound(value, elementReflectable);
             }
     );
+
+    reflectable->resize(reflectable->size() + 1);
+    IReflectablePtr newCompound = reflectable->at(reflectable->size() - 1);
+    ASSERT_TRUE(newCompound);
+
+    reflectable->setAt(AnyHolder<>(DummyParent{DummyChild{0}}), 0);
+    ASSERT_EQ(0, reflectable->at(0)->find("dummyChild.value")->getUInt32());
+    reflectable->append(AnyHolder<>(DummyParent{DummyChild{1}}));
+    ASSERT_EQ(1, reflectable->at(reflectable->size() - 1)->find("dummyChild.value")->getUInt32());
+}
+
+TEST_F(ReflectableTest, reflectableOwner)
+{
+    auto reflectable = DummyParent::typeInfo().createInstance();
+    IReflectableConstPtr constReflectable = reflectable;
+
+    ASSERT_FALSE(reflectable->isArray());
+    reflectable->setField("dummyChild", AnyHolder<>(DummyChild{42}));
+    ASSERT_EQ(42, reflectable->getField("dummyChild")->getField("value")->getUInt32());
+    ASSERT_EQ(42, constReflectable->getField("dummyChild")->getField("value")->getUInt32());
+    ASSERT_THROW(reflectable->createField("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(reflectable->getParameter("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(constReflectable->getParameter("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(reflectable->callFunction("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(constReflectable->callFunction("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(reflectable->getChoice(), CppRuntimeException);
+    ASSERT_THROW(constReflectable->getChoice(), CppRuntimeException);
+    ASSERT_FALSE(reflectable->find("nonexistent"));
+    ASSERT_FALSE(constReflectable->find("nonexistent"));
+    ASSERT_FALSE((*reflectable)["nonexistent"]);
+    ASSERT_FALSE((*constReflectable)["nonexistent"]);
+
+    ASSERT_THROW(reflectable->size(), CppRuntimeException); // not an array
+    ASSERT_THROW(reflectable->resize(0), CppRuntimeException); // not an array
+    ASSERT_THROW(reflectable->at(0), CppRuntimeException); // not an array
+    ASSERT_THROW(constReflectable->at(0), CppRuntimeException); // not an array
+    ASSERT_THROW((*reflectable)[0], CppRuntimeException); // not an array
+    ASSERT_THROW((*constReflectable)[0], CppRuntimeException); // not an array
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(), 0), CppRuntimeException); // not an array
+    ASSERT_THROW(reflectable->append(AnyHolder<>()), CppRuntimeException); // not an array
+
+    ASSERT_THROW(reflectable->getBool(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getInt16(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getInt32(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getInt64(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getUInt8(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getUInt16(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getUInt32(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getString(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
+
+    ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
+    ASSERT_THROW(reflectable->toUInt(), CppRuntimeException);
+    ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
+    ASSERT_THROW(reflectable->toString(), CppRuntimeException);
+
+    const size_t bitSizeOfValue = reflectable->bitSizeOf();
+    BitBuffer bitBuffer(bitSizeOfValue);
+    BitStreamWriter writer(bitBuffer);
+    reflectable->write(writer);
+    ASSERT_EQ(bitSizeOfValue, writer.getBitPosition());
+
+    // for better coverage
+    auto dummyChildReflectable = DummyChild::typeInfo().createInstance();
+    ASSERT_NO_THROW(dummyChildReflectable->initializeChildren());
 }
 
 } // namespace zserio

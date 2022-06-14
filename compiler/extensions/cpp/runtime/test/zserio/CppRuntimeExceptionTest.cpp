@@ -127,9 +127,10 @@ size_t enumToOrdinal(Enumeration value)
 
 TEST(CppRuntimeExceptionTest, appendEnum)
 {
-    const Enumeration value = Enumeration::RED;
-    CppRuntimeException exception = CppRuntimeException("") + value;
-    ASSERT_EQ(std::string("RED"), exception.what());
+    CppRuntimeException exception = CppRuntimeException("") + Enumeration::BLACK +
+            Enumeration::RED + Enumeration::WHITE;
+    ASSERT_EQ(std::string(EnumTraits<Enumeration>::names[0]) + EnumTraits<Enumeration>::names[1] +
+            EnumTraits<Enumeration>::names[2], exception.what());
 }
 
 class Bitmask

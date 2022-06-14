@@ -48,9 +48,9 @@
                 ::zserio::NullOpt<#if field.holderNeedsAllocator>, allocator</#if><#t>
             <#else>
                 <#if field.array??>
-                <@array_traits field/>, allocator<#t>
+                    <@array_traits field/>, allocator<#t>
                 <#else>
-                <#if field.needsAllocator>allocator<#elseif field.typeInfo.isSimple>${field.typeInfo.typeFullName}()</#if><#t>
+                    <#if field.needsAllocator>allocator<#elseif field.typeInfo.isSimple>${field.typeInfo.typeFullName}()</#if><#t>
                 </#if>
             </#if>
         </#if>
@@ -105,7 +105,16 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
     <@function_info_array_var "functions", compoundFunctionsData.list/>
 
     static const ::zserio::StructTypeInfo<allocator_type> typeInfo = {
-        ::zserio::makeStringView("${schemaTypeName}"), templateName, templateArguments,
+        ::zserio::makeStringView("${schemaTypeName}"),
+    <#if withReflectionCode>
+        [](const allocator_type& allocator) -> ${types.reflectablePtr.name}
+        {
+            return std::allocate_shared<::zserio::ReflectableOwner<${name}>>(allocator, allocator);
+        },
+    <#else>
+        nullptr,
+    </#if>
+        templateName, templateArguments,
         fields, parameters, functions
     };
 
@@ -132,6 +141,15 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
                 m_object(object)
         {}
     <#if fieldList?has_content>
+        <#if !isConst>
+
+        virtual void initializeChildren()
+        {
+            <#if needsChildrenInitialization>
+            m_object.initializeChildren();
+            </#if>
+        }
+        </#if>
 
         <@reflectable_get_field name, fieldList, true/>
         <#if !isConst>
@@ -139,6 +157,8 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         <@reflectable_get_field name, fieldList, false/>
 
         <@reflectable_set_field name, fieldList/>
+
+        <@reflectable_create_field name, fieldList/>
         </#if>
     </#if>
     <#if compoundParametersData.list?has_content>

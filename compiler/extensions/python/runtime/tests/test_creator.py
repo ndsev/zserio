@@ -169,16 +169,15 @@ class DummyObject:
                  nested_: typing.Optional[DummyNested] = None,
                  text_: str = str(),
                  nested_array_: typing.List[DummyNested] = None,
-                 text_array_: typing.List[str] = None,
-                 extern_array_: typing.List[BitBuffer] = None,
-                 optional_bool_: typing.Optional[bool] = None) -> None:
+                 text_array_: typing.List[str] = None) -> None:
         self._value_ = value_
         self._nested_ = nested_
         self._text_ = text_
         self._nested_array_ = Array(ObjectArrayTraits(None, None, None), nested_array_, is_auto=True)
         self._text_array = Array(StringArrayTraits(), text_array_, is_auto=True)
-        self._extern_array_ = Array(BitBufferArrayTraits(), extern_array_, is_auto=True)
-        self._optional_bool_ = optional_bool_
+        self._extern_array_ = None
+        self._optional_bool_ = None
+        self._optional_nested_ = None
 
     @staticmethod
     def type_info() -> TypeInfo:
@@ -221,7 +220,10 @@ class DummyObject:
                 'externArray', TypeInfo('extern', BitBuffer),
                 attributes={
                     MemberAttribute.PROPERTY_NAME : 'extern_array',
-                    MemberAttribute.ARRAY_LENGTH : None
+                    MemberAttribute.ARRAY_LENGTH : None,
+                    MemberAttribute.OPTIONAL : None,
+                    MemberAttribute.IS_USED_INDICATOR_NAME : 'is_extern_array_used',
+                    MemberAttribute.IS_SET_INDICATOR_NAME : 'is_extern_array_set'
                 }
             ),
             MemberInfo(
@@ -231,6 +233,16 @@ class DummyObject:
                     MemberAttribute.OPTIONAL : None,
                     MemberAttribute.IS_USED_INDICATOR_NAME : 'is_optional_bool_used',
                     MemberAttribute.IS_SET_INDICATOR_NAME : 'is_optional_bool_set'
+                }
+            ),
+            MemberInfo(
+                'optionalNested', DummyNested.type_info(),
+                attributes={
+                    MemberAttribute.PROPERTY_NAME : 'optional_nested',
+                    MemberAttribute.OPTIONAL : None,
+                    MemberAttribute.IS_USED_INDICATOR_NAME : 'is_optional_nested_used',
+                    MemberAttribute.IS_SET_INDICATOR_NAME : 'is_optional_nested_set',
+                    MemberAttribute.TYPE_ARGUMENTS : [(lambda self, zserio_index: self.value)]
                 }
             )
         ]
@@ -296,6 +308,14 @@ class DummyObject:
     def optional_bool(self, optional_bool_: typing.Optional[bool]) -> None:
         self._optional_bool_ = optional_bool_
 
+    @property
+    def optional_nested(self) -> typing.Optional[DummyNested]:
+        return self._optional_nested_
+
+    @optional_nested.setter
+    def optional_nested(self, optional_nested_: typing.Optional[DummyNested]) -> None:
+        self._optional_nested_ = optional_nested_
+
 class ZserioTreeCreatorTest(unittest.TestCase):
 
     def test_create_object(self):
@@ -324,11 +344,16 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         creator.begin_compound("nested")
         creator.set_value("value", 10)
         creator.set_value("text", "nested")
+        creator.set_value("data", BitBuffer([0x3c], 6))
+        creator.set_value("dummyEnum", DummyEnum.ONE)
+        creator.set_value("dummyBitmask", DummyBitmask.Values.WRITE)
         creator.end_compound()
         creator.begin_array("nestedArray")
         creator.begin_compound_element()
         creator.set_value("value", 5)
         creator.set_value("text", "nestedArray")
+        creator.set_value("dummyEnum", DummyEnum.TWO)
+        creator.set_value("dummyBitmask", DummyBitmask.Values.READ)
         creator.end_compound_element()
         creator.end_array()
         creator.begin_array("textArray")
@@ -337,19 +362,37 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         creator.add_value_element("text")
         creator.add_value_element("array")
         creator.end_array()
+        creator.begin_array("externArray")
+        creator.add_value_element(BitBuffer([0x0f], 4))
+        creator.end_array()
+        creator.set_value("optionalBool", False)
+        creator.begin_compound("optionalNested")
+        creator.set_value("text", "optionalNested")
+        creator.end_compound()
         obj = creator.end_root()
 
         self.assertEqual(13, obj.value)
+        self.assertEqual("test", obj.text)
         self.assertEqual(13, obj.nested.param)
         self.assertEqual(10, obj.nested.value)
         self.assertEqual("nested", obj.nested.text)
-        self.assertEqual("test", obj.text)
+        self.assertEqual([0x3c], obj.nested.data.buffer)
+        self.assertEqual(6, obj.nested.data.bitsize)
+        self.assertEqual(DummyEnum.ONE, obj.nested.dummy_enum)
+        self.assertEqual(DummyBitmask.Values.WRITE, obj.nested.dummy_bitmask)
         self.assertEqual(1, len(obj.nested_array))
         self.assertEqual(5, obj.nested_array[0].value)
         self.assertEqual("nestedArray", obj.nested_array[0].text)
+        self.assertEqual(DummyEnum.TWO, obj.nested_array[0].dummy_enum)
+        self.assertEqual(DummyBitmask.Values.READ, obj.nested_array[0].dummy_bitmask)
         self.assertEqual(["this", "is", "text", "array"], obj.text_array)
+        self.assertEqual(1, len(obj.extern_array))
+        self.assertEqual([0x0f], obj.extern_array[0].buffer)
+        self.assertEqual(4, obj.extern_array[0].bitsize)
+        self.assertEqual(False, obj.optional_bool)
+        self.assertEqual("optionalNested", obj.optional_nested.text)
 
-    def test_exception_before_root(self):
+    def test_exceptions_before_root(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
 
         with self.assertRaises(PythonRuntimeException):
@@ -582,6 +625,7 @@ class JsonReaderTest(unittest.TestCase):
         self.assertEqual(["this", "is", "text", "array"], obj.text_array)
         self.assertEqual([BitBuffer(bytes([0xDE, 0xD1]), 13)], obj.extern_array)
         self.assertEqual(None, obj.optional_bool)
+        self.assertEqual(None, obj.optional_nested) # not present in json
 
     def test_read_two_objects(self):
         json_reader = JsonReader(io.StringIO(

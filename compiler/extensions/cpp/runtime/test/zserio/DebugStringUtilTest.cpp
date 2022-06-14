@@ -27,10 +27,7 @@ struct DummyObject
         }};
 
         static const StructTypeInfo<ALLOC> typeInfo{
-            "Dummy"_sv,
-            [](const ALLOC& allocator) -> IBasicReflectablePtr<ALLOC> {
-                return std::allocate_shared<ReflectableOwner<DummyObject>>(allocator, allocator);
-            },
+            "Dummy"_sv, nullptr,
             {}, {}, fields, {}, {}
         };
 
@@ -90,15 +87,6 @@ struct DummyObject
                     ReflectableConstAllocatorHolderBase<ALLOC>(getDummyObjectTypeInfo(), allocator)
             {}
 
-            virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
-            {
-                if (name == makeStringView("text"))
-                {
-                    return BasicReflectableFactory<ALLOC>::getString(m_text, get_allocator());
-                }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
-            }
-
             virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
@@ -132,9 +120,14 @@ const std::string TEST_NAME = "DebugStringUtilTest";
 TEST(DebugStringUtilTest, toJsonStreamDefault)
 {
     std::ostringstream os;
-    const DummyObject<> dummyObject;
+    DummyObject<> dummyObject;
     toJsonStream(dummyObject, os);
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", os.str());
+
+    // improve coverage
+    IReflectablePtr reflectable = dummyObject.reflectable();
+    ASSERT_TRUE(reflectable);
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getString());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamDefaultWithAlloc)

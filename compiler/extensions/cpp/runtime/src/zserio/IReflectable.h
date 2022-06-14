@@ -56,7 +56,7 @@ public:
 
     /**
      * Initializes children of the reflected compound. Calls initializeChildren method on the generated
-     * C++ object, which recursively initialzes the whole object tree. When nothing within the object tree is
+     * C++ object, which recursively initializes the whole object tree. When nothing within the object tree is
      * parameterized, does nothing.
      *
      * \note This method is designed to be called on the top level object (i.e. root).
@@ -95,16 +95,18 @@ public:
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) = 0;
 
     /**
-     * Creates an optional field within current object and returns reflectable pointer to it.
+     * Creates a default constructed field within current object and returns reflectable pointer to it.
+     *
+     * \note When the field already exists, it's reset with the new default constructed value.
      *
      * \param name Name of the optional field to create.
      *
      * \return Reflectable to just created object.
      *
      * \throw CppRuntimeException When the reflected object is not a compound type or when the field with
-     *                            the given name doesn't exists or is not an optional or is already created!
+     *                            the given name doesn't exists.
      */
-    virtual Ptr createOptionalField(StringView name) = 0;
+    virtual Ptr createField(StringView name) = 0;
 
     /**
      * Gets reflectable view to the parameter (i.e. member) with the given schema name.

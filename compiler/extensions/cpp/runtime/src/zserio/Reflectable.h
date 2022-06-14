@@ -53,7 +53,7 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
-    virtual IBasicReflectablePtr<ALLOC> createOptionalField(StringView name) override;
+    virtual IBasicReflectablePtr<ALLOC> createField(StringView name) override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
@@ -1011,6 +1011,7 @@ public:
     using Base::ReflectableAllocatorHolderBase;
     using Base::getTypeInfo;
 
+    virtual void initializeChildren() override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
@@ -1041,7 +1042,7 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
-    virtual IBasicReflectablePtr<ALLOC> createOptionalField(StringView name) override;
+    virtual IBasicReflectablePtr<ALLOC> createField(StringView name) override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
@@ -1183,12 +1184,12 @@ public:
         return at(index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index)
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value)
+    virtual void append(const AnyHolder<ALLOC>& value) override
     {
         m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
@@ -1291,12 +1292,12 @@ public:
         return at(index);
     }
 
-    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index)
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
         m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value)
+    virtual void append(const AnyHolder<ALLOC>& value) override
     {
         m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
@@ -1394,7 +1395,7 @@ public:
         m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value)
+    virtual void append(const AnyHolder<ALLOC>& value) override
     {
         m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
@@ -1498,7 +1499,7 @@ public:
         m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
     }
 
-    virtual void append(const AnyHolder<ALLOC>& value)
+    virtual void append(const AnyHolder<ALLOC>& value) override
     {
         m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
     }
@@ -1508,6 +1509,11 @@ private:
 };
 /** \} */
 
+/**
+ * Wrapper around reflectable which actually owns the reflected object.
+ *
+ * This is needed in ZserioTreeCreator to be able to generically create the new instance of a zserio object.
+ */
 template <typename T, typename ALLOC = typename T::allocator_type>
 class ReflectableOwner : public IBasicReflectable<ALLOC>
 {
@@ -1537,9 +1543,9 @@ public:
         return m_reflectable->getField(name);
     }
 
-    virtual IBasicReflectablePtr<ALLOC> createOptionalField(StringView name) override
+    virtual IBasicReflectablePtr<ALLOC> createField(StringView name) override
     {
-        return m_reflectable->createOptionalField(name);
+        return m_reflectable->createField(name);
     }
 
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override
@@ -2202,7 +2208,7 @@ IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView)
 }
 
 template <typename ALLOC>
-IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::createOptionalField(StringView)
+IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::createField(StringView)
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to create!";
 }
@@ -2422,6 +2428,12 @@ string<ALLOC> ReflectableBase<ALLOC>::toString(const ALLOC&) const
 }
 
 template <typename ALLOC>
+void ReflectableConstAllocatorHolderBase<ALLOC>::initializeChildren()
+{
+    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+}
+
+template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::getField(StringView)
 {
     throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
@@ -2464,7 +2476,7 @@ IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::getField(StringView)
 }
 
 template <typename ALLOC>
-IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::createOptionalField(StringView)
+IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::createField(StringView)
 {
     throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }

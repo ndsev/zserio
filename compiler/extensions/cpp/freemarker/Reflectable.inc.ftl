@@ -12,7 +12,23 @@ ${I}        if (!m_object.${field.optional.isSetIndicatorName}())
 ${I}            return nullptr;
 
         </#if>
-${I}        return <@reflectable_create_field field/>;
+${I}        return <@reflectable_field_create field/>;
+${I}    }
+    </#list>
+${I}    throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
+${I}}
+</#macro>
+
+<#macro reflectable_create_field compoundName fieldList indent=2>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}virtual ${types.reflectablePtr.name} createField(::zserio::StringView name) override
+${I}{
+    <#list fieldList as field>
+${I}    if (name == ::zserio::makeStringView("${field.name}"))
+${I}    {
+${I}        m_object.${field.setterName}(<@field_raw_cpp_type_name field/>(<#rt>
+                    <#lt><#if field.needsAllocator>get_allocator()</#if>));
+${I}        return <@reflectable_field_create field/>;
 ${I}    }
     </#list>
 ${I}    throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
@@ -31,10 +47,7 @@ ${I}        m_object.${field.setterName}(value.get<<@field_raw_cpp_type_name fie
 ${I}        return;
 ${I}    }
     </#list>
-${I}    else
-${I}    {
-${I}        throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
-${I}    }
+${I}    throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
@@ -46,13 +59,10 @@ ${I}{
     <#list parametersList as parameter>
 ${I}    if (name == ::zserio::makeStringView("${parameter.name}"))
 ${I}    {
-${I}        return <@reflectable_create_parameter parameter/>;
+${I}        return <@reflectable_parameter_create parameter/>;
 ${I}    }
     </#list>
-${I}    else
-${I}    {
-${I}        throw ::zserio::CppRuntimeException("Parameter '") + name + "' doesn't exist in '${compoundName}'!";
-${I}    }
+${I}    throw ::zserio::CppRuntimeException("Parameter '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
@@ -64,17 +74,14 @@ ${I}{
     <#list functionList as function>
 ${I}    if (name == ::zserio::makeStringView("${function.schemaName}"))
 ${I}    {
-${I}        return <@reflectable_create_function function/>;
+${I}        return <@reflectable_function_create function/>;
 ${I}    }
     </#list>
-${I}    else
-${I}    {
-${I}        throw ::zserio::CppRuntimeException("Function '") + name + "' doesn't exist in '${compoundName}'!";
-${I}    }
+${I}    throw ::zserio::CppRuntimeException("Function '") + name + "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
-<#macro reflectable_create_field field>
+<#macro reflectable_field_create field>
     <#if field.array??>
         <#if field.array.elementCompound??>
             ${types.reflectableFactory.name}::getCompoundArray(<#t>
@@ -110,7 +117,7 @@ ${I}}
     </#if>
 </#macro>
 
-<#macro reflectable_create_parameter parameter>
+<#macro reflectable_parameter_create parameter>
     <#if parameter.typeInfo.typeInfoGetter??>
         ${types.reflectableFactory.name}::get${parameter.typeInfo.typeInfoGetter.suffix}(<#t>
                 <#if parameter.typeInfo.typeInfoGetter.arg??>${parameter.typeInfo.typeInfoGetter.arg}, </#if><#t>
@@ -122,7 +129,7 @@ ${I}}
     </#if>
 </#macro>
 
-<#macro reflectable_create_function function>
+<#macro reflectable_function_create function>
     <#if function.returnTypeInfo.typeInfoGetter??>
         ${types.reflectableFactory.name}::get${function.returnTypeInfo.typeInfoGetter.suffix}(<#t>
                 <#if function.returnTypeInfo.typeInfoGetter.arg??>${function.returnTypeInfo.typeInfoGetter.arg}, </#if><#t>
