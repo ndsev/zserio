@@ -1,13 +1,11 @@
 #ifndef ZSERIO_ISERVICE_H_INC
 #define ZSERIO_ISERVICE_H_INC
 
-#include <string>
-#include <vector>
+#include "zserio/IReflectable.h"
 #include "zserio/StringView.h"
 #include "zserio/Span.h"
 #include "zserio/Types.h"
-
-#include "zserio/IReflectable.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {
@@ -150,7 +148,7 @@ public:
      *
      * \throw ServiceException if the call fails.
      */
-    virtual std::vector<uint8_t, ALLOC> callMethod(
+    virtual vector<uint8_t, ALLOC> callMethod(
             StringView methodName,
             const IBasicServiceData<ALLOC>& requestData,
             void* context = nullptr) = 0;

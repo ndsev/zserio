@@ -5,6 +5,7 @@
 #include "zserio/ITypeInfo.h"
 #include "zserio/TypeInfoUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {
@@ -216,8 +217,8 @@ private:
 
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
     ALLOC m_allocator;
-    std::vector<std::reference_wrapper<const BasicFieldInfo<ALLOC>>> m_fieldInfoStack;
-    std::vector<IBasicReflectablePtr<ALLOC>> m_valueStack;
+    vector<std::reference_wrapper<const BasicFieldInfo<ALLOC>>, ALLOC> m_fieldInfoStack;
+    vector<IBasicReflectablePtr<ALLOC>, ALLOC> m_valueStack;
     State m_state = State::BEFORE_ROOT;
 };
 
@@ -227,7 +228,7 @@ using ZserioTreeCreator = BasicZserioTreeCreator<std::allocator<std::uint8_t>>;
 template <typename ALLOC>
 BasicZserioTreeCreator<ALLOC>::BasicZserioTreeCreator(const IBasicTypeInfo<ALLOC>& typeInfo,
         const ALLOC& allocator) :
-        m_typeInfo(typeInfo), m_allocator(allocator)
+        m_typeInfo(typeInfo), m_allocator(allocator), m_fieldInfoStack(allocator), m_valueStack(allocator)
 {}
 
 template <typename ALLOC>

@@ -1,11 +1,11 @@
 #ifndef ZSERIO_PACKING_CONTEXT_H_INC
 #define ZSERIO_PACKING_CONTEXT_H_INC
 
-#include <vector>
 #include <type_traits>
 
 #include "zserio/Types.h"
 #include "zserio/OptionalHolder.h"
+#include "zserio/Vector.h"
 
 namespace zserio
 {
@@ -319,10 +319,8 @@ template <typename ALLOC = std::allocator<uint8_t>>
 class BasicPackingContextNode
 {
 public:
-    /** Allocator type. */
-    using allocator_type = RebindAlloc<ALLOC, BasicPackingContextNode>;
     /** Typedef for vector of children. */
-    using Children = std::vector<BasicPackingContextNode, allocator_type>;
+    using Children = vector<BasicPackingContextNode, ALLOC>;
 
     /**
      * Constructor.

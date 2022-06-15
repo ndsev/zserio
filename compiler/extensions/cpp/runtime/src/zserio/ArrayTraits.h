@@ -2,15 +2,15 @@
 #define ZSERIO_ARRAY_TRAITS_H_INC
 
 #include <type_traits>
-#include <vector>
 #include <string>
+#include <vector>
 
+#include "zserio/BitPositionUtil.h"
+#include "zserio/BitSizeOfCalculator.h"
 #include "zserio/BitStreamWriter.h"
 #include "zserio/BitStreamReader.h"
-#include "zserio/BitPositionUtil.h"
-#include "zserio/VarSizeUtil.h"
-#include "zserio/BitSizeOfCalculator.h"
 #include "zserio/Enums.h"
+#include "zserio/VarSizeUtil.h"
 
 namespace zserio
 {

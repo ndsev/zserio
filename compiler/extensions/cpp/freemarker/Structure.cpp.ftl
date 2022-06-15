@@ -143,7 +143,7 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
     <#if fieldList?has_content>
         <#if !isConst>
 
-        virtual void initializeChildren()
+        virtual void initializeChildren() override
         {
             <#if needsChildrenInitialization>
             m_object.initializeChildren();
