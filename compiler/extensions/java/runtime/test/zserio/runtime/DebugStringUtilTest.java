@@ -133,17 +133,17 @@ public class DebugStringUtilTest
     private static final FieldInfo TEXT_FIELD_INFO = new FieldInfo(
             "text", "getText", "setText",
             BuiltinTypeInfo.getString(),
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             true, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );

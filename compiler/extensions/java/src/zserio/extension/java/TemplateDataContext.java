@@ -22,9 +22,17 @@ final class TemplateDataContext
                 new JavaCaseExpressionFormattingPolicy(javaNativeMapper);
         javaCaseExpressionFormatter = new ExpressionFormatter(casePolicy);
 
-        final JavaSqlIndirectExpressionFormattingPolicy sqlIndirectPolicy =
-                new JavaSqlIndirectExpressionFormattingPolicy(javaNativeMapper);
-        javaSqlIndirectExpressionFormatter = new ExpressionFormatter(sqlIndirectPolicy);
+        final JavaSqlExpressionFormattingPolicy sqlPolicy =
+                new JavaSqlExpressionFormattingPolicy(javaNativeMapper);
+        javaSqlExpressionFormatter = new ExpressionFormatter(sqlPolicy);
+
+        final JavaSqlLambdaExpressionFormattingPolicy sqlLambdaPolicy =
+                new JavaSqlLambdaExpressionFormattingPolicy(javaNativeMapper);
+        javaSqlLambdaExpressionFormatter = new ExpressionFormatter(sqlLambdaPolicy);
+
+        final JavaLambdaExpressionFormattingPolicy lambdaPolicy =
+                new JavaLambdaExpressionFormattingPolicy(javaNativeMapper);
+        javaLambdaExpressionFormatter = new ExpressionFormatter(lambdaPolicy);
 
         withWriterCode = javaParameters.getWithWriterCode();
         withValidationCode = javaParameters.getWithValidationCode();
@@ -59,9 +67,19 @@ final class TemplateDataContext
         return javaCaseExpressionFormatter;
     }
 
-    public ExpressionFormatter getJavaSqlIndirectExpressionFormatter()
+    public ExpressionFormatter getJavaSqlExpressionFormatter()
     {
-        return javaSqlIndirectExpressionFormatter;
+        return javaSqlExpressionFormatter;
+    }
+
+    public ExpressionFormatter getJavaSqlLambdaExpressionFormatter()
+    {
+        return javaSqlLambdaExpressionFormatter;
+    }
+
+    public ExpressionFormatter getJavaLambdaExpressionFormatter()
+    {
+        return javaLambdaExpressionFormatter;
     }
 
     public boolean getWithWriterCode()
@@ -94,7 +112,9 @@ final class TemplateDataContext
 
     private final ExpressionFormatter javaExpressionFormatter;
     private final ExpressionFormatter javaCaseExpressionFormatter;
-    private final ExpressionFormatter javaSqlIndirectExpressionFormatter;
+    private final ExpressionFormatter javaSqlExpressionFormatter;
+    private final ExpressionFormatter javaSqlLambdaExpressionFormatter;
+    private final ExpressionFormatter javaLambdaExpressionFormatter;
 
     private final boolean withWriterCode;
     private final boolean withValidationCode;

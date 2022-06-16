@@ -278,6 +278,18 @@ public class Expression extends AstNodeBase
     }
 
     /**
+     * Gets the owner of the expression.
+     *
+     * Owner is valid only for expressions which represent fields, parameters and functions.
+     *
+     * @return The owner of the expression.
+     */
+    public ZserioType getExprOwner()
+    {
+        return expressionOwner;
+    }
+
+    /**
      * Gets value for integer expression.
      *
      * @return Returns value for integer expression or null if expression is not integer or if value of integer
@@ -1483,22 +1495,25 @@ public class Expression extends AstNodeBase
     private void evaluateIdentifierScopeSymbol(ScopeSymbol identifierSymbol, Scope forcedEvaluationScope)
     {
         symbolObject = identifierSymbol;
+        final ZserioType scopeOwner = forcedEvaluationScope.getOwner();
         if (identifierSymbol instanceof Field)
         {
             evaluateExpressionType(((Field)identifierSymbol).getTypeInstantiation());
+            expressionOwner = scopeOwner;
         }
         else if (identifierSymbol instanceof Parameter)
         {
             evaluateExpressionType(((Parameter)identifierSymbol).getTypeReference());
+            expressionOwner = scopeOwner;
         }
         else if (identifierSymbol instanceof Function)
         {
             // function type, we must wait for "()"
+            expressionOwner = scopeOwner;
         }
         else if (identifierSymbol instanceof EnumItem)
         {
             // enumeration item (this can happen for enum choices where enum is visible or for enum itself)
-            final ZserioType scopeOwner = forcedEvaluationScope.getOwner();
             if (scopeOwner instanceof ChoiceType)
             {
                 // this enumeration item is in choice with enumeration type selector
@@ -1508,7 +1523,6 @@ public class Expression extends AstNodeBase
                 if (selectorExprZserioType instanceof EnumType)
                 {
                     final EnumType enumType = (EnumType)selectorExprZserioType;
-                    zserioType = enumType;
                     evaluateExpressionType(enumType);
                 }
             }
@@ -1519,7 +1533,6 @@ public class Expression extends AstNodeBase
         {
             // bitmask value
             // (this can happen for bitmask choices where bitmask is visible or for bitmask itself)
-            final ZserioType scopeOwner = forcedEvaluationScope.getOwner();
             if (scopeOwner instanceof ChoiceType)
             {
                 // this bitmaks value is in choice with bitmask type selector
@@ -1529,11 +1542,10 @@ public class Expression extends AstNodeBase
                 if (selectorExprZserioType instanceof BitmaskType)
                 {
                     final BitmaskType bitmaskType = (BitmaskType)selectorExprZserioType;
-                    zserioType = bitmaskType;
                     evaluateExpressionType(bitmaskType);
                 }
             }
-            // if this bitmask vlaue is in own bitmask, leave it unresolved (we have problem with it because
+            // if this bitmask value is in own bitmask, leave it unresolved (we have problem with it because
             // such bitmask values cannot be evaluated yet)
         }
         else
@@ -1808,6 +1820,7 @@ public class Expression extends AstNodeBase
     private ZserioType zserioType;
     private AstNode symbolObject;
     private TypeInstantiation symbolInstantiation;
+    private ZserioType expressionOwner;
     private List<Expression> unresolvedIdentifiers;
 
     private boolean needsBigIntegerCastingToNative;

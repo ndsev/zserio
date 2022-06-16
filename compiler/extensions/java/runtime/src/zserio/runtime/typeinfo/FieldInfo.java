@@ -2,6 +2,12 @@ package zserio.runtime.typeinfo;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.IntSupplier;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+import java.util.function.ToLongBiFunction;
 
 /**
  * Type information for compound type field.
@@ -16,23 +22,25 @@ public class FieldInfo
      * @param setterName Field setter name.
      * @param typeInfo Field type info.
      * @param typeArguments Field type arguments.
-     * @param alignment Field alignment.
-     * @param offset Field offset.
-     * @param initializer Field initializer.
+     * @param alignment Field alignment or null in case of no alignment.
+     * @param offset Field offset or null in case of no offset.
+     * @param initializer Field initializer or null in case of no initializer.
      * @param isOptional Flag whether the field is optional.
-     * @param optionalCondition Field optional condition.
+     * @param optionalCondition Field optional condition or null if field is not optional.
      * @param isUsedIndicatorName Field "is used" indicator name.
      * @param isSetIndicatorName Field "is set" indicator name.
-     * @param constraint Field constraint.
+     * @param constraint Field constraint or null if the field has no constraint.
      * @param isArray Flag whether the field is an array.
-     * @param arrayLength Array length.
+     * @param arrayLength Array length or null if the field is not an array or is auto/implicit array.
      * @param isPacked Flag whether the field is a packed array.
      * @param isImplicit Flag whether the field is an implicit array.
      */
     public FieldInfo(String schemaName, String getterName, String setterName, TypeInfo typeInfo,
-            List<String> typeArguments, String alignment, String offset, String initializer, boolean isOptional,
-            String optionalCondition, String isUsedIndicatorName, String isSetIndicatorName, String constraint,
-            boolean isArray, String arrayLength, boolean isPacked, boolean isImplicit)
+            List<BiFunction<Object, Integer, Object>> typeArguments, IntSupplier alignment,
+            BiFunction<Object, Integer, Object> offset, Supplier<Object> initializer, boolean isOptional,
+            Predicate<Object> optionalCondition, String isUsedIndicatorName, String isSetIndicatorName,
+            Predicate<Object> constraint, boolean isArray, ToIntFunction<Object> arrayLength,
+            boolean isPacked, boolean isImplicit)
     {
         this.schemaName = schemaName;
         this.getterName = getterName;
@@ -98,7 +106,7 @@ public class FieldInfo
      *
      * @return Unmodifiable list of type arguments.
      */
-    public List<String> getTypeArguments()
+    public List<BiFunction<Object, Integer, Object>> getTypeArguments()
     {
         return Collections.unmodifiableList(typeArguments);
     }
@@ -106,9 +114,9 @@ public class FieldInfo
     /**
      * Gets field alignment expression.
      *
-     * @return Field alignment or empty in case of no alignment.
+     * @return Field alignment or null in case of no alignment.
      */
-    public String getAlignment()
+    public IntSupplier getAlignment()
     {
         return alignment;
     }
@@ -116,9 +124,9 @@ public class FieldInfo
     /**
      * Gets field offset expression.
      *
-     * @return Field offset or empty in case of no alignment
+     * @return Field offset or null in case of no offset.
      */
-    public String getOffset()
+    public BiFunction<Object, Integer, Object> getOffset()
     {
         return offset;
     }
@@ -126,9 +134,9 @@ public class FieldInfo
     /**
      * Gets field initializer expression.
      *
-     * @return Field initializer or empty in case of no alignment
+     * @return Field initializer or null in case of no initializer.
      */
-    public String getInitializer()
+    public Supplier<Object> getInitializer()
     {
         return initializer;
     }
@@ -146,9 +154,9 @@ public class FieldInfo
     /**
      * Gets field optional condition expression.
      *
-     * @return Optional condition or empty if the field is not optional.
+     * @return Optional condition or null if the field is not optional.
      */
-    public String getOptionalCondition()
+    public Predicate<Object> getOptionalCondition()
     {
         return optionalCondition;
     }
@@ -176,9 +184,9 @@ public class FieldInfo
     /**
      * Gets field constraint expression.
      *
-     * @return Constraint or empty if the field does not have constraint.
+     * @return Constraint or null if the field does not have constraint.
      */
-    public String getConstraint()
+    public Predicate<Object> getConstraint()
     {
         return constraint;
     }
@@ -196,9 +204,9 @@ public class FieldInfo
     /**
      * Gets array field length expression.
      *
-     * @return Array length or empty if the field is not array or is auto/implicit array.
+     * @return Array length or null if the field is not array or is auto/implicit array.
      */
-    public String getArrayLength()
+    public ToIntFunction<Object> getArrayLength()
     {
         return arrayLength;
     }
@@ -227,17 +235,17 @@ public class FieldInfo
     private final String getterName;
     private final String setterName;
     private final TypeInfo typeInfo;
-    private final List<String> typeArguments;
-    private final String alignment;
-    private final String offset;
-    private final String initializer;
+    private final List<BiFunction<Object, Integer, Object>> typeArguments;
+    private final IntSupplier alignment;
+    private final BiFunction<Object, Integer, Object> offset;
+    private final Supplier<Object> initializer;
     private final boolean isOptional;
-    private final String optionalCondition;
+    private final Predicate<Object> optionalCondition;
     private final String isUsedIndicatorName;
     private final String isSetIndicatorName;
-    private final String constraint;
+    private final Predicate<Object> constraint;
     private final boolean isArray;
-    private final String arrayLength;
+    private final ToIntFunction<Object> arrayLength;
     boolean isPacked;
     boolean isImplicit;
 }

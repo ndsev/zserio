@@ -2,6 +2,7 @@ package zserio.extension.java;
 
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
+import zserio.ast.ZserioType;
 
 /**
  * A special formatting policy to be used in Java case expressions.
@@ -36,7 +37,7 @@ public class JavaCaseExpressionFormattingPolicy extends JavaDefaultExpressionFor
     }
 
     @Override
-    protected String getAccessPrefixForCompoundType()
+    protected String getAccessPrefixForCompoundType(ZserioType owner)
     {
         return "";
     }

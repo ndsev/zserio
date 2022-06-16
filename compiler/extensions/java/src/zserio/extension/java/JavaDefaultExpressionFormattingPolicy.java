@@ -168,7 +168,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         {
             if (!(resolvedSymbol instanceof Package))
                 formatSymbolIdentifier(result, symbol, isMostLeftId, resolvedSymbol, expr.getExprZserioType(),
-                        isSetter);
+                        expr.getExprOwner(), isSetter);
         }
 
         // finish casting to BigInteger
@@ -223,7 +223,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public UnaryExpressionFormatting getFunctionCall(Expression expr)
     {
-        return new UnaryExpressionFormatting(getAccessPrefix(), "()");
+        return new UnaryExpressionFormatting("", "()");
     }
 
     @Override
@@ -430,21 +430,23 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             JavaNativeMapper javaNativeMapper) throws ZserioExtensionException;
     protected abstract String getIdentifierForEnumItem(EnumItem enumItem);
     protected abstract String getDotSeparatorForEnumItem();
-    protected abstract String getAccessPrefixForCompoundType();
+    protected abstract String getAccessPrefixForCompoundType(ZserioType owner);
 
-    private void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param)
+    private void formatParameterAccessor(StringBuilder result, boolean isMostLeftId, Parameter param,
+            ZserioType exprOwner)
     {
         if (isMostLeftId)
-            result.append(getAccessPrefix());
+            result.append(getAccessPrefix(exprOwner));
 
         result.append(AccessorNameFormatter.getGetterName(param));
         result.append(JAVA_GETTER_FUNCTION_CALL);
     }
 
-    private void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter)
+    private void formatFieldAccessor(StringBuilder result, boolean isMostLeftId, Field field, boolean isSetter,
+            ZserioType exprOwner)
     {
         if (isMostLeftId)
-            result.append(getAccessPrefix());
+            result.append(getAccessPrefix(exprOwner));
 
         if (isSetter)
         {
@@ -456,6 +458,15 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
             result.append(AccessorNameFormatter.getGetterName(field));
             result.append(JAVA_GETTER_FUNCTION_CALL);
         }
+    }
+
+    private void formatFunction(StringBuilder result, boolean isMostLeftId, Function function,
+            ZserioType exprOwner)
+    {
+        if (isMostLeftId)
+            result.append(getAccessPrefix(exprOwner));
+
+        result.append(AccessorNameFormatter.getFunctionName(function));
     }
 
     private void formatTypeIdentifier(StringBuilder result, ZserioType resolvedType)
@@ -476,29 +487,31 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         }
     }
 
-    private String getAccessPrefix()
+    private String getAccessPrefix(ZserioType owner)
     {
-        final String accessPrefix = getAccessPrefixForCompoundType();
+        final String accessPrefix = getAccessPrefixForCompoundType(owner);
 
         return (accessPrefix.isEmpty()) ? accessPrefix : accessPrefix + ".";
     }
 
     private void formatSymbolIdentifier(StringBuilder result, String symbol, boolean isMostLeftId,
-            AstNode resolvedSymbol, ZserioType exprType, boolean isSetter) throws ZserioExtensionException
+            AstNode resolvedSymbol, ZserioType exprType, ZserioType exprOwner, boolean isSetter)
+                    throws ZserioExtensionException
     {
         if (resolvedSymbol instanceof Parameter)
         {
             final Parameter param = (Parameter)resolvedSymbol;
-            formatParameterAccessor(result, isMostLeftId, param);
+            formatParameterAccessor(result, isMostLeftId, param, exprOwner);
         }
         else if (resolvedSymbol instanceof Field)
         {
             final Field field = (Field)resolvedSymbol;
-            formatFieldAccessor(result, isMostLeftId, field, isSetter);
+            formatFieldAccessor(result, isMostLeftId, field, isSetter, exprOwner);
         }
         else if (resolvedSymbol instanceof EnumItem)
         {
-            result.append(getIdentifierForEnumItem((EnumItem)resolvedSymbol));
+            final EnumItem enumItem = (EnumItem)resolvedSymbol;
+            formatEnumItem(result, isMostLeftId, enumItem, exprType);
         }
         else if (resolvedSymbol instanceof BitmaskValue)
         {
@@ -507,9 +520,8 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         }
         else if (resolvedSymbol instanceof Function)
         {
-            // [functionCall]()
             final Function function = (Function)resolvedSymbol;
-            result.append(AccessorNameFormatter.getFunctionName(function));
+            formatFunction(result, isMostLeftId, function, exprOwner);
         }
         else if (resolvedSymbol instanceof Constant)
         {
@@ -523,14 +535,30 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         }
     }
 
+    private void formatEnumItem(StringBuilder result, boolean isMostLeftId, EnumItem enumItem,
+            ZserioType exprType) throws ZserioExtensionException
+    {
+        // emit whole name if this is the first symbol in dot subtree, otherwise emit only enum item name
+        if (isMostLeftId && exprType instanceof EnumType)
+        {
+            final String identifier = getIdentifierForTypeEnum((EnumType)exprType, javaNativeMapper);
+            if (!identifier.isEmpty())
+            {
+                result.append(identifier);
+                result.append(".");
+            }
+        }
+
+        result.append(getIdentifierForEnumItem(enumItem));
+    }
+
     private void formatBitmaskValue(StringBuilder result, boolean isMostLeftId, BitmaskValue bitmaskValue,
             ZserioType exprType) throws ZserioExtensionException
     {
         // emit whole name if this is the first symbol in dot subtree, otherwise emit only bitmask name
         if (isMostLeftId && exprType instanceof BitmaskType)
         {
-            final BitmaskType bitmaskType = (BitmaskType)exprType;
-            final JavaNativeType nativeBitmaskType = javaNativeMapper.getJavaType(bitmaskType);
+            final JavaNativeType nativeBitmaskType = javaNativeMapper.getJavaType((BitmaskType)exprType);
             result.append(nativeBitmaskType.getFullName());
             result.append(".");
         }

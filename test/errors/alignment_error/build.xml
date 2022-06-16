@@ -14,6 +14,7 @@
         <testGen testName="alignment_error" zsFile="field_alignment_error.zs" ignoreErrors="true"/>
         <testGen testName="alignment_error" zsFile="negative_integer_alignment_error.zs" ignoreErrors="true"/>
         <testGen testName="alignment_error" zsFile="no_integer_alignment_error.zs" ignoreErrors="true"/>
+        <testGen testName="alignment_error" zsFile="too_big_alignment_error.zs" ignoreErrors="true"/>
     </target>
 
     <target name="compile" depends="gen">

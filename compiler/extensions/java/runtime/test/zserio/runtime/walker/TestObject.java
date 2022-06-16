@@ -59,17 +59,17 @@ public class TestObject
                                     "getText", // getterName
                                     "setText", // setterName
                                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getString(), // typeInfo
-                                    new java.util.ArrayList<java.lang.String>(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     false, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "", // isUsedIndicatorName
                                     "", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     false, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             )
@@ -242,17 +242,17 @@ public class TestObject
                                     "getValue", // getterName
                                     "setValue", // setterName
                                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt32(), // typeInfo
-                                    new java.util.ArrayList<java.lang.String>(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     false, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "", // isUsedIndicatorName
                                     "", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     false, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             ),
@@ -261,17 +261,17 @@ public class TestObject
                                     "getText", // getterName
                                     "setText", // setterName
                                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getString(), // typeInfo
-                                    new java.util.ArrayList<java.lang.String>(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     false, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "", // isUsedIndicatorName
                                     "", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     false, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             ),
@@ -280,17 +280,17 @@ public class TestObject
                                     "getNestedArray", // getterName
                                     "setNestedArray", // setterName
                                     DummyNested.typeInfo(), // typeInfo
-                                    java.util.Arrays.asList(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     false, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "", // isUsedIndicatorName
                                     "", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     true, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             )
@@ -716,17 +716,17 @@ public class TestObject
                                     "getIdentifier", // getterName
                                     "setIdentifier", // setterName
                                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt32(), // typeInfo
-                                    new java.util.ArrayList<java.lang.String>(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     false, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "", // isUsedIndicatorName
                                     "", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     false, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             ),
@@ -735,17 +735,17 @@ public class TestObject
                                     "getNested", // getterName
                                     "setNested", // setterName
                                     DummyNested.typeInfo(), // typeInfo
-                                    java.util.Arrays.asList(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     true, // isOptional
-                                    "getIdentifier() != 0", // optionalCondition
+                                    obj -> ((DummyObject)obj).getIdentifier() != 0, // optionalCondition
                                     "isNestedUsed", // isUsedIndicatorName
                                     "isNestedSet", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     false, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             ),
@@ -754,17 +754,17 @@ public class TestObject
                                     "getText", // getterName
                                     "setText", // setterName
                                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getString(), // typeInfo
-                                    new java.util.ArrayList<java.lang.String>(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     false, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "", // isUsedIndicatorName
                                     "", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     false, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             ),
@@ -773,17 +773,17 @@ public class TestObject
                                     "getUnionArray", // getterName
                                     "setUnionArray", // setterName
                                     DummyUnion.typeInfo(), // typeInfo
-                                    java.util.Arrays.asList(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     false, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "", // isUsedIndicatorName
                                     "", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     true, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             ),
@@ -792,17 +792,17 @@ public class TestObject
                                     "getOptionalUnionArray", // getterName
                                     "setOptionalUnionArray", // setterName
                                     DummyUnion.typeInfo(), // typeInfo
-                                    java.util.Arrays.asList(), // typeArguments
-                                    "", // alignment
-                                    "", // offset
-                                    "", // initializer
+                                    new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+                                    null, // alignment
+                                    null, // offset
+                                    null, // initializer
                                     true, // isOptional
-                                    "", // optionalCondition
+                                    null, // optionalCondition
                                     "isOptionalUnionArrayUsed", // isUsedIndicatorName
                                     "isOptionalUnionArraySet", // isSetIndicatorName
-                                    "", // constraint
+                                    null, // constraint
                                     true, // isArray
-                                    "", // arrayLength
+                                    null, // arrayLength
                                     false, // isPacked
                                     false // isImplicit
                             )
@@ -1273,7 +1273,7 @@ public class TestObject
             return new zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo(
                     "DummyBitmask", DummyBitmask.class,
                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt32(),
-                    new java.util.ArrayList<java.lang.String>(),
+                    new java.util.ArrayList<java.util.function.Supplier<Object>>(),
                     java.util.Arrays.asList(
                             new zserio.runtime.typeinfo.ItemInfo("ZERO", "1L")
                     )

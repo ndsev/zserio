@@ -2,6 +2,7 @@ package zserio.runtime.typeinfo;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Type information for SQL table column.
@@ -18,7 +19,7 @@ public class ColumnInfo
      * @param sqlConstraint Column SQL constraint.
      * @param isVirtual Flag whether the column is virtual.
      */
-    public ColumnInfo(String schemaName, TypeInfo typeInfo, List<String> typeArguments,
+    public ColumnInfo(String schemaName, TypeInfo typeInfo, List<Function<Object, Object>> typeArguments,
             String sqlTypeName, String sqlConstraint, boolean isVirtual)
     {
         this.schemaName = schemaName;
@@ -54,7 +55,7 @@ public class ColumnInfo
      *
      * @return Unmodifiable list of type arguments.
      */
-    public List<String> getTypeArguments()
+    public List<Function<Object, Object>> getTypeArguments()
     {
         return Collections.unmodifiableList(typeArguments);
     }
@@ -91,7 +92,7 @@ public class ColumnInfo
 
     private final String schemaName;
     private final TypeInfo typeInfo;
-    private final List<String> typeArguments;
+    private final List<Function<Object, Object>> typeArguments;
     private final String sqlTypeName;
     private final String sqlConstraint;
     private final boolean isVirtual;

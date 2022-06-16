@@ -109,7 +109,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         final java.util.List<zserio.runtime.typeinfo.FunctionInfo> functionList =
                 <@functions_info compoundFunctionsData.list/>
         final java.util.List<zserio.runtime.typeinfo.CaseInfo> caseList =
-                <@cases_info caseMemberList, defaultMember!, isSwitchAllowed/>
+                <@cases_info caseMemberList, defaultMember!/>
 
         return new zserio.runtime.typeinfo.TypeInfo.ChoiceTypeInfo(
                 "${schemaTypeName}", ${name}.class, templateName, templateArguments,

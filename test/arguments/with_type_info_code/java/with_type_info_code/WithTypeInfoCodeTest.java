@@ -369,6 +369,23 @@ public class WithTypeInfoCodeTest
 
     private void checkWithTypeInfoCode(TypeInfo typeInfo)
     {
+        final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
+        final RecursiveChoice recursiveChoice = new RecursiveChoice(true, false);
+        final SimpleUnion simpleUnion = new SimpleUnion();
+        simpleUnion.setSimpleStruct(simpleStruct);
+        final SimpleChoice simpleChoice = new SimpleChoice(TestEnum.TWO);
+        simpleChoice.setFieldTwo(simpleUnion);
+        final TS32 ts32 = new TS32((long)11);
+        final TemplatedParameterizedStruct_TS32 templatedParameterizedStruct_TS32 =
+                new TemplatedParameterizedStruct_TS32(ts32);
+        final WithTypeInfoCode withTypeInfoCode = new WithTypeInfoCode();
+        withTypeInfoCode.setSimpleStruct(simpleStruct);
+        withTypeInfoCode.setRecursiveChoice(recursiveChoice);
+        withTypeInfoCode.setSelector(TestEnum.TWO);
+        withTypeInfoCode.setSimpleChoice(simpleChoice);
+        withTypeInfoCode.setTemplatedStruct(ts32);
+        withTypeInfoCode.setTemplatedParameterizedStruct(templatedParameterizedStruct_TS32);
+
         assertEquals("with_type_info_code.WithTypeInfoCode", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
@@ -392,16 +409,16 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
         assertEquals(0, simpleStructField.getTypeArguments().size());
-        assertEquals("", simpleStructField.getAlignment());
-        assertEquals("", simpleStructField.getOffset());
-        assertEquals("", simpleStructField.getInitializer());
+        assertEquals(null, simpleStructField.getAlignment());
+        assertEquals(null, simpleStructField.getOffset());
+        assertEquals(null, simpleStructField.getInitializer());
         assertFalse(simpleStructField.isOptional());
-        assertEquals("", simpleStructField.getOptionalCondition());
+        assertEquals(null, simpleStructField.getOptionalCondition());
         assertEquals("", simpleStructField.getIsUsedIndicatorName());
         assertEquals("", simpleStructField.getIsSetIndicatorName());
-        assertEquals("", simpleStructField.getConstraint());
+        assertEquals(null, simpleStructField.getConstraint());
         assertFalse(simpleStructField.isArray());
-        assertEquals("", simpleStructField.getArrayLength());
+        assertEquals(null, simpleStructField.getArrayLength());
         assertFalse(simpleStructField.isPacked());
         assertFalse(simpleStructField.isImplicit());
 
@@ -414,16 +431,16 @@ public class WithTypeInfoCodeTest
         checkComplexStruct(complexStructField.getTypeInfo());
 
         assertEquals(0, complexStructField.getTypeArguments().size());
-        assertEquals("", complexStructField.getAlignment());
-        assertEquals("", complexStructField.getOffset());
-        assertEquals("", complexStructField.getInitializer());
+        assertEquals(null, complexStructField.getAlignment());
+        assertEquals(null, complexStructField.getOffset());
+        assertEquals(null, complexStructField.getInitializer());
         assertFalse(complexStructField.isOptional());
-        assertEquals("", complexStructField.getOptionalCondition());
+        assertEquals(null, complexStructField.getOptionalCondition());
         assertEquals("", complexStructField.getIsUsedIndicatorName());
         assertEquals("", complexStructField.getIsSetIndicatorName());
-        assertEquals("", complexStructField.getConstraint());
+        assertEquals(null, complexStructField.getConstraint());
         assertFalse(complexStructField.isArray());
-        assertEquals("", complexStructField.getArrayLength());
+        assertEquals(null, complexStructField.getArrayLength());
         assertFalse(complexStructField.isPacked());
         assertFalse(complexStructField.isImplicit());
 
@@ -436,17 +453,18 @@ public class WithTypeInfoCodeTest
         checkParameterizedStruct(parameterizedStructField.getTypeInfo());
 
         assertEquals(1, parameterizedStructField.getTypeArguments().size());
-        assertEquals("getSimpleStruct()", parameterizedStructField.getTypeArguments().get(0));
-        assertEquals("", parameterizedStructField.getAlignment());
-        assertEquals("", parameterizedStructField.getOffset());
-        assertEquals("", parameterizedStructField.getInitializer());
+        assertEquals(withTypeInfoCode.getSimpleStruct(),
+                parameterizedStructField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
+        assertEquals(null, parameterizedStructField.getAlignment());
+        assertEquals(null, parameterizedStructField.getOffset());
+        assertEquals(null, parameterizedStructField.getInitializer());
         assertFalse(parameterizedStructField.isOptional());
-        assertEquals("", parameterizedStructField.getOptionalCondition());
+        assertEquals(null, parameterizedStructField.getOptionalCondition());
         assertEquals("", parameterizedStructField.getIsUsedIndicatorName());
         assertEquals("", parameterizedStructField.getIsSetIndicatorName());
-        assertEquals("", parameterizedStructField.getConstraint());
+        assertEquals(null, parameterizedStructField.getConstraint());
         assertFalse(parameterizedStructField.isArray());
-        assertEquals("", parameterizedStructField.getArrayLength());
+        assertEquals(null, parameterizedStructField.getArrayLength());
         assertFalse(parameterizedStructField.isPacked());
         assertFalse(parameterizedStructField.isImplicit());
 
@@ -459,16 +477,16 @@ public class WithTypeInfoCodeTest
         checkRecursiveStruct(recursiveStructField.getTypeInfo());
 
         assertEquals(0, recursiveStructField.getTypeArguments().size());
-        assertEquals("", recursiveStructField.getAlignment());
-        assertEquals("", recursiveStructField.getOffset());
-        assertEquals("", recursiveStructField.getInitializer());
+        assertEquals(null, recursiveStructField.getAlignment());
+        assertEquals(null, recursiveStructField.getOffset());
+        assertEquals(null, recursiveStructField.getInitializer());
         assertFalse(recursiveStructField.isOptional());
-        assertEquals("", recursiveStructField.getOptionalCondition());
+        assertEquals(null, recursiveStructField.getOptionalCondition());
         assertEquals("", recursiveStructField.getIsUsedIndicatorName());
         assertEquals("", recursiveStructField.getIsSetIndicatorName());
-        assertEquals("", recursiveStructField.getConstraint());
+        assertEquals(null, recursiveStructField.getConstraint());
         assertFalse(recursiveStructField.isArray());
-        assertEquals("", recursiveStructField.getArrayLength());
+        assertEquals(null, recursiveStructField.getArrayLength());
         assertFalse(recursiveStructField.isPacked());
         assertFalse(recursiveStructField.isImplicit());
 
@@ -481,42 +499,42 @@ public class WithTypeInfoCodeTest
         checkRecursiveUnion(recursiveUnion.getTypeInfo());
 
         assertEquals(0, recursiveUnion.getTypeArguments().size());
-        assertEquals("", recursiveUnion.getAlignment());
-        assertEquals("", recursiveUnion.getOffset());
-        assertEquals("", recursiveUnion.getInitializer());
+        assertEquals(null, recursiveUnion.getAlignment());
+        assertEquals(null, recursiveUnion.getOffset());
+        assertEquals(null, recursiveUnion.getInitializer());
         assertFalse(recursiveUnion.isOptional());
-        assertEquals("", recursiveUnion.getOptionalCondition());
+        assertEquals(null, recursiveUnion.getOptionalCondition());
         assertEquals("", recursiveUnion.getIsUsedIndicatorName());
         assertEquals("", recursiveUnion.getIsSetIndicatorName());
-        assertEquals("", recursiveUnion.getConstraint());
+        assertEquals(null, recursiveUnion.getConstraint());
         assertFalse(recursiveUnion.isArray());
-        assertEquals("", recursiveUnion.getArrayLength());
+        assertEquals(null, recursiveUnion.getArrayLength());
         assertFalse(recursiveUnion.isPacked());
         assertFalse(recursiveUnion.isImplicit());
 
         // recursiveChoice
-        final FieldInfo recursiveChoice = fields.get(5);
-        assertEquals("recursiveChoice", recursiveChoice.getSchemaName());
-        assertEquals("getRecursiveChoice", recursiveChoice.getGetterName());
-        assertEquals("setRecursiveChoice", recursiveChoice.getSetterName());
+        final FieldInfo recursiveChoiceField = fields.get(5);
+        assertEquals("recursiveChoice", recursiveChoiceField.getSchemaName());
+        assertEquals("getRecursiveChoice", recursiveChoiceField.getGetterName());
+        assertEquals("setRecursiveChoice", recursiveChoiceField.getSetterName());
 
-        checkRecursiveChoice(recursiveChoice.getTypeInfo());
+        checkRecursiveChoice(recursiveChoiceField.getTypeInfo());
 
-        assertEquals(2, recursiveChoice.getTypeArguments().size());
-        assertEquals("true", recursiveChoice.getTypeArguments().get(0));
-        assertEquals("false", recursiveChoice.getTypeArguments().get(1));
-        assertEquals("", recursiveChoice.getAlignment());
-        assertEquals("", recursiveChoice.getOffset());
-        assertEquals("", recursiveChoice.getInitializer());
-        assertFalse(recursiveChoice.isOptional());
-        assertEquals("", recursiveChoice.getOptionalCondition());
-        assertEquals("", recursiveChoice.getIsUsedIndicatorName());
-        assertEquals("", recursiveChoice.getIsSetIndicatorName());
-        assertEquals("", recursiveChoice.getConstraint());
-        assertFalse(recursiveChoice.isArray());
-        assertEquals("", recursiveChoice.getArrayLength());
-        assertFalse(recursiveChoice.isPacked());
-        assertFalse(recursiveChoice.isImplicit());
+        assertEquals(2, recursiveChoiceField.getTypeArguments().size());
+        assertEquals(true, recursiveChoiceField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
+        assertEquals(false, recursiveChoiceField.getTypeArguments().get(1).apply(withTypeInfoCode, null));
+        assertEquals(null, recursiveChoiceField.getAlignment());
+        assertEquals(null, recursiveChoiceField.getOffset());
+        assertEquals(null, recursiveChoiceField.getInitializer());
+        assertFalse(recursiveChoiceField.isOptional());
+        assertEquals(null, recursiveChoiceField.getOptionalCondition());
+        assertEquals("", recursiveChoiceField.getIsUsedIndicatorName());
+        assertEquals("", recursiveChoiceField.getIsSetIndicatorName());
+        assertEquals(null, recursiveChoiceField.getConstraint());
+        assertFalse(recursiveChoiceField.isArray());
+        assertEquals(null, recursiveChoiceField.getArrayLength());
+        assertFalse(recursiveChoiceField.isPacked());
+        assertFalse(recursiveChoiceField.isImplicit());
 
         // selector
         final FieldInfo selectorField = fields.get(6);
@@ -527,16 +545,16 @@ public class WithTypeInfoCodeTest
         checkTestEnum(selectorField.getTypeInfo());
 
         assertEquals(0, selectorField.getTypeArguments().size());
-        assertEquals("", selectorField.getAlignment());
-        assertEquals("", selectorField.getOffset());
-        assertEquals("", selectorField.getInitializer());
+        assertEquals(null, selectorField.getAlignment());
+        assertEquals(null, selectorField.getOffset());
+        assertEquals(null, selectorField.getInitializer());
         assertFalse(selectorField.isOptional());
-        assertEquals("", selectorField.getOptionalCondition());
+        assertEquals(null, selectorField.getOptionalCondition());
         assertEquals("", selectorField.getIsUsedIndicatorName());
         assertEquals("", selectorField.getIsSetIndicatorName());
-        assertEquals("", selectorField.getConstraint());
+        assertEquals(null, selectorField.getConstraint());
         assertFalse(selectorField.isArray());
-        assertEquals("", selectorField.getArrayLength());
+        assertEquals(null, selectorField.getArrayLength());
         assertFalse(selectorField.isPacked());
         assertFalse(selectorField.isImplicit());
 
@@ -549,17 +567,18 @@ public class WithTypeInfoCodeTest
         checkSimpleChoice(simpleChoiceField.getTypeInfo());
 
         assertEquals(1, simpleChoiceField.getTypeArguments().size());
-        assertEquals("getSelector()", simpleChoiceField.getTypeArguments().get(0));
-        assertEquals("", simpleChoiceField.getAlignment());
-        assertEquals("", simpleChoiceField.getOffset());
-        assertEquals("", simpleChoiceField.getInitializer());
+        assertEquals(withTypeInfoCode.getSelector(),
+                simpleChoiceField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
+        assertEquals(null, simpleChoiceField.getAlignment());
+        assertEquals(null, simpleChoiceField.getOffset());
+        assertEquals(null, simpleChoiceField.getInitializer());
         assertFalse(simpleChoiceField.isOptional());
-        assertEquals("", simpleChoiceField.getOptionalCondition());
+        assertEquals(null, simpleChoiceField.getOptionalCondition());
         assertEquals("", simpleChoiceField.getIsUsedIndicatorName());
         assertEquals("", simpleChoiceField.getIsSetIndicatorName());
-        assertEquals("", simpleChoiceField.getConstraint());
+        assertEquals(null, simpleChoiceField.getConstraint());
         assertFalse(simpleChoiceField.isArray());
-        assertEquals("", simpleChoiceField.getArrayLength());
+        assertEquals(null, simpleChoiceField.getArrayLength());
         assertFalse(simpleChoiceField.isPacked());
         assertFalse(simpleChoiceField.isImplicit());
 
@@ -572,16 +591,16 @@ public class WithTypeInfoCodeTest
         checkTS32(templatedStructField.getTypeInfo());
 
         assertEquals(0, templatedStructField.getTypeArguments().size());
-        assertEquals("", templatedStructField.getAlignment());
-        assertEquals("", templatedStructField.getOffset());
-        assertEquals("", templatedStructField.getInitializer());
+        assertEquals(null, templatedStructField.getAlignment());
+        assertEquals(null, templatedStructField.getOffset());
+        assertEquals(null, templatedStructField.getInitializer());
         assertFalse(templatedStructField.isOptional());
-        assertEquals("", templatedStructField.getOptionalCondition());
+        assertEquals(null, templatedStructField.getOptionalCondition());
         assertEquals("", templatedStructField.getIsUsedIndicatorName());
         assertEquals("", templatedStructField.getIsSetIndicatorName());
-        assertEquals("", templatedStructField.getConstraint());
+        assertEquals(null, templatedStructField.getConstraint());
         assertFalse(templatedStructField.isArray());
-        assertEquals("", templatedStructField.getArrayLength());
+        assertEquals(null, templatedStructField.getArrayLength());
         assertFalse(templatedStructField.isPacked());
         assertFalse(templatedStructField.isImplicit());
 
@@ -594,17 +613,18 @@ public class WithTypeInfoCodeTest
         checkTemplatedParameterizedStruct_TS32(templatedParameterizedStructField.getTypeInfo());
 
         assertEquals(1, templatedParameterizedStructField.getTypeArguments().size());
-        assertEquals("getTemplatedStruct()", templatedParameterizedStructField.getTypeArguments().get(0));
-        assertEquals("", templatedParameterizedStructField.getAlignment());
-        assertEquals("", templatedParameterizedStructField.getOffset());
-        assertEquals("", templatedParameterizedStructField.getInitializer());
+        assertEquals(withTypeInfoCode.getTemplatedStruct(),
+                templatedParameterizedStructField.getTypeArguments().get(0).apply(withTypeInfoCode, null));
+        assertEquals(null, templatedParameterizedStructField.getAlignment());
+        assertEquals(null, templatedParameterizedStructField.getOffset());
+        assertEquals(null, templatedParameterizedStructField.getInitializer());
         assertFalse(templatedParameterizedStructField.isOptional());
-        assertEquals("", templatedParameterizedStructField.getOptionalCondition());
+        assertEquals(null, templatedParameterizedStructField.getOptionalCondition());
         assertEquals("", templatedParameterizedStructField.getIsUsedIndicatorName());
         assertEquals("", templatedParameterizedStructField.getIsSetIndicatorName());
-        assertEquals("", templatedParameterizedStructField.getConstraint());
+        assertEquals(null, templatedParameterizedStructField.getConstraint());
         assertFalse(templatedParameterizedStructField.isArray());
-        assertEquals("", templatedParameterizedStructField.getArrayLength());
+        assertEquals(null, templatedParameterizedStructField.getArrayLength());
         assertFalse(templatedParameterizedStructField.isPacked());
         assertFalse(templatedParameterizedStructField.isImplicit());
 
@@ -620,16 +640,16 @@ public class WithTypeInfoCodeTest
         assertEquals(BitBuffer.class, externDataField.getTypeInfo().getJavaClass());
 
         assertEquals(0, externDataField.getTypeArguments().size());
-        assertEquals("", externDataField.getAlignment());
-        assertEquals("", externDataField.getOffset());
-        assertEquals("", externDataField.getInitializer());
+        assertEquals(null, externDataField.getAlignment());
+        assertEquals(null, externDataField.getOffset());
+        assertEquals(null, externDataField.getInitializer());
         assertFalse(externDataField.isOptional());
-        assertEquals("", externDataField.getOptionalCondition());
+        assertEquals(null, externDataField.getOptionalCondition());
         assertEquals("", externDataField.getIsUsedIndicatorName());
         assertEquals("", externDataField.getIsSetIndicatorName());
-        assertEquals("", externDataField.getConstraint());
+        assertEquals(null, externDataField.getConstraint());
         assertFalse(externDataField.isArray());
-        assertEquals("", externDataField.getArrayLength());
+        assertEquals(null, externDataField.getArrayLength());
         assertFalse(externDataField.isPacked());
         assertFalse(externDataField.isImplicit());
 
@@ -645,16 +665,16 @@ public class WithTypeInfoCodeTest
         assertEquals(BitBuffer.class, externArrayField.getTypeInfo().getJavaClass());
 
         assertEquals(0, externArrayField.getTypeArguments().size());
-        assertEquals("", externArrayField.getAlignment());
-        assertEquals("", externArrayField.getOffset());
-        assertEquals("", externArrayField.getInitializer());
+        assertEquals(null, externArrayField.getAlignment());
+        assertEquals(null, externArrayField.getOffset());
+        assertEquals(null, externArrayField.getInitializer());
         assertFalse(externArrayField.isOptional());
-        assertEquals("", externArrayField.getOptionalCondition());
+        assertEquals(null, externArrayField.getOptionalCondition());
         assertEquals("", externArrayField.getIsUsedIndicatorName());
         assertEquals("", externArrayField.getIsSetIndicatorName());
-        assertEquals("", externArrayField.getConstraint());
+        assertEquals(null, externArrayField.getConstraint());
         assertTrue(externArrayField.isArray());
-        assertEquals("", externArrayField.getArrayLength());
+        assertEquals(null, externArrayField.getArrayLength());
         assertFalse(externArrayField.isPacked());
         assertFalse(externArrayField.isImplicit());
 
@@ -671,22 +691,24 @@ public class WithTypeInfoCodeTest
         assertEquals(32, implicitArrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, implicitArrayField.getTypeArguments().size());
-        assertEquals("", implicitArrayField.getAlignment());
-        assertEquals("", implicitArrayField.getOffset());
-        assertEquals("", implicitArrayField.getInitializer());
+        assertEquals(null, implicitArrayField.getAlignment());
+        assertEquals(null, implicitArrayField.getOffset());
+        assertEquals(null, implicitArrayField.getInitializer());
         assertFalse(implicitArrayField.isOptional());
-        assertEquals("", implicitArrayField.getOptionalCondition());
+        assertEquals(null, implicitArrayField.getOptionalCondition());
         assertEquals("", implicitArrayField.getIsUsedIndicatorName());
         assertEquals("", implicitArrayField.getIsSetIndicatorName());
-        assertEquals("", implicitArrayField.getConstraint());
+        assertEquals(null, implicitArrayField.getConstraint());
         assertTrue(implicitArrayField.isArray());
-        assertEquals("", implicitArrayField.getArrayLength());
+        assertEquals(null, implicitArrayField.getArrayLength());
         assertFalse(implicitArrayField.isPacked());
         assertTrue(implicitArrayField.isImplicit());
     }
 
     private void checkSimpleStruct(TypeInfo typeInfo)
     {
+        final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
+
         assertEquals("with_type_info_code.SimpleStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
@@ -714,16 +736,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
-        assertEquals("8", fieldU32Field.getAlignment());
-        assertEquals("", fieldU32Field.getOffset());
-        assertEquals("10", fieldU32Field.getInitializer());
+        assertEquals(8, fieldU32Field.getAlignment().getAsInt());
+        assertEquals(null, fieldU32Field.getOffset());
+        assertEquals(10, fieldU32Field.getInitializer().get());
         assertFalse(fieldU32Field.isOptional());
-        assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals(null, fieldU32Field.getOptionalCondition());
         assertEquals("", fieldU32Field.getIsUsedIndicatorName());
         assertEquals("", fieldU32Field.getIsSetIndicatorName());
-        assertEquals("", fieldU32Field.getConstraint());
+        assertEquals(null, fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
-        assertEquals("", fieldU32Field.getArrayLength());
+        assertEquals(null, fieldU32Field.getArrayLength());
         assertFalse(fieldU32Field.isPacked());
         assertFalse(fieldU32Field.isImplicit());
 
@@ -740,16 +762,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldOffsetField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldOffsetField.getTypeArguments().size());
-        assertEquals("", fieldOffsetField.getAlignment());
-        assertEquals("", fieldOffsetField.getOffset());
-        assertEquals("", fieldOffsetField.getInitializer());
+        assertEquals(null, fieldOffsetField.getAlignment());
+        assertEquals(null, fieldOffsetField.getOffset());
+        assertEquals(null, fieldOffsetField.getInitializer());
         assertFalse(fieldOffsetField.isOptional());
-        assertEquals("", fieldOffsetField.getOptionalCondition());
+        assertEquals(null, fieldOffsetField.getOptionalCondition());
         assertEquals("", fieldOffsetField.getIsUsedIndicatorName());
         assertEquals("", fieldOffsetField.getIsSetIndicatorName());
-        assertEquals("", fieldOffsetField.getConstraint());
+        assertEquals(null, fieldOffsetField.getConstraint());
         assertFalse(fieldOffsetField.isArray());
-        assertEquals("", fieldOffsetField.getArrayLength());
+        assertEquals(null, fieldOffsetField.getArrayLength());
         assertFalse(fieldOffsetField.isPacked());
         assertFalse(fieldOffsetField.isImplicit());
 
@@ -765,16 +787,16 @@ public class WithTypeInfoCodeTest
         assertEquals(String.class, fieldStringField.getTypeInfo().getJavaClass());
 
         assertEquals(0, fieldStringField.getTypeArguments().size());
-        assertEquals("", fieldStringField.getAlignment());
-        assertEquals("getFieldOffset()", fieldStringField.getOffset());
-        assertEquals("\"My\" + \"String\"", fieldStringField.getInitializer());
+        assertEquals(null, fieldStringField.getAlignment());
+        assertEquals((long)10, fieldStringField.getOffset().apply(simpleStruct, null));
+        assertEquals("MyString", fieldStringField.getInitializer().get());
         assertFalse(fieldStringField.isOptional());
-        assertEquals("", fieldStringField.getOptionalCondition());
+        assertEquals(null, fieldStringField.getOptionalCondition());
         assertEquals("", fieldStringField.getIsUsedIndicatorName());
         assertEquals("", fieldStringField.getIsSetIndicatorName());
-        assertEquals("", fieldStringField.getConstraint());
+        assertEquals(null, fieldStringField.getConstraint());
         assertFalse(fieldStringField.isArray());
-        assertEquals("", fieldStringField.getArrayLength());
+        assertEquals(null, fieldStringField.getArrayLength());
         assertFalse(fieldStringField.isPacked());
         assertFalse(fieldStringField.isImplicit());
 
@@ -791,16 +813,16 @@ public class WithTypeInfoCodeTest
         assertEquals(1, fieldBoolField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldBoolField.getTypeArguments().size());
-        assertEquals("", fieldBoolField.getAlignment());
-        assertEquals("", fieldBoolField.getOffset());
-        assertEquals("false", fieldBoolField.getInitializer());
+        assertEquals(null, fieldBoolField.getAlignment());
+        assertEquals(null, fieldBoolField.getOffset());
+        assertEquals(false, fieldBoolField.getInitializer().get());
         assertFalse(fieldBoolField.isOptional());
-        assertEquals("", fieldBoolField.getOptionalCondition());
+        assertEquals(null, fieldBoolField.getOptionalCondition());
         assertEquals("", fieldBoolField.getIsUsedIndicatorName());
         assertEquals("", fieldBoolField.getIsSetIndicatorName());
-        assertEquals("", fieldBoolField.getConstraint());
+        assertEquals(null, fieldBoolField.getConstraint());
         assertFalse(fieldBoolField.isArray());
-        assertEquals("", fieldBoolField.getArrayLength());
+        assertEquals(null, fieldBoolField.getArrayLength());
         assertFalse(fieldBoolField.isPacked());
         assertFalse(fieldBoolField.isImplicit());
 
@@ -817,16 +839,16 @@ public class WithTypeInfoCodeTest
         assertEquals(16, fieldFloat16Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat16Field.getTypeArguments().size());
-        assertEquals("", fieldFloat16Field.getAlignment());
-        assertEquals("", fieldFloat16Field.getOffset());
-        assertEquals("1.0f", fieldFloat16Field.getInitializer());
+        assertEquals(null, fieldFloat16Field.getAlignment());
+        assertEquals(null, fieldFloat16Field.getOffset());
+        assertEquals(1.0f, fieldFloat16Field.getInitializer().get());
         assertFalse(fieldFloat16Field.isOptional());
-        assertEquals("", fieldFloat16Field.getOptionalCondition());
+        assertEquals(null, fieldFloat16Field.getOptionalCondition());
         assertEquals("", fieldFloat16Field.getIsUsedIndicatorName());
         assertEquals("", fieldFloat16Field.getIsSetIndicatorName());
-        assertEquals("", fieldFloat16Field.getConstraint());
+        assertEquals(null, fieldFloat16Field.getConstraint());
         assertFalse(fieldFloat16Field.isArray());
-        assertEquals("", fieldFloat16Field.getArrayLength());
+        assertEquals(null, fieldFloat16Field.getArrayLength());
         assertFalse(fieldFloat16Field.isPacked());
         assertFalse(fieldFloat16Field.isImplicit());
 
@@ -843,16 +865,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldFloat32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat32Field.getTypeArguments().size());
-        assertEquals("", fieldFloat32Field.getAlignment());
-        assertEquals("", fieldFloat32Field.getOffset());
-        assertEquals("", fieldFloat32Field.getInitializer());
+        assertEquals(null, fieldFloat32Field.getAlignment());
+        assertEquals(null, fieldFloat32Field.getOffset());
+        assertEquals(null, fieldFloat32Field.getInitializer());
         assertFalse(fieldFloat32Field.isOptional());
-        assertEquals("", fieldFloat32Field.getOptionalCondition());
+        assertEquals(null, fieldFloat32Field.getOptionalCondition());
         assertEquals("", fieldFloat32Field.getIsUsedIndicatorName());
         assertEquals("", fieldFloat32Field.getIsSetIndicatorName());
-        assertEquals("", fieldFloat32Field.getConstraint());
+        assertEquals(null, fieldFloat32Field.getConstraint());
         assertFalse(fieldFloat32Field.isArray());
-        assertEquals("", fieldFloat32Field.getArrayLength());
+        assertEquals(null, fieldFloat32Field.getArrayLength());
         assertFalse(fieldFloat32Field.isPacked());
         assertFalse(fieldFloat32Field.isImplicit());
 
@@ -869,22 +891,30 @@ public class WithTypeInfoCodeTest
         assertEquals(64, fieldFloat64Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldFloat64Field.getTypeArguments().size());
-        assertEquals("", fieldFloat64Field.getAlignment());
-        assertEquals("", fieldFloat64Field.getOffset());
-        assertEquals("2.0", fieldFloat64Field.getInitializer());
+        assertEquals(null, fieldFloat64Field.getAlignment());
+        assertEquals(null, fieldFloat64Field.getOffset());
+        assertEquals(2.0, fieldFloat64Field.getInitializer().get());
         assertFalse(fieldFloat64Field.isOptional());
-        assertEquals("", fieldFloat64Field.getOptionalCondition());
+        assertEquals(null, fieldFloat64Field.getOptionalCondition());
         assertEquals("", fieldFloat64Field.getIsUsedIndicatorName());
         assertEquals("", fieldFloat64Field.getIsSetIndicatorName());
-        assertEquals("", fieldFloat64Field.getConstraint());
+        assertEquals(null, fieldFloat64Field.getConstraint());
         assertFalse(fieldFloat64Field.isArray());
-        assertEquals("", fieldFloat64Field.getArrayLength());
+        assertEquals(null, fieldFloat64Field.getArrayLength());
         assertFalse(fieldFloat64Field.isPacked());
         assertFalse(fieldFloat64Field.isImplicit());
     }
 
     private void checkComplexStruct(TypeInfo typeInfo)
     {
+        final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
+        final ComplexStruct complexStruct = new ComplexStruct();
+        complexStruct.setSimpleStruct(simpleStruct);
+        complexStruct.setArray(new long[] {(long)1 });
+        complexStruct.setDynamicBitField(BigInteger.TEN);
+        final ParameterizedStruct parameterizedStruct =  new ParameterizedStruct(simpleStruct);
+        complexStruct.setParamStructArray(new ParameterizedStruct[] {parameterizedStruct});
+
         assertEquals("with_type_info_code.ComplexStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
@@ -901,7 +931,7 @@ public class WithTypeInfoCodeTest
         assertEquals(JavaType.LONG, function0.getTypeInfo().getJavaType());
         assertEquals(long.class, function0.getTypeInfo().getJavaClass());
         assertEquals(32, function0.getTypeInfo().getBitSize());
-        assertEquals("(getArray().length > 0) ? getArray()[0] : 0", function0.getFunctionResult());
+        assertEquals((long)1, function0.getFunctionResult().apply(complexStruct));
 
         assertEquals("", typeInfo.getTemplateName());
         assertEquals(0, typeInfo.getTemplateArguments().size());
@@ -918,16 +948,16 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
         assertEquals(0, simpleStructField.getTypeArguments().size());
-        assertEquals("", simpleStructField.getAlignment());
-        assertEquals("", simpleStructField.getOffset());
-        assertEquals("", simpleStructField.getInitializer());
+        assertEquals(null, simpleStructField.getAlignment());
+        assertEquals(null, simpleStructField.getOffset());
+        assertEquals(null, simpleStructField.getInitializer());
         assertFalse(simpleStructField.isOptional());
-        assertEquals("", simpleStructField.getOptionalCondition());
+        assertEquals(null, simpleStructField.getOptionalCondition());
         assertEquals("", simpleStructField.getIsUsedIndicatorName());
         assertEquals("", simpleStructField.getIsSetIndicatorName());
-        assertEquals("", simpleStructField.getConstraint());
+        assertEquals(null, simpleStructField.getConstraint());
         assertFalse(simpleStructField.isArray());
-        assertEquals("", simpleStructField.getArrayLength());
+        assertEquals(null, simpleStructField.getArrayLength());
         assertFalse(simpleStructField.isPacked());
         assertFalse(simpleStructField.isImplicit());
 
@@ -940,16 +970,16 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(anotherSimpleStructField.getTypeInfo());
 
         assertEquals(0, anotherSimpleStructField.getTypeArguments().size());
-        assertEquals("", anotherSimpleStructField.getAlignment());
-        assertEquals("", anotherSimpleStructField.getOffset());
-        assertEquals("", anotherSimpleStructField.getInitializer());
+        assertEquals(null, anotherSimpleStructField.getAlignment());
+        assertEquals(null, anotherSimpleStructField.getOffset());
+        assertEquals(null, anotherSimpleStructField.getInitializer());
         assertFalse(anotherSimpleStructField.isOptional());
-        assertEquals("", anotherSimpleStructField.getOptionalCondition());
+        assertEquals(null, anotherSimpleStructField.getOptionalCondition());
         assertEquals("", anotherSimpleStructField.getIsUsedIndicatorName());
         assertEquals("", anotherSimpleStructField.getIsSetIndicatorName());
-        assertEquals("", anotherSimpleStructField.getConstraint());
+        assertEquals(null, anotherSimpleStructField.getConstraint());
         assertFalse(anotherSimpleStructField.isArray());
-        assertEquals("", anotherSimpleStructField.getArrayLength());
+        assertEquals(null, anotherSimpleStructField.getArrayLength());
         assertFalse(anotherSimpleStructField.isPacked());
         assertFalse(anotherSimpleStructField.isImplicit());
 
@@ -962,16 +992,16 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(optionalSimpleStructField.getTypeInfo());
 
         assertEquals(0, optionalSimpleStructField.getTypeArguments().size());
-        assertEquals("", optionalSimpleStructField.getAlignment());
-        assertEquals("", optionalSimpleStructField.getOffset());
-        assertEquals("", optionalSimpleStructField.getInitializer());
+        assertEquals(null, optionalSimpleStructField.getAlignment());
+        assertEquals(null, optionalSimpleStructField.getOffset());
+        assertEquals(null, optionalSimpleStructField.getInitializer());
         assertTrue(optionalSimpleStructField.isOptional());
-        assertEquals("", optionalSimpleStructField.getOptionalCondition());
+        assertEquals(null, optionalSimpleStructField.getOptionalCondition());
         assertEquals("isOptionalSimpleStructUsed", optionalSimpleStructField.getIsUsedIndicatorName());
         assertEquals("isOptionalSimpleStructSet", optionalSimpleStructField.getIsSetIndicatorName());
-        assertEquals("", optionalSimpleStructField.getConstraint());
+        assertEquals(null, optionalSimpleStructField.getConstraint());
         assertFalse(optionalSimpleStructField.isArray());
-        assertEquals("", optionalSimpleStructField.getArrayLength());
+        assertEquals(null, optionalSimpleStructField.getArrayLength());
         assertFalse(optionalSimpleStructField.isPacked());
         assertFalse(optionalSimpleStructField.isImplicit());
 
@@ -988,16 +1018,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
-        assertEquals("", arrayField.getAlignment());
-        assertEquals("", arrayField.getOffset());
-        assertEquals("", arrayField.getInitializer());
+        assertEquals(null, arrayField.getAlignment());
+        assertEquals(null, arrayField.getOffset());
+        assertEquals(null, arrayField.getInitializer());
         assertFalse(arrayField.isOptional());
-        assertEquals("", arrayField.getOptionalCondition());
+        assertEquals(null, arrayField.getOptionalCondition());
         assertEquals("", arrayField.getIsUsedIndicatorName());
         assertEquals("", arrayField.getIsSetIndicatorName());
-        assertEquals("getArray().length > 0", arrayField.getConstraint());
+        assertEquals(true, arrayField.getConstraint().test(complexStruct));
         assertTrue(arrayField.isArray());
-        assertEquals("", arrayField.getArrayLength());
+        assertEquals(null, arrayField.getArrayLength());
         assertFalse(arrayField.isPacked());
         assertFalse(arrayField.isImplicit());
 
@@ -1014,16 +1044,16 @@ public class WithTypeInfoCodeTest
         assertEquals(5, arrayWithLenField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayWithLenField.getTypeArguments().size());
-        assertEquals("", arrayWithLenField.getAlignment());
-        assertEquals("", arrayWithLenField.getOffset());
-        assertEquals("", arrayWithLenField.getInitializer());
+        assertEquals(null, arrayWithLenField.getAlignment());
+        assertEquals(null, arrayWithLenField.getOffset());
+        assertEquals(null, arrayWithLenField.getInitializer());
         assertTrue(arrayWithLenField.isOptional());
-        assertEquals("getArray()[0] > 0", arrayWithLenField.getOptionalCondition());
+        assertEquals(true, arrayWithLenField.getOptionalCondition().test(complexStruct));
         assertEquals("isArrayWithLenUsed", arrayWithLenField.getIsUsedIndicatorName());
         assertEquals("isArrayWithLenSet", arrayWithLenField.getIsSetIndicatorName());
-        assertEquals("", arrayWithLenField.getConstraint());
+        assertEquals(null, arrayWithLenField.getConstraint());
         assertTrue(arrayWithLenField.isArray());
-        assertEquals("getArray()[0]", arrayWithLenField.getArrayLength());
+        assertEquals((long)1, arrayWithLenField.getArrayLength().applyAsInt(complexStruct));
         assertFalse(arrayWithLenField.isPacked());
         assertFalse(arrayWithLenField.isImplicit());
 
@@ -1036,18 +1066,18 @@ public class WithTypeInfoCodeTest
         checkParameterizedStruct(paramStructArrayField.getTypeInfo());
 
         assertEquals(1, paramStructArrayField.getTypeArguments().size());
-        assertEquals("((index % 2) == 0) ? getSimpleStruct() : getAnotherSimpleStruct()",
-                paramStructArrayField.getTypeArguments().get(0));
-        assertEquals("", paramStructArrayField.getAlignment());
-        assertEquals("", paramStructArrayField.getOffset());
-        assertEquals("", paramStructArrayField.getInitializer());
+        assertEquals(complexStruct.getSimpleStruct(),
+                paramStructArrayField.getTypeArguments().get(0).apply(complexStruct, 0));
+        assertEquals(null, paramStructArrayField.getAlignment());
+        assertEquals(null, paramStructArrayField.getOffset());
+        assertEquals(null, paramStructArrayField.getInitializer());
         assertTrue(paramStructArrayField.isOptional());
-        assertEquals("", paramStructArrayField.getOptionalCondition());
+        assertEquals(null, paramStructArrayField.getOptionalCondition());
         assertEquals("isParamStructArrayUsed", paramStructArrayField.getIsUsedIndicatorName());
         assertEquals("isParamStructArraySet", paramStructArrayField.getIsSetIndicatorName());
-        assertEquals("", paramStructArrayField.getConstraint());
+        assertEquals(null, paramStructArrayField.getConstraint());
         assertTrue(paramStructArrayField.isArray());
-        assertEquals("", paramStructArrayField.getArrayLength());
+        assertEquals(null, paramStructArrayField.getArrayLength());
         assertFalse(paramStructArrayField.isPacked());
         assertFalse(paramStructArrayField.isImplicit());
 
@@ -1063,17 +1093,17 @@ public class WithTypeInfoCodeTest
         assertEquals(BigInteger.class, dynamicBitFieldField.getTypeInfo().getJavaClass());
 
         assertEquals(1, dynamicBitFieldField.getTypeArguments().size());
-        assertEquals("getSimpleStruct().getFieldU32()", dynamicBitFieldField.getTypeArguments().get(0));
-        assertEquals("", dynamicBitFieldField.getAlignment());
-        assertEquals("", dynamicBitFieldField.getOffset());
-        assertEquals("", dynamicBitFieldField.getInitializer());
+        assertEquals((long)0, dynamicBitFieldField.getTypeArguments().get(0).apply(complexStruct, null));
+        assertEquals(null, dynamicBitFieldField.getAlignment());
+        assertEquals(null, dynamicBitFieldField.getOffset());
+        assertEquals(null, dynamicBitFieldField.getInitializer());
         assertFalse(dynamicBitFieldField.isOptional());
-        assertEquals("", dynamicBitFieldField.getOptionalCondition());
+        assertEquals(null, dynamicBitFieldField.getOptionalCondition());
         assertEquals("", dynamicBitFieldField.getIsUsedIndicatorName());
         assertEquals("", dynamicBitFieldField.getIsSetIndicatorName());
-        assertEquals("", dynamicBitFieldField.getConstraint());
+        assertEquals(null, dynamicBitFieldField.getConstraint());
         assertFalse(dynamicBitFieldField.isArray());
-        assertEquals("", dynamicBitFieldField.getArrayLength());
+        assertEquals(null, dynamicBitFieldField.getArrayLength());
         assertFalse(dynamicBitFieldField.isPacked());
         assertFalse(dynamicBitFieldField.isImplicit());
 
@@ -1084,23 +1114,23 @@ public class WithTypeInfoCodeTest
         assertEquals("setDynamicBitFieldArray", dynamicBitFieldArrayField.getSetterName());
 
         assertEquals("bit<>", dynamicBitFieldArrayField.getTypeInfo().getSchemaName());
-        assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD, dynamicBitFieldArrayField.getTypeInfo().getSchemaType());
+        assertEquals(SchemaType.DYNAMIC_UNSIGNED_BITFIELD,
+                dynamicBitFieldArrayField.getTypeInfo().getSchemaType());
         assertEquals(JavaType.BIG_INTEGER, dynamicBitFieldArrayField.getTypeInfo().getJavaType());
         assertEquals(BigInteger.class, dynamicBitFieldArrayField.getTypeInfo().getJavaClass());
 
         assertEquals(1, dynamicBitFieldArrayField.getTypeArguments().size());
-        assertEquals("(getDynamicBitField().multiply(new java.math.BigInteger(\"2\"))).longValue()",
-                dynamicBitFieldArrayField.getTypeArguments().get(0));
-        assertEquals("", dynamicBitFieldArrayField.getAlignment());
-        assertEquals("", dynamicBitFieldArrayField.getOffset());
-        assertEquals("", dynamicBitFieldArrayField.getInitializer());
+        assertEquals((long)20, dynamicBitFieldArrayField.getTypeArguments().get(0).apply(complexStruct, null));
+        assertEquals(null, dynamicBitFieldArrayField.getAlignment());
+        assertEquals(null, dynamicBitFieldArrayField.getOffset());
+        assertEquals(null, dynamicBitFieldArrayField.getInitializer());
         assertFalse(dynamicBitFieldArrayField.isOptional());
-        assertEquals("", dynamicBitFieldArrayField.getOptionalCondition());
+        assertEquals(null, dynamicBitFieldArrayField.getOptionalCondition());
         assertEquals("", dynamicBitFieldArrayField.getIsUsedIndicatorName());
         assertEquals("", dynamicBitFieldArrayField.getIsSetIndicatorName());
-        assertEquals("", dynamicBitFieldArrayField.getConstraint());
+        assertEquals(null, dynamicBitFieldArrayField.getConstraint());
         assertTrue(dynamicBitFieldArrayField.isArray());
-        assertEquals("", dynamicBitFieldArrayField.getArrayLength());
+        assertEquals(null, dynamicBitFieldArrayField.getArrayLength());
         assertTrue(dynamicBitFieldArrayField.isPacked());
         assertFalse(dynamicBitFieldArrayField.isImplicit());
 
@@ -1113,16 +1143,16 @@ public class WithTypeInfoCodeTest
         checkTestEnum(optionalEnumField.getTypeInfo());
 
         assertEquals(0, optionalEnumField.getTypeArguments().size());
-        assertEquals("", optionalEnumField.getAlignment());
-        assertEquals("", optionalEnumField.getOffset());
-        assertEquals("", optionalEnumField.getInitializer());
+        assertEquals(null, optionalEnumField.getAlignment());
+        assertEquals(null, optionalEnumField.getOffset());
+        assertEquals(null, optionalEnumField.getInitializer());
         assertTrue(optionalEnumField.isOptional());
-        assertEquals("", optionalEnumField.getOptionalCondition());
+        assertEquals(null, optionalEnumField.getOptionalCondition());
         assertEquals("isOptionalEnumUsed", optionalEnumField.getIsUsedIndicatorName());
         assertEquals("isOptionalEnumSet", optionalEnumField.getIsSetIndicatorName());
-        assertEquals("", optionalEnumField.getConstraint());
+        assertEquals(null, optionalEnumField.getConstraint());
         assertFalse(optionalEnumField.isArray());
-        assertEquals("", optionalEnumField.getArrayLength());
+        assertEquals(null, optionalEnumField.getArrayLength());
         assertFalse(optionalEnumField.isPacked());
         assertFalse(optionalEnumField.isImplicit());
 
@@ -1135,16 +1165,16 @@ public class WithTypeInfoCodeTest
         checkTestBitmask(optionalBitmaskField.getTypeInfo());
 
         assertEquals(0, optionalBitmaskField.getTypeArguments().size());
-        assertEquals("", optionalBitmaskField.getAlignment());
-        assertEquals("", optionalBitmaskField.getOffset());
-        assertEquals("", optionalBitmaskField.getInitializer());
+        assertEquals(null, optionalBitmaskField.getAlignment());
+        assertEquals(null, optionalBitmaskField.getOffset());
+        assertEquals(null, optionalBitmaskField.getInitializer());
         assertTrue(optionalBitmaskField.isOptional());
-        assertEquals("", optionalBitmaskField.getOptionalCondition());
+        assertEquals(null, optionalBitmaskField.getOptionalCondition());
         assertEquals("isOptionalBitmaskUsed", optionalBitmaskField.getIsUsedIndicatorName());
         assertEquals("isOptionalBitmaskSet", optionalBitmaskField.getIsSetIndicatorName());
-        assertEquals("", optionalBitmaskField.getConstraint());
+        assertEquals(null, optionalBitmaskField.getConstraint());
         assertFalse(optionalBitmaskField.isArray());
-        assertEquals("", optionalBitmaskField.getArrayLength());
+        assertEquals(null, optionalBitmaskField.getArrayLength());
         assertFalse(optionalBitmaskField.isPacked());
         assertFalse(optionalBitmaskField.isImplicit());
 
@@ -1160,22 +1190,25 @@ public class WithTypeInfoCodeTest
         assertEquals(BitBuffer.class, optionalExternField.getTypeInfo().getJavaClass());
 
         assertEquals(0, optionalExternField.getTypeArguments().size());
-        assertEquals("", optionalExternField.getAlignment());
-        assertEquals("", optionalExternField.getOffset());
-        assertEquals("", optionalExternField.getInitializer());
+        assertEquals(null, optionalExternField.getAlignment());
+        assertEquals(null, optionalExternField.getOffset());
+        assertEquals(null, optionalExternField.getInitializer());
         assertTrue(optionalExternField.isOptional());
-        assertEquals("", optionalExternField.getOptionalCondition());
+        assertEquals(null, optionalExternField.getOptionalCondition());
         assertEquals("isOptionalExternUsed", optionalExternField.getIsUsedIndicatorName());
         assertEquals("isOptionalExternSet", optionalExternField.getIsSetIndicatorName());
-        assertEquals("", optionalExternField.getConstraint());
+        assertEquals(null, optionalExternField.getConstraint());
         assertFalse(optionalExternField.isArray());
-        assertEquals("", optionalExternField.getArrayLength());
+        assertEquals(null, optionalExternField.getArrayLength());
         assertFalse(optionalExternField.isPacked());
         assertFalse(optionalExternField.isImplicit());
     }
 
     private void checkParameterizedStruct(TypeInfo typeInfo)
     {
+        final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
+        final ParameterizedStruct parameterizedStruct =  new ParameterizedStruct(simpleStruct);
+
         assertEquals("with_type_info_code.ParameterizedStruct", typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
         assertEquals(JavaType.STRUCT, typeInfo.getJavaType());
@@ -1209,16 +1242,16 @@ public class WithTypeInfoCodeTest
         assertEquals(8, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
-        assertEquals("", arrayField.getAlignment());
-        assertEquals("", arrayField.getOffset());
-        assertEquals("", arrayField.getInitializer());
+        assertEquals(null, arrayField.getAlignment());
+        assertEquals(null, arrayField.getOffset());
+        assertEquals(null, arrayField.getInitializer());
         assertFalse(arrayField.isOptional());
-        assertEquals("", arrayField.getOptionalCondition());
+        assertEquals(null, arrayField.getOptionalCondition());
         assertEquals("", arrayField.getIsUsedIndicatorName());
         assertEquals("", arrayField.getIsSetIndicatorName());
-        assertEquals("", arrayField.getConstraint());
+        assertEquals(null, arrayField.getConstraint());
         assertTrue(arrayField.isArray());
-        assertEquals("getSimple().getFieldU32()", arrayField.getArrayLength());
+        assertEquals((long)0, arrayField.getArrayLength().applyAsInt(parameterizedStruct));
         assertFalse(arrayField.isPacked());
         assertFalse(arrayField.isImplicit());
     }
@@ -1252,16 +1285,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
-        assertEquals("", fieldU32Field.getAlignment());
-        assertEquals("", fieldU32Field.getOffset());
-        assertEquals("", fieldU32Field.getInitializer());
+        assertEquals(null, fieldU32Field.getAlignment());
+        assertEquals(null, fieldU32Field.getOffset());
+        assertEquals(null, fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
-        assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals(null, fieldU32Field.getOptionalCondition());
         assertEquals("", fieldU32Field.getIsUsedIndicatorName());
         assertEquals("", fieldU32Field.getIsSetIndicatorName());
-        assertEquals("", fieldU32Field.getConstraint());
+        assertEquals(null, fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
-        assertEquals("", fieldU32Field.getArrayLength());
+        assertEquals(null, fieldU32Field.getArrayLength());
         assertFalse(fieldU32Field.isPacked());
         assertFalse(fieldU32Field.isImplicit());
 
@@ -1278,16 +1311,16 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getFields().size(), fieldRecursion.getTypeInfo().getFields().size());
 
         assertEquals(0, fieldRecursion.getTypeArguments().size());
-        assertEquals("", fieldRecursion.getAlignment());
-        assertEquals("", fieldRecursion.getOffset());
-        assertEquals("", fieldRecursion.getInitializer());
+        assertEquals(null, fieldRecursion.getAlignment());
+        assertEquals(null, fieldRecursion.getOffset());
+        assertEquals(null, fieldRecursion.getInitializer());
         assertTrue(fieldRecursion.isOptional());
-        assertEquals("", fieldRecursion.getOptionalCondition());
+        assertEquals(null, fieldRecursion.getOptionalCondition());
         assertEquals("isFieldRecursionUsed", fieldRecursion.getIsUsedIndicatorName());
         assertEquals("isFieldRecursionSet", fieldRecursion.getIsSetIndicatorName());
-        assertEquals("", fieldRecursion.getConstraint());
+        assertEquals(null, fieldRecursion.getConstraint());
         assertFalse(fieldRecursion.isArray());
-        assertEquals("", fieldRecursion.getArrayLength());
+        assertEquals(null, fieldRecursion.getArrayLength());
         assertFalse(fieldRecursion.isPacked());
         assertFalse(fieldRecursion.isImplicit());
 
@@ -1304,16 +1337,16 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getFields().size(), arrayRecursion.getTypeInfo().getFields().size());
 
         assertEquals(0, arrayRecursion.getTypeArguments().size());
-        assertEquals("", arrayRecursion.getAlignment());
-        assertEquals("", arrayRecursion.getOffset());
-        assertEquals("", arrayRecursion.getInitializer());
+        assertEquals(null, arrayRecursion.getAlignment());
+        assertEquals(null, arrayRecursion.getOffset());
+        assertEquals(null, arrayRecursion.getInitializer());
         assertFalse(arrayRecursion.isOptional());
-        assertEquals("", arrayRecursion.getOptionalCondition());
+        assertEquals(null, arrayRecursion.getOptionalCondition());
         assertEquals("", arrayRecursion.getIsUsedIndicatorName());
         assertEquals("", arrayRecursion.getIsSetIndicatorName());
-        assertEquals("", arrayRecursion.getConstraint());
+        assertEquals(null, arrayRecursion.getConstraint());
         assertTrue(arrayRecursion.isArray());
-        assertEquals("", arrayRecursion.getArrayLength());
+        assertEquals(null, arrayRecursion.getArrayLength());
         assertFalse(arrayRecursion.isPacked());
         assertFalse(arrayRecursion.isImplicit());
     }
@@ -1341,16 +1374,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
-        assertEquals("", fieldU32Field.getAlignment());
-        assertEquals("", fieldU32Field.getOffset());
-        assertEquals("", fieldU32Field.getInitializer());
+        assertEquals(null, fieldU32Field.getAlignment());
+        assertEquals(null, fieldU32Field.getOffset());
+        assertEquals(null, fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
-        assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals(null, fieldU32Field.getOptionalCondition());
         assertEquals("", fieldU32Field.getIsUsedIndicatorName());
         assertEquals("", fieldU32Field.getIsSetIndicatorName());
-        assertEquals("", fieldU32Field.getConstraint());
+        assertEquals(null, fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
-        assertEquals("", fieldU32Field.getArrayLength());
+        assertEquals(null, fieldU32Field.getArrayLength());
         assertFalse(fieldU32Field.isPacked());
         assertFalse(fieldU32Field.isImplicit());
 
@@ -1367,22 +1400,25 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getFields().size(), recursive.getTypeInfo().getFields().size());
 
         assertEquals(0, recursive.getTypeArguments().size());
-        assertEquals("", recursive.getAlignment());
-        assertEquals("", recursive.getOffset());
-        assertEquals("", recursive.getInitializer());
+        assertEquals(null, recursive.getAlignment());
+        assertEquals(null, recursive.getOffset());
+        assertEquals(null, recursive.getInitializer());
         assertFalse(recursive.isOptional());
-        assertEquals("", recursive.getOptionalCondition());
+        assertEquals(null, recursive.getOptionalCondition());
         assertEquals("", recursive.getIsUsedIndicatorName());
         assertEquals("", recursive.getIsSetIndicatorName());
-        assertEquals("", recursive.getConstraint());
+        assertEquals(null, recursive.getConstraint());
         assertTrue(recursive.isArray());
-        assertEquals("", recursive.getArrayLength());
+        assertEquals(null, recursive.getArrayLength());
         assertFalse(recursive.isPacked());
         assertFalse(recursive.isImplicit());
     }
 
     private void checkRecursiveChoice(TypeInfo typeInfo)
     {
+        final RecursiveChoice recursiveChoice = new RecursiveChoice(true, false);
+        recursiveChoice.setRecursive(new RecursiveChoice[] {new RecursiveChoice(false, false)});
+
         assertEquals("with_type_info_code.RecursiveChoice", typeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, typeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, typeInfo.getJavaType());
@@ -1425,18 +1461,18 @@ public class WithTypeInfoCodeTest
         assertEquals(typeInfo.getFields().size(), recursive.getTypeInfo().getFields().size());
 
         assertEquals(2, recursive.getTypeArguments().size());
-        assertEquals("getParam2()", recursive.getTypeArguments().get(0));
-        assertEquals("false", recursive.getTypeArguments().get(1));
-        assertEquals("", recursive.getAlignment());
-        assertEquals("", recursive.getOffset());
-        assertEquals("", recursive.getInitializer());
+        assertEquals(false, recursive.getTypeArguments().get(0).apply(recursiveChoice, null));
+        assertEquals(false, recursive.getTypeArguments().get(1).apply(recursiveChoice, null));
+        assertEquals(null, recursive.getAlignment());
+        assertEquals(null, recursive.getOffset());
+        assertEquals(null, recursive.getInitializer());
         assertFalse(recursive.isOptional());
-        assertEquals("", recursive.getOptionalCondition());
+        assertEquals(null, recursive.getOptionalCondition());
         assertEquals("", recursive.getIsUsedIndicatorName());
         assertEquals("", recursive.getIsSetIndicatorName());
-        assertEquals("", recursive.getConstraint());
+        assertEquals(null, recursive.getConstraint());
         assertTrue(recursive.isArray());
-        assertEquals("", recursive.getArrayLength());
+        assertEquals(null, recursive.getArrayLength());
         assertFalse(recursive.isPacked());
         assertFalse(recursive.isImplicit());
 
@@ -1453,16 +1489,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldU32Field.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldU32Field.getTypeArguments().size());
-        assertEquals("", fieldU32Field.getAlignment());
-        assertEquals("", fieldU32Field.getOffset());
-        assertEquals("", fieldU32Field.getInitializer());
+        assertEquals(null, fieldU32Field.getAlignment());
+        assertEquals(null, fieldU32Field.getOffset());
+        assertEquals(null, fieldU32Field.getInitializer());
         assertFalse(fieldU32Field.isOptional());
-        assertEquals("", fieldU32Field.getOptionalCondition());
+        assertEquals(null, fieldU32Field.getOptionalCondition());
         assertEquals("", fieldU32Field.getIsUsedIndicatorName());
         assertEquals("", fieldU32Field.getIsSetIndicatorName());
-        assertEquals("", fieldU32Field.getConstraint());
+        assertEquals(null, fieldU32Field.getConstraint());
         assertFalse(fieldU32Field.isArray());
-        assertEquals("", fieldU32Field.getArrayLength());
+        assertEquals(null, fieldU32Field.getArrayLength());
         assertFalse(fieldU32Field.isPacked());
         assertFalse(fieldU32Field.isImplicit());
     }
@@ -1502,6 +1538,12 @@ public class WithTypeInfoCodeTest
 
     private void checkSimpleChoice(TypeInfo typeInfo)
     {
+        final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
+        final SimpleUnion simpleUnion = new SimpleUnion();
+        simpleUnion.setSimpleStruct(simpleStruct);
+        final SimpleChoice simpleChoice = new SimpleChoice(TestEnum.TWO);
+        simpleChoice.setFieldTwo(simpleUnion);
+
         assertEquals("with_type_info_code.SimpleChoice", typeInfo.getSchemaName());
         assertEquals(SchemaType.CHOICE, typeInfo.getSchemaType());
         assertEquals(JavaType.CHOICE, typeInfo.getJavaType());
@@ -1524,7 +1566,7 @@ public class WithTypeInfoCodeTest
         assertEquals(JavaType.LONG, function0.getTypeInfo().getJavaType());
         assertEquals(long.class, function0.getTypeInfo().getJavaClass());
         assertEquals(32, function0.getTypeInfo().getBitSize());
-        assertEquals("getFieldTwo().funcSimpleStructFieldU32()", function0.getFunctionResult());
+        assertEquals((long)0, function0.getFunctionResult().apply(simpleChoice));
 
         assertEquals("getSelector()", typeInfo.getSelector());
 
@@ -1543,16 +1585,16 @@ public class WithTypeInfoCodeTest
         checkSimpleUnion(fieldTwoField.getTypeInfo());
 
         assertEquals(0, fieldTwoField.getTypeArguments().size());
-        assertEquals("", fieldTwoField.getAlignment());
-        assertEquals("", fieldTwoField.getOffset());
-        assertEquals("", fieldTwoField.getInitializer());
+        assertEquals(null, fieldTwoField.getAlignment());
+        assertEquals(null, fieldTwoField.getOffset());
+        assertEquals(null, fieldTwoField.getInitializer());
         assertFalse(fieldTwoField.isOptional());
-        assertEquals("", fieldTwoField.getOptionalCondition());
+        assertEquals(null, fieldTwoField.getOptionalCondition());
         assertEquals("", fieldTwoField.getIsUsedIndicatorName());
         assertEquals("", fieldTwoField.getIsSetIndicatorName());
-        assertEquals("", fieldTwoField.getConstraint());
+        assertEquals(null, fieldTwoField.getConstraint());
         assertFalse(fieldTwoField.isArray());
-        assertEquals("", fieldTwoField.getArrayLength());
+        assertEquals(null, fieldTwoField.getArrayLength());
         assertFalse(fieldTwoField.isPacked());
         assertFalse(fieldTwoField.isImplicit());
 
@@ -1568,16 +1610,16 @@ public class WithTypeInfoCodeTest
         assertEquals(String.class, fieldDefaultField.getTypeInfo().getJavaClass());
 
         assertEquals(0, fieldDefaultField.getTypeArguments().size());
-        assertEquals("", fieldDefaultField.getAlignment());
-        assertEquals("", fieldDefaultField.getOffset());
-        assertEquals("", fieldDefaultField.getInitializer());
+        assertEquals(null, fieldDefaultField.getAlignment());
+        assertEquals(null, fieldDefaultField.getOffset());
+        assertEquals(null, fieldDefaultField.getInitializer());
         assertFalse(fieldDefaultField.isOptional());
-        assertEquals("", fieldDefaultField.getOptionalCondition());
+        assertEquals(null, fieldDefaultField.getOptionalCondition());
         assertEquals("", fieldDefaultField.getIsUsedIndicatorName());
         assertEquals("", fieldDefaultField.getIsSetIndicatorName());
-        assertEquals("", fieldDefaultField.getConstraint());
+        assertEquals(null, fieldDefaultField.getConstraint());
         assertFalse(fieldDefaultField.isArray());
-        assertEquals("", fieldDefaultField.getArrayLength());
+        assertEquals(null, fieldDefaultField.getArrayLength());
         assertFalse(fieldDefaultField.isPacked());
         assertFalse(fieldDefaultField.isImplicit());
 
@@ -1587,13 +1629,13 @@ public class WithTypeInfoCodeTest
         // case One
         final CaseInfo case0 = cases.get(0);
         assertEquals(1, case0.getCaseExpressions().size());
-        assertEquals("One", case0.getCaseExpressions().get(0));
+        assertEquals(TestEnum.One, case0.getCaseExpressions().get(0).get());
         assertEquals(null, case0.getField());
 
         // case TWO
         final CaseInfo case1 = cases.get(1);
         assertEquals(1, case1.getCaseExpressions().size());
-        assertEquals("TWO", case1.getCaseExpressions().get(0));
+        assertEquals(TestEnum.TWO, case1.getCaseExpressions().get(0).get());
         assertEquals(fieldTwoField, case1.getField());
 
         // default
@@ -1604,6 +1646,10 @@ public class WithTypeInfoCodeTest
 
     private void checkSimpleUnion(TypeInfo typeInfo)
     {
+        final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
+        final SimpleUnion simpleUnion = new SimpleUnion();
+        simpleUnion.setSimpleStruct(simpleStruct);
+
         assertEquals("with_type_info_code.SimpleUnion", typeInfo.getSchemaName());
         assertEquals(SchemaType.UNION, typeInfo.getSchemaType());
         assertEquals(JavaType.UNION, typeInfo.getJavaType());
@@ -1621,7 +1667,7 @@ public class WithTypeInfoCodeTest
         assertEquals(JavaType.LONG, function0.getTypeInfo().getJavaType());
         assertEquals(long.class, function0.getTypeInfo().getJavaClass());
         assertEquals(32, function0.getTypeInfo().getBitSize());
-        assertEquals("getSimpleStruct().getFieldU32()", function0.getFunctionResult());
+        assertEquals((long)0, function0.getFunctionResult().apply(simpleUnion));
 
         assertEquals("", typeInfo.getTemplateName());
         assertEquals(0, typeInfo.getTemplateArguments().size());
@@ -1638,16 +1684,16 @@ public class WithTypeInfoCodeTest
         checkTestBitmask(testBitmaskField.getTypeInfo());
 
         assertEquals(0, testBitmaskField.getTypeArguments().size());
-        assertEquals("", testBitmaskField.getAlignment());
-        assertEquals("", testBitmaskField.getOffset());
-        assertEquals("", testBitmaskField.getInitializer());
+        assertEquals(null, testBitmaskField.getAlignment());
+        assertEquals(null, testBitmaskField.getOffset());
+        assertEquals(null, testBitmaskField.getInitializer());
         assertFalse(testBitmaskField.isOptional());
-        assertEquals("", testBitmaskField.getOptionalCondition());
+        assertEquals(null, testBitmaskField.getOptionalCondition());
         assertEquals("", testBitmaskField.getIsUsedIndicatorName());
         assertEquals("", testBitmaskField.getIsSetIndicatorName());
-        assertEquals("", testBitmaskField.getConstraint());
+        assertEquals(null, testBitmaskField.getConstraint());
         assertFalse(testBitmaskField.isArray());
-        assertEquals("", testBitmaskField.getArrayLength());
+        assertEquals(null, testBitmaskField.getArrayLength());
         assertFalse(testBitmaskField.isPacked());
         assertFalse(testBitmaskField.isImplicit());
 
@@ -1660,16 +1706,16 @@ public class WithTypeInfoCodeTest
         checkSimpleStruct(simpleStructField.getTypeInfo());
 
         assertEquals(0, simpleStructField.getTypeArguments().size());
-        assertEquals("", simpleStructField.getAlignment());
-        assertEquals("", simpleStructField.getOffset());
-        assertEquals("", simpleStructField.getInitializer());
+        assertEquals(null, simpleStructField.getAlignment());
+        assertEquals(null, simpleStructField.getOffset());
+        assertEquals(null, simpleStructField.getInitializer());
         assertFalse(simpleStructField.isOptional());
-        assertEquals("", simpleStructField.getOptionalCondition());
+        assertEquals(null, simpleStructField.getOptionalCondition());
         assertEquals("", simpleStructField.getIsUsedIndicatorName());
         assertEquals("", simpleStructField.getIsSetIndicatorName());
-        assertEquals("", simpleStructField.getConstraint());
+        assertEquals(null, simpleStructField.getConstraint());
         assertFalse(simpleStructField.isArray());
-        assertEquals("", simpleStructField.getArrayLength());
+        assertEquals(null, simpleStructField.getArrayLength());
         assertFalse(simpleStructField.isPacked());
         assertFalse(simpleStructField.isImplicit());
     }
@@ -1686,7 +1732,7 @@ public class WithTypeInfoCodeTest
         assertEquals(JavaType.SHORT, typeInfo.getUnderlyingType().getJavaType());
         assertEquals(short.class, typeInfo.getUnderlyingType().getJavaClass());
         assertEquals(1, typeInfo.getUnderlyingTypeArguments().size());
-        assertEquals("10", typeInfo.getUnderlyingTypeArguments().get(0));
+        assertEquals(10, typeInfo.getUnderlyingTypeArguments().get(0).get());
 
         final List<ItemInfo> values = typeInfo.getBitmaskValues();
         assertEquals(3, values.size());
@@ -1744,22 +1790,26 @@ public class WithTypeInfoCodeTest
         assertEquals(32, fieldField.getTypeInfo().getBitSize());
 
         assertEquals(0, fieldField.getTypeArguments().size());
-        assertEquals("", fieldField.getAlignment());
-        assertEquals("", fieldField.getOffset());
-        assertEquals("", fieldField.getInitializer());
+        assertEquals(null, fieldField.getAlignment());
+        assertEquals(null, fieldField.getOffset());
+        assertEquals(null, fieldField.getInitializer());
         assertFalse(fieldField.isOptional());
-        assertEquals("", fieldField.getOptionalCondition());
+        assertEquals(null, fieldField.getOptionalCondition());
         assertEquals("", fieldField.getIsUsedIndicatorName());
         assertEquals("", fieldField.getIsSetIndicatorName());
-        assertEquals("", fieldField.getConstraint());
+        assertEquals(null, fieldField.getConstraint());
         assertFalse(fieldField.isArray());
-        assertEquals("", fieldField.getArrayLength());
+        assertEquals(null, fieldField.getArrayLength());
         assertFalse(fieldField.isPacked());
         assertFalse(fieldField.isImplicit());
     }
 
     private void checkTemplatedParameterizedStruct_TS32(TypeInfo typeInfo)
     {
+        final TS32 ts32 = new TS32((long)11);
+        final TemplatedParameterizedStruct_TS32 templatedParameterizedStruct_TS32 =
+                new TemplatedParameterizedStruct_TS32(ts32);
+
         assertEquals("with_type_info_code.TemplatedParameterizedStruct_TS32",
                 typeInfo.getSchemaName());
         assertEquals(SchemaType.STRUCT, typeInfo.getSchemaType());
@@ -1796,16 +1846,16 @@ public class WithTypeInfoCodeTest
         assertEquals(32, arrayField.getTypeInfo().getBitSize());
 
         assertEquals(0, arrayField.getTypeArguments().size());
-        assertEquals("", arrayField.getAlignment());
-        assertEquals("", arrayField.getOffset());
-        assertEquals("", arrayField.getInitializer());
+        assertEquals(null, arrayField.getAlignment());
+        assertEquals(null, arrayField.getOffset());
+        assertEquals(null, arrayField.getInitializer());
         assertFalse(arrayField.isOptional());
-        assertEquals("", arrayField.getOptionalCondition());
+        assertEquals(null, arrayField.getOptionalCondition());
         assertEquals("", arrayField.getIsUsedIndicatorName());
         assertEquals("", arrayField.getIsSetIndicatorName());
-        assertEquals("", arrayField.getConstraint());
+        assertEquals(null, arrayField.getConstraint());
         assertTrue(arrayField.isArray());
-        assertEquals("getParam().getField()", arrayField.getArrayLength());
+        assertEquals((long)11, arrayField.getArrayLength().applyAsInt(templatedParameterizedStruct_TS32));
         assertFalse(arrayField.isPacked());
         assertFalse(arrayField.isImplicit());
     }

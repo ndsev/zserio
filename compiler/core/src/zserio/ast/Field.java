@@ -274,6 +274,9 @@ public class Field extends DocumentableAstNode implements ScopeSymbol
             if (alignmentValue == null || alignmentValue.compareTo(BigInteger.ZERO) < 0)
                 throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
                         "' is not positive integer!");
+            if (alignmentValue.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0)
+                throw new ParserException(alignmentExpr, "Alignment expression for field '" + getName() +
+                        "' is bigger than integer max value (" + Integer.MAX_VALUE + ")!");
         }
 
         // check initializer expression type

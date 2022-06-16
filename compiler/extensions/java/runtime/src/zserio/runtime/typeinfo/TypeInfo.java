@@ -3,6 +3,7 @@ package zserio.runtime.typeinfo;
 import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
@@ -122,7 +123,7 @@ public interface TypeInfo
      *
      * @throws ZserioError If the zserio type is not enumeration or bitmask type.
      */
-    List<String> getUnderlyingTypeArguments();
+    List<Supplier<Object>> getUnderlyingTypeArguments();
 
     /**
      * Gets the type information for enumeration type items.
@@ -324,7 +325,7 @@ public interface TypeInfo
         }
 
         @Override
-        public List<String> getUnderlyingTypeArguments()
+        public List<Supplier<Object>> getUnderlyingTypeArguments()
         {
             throw new ZserioError("Type '" + getSchemaName() + "' does not have underlying type!");
         }
@@ -1245,7 +1246,7 @@ public interface TypeInfo
          */
         public TypeInfoWithUnderlyingTypeBase(String schemaName, SchemaType schemaType,
                 JavaType javaType, Class<?> javaClass,
-                TypeInfo underlyingType, List<String> underlyingTypeArguments)
+                TypeInfo underlyingType, List<Supplier<Object>> underlyingTypeArguments)
         {
             super(schemaName, schemaType, javaType, javaClass);
 
@@ -1260,13 +1261,13 @@ public interface TypeInfo
         }
 
         @Override
-        public List<String> getUnderlyingTypeArguments()
+        public List<Supplier<Object>> getUnderlyingTypeArguments()
         {
             return Collections.unmodifiableList(underlyingTypeArguments);
         }
 
         private final TypeInfo underlyingType;
-        private final List<String> underlyingTypeArguments;
+        private final List<Supplier<Object>> underlyingTypeArguments;
     }
 
     /**
@@ -1283,8 +1284,8 @@ public interface TypeInfo
          * @param underlyingTypeArguments The underlying zserio type arguments.
          * @param enumItems The sequence of type informations for enumeration items.
          */
-        public EnumTypeInfo(String schemaName, Class<?> javaClass,
-                TypeInfo underlyingType, List<String> underlyingTypeArguments, List<ItemInfo> enumItems)
+        public EnumTypeInfo(String schemaName, Class<?> javaClass, TypeInfo underlyingType,
+                List<Supplier<Object>> underlyingTypeArguments, List<ItemInfo> enumItems)
         {
             super(schemaName, SchemaType.ENUM, JavaType.ENUM, javaClass,
                     underlyingType, underlyingTypeArguments);
@@ -1315,8 +1316,8 @@ public interface TypeInfo
          * @param underlyingTypeArguments The underlying zserio type arguments.
          * @param bitmaskValues The sequence of type informations for bitmask values.
          */
-        public BitmaskTypeInfo(String schemaName, Class<?> javaClass,
-                TypeInfo underlyingType, List<String> underlyingTypeArguments, List<ItemInfo> bitmaskValues)
+        public BitmaskTypeInfo(String schemaName, Class<?> javaClass, TypeInfo underlyingType,
+                List<Supplier<Object>> underlyingTypeArguments, List<ItemInfo> bitmaskValues)
         {
             super(schemaName, SchemaType.BITMASK, JavaType.BITMASK, javaClass,
                     underlyingType, underlyingTypeArguments);
@@ -1574,7 +1575,7 @@ public interface TypeInfo
         }
 
         @Override
-        public List<String> getUnderlyingTypeArguments()
+        public List<Supplier<Object>> getUnderlyingTypeArguments()
         {
             return getTypeInfo().getUnderlyingTypeArguments();
         }

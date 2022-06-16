@@ -13,4 +13,13 @@
             <Method name="validate"/>
         </Or>
     </Match>
+    <Match>
+        <!-- Boxed value is unboxed and then immediately reboxed (needed only for type info). -->
+        <Bug code="Bx"/>
+        <Method name="~.*typeInfo.*"/>
+        <Or>
+            <Class name="templates.function_templated_return_type.TestStructure_float32"/>
+            <Class name="templates.function_templated_return_type.TestStructure_uint32"/>
+        </Or>
+    </Match>
 </FindBugsFilter>

@@ -52,8 +52,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
         for (Field field: tableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeMapper,
-                    javaExpressionFormatter, context.getJavaSqlIndirectExpressionFormatter(),
+            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeMapper, javaExpressionFormatter,
+                    context.getJavaSqlExpressionFormatter(), context.getJavaSqlLambdaExpressionFormatter(),
                     sqlNativeTypeMapper, tableType, field);
             fields.add(fieldData);
             for (FieldTemplateData.ParameterTemplateData parameterTemplateData : fieldData.getTypeParameters())
@@ -178,8 +178,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public static class FieldTemplateData
     {
         public FieldTemplateData(JavaNativeMapper javaNativeMapper,
-                ExpressionFormatter javaExpressionFormatter,
-                ExpressionFormatter javaSqlIndirectExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
+                ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaSqlExpressionFormatter,
+                ExpressionFormatter javaSqlLambdaExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
                 SqlTableType parentType, Field field) throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
@@ -200,8 +200,8 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                         (ParameterizedTypeInstantiation)fieldTypeInstantiation;
                 for (InstantiatedParameter parameter : parameterizedInstantiation.getInstantiatedParameters())
                 {
-                    typeParameters.add(new ParameterTemplateData(javaNativeMapper,
-                            javaSqlIndirectExpressionFormatter, parentType, parameter));
+                    typeParameters.add(new ParameterTemplateData(javaNativeMapper, javaSqlExpressionFormatter,
+                            javaSqlLambdaExpressionFormatter, parentType, parameter));
                 }
             }
 
@@ -276,12 +276,14 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public static class ParameterTemplateData
         {
             public ParameterTemplateData(JavaNativeMapper javaNativeMapper,
-                    ExpressionFormatter javaSqlIndirectExpressionFormatter, SqlTableType tableType,
+                    ExpressionFormatter javaSqlExpressionFormatter,
+                    ExpressionFormatter javaSqlLambdaExpressionFormatter, SqlTableType tableType,
                     InstantiatedParameter instantiatedParameter) throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
-                expression = javaSqlIndirectExpressionFormatter.formatGetter(argumentExpression);
+                expression = javaSqlExpressionFormatter.formatGetter(argumentExpression);
+                lambdaExpression = javaSqlLambdaExpressionFormatter.formatGetter(argumentExpression);
                 final Parameter parameter = instantiatedParameter.getParameter();
                 name = parameter.getName();
                 final TypeReference parameterTypeReference = parameter.getTypeReference();
@@ -299,6 +301,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                 return expression;
             }
 
+            public String getLambdaExpression()
+            {
+                return lambdaExpression;
+            }
+
             public String getName()
             {
                 return name;
@@ -311,6 +318,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
             private final boolean isExplicit;
             private final String expression;
+            private final String lambdaExpression;
             private final String name;
             private final NativeTypeInfoTemplateData typeInfo;
         }

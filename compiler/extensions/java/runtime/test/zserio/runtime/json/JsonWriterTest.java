@@ -355,17 +355,17 @@ public class JsonWriterTest
             "getText", // getterName
             "setText", // setterName
             BuiltinTypeInfo.getString(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -375,17 +375,17 @@ public class JsonWriterTest
             "getBoolField", // getterName
             "setBoolField", // setterName
             BuiltinTypeInfo.getBool(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -395,17 +395,17 @@ public class JsonWriterTest
             "getInt32Field", // getterName
             "setInt32Field", // setterName
             BuiltinTypeInfo.getInt32(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -415,17 +415,17 @@ public class JsonWriterTest
             "getUint64Field", // getterName
             "setUint64Field", // setterName
             BuiltinTypeInfo.getUInt64(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -435,17 +435,17 @@ public class JsonWriterTest
             "getFloatField", // getterName
             "setFloatField", // setterName
             BuiltinTypeInfo.getFloat32(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -455,17 +455,17 @@ public class JsonWriterTest
             "getDoubleField", // getterName
             "setDoubleField", // setterName
             BuiltinTypeInfo.getFloat64(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -487,20 +487,20 @@ public class JsonWriterTest
                     "DummyEnum", // schemaName
                     DummyEnum.class, // javaClass
                     BuiltinTypeInfo.getInt8(), // underlyingType
-                    new ArrayList<String>(), // underlyingTypeArguments
+                    new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList(new ItemInfo("ZERO", "0")) // enumItems
             ),
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -513,20 +513,20 @@ public class JsonWriterTest
                     "DummyEnum", // schemaName
                     DummyEnum.class, // javaClass
                     BuiltinTypeInfo.getUInt64(), // underlyingType
-                    new ArrayList<String>(), // underlyingTypeArguments
+                    new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615")) // enumItems
             ),
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -548,20 +548,20 @@ public class JsonWriterTest
                     "DummyBitmask", // schemaName
                     DummyBitmask.class, // javaClass
                     BuiltinTypeInfo.getInt8(), // underlyingType
-                    new ArrayList<String>(), // underlyingTypeArguments
+                    new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList(new ItemInfo("ZERO", "0")) // bitmaskValues
             ),
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -574,20 +574,20 @@ public class JsonWriterTest
                     "DummyBitmask", // schemaName
                     DummyBitmask.class, // javaClass
                     BuiltinTypeInfo.getUInt64(), // underlyingType
-                    new ArrayList<String>(), // underlyingTypeArguments
+                    new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
                     Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615")) // bitmaskValues
             ),
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -597,17 +597,17 @@ public class JsonWriterTest
             "getIdentifier", // getterName
             "setIdentifier", // setterName
             BuiltinTypeInfo.getUInt32(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -617,17 +617,17 @@ public class JsonWriterTest
             "getData", // getterName
             "setData", // setterName
             BuiltinTypeInfo.getBitBuffer(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -651,17 +651,17 @@ public class JsonWriterTest
             "getNested", // getterName
             "setNested", // setterName
             DUMMY_TYPE_INFO, // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             false, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );
@@ -671,17 +671,17 @@ public class JsonWriterTest
             "getArray", // getterName
             "setArray", // setterName
             BuiltinTypeInfo.getUInt32(), // typeInfo
-            new ArrayList<String>(), // typeArguments
-            "", // alignment
-            "", // offset
-            "", // initializer
+            new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
+            null, // alignment
+            null, // offset
+            null, // initializer
             false, // isOptional
-            "", // optionalCondition
+            null, // optionalCondition
             "", // isUsedindicatorName
             "", // isSetindicatorName
-            "", // constraint
+            null, // constraint
             true, // isArray
-            "", // arrayLength
+            null, // arrayLength
             false, // isPacked
             false // isImplicit
     );

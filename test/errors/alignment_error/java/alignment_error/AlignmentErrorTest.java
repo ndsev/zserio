@@ -40,5 +40,13 @@ public class AlignmentErrorTest
         assertTrue(zserioErrors.isPresent(error));
     }
 
+    @Test
+    public void tooBigAlignment()
+    {
+        final String error = "too_big_alignment_error.zs:5:7: Alignment expression for field 'field' " +
+                "is bigger than integer max value (2147483647)!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
     private static ZserioErrorOutput zserioErrors;
 }

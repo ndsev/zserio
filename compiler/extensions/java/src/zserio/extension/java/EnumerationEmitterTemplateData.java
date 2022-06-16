@@ -23,11 +23,13 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
+        final ExpressionFormatter javaLambdaExpressionFormatter = context.getJavaLambdaExpressionFormatter();
         final NativeIntegralType nativeIntegralType =
                 javaNativeMapper.getJavaIntegralType(enumTypeInstantiation);
 
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, enumTypeInstantiation);
-        bitSize = BitSizeTemplateData.create(enumTypeInstantiation, javaExpressionFormatter);
+        bitSize = BitSizeTemplateData.create(enumTypeInstantiation, javaExpressionFormatter,
+                javaLambdaExpressionFormatter);
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
                 javaExpressionFormatter, javaNativeMapper);
 

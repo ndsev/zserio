@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import zserio.runtime.ZserioError;
 import zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo;
@@ -387,7 +389,7 @@ public class TypeInfoTest
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
         final EnumTypeInfo enumTypeInfo = new EnumTypeInfo("", null,
-                underlyingTypeInfo, new ArrayList<String>(), new ArrayList<ItemInfo>());
+                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), new ArrayList<ItemInfo>());
         assertEquals("", enumTypeInfo.getSchemaName());
         assertEquals(SchemaType.ENUM, enumTypeInfo.getSchemaType());
         assertEquals(JavaType.ENUM, enumTypeInfo.getJavaType());
@@ -426,7 +428,7 @@ public class TypeInfoTest
     {
         final TypeInfo underlyingTypeInfo = BuiltinTypeInfo.getInt8();
         final BitmaskTypeInfo bitmaskTypeInfo = new BitmaskTypeInfo("", null,
-                underlyingTypeInfo, new ArrayList<String>(), new ArrayList<ItemInfo>());
+                underlyingTypeInfo, new ArrayList<Supplier<Object>>(), new ArrayList<ItemInfo>());
         assertEquals("", bitmaskTypeInfo.getSchemaName());
         assertEquals(SchemaType.BITMASK, bitmaskTypeInfo.getSchemaType());
         assertEquals(JavaType.BITMASK, bitmaskTypeInfo.getJavaType());
@@ -635,18 +637,17 @@ public class TypeInfoTest
                             "getRecursive", // getterName
                             "setRecursive", // setterName
                             new RecursiveTypeInfo(new RecursiveTypeInfoGetter()), // typeInfo
-                            new ArrayList<String>(), // typeArguments
-                            //!@#new ArrayList<Function<Object, Object>>(), // typeArgumentsGetters
-                            "", // alignment
-                            "", // offset
-                            "", // initializer
+                            new ArrayList<BiFunction<Object, Integer, Object>>(), // typeArguments
+                            null, // alignment
+                            null, // offset
+                            null, // initializer
                             true, // isOptional
-                            "", // optionalCondition
+                            null, // optionalCondition
                             "isRecursiveUsed", // isUsedindicatorName
                             "isRecursiveSet", // isSetindicatorName
-                            "", // constraint
+                            null, // constraint
                             false, // isArray
-                            "", // arrayLength
+                            null, // arrayLength
                             false, // isPacked
                             false // isImplicit
                     )

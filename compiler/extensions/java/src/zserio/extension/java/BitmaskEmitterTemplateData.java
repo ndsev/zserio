@@ -27,11 +27,13 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         final TypeInstantiation bitmaskTypeInstantiation = bitmaskType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
+        final ExpressionFormatter javaLambdaExpressionFormatter = context.getJavaLambdaExpressionFormatter();
         final NativeIntegralType nativeIntegralType =
                 javaNativeMapper.getJavaIntegralType(bitmaskTypeInstantiation);
 
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, bitmaskTypeInstantiation);
-        bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, javaExpressionFormatter);
+        bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, javaExpressionFormatter,
+                javaLambdaExpressionFormatter);
         runtimeFunction = JavaRuntimeFunctionDataCreator.createData(bitmaskTypeInstantiation,
                 javaExpressionFormatter, javaNativeMapper);
 

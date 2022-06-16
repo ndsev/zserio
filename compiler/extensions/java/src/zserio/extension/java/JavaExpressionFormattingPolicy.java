@@ -2,6 +2,7 @@ package zserio.extension.java;
 
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
+import zserio.ast.ZserioType;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
@@ -39,7 +40,7 @@ public class JavaExpressionFormattingPolicy extends JavaDefaultExpressionFormatt
     }
 
     @Override
-    protected String getAccessPrefixForCompoundType()
+    protected String getAccessPrefixForCompoundType(ZserioType owner)
     {
         return "";
     }

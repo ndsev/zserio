@@ -16,14 +16,15 @@ import zserio.extension.java.types.JavaNativeType;
 public final class CompoundFunctionTemplateData
 {
     public CompoundFunctionTemplateData(JavaNativeMapper javaNativeMapper, CompoundType compoundType,
-            ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
+            ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter)
+                    throws ZserioExtensionException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<Function> functionList = compoundType.getFunctions();
         for (Function compoundFunction : functionList)
         {
             compoundFunctionList.add(new CompoundFunction(javaNativeMapper, compoundFunction,
-                    javaExpressionFormatter));
+                    javaExpressionFormatter, javaLambdaExpressionFormatter));
         }
     }
 
@@ -35,7 +36,8 @@ public final class CompoundFunctionTemplateData
     public static class CompoundFunction
     {
         public CompoundFunction(JavaNativeMapper javaNativeMapper, Function function,
-                ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
+                ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter)
+                        throws ZserioExtensionException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(returnTypeReference);
@@ -43,6 +45,7 @@ public final class CompoundFunctionTemplateData
             schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
             resultExpression = javaExpressionFormatter.formatGetter(function.getResultExpression());
+            lambdaResultExpression = javaLambdaExpressionFormatter.formatGetter(function.getResultExpression());
         }
 
         public NativeTypeInfoTemplateData getReturnTypeInfo()
@@ -65,10 +68,16 @@ public final class CompoundFunctionTemplateData
             return resultExpression;
         }
 
+        public String getLambdaResultExpression()
+        {
+            return lambdaResultExpression;
+        }
+
         private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String schemaName;
         private final String name;
         private final String resultExpression;
+        private final String lambdaResultExpression;
     }
 
     private final List<CompoundFunction>    compoundFunctionList;

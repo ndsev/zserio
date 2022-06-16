@@ -12,7 +12,7 @@
     <#if fieldList?has_content>
 ${I}java.util.Arrays.asList(
         <#list fieldList as field>
-            <@field_info field field?has_next indent+2/>
+            <@field_info field, field?has_next, indent+2/>
         </#list>
 ${I});
     <#else>
@@ -35,16 +35,16 @@ ${I}        <@type_info field.array.elementTypeInfo/>, // typeInfo
 ${I}        <@type_info field.typeInfo/>, // typeInfo
     </#if>
 ${I}        <@field_info_type_arguments field/>, // typeArguments
-${I}        "${(field.alignmentValue!"")?j_string}", // alignment
-${I}        "<#if field.offset??>${field.offset.getter?j_string}</#if>", // offset
-${I}        "${(field.initializer!"")?j_string}", // initializer
+${I}        <#if field.alignmentValue??>() -> ${field.alignmentValue}<#else>null</#if>, // alignment
+${I}        <#if field.offset??>(obj, index) -> ${field.offset.lambdaGetter}<#else>null</#if>, // offset
+${I}        <#if field.initializer??>() -> ${field.initializer}<#else>null</#if>, // initializer
 ${I}        ${(field.optional??)?c}, // isOptional
-${I}        "<#if field.optional??>${(field.optional.clause!"")?j_string}</#if>", // optionalCondition
+${I}        <#if field.optional?? && field.optional.lambdaClause??>(obj) -> ${field.optional.lambdaClause}<#else>null</#if>, // optionalCondition
 ${I}        "<#if field.optional??>${field.optional.isUsedIndicatorName}</#if>", // isUsedIndicatorName
 ${I}        "<#if field.optional?? && withWriterCode>${field.optional.isSetIndicatorName}</#if>", // isSetIndicatorName
-${I}        "${(field.constraint!"")?j_string}", // constraint
+${I}        <#if field.lambdaConstraint??>(obj) -> ${field.lambdaConstraint}<#else>null</#if>, // constraint
 ${I}        ${(field.array??)?c}, // isArray
-${I}        <#if field.array??>"${(field.array.length!"")?j_string}"<#else>""</#if>, // arrayLength
+${I}        <#if field.array?? && field.array.lambdaLength??>(obj) -> (int)(${field.array.lambdaLength})<#else>null</#if>, // arrayLength
 ${I}        ${(field.array?? && field.array.isPacked)?c}, // isPacked
 ${I}        ${(field.array?? && field.array.isImplicit)?c} // isImplicit
 ${I})<#if comma>,</#if>
@@ -78,20 +78,20 @@ ${I}}
     <#if field.array?? && field.array.elementCompound??>
         <@field_info_compound_type_arguments field.array.elementCompound.instantiatedParameters/>
     <#elseif field.array?? && field.array.elementBitSize?? && field.array.elementBitSize.isDynamicBitField>
-        java.util.Arrays.asList("${field.array.elementBitSize.value?j_string}")<#t>
+        java.util.Arrays.asList((obj, index) -> ${field.array.elementBitSize.lambdaValue})<#t>
     <#elseif field.compound??>
         <@field_info_compound_type_arguments field.compound.instantiatedParameters/>
     <#elseif field.bitSize?? && field.bitSize.isDynamicBitField>
-        java.util.Arrays.asList("${field.bitSize.value?j_string}")<#t>
+        java.util.Arrays.asList((obj, index) -> ${field.bitSize.lambdaValue})<#t>
     <#else>
-        new java.util.ArrayList<java.lang.String>()<#t>
+        new java.util.ArrayList<java.util.function.BiFunction<java.lang.Object, java.lang.Integer, java.lang.Object>>()<#t>
     </#if>
 </#macro>
 
 <#macro field_info_compound_type_arguments parameters>
     java.util.Arrays.asList(<#t>
     <#list parameters as parameter>
-        "${parameter.expression?j_string}"<#if parameter?has_next>, </#if><#t>
+        (obj, index) -> ${parameter.lambdaExpression}<#if parameter?has_next>, </#if><#t>
     </#list>
     )<#t>
 </#macro>
@@ -135,24 +135,24 @@ ${I}new java.util.ArrayList<zserio.runtime.typeinfo.FunctionInfo>();
 ${I}new zserio.runtime.typeinfo.FunctionInfo(
 ${I}        "${function.schemaName}", // schemaName
 ${I}        <@type_info function.returnTypeInfo/>, // typeInfo
-${I}        "${function.resultExpression?j_string}" // result expression
+${I}        (obj) -> ${function.lambdaResultExpression} // result expression
 ${I})<#if comma>,</#if>
 </#macro>
 
-<#macro cases_info caseMemberList defaultMember isSwitchAllowed indent=4 fieldListVarName="fieldList">
+<#macro cases_info caseMemberList defaultMember indent=4 fieldListVarName="fieldList">
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#local fieldIndex=0>
     <#if caseMemberList?has_content || defaultMember?has_content>
 ${I}java.util.Arrays.asList(
         <#list caseMemberList as caseMember>
 ${I}        new zserio.runtime.typeinfo.CaseInfo(
-                    <@case_info_case_expressions caseMember.caseList, isSwitchAllowed, indent+4/>
+                    <@case_info_case_expressions caseMember.caseList, indent+4/>
 ${I}                <#if caseMember.compoundField??>${fieldListVarName}.get(${fieldIndex})<#local fieldIndex+=1><#else>null</#if>
 ${I}        )<#if caseMember?has_next || defaultMember?has_content>,</#if>
         </#list>
         <#if defaultMember?has_content>
 ${I}        new zserio.runtime.typeinfo.CaseInfo(
-${I}                new java.util.ArrayList<java.lang.String>(),
+${I}                new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
 ${I}                <#if defaultMember.compoundField??>${fieldListVarName}.get(${fieldIndex})<#local fieldIndex+=1><#else>null</#if>
 ${I}        )
         </#if>
@@ -162,11 +162,11 @@ ${I}new java.util.ArrayList<zserio.runtime.typeinfo.CaseInfo>();
     </#if>
 </#macro>
 
-<#macro case_info_case_expressions caseList isSwitchAllowed indent>
+<#macro case_info_case_expressions caseList indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}java.util.Arrays.asList(
     <#list caseList as case>
-${I}        "${isSwitchAllowed?then(case.expressionForCase, case.expressionForIf)?j_string}"<#if case?has_next>,</#if>
+${I}        () -> ${case.expressionForIf}<#if case?has_next>,</#if>
     </#list>
 ${I}),
 </#macro>
@@ -177,9 +177,9 @@ ${I}),
 
 <#macro underlying_type_info_type_arguments bitSize>
     <#if bitSize?has_content && bitSize.isDynamicBitField>
-    java.util.Arrays.asList("${bitSize.value?j_string}")<#t>
+    java.util.Arrays.asList(() -> ${bitSize.value})<#t>
     <#else>
-    new java.util.ArrayList<java.lang.String>()<#t>
+    new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>()<#t>
     </#if>
 </#macro>
 
@@ -231,11 +231,11 @@ ${I})<#if comma>,</#if>
     <#elseif field.typeParameters?has_content>
         java.util.Arrays.asList(<#t>
         <#list field.typeParameters as parameter>
-            "<#if parameter.isExplicit>explicit </#if>${parameter.expression}"<#if parameter?has_next>, </#if><#t>
+            (<#if parameter.isExplicit>${parameter.expression}<#else>row</#if>) -> ${parameter.lambdaExpression}<#if parameter?has_next>, </#if><#t>
         </#list>
         )<#t>
     <#else>
-        new java.util.ArrayList<java.lang.String>()<#t>
+        new java.util.ArrayList<java.util.function.Function<java.lang.Object, java.lang.Object>>()<#t>
     </#if>
 </#macro>
 
