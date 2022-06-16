@@ -30,8 +30,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, enumTypeInstantiation);
         bitSize = BitSizeTemplateData.create(enumTypeInstantiation, javaExpressionFormatter,
                 javaLambdaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
-                javaExpressionFormatter, javaNativeMapper);
+        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, enumTypeInstantiation);
 
         items = new ArrayList<EnumItemData>();
         for (EnumItem item: enumType.getItems())

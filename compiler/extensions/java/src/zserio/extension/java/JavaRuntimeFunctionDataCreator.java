@@ -22,12 +22,13 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public class JavaRuntimeFunctionDataCreator
 {
-    public static RuntimeFunctionTemplateData createData(TypeInstantiation typeInstantiation,
-            ExpressionFormatter javaExpressionFormatter, JavaNativeMapper javaNativeMapper)
-                    throws ZserioExtensionException
+    public static RuntimeFunctionTemplateData createData(TemplateDataContext context,
+            TypeInstantiation typeInstantiation) throws ZserioExtensionException
     {
+        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
+            final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
             return RuntimeFunctionSuffixVisitor.mapDynamicBitField(
                     (DynamicBitFieldInstantiation)typeInstantiation, javaExpressionFormatter, javaNativeMapper);
         }

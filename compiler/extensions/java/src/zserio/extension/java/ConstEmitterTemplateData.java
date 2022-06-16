@@ -12,7 +12,8 @@ import zserio.extension.java.types.JavaNativeType;
  */
 public final class ConstEmitterTemplateData extends JavaTemplateData
 {
-    public ConstEmitterTemplateData(TemplateDataContext context, Constant constant) throws ZserioExtensionException
+    public ConstEmitterTemplateData(TemplateDataContext context, Constant constant)
+            throws ZserioExtensionException
     {
         super(context);
 

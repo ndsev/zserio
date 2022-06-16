@@ -25,18 +25,20 @@ import zserio.extension.java.types.NativeRawArray;
  */
 public final class CompoundFieldTemplateData
 {
-    public CompoundFieldTemplateData(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-            CompoundType parentType, Field field, ExpressionFormatter javaExpressionFormatter,
-            ExpressionFormatter javaLambdaExpressionFormatter) throws ZserioExtensionException
+    public CompoundFieldTemplateData(TemplateDataContext context, CompoundType parentType, Field field)
+            throws ZserioExtensionException
     {
         final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
 
         name = field.getName();
 
         // this must be the first one because we need to determine isTypeNullable
+        final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
+        final ExpressionFormatter javaLambdaExpressionFormatter = context.getJavaLambdaExpressionFormatter();
         optional = createOptional(field, fieldTypeInstantiation.getBaseType(), parentType,
                 javaExpressionFormatter, javaLambdaExpressionFormatter);
 
+        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final boolean isTypeNullable = (optional != null);
         final JavaNativeType nullableNativeType = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
         final JavaNativeType nativeType = (isTypeNullable) ? nullableNativeType :
@@ -50,6 +52,7 @@ public final class CompoundFieldTemplateData
 
         isPackable = field.isPackable();
 
+        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
         rangeCheckData = new RangeCheckTemplateData(this, javaNativeMapper, withRangeCheckCode,
                 fieldTypeInstantiation, isTypeNullable, javaExpressionFormatter);
 
@@ -64,12 +67,9 @@ public final class CompoundFieldTemplateData
         bitSize = BitSizeTemplateData.create(fieldTypeInstantiation, javaExpressionFormatter,
                 javaLambdaExpressionFormatter);
         offset = createOffset(field, javaNativeMapper, javaExpressionFormatter, javaLambdaExpressionFormatter);
-        array = createArray(nativeType, fieldTypeInstantiation, parentType, javaNativeMapper,
-                withRangeCheckCode, javaExpressionFormatter, javaLambdaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(fieldTypeInstantiation,
-                javaExpressionFormatter, javaNativeMapper);
-        compound = createCompound(javaNativeMapper, withRangeCheckCode, javaExpressionFormatter,
-                javaLambdaExpressionFormatter, fieldTypeInstantiation);
+        array = createArray(context, nativeType, fieldTypeInstantiation, parentType);
+        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation);
+        compound = createCompound(context, fieldTypeInstantiation);
     }
 
     public String getName()
@@ -266,17 +266,18 @@ public final class CompoundFieldTemplateData
 
     public static class Array
     {
-        public Array(NativeArrayType nativeType, ArrayInstantiation arrayInstantiation,
-                CompoundType parentType, JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-                ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter)
-                        throws ZserioExtensionException
+        public Array(TemplateDataContext context, NativeArrayType nativeType,
+                ArrayInstantiation arrayInstantiation, CompoundType parentType) throws ZserioExtensionException
         {
             final TypeInstantiation elementTypeInstantiation = arrayInstantiation.getElementTypeInstantiation();
 
             isImplicit = arrayInstantiation.isImplicit();
             isPacked = arrayInstantiation.isPacked();
 
+            final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
             length = createLength(arrayInstantiation, javaExpressionFormatter);
+            final ExpressionFormatter javaLambdaExpressionFormatter =
+                    context.getJavaLambdaExpressionFormatter();
             lambdaLength = createLength(arrayInstantiation, javaLambdaExpressionFormatter);
 
             wrapperJavaTypeName = nativeType.getArrayWrapper().getFullName();
@@ -286,6 +287,7 @@ public final class CompoundFieldTemplateData
             final NativeArrayTraits nativeArrayTraits = nativeType.getArrayTraits();
             arrayTraits = new ArrayTraitsTemplateData(nativeArrayTraits);
 
+            final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
             final JavaNativeType elementNativeType = javaNativeMapper.getJavaType(elementTypeInstantiation);
             elementTypeInfo = new NativeTypeInfoTemplateData(elementNativeType, elementTypeInstantiation);
 
@@ -294,8 +296,7 @@ public final class CompoundFieldTemplateData
 
             elementBitSize = BitSizeTemplateData.create(elementTypeInstantiation, javaExpressionFormatter,
                     javaLambdaExpressionFormatter);
-            elementCompound = createCompound(javaNativeMapper, withRangeCheckCode, javaExpressionFormatter,
-                    javaLambdaExpressionFormatter, elementTypeInstantiation);
+            elementCompound = createCompound(context, elementTypeInstantiation);
             elementIsRecursive = elementTypeInstantiation.getBaseType() == parentType;
         }
 
@@ -413,27 +414,21 @@ public final class CompoundFieldTemplateData
 
     public static class Compound
     {
-        public Compound(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-                ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter,
+        public Compound(TemplateDataContext context,
                 ParameterizedTypeInstantiation parameterizedTypeInstantiation) throws ZserioExtensionException
         {
-            this(javaNativeMapper, withRangeCheckCode, javaExpressionFormatter,
-                    parameterizedTypeInstantiation.getBaseType());
+            this(context, parameterizedTypeInstantiation.getBaseType());
 
             for (InstantiatedParameter param : parameterizedTypeInstantiation.getInstantiatedParameters())
             {
-                instantiatedParameters.add(new InstantiatedParameterData(javaNativeMapper,
-                        javaExpressionFormatter, javaLambdaExpressionFormatter, param));
+                instantiatedParameters.add(new InstantiatedParameterData(context, param));
             }
         }
 
-        public Compound(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-                ExpressionFormatter javaExpressionFormatter, CompoundType compoundType)
-                        throws ZserioExtensionException
+        public Compound(TemplateDataContext context, CompoundType compoundType) throws ZserioExtensionException
         {
             instantiatedParameters = new ArrayList<InstantiatedParameterData>();
-            parameters = new CompoundParameterTemplateData(javaNativeMapper, withRangeCheckCode, compoundType,
-                    javaExpressionFormatter);
+            parameters = new CompoundParameterTemplateData(context, compoundType);
         }
 
         public Iterable<InstantiatedParameterData> getInstantiatedParameters()
@@ -448,18 +443,20 @@ public final class CompoundFieldTemplateData
 
         public static class InstantiatedParameterData
         {
-            public InstantiatedParameterData(JavaNativeMapper javaNativeMapper,
-                    ExpressionFormatter javaExpressionFormatter,
-                    ExpressionFormatter javaLambdaExpressionFormatter,
+            public InstantiatedParameterData(TemplateDataContext context,
                     InstantiatedParameter instantiatedParameter) throws ZserioExtensionException
             {
                 final TypeReference parameterTypeReference =
                         instantiatedParameter.getParameter().getTypeReference();
+                final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
                 final JavaNativeType nativeParameterType =
                         javaNativeMapper.getJavaType(parameterTypeReference);
                 typeInfo = new NativeTypeInfoTemplateData(nativeParameterType, parameterTypeReference);
+                final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
                 expression = javaExpressionFormatter.formatGetter(
                         instantiatedParameter.getArgumentExpression());
+                final ExpressionFormatter javaLambdaExpressionFormatter =
+                        context.getJavaLambdaExpressionFormatter();
                 lambdaExpression = javaLambdaExpressionFormatter.formatGetter(
                         instantiatedParameter.getArgumentExpression());
             }
@@ -542,10 +539,8 @@ public final class CompoundFieldTemplateData
                 javaLambdaExpressionFormatter);
     }
 
-    private static Array createArray(JavaNativeType nativeType, TypeInstantiation typeInstantiation,
-            CompoundType parentType, JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-            ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter)
-                    throws ZserioExtensionException
+    private static Array createArray(TemplateDataContext context, JavaNativeType nativeType,
+            TypeInstantiation typeInstantiation, CompoundType parentType) throws ZserioExtensionException
     {
         if (!(nativeType instanceof NativeArrayType))
             return null;
@@ -557,23 +552,20 @@ public final class CompoundFieldTemplateData
                     nativeType.getClass().getName() + "'!");
         }
 
-        return new Array((NativeArrayType)nativeType, (ArrayInstantiation)typeInstantiation, parentType,
-                javaNativeMapper, withRangeCheckCode, javaExpressionFormatter, javaLambdaExpressionFormatter);
+        return new Array(context, (NativeArrayType)nativeType,
+                (ArrayInstantiation)typeInstantiation, parentType);
     }
 
-    private static Compound createCompound(JavaNativeMapper javaNativeMapper, boolean withRangeCheckCode,
-            ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter,
-            TypeInstantiation typeInstantiation) throws ZserioExtensionException
+    private static Compound createCompound(TemplateDataContext context, TypeInstantiation typeInstantiation)
+            throws ZserioExtensionException
     {
         if (typeInstantiation instanceof ParameterizedTypeInstantiation)
         {
-            return new Compound(javaNativeMapper, withRangeCheckCode, javaExpressionFormatter,
-                    javaLambdaExpressionFormatter, (ParameterizedTypeInstantiation)typeInstantiation);
+            return new Compound(context, (ParameterizedTypeInstantiation)typeInstantiation);
         }
         else if (typeInstantiation.getBaseType() instanceof CompoundType)
         {
-            return new Compound(javaNativeMapper, withRangeCheckCode, javaExpressionFormatter,
-                    (CompoundType)typeInstantiation.getBaseType());
+            return new Compound(context, (CompoundType)typeInstantiation.getBaseType());
         }
         else
         {

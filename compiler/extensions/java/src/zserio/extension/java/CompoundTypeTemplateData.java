@@ -5,7 +5,6 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.Field;
-import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -18,26 +17,16 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     {
         super(context, compoundType);
 
-        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
-        final boolean withRangeCheckCode = context.getWithRangeCheckCode();
-        final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
-        final ExpressionFormatter javaLambdaExpressionFormatter = context.getJavaLambdaExpressionFormatter();
-
-        compoundParametersData = new CompoundParameterTemplateData(javaNativeMapper, withRangeCheckCode,
-                compoundType, javaExpressionFormatter);
+        compoundParametersData = new CompoundParameterTemplateData(context, compoundType);
         compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData);
-        compoundFunctionsData = new CompoundFunctionTemplateData(javaNativeMapper, compoundType,
-                javaExpressionFormatter, javaLambdaExpressionFormatter);
+        compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType);
 
         hasFieldWithOffset = compoundType.hasFieldWithOffset();
 
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
         for (Field fieldType : fieldTypeList)
-        {
-            fieldList.add(new CompoundFieldTemplateData(javaNativeMapper, withRangeCheckCode, compoundType,
-                    fieldType, javaExpressionFormatter, javaLambdaExpressionFormatter));
-        }
+            fieldList.add(new CompoundFieldTemplateData(context, compoundType, fieldType));
 
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType);
     }

@@ -34,8 +34,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
         underlyingTypeInfo = new NativeTypeInfoTemplateData(nativeIntegralType, bitmaskTypeInstantiation);
         bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, javaExpressionFormatter,
                 javaLambdaExpressionFormatter);
-        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(bitmaskTypeInstantiation,
-                javaExpressionFormatter, javaNativeMapper);
+        runtimeFunction = JavaRuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation);
 
         final BigInteger lowerBound = getLowerBound(bitmaskTypeInstantiation);
         this.lowerBound = lowerBound.equals(nativeIntegralType.getLowerBound()) ? null :

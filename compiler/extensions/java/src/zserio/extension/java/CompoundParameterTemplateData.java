@@ -6,7 +6,6 @@ import java.util.List;
 import zserio.ast.CompoundType;
 import zserio.ast.Parameter;
 import zserio.ast.TypeReference;
-import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.java.types.JavaNativeType;
 
@@ -15,12 +14,12 @@ import zserio.extension.java.types.JavaNativeType;
  */
 public final class CompoundParameterTemplateData
 {
-    public CompoundParameterTemplateData(JavaNativeMapper javaNativeMapper,
-            boolean withRangeCheckCode, CompoundType compoundType,
-            ExpressionFormatter javaExpressionFormatter) throws ZserioExtensionException
+    public CompoundParameterTemplateData(TemplateDataContext context, CompoundType compoundType)
+            throws ZserioExtensionException
     {
         compoundName = compoundType.getName();
 
+        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
         for (Parameter compoundParameterType : compoundParameterTypeList)

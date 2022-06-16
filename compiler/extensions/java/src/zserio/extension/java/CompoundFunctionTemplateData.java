@@ -15,17 +15,13 @@ import zserio.extension.java.types.JavaNativeType;
  */
 public final class CompoundFunctionTemplateData
 {
-    public CompoundFunctionTemplateData(JavaNativeMapper javaNativeMapper, CompoundType compoundType,
-            ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter)
-                    throws ZserioExtensionException
+    public CompoundFunctionTemplateData(TemplateDataContext context, CompoundType compoundType)
+            throws ZserioExtensionException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<Function> functionList = compoundType.getFunctions();
         for (Function compoundFunction : functionList)
-        {
-            compoundFunctionList.add(new CompoundFunction(javaNativeMapper, compoundFunction,
-                    javaExpressionFormatter, javaLambdaExpressionFormatter));
-        }
+            compoundFunctionList.add(new CompoundFunction(context, compoundFunction));
     }
 
     public Iterable<CompoundFunction> getList()
@@ -35,16 +31,18 @@ public final class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(JavaNativeMapper javaNativeMapper, Function function,
-                ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaLambdaExpressionFormatter)
-                        throws ZserioExtensionException
+        public CompoundFunction(TemplateDataContext context, Function function) throws ZserioExtensionException
         {
             final TypeReference returnTypeReference = function.getReturnTypeReference();
+            final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(returnTypeReference);
             returnTypeInfo = new NativeTypeInfoTemplateData(nativeType, returnTypeReference);
             schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);
+            final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
             resultExpression = javaExpressionFormatter.formatGetter(function.getResultExpression());
+            final ExpressionFormatter javaLambdaExpressionFormatter =
+                    context.getJavaLambdaExpressionFormatter();
             lambdaResultExpression = javaLambdaExpressionFormatter.formatGetter(function.getResultExpression());
         }
 
