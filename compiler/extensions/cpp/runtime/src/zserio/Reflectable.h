@@ -1429,7 +1429,7 @@ public:
     using Base::operator[];
 
     EnumReflectableConstArray(const ALLOC& allocator, const RAW_ARRAY& rawArray) :
-            Base(enumTypeInfo<ElementType>(), allocator), m_rawArray(rawArray)
+            Base(enumTypeInfo<ElementType, ALLOC>(), allocator), m_rawArray(rawArray)
     {}
 
     virtual size_t size() const override
@@ -1461,7 +1461,7 @@ private:
 
 public:
     EnumReflectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
-            Base(enumTypeInfo<ElementType>(), allocator), m_rawArray(rawArray)
+            Base(enumTypeInfo<ElementType, ALLOC>(), allocator), m_rawArray(rawArray)
     {}
 
     virtual size_t size() const override

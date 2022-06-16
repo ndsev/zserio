@@ -4,7 +4,7 @@
                 <#if typeInfo.typeInfoGetter.arg??>${typeInfo.typeInfoGetter.arg}</#if>)<#t>
     <#else>
         <#if typeInfo.isEnum>
-        ::zserio::enumTypeInfo<${typeInfo.typeFullName}>()<#t>
+        ::zserio::enumTypeInfo<${typeInfo.typeFullName}, allocator_type>()<#t>
         <#else>
         ${typeInfo.typeFullName}::typeInfo()<#t>
         </#if>
