@@ -76,6 +76,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/IWalkObserver.h
     zserio/JsonEncoder.cpp
     zserio/JsonEncoder.h
+    zserio/JsonDecoder.h
     zserio/JsonWriter.h
     zserio/OptionalHolder.h
     zserio/PackingContext.h

@@ -43,6 +43,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/HeapOptionalHolderTest.cpp
     zserio/InplaceOptionalHolderTest.cpp
     zserio/JsonEncoderTest.cpp
+    zserio/JsonDecoderTest.cpp
     zserio/JsonWriterTest.cpp
     zserio/FileUtilTest.cpp
     zserio/MemoryResourceTest.cpp

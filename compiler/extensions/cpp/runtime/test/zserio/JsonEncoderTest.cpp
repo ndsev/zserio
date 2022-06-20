@@ -159,7 +159,6 @@ TEST(JsonEncoderTest, encodeString)
     JsonEncoder::encodeString(os, "\t");
     ASSERT_EQ("\"\\t\"", os.str());
 
-
     os.str("");
     JsonEncoder::encodeString(os, "\n\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\"\'Hello World2");
     ASSERT_EQ("\"\\n\\t%^@(*aAzZ01234569$%^!?<>[]](){}-=+~:;/|\\\\\\\"'Hello World2\"", os.str());
