@@ -212,17 +212,17 @@ class JsonParserTest(unittest.TestCase):
         def report(self):
             return self._report
 
-        def begin_array(self):
-            self._report.append("begin_array")
-
-        def end_array(self):
-            self._report.append("end_array")
-
         def begin_object(self):
             self._report.append("begin_object")
 
         def end_object(self):
             self._report.append("end_object")
+
+        def begin_array(self):
+            self._report.append("begin_array")
+
+        def end_array(self):
+            self._report.append("end_array")
 
         def visit_key(self, key):
             self._report.append(f"visit_key: {key}")
@@ -250,7 +250,7 @@ class JsonParserTest(unittest.TestCase):
         tokenizer = JsonParser.Tokenizer(text_io)
         token = tokenizer.next()
         tokens = []
-        while token not in [JsonParser.Token.EOF, JsonParser.Token.UNKNOWN]:
+        while token not in [JsonParser.Token.END_OF_FILE, JsonParser.Token.UNKNOWN]:
             tokens.append((token, tokenizer.get_value()))
             token = tokenizer.next()
 
@@ -285,11 +285,35 @@ class JsonParserTest(unittest.TestCase):
         self.assertEqual(["visit_value: text"], observer.report)
 
     def test_two_strings(self):
-        text_io = io.StringIO("\"text\"\"text\"")
+        text_io = io.StringIO("\"text\"\"second\"")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
         self.assertFalse(json_parser.parse())
         self.assertEqual(["visit_value: text"], observer.report)
+        self.assertTrue(json_parser.parse())
+        self.assertEqual(["visit_value: text", "visit_value: second"], observer.report)
+
+    def test_parse(self):
+        text_io = io.StringIO("{\"array\":\n[\n{\"key1\":\n10, \"key2\":\n\"text\"}, {}]}")
+        observer = JsonParserTest.DummyObserver()
+        json_parser = JsonParser(text_io, observer)
+        self.assertTrue(json_parser.parse())
+
+        self.assertEqual([
+            "begin_object",
+            "visit_key: array",
+            "begin_array",
+            "begin_object",
+            "visit_key: key1",
+            "visit_value: 10",
+            "visit_key: key2",
+            "visit_value: text",
+            "end_object",
+            "begin_object",
+            "end_object",
+            "end_array",
+            "end_object"
+        ], observer.report)
 
     def test_unexpected_object(self):
         text_io = io.StringIO("{\n\n{\n\n")
@@ -301,6 +325,17 @@ class JsonParserTest(unittest.TestCase):
         self.assertTrue(str(error.exception).startswith("JsonParser line 3:"), error.exception)
 
         self.assertEqual(["begin_object"], observer.report)
+
+    def test_unexpected_object_after_item_separator(self):
+        text_io = io.StringIO("{\n  \"key\": 10,\n  {\n")
+        observer = JsonParserTest.DummyObserver()
+        json_parser = JsonParser(text_io, observer)
+        with self.assertRaises(PythonRuntimeException) as error:
+            json_parser.parse()
+
+        self.assertTrue(str(error.exception).startswith("JsonParser line 3:"), error.exception)
+
+        self.assertEqual(["begin_object", "visit_key: key", "visit_value: 10"], observer.report)
 
     def test_missing_object_item_separator(self):
         text_io = io.StringIO("{\n\"item1\":\"text\"\n\"item2\":\"text\"\n}")
@@ -338,7 +373,7 @@ class JsonParserTest(unittest.TestCase):
 
         self.assertEqual(["begin_object", "visit_key: item"], observer.report)
 
-    def test_missing_array_item_separator(self):
+    def test_missing_array_element_separator(self):
         text_io = io.StringIO("{\n\"array\":\n[10\n20\n]}")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
@@ -364,25 +399,3 @@ class JsonParserTest(unittest.TestCase):
         self.assertTrue(str(error.exception).startswith("JsonParser line 1:"), error.exception)
 
         self.assertEqual([], observer.report)
-
-    def test_parse(self):
-        text_io = io.StringIO("{\"array\":\n[\n{\"key1\":\n10, \"key2\":\n\"text\"}, {}]}")
-        observer = JsonParserTest.DummyObserver()
-        json_parser = JsonParser(text_io, observer)
-        json_parser.parse()
-
-        self.assertEqual([
-            "begin_object",
-            "visit_key: array",
-            "begin_array",
-            "begin_object",
-            "visit_key: key1",
-            "visit_value: 10",
-            "visit_key: key2",
-            "visit_value: text",
-            "end_object",
-            "begin_object",
-            "end_object",
-            "end_array",
-            "end_object"
-        ], observer.report)

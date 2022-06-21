@@ -276,13 +276,13 @@ class JsonParser:
         :raises JsonParserException: When parsing fails.
         """
 
-        if self._tokenizer.get_token() == JsonParser.Token.BOF:
-            if self._tokenizer.next() == JsonParser.Token.EOF:
+        if self._tokenizer.get_token() == JsonParser.Token.BEGIN_OF_FILE:
+            if self._tokenizer.next() == JsonParser.Token.END_OF_FILE:
                 return True
 
         self._parse_element()
 
-        return self._tokenizer.get_token() == JsonParser.Token.EOF
+        return self._tokenizer.get_token() == JsonParser.Token.END_OF_FILE
 
     def get_line(self) -> int:
         """
@@ -293,14 +293,26 @@ class JsonParser:
 
         return self._tokenizer.get_line()
 
+    def _parse_element(self) -> None:
+        token = self._tokenizer.get_token()
+        if token == JsonParser.Token.BEGIN_ARRAY:
+            self._parse_array()
+        elif token == JsonParser.Token.BEGIN_OBJECT:
+            self._parse_object()
+        elif token == JsonParser.Token.VALUE:
+            self._observer.visit_value(self._tokenizer.get_value())
+            self._tokenizer.next()
+        else:
+            self._raise_unexpected_token(JsonParser.ELEMENT_TOKENS)
+
     def _parse_object(self) -> None:
-        self._tokenizer.consume(JsonParser.Token.BEGIN_OBJECT)
+        self._consume_token(JsonParser.Token.BEGIN_OBJECT)
         self._observer.begin_object()
 
         if self._tokenizer.get_token() == JsonParser.Token.VALUE:
             self._parse_members()
 
-        self._tokenizer.consume(JsonParser.Token.END_OBJECT)
+        self._consume_token(JsonParser.Token.END_OBJECT)
         self._observer.end_object()
 
     def _parse_members(self) -> None:
@@ -310,38 +322,25 @@ class JsonParser:
             self._parse_member()
 
     def _parse_member(self) -> None:
-        key = self._tokenizer.consume(JsonParser.Token.VALUE)
+        self._check_token(JsonParser.Token.VALUE)
+        key = self._tokenizer.get_value()
         if not isinstance(key, str):
             raise JsonParserException(f"JsonParser line {self.get_line()}: Key must be a string value!")
         self._observer.visit_key(key)
+        self._tokenizer.next()
 
-        self._tokenizer.consume(JsonParser.Token.KEY_SEPARATOR)
+        self._consume_token(JsonParser.Token.KEY_SEPARATOR)
 
         self._parse_element()
 
-    def _parse_element(self) -> None:
-        token = self._tokenizer.get_token()
-        if token == JsonParser.Token.BEGIN_ARRAY:
-            self._parse_array()
-            return
-        elif token == JsonParser.Token.BEGIN_OBJECT:
-            self._parse_object()
-            return
-        elif token == JsonParser.Token.VALUE:
-            self._observer.visit_value(self._tokenizer.get_value())
-            self._tokenizer.next()
-            return
-
-        self._tokenizer.unexpected(JsonParser.ELEMENT_TOKENS)
-
     def _parse_array(self) -> None:
-        self._tokenizer.consume(JsonParser.Token.BEGIN_ARRAY)
+        self._consume_token(JsonParser.Token.BEGIN_ARRAY)
         self._observer.begin_array()
 
         if self._tokenizer.get_token() in JsonParser.ELEMENT_TOKENS:
             self._parse_elements()
 
-        self._tokenizer.consume(JsonParser.Token.END_ARRAY)
+        self._consume_token(JsonParser.Token.END_ARRAY)
         self._observer.end_array()
 
     def _parse_elements(self) -> None:
@@ -350,14 +349,33 @@ class JsonParser:
             self._tokenizer.next()
             self._parse_element()
 
+    def _check_token(self, token: 'JsonParser.Token') -> None:
+        if self._tokenizer.get_token() != token:
+            self._raise_unexpected_token([token])
+
+    def _consume_token(self, token: 'JsonParser.Token') -> None:
+        self._check_token(token)
+        self._tokenizer.next()
+
+    def _raise_unexpected_token(self, expecting: typing.List['JsonParser.Token']) -> None:
+        msg = f"JsonParser line {self.get_line()}: Unexpected token: {self._tokenizer.get_token()}"
+        if self._tokenizer.get_value() is not None:
+            msg += f" ('{self._tokenizer.get_value()}')"
+        if len(expecting) == 1:
+            msg += f", expecting {expecting[0]}!"
+        else:
+            msg += ", expecting one of [" + ", ".join([str(x) for x in expecting]) + "]!"
+
+        raise JsonParserException(msg)
+
     class Token(enum.Enum):
         """
         JsonParser tokens definition.
         """
 
         UNKNOWN = -1
-        BOF = enum.auto()
-        EOF = enum.auto()
+        BEGIN_OF_FILE = enum.auto()
+        END_OF_FILE = enum.auto()
         BEGIN_OBJECT = enum.auto()
         END_OBJECT = enum.auto()
         BEGIN_ARRAY = enum.auto()
@@ -383,7 +401,7 @@ class JsonParser:
             self._content = self._io.readline(JsonParser.Tokenizer.MAX_LINE_LEN)
             self._line_number = 1
             self._pos = 0
-            self._token = JsonParser.Token.BOF
+            self._token = JsonParser.Token.BEGIN_OF_FILE
             self._value: typing.Any = None
 
         def next(self) -> 'JsonParser.Token':
@@ -395,55 +413,20 @@ class JsonParser:
             """
 
             current_line_number = self._line_number
-            while True:
-                if self._decode_next():
-                    return self._token
-                else:
-                    new_content = self._io.readline(JsonParser.Tokenizer.MAX_LINE_LEN)
-                    self._line_number += 1
-                    if not new_content:
-                        if self._token == JsonParser.Token.EOF:
-                            return self._token
-                        raise JsonParserException(f"JsonParser line {current_line_number}: Unknown token: "
-                                                     f"'{self._value}' ({self._token})")
+            while not self._decode_next():
+                new_content = self._io.readline(JsonParser.Tokenizer.MAX_LINE_LEN)
+                self._line_number += 1
+                if not new_content:
+                    if self._token == JsonParser.Token.END_OF_FILE:
+                        return self._token
+                    raise JsonParserException(f"JsonParser line {current_line_number}: Unknown token: "
+                                                    f"'{self._value}' ({self._token})!")
 
-                    self._content = self._content[self._pos:]
-                    self._content += new_content
-                    self._pos = 0
+                self._content = self._content[self._pos:]
+                self._content += new_content
+                self._pos = 0
 
-        def consume(self, token: 'JsonParser.Token') -> typing.Any:
-            """
-            Consumes requested token and returns it's value.
-
-            :return: Value of the consumed token.
-            :raises JsonParserException: When the required token is not present.
-            """
-
-            if self._token != token:
-                self.unexpected([token])
-
-            value = self._value
-
-            self.next()
-
-            return value
-
-        def unexpected(self, expecting: typing.List['JsonParser.Token']) -> None:
-            """
-            Reports current token as unexpected.
-
-            :raises JsonParserException: Always.
-            """
-
-            msg = f"JsonParser line {self._line_number}: Unexpected token: {self._token}"
-            if self._value is not None:
-                msg += f" ('{self._value}')"
-            if len(expecting) == 1:
-                msg += f", expecting {expecting[0]}!"
-            else:
-                msg += ", expecting one of [" + ", ".join([str(x) for x in expecting]) + "]!"
-
-            raise JsonParserException(msg)
+            return self._token
 
         def get_token(self) -> 'JsonParser.Token':
             """
@@ -471,14 +454,14 @@ class JsonParser:
 
         def _decode_next(self) -> bool:
             if self._pos >= len(self._content):
-                self._token = JsonParser.Token.EOF
+                self._token = JsonParser.Token.END_OF_FILE
                 self._value = None
                 return False
             ws_match = JsonParser.Tokenizer.WHITESPACE.match(self._content, self._pos)
             if ws_match:
                 self._pos = ws_match.end()
             if self._pos >= len(self._content):
-                self._token = JsonParser.Token.EOF
+                self._token = JsonParser.Token.END_OF_FILE
                 self._value = None
                 return False
 
@@ -502,7 +485,7 @@ class JsonParser:
                     return True
                 except json.JSONDecodeError:
                     self._token = JsonParser.Token.UNKNOWN
-                    self._value = self._content[self._pos]
+                    self._value = next_char
                     return False
 
             self._pos += 1

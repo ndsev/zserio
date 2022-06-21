@@ -202,7 +202,7 @@ private:
     template <typename T>
     AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value) const;
 
-    const char* state()
+    const char* stateName()
     {
         switch (m_state)
         {
@@ -210,7 +210,7 @@ private:
             return "BEFORE_ROOT";
         case State::IN_COMPOUND:
             return "IN_COMPOUND";
-        default: // State::IN_ARRAY:
+        default: // State::IN_ARRAY
             return "IN_ARRAY";
         }
     }
@@ -235,7 +235,7 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginRoot()
 {
     if (m_state != State::BEFORE_ROOT)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin root in state '") + state() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin root in state '") + stateName() + "'!";
 
     m_valueStack.push_back(m_typeInfo.createInstance(m_allocator));
     m_state = State::IN_COMPOUND;
@@ -245,7 +245,7 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> BasicZserioTreeCreator<ALLOC>::endRoot()
 {
     if (m_state != State::IN_COMPOUND || m_valueStack.size() != 1)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end root in state '") + state() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end root in state '") + stateName() + "'!";
 
     m_state = State::BEFORE_ROOT;
     auto value = m_valueStack.back();
@@ -257,7 +257,7 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginArray(const std::string& name)
 {
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin array in state '") + state() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin array in state '") + stateName() + "'!";
 
     const auto& parentTypeInfo = getTypeInfo();
     const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
@@ -282,7 +282,7 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::endArray()
 {
     if (m_state != State::IN_ARRAY)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end array in state '") + state() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end array in state '") + stateName() + "'!";
 
     m_fieldInfoStack.pop_back();
     m_valueStack.pop_back();
@@ -293,7 +293,7 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginCompound(const std::string& name)
 {
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound in state '") + state() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound in state '") + stateName() + "'!";
 
     const auto& parentTypeInfo = getTypeInfo();
     const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
@@ -322,7 +322,7 @@ void BasicZserioTreeCreator<ALLOC>::endCompound()
 {
     if (m_state != State::IN_COMPOUND || m_fieldInfoStack.empty())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound in state '") + state() +
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound in state '") + stateName() +
                 "'" + (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "!'");
     }
 
@@ -341,7 +341,7 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const std::string& name, T&& value)
     // TODO[Mi-L@]: How to set null value?!
 
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot set value in state '") + state() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot set value in state '") + stateName() + "'!";
 
     const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
     if (fieldInfo.isArray)
@@ -360,7 +360,7 @@ void BasicZserioTreeCreator<ALLOC>::beginCompoundElement()
     if (m_state != State::IN_ARRAY)
     {
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound element in state '") +
-                state() + "'!";
+                stateName() + "'!";
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -382,7 +382,7 @@ void BasicZserioTreeCreator<ALLOC>::endCompoundElement()
     if (m_state != State::IN_COMPOUND || m_fieldInfoStack.empty())
     {
         throw CppRuntimeException("ZserioTreeCreator: Cannot end compound element in state '") +
-                state() + (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "'!");
+                stateName() + (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "'!");
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -398,7 +398,7 @@ template <typename T>
 void BasicZserioTreeCreator<ALLOC>::addValueElement(T&& value)
 {
     if (m_state != State::IN_ARRAY)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") + state() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") + stateName() + "'!";
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
     m_valueStack.back()->append(makeAnyValue(fieldInfo.typeInfo, std::forward<T>(value)));

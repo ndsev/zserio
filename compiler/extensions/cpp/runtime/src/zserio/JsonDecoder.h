@@ -1,5 +1,5 @@
-#ifndef JSON_DECODER_H_INC
-#define JSON_DECODER_H_INC
+#ifndef ZSERIO_JSON_DECODER_H_INC
+#define ZSERIO_JSON_DECODER_H_INC
 
 #include <utility>
 #include <cerrno>
@@ -57,7 +57,7 @@ private:
     AnyHolder<ALLOC> decodeNan(const char* input, size_t& numRead);
     AnyHolder<ALLOC> decodeInfinity(const char* input, size_t& numRead, bool isNegative=false);
     AnyHolder<ALLOC> decodeString(const char* input, size_t& numRead);
-    static const char* decodeUnicodeEscape(const char* input, string<ALLOC>& value);
+    static bool decodeUnicodeEscape(const char* input, string<ALLOC>& value);
     static char decodeHex(char ch);
     AnyHolder<ALLOC> decodeSigned(const char* input, size_t& numRead);
     AnyHolder<ALLOC> decodeUnsigned(const char* input, size_t& numRead);
@@ -195,22 +195,21 @@ AnyHolder<ALLOC> BasicJsonDecoder<ALLOC>::decodeString(const char* input, size_t
 }
 
 template <typename ALLOC>
-const char* BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(const char* input, string<ALLOC>& value)
+bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(const char* input, string<ALLOC>& value)
 {
-    const char* pInput = input;
-    if (*pInput++ != '0' || *pInput++ != '0')
-        return input;
+    if (*input++ != '0' || *input++ != '0')
+        return false;
 
-    char ch1 = decodeHex(*pInput++);
+    char ch1 = decodeHex(*input++);
     if (ch1 == - 1)
-        return input;
+        return false;
 
-    char ch2 = decodeHex(*pInput++);
+    char ch2 = decodeHex(*input++);
     if (ch2 == -1)
-        return input;
+        return false;
 
     value.push_back(static_cast<char>(ch1 << 4) | ch2);
-    return pInput;
+    return true;
 }
 
 template <typename ALLOC>
@@ -236,7 +235,7 @@ AnyHolder<ALLOC> BasicJsonDecoder<ALLOC>::decodeSigned(const char* input, size_t
     numRead = static_cast<size_t>(pEnd - input);
     if (numRead == 0)
         return AnyHolder<ALLOC>(get_allocator());
-    if (*pEnd == '.')
+    if (*pEnd == '.' || *pEnd == 'e' || *pEnd == 'E')
         return decodeDouble(input, numRead);
 
     return AnyHolder<ALLOC>(value, get_allocator());
@@ -274,4 +273,4 @@ using JsonDecoder = BasicJsonDecoder<>;
 
 } // namespace zserio
 
-#endif // JSON_DECODER_H_INC
+#endif // ZSERIO_JSON_DECODER_H_INC
