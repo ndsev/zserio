@@ -159,6 +159,7 @@ class ZserioTreeCreator:
         """
         Gets type info of the expected member.
 
+        :param name: Member name.
         :returns: Type info of the expected member.
         :raises PythonRuntimeException: When the creator is not in a compound element.
         """
@@ -222,10 +223,10 @@ class ZserioTreeCreator:
             raise PythonRuntimeException("ZserioTreeCreator: Cannot add value element in state "
                                          f"'{self._state}'!")
 
-        member_info = self._member_info_stack[-1]
-        if value is not None and not isinstance(value, member_info.type_info.py_type):
+        element_type_info = self._member_info_stack[-1].type_info
+        if value is not None and not isinstance(value, element_type_info.py_type):
             raise PythonRuntimeException(f"ZserioTreeCreator: Unexpected value type '{type(value)}', expecting "
-                                         f"{member_info.type_info.py_type}")
+                                         f"{element_type_info.py_type}")
 
         self._value_stack[-1].append(value)
 

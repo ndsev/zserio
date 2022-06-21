@@ -7,7 +7,6 @@ import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-import java.util.function.ToLongBiFunction;
 
 /**
  * Type information for compound type field.
