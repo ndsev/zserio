@@ -415,13 +415,12 @@ class JsonParser:
             current_line_number = self._line_number
             while not self._decode_next():
                 new_content = self._io.readline(JsonParser.Tokenizer.MAX_LINE_LEN)
-                self._line_number += 1
                 if not new_content:
                     if self._token == JsonParser.Token.END_OF_FILE:
                         return self._token
                     raise JsonParserException(f"JsonParser line {current_line_number}: Unknown token: "
                                                     f"'{self._value}' ({self._token})!")
-
+                self._line_number += 1
                 self._content = self._content[self._pos:]
                 self._content += new_content
                 self._pos = 0

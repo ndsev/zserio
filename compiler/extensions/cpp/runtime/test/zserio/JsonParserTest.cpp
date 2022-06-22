@@ -160,7 +160,7 @@ TEST(JsonParserTest, unexpectedObject)
     }, CppRuntimeException);
 
     std::vector<std::string> expectedReport = {{
-        {"beginObject"}
+        "beginObject"
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }
@@ -233,7 +233,7 @@ TEST(JsonParserTest, wrongKeyType)
     }, CppRuntimeException);
 
     std::vector<std::string> expectedReport = {{
-        {"beginObject"}
+        "beginObject"
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
 }

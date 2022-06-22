@@ -65,9 +65,7 @@ JsonToken BasicJsonTokenizer<ALLOC>::next()
     while (!decodeNext())
     {
         string<ALLOC> newContent(m_content.get_allocator());
-        const bool ok = std::getline(m_in, newContent);
-        m_lineNumber += 1;
-        if (!ok)
+        if (!std::getline(m_in, newContent))
         {
             if (m_token == JsonToken::END_OF_FILE)
                 return m_token;
@@ -75,6 +73,7 @@ JsonToken BasicJsonTokenizer<ALLOC>::next()
                     ": Unknown token: '" + m_value.template get<char>() +
                     "' (" + jsonTokenName(m_token) + ")!";
         }
+        m_lineNumber += 1;
         m_content = m_content.substr(m_pos) + newContent;
         m_pos = 0;
     }
