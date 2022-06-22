@@ -2,8 +2,7 @@ import io
 import unittest
 
 from zserio.bitbuffer import BitBuffer
-from zserio.exception import PythonRuntimeException
-from zserio.json import JsonWriter, JsonEncoder, JsonParser
+from zserio.json import JsonWriter, JsonEncoder, JsonParser, JsonParserException
 from zserio.typeinfo import TypeInfo, MemberInfo, ItemInfo, TypeAttribute, MemberAttribute
 from zserio.limits import INT64_MIN, UINT64_MAX
 
@@ -319,7 +318,7 @@ class JsonParserTest(unittest.TestCase):
         text_io = io.StringIO("{\n\n{\n\n")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 3:"), error.exception)
@@ -330,7 +329,7 @@ class JsonParserTest(unittest.TestCase):
         text_io = io.StringIO("{\n  \"key\": 10,\n  {\n")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 3:"), error.exception)
@@ -341,7 +340,7 @@ class JsonParserTest(unittest.TestCase):
         text_io = io.StringIO("{\n\"item1\":\"text\"\n\"item2\":\"text\"\n}")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 3:"), error.exception)
@@ -355,7 +354,7 @@ class JsonParserTest(unittest.TestCase):
         text_io = io.StringIO("{\n10:\"text\"\n}")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 2:"), error.exception)
@@ -366,7 +365,7 @@ class JsonParserTest(unittest.TestCase):
         text_io = io.StringIO("{\n\"item\":}")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 2:"), error.exception)
@@ -377,7 +376,7 @@ class JsonParserTest(unittest.TestCase):
         text_io = io.StringIO("{\n\"array\":\n[10\n20\n]}")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 4:"), error.exception)
@@ -393,7 +392,7 @@ class JsonParserTest(unittest.TestCase):
         text_io = io.StringIO("\\\n")
         observer = JsonParserTest.DummyObserver()
         json_parser = JsonParser(text_io, observer)
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_parser.parse()
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 1:"), error.exception)

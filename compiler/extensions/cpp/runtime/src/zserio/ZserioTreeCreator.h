@@ -128,7 +128,7 @@ public:
      *
      * \throw CppRuntimeException When the field doesn't exist or when the creator is not in a compound.
      */
-    void beginArray(const std::string& name);
+    void beginArray(const string<ALLOC>& name);
 
     /**
      * Finishes the array field.
@@ -144,7 +144,7 @@ public:
      *
      * \throw CppRuntimeException When the field doesn't exist or when the creator is not in a compound.
      */
-    void beginCompound(const std::string& name);
+    void beginCompound(const string<ALLOC>& name);
 
     /**
      * Finishes the compound.
@@ -162,7 +162,18 @@ public:
      * \throw CppRuntimeException When the field doesn't exist or when the creator is not in a compound.
      */
     template <typename T>
-    void setValue(const std::string& name, T&& value);
+    void setValue(const string<ALLOC>& name, T&& value);
+
+    /**
+     * Gets type info of the expected field.
+     *
+     * \param name Field name.
+     *
+     * \return Type info of the expected field.
+     *
+     * \throw CppRuntimeException When the creator is not in a compound.
+     */
+    const IBasicTypeInfo<ALLOC>& getFieldType(const string<ALLOC>& name) const;
 
     /**
      * Creates compound array element within the current array.
@@ -188,6 +199,15 @@ public:
     template <typename T>
     void addValueElement(T&& value);
 
+    /**
+     * Gets type info of the expected array element.
+     *
+     * \return Type info of the expected array element.
+     *
+     * \throw CppRuntimeException When the creator is not in an array.
+     */
+    const IBasicTypeInfo<ALLOC>& getElementType() const;
+
 private:
     enum class State : uint8_t
     {
@@ -202,7 +222,7 @@ private:
     template <typename T>
     AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value) const;
 
-    const char* stateName()
+    const char* stateName() const
     {
         switch (m_state)
         {
@@ -254,7 +274,7 @@ IBasicReflectablePtr<ALLOC> BasicZserioTreeCreator<ALLOC>::endRoot()
 }
 
 template <typename ALLOC>
-void BasicZserioTreeCreator<ALLOC>::beginArray(const std::string& name)
+void BasicZserioTreeCreator<ALLOC>::beginArray(const string<ALLOC>& name)
 {
     if (m_state != State::IN_COMPOUND)
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin array in state '") + stateName() + "'!";
@@ -290,7 +310,7 @@ void BasicZserioTreeCreator<ALLOC>::endArray()
 }
 
 template <typename ALLOC>
-void BasicZserioTreeCreator<ALLOC>::beginCompound(const std::string& name)
+void BasicZserioTreeCreator<ALLOC>::beginCompound(const string<ALLOC>& name)
 {
     if (m_state != State::IN_COMPOUND)
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound in state '") + stateName() + "'!";
@@ -336,7 +356,7 @@ void BasicZserioTreeCreator<ALLOC>::endCompound()
 
 template <typename ALLOC>
 template <typename T>
-void BasicZserioTreeCreator<ALLOC>::setValue(const std::string& name, T&& value)
+void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, T&& value)
 {
     // TODO[Mi-L@]: How to set null value?!
 
@@ -352,6 +372,15 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const std::string& name, T&& value)
 
     m_valueStack.back()->setField(fieldInfo.schemaName,
             makeAnyValue(fieldInfo.typeInfo, std::forward<T>(value)));
+}
+
+template <typename ALLOC>
+const IBasicTypeInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::getFieldType(const string<ALLOC>& name) const
+{
+    if (m_state != State::IN_COMPOUND)
+        throw CppRuntimeException("ZserioTreeCreator: Cannot get field type in state '") + stateName() + "'!";
+
+    return findFieldInfo(getTypeInfo(), name).typeInfo;
 }
 
 template <typename ALLOC>
@@ -398,10 +427,22 @@ template <typename T>
 void BasicZserioTreeCreator<ALLOC>::addValueElement(T&& value)
 {
     if (m_state != State::IN_ARRAY)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") + stateName() + "'!";
+    {
+        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") +
+                stateName() + "'!";
+    }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
     m_valueStack.back()->append(makeAnyValue(fieldInfo.typeInfo, std::forward<T>(value)));
+}
+
+template <typename ALLOC>
+const IBasicTypeInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::getElementType() const
+{
+    if (m_state != State::IN_ARRAY)
+        throw CppRuntimeException("ZserioTreeCreator: Cannot get element type in state '") + stateName() + "'!";
+
+    return m_fieldInfoStack.back().get().typeInfo;
 }
 
 template <typename ALLOC>

@@ -152,12 +152,12 @@ TEST(JsonParserTest, unexpectedObject)
         {
             jsonParser.parse();
         }
-        catch (const CppRuntimeException& e)
+        catch (const JsonParserException& e)
         {
             assertStartsWith("JsonParser line 3:", e.what());
             throw;
         }
-    }, CppRuntimeException);
+    }, JsonParserException);
 
     std::vector<std::string> expectedReport = {{
         "beginObject"
@@ -175,12 +175,12 @@ TEST(JsonParserTest, unexpectedObjectAfterItemSeparator)
         {
             jsonParser.parse();
         }
-        catch (const CppRuntimeException& e)
+        catch (const JsonParserException& e)
         {
             assertStartsWith("JsonParser line 3:", e.what());
             throw;
         }
-    }, CppRuntimeException);
+    }, JsonParserException);
 
     std::vector<std::string> expectedReport = {{
         {"beginObject"},
@@ -200,12 +200,12 @@ TEST(JsonParserTest, missingObjectItemSeparator)
         {
             jsonParser.parse();
         }
-        catch (const CppRuntimeException& e)
+        catch (const JsonParserException& e)
         {
             assertStartsWith("JsonParser line 3:", e.what());
             throw;
         }
-    }, CppRuntimeException);
+    }, JsonParserException);
 
     std::vector<std::string> expectedReport = {{
         {"beginObject"},
@@ -225,12 +225,12 @@ TEST(JsonParserTest, wrongKeyType)
         {
             jsonParser.parse();
         }
-        catch (const CppRuntimeException& e)
+        catch (const JsonParserException& e)
         {
             assertStartsWith("JsonParser line 2:", e.what());
             throw;
         }
-    }, CppRuntimeException);
+    }, JsonParserException);
 
     std::vector<std::string> expectedReport = {{
         "beginObject"
@@ -248,12 +248,12 @@ TEST(JsonParserTest, unexpectedElementToken)
         {
             jsonParser.parse();
         }
-        catch (const CppRuntimeException& e)
+        catch (const JsonParserException& e)
         {
             assertStartsWith("JsonParser line 2:", e.what());
             throw;
         }
-    }, CppRuntimeException);
+    }, JsonParserException);
 
     std::vector<std::string> expectedReport = {{
         {"beginObject"},
@@ -272,12 +272,12 @@ TEST(JsonParserTest, missingArrayElementSeparator)
         {
             jsonParser.parse();
         }
-        catch (const CppRuntimeException& e)
+        catch (const JsonParserException& e)
         {
             assertStartsWith("JsonParser line 4:", e.what());
             throw;
         }
-    }, CppRuntimeException);
+    }, JsonParserException);
 
     std::vector<std::string> expectedReport = {{
         {"beginObject"},
@@ -298,12 +298,12 @@ TEST(JsonParserTest, unknownToken)
         {
             jsonParser.parse();
         }
-        catch (const CppRuntimeException& e)
+        catch (const JsonParserException& e)
         {
             assertStartsWith("JsonParser line 1:", e.what());
             throw;
         }
-    }, CppRuntimeException);
+    }, JsonParserException);
 
     ASSERT_TRUE(observer.getReport().empty());
 }

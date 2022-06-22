@@ -161,7 +161,7 @@ class ZserioTreeCreator:
 
         :param name: Member name.
         :returns: Type info of the expected member.
-        :raises PythonRuntimeException: When the creator is not in a compound element.
+        :raises PythonRuntimeException: When the creator is not in a compound.
         """
 
         if self._state != ZserioTreeCreator._State.IN_COMPOUND:

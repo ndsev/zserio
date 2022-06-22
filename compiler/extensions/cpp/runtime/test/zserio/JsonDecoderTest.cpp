@@ -94,6 +94,12 @@ TEST_F(JsonDecoderTest, decodeDouble)
 
     checkDecoder("1e+20", 5, 1e+20);
     checkDecoder("1E+20", 5, 1E+20);
+    checkDecoder("1e-20", 5, 1e-20);
+    checkDecoder("1E-20", 5, 1E-20);
+    checkDecoder("-1e+20", 6, -1e+20);
+    checkDecoder("-1E+20", 6, -1E+20);
+    checkDecoder("-1e-20", 6, -1e-20);
+    checkDecoder("-1E-20", 6, -1E-20);
 }
 
 TEST_F(JsonDecoderTest, decodeString)

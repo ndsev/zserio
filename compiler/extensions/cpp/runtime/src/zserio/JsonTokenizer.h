@@ -5,6 +5,7 @@
 #include <istream>
 
 #include "zserio/AnyHolder.h"
+#include "zserio/CppRuntimeException.h"
 #include "zserio/JsonDecoder.h"
 #include "zserio/Types.h"
 
@@ -26,6 +27,12 @@ enum class JsonToken : int8_t
 };
 
 const char* jsonTokenName(JsonToken token);
+
+class JsonParserException : public detail::CppRuntimeExceptionHelper<JsonParserException>
+{
+public:
+    using BaseType::CppRuntimeExceptionHelper;
+};
 
 template <typename ALLOC = std::allocator<uint8_t>>
 class BasicJsonTokenizer
@@ -69,7 +76,7 @@ JsonToken BasicJsonTokenizer<ALLOC>::next()
         {
             if (m_token == JsonToken::END_OF_FILE)
                 return m_token;
-            throw CppRuntimeException("JsonParser line ") + currentLineNumber +
+            throw JsonParserException("JsonParser line ") + currentLineNumber +
                     ": Unknown token: '" + m_value.template get<char>() +
                     "' (" + jsonTokenName(m_token) + ")!";
         }

@@ -78,6 +78,7 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/JsonEncoder.h
     zserio/JsonDecoder.h
     zserio/JsonParser.h
+    zserio/JsonReader.h
     zserio/JsonTokenizer.cpp
     zserio/JsonTokenizer.h
     zserio/JsonWriter.h

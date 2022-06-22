@@ -45,6 +45,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/JsonEncoderTest.cpp
     zserio/JsonDecoderTest.cpp
     zserio/JsonParserTest.cpp
+    zserio/JsonReaderTest.cpp
     zserio/JsonTokenizerTest.cpp
     zserio/JsonWriterTest.cpp
     zserio/FileUtilTest.cpp

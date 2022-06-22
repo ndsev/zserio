@@ -129,7 +129,7 @@ void BasicJsonParser<ALLOC>::parseMember()
     checkToken(JsonToken::VALUE);
     const AnyHolder<ALLOC>& key = m_tokenizer.getValue();
     if (!key.template isType<string<ALLOC>>())
-        throw CppRuntimeException("JsonParser line ") + getLine() + ": Key must be a string value!";
+        throw JsonParserException("JsonParser line ") + getLine() + ": Key must be a string value!";
     m_observer.visitKey(key.template get<string<ALLOC>>());
     m_tokenizer.next();
 
@@ -218,7 +218,7 @@ void BasicJsonParser<ALLOC>::consumeToken(JsonToken token)
 template <typename ALLOC>
 void BasicJsonParser<ALLOC>::throwUnexpectedToken(Span<const JsonToken> expecting) const
 {
-    CppRuntimeException error("JsonParser line ");
+    JsonParserException error("JsonParser line ");
     error + getLine() + ": unexpected token: " + jsonTokenName(m_tokenizer.getToken());
     if (expecting.size() == 1)
     {
