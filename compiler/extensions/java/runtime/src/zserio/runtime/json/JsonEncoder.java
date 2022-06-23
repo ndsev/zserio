@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 /**
  * Converts zserio values to Json string representation.
  */
-public class JsonEncoder
+class JsonEncoder
 {
     /**
      * Encodes JSON null value to the output stream using the given writer.

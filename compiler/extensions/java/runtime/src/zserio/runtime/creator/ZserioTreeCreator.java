@@ -172,8 +172,8 @@ public class ZserioTreeCreator
             }
 
             final TypeInfo typeInfo = fieldInfo.getTypeInfo();
-            final Class<?> wrapperFieldClass = toBoxedClass(typeInfo.getJavaClass());
-            if (!wrapperFieldClass.isInstance(value))
+            final Class<?> boxedFieldClass = toBoxedClass(typeInfo.getJavaClass());
+            if (!boxedFieldClass.isInstance(value))
                 throw new ZserioError("ZserioTreeCreator: Unexpected value type '" + value.getClass() + "', " +
                         "expecting '" + typeInfo.getJavaClass() + "'!");
         }
@@ -256,8 +256,8 @@ public class ZserioTreeCreator
         if (value != null)
         {
             final TypeInfo elementTypeInfo = fieldInfoStack.peek().getTypeInfo();
-            final Class<?> wrappedElementClass = toBoxedClass(elementTypeInfo.getJavaClass());
-            if (!wrappedElementClass.isInstance(value))
+            final Class<?> boxedElementClass = toBoxedClass(elementTypeInfo.getJavaClass());
+            if (!boxedElementClass.isInstance(value))
             {
                 throw new ZserioError("ZserioTreeCreator: Unexpected value type '" + value.getClass() +
                         "', expecting '" + elementTypeInfo.getJavaClass() + "'!");
@@ -389,8 +389,8 @@ public class ZserioTreeCreator
 
     private static Class<?> toBoxedClass(Class<?> clazz)
     {
-        final Class<?> wrapperClazz = unboxedToBoxedClassMap.get(clazz);
-        return (wrapperClazz == null) ? clazz : wrapperClazz;
+        final Class<?> boxedClazz = unboxedToBoxedClassMap.get(clazz);
+        return (boxedClazz == null) ? clazz : boxedClazz;
     }
 
     private enum State
