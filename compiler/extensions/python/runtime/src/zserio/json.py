@@ -201,7 +201,7 @@ class JsonParserException(PythonRuntimeException):
 
 class JsonParser:
     """
-    Json Parse.
+    Json Parser.
 
     Parses the json on the fly and calls an observer.
     """
@@ -239,7 +239,7 @@ class JsonParser:
 
             raise NotImplementedError()
 
-        def visit_key(self, key) -> None:
+        def visit_key(self, key: str) -> None:
             """
             Called on a JSON key.
 
