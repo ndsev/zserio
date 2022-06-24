@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
-class JsonEncoderTest
+public class JsonEncoderTest
 {
     @Test
     public void encodeNull()

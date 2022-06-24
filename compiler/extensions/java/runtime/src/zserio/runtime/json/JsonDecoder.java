@@ -57,7 +57,7 @@ class JsonDecoder
     }
 
     /**
-     * Decoder result object.
+     * Decoder result value.
      */
     static class Result
     {
@@ -76,9 +76,9 @@ class JsonDecoder
          *
          * @return Decoded JSON value or null in case of failure.
          */
-        public Object getObject()
+        public Object getValue()
         {
-            return object;
+            return value;
         }
 
         /**
@@ -100,7 +100,7 @@ class JsonDecoder
 
         public static Result failure(int numReadChars)
         {
-            return new Result(false, numReadChars, 0);
+            return new Result(false, null, numReadChars);
         }
 
         public static Result success(Object object, int numReadChars)
@@ -108,22 +108,22 @@ class JsonDecoder
             return new Result(true, object, numReadChars);
         }
 
-        private Result(boolean success, Object object, int numReadChars)
+        private Result(boolean success, Object value, int numReadChars)
         {
             this.success = success;
-            this.object = object;
+            this.value = value;
             this.numReadChars = numReadChars;
         }
 
         private final boolean success;
-        private final Object object;
+        private final Object value;
         private final int numReadChars;
     }
 
     private static Result decodeLiteral(String content, int pos, String text, Object decodedObject)
     {
         final int textLength = text.length();
-        if (pos + textLength >= content.length())
+        if (pos + textLength > content.length())
             return Result.failure(content.length() - pos);
 
         final String subContent = content.substring(pos, pos + textLength);
@@ -131,48 +131,6 @@ class JsonDecoder
             return Result.success(decodedObject, textLength);
 
         return Result.failure(textLength);
-    }
-
-    private static Result decodeNumber(String content, int pos)
-    {
-        // find out the end of the number in the string
-        int endOfNumberPos = pos;
-        if (content.charAt(endOfNumberPos) == '-')
-            endOfNumberPos++;
-        boolean isDouble = false;
-        while (endOfNumberPos < content.length())
-        {
-            final char nextChar = content.charAt(endOfNumberPos);
-            if (Character.isDigit(nextChar))
-                continue;
-            if (isDouble == false && (nextChar == '.' || nextChar == 'e' || nextChar == 'E'))
-            {
-                isDouble = true;
-                continue;
-            }
-            break;
-        }
-
-        // decode the number from the substring
-        final int numberLength = endOfNumberPos - pos;
-        final String subContent = content.substring(pos, endOfNumberPos);
-        try
-        {
-            if (isDouble)
-            {
-                final Double doubleNumber = Double.parseDouble(subContent);
-                return Result.success(doubleNumber, numberLength);
-            }
-            else
-            {
-                final BigInteger integerNumber = new BigInteger(subContent);
-                return Result.success(integerNumber, numberLength);
-            }
-        }
-        catch (NumberFormatException excpt)
-        {
-            return Result.failure(numberLength);
-        }
     }
 
     private static Result decodeString(String content, int pos)
@@ -185,7 +143,7 @@ class JsonDecoder
             endOfStringPos++;
             if (nextChar == '\\')
             {
-                if (endOfStringPos + 1 >= content.length())
+                if (endOfStringPos >= content.length())
                     return Result.failure(endOfStringPos - pos);
 
                 final char nextNextChar = content.charAt(endOfStringPos);
@@ -213,7 +171,7 @@ class JsonDecoder
                     break;
                 case 'u': // unicode escape
                     final int unicodeEscapeLen = 4;
-                    if (endOfStringPos + unicodeEscapeLen >= content.length())
+                    if (endOfStringPos + unicodeEscapeLen > content.length())
                         return Result.failure(content.length() - pos);
                     final String subContent = content.substring(endOfStringPos,
                             endOfStringPos + unicodeEscapeLen);
@@ -236,5 +194,93 @@ class JsonDecoder
         }
 
         return Result.success(decodedString.toString(), endOfStringPos - pos);
+    }
+
+    private static Result decodeNumber(String content, int pos)
+    {
+        final ExtractNumberResult result = extractNumber(content, pos);
+        final String numberContent = result.getNumberContent();
+        final int numberLength = numberContent.length();
+        if (numberLength == 0)
+            return Result.failure(1);
+
+        try
+        {
+            if (result.isDouble())
+            {
+                final Double doubleNumber = Double.parseDouble(numberContent);
+                return Result.success(doubleNumber, numberLength);
+            }
+            else
+            {
+                final BigInteger integerNumber = new BigInteger(numberContent);
+                return Result.success(integerNumber, numberLength);
+            }
+        }
+        catch (NumberFormatException excpt)
+        {
+            return Result.failure(numberLength);
+        }
+    }
+
+    private static class ExtractNumberResult
+    {
+        public ExtractNumberResult(String numberContent, boolean isDouble)
+        {
+            this.numberContent = numberContent;
+            this.isDouble = isDouble;
+        }
+
+        public String getNumberContent()
+        {
+            return numberContent;
+        }
+
+        public boolean isDouble()
+        {
+            return isDouble;
+        }
+
+        private String numberContent;
+        private boolean isDouble;
+
+    }
+
+    private static ExtractNumberResult extractNumber(String content, int pos)
+    {
+        int endOfNumberPos = pos;
+        if (content.charAt(endOfNumberPos) == '-') // we already know that there is something after '-'
+            endOfNumberPos++;
+        boolean isDouble = false;
+        boolean acceptSign = false;
+        while (endOfNumberPos < content.length())
+        {
+            final char nextChar = content.charAt(endOfNumberPos);
+            if (acceptSign)
+            {
+                acceptSign = false;
+                if (nextChar == '+' || nextChar == '-')
+                {
+                    endOfNumberPos++;
+                    continue;
+                }
+            }
+            if (Character.isDigit(nextChar))
+            {
+                endOfNumberPos++;
+                continue;
+            }
+            if (isDouble == false && (nextChar == '.' || nextChar == 'e' || nextChar == 'E'))
+            {
+                endOfNumberPos++;
+                isDouble = true;
+                if (nextChar == 'e' || nextChar == 'E')
+                    acceptSign = true;
+                continue;
+            }
+            break;
+        }
+
+        return new ExtractNumberResult(content.substring(pos, endOfNumberPos), isDouble);
     }
 }

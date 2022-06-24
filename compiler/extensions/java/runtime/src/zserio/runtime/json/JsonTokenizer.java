@@ -163,7 +163,7 @@ class JsonTokenizer
             if (!result.success())
                 throw new ZserioError("JsonTokenizer:" + lineNumber + ":" + columnNumber + ": Unknown token!");
 
-            setToken(JsonToken.VALUE, result.getObject());
+            setToken(JsonToken.VALUE, result.getValue());
             setPosition(pos + numReadChars, columnNumber + numReadChars);
         }
 

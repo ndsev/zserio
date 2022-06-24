@@ -95,7 +95,7 @@ TEST(JsonParserTest, empty)
     ASSERT_EQ(0, observer.getReport().size());
 }
 
-TEST(JsonParserTest, str)
+TEST(JsonParserTest, oneString)
 {
     std::stringstream str("\"text\"");
     DummyObserver observer;
