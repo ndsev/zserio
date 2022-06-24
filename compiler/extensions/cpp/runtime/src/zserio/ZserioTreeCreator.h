@@ -5,6 +5,7 @@
 #include "zserio/ITypeInfo.h"
 #include "zserio/TypeInfoUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/Traits.h"
 #include "zserio/Vector.h"
 
 namespace zserio
@@ -12,6 +13,9 @@ namespace zserio
 
 namespace detail
 {
+
+template <typename T, typename ALLOC>
+AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, const ALLOC& allocator);
 
 template <typename T, typename U, typename ALLOC,
         typename std::enable_if<std::is_arithmetic<typename std::decay<U>::type>::value, int>::type = 0>
@@ -57,6 +61,36 @@ AnyHolder<ALLOC> makeAnyStringValue(const T&, const ALLOC&)
     throw CppRuntimeException("ZserioTreeCreator: Trying to make any string value from unsupported type!");
 }
 
+template <typename T, typename ALLOC,
+        typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyEnumValue(T enumValue, const IBasicTypeInfo<ALLOC>&, const ALLOC& allocator)
+{
+    return AnyHolder<ALLOC>(enumValue, allocator);
+}
+
+template <typename T, typename ALLOC,
+        typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyEnumValue(T enumRawValue, const IBasicTypeInfo<ALLOC>& underlyingTypeInfo,
+        const ALLOC& allocator)
+{
+    return makeAnyValue(underlyingTypeInfo, enumRawValue, allocator);
+}
+
+template <typename T, typename ALLOC,
+        typename std::enable_if<has_get_value<T>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskValue, const IBasicTypeInfo<ALLOC>&, const ALLOC& allocator)
+{
+    return AnyHolder<ALLOC>(bitmaskValue, allocator);
+}
+
+template <typename T, typename ALLOC,
+        typename std::enable_if<!has_get_value<T>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskRawValue, const IBasicTypeInfo<ALLOC>& underlyingTypeInfo,
+        const ALLOC& allocator)
+{
+    return makeAnyValue(underlyingTypeInfo, bitmaskRawValue, allocator);
+}
+
 template <typename T, typename ALLOC>
 AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, const ALLOC& allocator)
 {
@@ -86,6 +120,10 @@ AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, 
         return makeAnyArithmeticValue<double>(std::forward<T>(value), allocator);
     case CppType::STRING:
         return makeAnyStringValue(std::forward<T>(value), allocator);
+    case CppType::ENUM:
+        return makeAnyEnumValue(std::forward<T>(value), typeInfo.getUnderlyingType(), allocator);
+    case CppType::BITMASK:
+        return makeAnyBitmaskValue(std::forward<T>(value), typeInfo.getUnderlyingType(), allocator);
     default:
         return AnyHolder<ALLOC>(std::forward<T>(value), allocator);
     }
