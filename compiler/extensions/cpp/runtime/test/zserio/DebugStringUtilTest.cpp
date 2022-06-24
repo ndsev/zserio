@@ -305,7 +305,7 @@ TEST(DebugStringUtilTest, toJsonFileDefault)
     const std::string fileName = "DebugStringUtilTest_default.json";
     toJsonFile(dummyObject, fileName);
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
@@ -317,7 +317,7 @@ TEST(DebugStringUtilTest, toJsonFileDefaultWithAlloc)
     const std::string fileName = "DebugStringUtilTest_defaultWithAlloc.json";
     toJsonFile(dummyObject, fileName, std::allocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
@@ -326,10 +326,11 @@ TEST(DebugStringUtilTest, toJsonFileDefaultWithAlloc)
 TEST(DebugStringUtilTest, toJsonFileDefaultWithPolymorphicAlloc)
 {
     const DummyObject<pmr::PolymorphicAllocator<uint8_t>> dummyObject;
-    const std::string fileName = "DebugStringUtilTest_defaultWithPolymorphicAlloc.json";
+    const string<pmr::PolymorphicAllocator<char>> fileName =
+            "DebugStringUtilTest_defaultWithPolymorphicAlloc.json";
     toJsonFile(dummyObject, fileName, pmr::PolymorphicAllocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
@@ -341,7 +342,7 @@ TEST(DebugStringUtilTest, toJsonFileIndent2)
     const std::string fileName = "DebugStringUtilTest_indent2.json";
     toJsonFile(dummyObject, fileName, 2);
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
@@ -353,7 +354,7 @@ TEST(DebugStringUtilTest, toJsonFileIndent2WithAlloc)
     const std::string fileName = "DebugStringUtilTest_indent2WithAlloc.json";
     toJsonFile(dummyObject, fileName, 2, std::allocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
@@ -362,10 +363,11 @@ TEST(DebugStringUtilTest, toJsonFileIndent2WithAlloc)
 TEST(DebugStringUtilTest, toJsonFileIndent2WithPolymorphicAlloc)
 {
     const DummyObject<pmr::PolymorphicAllocator<uint8_t>> dummyObject;
-    const std::string fileName = "DebugStringUtilTest_indent2WithPolymorphicAlloc.json";
+    const string<pmr::PolymorphicAllocator<char>> fileName =
+            "DebugStringUtilTest_indent2WithPolymorphicAlloc.json";
     toJsonFile(dummyObject, fileName, 2, pmr::PolymorphicAllocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
@@ -377,7 +379,7 @@ TEST(DebugStringUtilTest, toJsonFileFilter)
     const std::string fileName = "DebugStringUtilTest_filter.json";
     toJsonFile(dummyObject, fileName, DefaultWalkFilter());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
@@ -390,7 +392,7 @@ TEST(DebugStringUtilTest, toJsonFileFilterWithAlloc)
     const std::string fileName = "DebugStringUtilTest_filterWithAlloc.json";
     toJsonFile(dummyObject, fileName, defaultWalkFilter, std::allocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
@@ -400,10 +402,11 @@ TEST(DebugStringUtilTest, toJsonFileFilterWithPolymorphicAlloc)
 {
     const DummyObject<pmr::PolymorphicAllocator<uint8_t>> dummyObject;
     BasicDefaultWalkFilter<pmr::PolymorphicAllocator<uint8_t>> defaultWalkFilter;
-    const std::string fileName = "DebugStringUtilTest_filterWithPolymorphicAlloc.json";
+    const string<pmr::PolymorphicAllocator<char>> fileName =
+            "DebugStringUtilTest_filterWithPolymorphicAlloc.json";
     toJsonFile(dummyObject, fileName, defaultWalkFilter, pmr::PolymorphicAllocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n    \"text\": \"test\"\n}", ss.str());
@@ -416,7 +419,7 @@ TEST(DebugStringUtilTest, toJsonFileIndent2Filter)
     const std::string fileName = "DebugStringUtilTest_indent2Filter.json";
     toJsonFile(dummyObject, fileName, 2, depthWalkFilter);
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n}", ss.str());
@@ -429,7 +432,7 @@ TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithAlloc)
     const std::string fileName = "DebugStringUtilTest_indent2FilterWithAlloc.json";
     toJsonFile(dummyObject, fileName, 2, defaultWalkFilter, std::allocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
@@ -439,10 +442,11 @@ TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithPolymorphicAlloc)
 {
     const DummyObject<pmr::PolymorphicAllocator<uint8_t>> dummyObject;
     BasicDefaultWalkFilter<pmr::PolymorphicAllocator<uint8_t>> defaultWalkFilter;
-    const std::string fileName = "DebugStringUtilTest_indent2FilterWithPolymorphicAlloc.json";
+    const string<pmr::PolymorphicAllocator<char>> fileName =
+            "DebugStringUtilTest_indent2FilterWithPolymorphicAlloc.json";
     toJsonFile(dummyObject, fileName, 2, defaultWalkFilter, pmr::PolymorphicAllocator<uint8_t>());
 
-    std::ifstream is(fileName);
+    std::ifstream is(fileName.c_str());
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());

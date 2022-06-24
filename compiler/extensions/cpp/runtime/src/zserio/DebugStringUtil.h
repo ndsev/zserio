@@ -51,7 +51,7 @@ string<ALLOC> toJsonString(const T& object, uint8_t indent, WALK_FILTER&& walkFi
 }
 
 template <typename T, typename WALK_FILTER, typename ALLOC>
-void toJsonFile(const T& object, const std::string& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
+void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator)
 {
     std::ofstream os = std::ofstream(fileName.c_str(), std::ofstream::out);
@@ -311,7 +311,7 @@ string<ALLOC> toJsonString(const T& object, uint8_t indent, WALK_FILTER&& walkFi
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toJsonFile(const T& object, const std::string& fileName, const ALLOC& allocator = ALLOC())
+void toJsonFile(const T& object, const string<ALLOC>& fileName, const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonFile(object, fileName, 4, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
@@ -337,7 +337,7 @@ void toJsonFile(const T& object, const std::string& fileName, const ALLOC& alloc
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
-void toJsonFile(const T& object, const std::string& fileName, uint8_t indent, const ALLOC& allocator = ALLOC())
+void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonFile(object, fileName, indent, BasicDefaultWalkFilter<ALLOC>(), allocator);
 }
@@ -366,7 +366,7 @@ void toJsonFile(const T& object, const std::string& fileName, uint8_t indent, co
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
-void toJsonFile(const T& object, const std::string& fileName, WALK_FILTER&& walkFilter,
+void toJsonFile(const T& object, const string<ALLOC>& fileName, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonFile(object, fileName, 4, walkFilter, allocator);
@@ -396,7 +396,7 @@ void toJsonFile(const T& object, const std::string& fileName, WALK_FILTER&& walk
 template <typename T, typename WALK_FILTER, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<std::is_base_of<IBasicWalkFilter<ALLOC>,
                 typename std::decay<WALK_FILTER>::type>::value, int>::type = 0>
-void toJsonFile(const T& object, const std::string& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
+void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonFile(object, fileName, indent, walkFilter, allocator);
