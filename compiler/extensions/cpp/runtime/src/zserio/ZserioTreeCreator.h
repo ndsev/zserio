@@ -135,7 +135,7 @@ AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, 
  * Allows to build zserio object tree defined by the given type info.
  */
 template <typename ALLOC>
-class BasicZserioTreeCreator
+class BasicZserioTreeCreator : AllocatorHolder<ALLOC>
 {
 public:
     /**
@@ -203,6 +203,18 @@ public:
     void setValue(const string<ALLOC>& name, T&& value);
 
     /**
+     * Overload for setting of a null value.
+     *
+     * Note that this does nothing in C++ since non-optional fields are always present (default initialized).
+     *
+     * \param name Name of the field.
+     * \param nullValue Null value.
+     *
+     * \throw CppRuntimeException When the field doesn't exist or when the creator is not in a compound.
+     */
+    void setValue(const string<ALLOC>& name, std::nullptr_t nullValue);
+
+    /**
      * Gets type info of the expected field.
      *
      * \param name Field name.
@@ -247,6 +259,8 @@ public:
     const IBasicTypeInfo<ALLOC>& getElementType() const;
 
 private:
+    using AllocatorHolder<ALLOC>::get_allocator;
+
     enum class State : uint8_t
     {
         BEFORE_ROOT,
@@ -274,7 +288,6 @@ private:
     }
 
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
-    ALLOC m_allocator;
     vector<std::reference_wrapper<const BasicFieldInfo<ALLOC>>, ALLOC> m_fieldInfoStack;
     vector<IBasicReflectablePtr<ALLOC>, ALLOC> m_valueStack;
     State m_state = State::BEFORE_ROOT;
@@ -286,7 +299,8 @@ using ZserioTreeCreator = BasicZserioTreeCreator<std::allocator<std::uint8_t>>;
 template <typename ALLOC>
 BasicZserioTreeCreator<ALLOC>::BasicZserioTreeCreator(const IBasicTypeInfo<ALLOC>& typeInfo,
         const ALLOC& allocator) :
-        m_typeInfo(typeInfo), m_allocator(allocator), m_fieldInfoStack(allocator), m_valueStack(allocator)
+        AllocatorHolder<ALLOC>(allocator),
+        m_typeInfo(typeInfo), m_fieldInfoStack(allocator), m_valueStack(allocator)
 {}
 
 template <typename ALLOC>
@@ -295,7 +309,7 @@ void BasicZserioTreeCreator<ALLOC>::beginRoot()
     if (m_state != State::BEFORE_ROOT)
         throw CppRuntimeException("ZserioTreeCreator: Cannot begin root in state '") + stateName() + "'!";
 
-    m_valueStack.push_back(m_typeInfo.createInstance(m_allocator));
+    m_valueStack.push_back(m_typeInfo.createInstance(get_allocator()));
     m_state = State::IN_COMPOUND;
 }
 
@@ -396,8 +410,6 @@ template <typename ALLOC>
 template <typename T>
 void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, T&& value)
 {
-    // TODO[Mi-L@]: How to set null value?!
-
     if (m_state != State::IN_COMPOUND)
         throw CppRuntimeException("ZserioTreeCreator: Cannot set value in state '") + stateName() + "'!";
 
@@ -410,6 +422,27 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, T&& valu
 
     m_valueStack.back()->setField(fieldInfo.schemaName,
             makeAnyValue(fieldInfo.typeInfo, std::forward<T>(value)));
+}
+
+template <typename ALLOC>
+void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, std::nullptr_t nullValue)
+{
+    if (m_state != State::IN_COMPOUND)
+        throw CppRuntimeException("ZserioTreeCreator: Cannot set value (null) in state '") + stateName() + "'!";
+
+    // just check that the field exists
+    const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
+    if (fieldInfo.isOptional)
+    {
+        // reset an optional field
+        m_valueStack.back()->setField(fieldInfo.schemaName, AnyHolder<ALLOC>(nullValue, get_allocator()));
+    }
+    else
+    {
+        // reset non-optional field with default-constructed value
+        // (classes generated in C++ do not support null values)
+        m_valueStack.back()->createField(fieldInfo.schemaName);
+    }
 }
 
 template <typename ALLOC>
@@ -510,7 +543,7 @@ template <typename T>
 AnyHolder<ALLOC> BasicZserioTreeCreator<ALLOC>::makeAnyValue(
         const IBasicTypeInfo<ALLOC>& typeInfo, T&& value) const
 {
-    return detail::makeAnyValue(typeInfo, std::forward<T>(value), m_allocator);
+    return detail::makeAnyValue(typeInfo, std::forward<T>(value), get_allocator());
 }
 
 } // namespace zserio

@@ -215,10 +215,17 @@ TEST(JsonWriterTest, enumValue)
         }
     };
 
-    observer.visitValue(std::make_shared<DummyEnumReflectable>(), ENUM_FIELD_INFO);
+    IReflectablePtr reflectable = std::make_shared<DummyEnumReflectable>();
+    observer.visitValue(reflectable, ENUM_FIELD_INFO);
 
     // note that this is not valid json
     ASSERT_EQ("\"dummyEnum\": 0", os.str());
+
+    // just improve coverage
+    ASSERT_EQ(0, reflectable->bitSizeOf());
+    BitBuffer bitBuffer(0);
+    BitStreamWriter writer(bitBuffer);
+    ASSERT_NO_THROW(reflectable->write(writer));
 }
 
 TEST(JsonWriterTest, bitmaskValue)
@@ -249,10 +256,17 @@ TEST(JsonWriterTest, bitmaskValue)
         }
     };
 
-    observer.visitValue(std::make_shared<DummyBitmaskReflectable>(), BITMASK_FIELD_INFO);
+    IReflectablePtr reflectable = std::make_shared<DummyBitmaskReflectable>();
+    observer.visitValue(reflectable, BITMASK_FIELD_INFO);
 
     // note that this is not valid json
     ASSERT_EQ("\"dummyBitmask\": 0", os.str());
+
+    // just improve coverage
+    ASSERT_EQ(0, reflectable->bitSizeOf());
+    BitBuffer bitBuffer(0);
+    BitStreamWriter writer(bitBuffer);
+    ASSERT_NO_THROW(reflectable->write(writer));
 }
 
 TEST(JsonWriterTest, compound)

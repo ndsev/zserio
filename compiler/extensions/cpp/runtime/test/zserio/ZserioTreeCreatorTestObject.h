@@ -1,5 +1,5 @@
-#ifndef ZSERIO_CREATOR_TEST_OBJECT_H_INC
-#define ZSERIO_CREATOR_TEST_OBJECT_H_INC
+#ifndef ZSERIO_ZSERIO_TREE_CREATOR_TEST_OBJECT_H_INC
+#define ZSERIO_ZSERIO_TREE_CREATOR_TEST_OBJECT_H_INC
 
 #include "zserio/Array.h"
 #include "zserio/TypeInfo.h"
@@ -26,11 +26,9 @@ DummyEnum valueToEnum(uint8_t rawValue)
     {
     case UINT8_C(0):
         return DummyEnum::ONE;
-    case UINT8_C(1):
+    default:
         return DummyEnum::TWO;
     }
-
-    throw ::zserio::CppRuntimeException("Unknown value for enumeration DummyEnum: ") + rawValue + "!";
 }
 
 template <>
@@ -230,6 +228,7 @@ public:
     bool isOptionalBoolSet() const;
     bool getOptionalBool() const;
     void setOptionalBool(bool optionalBool_);
+    void resetOptionalBool();
 
     bool isOptionalNestedSet() const;
     DummyNested& getOptionalNested();
@@ -810,7 +809,10 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
             }
             if (name == makeStringView("optionalBool"))
             {
-                m_object.setOptionalBool(value.get<bool>());
+                if (value.isType<std::nullptr_t>())
+                    m_object.resetOptionalBool();
+                else
+                    m_object.setOptionalBool(value.get<bool>());
                 return;
             }
 
@@ -821,11 +823,14 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
 
         virtual IReflectablePtr createField(StringView name) override
         {
+            if (name == makeStringView("text"))
+            {
+                m_object.setText(string<>(get_allocator()));
+                return ReflectableFactory::getString(m_object.getText(), get_allocator());
+            }
+
             if (name == makeStringView("externArray"))
             {
-                if (m_object.isExternArraySet())
-                    throw CppRuntimeException("Field '") + name + "' is already created!";
-
                 m_object.setExternArray(std::vector<BitBuffer>(get_allocator()));
                 return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getBitBuffer(),
                         m_object.getExternArray(), get_allocator());
@@ -833,14 +838,11 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
 
             if (name == makeStringView("optionalNested"))
             {
-                if (m_object.isOptionalNestedSet())
-                    throw CppRuntimeException("Field '") + name + "' is already created!";
-
                 m_object.setOptionalNested(DummyNested(get_allocator()));
                 return m_object.getOptionalNested().reflectable(get_allocator());
             }
 
-            throw CppRuntimeException("Field '") + name + "' is not an optional field in 'DummyObject'!";
+            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
         }
 
         virtual void initializeChildren() override
@@ -936,6 +938,11 @@ void DummyObject::setOptionalBool(bool optionalBool_)
     m_optionalBool_ = optionalBool_;
 }
 
+void DummyObject::resetOptionalBool()
+{
+    m_optionalBool_.reset();
+}
+
 bool DummyObject::isOptionalNestedSet() const
 {
     return m_optionalNested_.hasValue();
@@ -952,6 +959,7 @@ void DummyObject::setOptionalNested(const DummyNested& optionalNested_)
 }
 
 } // namespace
+
 } // namespace zserio
 
-#endif // ZSERIO_CREATOR_TEST_OBJECT_H_INC
+#endif // ZSERIO_ZSERIO_TREE_CREATOR_TEST_OBJECT_H_INC

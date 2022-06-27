@@ -674,7 +674,7 @@ class JsonReaderTest(unittest.TestCase):
     def test_json_parser_exception(self):
         json_reader = JsonReader(io.StringIO("{\"value\"\n\"value\""))
 
-        with self.assertRaises(PythonRuntimeException) as error:
+        with self.assertRaises(JsonParserException) as error:
             json_reader.read(DummyObject.type_info())
 
         self.assertTrue(str(error.exception).startswith("JsonParser line 2:"))
@@ -741,13 +741,13 @@ class JsonReaderTest(unittest.TestCase):
 
         self.assertTrue(str(error.exception).endswith("(JsonParser line 12)"))
 
-    def test_json_array(self):
+    def test_json_array_exception(self):
         json_reader = JsonReader(io.StringIO("[1, 2]"))
 
         with self.assertRaises(PythonRuntimeException):
             json_reader.read(DummyObject.type_info())
 
-    def test_json_value(self):
+    def test_json_value_exception(self):
         json_reader = JsonReader(io.StringIO("\"text\""))
 
         with self.assertRaises(PythonRuntimeException):

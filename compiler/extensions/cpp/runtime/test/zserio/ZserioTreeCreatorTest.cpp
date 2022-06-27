@@ -3,7 +3,7 @@
 #include "zserio/ZserioTreeCreator.h"
 #include "zserio/StringConvertUtil.h"
 
-#include "zserio/CreatorTestObject.h"
+#include "zserio/ZserioTreeCreatorTestObject.h"
 
 namespace zserio
 {
@@ -57,6 +57,20 @@ TEST(ZserioTreeCreatorTest, createObjectSetFields)
     ZserioTreeCreator creator(DummyObject::typeInfo());
     creator.beginRoot();
     creator.setValue("value", 13);
+    creator.setValue("text", "test");
+    IReflectablePtr reflectable = creator.endRoot();
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getString());
+}
+
+TEST(ZserioTreeCreatorTest, createObjectResetFields)
+{
+    ZserioTreeCreator creator(DummyObject::typeInfo());
+    creator.beginRoot();
+    creator.setValue("value", 13);
+    creator.setValue("text", nullptr);
     creator.setValue("text", "test");
     IReflectablePtr reflectable = creator.endRoot();
     ASSERT_TRUE(reflectable);
@@ -141,9 +155,12 @@ TEST(ZserioTreeCreator, exceptionsBeforeRoot)
     ASSERT_THROW(creator.endRoot(), CppRuntimeException);
     ASSERT_THROW(creator.beginArray("nestedArray"), CppRuntimeException);
     ASSERT_THROW(creator.endArray(), CppRuntimeException);
+    ASSERT_THROW(creator.getFieldType("nested"), CppRuntimeException);
     ASSERT_THROW(creator.beginCompound("nested"), CppRuntimeException);
     ASSERT_THROW(creator.endCompound(), CppRuntimeException);
     ASSERT_THROW(creator.setValue("value", 13), CppRuntimeException);
+    ASSERT_THROW(creator.setValue("nonexistent", nullptr), CppRuntimeException);
+    ASSERT_THROW(creator.getElementType(), CppRuntimeException);
     ASSERT_THROW(creator.beginCompoundElement(), CppRuntimeException);
     ASSERT_THROW(creator.endCompoundElement(), CppRuntimeException);
     ASSERT_THROW(creator.addValueElement(13), CppRuntimeException);
@@ -237,6 +254,41 @@ TEST(ZserioTreeCreator, exceptionsInCompoundElement)
     ASSERT_THROW(creator.setValue("nonexistent", 13), CppRuntimeException);
     ASSERT_THROW(creator.beginCompoundElement(), CppRuntimeException);
     ASSERT_THROW(creator.addValueElement(13), CppRuntimeException);
+}
+
+// just to improve test coverage
+TEST(ZserioTreeCreator, dummyObjectCoverage)
+{
+    BitBuffer bitBuffer(0);
+    BitStreamWriter writer(bitBuffer);
+    DummyEnum dummyEnum = DummyEnum::ONE;
+    auto reflectable = enumReflectable(dummyEnum);
+    ASSERT_EQ(8, reflectable->bitSizeOf());
+    ASSERT_NO_THROW(reflectable->write(writer));
+
+    DummyBitmask dummyBitmask = DummyBitmask::Values::READ;
+    reflectable = dummyBitmask.reflectable();
+    ASSERT_EQ(8, reflectable->bitSizeOf());
+    ASSERT_NO_THROW(reflectable->write(writer));
+
+    DummyNested dummyNested;
+    reflectable = dummyNested.reflectable();
+    ASSERT_THROW(reflectable->getField("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
+    ASSERT_THROW(reflectable->getParameter("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException); // not initalized
+    ASSERT_EQ(0, reflectable->bitSizeOf());
+    ASSERT_NO_THROW(reflectable->write(writer));
+
+    DummyObject dummyObject;
+    reflectable = dummyObject.reflectable();
+    ASSERT_THROW(reflectable->getField("nonexistent"), CppRuntimeException);
+    ASSERT_EQ(nullptr, reflectable->getField("externArray"));
+    ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
+    ASSERT_THROW(reflectable->createField("nonexistent"), CppRuntimeException);
+    ASSERT_THROW(reflectable->getParameter("nonexistent"), CppRuntimeException);
+    ASSERT_EQ(0, reflectable->bitSizeOf());
+    ASSERT_NO_THROW(reflectable->write(writer));
 }
 
 } // namespace zserio

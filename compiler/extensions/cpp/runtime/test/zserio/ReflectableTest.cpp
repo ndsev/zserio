@@ -888,6 +888,7 @@ protected:
     {
         ASSERT_THROW(reflectable->initializeChildren(), CppRuntimeException);
         ASSERT_THROW(reflectable->setField("field", AnyHolder<>{}), CppRuntimeException);
+        ASSERT_THROW(reflectable->createField("field"), CppRuntimeException);
 
         checkNonCompoundConstMethods(reflectable);
     }

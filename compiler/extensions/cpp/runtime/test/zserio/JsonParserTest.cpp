@@ -142,6 +142,25 @@ TEST(JsonParserTest, parse)
     ASSERT_EQ(expectedReport, observer.getReport());
 }
 
+TEST(JsonParserTest, valueTypes)
+{
+    std::stringstream str("null true 10 -10 1.1 \"str\"");
+    DummyObserver observer;
+    JsonParser jsonParser(str, observer);
+    while (!jsonParser.parse())
+    {}
+
+    std::vector<std::string> expectedReport = {{
+        {"visitValue: null"},
+        {"visitValue: true"},
+        {"visitValue: 10"},
+        {"visitValue: -10"},
+        {"visitValue: 1.100000"},
+        {"visitValue: str"}
+    }};
+    ASSERT_EQ(expectedReport, observer.getReport());
+}
+
 TEST(JsonParserTest, unexpectedObject)
 {
     std::stringstream str("{\n\n{\n\n");

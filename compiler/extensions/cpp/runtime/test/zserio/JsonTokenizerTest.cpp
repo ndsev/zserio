@@ -36,4 +36,18 @@ TEST(JsonTokenizerTest, tokens)
     ASSERT_EQ(JsonToken::END_OF_FILE, tokenizer.next());
 }
 
+TEST(JsonTokenizerTest, jsonTokenName)
+{
+    ASSERT_EQ(std::string("UNKNOWN"), jsonTokenName(JsonToken::UNKNOWN));
+    ASSERT_EQ(std::string("BEGIN_OF_FILE"), jsonTokenName(JsonToken::BEGIN_OF_FILE));
+    ASSERT_EQ(std::string("END_OF_FILE"), jsonTokenName(JsonToken::END_OF_FILE));
+    ASSERT_EQ(std::string("BEGIN_OBJECT"), jsonTokenName(JsonToken::BEGIN_OBJECT));
+    ASSERT_EQ(std::string("END_OBJECT"), jsonTokenName(JsonToken::END_OBJECT));
+    ASSERT_EQ(std::string("BEGIN_ARRAY"), jsonTokenName(JsonToken::BEGIN_ARRAY));
+    ASSERT_EQ(std::string("END_ARRAY"), jsonTokenName(JsonToken::END_ARRAY));
+    ASSERT_EQ(std::string("KEY_SEPARATOR"), jsonTokenName(JsonToken::KEY_SEPARATOR));
+    ASSERT_EQ(std::string("ITEM_SEPARATOR"), jsonTokenName(JsonToken::ITEM_SEPARATOR));
+    ASSERT_EQ(std::string("VALUE"), jsonTokenName(JsonToken::VALUE));
+}
+
 } // namespace zserio

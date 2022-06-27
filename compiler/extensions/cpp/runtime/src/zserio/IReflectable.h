@@ -85,6 +85,9 @@ public:
     /**
      * Sets the field (i.e. member) with the given schema name.
      *
+     * \note For optional fields, the value can be also nullptr of type std::nullptr_t which allows
+     *       to reset an optional field.
+     *
      * \param name Field schema name.
      * \param value Value to set. The type must exactly match the type of the zserio field mapped to C++!
      *
