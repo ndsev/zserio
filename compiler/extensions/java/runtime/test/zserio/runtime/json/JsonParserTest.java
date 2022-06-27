@@ -96,8 +96,7 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
-        // TODO[mikir] wrong column number
-        assertEquals("JsonParser:3:2: Unexpected token: BEGIN_OBJECT ('{'), expecting END_OBJECT!",
+        assertEquals("JsonParser:3:1: Unexpected token: BEGIN_OBJECT ('{'), expecting END_OBJECT!",
                 exception.getMessage());
         assertEquals(1, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
@@ -113,8 +112,7 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
-        // TODO[mikir] wrong column number
-        assertEquals("JsonParser:3:4: Unexpected token: BEGIN_OBJECT ('{'), expecting VALUE!",
+        assertEquals("JsonParser:3:3: Unexpected token: BEGIN_OBJECT ('{'), expecting VALUE!",
                 exception.getMessage());
         assertEquals(3, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
@@ -132,8 +130,7 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
-        // TODO[mikir] wrong column number
-        assertEquals("JsonParser:3:8: Unexpected token: VALUE ('item2'), expecting END_OBJECT!",
+        assertEquals("JsonParser:3:1: Unexpected token: VALUE ('item2'), expecting END_OBJECT!",
                 exception.getMessage());
         assertEquals(3, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
@@ -151,8 +148,7 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
-        // TODO[mikir] wrong column number
-        assertEquals("JsonParser:2:3: Key must be a string value!", exception.getMessage());
+        assertEquals("JsonParser:2:1: Key must be a string value!", exception.getMessage());
         assertEquals(1, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
 
@@ -167,8 +163,7 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
-        // TODO[mikir] wrong column number
-        assertEquals("JsonParser:2:9: Unexpected token: END_OBJECT ('}'), expecting one of " +
+        assertEquals("JsonParser:2:8: Unexpected token: END_OBJECT ('}'), expecting one of " +
                 "[BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!", exception.getMessage());
         assertEquals(2, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
@@ -185,30 +180,13 @@ public class JsonParserTest
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
         final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
-        // TODO[mikir] wrong column number
-        assertEquals("JsonParser:4:3: Unexpected token: VALUE ('20'), expecting END_ARRAY!",
+        assertEquals("JsonParser:4:1: Unexpected token: VALUE ('20'), expecting END_ARRAY!",
                 exception.getMessage());
         assertEquals(4, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
         assertEquals("visitKey: array", observer.getReport().get(1));
         assertEquals("beginArray", observer.getReport().get(2));
         assertEquals("visitValue: 10", observer.getReport().get(3));
-
-        reader.close();
-    }
-
-    @Test
-    // TODO[mikir] to move to Tokenizer
-    public void unknownToken() throws IOException
-    {
-        final Reader reader = new StringReader("\\\n");
-        final DummyObserver observer = new DummyObserver();
-        final JsonParser jsonParser = new JsonParser(reader, observer);
-
-        final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
-        // TODO[mikir] wrong column number
-        assertEquals("JsonTokenizer:1:1: Unknown token!", exception.getMessage());
-        assertEquals(0, observer.getReport().size());
 
         reader.close();
     }

@@ -20,18 +20,11 @@ class JsonTokenizer
         this.reader = reader;
 
         content = readContent();
-        if (content.isEmpty())
-        {
-            lineNumber = 0;
-            setToken(JsonToken.END_OF_FILE, null);
-            setPosition(0, 0);
-        }
-        else
-        {
-            lineNumber = 1;
-            setToken(JsonToken.BEGIN_OF_FILE, null);
-            setPosition(0, 1);
-        }
+        setToken(content.isEmpty() ? JsonToken.END_OF_FILE : JsonToken.BEGIN_OF_FILE, null);
+        lineNumber = 1;
+        columnNumber = 1;
+        tokenColumnNumber  = 1;
+        pos = 0;
     }
 
     /**
@@ -81,7 +74,7 @@ class JsonTokenizer
     }
 
     /**
-     * Gets current line number.
+     * Gets line number of the current token.
      *
      * @return Line number.
      */
@@ -91,13 +84,13 @@ class JsonTokenizer
     }
 
     /**
-     * Gets current column number.
+     * Gets column number of the current token.
      *
      * @return Column number.
      */
     public int getColumn()
     {
-        return columnNumber;
+        return tokenColumnNumber;
     }
 
     String readContent()
@@ -120,6 +113,8 @@ class JsonTokenizer
     {
         if (!skipWhitespaces())
             return false;
+
+        tokenColumnNumber = columnNumber;
 
         final char nextChar = content.charAt(pos);
         if (nextChar == '{')
@@ -161,7 +156,10 @@ class JsonTokenizer
                 return false; // we are at the end of chunk => read more
 
             if (!result.success())
-                throw new ZserioError("JsonTokenizer:" + lineNumber + ":" + columnNumber + ": Unknown token!");
+            {
+                throw new ZserioError("JsonTokenizer:" + lineNumber + ":" + tokenColumnNumber +
+                        ": Unknown token!");
+            }
 
             setToken(JsonToken.VALUE, result.getValue());
             setPosition(pos + numReadChars, columnNumber + numReadChars);
@@ -230,6 +228,7 @@ class JsonTokenizer
     private String content;
     private int lineNumber;
     private int columnNumber;
+    private int tokenColumnNumber;
     private int pos;
     private JsonToken token;
     private Object value;
