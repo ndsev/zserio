@@ -6,7 +6,7 @@ import enum
 from zserio.exception import PythonRuntimeException
 from zserio.array import Array, ObjectArrayTraits, StringArrayTraits, BitBufferArrayTraits
 from zserio.creator import ZserioTreeCreator
-from zserio.json import JsonReader
+from zserio.json import JsonReader, JsonParserException
 from zserio.typeinfo import TypeInfo, TypeAttribute, MemberInfo, MemberAttribute, ItemInfo
 from zserio.bitbuffer import BitBuffer
 
