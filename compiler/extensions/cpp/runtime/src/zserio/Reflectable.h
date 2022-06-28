@@ -88,7 +88,7 @@ public:
     virtual uint64_t getUInt64() const override;
     virtual float getFloat() const override;
     virtual double getDouble() const override;
-    virtual StringView getString() const override;
+    virtual StringView getStringView() const override;
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
     // convenience conversions
@@ -691,14 +691,14 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual StringView getString() const override
+    virtual StringView getStringView() const override
     {
         return Base::getValue();
     }
 
     virtual string<ALLOC> toString(const ALLOC& allocator) const override
     {
-        return zserio::toString(getString(), allocator);
+        return zserio::toString(Base::getValue(), allocator);
     }
 
     virtual void write(BitStreamWriter& writer) const override
@@ -1062,7 +1062,7 @@ public:
     virtual uint64_t getUInt64() const override;
     virtual float getFloat() const override;
     virtual double getDouble() const override;
-    virtual StringView getString() const override;
+    virtual StringView getStringView() const override;
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override;
 
     virtual int64_t toInt() const override;
@@ -1650,7 +1650,7 @@ public:
     virtual uint64_t getUInt64() const override { return m_reflectable->getUInt64(); }
     virtual float getFloat() const override { return m_reflectable->getFloat(); }
     virtual double getDouble() const override { return m_reflectable->getDouble(); }
-    virtual StringView getString() const override { return m_reflectable->getString(); }
+    virtual StringView getStringView() const override { return m_reflectable->getStringView(); }
     virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override { return m_reflectable->getBitBuffer(); }
 
     // convenience conversions
@@ -2388,7 +2388,7 @@ double ReflectableBase<ALLOC>::getDouble() const
 }
 
 template <typename ALLOC>
-StringView ReflectableBase<ALLOC>::getString() const
+StringView ReflectableBase<ALLOC>::getStringView() const
 {
     throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not string type!";
 }
@@ -2584,7 +2584,7 @@ double ReflectableArrayBase<ALLOC>::getDouble() const
 }
 
 template <typename ALLOC>
-StringView ReflectableArrayBase<ALLOC>::getString() const
+StringView ReflectableArrayBase<ALLOC>::getStringView() const
 {
     throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }

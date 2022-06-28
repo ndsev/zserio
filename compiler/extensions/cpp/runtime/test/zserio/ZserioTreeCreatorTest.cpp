@@ -62,7 +62,7 @@ TEST(ZserioTreeCreatorTest, createObjectSetFields)
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
-    ASSERT_EQ("test"_sv, reflectable->getField("text")->getString());
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
 }
 
 TEST(ZserioTreeCreatorTest, createObjectResetFields)
@@ -76,7 +76,7 @@ TEST(ZserioTreeCreatorTest, createObjectResetFields)
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
-    ASSERT_EQ("test"_sv, reflectable->getField("text")->getString());
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
 }
 
 TEST(ZserioTreeCreatorTest, createObjectFull)
@@ -120,32 +120,32 @@ TEST(ZserioTreeCreatorTest, createObjectFull)
     reflectable->initializeChildren();
 
     ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
-    ASSERT_EQ("test"_sv, reflectable->getField("text")->getString());
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
     ASSERT_EQ(13, reflectable->find("nested.param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
-    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getString());
+    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
     ASSERT_EQ(0x3c, reflectable->find("nested.data")->getBitBuffer().getBuffer()[0]);
     ASSERT_EQ(6, reflectable->find("nested.data")->getBitBuffer().getBitSize());
     ASSERT_EQ(enumToValue(DummyEnum::ONE), reflectable->find("nested.dummyEnum")->getUInt8());
     ASSERT_EQ(DummyBitmask::Values::WRITE, DummyBitmask(reflectable->find("nested.dummyBitmask")->getUInt8()));
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
-    ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getString());
+    ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
     ASSERT_EQ(enumToValue(DummyEnum::TWO),
             reflectable->getField("nestedArray")->at(0)->getField("dummyEnum")->getUInt8());
     ASSERT_EQ(DummyBitmask::Values::READ,
             DummyBitmask(reflectable->getField("nestedArray")->at(0)->getField("dummyBitmask")->getUInt8()));
     ASSERT_EQ(4, reflectable->getField("textArray")->size());
-    ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getString());
-    ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getString());
-    ASSERT_EQ("text"_sv, reflectable->getField("textArray")->at(2)->getString());
-    ASSERT_EQ("array"_sv, reflectable->getField("textArray")->at(3)->getString());
+    ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getStringView());
+    ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getStringView());
+    ASSERT_EQ("text"_sv, reflectable->getField("textArray")->at(2)->getStringView());
+    ASSERT_EQ("array"_sv, reflectable->getField("textArray")->at(3)->getStringView());
     ASSERT_EQ(1, reflectable->getField("externArray")->size());
     ASSERT_EQ(0x0f, reflectable->getField("externArray")->at(0)->getBitBuffer().getBuffer()[0]);
     ASSERT_EQ(4, reflectable->getField("externArray")->at(0)->getBitBuffer().getBitSize());
     ASSERT_EQ(false, reflectable->getField("optionalBool")->getBool());
     ASSERT_TRUE(reflectable->getField("optionalNested"));
-    ASSERT_EQ("optionalNested"_sv, reflectable->find("optionalNested.text")->getString());
+    ASSERT_EQ("optionalNested"_sv, reflectable->find("optionalNested.text")->getStringView());
 }
 
 TEST(ZserioTreeCreator, exceptionsBeforeRoot)

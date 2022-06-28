@@ -821,7 +821,7 @@ protected:
         ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
         ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
-        ASSERT_THROW(reflectable->getString(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
         ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
@@ -976,7 +976,7 @@ protected:
         ASSERT_THROW(reflectable->getUInt16(), CppRuntimeException);
         ASSERT_THROW(reflectable->getUInt32(), CppRuntimeException);
         ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
-        ASSERT_THROW(reflectable->getString(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
         checkArithmeticCppTypeGetters(value, reflectable);
@@ -998,7 +998,7 @@ protected:
 
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
         ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
-        ASSERT_THROW(reflectable->getString(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
         checkArithmeticCppTypeGetters(value, reflectable);
@@ -1033,7 +1033,7 @@ protected:
     template <typename REFLECTABLE_PTR>
     void checkString(StringView value, const REFLECTABLE_PTR& reflectable)
     {
-        ASSERT_EQ(value, reflectable->getString());
+        ASSERT_EQ(value, reflectable->getStringView());
 
         ASSERT_EQ(toString(value), reflectable->toString());
         ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
@@ -1144,7 +1144,7 @@ protected:
         ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
         ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
         ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
-        ASSERT_THROW(reflectable->getString(), CppRuntimeException);
+        ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
         ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
         ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
@@ -1592,7 +1592,7 @@ TEST_F(ReflectableTest, bitBufferReflectable)
     ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
     ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
     ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getString(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
 
     checkNonCompound(reflectable);
     checkNonArray(reflectable);
@@ -1734,10 +1734,10 @@ TEST_F(ReflectableTest, stringArray)
     ASSERT_EQ(0, reflectable->size());
     reflectable->append(AnyHolder<>(std::string("appended")));
     ASSERT_EQ(1, reflectable->size());
-    ASSERT_EQ("appended"_sv, reflectable->at(0)->getString());
+    ASSERT_EQ("appended"_sv, reflectable->at(0)->getStringView());
     reflectable->setAt(AnyHolder<>(std::string("set")), 0);
     ASSERT_EQ(1, reflectable->size());
-    ASSERT_EQ("set"_sv, reflectable->at(0)->getString());
+    ASSERT_EQ("set"_sv, reflectable->at(0)->getStringView());
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
 }
@@ -1954,7 +1954,7 @@ TEST_F(ReflectableTest, reflectableOwner)
     ASSERT_THROW(reflectable->getUInt64(), CppRuntimeException);
     ASSERT_THROW(reflectable->getFloat(), CppRuntimeException);
     ASSERT_THROW(reflectable->getDouble(), CppRuntimeException);
-    ASSERT_THROW(reflectable->getString(), CppRuntimeException);
+    ASSERT_THROW(reflectable->getStringView(), CppRuntimeException);
     ASSERT_THROW(reflectable->getBitBuffer(), CppRuntimeException);
 
     ASSERT_THROW(reflectable->toInt(), CppRuntimeException);

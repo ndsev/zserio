@@ -361,7 +361,7 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectableConstPtr<ALLOC>& 
         JsonEncoder::encodeFloatingPoint(m_out, reflectable->getDouble());
         break;
     case CppType::STRING:
-        JsonEncoder::encodeString(m_out, reflectable->getString());
+        JsonEncoder::encodeString(m_out, reflectable->getStringView());
         break;
     case CppType::BIT_BUFFER:
         writeBitBuffer(reflectable->getBitBuffer());

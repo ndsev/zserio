@@ -89,15 +89,15 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
     ASSERT_EQ(13, reflectable->getField("nested")->getParameter("param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
-    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getString());
+    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
     ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.data")->getBitBuffer());
     ASSERT_EQ(enumToValue(DummyEnum::ONE), reflectable->find("nested.dummyEnum")->getUInt8());
     ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(),
             reflectable->find("nested.dummyBitmask")->getUInt8());
-    ASSERT_EQ("test"_sv, reflectable->getField("text")->getString());
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
     ASSERT_EQ(1, reflectable->getField("nestedArray")->size());
     ASSERT_EQ(5, reflectable->getField("nestedArray")->at(0)->getField("value")->getUInt32());
-    ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getString());
+    ASSERT_EQ("nestedArray"_sv, reflectable->getField("nestedArray")->at(0)->getField("text")->getStringView());
     ASSERT_EQ(BitBuffer({{0xCA, 0xFE}}, 15),
             reflectable->getField("nestedArray")->at(0)->getField("data")->getBitBuffer());
     ASSERT_EQ(enumToValue(DummyEnum::TWO),
@@ -105,10 +105,10 @@ TEST(JsonReaderTest, readObject)
     ASSERT_EQ(DummyBitmask(DummyBitmask::Values::WRITE).getValue(),
             reflectable->getField("nestedArray")->at(0)->getField("dummyBitmask")->getUInt8());
     ASSERT_EQ(4, reflectable->getField("textArray")->size());
-    ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getString());
-    ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getString());
-    ASSERT_EQ("text"_sv, reflectable->getField("textArray")->at(2)->getString());
-    ASSERT_EQ("array"_sv, reflectable->getField("textArray")->at(3)->getString());
+    ASSERT_EQ("this"_sv, reflectable->getField("textArray")->at(0)->getStringView());
+    ASSERT_EQ("is"_sv, reflectable->getField("textArray")->at(1)->getStringView());
+    ASSERT_EQ("text"_sv, reflectable->getField("textArray")->at(2)->getStringView());
+    ASSERT_EQ("array"_sv, reflectable->getField("textArray")->at(3)->getStringView());
     ASSERT_EQ(1, reflectable->getField("externArray")->size());
     ASSERT_EQ(BitBuffer({{0xDE, 0xD1}}, 13), reflectable->getField("externArray")->at(0)->getBitBuffer());
     ASSERT_EQ(nullptr, reflectable->getField("optionalBool"));
@@ -126,12 +126,12 @@ TEST(JsonReaderTest, readTwoObjects)
     auto obj1 = jsonReader.read(DummyObject::typeInfo());
     ASSERT_TRUE(obj1);
     ASSERT_EQ(13, obj1->getField("value")->getUInt32());
-    ASSERT_EQ(""_sv, obj1->getField("text")->getString());
+    ASSERT_EQ(""_sv, obj1->getField("text")->getStringView());
 
     auto obj2 = jsonReader.read(DummyObject::typeInfo());
     ASSERT_TRUE(obj2);
     ASSERT_EQ(42, obj2->getField("value")->getUInt32());
-    ASSERT_EQ("test"_sv, obj2->getField("text")->getString());
+    ASSERT_EQ("test"_sv, obj2->getField("text")->getStringView());
 }
 
 TEST(JsonReaderTest, readUnonrderedBitBuffer)
@@ -164,7 +164,7 @@ TEST(JsonReaderTest, readUnonrderedBitBuffer)
     ASSERT_EQ(13, reflectable->getField("value")->getUInt32());
     ASSERT_EQ(13, reflectable->getField("nested")->getParameter("param")->getUInt32());
     ASSERT_EQ(10, reflectable->find("nested.value")->getUInt32());
-    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getString());
+    ASSERT_EQ("nested"_sv, reflectable->find("nested.text")->getStringView());
     ASSERT_EQ(BitBuffer({{0xCB, 0xF0}}, 12), reflectable->find("nested.data")->getBitBuffer());
     ASSERT_EQ(enumToValue(DummyEnum::ONE), reflectable->find("nested.dummyEnum")->getUInt8());
     ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(),

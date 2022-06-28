@@ -348,7 +348,7 @@ public:
      * \return Reference to the string value.
      * \throw CppRuntimeException When the reflected object is not a string type.
      */
-    virtual StringView getString() const = 0;
+    virtual StringView getStringView() const = 0;
 
     /**
      * Gets reference to the reflected bit buffer.

@@ -127,7 +127,7 @@ TEST(DebugStringUtilTest, toJsonStreamDefault)
     // improve coverage
     IReflectablePtr reflectable = dummyObject.reflectable();
     ASSERT_TRUE(reflectable);
-    ASSERT_EQ("test"_sv, reflectable->getField("text")->getString());
+    ASSERT_EQ("test"_sv, reflectable->getField("text")->getStringView());
 }
 
 TEST(DebugStringUtilTest, toJsonStreamDefaultWithAlloc)
