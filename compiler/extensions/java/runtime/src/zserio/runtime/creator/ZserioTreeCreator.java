@@ -157,7 +157,7 @@ public class ZserioTreeCreator
      * @param name Name of the field.
      * @param value Value to set.
      */
-    void setValue(String name, Object value)
+    public void setValue(String name, Object value)
     {
         if (state != State.IN_COMPOUND)
             throw new ZserioError("ZserioTreeCreator: Cannot set value in state '" + state + "'!");

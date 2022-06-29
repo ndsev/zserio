@@ -3,8 +3,6 @@ package zserio.runtime.json;
 import java.io.Reader;
 import java.io.IOException;
 
-import zserio.runtime.ZserioError;
-
 /**
  * Json Tokenizer used by Json Parser.
  */
@@ -20,11 +18,12 @@ class JsonTokenizer
         this.reader = reader;
 
         content = readContent();
-        setToken(content.isEmpty() ? JsonToken.END_OF_FILE : JsonToken.BEGIN_OF_FILE, null);
         lineNumber = 1;
         columnNumber = 1;
         tokenColumnNumber  = 1;
         pos = 0;
+        setToken(content.isEmpty() ? JsonToken.END_OF_FILE : JsonToken.BEGIN_OF_FILE, null);
+        decoderResult = null;
     }
 
     /**
@@ -40,10 +39,18 @@ class JsonTokenizer
             if (newContent.isEmpty())
             {
                 if (token == JsonToken.END_OF_FILE)
-                    return token;
+                {
+                    tokenColumnNumber = columnNumber;
+                }
+                else
+                {
+                    // stream is at the end but last token is not EOF => value must be at the end
+                    final int numReadChars = decoderResult.getNumReadChars();
+                    setToken(JsonToken.VALUE, decoderResult.getValue());
+                    setPosition(pos + numReadChars, columnNumber + numReadChars);
+                }
 
-                // stream is not finished by whitespace => emulate new line
-                newContent = "\n";
+                return token;
             }
 
             content = content.substring(pos) + newContent;
@@ -105,7 +112,7 @@ class JsonTokenizer
         }
         catch (IOException excpt)
         {
-            throw new ZserioError("JsonTokenizer: Read failure!", excpt);
+            throw new JsonParserError("JsonTokenizer: Read failure!", excpt);
         }
     }
 
@@ -149,19 +156,19 @@ class JsonTokenizer
         }
         else
         {
-            final JsonDecoder.Result result = JsonDecoder.decodeValue(content, pos);
-            final int numReadChars = result.getNumReadChars();
+            decoderResult = JsonDecoder.decodeValue(content, pos);
+            final int numReadChars = decoderResult.getNumReadChars();
 
             if (pos + numReadChars >= content.length())
-                return false; // we are at the end of chunk => read more
+                return false; // we are at the end of chunk => try to read more
 
-            if (!result.success())
+            if (!decoderResult.success())
             {
-                throw new ZserioError("JsonTokenizer:" + lineNumber + ":" + tokenColumnNumber +
+                throw new JsonParserError("JsonTokenizer:" + lineNumber + ":" + tokenColumnNumber +
                         ": Unknown token!");
             }
 
-            setToken(JsonToken.VALUE, result.getValue());
+            setToken(JsonToken.VALUE, decoderResult.getValue());
             setPosition(pos + numReadChars, columnNumber + numReadChars);
         }
 
@@ -232,4 +239,5 @@ class JsonTokenizer
     private int pos;
     private JsonToken token;
     private Object value;
+    private JsonDecoder.Result decoderResult;
 }

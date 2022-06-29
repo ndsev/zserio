@@ -2,8 +2,6 @@ package zserio.runtime.json;
 
 import java.io.Reader;
 
-import zserio.runtime.ZserioError;
-
 /**
  * Json parser.
  *
@@ -49,6 +47,16 @@ class JsonParser
     public int getLine()
     {
         return tokenizer.getLine();
+    }
+
+    /**
+     * Gets current column number.
+     *
+     * @return Column number.
+     */
+    public int getColumn()
+    {
+        return tokenizer.getColumn();
     }
 
     /**
@@ -158,7 +166,7 @@ class JsonParser
         final Object key = tokenizer.getValue();
         if (!(key instanceof String))
         {
-            throw new ZserioError("JsonParser:" + tokenizer.getLine() + ":" + tokenizer.getColumn() +
+            throw new JsonParserError("JsonParser:" + tokenizer.getLine() + ":" + tokenizer.getColumn() +
                     ": Key must be a string value!");
         }
         observer.visitKey((String)key);
@@ -213,7 +221,7 @@ class JsonParser
             msg += ", expecting one of [" + builder.toString() + "]!";
         }
 
-        throw new ZserioError(msg);
+        throw new JsonParserError(msg);
     }
 
     static JsonToken[] ELEMENT_TOKENS =

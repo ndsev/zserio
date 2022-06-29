@@ -10,8 +10,6 @@ import java.math.BigInteger;
 
 import org.junit.jupiter.api.Test;
 
-import zserio.runtime.ZserioError;
-
 public class JsonTokenizerTest
 {
     @Test
@@ -80,7 +78,7 @@ public class JsonTokenizerTest
 
         assertEquals(JsonToken.END_OF_FILE, tokenizer.next());
         assertEquals(5, tokenizer.getLine());
-        assertEquals(3, tokenizer.getColumn());
+        assertEquals(4, tokenizer.getColumn());
 
         reader.close();
     }
@@ -90,7 +88,7 @@ public class JsonTokenizerTest
     {
         final Reader reader = new StringReader("\\\n");
         final JsonTokenizer tokenizer = new JsonTokenizer(reader);
-        final ZserioError exception = assertThrows(ZserioError.class, () -> tokenizer.next());
+        final JsonParserError exception = assertThrows(JsonParserError.class, () -> tokenizer.next());
         assertEquals("JsonTokenizer:1:1: Unknown token!", exception.getMessage());
 
         reader.close();

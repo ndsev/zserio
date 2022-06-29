@@ -13,8 +13,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import zserio.runtime.ZserioError;
-
 public class JsonParserTest
 {
     @Test
@@ -54,10 +52,14 @@ public class JsonParserTest
         assertFalse(jsonParser.parse());
         assertEquals(1, observer.getReport().size());
         assertEquals("visitValue: text", observer.getReport().get(0));
+        assertEquals(1, jsonParser.getLine());
+        assertEquals(7, jsonParser.getColumn());
 
         assertTrue(jsonParser.parse());
         assertEquals(2, observer.getReport().size());
         assertEquals("visitValue: second", observer.getReport().get(1));
+        assertEquals(1, jsonParser.getLine());
+        assertEquals(15, jsonParser.getColumn());
 
         reader.close();
     }
@@ -95,7 +97,7 @@ public class JsonParserTest
         final DummyObserver observer = new DummyObserver();
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
-        final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
+        final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
         assertEquals("JsonParser:3:1: Unexpected token: BEGIN_OBJECT ('{'), expecting END_OBJECT!",
                 exception.getMessage());
         assertEquals(1, observer.getReport().size());
@@ -111,7 +113,7 @@ public class JsonParserTest
         final DummyObserver observer = new DummyObserver();
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
-        final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
+        final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
         assertEquals("JsonParser:3:3: Unexpected token: BEGIN_OBJECT ('{'), expecting VALUE!",
                 exception.getMessage());
         assertEquals(3, observer.getReport().size());
@@ -129,7 +131,7 @@ public class JsonParserTest
         final DummyObserver observer = new DummyObserver();
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
-        final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
+        final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
         assertEquals("JsonParser:3:1: Unexpected token: VALUE ('item2'), expecting END_OBJECT!",
                 exception.getMessage());
         assertEquals(3, observer.getReport().size());
@@ -147,7 +149,7 @@ public class JsonParserTest
         final DummyObserver observer = new DummyObserver();
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
-        final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
+        final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
         assertEquals("JsonParser:2:1: Key must be a string value!", exception.getMessage());
         assertEquals(1, observer.getReport().size());
         assertEquals("beginObject", observer.getReport().get(0));
@@ -162,7 +164,7 @@ public class JsonParserTest
         final DummyObserver observer = new DummyObserver();
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
-        final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
+        final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
         assertEquals("JsonParser:2:8: Unexpected token: END_OBJECT ('}'), expecting one of " +
                 "[BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!", exception.getMessage());
         assertEquals(2, observer.getReport().size());
@@ -179,7 +181,7 @@ public class JsonParserTest
         final DummyObserver observer = new DummyObserver();
         final JsonParser jsonParser = new JsonParser(reader, observer);
 
-        final ZserioError exception = assertThrows(ZserioError.class, () -> jsonParser.parse());
+        final JsonParserError exception = assertThrows(JsonParserError.class, () -> jsonParser.parse());
         assertEquals("JsonParser:4:1: Unexpected token: VALUE ('20'), expecting END_ARRAY!",
                 exception.getMessage());
         assertEquals(4, observer.getReport().size());
