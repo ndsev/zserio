@@ -72,6 +72,7 @@ public class JsonDecoderTest
         checkDecoderFailure("invalid", 0, 1);
         checkDecoderFailure("i-Infinvalid", 1, 9);
         checkDecoderFailure("-Infin", 0, 6);
+        checkDecoderFailure("-Infix", 0, 6);
     }
 
     @Test
@@ -82,6 +83,8 @@ public class JsonDecoderTest
         checkDecoderSuccess("-0 { }", 0, 2, BigInteger.ZERO);
         checkDecoderSuccess("-1", 0, 2, BigInteger.valueOf(-1));
         checkDecoderSuccess("-9223372036854775808", 0, 20, BigInteger.valueOf(Long.MIN_VALUE));
+
+        checkDecoderFailure("--10", 0, 1);
     }
 
     @Test
@@ -93,6 +96,8 @@ public class JsonDecoderTest
         checkDecoderSuccess("1", 0, 1, BigInteger.ONE);
         checkDecoderSuccess("9223372036854775807", 0, 19, BigInteger.valueOf(Long.MAX_VALUE));
         checkDecoderSuccess("18446744073709551615", 0, 20, new BigInteger("18446744073709551615"));
+
+        checkDecoderFailure("+10", 0, 1);
     }
 
     @Test
@@ -118,6 +123,10 @@ public class JsonDecoderTest
 
         checkDecoderFailure("1EE20", 0, 2);
         checkDecoderFailure("1E++20", 0, 3);
+
+        checkDecoderFailure("1e", 0, 2);
+        checkDecoderFailure("1e+", 0, 3);
+        checkDecoderFailure("1E-", 0, 3);
     }
 
     @Test
@@ -145,6 +154,9 @@ public class JsonDecoderTest
 
         // <= 0x1F -> unicode escape
         checkDecoderSuccess("\"\\u001f\"", 0, 8, "\u001f");
+
+        // TODO[Mi-L@]: Fixme!
+        //checkDecoderFailure("\"unterminated", 0, 13);
     }
 
     private void checkDecoderSuccess(String input, int pos, int expectedNumRead, Object expectedValue)

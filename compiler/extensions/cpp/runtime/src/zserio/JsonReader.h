@@ -129,7 +129,8 @@ public:
         }
         catch (const CppRuntimeException& e)
         {
-            throw CppRuntimeException(e.what()) + " (JsonParser line " + m_parser.getLine() + ")";
+            throw CppRuntimeException(e.what()) +
+                    " (JsonParser:" + m_parser.getLine() + ":" + m_parser.getColumn() + ")";
         }
 
         return m_creatorAdapter.get();

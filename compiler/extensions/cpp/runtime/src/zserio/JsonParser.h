@@ -41,10 +41,10 @@ public:
     bool parse()
     {
         if (m_tokenizer.getToken() == JsonToken::BEGIN_OF_FILE)
-        {
-            if (m_tokenizer.next() == JsonToken::END_OF_FILE)
-                return true;
-        }
+            m_tokenizer.next();
+
+        if (m_tokenizer.getToken() == JsonToken::END_OF_FILE)
+            return true;
 
         parseElement();
 
@@ -54,6 +54,11 @@ public:
     size_t getLine() const
     {
         return m_tokenizer.getLine();
+    }
+
+    size_t getColumn() const
+    {
+        return m_tokenizer.getColumn();
     }
 
 private:
@@ -129,7 +134,10 @@ void BasicJsonParser<ALLOC>::parseMember()
     checkToken(JsonToken::VALUE);
     const AnyHolder<ALLOC>& key = m_tokenizer.getValue();
     if (!key.template isType<string<ALLOC>>())
-        throw JsonParserException("JsonParser line ") + getLine() + ": Key must be a string value!";
+    {
+        throw JsonParserException("JsonParser:") + getLine() + ":" + getColumn() +
+                ": Key must be a string value!";
+    }
     m_observer.visitKey(key.template get<string<ALLOC>>());
     m_tokenizer.next();
 
@@ -218,8 +226,8 @@ void BasicJsonParser<ALLOC>::consumeToken(JsonToken token)
 template <typename ALLOC>
 void BasicJsonParser<ALLOC>::throwUnexpectedToken(Span<const JsonToken> expecting) const
 {
-    JsonParserException error("JsonParser line ");
-    error + getLine() + ": unexpected token: " + jsonTokenName(m_tokenizer.getToken());
+    JsonParserException error("JsonParser:");
+    error + getLine() + ":" + getColumn() + ": unexpected token: " + jsonTokenName(m_tokenizer.getToken());
     if (expecting.size() == 1)
     {
         error + ", expecting " + jsonTokenName(expecting[0]) + "!";

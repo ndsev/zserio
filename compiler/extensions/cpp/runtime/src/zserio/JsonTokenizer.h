@@ -39,9 +39,10 @@ class BasicJsonTokenizer
 {
 public:
     BasicJsonTokenizer(std::istream& in, const ALLOC& allocator):
-        m_in(in), m_decoder(allocator), m_content(allocator), m_value(allocator)
+            m_buffer(), m_in(in), m_decoder(allocator), m_decoderResult(0, allocator),
+            m_content(readContent(allocator)), m_value(allocator)
     {
-        std::getline(m_in, m_content);
+        m_token = m_content.empty() ? JsonToken::END_OF_FILE : JsonToken::BEGIN_OF_FILE;
     }
 
     JsonToken next();
@@ -49,38 +50,57 @@ public:
     JsonToken getToken() const { return m_token; }
     const AnyHolder<ALLOC>& getValue() const { return m_value; }
     size_t getLine() const { return m_lineNumber; }
+    size_t getColumn() const { return m_tokenColumnNumber; }
 
 private:
+    string<ALLOC> readContent(const ALLOC& allocator);
+
     bool decodeNext();
-    bool decodeValue();
-    bool checkEof();
-    void skipWs();
+    bool skipWhitespaces();
+
+    template <typename T>
+    void setToken(JsonToken token, T&& value);
+    void setToken(JsonToken token, AnyHolder<ALLOC>&& value);
+    void setToken(JsonToken token);
+    void setPosition(size_t newPos, size_t newColumnNumber);
+    void setTokenValue();
+
+    static constexpr size_t BUFFER_SIZE = 64 * 1024;
+    char m_buffer[BUFFER_SIZE];
 
     std::istream& m_in;
     BasicJsonDecoder<ALLOC> m_decoder;
+    typename BasicJsonDecoder<ALLOC>::DecoderResult m_decoderResult;
     string<ALLOC> m_content;
     size_t m_lineNumber = 1;
+    size_t m_columnNumber = 1;
+    size_t m_tokenColumnNumber = 1;
     size_t m_pos = 0;
-    JsonToken m_token = JsonToken::BEGIN_OF_FILE;
+    JsonToken m_token;
     AnyHolder<ALLOC> m_value;
 };
 
 template <typename ALLOC>
 JsonToken BasicJsonTokenizer<ALLOC>::next()
 {
-    size_t currentLineNumber = m_lineNumber;
     while (!decodeNext())
     {
-        string<ALLOC> newContent(m_content.get_allocator());
-        if (!std::getline(m_in, newContent))
+        string<ALLOC> newContent = readContent(m_content.get_allocator());
+        if (newContent.empty())
         {
             if (m_token == JsonToken::END_OF_FILE)
-                return m_token;
-            throw JsonParserException("JsonParser line ") + currentLineNumber +
-                    ": Unknown token: '" + m_value.template get<char>() +
-                    "' (" + jsonTokenName(m_token) + ")!";
+            {
+                m_tokenColumnNumber = m_columnNumber;
+            }
+            else
+            {
+                // stream is finished but last token is not EOF => value must be at the end
+                setTokenValue();
+            }
+
+            return m_token;
         }
-        m_lineNumber += 1;
+
         m_content = m_content.substr(m_pos) + newContent;
         m_pos = 0;
     }
@@ -89,88 +109,136 @@ JsonToken BasicJsonTokenizer<ALLOC>::next()
 }
 
 template <typename ALLOC>
+string<ALLOC> BasicJsonTokenizer<ALLOC>::readContent(const ALLOC& allocator)
+{
+    const size_t count = static_cast<size_t>(m_in.rdbuf()->sgetn(m_buffer, BUFFER_SIZE));
+    return string<ALLOC>(m_buffer, count, allocator);
+}
+
+template <typename ALLOC>
 bool BasicJsonTokenizer<ALLOC>::decodeNext()
 {
-    if (checkEof())
-        return false;
-    skipWs();
-    if (checkEof())
+    if (!skipWhitespaces())
         return false;
 
-    char nextChar = m_content[m_pos];
+    m_tokenColumnNumber = m_columnNumber;
+
+    const char nextChar = m_content[m_pos];
     switch (nextChar)
     {
     case '{':
-        m_token = JsonToken::BEGIN_OBJECT;
+        setToken(JsonToken::BEGIN_OBJECT, nextChar);
+        setPosition(m_pos + 1, m_columnNumber + 1);
         break;
     case '}':
-        m_token = JsonToken::END_OBJECT;
+        setToken(JsonToken::END_OBJECT, nextChar);
+        setPosition(m_pos + 1, m_columnNumber + 1);
         break;
     case '[':
-        m_token = JsonToken::BEGIN_ARRAY;
+        setToken(JsonToken::BEGIN_ARRAY, nextChar);
+        setPosition(m_pos + 1, m_columnNumber + 1);
         break;
     case ']':
-        m_token = JsonToken::END_ARRAY;
+        setToken(JsonToken::END_ARRAY, nextChar);
+        setPosition(m_pos + 1, m_columnNumber + 1);
         break;
     case ':':
-        m_token = JsonToken::KEY_SEPARATOR;
+        setToken(JsonToken::KEY_SEPARATOR, nextChar);
+        setPosition(m_pos + 1, m_columnNumber + 1);
         break;
     case ',':
-        m_token = JsonToken::ITEM_SEPARATOR;
+        setToken(JsonToken::ITEM_SEPARATOR, nextChar);
+        setPosition(m_pos + 1, m_columnNumber + 1);
         break;
     default:
-        return decodeValue();
+        m_decoderResult = m_decoder.decodeValue(m_content.c_str() + m_pos);
+        if (m_pos + m_decoderResult.numReadChars >= m_content.size())
+            return false; // we are at the end of chunk => read more
+
+        setTokenValue();
+        break;
     }
 
-    ++m_pos;
-    m_value.set(nextChar);
     return true;
 }
 
 template <typename ALLOC>
-bool BasicJsonTokenizer<ALLOC>::decodeValue()
+bool BasicJsonTokenizer<ALLOC>::skipWhitespaces()
 {
-    size_t numRead = 0;
-    m_value = m_decoder.decodeValue(m_content.c_str() + m_pos, numRead);
+    while (true)
+    {
+        if (m_pos >= m_content.size())
+        {
+            setToken(JsonToken::END_OF_FILE);
+            return false;
+        }
 
-    if (m_value.hasValue())
-    {
-        m_pos += numRead;
-        m_token = JsonToken::VALUE;
-        return true;
-    }
-    else
-    {
-        m_token = JsonToken::UNKNOWN;
-        m_value.set(m_content[m_pos]);
-        return false;
+        const char nextChar = m_content[m_pos];
+        switch (nextChar)
+        {
+        case ' ':
+        case '\t':
+            setPosition(m_pos + 1, m_columnNumber + 1);
+            break;
+        case '\n':
+            m_lineNumber++;
+            setPosition(m_pos + 1, 1);
+            break;
+        case '\r':
+            if (m_pos + 1 >= m_content.size())
+            {
+                setToken(JsonToken::END_OF_FILE);
+                return false;
+            }
+            m_lineNumber++;
+            setPosition(m_pos + (m_content[m_pos + 1] == '\n' ? 2 : 1), 1);
+            break;
+        default:
+            return true;
+        }
     }
 }
 
 template <typename ALLOC>
-bool BasicJsonTokenizer<ALLOC>::checkEof()
+template <typename T>
+void BasicJsonTokenizer<ALLOC>::setToken(JsonToken token, T&& value)
 {
-    if (m_pos >= m_content.size())
-    {
-        m_token = JsonToken::END_OF_FILE;
-        m_value.reset();
-        return true;
-    }
-
-    return false;
+    m_token = token;
+    m_value.set(std::forward<T>(value));
 }
 
 template <typename ALLOC>
-void BasicJsonTokenizer<ALLOC>::skipWs()
+void BasicJsonTokenizer<ALLOC>::setToken(JsonToken token, AnyHolder<ALLOC>&& value)
 {
-    while (m_pos < m_content.size() && (
-            m_content[m_pos] == ' ' ||
-            m_content[m_pos] == '\t' ||
-            m_content[m_pos] == '\n' ||
-            m_content[m_pos] == '\r'))
+    m_token = token;
+    m_value = std::move(value);
+}
+
+template <typename ALLOC>
+void BasicJsonTokenizer<ALLOC>::setToken(JsonToken token)
+{
+    m_token = token;
+    m_value.reset();
+}
+
+template <typename ALLOC>
+void BasicJsonTokenizer<ALLOC>::setPosition(size_t newPos, size_t newColumnNumber)
+{
+    m_pos = newPos;
+    m_columnNumber = newColumnNumber;
+}
+
+template <typename ALLOC>
+void BasicJsonTokenizer<ALLOC>::setTokenValue()
+{
+    if (!m_decoderResult.value.hasValue())
     {
-        ++m_pos;
+        throw JsonParserException("JsonTokenizer:") + m_lineNumber + ":" + m_tokenColumnNumber +
+                ": Unknown token!";
     }
+
+    setToken(JsonToken::VALUE, std::move(m_decoderResult.value));
+    setPosition(m_pos + m_decoderResult.numReadChars, m_columnNumber + m_decoderResult.numReadChars);
 }
 
 using JsonTokenizer = BasicJsonTokenizer<>;

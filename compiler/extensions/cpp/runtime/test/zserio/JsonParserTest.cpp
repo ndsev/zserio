@@ -76,14 +76,6 @@ private:
     std::vector<std::string> m_report;
 };
 
-void assertStartsWith(const std::string& expectedStart, const char* cstr)
-{
-    std::string str(cstr);
-    if (str.size() > expectedStart.size())
-        str.resize(expectedStart.size());
-    ASSERT_EQ(expectedStart, str);
-}
-
 } // namespace
 
 TEST(JsonParserTest, empty)
@@ -173,7 +165,7 @@ TEST(JsonParserTest, unexpectedObject)
         }
         catch (const JsonParserException& e)
         {
-            assertStartsWith("JsonParser line 3:", e.what());
+            ASSERT_STREQ("JsonParser:3:1: unexpected token: BEGIN_OBJECT, expecting END_OBJECT!", e.what());
             throw;
         }
     }, JsonParserException);
@@ -196,7 +188,7 @@ TEST(JsonParserTest, unexpectedObjectAfterItemSeparator)
         }
         catch (const JsonParserException& e)
         {
-            assertStartsWith("JsonParser line 3:", e.what());
+            ASSERT_STREQ("JsonParser:3:3: unexpected token: BEGIN_OBJECT, expecting VALUE!", e.what());
             throw;
         }
     }, JsonParserException);
@@ -221,7 +213,7 @@ TEST(JsonParserTest, missingObjectItemSeparator)
         }
         catch (const JsonParserException& e)
         {
-            assertStartsWith("JsonParser line 3:", e.what());
+            ASSERT_STREQ("JsonParser:3:1: unexpected token: VALUE, expecting END_OBJECT!", e.what());
             throw;
         }
     }, JsonParserException);
@@ -246,7 +238,7 @@ TEST(JsonParserTest, wrongKeyType)
         }
         catch (const JsonParserException& e)
         {
-            assertStartsWith("JsonParser line 2:", e.what());
+            ASSERT_STREQ("JsonParser:2:1: Key must be a string value!", e.what());
             throw;
         }
     }, JsonParserException);
@@ -269,7 +261,8 @@ TEST(JsonParserTest, unexpectedElementToken)
         }
         catch (const JsonParserException& e)
         {
-            assertStartsWith("JsonParser line 2:", e.what());
+            ASSERT_STREQ("JsonParser:2:8: unexpected token: END_OBJECT, "
+                    "expecting one of [BEGIN_OBJECT, BEGIN_ARRAY, VALUE]!", e.what());
             throw;
         }
     }, JsonParserException);
@@ -293,7 +286,7 @@ TEST(JsonParserTest, missingArrayElementSeparator)
         }
         catch (const JsonParserException& e)
         {
-            assertStartsWith("JsonParser line 4:", e.what());
+            ASSERT_STREQ("JsonParser:4:1: unexpected token: VALUE, expecting END_ARRAY!", e.what());
             throw;
         }
     }, JsonParserException);
@@ -305,26 +298,6 @@ TEST(JsonParserTest, missingArrayElementSeparator)
         {"visitValue: 10"}
     }};
     ASSERT_EQ(expectedReport, observer.getReport());
-}
-
-TEST(JsonParserTest, unknownToken)
-{
-    std::stringstream str("\\\n");
-    DummyObserver observer;
-    JsonParser jsonParser(str, observer);
-    ASSERT_THROW({
-        try
-        {
-            jsonParser.parse();
-        }
-        catch (const JsonParserException& e)
-        {
-            assertStartsWith("JsonParser line 1:", e.what());
-            throw;
-        }
-    }, JsonParserException);
-
-    ASSERT_TRUE(observer.getReport().empty());
 }
 
 } // namespace zserio

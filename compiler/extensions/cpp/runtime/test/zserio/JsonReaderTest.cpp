@@ -6,27 +6,6 @@
 namespace zserio
 {
 
-namespace
-{
-
-void assertStartsWith(const std::string& expectedStart, const char* cstr)
-{
-    std::string str(cstr);
-    if (str.size() > expectedStart.size())
-        str.resize(expectedStart.size());
-    ASSERT_EQ(expectedStart, str);
-}
-
-void assertEndsWith(const std::string& expectedEnd, const char* cstr)
-{
-    std::string str(cstr);
-    if (str.size() > expectedEnd.size())
-        str = str.substr(str.size() - expectedEnd.size());
-    ASSERT_EQ(expectedEnd, str);
-}
-
-} // namespace
-
 TEST(JsonReaderTest, readObject)
 {
     std::stringstream str(
@@ -185,7 +164,7 @@ TEST(JsonReaderTest, jsonParserException)
         }
         catch (const JsonParserException& e)
         {
-            assertStartsWith("JsonParser line 2:", e.what());
+            ASSERT_STREQ("JsonParser:2:1: unexpected token: VALUE, expecting KEY_SEPARATOR!", e.what());
             throw;
         }
     }, JsonParserException);
@@ -205,7 +184,8 @@ TEST(JsonReaderTest, wrongKeyException)
         }
         catch (const CppRuntimeException& e)
         {
-            assertEndsWith("(JsonParser line 2)", e.what());
+            ASSERT_STREQ("ZserioTreeCreator: Member 'nonexisting' not found in 'DummyObject'! "
+                    "(JsonParser:2:16)", e.what());
             throw;
         }
     }, CppRuntimeException);
@@ -225,7 +205,8 @@ TEST(JsonReaderTest, wrongValueTypeException)
         }
         catch (const CppRuntimeException& e)
         {
-            assertEndsWith("(JsonParser line 2)", e.what());
+            ASSERT_STREQ("ZserioTreeCreator: Trying to make integral any value from non-integral type! "
+                    "(JsonParser:2:12)", e.what());
             throw;
         }
     }, CppRuntimeException);
@@ -259,7 +240,7 @@ TEST(JsonReaderTest, wrongBitBufferException)
         }
         catch (const CppRuntimeException& e)
         {
-            assertEndsWith("(JsonParser line 12)", e.what());
+            ASSERT_STREQ("JsonReader: Unexpected beginObject in BitBuffer! (JsonParser:12:14)", e.what());
             throw;
         }
     }, CppRuntimeException);
@@ -291,7 +272,7 @@ TEST(JsonReaderTest, partialBitBufferException)
         }
         catch (const CppRuntimeException& e)
         {
-            assertEndsWith("(JsonParser line 12)", e.what());
+            ASSERT_STREQ("JsonReader: Unexpected end in BitBuffer! (JsonParser:12:5)", e.what());
             throw;
         }
     }, CppRuntimeException);
