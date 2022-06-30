@@ -343,7 +343,7 @@ protected:
         // - optional child
         reflectable.setField("child", AnyHolder(Child{13, "thirteen", false, zserio::NullOpt}));
         ASSERT_TRUE(reflectable.getField("child"));
-        ASSERT_EQ("thirteen"_sv, reflectable["child.name"]->getString());
+        ASSERT_EQ("thirteen"_sv, reflectable["child.name"]->getStringView());
         ASSERT_FALSE(reflectable["child.hasNicknames"]->getBool());
 
         // write read check on structure
@@ -383,13 +383,13 @@ TEST_F(WithReflectionCodeTest, checkChoiceWithStructure)
     ASSERT_EQ(zserio::enumToValue(Selector::STRUCT),
             reflectable->find("structField.getEnumField")->getInt8());
 
-    ASSERT_EQ("zero"_sv, reflectable->callFunction("getFirstChildName")->getString());
+    ASSERT_EQ("zero"_sv, reflectable->callFunction("getFirstChildName")->getStringView());
     ASSERT_EQ("zero", reflectable->find("getFirstChildName")->toString());
 
     checkStructReflectable(*structReflectable, choice.getStructField());
 
     // check child set by checkStructReflectable
-    ASSERT_EQ("thirteen"_sv, (*reflectable)["structField.child.name"]->getString());
+    ASSERT_EQ("thirteen"_sv, (*reflectable)["structField.child.name"]->getStringView());
 
     // set field within child
     structReflectable->setField("dynamicBitField", AnyHolder(static_cast<uint64_t>(13)));
