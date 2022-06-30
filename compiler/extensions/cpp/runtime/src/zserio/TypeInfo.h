@@ -826,7 +826,6 @@ private:
     TypeInfoFunc m_typeInfoFunc;
 };
 
-
 template <typename ALLOC>
 TypeInfoBase<ALLOC>::TypeInfoBase(StringView schemaName, SchemaType schemaType, CppType cppType) :
         m_schemaName(schemaName), m_schemaType(schemaType), m_cppType(cppType)

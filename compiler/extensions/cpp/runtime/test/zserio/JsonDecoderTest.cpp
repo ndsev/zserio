@@ -5,6 +5,8 @@
 namespace zserio
 {
 
+using JsonDecoder = BasicJsonDecoder<>;
+
 class JsonDecoderTest : public ::testing::Test
 {
 protected:

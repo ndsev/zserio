@@ -1940,7 +1940,7 @@ public:
      * \param bitPosition Current bit stream position.
      * \param element Current element.
      *
-     * \returns Updated bit stream position which points to the first bit after this element.
+     * \return Updated bit stream position which points to the first bit after this element.
      */
     template <typename PACKING_CONTEXT_NODE>
     static size_t initializeOffsets(PACKING_CONTEXT_NODE& contextNode, size_t bitPosition,

@@ -15,31 +15,62 @@
 namespace zserio
 {
 
+/**
+ * JSON value decoder.
+ */
 template <typename ALLOC = std::allocator<uint8_t>>
 class BasicJsonDecoder : public AllocatorHolder<ALLOC>
 {
 public:
     using AllocatorHolder<ALLOC>::get_allocator;
 
+    /**
+     * Decoder result value.
+     */
     struct DecoderResult
     {
+        /**
+         * Constructor used for decoder failure.
+         *
+         * \param numRead Number of processed characters.
+         * \param allocator Allocator to use.
+         */
         DecoderResult(size_t numRead, const ALLOC& allocator) :
                 numReadChars(numRead), value(allocator)
         {}
 
+        /**
+         * Constructor for decoder success.
+         *
+         * \param numRead Number of processed characters.
+         * \param decodedValue Value decoded from JSON stream.
+         * \param allocator Allocator to use.
+         */
         template <typename T>
-        DecoderResult(size_t numRead, T&& readValue, const ALLOC& allocator) :
-                numReadChars(numRead), value(std::forward<T>(readValue), allocator)
+        DecoderResult(size_t numRead, T&& decodedValue, const ALLOC& allocator) :
+                numReadChars(numRead), value(std::forward<T>(decodedValue), allocator)
         {}
 
-        size_t numReadChars;
-        AnyHolder<ALLOC> value;
+        size_t numReadChars; /**< Number of processed characters. */
+        AnyHolder<ALLOC> value; /**< Decoded value. Empty on failure. */
     };
 
+    /**
+     * Constructor.
+     *
+     * \param allocator Allocator to use.
+     */
     BasicJsonDecoder(const ALLOC& allocator = ALLOC()) :
             AllocatorHolder<ALLOC>(allocator)
     {}
 
+    /**
+     * Decodes the JSON value from the input.
+     *
+     * \param input Input to decode from.
+     *
+     * \return Decoder result.
+     */
     DecoderResult decodeValue(const char* input)
     {
         switch (input[0])
@@ -287,8 +318,6 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeD
 
     return DecoderResult(numChars, value, get_allocator());
 }
-
-using JsonDecoder = BasicJsonDecoder<>;
 
 } // namespace zserio
 

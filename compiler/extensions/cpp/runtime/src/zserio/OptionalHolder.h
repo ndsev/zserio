@@ -413,7 +413,6 @@ private:
     storage_type m_storage;
 };
 
-
 /**
  * In place storage for optional holder.
  */

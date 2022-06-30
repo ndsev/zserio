@@ -350,7 +350,6 @@ TEST_F(HeapOptionalHolderTest, hasValue)
     ASSERT_EQ(true, optionalInt.hasValue());
 }
 
-
 TEST_F(HeapOptionalHolderTest, setGet)
 {
     HeapOptionalHolder<int> optionalInt;

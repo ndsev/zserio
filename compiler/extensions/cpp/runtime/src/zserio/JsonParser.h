@@ -9,35 +9,113 @@
 namespace zserio
 {
 
+/**
+ * Json Parser.
+ *
+ * Parses the JSON on the fly and calls an observer.
+ */
 template <typename ALLOC = std::allocator<uint8_t>>
 class BasicJsonParser
 {
 public:
+    /**
+     * Json Parser Observer.
+     */
     class IObserver
     {
     public:
+        /**
+         * Destructor.
+         */
         virtual ~IObserver() {}
 
+        /**
+         * Called when a JSON object begins - i.e. on '{'.
+         */
         virtual void beginObject() = 0;
+
+        /**
+         * Called when a JSON objects ends - i.e. on '}'.
+         */
         virtual void endObject() = 0;
 
+        /**
+         * Called when a JSON array begins - i.e. on '['.
+         */
         virtual void beginArray() = 0;
+
+        /**
+         * Called when a JSON array ends - i.e. on ']'.
+         */
         virtual void endArray() = 0;
 
+        /**
+         * Called on a JSON key.
+         *
+         * \param key String view to the key name.
+         */
         virtual void visitKey(StringView key) = 0;
 
+        /**
+         * Call on a JSON null value.
+         *
+         * \param nullValue Null value.
+         */
         virtual void visitValue(std::nullptr_t nullValue) = 0;
+
+        /**
+         * Call on a JSON bool value.
+         *
+         * \param boolValue Bool value.
+         */
         virtual void visitValue(bool boolValue) = 0;
+
+        /**
+         * Call on a JSON signed integer value.
+         *
+         * \param intValue Signed integer value.
+         */
         virtual void visitValue(int64_t intValue) = 0;
+
+        /**
+         * Call on a JSON unsigned integer value.
+         *
+         * \param uintValue Unsigned integer value.
+         */
         virtual void visitValue(uint64_t uintValue) = 0;
+
+        /**
+         * Call on a JSON floating point value.
+         *
+         * \param doubleValue Floating point value.
+         */
         virtual void visitValue(double doubleValue) = 0;
+
+        /**
+         * Call on a JSON string value.
+         *
+         * \param stringValue String view to the string value.
+         */
         virtual void visitValue(StringView stringValue) = 0;
     };
 
+    /**
+     * Constructor.
+     *
+     * \param in Text stream to parse.
+     * \param observer Observer to use.
+     * \param allocator Allocator to use.
+     */
     BasicJsonParser(std::istream& in, IObserver& observer, const ALLOC& allocator = ALLOC()) :
             m_tokenizer(in, allocator), m_observer(observer)
     {}
 
+    /**
+     * Parses single JSON element from the text stream.
+     *
+     * \return True when end-of-file is reached, false otherwise (i.e. another JSON element is present).
+     * \throw JsonParserException When parsing fails.
+     */
     bool parse()
     {
         if (m_tokenizer.getToken() == JsonToken::BEGIN_OF_FILE)
@@ -51,11 +129,21 @@ public:
         return m_tokenizer.getToken() == JsonToken::END_OF_FILE;
     }
 
+    /**
+     * Gets current line number.
+     *
+     * \return Line number.
+     */
     size_t getLine() const
     {
         return m_tokenizer.getLine();
     }
 
+    /**
+     * Gets current column number.
+     *
+     * \return Column number.
+     */
     size_t getColumn() const
     {
         return m_tokenizer.getColumn();
@@ -78,7 +166,7 @@ private:
 
     static const std::array<JsonToken, 3> ELEMENT_TOKENS;
 
-    JsonTokenizer m_tokenizer;
+    BasicJsonTokenizer<ALLOC> m_tokenizer;
     IObserver& m_observer;
 };
 
@@ -215,7 +303,6 @@ void BasicJsonParser<ALLOC>::checkToken(JsonToken token)
         throwUnexpectedToken({{token}});
 }
 
-
 template <typename ALLOC>
 void BasicJsonParser<ALLOC>::consumeToken(JsonToken token)
 {
@@ -246,6 +333,7 @@ void BasicJsonParser<ALLOC>::throwUnexpectedToken(Span<const JsonToken> expectin
     throw error;
 }
 
+/** Typedef to Json Parser provided for convenience - using default std::allocator<uint8_t>. */
 using JsonParser = BasicJsonParser<>;
 
 } // namespace

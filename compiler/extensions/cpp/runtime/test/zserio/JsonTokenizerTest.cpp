@@ -7,6 +7,8 @@
 namespace zserio
 {
 
+using JsonTokenizer = BasicJsonTokenizer<>;
+
 TEST(JsonTokenizerTest, tokens)
 {
     std::stringstream str("{\"array\":\n[\n{\"key\":\n10}]}");

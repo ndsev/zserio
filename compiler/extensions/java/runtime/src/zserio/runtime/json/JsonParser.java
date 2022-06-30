@@ -3,9 +3,9 @@ package zserio.runtime.json;
 import java.io.Reader;
 
 /**
- * Json parser.
+ * Json Parser.
  *
- * Parses the json on the fly and calls an observer.
+ * Parses the JSON on the fly and calls an observer.
  */
 class JsonParser
 {
@@ -13,7 +13,7 @@ class JsonParser
      * Constructor.
      *
      * @param reader Text stream to parse.
-     * @param observer Json reader observer.
+     * @param observer Observer to use.
      */
     public JsonParser(Reader reader, Observer observer)
     {
@@ -24,7 +24,7 @@ class JsonParser
     /**
      * Parses single JSON element from the text stream.
      *
-     * @return True when end-of-file is reached, False otherwise (i.e. another JSON element is present).
+     * @return True when end-of-file is reached, false otherwise (i.e. another JSON element is present).
      */
     public boolean parse()
     {

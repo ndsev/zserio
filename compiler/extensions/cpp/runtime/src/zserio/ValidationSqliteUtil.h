@@ -70,7 +70,6 @@ struct ValidationSqliteUtil
         return static_cast<size_t>(sqlite3_column_int64(statement.get(), 0));
     }
 
-
     /**
      * Gets a map of column names to column description for given SQLite table.
      *

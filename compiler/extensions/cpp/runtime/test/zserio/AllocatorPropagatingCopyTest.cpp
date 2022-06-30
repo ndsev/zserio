@@ -53,7 +53,6 @@ private:
     allocator_type m_allocator;
 };
 
-
 } // namespace
 
 TEST(AllocatorPropagatingCopyTest, copyDefault)

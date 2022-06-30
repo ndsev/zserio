@@ -12,6 +12,9 @@
 namespace zserio
 {
 
+/**
+ * Tokens used by Json Tokenizer.
+ */
 enum class JsonToken : int8_t
 {
     UNKNOWN = -1,
@@ -26,18 +29,37 @@ enum class JsonToken : int8_t
     VALUE
 };
 
+/**
+ * Gets name of the given JSON token.
+ *
+ * \param token JSON token.
+ *
+ * \return Name of the JSON token.
+ */
 const char* jsonTokenName(JsonToken token);
 
+/**
+ * Exception used to distinguish exceptions from the JsonParser.
+ */
 class JsonParserException : public detail::CppRuntimeExceptionHelper<JsonParserException>
 {
 public:
     using BaseType::CppRuntimeExceptionHelper;
 };
 
+/**
+ * Json Tokenizer used by Json Parser.
+ */
 template <typename ALLOC = std::allocator<uint8_t>>
 class BasicJsonTokenizer
 {
 public:
+    /**
+     * Constructor.
+     *
+     * \param in Input stream to tokenize.
+     * \param allocator Allocator to use.
+     */
     BasicJsonTokenizer(std::istream& in, const ALLOC& allocator):
             m_buffer(), m_in(in), m_decoder(allocator), m_decoderResult(0, allocator),
             m_content(readContent(allocator)), m_value(allocator)
@@ -45,11 +67,43 @@ public:
         m_token = m_content.empty() ? JsonToken::END_OF_FILE : JsonToken::BEGIN_OF_FILE;
     }
 
+    /**
+     * Move to the next token.
+     *
+     * \return Next token.
+     * \throw JsonParserException In case that tokenizing fails - i.e. unknown token is reached.
+     */
     JsonToken next();
 
+    /**
+     * Gets current token.
+     *
+     * \return Current token.
+     */
     JsonToken getToken() const { return m_token; }
+
+    /**
+     * Gets current value.
+     *
+     * Any holder can be either unset - i.e. beginning or end of the input,
+     * or it can hold one of the types defined in IObserver::visitValue.
+     *
+     * \return Current value as an AnyHolder.
+     */
     const AnyHolder<ALLOC>& getValue() const { return m_value; }
+
+    /**
+     * Gets line number of the current token.
+     *
+     * \return Line number.
+     */
     size_t getLine() const { return m_lineNumber; }
+
+    /**
+     * Gets column number of the current token.
+     *
+     * \return Column number.
+     */
     size_t getColumn() const { return m_tokenColumnNumber; }
 
 private:
@@ -240,8 +294,6 @@ void BasicJsonTokenizer<ALLOC>::setTokenValue()
     setToken(JsonToken::VALUE, std::move(m_decoderResult.value));
     setPosition(m_pos + m_decoderResult.numReadChars, m_columnNumber + m_decoderResult.numReadChars);
 }
-
-using JsonTokenizer = BasicJsonTokenizer<>;
 
 } // namespace zserio
 

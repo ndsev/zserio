@@ -126,7 +126,6 @@ struct has_reflectable<T, detail::void_t<typename detail::decltype_reflectable<T
 {};
 /** \} */
 
-
 /**
  * Trait used to check whether the type T has getValue method - i.e. whether it's a bitmask.
  * \{

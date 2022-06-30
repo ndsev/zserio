@@ -107,14 +107,31 @@ private:
 
 } // namespace detail
 
+/**
+ * Reads zserio object tree defined by a type info from a text stream.
+ */
 template <typename ALLOC = std::allocator<uint8_t>>
 class BasicJsonReader
 {
 public:
+    /**
+     * Constructor.
+     *
+     * \param in Text stream to read.
+     * \param allocator Allocator to use.
+     */
     explicit BasicJsonReader(std::istream& in, const ALLOC& allocator = ALLOC()) :
             m_creatorAdapter(allocator), m_parser(in, m_creatorAdapter, allocator)
     {}
 
+    /**
+     * Reads a zserio object tree defined by the given type info from the text stream.
+     *
+     * \param typeInfo Type info defining the expected zserio object tree.
+     *
+     * \return Zserio object tree initialized using the JSON data.
+     * \throw CppRuntimeException When the JSON doesn't contain expected zserio object tree.
+     */
     IBasicReflectablePtr<ALLOC> read(const IBasicTypeInfo<ALLOC>& typeInfo)
     {
         m_creatorAdapter.setType(typeInfo);
@@ -140,6 +157,9 @@ private:
     detail::CreatorAdapter<ALLOC> m_creatorAdapter;
     BasicJsonParser<ALLOC> m_parser;
 };
+
+/** Typedef to Json Reader provided for convenience - using default std::allocator<uint8_t>. */
+using JsonReader = BasicJsonReader<>;
 
 namespace detail
 {
@@ -508,8 +528,6 @@ void CreatorAdapter<ALLOC>::setValue(T&& value)
 }
 
 } // namespace detail
-
-using JsonReader = BasicJsonReader<>;
 
 } // namespace zserio
 

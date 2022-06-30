@@ -100,7 +100,7 @@ class WalkFilter:
         :param array: Zserio array.
         :param member_info: Array member info.
 
-        :return: True when the walking should continue to the array.
+        :returns: True when the walking should continue to the array.
         """
         raise NotImplementedError()
 

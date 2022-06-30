@@ -17,14 +17,14 @@ import zserio.runtime.typeinfo.JavaType;
 import zserio.runtime.typeinfo.TypeInfo;
 
 /**
- * Reads zserio object tree defined by type info from a text stream.
+ * Reads zserio object tree defined by a type info from a text stream.
  */
 public class JsonReader implements AutoCloseable
 {
     /**
      * Constructor.
      *
-     * @param reader Text stream to parse.
+     * @param reader Text stream to read.
      */
     public JsonReader(Reader reader)
     {
@@ -40,9 +40,9 @@ public class JsonReader implements AutoCloseable
     }
 
     /**
-     * Reads a zserio object tree defined by the given type_info from the text steam.
+     * Reads a zserio object tree defined by the given type info from the text steam.
      *
-     * @param typeInfo Type info defining the zserio object tree.
+     * @param typeInfo Type info defining the expected zserio object tree.
      *
      * @return Zserio object tree initialized using the JSON data.
      */

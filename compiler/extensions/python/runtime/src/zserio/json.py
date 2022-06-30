@@ -203,7 +203,7 @@ class JsonParser:
     """
     Json Parser.
 
-    Parses the json on the fly and calls an observer.
+    Parses the JSON on the fly and calls an observer.
     """
 
     class Observer:
@@ -262,7 +262,7 @@ class JsonParser:
         Constructor.
 
         :param text_io: Text stream to parse.
-        :param observer: Json reader observer.
+        :param observer: Observer to use.
         """
 
         self._tokenizer = JsonParser.Tokenizer(text_io)
@@ -498,14 +498,14 @@ class JsonParser:
 
 class JsonReader:
     """
-    Reads zserio object tree defined by type info from a text stream.
+    Reads zserio object tree defined by a type info from a text stream.
     """
 
     def __init__(self, text_io: typing.TextIO) -> None:
         """
         Constructor.
 
-        :param text_io: Text stream to use for reading.
+        :param text_io: Text stream to read.
         """
 
         self._creator_adapter = JsonReader._CreatorAdapter()
@@ -513,9 +513,9 @@ class JsonReader:
 
     def read(self, type_info: TypeInfo) -> typing.Any:
         """
-        Reads a zserio object tree defined by the given type_info from the text steam.
+        Reads a zserio object tree defined by the given type info from the text steam.
 
-        :param type_info: Type info defining the zserio object tree.
+        :param type_info: Type info defining the expected zserio object tree.
         :returns: Zserio object tree initialized using the JSON data.
         :raises PythonRuntimeException: When the JSON doesn't contain expected zserio object tree.
         """

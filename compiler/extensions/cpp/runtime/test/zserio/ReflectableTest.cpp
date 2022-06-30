@@ -853,7 +853,6 @@ protected:
         ASSERT_EQ(bitSizeOfValue, reader.getBitPosition());
     }
 
-
     void checkNonArray(const IReflectableConstPtr& reflectable)
     {
         ASSERT_FALSE(reflectable->isArray());
