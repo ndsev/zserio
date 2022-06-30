@@ -128,8 +128,8 @@ public class JsonDecoderTest
         checkDecoderSuccess("\"\" { }", 0, 2, "");
 
         checkDecoderSuccess("\"test\"", 0, 6, "test");
-        checkDecoderSuccess("\"München\"", 0, 9, "München"); //!@# C++ is 10?!?!?
-        checkDecoderSuccess("\"€\"", 0, 3, "€"); //!@# C++ is 5?!?!?!
+        checkDecoderSuccess("\"München\"", 0, 9, "München");
+        checkDecoderSuccess("\"€\"", 0, 3, "€");
 
         // escapes
         checkDecoderSuccess("\"\\\\\"", 0, 4, "\\");

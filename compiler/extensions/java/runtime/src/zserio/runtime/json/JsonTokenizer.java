@@ -44,10 +44,8 @@ class JsonTokenizer
                 }
                 else
                 {
-                    // stream is at the end but last token is not EOF => value must be at the end
-                    final int numReadChars = decoderResult.getNumReadChars();
-                    setToken(JsonToken.VALUE, decoderResult.getValue());
-                    setPosition(pos + numReadChars, columnNumber + numReadChars);
+                    // stream is finished but last token is not EOF => value must be at the end
+                    setTokenValue();
                 }
 
                 return token;
@@ -124,52 +122,45 @@ class JsonTokenizer
         tokenColumnNumber = columnNumber;
 
         final char nextChar = content.charAt(pos);
-        if (nextChar == '{')
+        switch (nextChar)
         {
+        case '{':
             setToken(JsonToken.BEGIN_OBJECT, nextChar);
             setPosition(pos + 1, columnNumber + 1);
-        }
-        else if (nextChar == '}')
-        {
+            break;
+
+        case '}':
             setToken(JsonToken.END_OBJECT, nextChar);
             setPosition(pos + 1, columnNumber + 1);
-        }
-        else if (nextChar == '[')
-        {
+            break;
+
+        case '[':
             setToken(JsonToken.BEGIN_ARRAY, nextChar);
             setPosition(pos + 1, columnNumber + 1);
-        }
-        else if (nextChar == ']')
-        {
+            break;
+
+        case ']':
             setToken(JsonToken.END_ARRAY, nextChar);
             setPosition(pos + 1, columnNumber + 1);
-        }
-        else if (nextChar == ':')
-        {
+            break;
+
+        case ':':
             setToken(JsonToken.KEY_SEPARATOR, nextChar);
             setPosition(pos + 1, columnNumber + 1);
-        }
-        else if (nextChar == ',')
-        {
+            break;
+
+        case ',':
             setToken(JsonToken.ITEM_SEPARATOR, nextChar);
             setPosition(pos + 1, columnNumber + 1);
-        }
-        else
-        {
-            decoderResult = JsonDecoder.decodeValue(content, pos);
-            final int numReadChars = decoderResult.getNumReadChars();
+            break;
 
-            if (pos + numReadChars >= content.length())
+        default:
+            decoderResult = JsonDecoder.decodeValue(content, pos);
+            if (pos + decoderResult.getNumReadChars() >= content.length())
                 return false; // we are at the end of chunk => try to read more
 
-            if (!decoderResult.success())
-            {
-                throw new JsonParserError("JsonTokenizer:" + lineNumber + ":" + tokenColumnNumber +
-                        ": Unknown token!");
-            }
-
-            setToken(JsonToken.VALUE, decoderResult.getValue());
-            setPosition(pos + numReadChars, columnNumber + numReadChars);
+            setTokenValue();
+            break;
         }
 
         return true;
@@ -225,6 +216,19 @@ class JsonTokenizer
     {
         pos = newPos;
         columnNumber = newColumnNumber;
+    }
+
+    private void setTokenValue()
+    {
+        if (!decoderResult.success())
+        {
+            throw new JsonParserError("JsonTokenizer:" + lineNumber + ":" + tokenColumnNumber +
+                    ": Unknown token!");
+        }
+
+        setToken(JsonToken.VALUE, decoderResult.getValue());
+        final int numReadChars = decoderResult.getNumReadChars();
+        setPosition(pos + numReadChars, columnNumber + numReadChars);
     }
 
     private static final int MAX_LINE_LEN = 64 * 1024;

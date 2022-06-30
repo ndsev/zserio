@@ -296,6 +296,7 @@ TEST(JsonReaderTest, partialBitBufferException)
         }
     }, CppRuntimeException);
 }
+
 TEST(JsonReaderTest, jsonArrayException)
 {
     std::stringstream str("[1, 2]");
@@ -303,6 +304,7 @@ TEST(JsonReaderTest, jsonArrayException)
 
     ASSERT_THROW(jsonReader.read(DummyObject::typeInfo()), CppRuntimeException);
 }
+
 TEST(JsonReaderTest, jsonValueException)
 {
     std::stringstream str("\"text\"");
