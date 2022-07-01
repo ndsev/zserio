@@ -495,10 +495,28 @@ TEST(DebugStringUtilTest, fromJsonStream)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
+TEST(DebugStringUtilTest, fromJsonStreamTemplate)
+{
+    std::istringstream ss("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonStream<DummyObject<>>(ss);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
 TEST(DebugStringUtilTest, fromJsonString)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonString(DummyObject<>::typeInfo(), jsonString);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonStringTemplate)
+{
+    std::string jsonString("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonString<DummyObject<>>(jsonString);
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
@@ -513,6 +531,20 @@ TEST(DebugStringUtilTest, fromJsonFile)
     }
 
     IReflectablePtr reflectable = fromJsonFile(DummyObject<>::typeInfo(), fileName);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonFileTemplate)
+{
+    const char* fileName = "DebugStringUtilTest_fromJsonFile.json";
+    {
+        std::ofstream os(fileName);
+        os << "{\n  \"text\": \"something\"\n}";
+    }
+
+    IReflectablePtr reflectable = fromJsonFile<DummyObject<>>(fileName);
     ASSERT_TRUE(reflectable);
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());

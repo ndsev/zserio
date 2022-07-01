@@ -428,11 +428,40 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
  * \return Reflectable instance of the requested zserio object.
  * \throw CppRuntimeException In case of any error.
  */
-template <typename ALLOC = std::allocator<uint8_t>>
-IBasicReflectablePtr<ALLOC> fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is)
+template <typename ALLOC, typename ALLOC_HELPER = // ALLOC_HELPER needed due to gcc 11.2 bug
+        typename std::enable_if<is_allocator<ALLOC>::value, ALLOC>::type>
+IBasicReflectablePtr<ALLOC_HELPER> fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is)
 {
     JsonReader jsonReader(is);
     return jsonReader.read(typeInfo);
+}
+
+/**
+ * Parses JSON debug string from given text stream and creates instance of the requested zserio object
+ * according to the data contained in the debug string.
+ *
+ * \note The created object can be only partially initialzed depending on the JSON debug string.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *
+ *     std::istringstream is("{ \"fieldU32\": 13 }");
+ *     IReflectablePtr reflectable = fromJsonStream(SomeZserioObject::typeInfo(), is);
+ *
+ *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ * \endcode
+ *
+ * \param is Text stream to use.
+ *
+ * \return Reflectable instance of the requested zserio object.
+ * \throw CppRuntimeException In case of any error.
+ */
+template <typename T, typename ALLOC = typename T::allocator_type>
+IBasicReflectablePtr<ALLOC> fromJsonStream(std::istream& is)
+{
+    return fromJsonStream(T::typeInfo(), is);
 }
 
 /**
@@ -458,11 +487,41 @@ IBasicReflectablePtr<ALLOC> fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo
  * \return Reflectable instance of the requested zserio object.
  * \throw CppRuntimeException In case of any error.
  */
-template <typename ALLOC = std::allocator<uint8_t>>
-IBasicReflectablePtr<ALLOC> fromJsonString(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& json)
+template <typename ALLOC, typename ALLOC_HELPER = // ALLOC_HELPER needed due to gcc 11.2 bug
+        typename std::enable_if<is_allocator<ALLOC>::value, ALLOC>::type>
+IBasicReflectablePtr<ALLOC_HELPER> fromJsonString(const IBasicTypeInfo<ALLOC>& typeInfo,
+        const string<ALLOC_HELPER>& json)
 {
     std::basic_istringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>> is(json);
     return fromJsonStream(typeInfo, is);
+}
+
+/**
+ * Parses JSON debug string from given JSON string and creates instance of the requested zserio object
+ * according to the data contained in the debug string.
+ *
+ * \note The created object can be only partially initialzed depending on the JSON debug string.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *
+ *     std::string str("{ \"fieldU32\": 13 }")
+ *     IReflectablePtr reflectable = fromJsonStream<SomeZserioObject>(str);
+ *
+ *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ * \endcode
+ *
+ * \param json String to use.
+ *
+ * \return Reflectable instance of the requested zserio object.
+ * \throw CppRuntimeException In case of any error.
+ */
+template <typename T, typename ALLOC = typename T::allocator_type>
+IBasicReflectablePtr<ALLOC> fromJsonString(const string<ALLOC>& json)
+{
+    return fromJsonString(T::typeInfo(), json);
 }
 
 /**
@@ -488,8 +547,10 @@ IBasicReflectablePtr<ALLOC> fromJsonString(const IBasicTypeInfo<ALLOC>& typeInfo
  * \return Reflectable instance of the requested zserio object.
  * \throw CppRuntimeException In case of any error.
  */
-template <typename ALLOC = std::allocator<uint8_t>>
-IBasicReflectablePtr<ALLOC> fromJsonFile(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& fileName)
+template <typename ALLOC, typename ALLOC_HELPER = // ALLOC_HELPER needed due to gcc (11.2) bug
+        typename std::enable_if<is_allocator<ALLOC>::value, ALLOC>::type>
+IBasicReflectablePtr<ALLOC_HELPER> fromJsonFile(const IBasicTypeInfo<ALLOC>& typeInfo,
+        const string<ALLOC_HELPER>& fileName)
 {
     std::ifstream is = std::ifstream(fileName.c_str());
     if (!is)
@@ -498,6 +559,34 @@ IBasicReflectablePtr<ALLOC> fromJsonFile(const IBasicTypeInfo<ALLOC>& typeInfo, 
                 fileName + "' for reading!";
     }
     return fromJsonStream(typeInfo, is);
+}
+
+/**
+ * Parses JSON debug string from given text file and creates instance of the requested zserio object
+ * according to the data contained in the debug string.
+ *
+ * \note The created object can be only partially initialzed depending on the JSON debug string.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *
+ *     std::ifstream is("FileName.json");
+ *     IReflectablePtr reflectable = fromJsonStream<SomeZserioObject>(is);
+ *
+ *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ * \endcode
+ *
+ * \param fileName Name of file to read.
+ *
+ * \return Reflectable instance of the requested zserio object.
+ * \throw CppRuntimeException In case of any error.
+ */
+template <typename T, typename ALLOC = typename T::allocator_type>
+IBasicReflectablePtr<ALLOC> fromJsonFile(const string<ALLOC>& fileName)
+{
+    return fromJsonFile(T::typeInfo(), fileName);
 }
 
 } // namespace zserio
