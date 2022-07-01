@@ -1,14 +1,24 @@
 package zserio.runtime;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 
+import zserio.runtime.json.JsonReader;
 import zserio.runtime.json.JsonWriter;
+import zserio.runtime.typeinfo.TypeInfo;
 import zserio.runtime.walker.DefaultWalkFilter;
 import zserio.runtime.walker.WalkFilter;
 import zserio.runtime.walker.Walker;
@@ -328,6 +338,189 @@ public class DebugStringUtil
     public static void toJsonFile(Object zserioObject, String fileName) throws IOException
     {
         toJsonFile(zserioObject, fileName, DEFAULT_INDENT);
+    }
+
+    /**
+     * Parses JSON debug string from given text stream and creates instance of the requested zserio object.
+     * <p>
+     * The created zserio object is filled according to the data contained in the debug string.
+     * <p>
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import java.io.StringReader;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Reader reader = new StringReader("{}");
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.typeInfo(), reader);
+     * </pre></blockquote>
+     *
+     * @param typeInfo Type info of the generated zserio object to create.
+     * @param reader Text stream to use.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonStream(TypeInfo typeInfo, Reader reader)
+    {
+        final JsonReader jsonReader = new JsonReader(reader);
+        return jsonReader.read(typeInfo);
+    }
+
+    /**
+     * Parses JSON debug string from given text stream and creates instance of the requested zserio object.
+     * <p>
+     * The created zserio object is filled according to the data contained in the debug string.
+     * <p>
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import java.io.StringReader;
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Reader reader = new StringReader("{}");
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.class, reader);
+     * </pre></blockquote>
+     *
+     * @param zserioClass Class instance of the generated zserio object to create.
+     * @param reader Text stream to use.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonStream(Class<?> zserioClass, Reader reader)
+    {
+        return fromJsonStream(getTypeInfo(zserioClass), reader);
+    }
+
+    /**
+     * Parses JSON debug string and creates instance of the requested zserio object.
+     * <p>
+     * The created zserio object is filled according to the data contained in the debug string.
+     * <p>
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.typeInfo(), "{}");
+     * </pre></blockquote>
+     *
+     * @param typeInfo Type info of the generated zserio object to create.
+     * @param jsonString JSON debug string to parse.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonString(TypeInfo typeInfo, String jsonString)
+    {
+        final Reader reader = new StringReader(jsonString);
+        return fromJsonStream(typeInfo, reader);
+    }
+
+    /**
+     * Parses JSON debug string and creates instance of the requested zserio object.
+     * <p>
+     * The created zserio object is filled according to the data contained in the debug string.
+     * <p>
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug string.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.class, "{}");
+     * </pre></blockquote>
+     *
+     * @param zserioClass Class instance of the generated zserio object to create.
+     * @param jsonString JSON debug string to parse.
+     *
+     * @return Instance of the requested zserio object.
+     */
+    public static Object fromJsonString(Class<?> zserioClass, String jsonString)
+    {
+        final Reader reader = new StringReader(jsonString);
+        return fromJsonStream(zserioClass, reader);
+    }
+
+    /**
+     * Parses JSON debug file and creates instance of the requested zserio object.
+     * <p>
+     * The created zserio object is filled according to the data contained in the debug string.
+     * <p>
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug file.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.typeInfo(), "{}");
+     * </pre></blockquote>
+     *
+     * @param typeInfo Type info of the generated zserio object to create.
+     * @param fileName Name of the JSON debug file.
+     *
+     * @return Instance of the requested zserio object.
+     *
+     * @throws FileNotFoundException If given JSON debug file name does not exist.
+     */
+    public static Object fromJsonFile(TypeInfo typeInfo, String fileName) throws FileNotFoundException
+    {
+        final InputStream inputStream = new FileInputStream(fileName);
+        final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        return fromJsonStream(typeInfo, reader);
+    }
+
+    /**
+     * Parses JSON debug file and creates instance of the requested zserio object.
+     * <p>
+     * The created zserio object is filled according to the data contained in the debug string.
+     * <p>
+     * Note that the created object can be only partially initialized depending on the data stored in the
+     * JSON debug file.
+     * <p>
+     * Example:
+     * <blockquote><pre>
+     * import zserio.runtime.DebugStringUtil;
+     *
+     * final Object zserioObject = DebugStringUtil.fronJsonStream(SomeZserioObject.class, "{}");
+     * </pre></blockquote>
+     *
+     * @param zserioClass Class instance of the generated zserio object to create.
+     * @param fileName Name of the JSON debug file.
+     *
+     * @return Instance of the requested zserio object.
+     *
+     * @throws FileNotFoundException If given JSON debug file name does not exist.
+     */
+    public static Object fromJsonFile(Class<?> zserioClass, String fileName) throws FileNotFoundException
+    {
+        final InputStream inputStream = new FileInputStream(fileName);
+        final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        return fromJsonStream(zserioClass, reader);
+    }
+
+    private static TypeInfo getTypeInfo(Class<?> zserioClass)
+    {
+        try
+        {
+            final Method typeInfoMethod = zserioClass.getMethod("typeInfo");
+            if (!typeInfoMethod.getReturnType().equals(TypeInfo.class))
+                throw new ZserioError("DebugStringUtil: Zserio object has wrong typeInfo method!");
+
+            return (TypeInfo)typeInfoMethod.invoke(null);
+        }
+        catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException |
+                InvocationTargetException e)
+        {
+            throw new ZserioError("DebugStringUtil: Zserio object must have type info enabled " +
+                    "(see zserio option -withTypeInfoCode)!");
+        }
     }
 
     private static final int DEFAULT_INDENT = 4;
