@@ -137,8 +137,11 @@ class JsonDecoder
     {
         final StringBuilder decodedString = new StringBuilder();
         int endOfStringPos = pos + 1; // we know that at the beginning is '"'
-        while (endOfStringPos < content.length())
+        while (true)
         {
+            if (endOfStringPos >= content.length())
+                return Result.failure(endOfStringPos - pos);
+
             final char nextChar = content.charAt(endOfStringPos);
             endOfStringPos++;
             if (nextChar == '\\')

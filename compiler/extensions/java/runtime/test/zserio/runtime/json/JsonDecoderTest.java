@@ -155,8 +155,7 @@ public class JsonDecoderTest
         // <= 0x1F -> unicode escape
         checkDecoderSuccess("\"\\u001f\"", 0, 8, "\u001f");
 
-        // TODO[Mi-L@]: Fixme!
-        //checkDecoderFailure("\"unterminated", 0, 13);
+        checkDecoderFailure("\"unterminated", 0, 13);
     }
 
     private void checkDecoderSuccess(String input, int pos, int expectedNumRead, Object expectedValue)
