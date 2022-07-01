@@ -7,11 +7,13 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -174,8 +176,9 @@ public class DebugStringUtilTest
     @Test
     public void fromJsonFileTypeInfo() throws IOException
     {
-        final String content = "{\"text\": \"something\"}";
-        Files.write(Paths.get(TEST_FILE_NAME), content.getBytes());
+        final List<CharSequence> content = new ArrayList<CharSequence>();
+        content.add("{\"text\": \"something\"}");
+        Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName("UTF-8"));
 
         final Object zserioObject = DebugStringUtil.fromJsonFile(DummyObject.typeInfo(), TEST_FILE_NAME);
         assertTrue(zserioObject != null);
@@ -186,8 +189,9 @@ public class DebugStringUtilTest
     @Test
     public void fromJsonFileClass() throws IOException
     {
-        final String content = "{\"text\": \"something\"}";
-        Files.write(Paths.get(TEST_FILE_NAME), content.getBytes());
+        final List<CharSequence> content = new ArrayList<CharSequence>();
+        content.add("{\"text\": \"something\"}");
+        Files.write(Paths.get(TEST_FILE_NAME), content, Charset.forName("UTF-8"));
 
         final Object zserioObject = DebugStringUtil.fromJsonFile(DummyObject.class, TEST_FILE_NAME);
         assertTrue(zserioObject != null);
