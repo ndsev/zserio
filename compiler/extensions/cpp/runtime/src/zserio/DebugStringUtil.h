@@ -18,6 +18,7 @@
 #include <utility>
 
 #include "zserio/Walker.h"
+#include "zserio/JsonReader.h"
 #include "zserio/JsonWriter.h"
 #include "zserio/Traits.h"
 
@@ -54,14 +55,14 @@ template <typename T, typename WALK_FILTER, typename ALLOC>
 void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, WALK_FILTER&& walkFilter,
         const ALLOC& allocator)
 {
-    std::ofstream os = std::ofstream(fileName.c_str(), std::ofstream::out);
+    std::ofstream os = std::ofstream(fileName.c_str());
     if (!os)
-        throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to open '" + fileName +"' for writing!");
+        throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to open '") + fileName + "' for writing!";
 
     detail::toJsonStream(object, os, indent, walkFilter, allocator);
 
     if (!os)
-        throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to write '" + fileName +"'!");
+        throw CppRuntimeException("DebugStringUtil.toJsonFile: Failed to write '") + fileName + "'!";
 }
 
 } // namespace detail
@@ -71,8 +72,8 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
  *
  * Example:
  * \code{.cpp}
- *     include <sstream>
- *     include <zserio/DebugStringUtil.h>
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     std::ostringstream os;
@@ -97,8 +98,8 @@ void toJsonStream(const T& object, std::ostream& os, const ALLOC& allocator = AL
  *
  * Example:
  * \code{.cpp}
- *     include <sstream>
- *     include <zserio/DebugStringUtil.h>
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     std::ostringstream os;
@@ -125,9 +126,9 @@ void toJsonStream(const T& object, std::ostream& os, uint8_t indent, const ALLOC
  *
  * The following example shows filtering of arrays up to 5 elements:
  * \code{.cpp}
- *     include <sstream>
- *     include <zserio/DebugStringUtil.h>
- *     include <zserio/Walker.h>
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *     #include <zserio/Walker.h>
  *
  *     SomeZserioObject object;
  *     std::ostringstream os;
@@ -155,9 +156,9 @@ void toJsonStream(const T& object, std::ostream& os, WALK_FILTER&& walkFilter, c
  *
  * Example:
  * \code{.cpp}
- *     include <sstream>
- *     include <zserio/DebugStringUtil.h>
- *     include <zserio/Walker.h>
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *     #include <zserio/Walker.h>
  *
  *     SomeZserioObject object;
  *     std::ostringstream os;
@@ -186,8 +187,8 @@ void toJsonStream(const T& object, std::ostream& os, uint8_t indent, WALK_FILTER
  *
  * Example:
  * \code{.cpp}
- *     include <iostream>
- *     include <zserio/DebugStringUtil.h>
+ *     #include <iostream>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     std::cout << zserio::toJsonString(object) << std::endl;
@@ -212,8 +213,8 @@ string<ALLOC> toJsonString(const T& object, const ALLOC& allocator = ALLOC())
  *
  * Example:
  * \code{.cpp}
- *     include <iostream>
- *     include <zserio/DebugStringUtil.h>
+ *     #include <iostream>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     const uint8_t indent = 4;
@@ -240,8 +241,8 @@ string<ALLOC> toJsonString(const T& object, uint8_t indent, const ALLOC& allocat
  *
  * The following example shows filtering of arrays up to 5 elements:
  * \code{.cpp}
- *     include <iostream>
- *     include <zserio/DebugStringUtil.h>
+ *     #include <iostream>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     zserio::ArrayLengthWalkFilter walkFilter(5);
@@ -269,8 +270,8 @@ string<ALLOC> toJsonString(const T& object, WALK_FILTER&& walkFilter, const ALLO
  *
  * Example:
  * \code{.cpp}
- *     include <iostream>
- *     include <zserio/DebugStringUtil.h>
+ *     #include <iostream>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     const uint8_t indent = 4;
@@ -299,10 +300,10 @@ string<ALLOC> toJsonString(const T& object, uint8_t indent, WALK_FILTER&& walkFi
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/DebugStringUtil.h>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
- *     zserio::toJsonFile(object, "FileName.bin");
+ *     zserio::toJsonFile(object, "FileName.json");
  * \endcode
  *
  * \param object Zserio object to use.
@@ -323,17 +324,19 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, const ALLOC& all
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/DebugStringUtil.h>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     const uint8_t indent = 4;
- *     zserio::toJsonFile(object, "FileName.bin", indent);
+ *     zserio::toJsonFile(object, "FileName.json", indent);
  * \endcode
  *
  * \param object Zserio object to use.
  * \param fileName Name of file to write.
  * \param indent Indent argument for JsonWriter.
  * \param allocator Allocator to use.
+ *
+ * \throw CppRuntimeException When the writing fails.
  */
 template <typename T, typename ALLOC = std::allocator<uint8_t>,
         typename std::enable_if<is_allocator<ALLOC>::value, int>::type = 0>
@@ -351,11 +354,11 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/DebugStringUtil.h>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     zserio::ArrayLengthWalkFilter walkFilter(5);
- *     zserio::toJsonFile(object, "FileName.bin", walkFilter);
+ *     zserio::toJsonFile(object, "FileName.json", walkFilter);
  * \endcode
  *
  * \param object Zserio object to use.
@@ -379,12 +382,12 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, WALK_FILTER&& wa
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/DebugStringUtil.h>
+ *     #include <zserio/DebugStringUtil.h>
  *
  *     SomeZserioObject object;
  *     const uint8_t indent = 4;
  *     zserio::ArrayLengthWalkFilter walkFilter(5);
- *     zserio::toJsonFile(object, "FileName.bin", indent, walkFilter);
+ *     zserio::toJsonFile(object, "FileName.json", indent, walkFilter);
  * \endcode
  *
  * \param object Zserio object to use.
@@ -400,6 +403,101 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
         const ALLOC& allocator = ALLOC())
 {
     return detail::toJsonFile(object, fileName, indent, walkFilter, allocator);
+}
+
+/**
+ * Parses JSON debug string from given text stream and creates instance of the requested zserio object
+ * according to the data contained in the debug string.
+ *
+ * \note The created object can be only partially initialzed depending on the JSON debug string.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *
+ *     std::istringstream is("{ \"fieldU32\": 13 }");
+ *     IReflectablePtr reflectable = fromJsonStream(SomeZserioObject::typeInfo(), is);
+ *
+ *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ * \endcode
+ *
+ * \param typeInfo Type info of the generated zserio object to create.
+ * \param is Text stream to use.
+ *
+ * \return Reflectable instance of the requested zserio object.
+ * \throw CppRuntimeException In case of any error.
+ */
+template <typename ALLOC = std::allocator<uint8_t>>
+IBasicReflectablePtr<ALLOC> fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is)
+{
+    JsonReader jsonReader(is);
+    return jsonReader.read(typeInfo);
+}
+
+/**
+ * Parses JSON debug string from given JSON string and creates instance of the requested zserio object
+ * according to the data contained in the debug string.
+ *
+ * \note The created object can be only partially initialzed depending on the JSON debug string.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *
+ *     std::string str("{ \"fieldU32\": 13 }")
+ *     IReflectablePtr reflectable = fromJsonStream(SomeZserioObject::typeInfo(), str);
+ *
+ *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ * \endcode
+ *
+ * \param typeInfo Type info of the generated zserio object to create.
+ * \param json String to use.
+ *
+ * \return Reflectable instance of the requested zserio object.
+ * \throw CppRuntimeException In case of any error.
+ */
+template <typename ALLOC = std::allocator<uint8_t>>
+IBasicReflectablePtr<ALLOC> fromJsonString(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& json)
+{
+    std::basic_istringstream<char, std::char_traits<char>, RebindAlloc<ALLOC, char>> is(json);
+    return fromJsonStream(typeInfo, is);
+}
+
+/**
+ * Parses JSON debug string from given text file and creates instance of the requested zserio object
+ * according to the data contained in the debug string.
+ *
+ * \note The created object can be only partially initialzed depending on the JSON debug string.
+ *
+ * Example:
+ * \code{.cpp}
+ *     #include <sstream>
+ *     #include <zserio/DebugStringUtil.h>
+ *
+ *     std::ifstream is("FileName.json");
+ *     IReflectablePtr reflectable = fromJsonStream(SomeZserioObject::typeInfo(), is);
+ *
+ *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ * \endcode
+ *
+ * \param typeInfo Type info of the generated zserio object to create.
+ * \param fileName Name of file to read.
+ *
+ * \return Reflectable instance of the requested zserio object.
+ * \throw CppRuntimeException In case of any error.
+ */
+template <typename ALLOC = std::allocator<uint8_t>>
+IBasicReflectablePtr<ALLOC> fromJsonFile(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& fileName)
+{
+    std::ifstream is = std::ifstream(fileName.c_str());
+    if (!is)
+    {
+        throw CppRuntimeException("DebugStringUtil.fromJsonFile: Failed to open '") +
+                fileName + "' for reading!";
+    }
+    return fromJsonStream(typeInfo, is);
 }
 
 } // namespace zserio

@@ -245,7 +245,7 @@ public class DebugStringUtil
      * final SomeZserioObject zserioObject = new SomeZserioObject();
      * final int indent = 4;
      * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
-     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin", indent, walkFilter);
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.json", indent, walkFilter);
      * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
@@ -278,7 +278,7 @@ public class DebugStringUtil
      *
      * final SomeZserioObject zserioObject = new SomeZserioObject();
      * final int indent = 4;
-     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin", indent);
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.json", indent);
      * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
@@ -304,7 +304,7 @@ public class DebugStringUtil
      *
      * final SomeZserioObject zserioObject = new SomeZserioObject();
      * final ArrayLengthWalkFilter walkFilter = new ArrayLengthWalkFilter(5);
-     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin", walkFilter);
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.json", walkFilter);
      * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.
@@ -327,7 +327,7 @@ public class DebugStringUtil
      * import zserio.runtime.DebugStringUtil;
      *
      * final SomeZserioObject zserioObject = new SomeZserioObject();
-     * DebugStringUtil.toJsonFile(zserioObject, "FileName.bin");
+     * DebugStringUtil.toJsonFile(zserioObject, "FileName.json");
      * </pre></blockquote>
      *
      * @param zserioObject Zserio object to use.

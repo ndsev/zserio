@@ -17,9 +17,15 @@ struct DummyObject
 {
     using allocator_type = ALLOC;
 
-    DummyObject(const allocator_type& = ALLOC()) {}
+    explicit DummyObject(const ALLOC& allocator = ALLOC()) :
+            m_text_("test", allocator)
+    {}
 
-    static const IBasicTypeInfo<ALLOC>& getDummyObjectTypeInfo()
+    explicit DummyObject(const string<ALLOC>& text_, const ALLOC& = ALLOC()) :
+            m_text_(text_)
+    {}
+
+    static const IBasicTypeInfo<ALLOC>& typeInfo()
     {
         static const std::array<BasicFieldInfo<ALLOC>, 1> fields{BasicFieldInfo<ALLOC>{
             "text"_sv, BuiltinTypeInfo<ALLOC>::getString(),
@@ -27,7 +33,10 @@ struct DummyObject
         }};
 
         static const StructTypeInfo<ALLOC> typeInfo{
-            "Dummy"_sv, nullptr,
+            "Dummy"_sv,
+            [](const ALLOC& allocator) -> IBasicReflectablePtr<ALLOC> {
+                return std::allocate_shared<ReflectableOwner<DummyObject>>(allocator, allocator);
+            },
             {}, {}, fields, {}, {}
         };
 
@@ -44,15 +53,16 @@ struct DummyObject
             using ReflectableConstAllocatorHolderBase<ALLOC>::getParameter;
             using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
 
-            explicit Reflectable(const ALLOC& allocator) :
-                    ReflectableConstAllocatorHolderBase<ALLOC>(getDummyObjectTypeInfo(), allocator)
+            explicit Reflectable(const DummyObject& owner, const ALLOC& allocator) :
+                    ReflectableConstAllocatorHolderBase<ALLOC>(typeInfo(), allocator),
+                    m_owner(owner)
             {}
 
             virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
-                    return BasicReflectableFactory<ALLOC>::getString(m_text, get_allocator());
+                    return BasicReflectableFactory<ALLOC>::getString(m_owner.getText(), get_allocator());
                 }
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
             }
@@ -67,10 +77,10 @@ struct DummyObject
             }
 
         private:
-            const string<ALLOC> m_text = "test";
+            const DummyObject& m_owner;
         };
 
-        return std::allocate_shared<Reflectable>(allocator, allocator);
+        return std::allocate_shared<Reflectable>(allocator, *this, allocator);
     }
 
     IBasicReflectablePtr<ALLOC> reflectable(const ALLOC& allocator = ALLOC())
@@ -83,15 +93,26 @@ struct DummyObject
             using ReflectableConstAllocatorHolderBase<ALLOC>::getParameter;
             using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
 
-            explicit Reflectable(const ALLOC& allocator) :
-                    ReflectableConstAllocatorHolderBase<ALLOC>(getDummyObjectTypeInfo(), allocator)
+            explicit Reflectable(DummyObject& owner, const ALLOC& allocator) :
+                    ReflectableConstAllocatorHolderBase<ALLOC>(typeInfo(), allocator),
+                    m_owner(owner)
             {}
 
             virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
                 {
-                    return BasicReflectableFactory<ALLOC>::getString(m_text, get_allocator());
+                    return BasicReflectableFactory<ALLOC>::getString(m_owner.getText(), get_allocator());
+                }
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+            }
+
+            virtual void setField(StringView name, const AnyHolder<ALLOC>& any) override
+            {
+                if (name == makeStringView("text"))
+                {
+                    m_owner.setText(any.template get<string<ALLOC>>());
+                    return;
                 }
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
             }
@@ -106,11 +127,24 @@ struct DummyObject
             }
 
         private:
-            const string<ALLOC> m_text = "test";
+            DummyObject& m_owner;
         };
 
-        return std::allocate_shared<Reflectable>(allocator, allocator);
+        return std::allocate_shared<Reflectable>(allocator, *this, allocator);
     }
+
+    void setText(const string<ALLOC>& text_)
+    {
+        m_text_ = text_;
+    }
+
+    const string<ALLOC>& getText() const
+    {
+        return m_text_;
+    }
+
+private:
+    string<ALLOC> m_text_;
 };
 
 const std::string TEST_NAME = "DebugStringUtilTest";
@@ -450,6 +484,38 @@ TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithPolymorphicAlloc)
     std::stringstream ss;
     ss << is.rdbuf();
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
+}
+
+TEST(DebugStringUtilTest, fromJsonStream)
+{
+    std::istringstream ss("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonStream(DummyObject<>::typeInfo(), ss);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonString)
+{
+    std::string jsonString("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonString(DummyObject<>::typeInfo(), jsonString);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonFile)
+{
+    const char* fileName = "DebugStringUtilTest_fromJsonFile.json";
+    {
+        std::ofstream os(fileName);
+        os << "{\n  \"text\": \"something\"\n}";
+    }
+
+    IReflectablePtr reflectable = fromJsonFile(DummyObject<>::typeInfo(), fileName);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
 } // namespace zserio

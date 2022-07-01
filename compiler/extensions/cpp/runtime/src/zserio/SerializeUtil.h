@@ -76,8 +76,8 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/SerializeUtil.h>
- *     include <zserio/pmr/PolymorphicAllocator.h>
+ *     #include <zserio/SerializeUtil.h>
+ *     #include <zserio/pmr/PolymorphicAllocator.h>
  *
  *     const zserio::pmr::PolymorphicAllocator<> allocator;
  *     SomeZserioObject object(allocator);
@@ -107,7 +107,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/SerializeUtil.h>
+ *     #include <zserio/SerializeUtil.h>
  *
  *     SomeZserioObject object;
  *     const zserio::BitBuffer bitBuffer = zserio::serialize(object);
@@ -133,7 +133,7 @@ BasicBitBuffer<ALLOC> serialize(T& object, ARGS&&... arguments)
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/SerializeUtil.h>
+ *     #include <zserio/SerializeUtil.h>
  *
  *     const SomeZserioEnum enumValue = SomeZserioEnum::SomeEnumValue;
  *     const zserio::BitBuffer bitBuffer = zserio::serialize(enumValue);
@@ -161,7 +161,7 @@ BasicBitBuffer<ALLOC> serialize(T enumValue, const ALLOC& allocator = ALLOC())
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/SerializeUtil.h>
+ *     #include <zserio/SerializeUtil.h>
  *
  *     SomeZserioObject object;
  *     const zserio::BitBuffer bitBuffer = zserio::serialize(object);
@@ -188,7 +188,7 @@ typename std::enable_if<!std::is_enum<T>::value, T>::type deserialize(
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/SerializeUtil.h>
+ *     #include <zserio/SerializeUtil.h>
  *
  *     const SomeZserioEnum enumValue = SomeZserioEnum::SomeEnumValue;
  *     const zserio::BitBuffer bitBuffer = zserio::serialize(enumValue);
@@ -213,7 +213,7 @@ typename std::enable_if<std::is_enum<T>::value, T>::type deserialize(const Basic
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/SerializeUtil.h>
+ *     #include <zserio/SerializeUtil.h>
  *
  *     SomeZserioObject object;
  *     zserio::serializeToFile(object, "FileName.bin");
@@ -238,7 +238,7 @@ void serializeToFile(T& object, const std::string& fileName, ARGS&&... arguments
  *
  * Example:
  * \code{.cpp}
- *     include <zserio/SerializeUtil.h>
+ *     #include <zserio/SerializeUtil.h>
  *
  *     const std::string fileName = "FileName.bin";
  *     SomeZserioObject object;
