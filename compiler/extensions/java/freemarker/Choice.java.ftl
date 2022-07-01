@@ -223,7 +223,7 @@ ${I}break;
     public ${field.typeInfo.typeFullName} ${field.getterName}()
     {
     <#if field.array??>
-        return ((${field.array.wrapperJavaTypeName})objectChoice).getRawArray();
+        return (objectChoice == null) ? null : ((${field.array.wrapperJavaTypeName})objectChoice).getRawArray();
     <#else>
         return (${field.nullableTypeInfo.typeFullName})objectChoice;
     </#if>

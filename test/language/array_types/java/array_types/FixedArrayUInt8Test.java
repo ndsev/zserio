@@ -17,6 +17,13 @@ import array_types.fixed_array_uint8.FixedArray;
 public class FixedArrayUInt8Test
 {
     @Test
+    public void emptyConstructor()
+    {
+        final FixedArray fixedArray = new FixedArray();
+        assertEquals(null, fixedArray.getUint8Array());
+    }
+
+    @Test
     public void bitSizeOf() throws IOException, ZserioError
     {
         final short[] uint8Array = new short[FIXED_ARRAY_LENGTH];

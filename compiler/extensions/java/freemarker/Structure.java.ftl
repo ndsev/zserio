@@ -115,11 +115,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     public ${field.typeInfo.typeFullName} ${field.getterName}()
     {
     <#if field.array??>
-        <#if field.optional??>
         return (<@field_member_name field/> == null) ? null : <@field_member_name field/>.getRawArray();
-        <#else>
-        return <@field_member_name field/>.getRawArray();
-        </#if>
     <#else>
         return <@field_member_name field/>;
     </#if>

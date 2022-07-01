@@ -17,6 +17,13 @@ import array_types.auto_array_uint8.AutoArray;
 public class AutoArrayUInt8Test
 {
     @Test
+    public void emptyConstructor()
+    {
+        final AutoArray autoArray = new AutoArray();
+        assertEquals(null, autoArray.getUint8Array());
+    }
+
+    @Test
     public void bitSizeOfLength1() throws IOException, ZserioError
     {
         checkBitSizeOf(AUTO_ARRAY_LENGTH1);
