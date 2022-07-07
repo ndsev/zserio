@@ -285,7 +285,7 @@ template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeSigned(
         const char* input, size_t numChars)
 {
-    // note that in case of overflow we return INT_MIN / INT_MAX
+    // note that in case of overflow we return INT64_MIN / INT64_MAX
     char* pEnd = nullptr;
     const int64_t value = std::strtoll(input, &pEnd, 10);
     if (static_cast<size_t>(pEnd - input) != numChars)
@@ -298,7 +298,7 @@ template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeUnsigned(
         const char* input, size_t numChars)
 {
-    // note that in case of overflow we return UINT_MAX?
+    // note that in case of overflow we return UINT64_MAX?
     char* pEnd = nullptr;
     const uint64_t value = std::strtoull(input, &pEnd, 10);
     if (static_cast<size_t>(pEnd - input) != numChars)

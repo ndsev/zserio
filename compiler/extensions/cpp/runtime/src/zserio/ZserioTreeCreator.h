@@ -430,7 +430,6 @@ void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, std::nul
     if (m_state != State::IN_COMPOUND)
         throw CppRuntimeException("ZserioTreeCreator: Cannot set value (null) in state '") + stateName() + "'!";
 
-    // just check that the field exists
     const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
     if (fieldInfo.isOptional)
     {

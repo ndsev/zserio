@@ -43,7 +43,32 @@ ${I}{
     <#list fieldList as field>
 ${I}    if (name == ::zserio::makeStringView("${field.name}"))
 ${I}    {
+        <#if field.optional??>
+${I}        if (value.isType<::std::nullptr_t>())
+${I}        {
+${I}            m_object.${field.optional.resetterName}();
+${I}            return;
+${I}        }
+
+        </#if>
+        <#if field.typeInfo.isEnum || field.typeInfo.isBitmask>
+${I}        if (value.isType<<@field_raw_cpp_type_name field/>>())
+${I}        {
+${I}            m_object.${field.setterName}(value.get<<@field_raw_cpp_type_name field/>>());
+${I}        }
+${I}        else
+${I}        {
+            <#if field.typeInfo.isEnum>
+${I}            m_object.${field.setterName}(::zserio::valueToEnum<<@field_raw_cpp_type_name field/>>(
+${I}                    value.get<typename ::std::underlying_type<<@field_raw_cpp_type_name field/>>::type>()));
+            <#else><#-- bitmask -->
+${I}            m_object.${field.setterName}(<@field_raw_cpp_type_name field/>(
+${I}                    value.get<<@field_raw_cpp_type_name field/>::underlying_type>()));
+            </#if>
+${I}        }
+        <#else>
 ${I}        m_object.${field.setterName}(value.get<<@field_raw_cpp_type_name field/>>());
+        </#if>
 ${I}        return;
 ${I}    }
     </#list>
