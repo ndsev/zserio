@@ -499,7 +499,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException):
             creator.add_value_element(13)
         with self.assertRaises(PythonRuntimeException):
-            creator.get_member_type("nonexistent")
+            creator.get_field_type("nonexistent")
 
     def test_exceptions_in_simple_array(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
@@ -525,7 +525,7 @@ class ZserioTreeCreatorTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException):
             creator.add_value_element(13) # wrong type
         with self.assertRaises(PythonRuntimeException):
-            creator.get_member_type("nonexistent")
+            creator.get_field_type("nonexistent")
 
     def test_exceptions_in_compound_element(self):
         creator = ZserioTreeCreator(DummyObject.type_info())
@@ -677,7 +677,8 @@ class JsonReaderTest(unittest.TestCase):
         with self.assertRaises(JsonParserException) as error:
             json_reader.read(DummyObject.type_info())
 
-        self.assertTrue(str(error.exception).startswith("JsonParser line 2:"))
+        self.assertEqual("JsonParser:2:1: Unexpected token: JsonToken.VALUE ('value'), expecting "
+                         "JsonToken.KEY_SEPARATOR!", str(error.exception))
 
     def test_wrong_key_exception(self):
         json_reader = JsonReader(io.StringIO("{\"value\": 13,\n\"nonexisting\": 10}"))
@@ -685,7 +686,8 @@ class JsonReaderTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_reader.read(DummyObject.type_info())
 
-        self.assertTrue(str(error.exception).endswith("(JsonParser line 2)"))
+        self.assertEqual("ZserioTreeCreator: Field 'nonexisting' not found in 'DummyObject'! "
+                         "(JsonParser:2:16)", str(error.exception))
 
     def test_wrong_value_type_exception(self):
         json_reader = JsonReader(io.StringIO("{\n  \"value\": \"13\"\n}"))
@@ -693,7 +695,8 @@ class JsonReaderTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_reader.read(DummyObject.type_info())
 
-        self.assertTrue(str(error.exception).endswith("(JsonParser line 2)"))
+        self.assertEqual("ZserioTreeCreator: Unexpected value type '<class 'str'>', expecting '<class 'int'>'! "
+                         "(JsonParser:2:12)", str(error.exception))
 
     def test_wrong_bitbuffer_exception(self):
         json_reader = JsonReader(io.StringIO(
@@ -717,7 +720,8 @@ class JsonReaderTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_reader.read(DummyObject.type_info())
 
-        self.assertTrue(str(error.exception).endswith("(JsonParser line 12)"))
+        self.assertEqual("JsonReader: Unexpected begin object in Bit Buffer! (JsonParser:11:25)",
+                         str(error.exception))
 
     def test_partial_bitbuffer_exception(self):
         json_reader = JsonReader(io.StringIO(
@@ -739,7 +743,7 @@ class JsonReaderTest(unittest.TestCase):
         with self.assertRaises(PythonRuntimeException) as error:
             json_reader.read(DummyObject.type_info())
 
-        self.assertTrue(str(error.exception).endswith("(JsonParser line 12)"))
+        self.assertEqual("JsonReader: Unexpected end in Bit Buffer! (JsonParser:12:5)", str(error.exception))
 
     def test_json_array_exception(self):
         json_reader = JsonReader(io.StringIO("[1, 2]"))
