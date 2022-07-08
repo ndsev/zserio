@@ -196,6 +196,8 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeS
 template <typename ALLOC>
 bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(const char*& pInput, string<ALLOC>& value)
 {
+    // TODO[Mi-L@]: Simplified just to decode what zserio encodes, for complex solution we could use
+    //              std::wstring_convert but it's deprecated in C++17.
     if (*pInput++ != '0' || *pInput++ != '0')
         return false;
 
