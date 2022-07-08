@@ -48,7 +48,7 @@ public class JsonTokenizerTest
     @Test
     public void lineColumn() throws IOException
     {
-        final Reader reader = new StringReader("\n{\n   \"key\"  \n :\n10}");
+        final Reader reader = new StringReader("\n{\r   \"key\"  \n :\n10}\r");
         final JsonTokenizer tokenizer = new JsonTokenizer(reader);
 
         assertEquals(JsonToken.BEGIN_OBJECT, tokenizer.next());

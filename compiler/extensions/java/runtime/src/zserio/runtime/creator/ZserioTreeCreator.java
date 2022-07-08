@@ -167,7 +167,7 @@ public class ZserioTreeCreator
         {
             if (fieldInfo.isArray())
             {
-                throw new ZserioError("ZserioTreeCreator: Expecting array in member '" +
+                throw new ZserioError("ZserioTreeCreator: Expecting array in field '" +
                         fieldInfo.getSchemaName() + "!");
             }
 
@@ -184,16 +184,16 @@ public class ZserioTreeCreator
     }
 
     /**
-     * Gets type info of the expected member.
+     * Gets type info of the expected field.
      *
-     * @param name Member name.
+     * @param name Field name.
      *
-     * @return Type info of the expected member.
+     * @return Type info of the expected field.
      */
-    public TypeInfo getMemberType(String name)
+    public TypeInfo getFieldType(String name)
     {
         if (state != State.IN_COMPOUND)
-            throw new ZserioError("ZserioTreeCreator: Cannot get member type in state '" + state + "'!");
+            throw new ZserioError("ZserioTreeCreator: Cannot get field type in state '" + state + "'!");
 
         final FieldInfo fieldInfo = findFieldInfo(getTypeInfo(), name);
         return fieldInfo.getTypeInfo();

@@ -184,7 +184,7 @@ public class ZserioTreeCreatorTest
         assertThrows(ZserioError.class, () -> creator.setValue("nonexistent", 13));
         assertThrows(ZserioError.class, () -> creator.endCompoundElement());
         assertThrows(ZserioError.class, () -> creator.addValueElement(13));
-        assertThrows(ZserioError.class, () -> creator.getMemberType("nonexistent"));
+        assertThrows(ZserioError.class, () -> creator.getFieldType("nonexistent"));
     }
 
     @Test
@@ -205,7 +205,7 @@ public class ZserioTreeCreatorTest
         assertThrows(ZserioError.class, () -> creator.endCompoundElement());
         assertThrows(ZserioError.class, () -> creator.beginCompoundElement());
         assertThrows(ZserioError.class, () -> creator.addValueElement(13)); // wrong type
-        assertThrows(ZserioError.class, () -> creator.getMemberType("nonexistent"));
+        assertThrows(ZserioError.class, () -> creator.getFieldType("nonexistent"));
     }
 
     @Test

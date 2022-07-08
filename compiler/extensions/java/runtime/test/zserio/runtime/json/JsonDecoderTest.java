@@ -85,6 +85,7 @@ public class JsonDecoderTest
         checkDecoderSuccess("-9223372036854775808", 0, 20, BigInteger.valueOf(Long.MIN_VALUE));
 
         checkDecoderFailure("--10", 0, 1);
+        checkDecoderFailure("-", 0, 1);
     }
 
     @Test
@@ -155,7 +156,17 @@ public class JsonDecoderTest
         // <= 0x1F -> unicode escape
         checkDecoderSuccess("\"\\u001f\"", 0, 8, "\u001f");
 
+        checkDecoderFailure("\"\\u001x\"", 0, 7);
         checkDecoderFailure("\"unterminated", 0, 13);
+        checkDecoderFailure("\"wrong escape \\", 0, 15);
+        checkDecoderFailure("\"wrong unicode escape \\u0", 0, 25);
+        checkDecoderFailure("\"unknown escape \\x", 0, 18);
+    }
+
+    @Test
+    public void wrong_arguments()
+    {
+        checkDecoderFailure("", 1, 0);
     }
 
     private void checkDecoderSuccess(String input, int pos, int expectedNumRead, Object expectedValue)

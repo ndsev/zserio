@@ -103,9 +103,9 @@ class JsonDecoder
             return new Result(false, null, numReadChars);
         }
 
-        public static Result success(Object object, int numReadChars)
+        public static Result success(Object value, int numReadChars)
         {
-            return new Result(true, object, numReadChars);
+            return new Result(true, value, numReadChars);
         }
 
         private Result(boolean success, Object value, int numReadChars)
@@ -120,7 +120,7 @@ class JsonDecoder
         private final int numReadChars;
     }
 
-    private static Result decodeLiteral(String content, int pos, String text, Object decodedObject)
+    private static Result decodeLiteral(String content, int pos, String text, Object decodedValue)
     {
         final int textLength = text.length();
         if (pos + textLength > content.length())
@@ -128,7 +128,7 @@ class JsonDecoder
 
         final String subContent = content.substring(pos, pos + textLength);
         if (subContent.equals(text))
-            return Result.success(decodedObject, textLength);
+            return Result.success(decodedValue, textLength);
 
         return Result.failure(textLength);
     }
@@ -174,12 +174,16 @@ class JsonDecoder
                     break;
                 case 'u': // unicode escape
                     final int unicodeEscapeLen = 4;
-                    if (endOfStringPos + unicodeEscapeLen > content.length())
-                        return Result.failure(content.length() - pos);
-                    final String subContent = content.substring(endOfStringPos,
-                            endOfStringPos + unicodeEscapeLen);
                     endOfStringPos += unicodeEscapeLen;
-                    decodedString.append(Character.toChars(Integer.parseInt(subContent, 16)));
+                    if (endOfStringPos >= content.length())
+                        return Result.failure(content.length() - pos);
+                    final String subContent = content.substring(endOfStringPos - unicodeEscapeLen,
+                            endOfStringPos);
+                    final String decodedUnicode = decodeUnicodeEscape(subContent);
+                    if (decodedUnicode != null)
+                        decodedString.append(decodedUnicode);
+                    else
+                        return Result.failure(endOfStringPos - pos);
                     break;
                 default:
                     // unknown escape character, not decoded...
@@ -197,6 +201,18 @@ class JsonDecoder
         }
 
         return Result.success(decodedString.toString(), endOfStringPos - pos);
+    }
+
+    private static String decodeUnicodeEscape(String content)
+    {
+        try
+        {
+            return new String(Character.toChars(Integer.parseInt(content, 16)));
+        }
+        catch (NumberFormatException excpt)
+        {
+            return null;
+        }
     }
 
     private static Result decodeNumber(String content, int pos)
@@ -246,7 +262,6 @@ class JsonDecoder
 
         private String numberContent;
         private boolean isDouble;
-
     }
 
     private static ExtractNumberResult extractNumber(String content, int pos)

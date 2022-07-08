@@ -20,7 +20,7 @@ class JsonTokenizer
         content = readContent();
         lineNumber = 1;
         columnNumber = 1;
-        tokenColumnNumber  = 1;
+        tokenColumnNumber = 1;
         pos = 0;
         setToken(content.isEmpty() ? JsonToken.END_OF_FILE : JsonToken.BEGIN_OF_FILE, null);
         decoderResult = null;

@@ -259,7 +259,7 @@ public class JsonReader implements AutoCloseable
                     final String lastKey = keyStack.peek();
                     if (!lastKey.isEmpty())
                     {
-                        if (creator.getMemberType(lastKey).getJavaClass().equals(BitBuffer.class))
+                        if (creator.getFieldType(lastKey).getJavaClass().equals(BitBuffer.class))
                             bitBufferAdapter = new BitBufferAdapter();
                         else
                             creator.beginCompound(lastKey);
@@ -384,7 +384,7 @@ public class JsonReader implements AutoCloseable
                 final String lastKey = keyStack.peek();
                 if (!lastKey.isEmpty())
                 {
-                    final TypeInfo expectedTypeInfo = creator.getMemberType(lastKey);
+                    final TypeInfo expectedTypeInfo = creator.getFieldType(lastKey);
                     creator.setValue(lastKey, convertValue(value, expectedTypeInfo));
                     keyStack.pop(); // finish member
                 }
