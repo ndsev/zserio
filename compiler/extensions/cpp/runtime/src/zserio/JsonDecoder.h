@@ -162,12 +162,21 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeS
                 ++pInput;
                 break;
             case 'u': // unicode escape
-                if (!decodeUnicodeEscape(++pInput, value))
                 {
-                    // unsupported unicode escape
-                    return DecoderResult(static_cast<size_t>(pInput - input), get_allocator());
+                    ++pInput;
+                    const size_t unicodeEscapeLen = 4;
+                    const size_t numReadChars = strnlen(pInput, unicodeEscapeLen);
+                    if (numReadChars < unicodeEscapeLen)
+                        return DecoderResult(static_cast<size_t>(pInput + numReadChars - input), get_allocator());
+                    if (!decodeUnicodeEscape(pInput, value))
+                    {
+                        // unsupported unicode escape
+                        return DecoderResult(static_cast<size_t>(pInput - input), get_allocator());
+                    }
+                    break;
                 }
-                break;
+            case '\0': // in case of terminating zero do not consume it
+                return DecoderResult(static_cast<size_t>(pInput - input), get_allocator());
             default:
                 ++pInput;
                 // unknown character, not decoded...
@@ -201,11 +210,11 @@ bool BasicJsonDecoder<ALLOC>::decodeUnicodeEscape(const char*& pInput, string<AL
     if (*pInput++ != '0' || *pInput++ != '0')
         return false;
 
-    char ch1 = decodeHex(*pInput++);
-    if (ch1 == - 1)
+    const char ch1 = decodeHex(*pInput++);
+    if (ch1 == -1)
         return false;
 
-    char ch2 = decodeHex(*pInput++);
+    const char ch2 = decodeHex(*pInput++);
     if (ch2 == -1)
         return false;
 

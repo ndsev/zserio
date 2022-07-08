@@ -40,7 +40,7 @@ TEST(JsonTokenizerTest, tokens)
 
 TEST(JsonTokenizerTest, lineColumn)
 {
-    std::stringstream str("\n{\n   \"key\"  \n :\n10}");
+    std::stringstream str("\n{\r   \"key\"  \n :\n10}\r");
     JsonTokenizer tokenizer(str, std::allocator<uint8_t>());
 
     ASSERT_EQ(JsonToken::BEGIN_OBJECT, tokenizer.next());

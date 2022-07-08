@@ -135,6 +135,7 @@ TEST_F(JsonDecoderTest, decodeSignedIntegral)
     checkDecoderSuccess("-9223372036854775808", 20, INT64_MIN);
 
     checkDecoderFailure("--10", 1);
+    checkDecoderFailure("-", 1);
 }
 
 TEST_F(JsonDecoderTest, decodeUnsignedIntegral)
@@ -195,9 +196,16 @@ TEST_F(JsonDecoderTest, decodeString)
     // <= 0x1F -> unicode escape
     checkDecoderSuccess("\"\\u001f\"", 8, std::string("\x1F"));
 
+    checkDecoderFailure("\"\\u001x\"", 7);
     checkDecoderFailure("\"unterminated", 13);
+    checkDecoderFailure("\"wrong escape \\", 15);
+    checkDecoderFailure("\"wrong unicode escape \\u0", 25);
+    checkDecoderFailure("\"unknown escape \\x", 18);
+}
 
-    checkDecoderFailure("\"\\zinvalid escape\"", 3);
+TEST_F(JsonDecoderTest, wrong_arguments)
+{
+    checkDecoderFailure("", 0);
 }
 
 } // namespace zserio
