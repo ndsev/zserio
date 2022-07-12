@@ -156,21 +156,20 @@ public class JsonReader implements AutoCloseable
                 if (buffer == null)
                     buffer = new ArrayList<Byte>();
 
-                try
-                {
-                    buffer.add(((BigInteger)value).byteValue());
-                }
-                catch (ArithmeticException  excpt)
+                // bit buffer stores 8-bit unsigned values in byte type
+                final BigInteger intValue = (BigInteger)value;
+                if (intValue.compareTo(BigInteger.ZERO) < 0 || intValue.compareTo(BigInteger.valueOf(255)) > 0)
                 {
                     throw new ZserioError("JsonReader: Cannot create byte for Bit Buffer from value '" +
-                            value.toString() + "'!", excpt);
+                            value.toString() + "'!");
                 }
+                buffer.add(((BigInteger)value).byteValue());
             }
             else if (state == State.VISIT_VALUE_BITSIZE && value instanceof BigInteger)
             {
                 try
                 {
-                    bitSize = ((BigInteger)value).longValue();
+                    bitSize = ((BigInteger)value).longValueExact();
                 }
                 catch (ArithmeticException  excpt)
                 {
@@ -405,17 +404,31 @@ public class JsonReader implements AutoCloseable
             switch (expectedJavaType)
             {
             case ENUM:
-                return createEnum(value, typeInfo);
+                if (value instanceof BigInteger)
+                    return createEnum((BigInteger)value, typeInfo);
+                break;
 
             case BITMASK:
-                return createBitmask(value, typeInfo);
+                if (value instanceof BigInteger)
+                    return createBitmask((BigInteger)value, typeInfo);
+                break;
+
+            case FLOAT:
+                if (value instanceof Double)
+                    return ((Double)value).floatValue();
+                break;
 
             default:
-                return createNumber(value, typeInfo, expectedJavaType);
+                if (value instanceof BigInteger)
+                    return convertNumber((BigInteger)value, typeInfo, expectedJavaType);
+                break;
             }
+
+            // possible type mismatch => just leave it to creator, it will check and report better message
+            return value;
         }
 
-        private static Object createEnum(Object value, TypeInfo typeInfo)
+        private static Object createEnum(BigInteger value, TypeInfo typeInfo)
         {
             try
             {
@@ -425,7 +438,7 @@ public class JsonReader implements AutoCloseable
                 final Method toEnum = enumClass.getMethod("toEnum", enumUnderlyingClass);
                 final JavaType enumUnderlyingJavaType = enumUnderlyingTypeInfo.getJavaType();
 
-                return toEnum.invoke(null, createNumber(value, typeInfo, enumUnderlyingJavaType));
+                return toEnum.invoke(null, convertNumber(value, typeInfo, enumUnderlyingJavaType));
             }
             catch (ClassCastException | SecurityException | IllegalAccessException | IllegalArgumentException |
                     InvocationTargetException | NoSuchMethodException excpt)
@@ -435,7 +448,7 @@ public class JsonReader implements AutoCloseable
             }
         }
 
-        private static Object createBitmask(Object value, TypeInfo typeInfo)
+        private static Object createBitmask(BigInteger value, TypeInfo typeInfo)
         {
             try
             {
@@ -446,7 +459,7 @@ public class JsonReader implements AutoCloseable
                 final Constructor<?> constructor = bitmaskClass.getDeclaredConstructor(parameterType);
                 final JavaType bitmaskUnderlyingJavaType = bitmaskUnderlyingTypeInfo.getJavaType();
 
-                return constructor.newInstance(createNumber(value, typeInfo, bitmaskUnderlyingJavaType));
+                return constructor.newInstance(convertNumber(value, typeInfo, bitmaskUnderlyingJavaType));
             }
             catch (ClassCastException | InstantiationException | SecurityException | IllegalAccessException |
                     IllegalArgumentException | InvocationTargetException | NoSuchMethodException excpt)
@@ -456,7 +469,7 @@ public class JsonReader implements AutoCloseable
             }
         }
 
-        private static Object createNumber(Object value, TypeInfo typeInfo, JavaType expectedJavaType)
+        private static Object convertNumber(BigInteger value, TypeInfo typeInfo, JavaType expectedJavaType)
         {
             switch (expectedJavaType)
             {
@@ -472,19 +485,16 @@ public class JsonReader implements AutoCloseable
             case LONG:
                 return createLong(value, typeInfo);
 
-            case FLOAT:
-                return createFloat(value);
-
             default:
                 return value;
             }
         }
 
-        private static Object createByte(Object value, TypeInfo typeInfo)
+        private static byte createByte(BigInteger value, TypeInfo typeInfo)
         {
             try
             {
-                return (value instanceof BigInteger) ? ((BigInteger)value).byteValue() : value;
+                return value.byteValueExact();
             }
             catch (ArithmeticException excpt)
             {
@@ -493,11 +503,11 @@ public class JsonReader implements AutoCloseable
             }
         }
 
-        private static Object createShort(Object value, TypeInfo typeInfo)
+        private static short createShort(BigInteger value, TypeInfo typeInfo)
         {
             try
             {
-                return (value instanceof BigInteger) ? ((BigInteger)value).shortValue() : value;
+                return value.shortValueExact();
             }
             catch (ArithmeticException excpt)
             {
@@ -506,11 +516,11 @@ public class JsonReader implements AutoCloseable
             }
         }
 
-        private static Object createInt(Object value, TypeInfo typeInfo)
+        private static int createInt(BigInteger value, TypeInfo typeInfo)
         {
             try
             {
-                return (value instanceof BigInteger) ? ((BigInteger)value).intValue() : value;
+                return value.intValueExact();
             }
             catch (ArithmeticException excpt)
             {
@@ -519,22 +529,17 @@ public class JsonReader implements AutoCloseable
             }
         }
 
-        private static Object createLong(Object value, TypeInfo typeInfo)
+        private static long createLong(BigInteger value, TypeInfo typeInfo)
         {
             try
             {
-                return (value instanceof BigInteger) ? ((BigInteger)value).longValue() : value;
+                return value.longValueExact();
             }
             catch (ArithmeticException excpt)
             {
                 throw new ZserioError("JsonReader: Cannot create long '" + typeInfo.getSchemaName() +
                         "' from value '" + value.toString() + "'!", excpt);
             }
-        }
-
-        private static Object createFloat(Object value)
-        {
-            return (value instanceof Double) ? ((Double)value).floatValue() : value;
         }
 
         private ZserioTreeCreator creator;

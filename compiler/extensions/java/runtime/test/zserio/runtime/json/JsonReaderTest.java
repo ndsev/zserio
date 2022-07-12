@@ -304,4 +304,93 @@ public class JsonReaderTest
                 exception.getMessage());
         jsonReader.close();
     }
+
+    @Test
+    public void wrongLongValueException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"value\": 9223372036854775808\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("JsonReader: Cannot create long 'uint32' from value '9223372036854775808'! " +
+                "(JsonParser:2:14)", exception.getMessage());
+        jsonReader.close();
+    }
+
+    @Test
+    public void bigBitBufferByteValueException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"data\": {\n" +
+                "             \"buffer\": [\n" +
+                "                 256\n" +
+                "             ],\n" +
+                "             \"bitSize\": 7\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("JsonReader: Cannot create byte for Bit Buffer from value '256'! (JsonParser:5:18)",
+                exception.getMessage());
+        jsonReader.close();
+    }
+
+    @Test
+    public void negativeBitBufferByteValueException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"data\": {\n" +
+                "             \"buffer\": [\n" +
+                "                 -1\n" +
+                "             ],\n" +
+                "             \"bitSize\": 7\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("JsonReader: Cannot create byte for Bit Buffer from value '-1'! (JsonParser:5:18)",
+                exception.getMessage());
+        jsonReader.close();
+    }
+
+    @Test
+    public void wrongBitBufferSizeValueException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"data\": {\n" +
+                "             \"buffer\": [\n" +
+                "                 255\n" +
+                "             ],\n" +
+                "             \"bitSize\": 9223372036854775808\n" +
+                "        }\n" +
+                "    }\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("JsonReader: Cannot create long for Bit Buffer size from value '9223372036854775808'! " +
+                "(JsonParser:7:25)", exception.getMessage());
+        jsonReader.close();
+    }
 }
