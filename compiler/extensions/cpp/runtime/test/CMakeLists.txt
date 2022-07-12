@@ -53,6 +53,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/NewDeleteResourceTest.cpp
     zserio/PolymorphicAllocatorTest.cpp
     zserio/ReflectableTest.cpp
+    zserio/ReflectableUtilTest.cpp
     zserio/SerializeUtilTest.cpp
     zserio/SpanTest.cpp
     zserio/SqliteConnectionTest.cpp
@@ -66,6 +67,8 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/VarSizeUtilTest.cpp
     zserio/WalkerTest.cpp
     zserio/ZserioTreeCreatorTest.cpp
+    zserio/ZserioTreeCreatorTestObject.h
+    zserio/ZserioTreeCreatorTestObject.cpp
 )
 
 set(ZSERIO_CPP_RUNTIME_TEST_HEADERS

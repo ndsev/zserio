@@ -1826,13 +1826,6 @@ public:
     }
 
     static IBasicReflectablePtr<ALLOC> getString(
-            const string<ALLOC>& value, const ALLOC& allocator = ALLOC())
-    {
-        return std::allocate_shared<StringReflectable<ALLOC>>(
-                allocator, BuiltinTypeInfo<ALLOC>::getString(), value);
-    }
-
-    static IBasicReflectablePtr<ALLOC> getString(
             StringView value, const ALLOC& allocator = ALLOC())
     {
         return std::allocate_shared<StringReflectable<ALLOC>>(

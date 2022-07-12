@@ -11,6 +11,7 @@
 #include "zserio/AnyHolder.h"
 #include "zserio/CppRuntimeException.h"
 #include "zserio/String.h"
+#include "zserio/StringView.h"
 
 namespace zserio
 {

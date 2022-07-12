@@ -9,6 +9,9 @@
 namespace zserio
 {
 
+namespace
+{
+
 class DummyObject
 {
 public:
@@ -16,11 +19,11 @@ public:
     int getValue() const { return m_value; }
     void setValue(int value) { m_value = value; }
 
-    bool operator==(const DummyObject& other) const { return m_value == other.m_value; }
-
 private:
     int m_value;
 };
+
+} // namespace
 
 TEST(AnyHolderTest, emptyConstructor)
 {

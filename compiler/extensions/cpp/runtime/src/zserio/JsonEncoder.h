@@ -7,6 +7,7 @@
 #include "zserio/Vector.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/StringView.h"
 
 namespace zserio
 {

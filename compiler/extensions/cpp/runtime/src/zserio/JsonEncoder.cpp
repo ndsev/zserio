@@ -1,7 +1,7 @@
 #include <iomanip>
 #include <cmath>
 
-#include "JsonEncoder.h"
+#include "zserio/JsonEncoder.h"
 
 namespace zserio
 {
