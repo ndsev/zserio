@@ -526,7 +526,7 @@ const BasicFieldInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::findFieldInfo(
         const IBasicTypeInfo<ALLOC>& typeInfo, StringView name) const
 {
     Span<const BasicFieldInfo<ALLOC>> fields = typeInfo.getFields();
-    auto found_it = find_if(fields.begin(), fields.end(),
+    auto found_it = std::find_if(fields.begin(), fields.end(),
             [name](const BasicFieldInfo<ALLOC>& field){ return field.schemaName == name; });
     if (found_it == fields.end())
     {

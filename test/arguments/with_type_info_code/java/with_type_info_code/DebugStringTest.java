@@ -213,8 +213,8 @@ public class DebugStringTest
         for (ParameterizedStruct paramStruct : withTypeInfoCode.getComplexStruct().getParamStructArray())
         {
             assertTrue(paramStruct.getArray().length <= maxArrayLength);
-            assertTrue(withTypeInfoCode.getComplexStruct().getDynamicBitFieldArray().length <= maxArrayLength);
         }
+        assertTrue(withTypeInfoCode.getComplexStruct().getDynamicBitFieldArray().length <= maxArrayLength);
 
         assertTrue(withTypeInfoCode.getParameterizedStruct().getArray().length <= maxArrayLength);
         assertTrue(withTypeInfoCode.getTemplatedParameterizedStruct().getArray().length <= maxArrayLength);

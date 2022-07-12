@@ -508,7 +508,7 @@ TEST(DebugStringUtilTest, fromJsonFile)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFile.json";
     {
-        std::ofstream os(fileName);
+        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
     }
 

@@ -2,13 +2,14 @@
 
 #include "zserio/FileUtil.h"
 #include "zserio/CppRuntimeException.h"
+#include "zserio/StringView.h"
 
 namespace zserio
 {
 
 void writeBufferToFile(const uint8_t* buffer, size_t bitSize, BitsTag, const std::string& fileName)
 {
-    std::ofstream os(fileName.c_str(), std::ofstream::binary);
+    std::ofstream os(fileName.c_str(), std::ofstream::binary | std::ofstream::trunc);
     if (!os)
         throw CppRuntimeException("writeBufferToFile: Failed to open '" + fileName +"' for writing!");
 

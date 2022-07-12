@@ -275,7 +275,7 @@ void BitBufferAdapter<ALLOC>::visitValue(StringView)
 template <typename ALLOC>
 void CreatorAdapter<ALLOC>::setType(const IBasicTypeInfo<ALLOC>& typeInfo)
 {
-    m_creator = ZserioTreeCreator(typeInfo, get_allocator());
+    m_creator = BasicZserioTreeCreator<ALLOC>(typeInfo, get_allocator());
 }
 
 template <typename ALLOC>
