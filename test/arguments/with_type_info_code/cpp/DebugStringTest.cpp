@@ -183,8 +183,7 @@ TEST_F(DebugStringTest, jsonWriterWithOptionals)
         zserio::toJsonFile(withTypeInfoCodeConst, JSON_NAME_WITH_OPTIONALS);
         checkJsonFile(JSON_NAME_WITH_OPTIONALS);
 
-        auto reflectable = zserio::fromJsonFile(WithTypeInfoCode::typeInfo(), JSON_NAME_WITH_OPTIONALS,
-                allocator_type());
+        auto reflectable = zserio::fromJsonFile<WithTypeInfoCode>(JSON_NAME_WITH_OPTIONALS, allocator_type());
         ASSERT_TRUE(reflectable);
         reflectable->initializeChildren();
         checkReflectable(withTypeInfoCode, reflectable);
@@ -202,7 +201,7 @@ TEST_F(DebugStringTest, jsonWriterWithoutOptionals)
         zserio::toJsonFile(withTypeInfoCode, JSON_NAME_WITHOUT_OPTIONALS);
         checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
 
-        auto reflectable = zserio::fromJsonFile(WithTypeInfoCode::typeInfo(), JSON_NAME_WITHOUT_OPTIONALS,
+        auto reflectable = zserio::fromJsonFile<WithTypeInfoCode>(JSON_NAME_WITHOUT_OPTIONALS,
                 allocator_type());
         ASSERT_TRUE(reflectable);
         reflectable->initializeChildren();
