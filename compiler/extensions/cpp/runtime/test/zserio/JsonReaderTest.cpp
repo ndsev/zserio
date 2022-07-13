@@ -205,7 +205,7 @@ TEST(JsonReaderTest, wrongValueTypeException)
         }
         catch (const CppRuntimeException& e)
         {
-            ASSERT_STREQ("ZserioTreeCreator: Trying to make integral any value from non-integral type! "
+            ASSERT_STREQ("ZserioTreeCreator: Value '13' cannot be converted to integral value! "
                     "(JsonParser:2:12)", e.what());
             throw;
         }
@@ -292,6 +292,140 @@ TEST(JsonReaderTest, jsonValueException)
     JsonReader jsonReader(str);
 
     ASSERT_THROW(jsonReader.read(DummyObject::typeInfo()), CppRuntimeException);
+}
+
+TEST(JsonReaderTest, bigLongValueException)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"value\": 4294967296\n"
+        "}"
+    );
+    JsonReader jsonReader(str);
+
+    ASSERT_THROW({
+        try
+        {
+            jsonReader.read(DummyObject::typeInfo());
+        }
+        catch (const CppRuntimeException& e)
+        {
+            ASSERT_STREQ("ZserioTreeCreator: Integral value '4294967296' overflow (<0, 4294967295>)! "
+                    "(JsonParser:2:14)", e.what());
+            throw;
+        }
+    }, CppRuntimeException);
+}
+
+TEST(JsonReaderTest, floatLongValueException)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"value\": 1.234\n"
+        "}"
+    );
+    JsonReader jsonReader(str);
+
+    ASSERT_THROW({
+        try
+        {
+            jsonReader.read(DummyObject::typeInfo());
+        }
+        catch (const CppRuntimeException& e)
+        {
+            ASSERT_STREQ("ZserioTreeCreator: Value '1.233' cannot be converted to integral value! "
+                    "(JsonParser:2:14)", e.what());
+            throw;
+        }
+    }, CppRuntimeException);
+}
+
+TEST(JsonReaderTest, bigBitBufferByteValueException)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"nested\": {\n"
+        "        \"data\": {\n"
+        "             \"buffer\": [\n"
+        "                 256\n"
+        "             ],\n"
+        "             \"bitSize\": 7\n"
+        "        }\n"
+        "    }\n"
+        "}"
+    );
+    JsonReader jsonReader(str);
+
+    ASSERT_THROW({
+        try
+        {
+            jsonReader.read(DummyObject::typeInfo());
+        }
+        catch (const CppRuntimeException& e)
+        {
+            ASSERT_STREQ("JsonReader: Cannot create byte for Bit Buffer from value '256'! (JsonParser:5:18)",
+                    e.what());
+            throw;
+        }
+    }, CppRuntimeException);
+}
+
+TEST(JsonReaderTest, negativeBitBufferByteValueException)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"nested\": {\n"
+        "        \"data\": {\n"
+        "             \"buffer\": [\n"
+        "                 -1\n"
+        "             ],\n"
+        "             \"bitSize\": 7\n"
+        "        }\n"
+        "    }\n"
+        "}"
+    );
+    JsonReader jsonReader(str);
+
+    ASSERT_THROW({
+        try
+        {
+            jsonReader.read(DummyObject::typeInfo());
+        }
+        catch (const CppRuntimeException& e)
+        {
+            ASSERT_STREQ("JsonReader: Unexpected visitValue (int) in BitBuffer! (JsonParser:5:18)", e.what());
+            throw;
+        }
+    }, CppRuntimeException);
+}
+
+TEST(JsonReaderTest, wrongBitBufferSizeValueException)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"nested\": {\n"
+        "        \"data\": {\n"
+        "             \"buffer\": [\n"
+        "                 255\n"
+        "             ],\n"
+        "             \"bitSize\": 18446744073709551616\n"
+        "        }\n"
+        "    }\n"
+        "}"
+    );
+    JsonReader jsonReader(str);
+
+    ASSERT_THROW({
+        try
+        {
+            jsonReader.read(DummyObject::typeInfo());
+        }
+        catch (const CppRuntimeException& e)
+        {
+            ASSERT_STREQ("JsonTokenizer:7:25: Value is outside of the 64-bit integer range!", e.what());
+            throw;
+        }
+    }, CppRuntimeException);
 }
 
 TEST(JsonReaderTest, bitBufferAdapterUninitializedCalls)

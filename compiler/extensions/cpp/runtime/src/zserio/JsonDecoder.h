@@ -37,7 +37,7 @@ public:
          * \param allocator Allocator to use.
          */
         DecoderResult(size_t numRead, const ALLOC& allocator) :
-                numReadChars(numRead), value(allocator)
+                numReadChars(numRead), value(allocator), integerOverflow(false)
         {}
 
         /**
@@ -49,11 +49,35 @@ public:
          */
         template <typename T>
         DecoderResult(size_t numRead, T&& decodedValue, const ALLOC& allocator) :
-                numReadChars(numRead), value(std::forward<T>(decodedValue), allocator)
+                numReadChars(numRead), value(std::forward<T>(decodedValue), allocator), integerOverflow(false)
+        {}
+
+        /**
+         * Constructor used for integer decoder.
+         *
+         * \param numRead Number of processed characters.
+         * \param decodedValue Value decoded from JSON stream.
+         * \param overflow True in case of integer overflow.
+         * \param allocator Allocator to use.
+         */
+        template <typename T>
+        DecoderResult(size_t numRead, T&& decodedValue, bool overflow, const ALLOC& allocator) :
+                numReadChars(numRead), value(createValue(decodedValue, overflow, allocator)),
+                        integerOverflow(overflow)
         {}
 
         size_t numReadChars; /**< Number of processed characters. */
         AnyHolder<ALLOC> value; /**< Decoded value. Empty on failure. */
+        bool integerOverflow; /**< True if decoded value was bigger than UINT64_MAX or was not in interval
+                                   <INT64_MIN, INT64_MAX>. */
+
+    private:
+        template <typename T>
+        AnyHolder<ALLOC> createValue(T&& decodedValue, bool overflow, const ALLOC& allocator)
+        {
+            return overflow ? AnyHolder<ALLOC>(allocator) :
+                    AnyHolder<ALLOC>(std::forward<T>(decodedValue), allocator);
+        }
     };
 
     /**
@@ -297,26 +321,28 @@ template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeSigned(
         const char* input, size_t numChars)
 {
-    // note that in case of overflow we return INT64_MIN / INT64_MAX
     char* pEnd = nullptr;
     const int64_t value = std::strtoll(input, &pEnd, 10);
     if (static_cast<size_t>(pEnd - input) != numChars)
         return DecoderResult(numChars, get_allocator());
 
-    return DecoderResult(numChars, value, get_allocator());
+    const bool overflow = (errno == ERANGE);
+
+    return DecoderResult(numChars, value, overflow, get_allocator());
 }
 
 template <typename ALLOC>
 typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeUnsigned(
         const char* input, size_t numChars)
 {
-    // note that in case of overflow we return UINT64_MAX?
     char* pEnd = nullptr;
     const uint64_t value = std::strtoull(input, &pEnd, 10);
     if (static_cast<size_t>(pEnd - input) != numChars)
         return DecoderResult(numChars, get_allocator());
 
-    return DecoderResult(numChars, value, get_allocator());
+    const bool overflow = (errno == ERANGE);
+
+    return DecoderResult(numChars, value, overflow, get_allocator());
 }
 
 template <typename ALLOC>

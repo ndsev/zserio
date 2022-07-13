@@ -1,6 +1,9 @@
 #ifndef ZSERIO_ZSERIO_TREE_CREATOR_H_INC
 #define ZSERIO_ZSERIO_TREE_CREATOR_H_INC
 
+#include <limits>
+#include <type_traits>
+
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
 #include "zserio/TypeInfoUtil.h"
@@ -17,18 +20,117 @@ namespace detail
 template <typename T, typename ALLOC>
 AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, const ALLOC& allocator);
 
+template <typename T, typename U,
+        typename std::enable_if<std::is_unsigned<typename std::decay<U>::type>::value, int>::type = 0>
+bool checkArithmeticValueRanges(U value)
+{
+    // value is unsigned
+    if (value > static_cast<U>(std::numeric_limits<T>::max()))
+        return false;
+
+    return true;
+}
+
+template <typename T, typename U,
+        typename std::enable_if<std::is_signed<typename std::decay<U>::type>::value &&
+                std::is_signed<typename std::decay<T>::type>::value, int>::type = 0>
+bool checkArithmeticValueRanges(U value)
+{
+    // value is signed and it is converted to signed value
+    if (static_cast<int64_t>(value) < static_cast<int64_t>(std::numeric_limits<T>::min()) ||
+            static_cast<int64_t>(value) > static_cast<int64_t>(std::numeric_limits<T>::max()))
+        return false;
+
+    return true;
+}
+
+template <typename T, typename U,
+        typename std::enable_if<std::is_signed<typename std::decay<U>::type>::value &&
+                std::is_unsigned<typename std::decay<T>::type>::value, int>::type = 0>
+bool checkArithmeticValueRanges(U value)
+{
+    // value is signed and it is converted to unsigned value
+    if (value < 0 || static_cast<uint64_t>(value) > static_cast<uint64_t>(std::numeric_limits<T>::max()))
+        return false;
+
+    return true;
+}
+
+template <typename T>
+T convertValueForException(T value)
+{
+    return value;
+}
+
+template <typename ALLOC>
+const char* convertValueForException(const BasicBitBuffer<ALLOC>&)
+{
+    return "BitBuffer";
+}
+
+template <typename T, typename ALLOC>
+AnyHolder<ALLOC> makeAnyBoolValue(bool value, const ALLOC& allocator)
+{
+    return AnyHolder<ALLOC>(static_cast<T>(value), allocator);
+}
+
+template <typename T, typename U, typename ALLOC>
+AnyHolder<ALLOC> makeAnyBoolValue(const U& value, const ALLOC&)
+{
+    throw CppRuntimeException("ZserioTreeCreator: Value '") + convertValueForException(value) +
+            "' cannot be converted to bool value!";
+}
+
+template <typename T, typename ALLOC>
+AnyHolder<ALLOC> makeAnyIntegralValue(bool value, const ALLOC&)
+{
+    throw CppRuntimeException("ZserioTreeCreator: Bool value '") + convertValueForException(value) +
+            "' cannot be converted to integral type!";
+}
+
+template <typename T, typename U, typename ALLOC,
+        typename std::enable_if<std::is_integral<typename std::decay<U>::type>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyIntegralValue(U value, const ALLOC& allocator)
+{
+    // check ranges of integers
+    if (!checkArithmeticValueRanges<T>(value))
+    {
+        throw CppRuntimeException("ZserioTreeCreator: Integral value '") + value + "' overflow (<" +
+                std::numeric_limits<T>::min() + ", " + std::numeric_limits<T>::max() + ">)!";
+    }
+
+    return AnyHolder<ALLOC>(static_cast<T>(value), allocator);
+}
+
+template <typename T, typename U, typename ALLOC,
+        typename std::enable_if<!std::is_integral<typename std::decay<U>::type>::value, int>::type = 0>
+AnyHolder<ALLOC> makeAnyIntegralValue(const U& value, const ALLOC&)
+{
+    throw CppRuntimeException("ZserioTreeCreator: Value '") + convertValueForException(value) +
+            "' cannot be converted to integral value!";
+}
+
+template <typename T, typename ALLOC>
+AnyHolder<ALLOC> makeAnyFloatingValue(bool value, const ALLOC&)
+{
+    throw CppRuntimeException("ZserioTreeCreator: Bool value '") + convertValueForException(value) +
+            "' cannot be converted to floating type!";
+}
+
 template <typename T, typename U, typename ALLOC,
         typename std::enable_if<std::is_arithmetic<typename std::decay<U>::type>::value, int>::type = 0>
-AnyHolder<ALLOC> makeAnyArithmeticValue(U value, const ALLOC& allocator)
+AnyHolder<ALLOC> makeAnyFloatingValue(U value, const ALLOC& allocator)
 {
+    // allow conversion integers to floats
     return AnyHolder<ALLOC>(static_cast<T>(value), allocator);
 }
 
 template <typename T, typename U, typename ALLOC,
         typename std::enable_if<!std::is_arithmetic<typename std::decay<U>::type>::value, int>::type = 0>
-AnyHolder<ALLOC> makeAnyArithmeticValue(const U&, const ALLOC&)
+AnyHolder<ALLOC> makeAnyFloatingValue(const U& value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Trying to make integral any value from non-integral type!");
+    throw CppRuntimeException("ZserioTreeCreator: Value '") + convertValueForException(value) +
+            "' cannot be converted to floating value!";
 }
 
 template <typename ALLOC>
@@ -97,27 +199,27 @@ AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, 
     switch (typeInfo.getCppType())
     {
     case CppType::BOOL:
-        return makeAnyArithmeticValue<bool>(std::forward<T>(value), allocator);
+        return makeAnyBoolValue<bool>(std::forward<T>(value), allocator);
     case CppType::UINT8:
-        return makeAnyArithmeticValue<uint8_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<uint8_t>(std::forward<T>(value), allocator);
     case CppType::UINT16:
-        return makeAnyArithmeticValue<uint16_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<uint16_t>(std::forward<T>(value), allocator);
     case CppType::UINT32:
-        return makeAnyArithmeticValue<uint32_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<uint32_t>(std::forward<T>(value), allocator);
     case CppType::UINT64:
-        return makeAnyArithmeticValue<uint64_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<uint64_t>(std::forward<T>(value), allocator);
     case CppType::INT8:
-        return makeAnyArithmeticValue<int8_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<int8_t>(std::forward<T>(value), allocator);
     case CppType::INT16:
-        return makeAnyArithmeticValue<int16_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<int16_t>(std::forward<T>(value), allocator);
     case CppType::INT32:
-        return makeAnyArithmeticValue<int32_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<int32_t>(std::forward<T>(value), allocator);
     case CppType::INT64:
-        return makeAnyArithmeticValue<int64_t>(std::forward<T>(value), allocator);
+        return makeAnyIntegralValue<int64_t>(std::forward<T>(value), allocator);
     case CppType::FLOAT:
-        return makeAnyArithmeticValue<float>(std::forward<T>(value), allocator);
+        return makeAnyFloatingValue<float>(std::forward<T>(value), allocator);
     case CppType::DOUBLE:
-        return makeAnyArithmeticValue<double>(std::forward<T>(value), allocator);
+        return makeAnyFloatingValue<double>(std::forward<T>(value), allocator);
     case CppType::STRING:
         return makeAnyStringValue(std::forward<T>(value), allocator);
     case CppType::ENUM:

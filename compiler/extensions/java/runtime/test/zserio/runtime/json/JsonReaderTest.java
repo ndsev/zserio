@@ -306,7 +306,7 @@ public class JsonReaderTest
     }
 
     @Test
-    public void wrongLongValueException() throws IOException
+    public void bigLongValueException() throws IOException
     {
         final Reader reader = new StringReader(
                 "{\n" +
@@ -318,6 +318,23 @@ public class JsonReaderTest
         final ZserioError exception = assertThrows(ZserioError.class,
                 () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
         assertEquals("JsonReader: Cannot create long 'uint32' from value '9223372036854775808'! " +
+                "(JsonParser:2:14)", exception.getMessage());
+        jsonReader.close();
+    }
+
+    @Test
+    public void floatLongValueException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"value\": 1.234\n" +
+                "}"
+                );
+
+        final JsonReader jsonReader = new JsonReader(reader);
+        final ZserioError exception = assertThrows(ZserioError.class,
+                () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+        assertEquals("ZserioTreeCreator: Unexpected value type 'class java.lang.Double', expecting 'long'! " +
                 "(JsonParser:2:14)", exception.getMessage());
         jsonReader.close();
     }

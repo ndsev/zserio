@@ -15,6 +15,25 @@ enum class DummyEnum : uint8_t
 };
 
 template <>
+struct EnumTraits<DummyEnum>
+{
+    static constexpr ::std::array<const char*, 2> names =
+    {{
+        "ONE",
+        "TWO"
+    }};
+
+    static constexpr ::std::array<DummyEnum, 2> values =
+    {{
+        DummyEnum::ONE,
+        DummyEnum::TWO
+    }};
+};
+
+template <>
+size_t enumToOrdinal<DummyEnum>(DummyEnum value);
+
+template <>
 DummyEnum valueToEnum(uint8_t rawValue);
 
 template <>

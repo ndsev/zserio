@@ -3,6 +3,24 @@
 namespace zserio
 {
 
+constexpr ::std::array<const char*, 2> EnumTraits<DummyEnum>::names;
+constexpr ::std::array<DummyEnum, 2> EnumTraits<DummyEnum>::values;
+
+template <>
+size_t enumToOrdinal(DummyEnum value)
+{
+    switch (value)
+    {
+    case DummyEnum::ONE:
+        return 0;
+    case DummyEnum::TWO:
+        return 1;
+    default:
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration DarkColor: ") +
+                static_cast<typename ::std::underlying_type<DummyEnum>::type>(value) + "!";
+    }
+}
+
 template <>
 DummyEnum valueToEnum(uint8_t rawValue)
 {

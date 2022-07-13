@@ -2,6 +2,7 @@
 #define ZSERIO_JSON_READER_H_INC
 
 #include <istream>
+#include <limits>
 
 #include "zserio/JsonParser.h"
 #include "zserio/OptionalHolder.h"
@@ -244,6 +245,12 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
 {
     if (m_state == VISIT_VALUE_BUFFER)
     {
+        if (uintValue > static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()))
+        {
+            throw CppRuntimeException("JsonReader: Cannot create byte for Bit Buffer from value '") +
+                    uintValue + "'!";
+        }
+
         if (!m_buffer.hasValue())
             m_buffer = vector<uint8_t, ALLOC>(1, static_cast<uint8_t>(uintValue));
         else
@@ -251,6 +258,12 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
     }
     else if (m_state == VISIT_VALUE_BITSIZE)
     {
+        if (uintValue != static_cast<uint64_t>(static_cast<size_t>(uintValue)))
+        {
+            throw CppRuntimeException("JsonReader: Cannot create size_t for Bit Buffer size from value '") +
+                    uintValue + "'!";
+        }
+
         m_bitSize = static_cast<size_t>(uintValue);
         m_state = VISIT_KEY;
     }
