@@ -90,9 +90,9 @@ TEST(ZserioTreeCreator, makeAnyValue)
     // int32
     any = detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 32, allocator);
     ASSERT_EQ(32, any.get<int32_t>());
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), -2147483649, allocator),
+    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), -2147483649LL, allocator),
             CppRuntimeException);
-    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 2147483648, allocator),
+    ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 2147483648LL, allocator),
             CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), 1.0f, allocator), CppRuntimeException);
     ASSERT_THROW(detail::makeAnyValue(BuiltinTypeInfo<>::getInt32(), "1", allocator), CppRuntimeException);
