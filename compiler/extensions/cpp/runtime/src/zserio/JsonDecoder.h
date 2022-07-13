@@ -322,6 +322,7 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeS
         const char* input, size_t numChars)
 {
     char* pEnd = nullptr;
+    errno = 0; // no library function sets its value back to zero once changed
     const int64_t value = std::strtoll(input, &pEnd, 10);
     if (static_cast<size_t>(pEnd - input) != numChars)
         return DecoderResult(numChars, get_allocator());
@@ -336,6 +337,7 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeU
         const char* input, size_t numChars)
 {
     char* pEnd = nullptr;
+    errno = 0; // no library function sets its value back to zero once changed
     const uint64_t value = std::strtoull(input, &pEnd, 10);
     if (static_cast<size_t>(pEnd - input) != numChars)
         return DecoderResult(numChars, get_allocator());
