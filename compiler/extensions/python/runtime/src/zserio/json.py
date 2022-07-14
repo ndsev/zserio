@@ -804,16 +804,17 @@ class JsonReader:
         self._creator_adapter = JsonReader._CreatorAdapter()
         self._parser = JsonParser(text_io, self._creator_adapter)
 
-    def read(self, type_info: TypeInfo) -> typing.Any:
+    def read(self, type_info: TypeInfo, *arguments: typing.List[typing.Any]) -> typing.Any:
         """
         Reads a zserio object tree defined by the given type info from the text steam.
 
         :param type_info: Type info defining the expected zserio object tree.
+        :param arguments: Arguments of type defining the expected zserio object tree.
         :returns: Zserio object tree initialized using the JSON data.
         :raises PythonRuntimeException: When the JSON doesn't contain expected zserio object tree.
         """
 
-        self._creator_adapter.set_type(type_info)
+        self._creator_adapter.set_type(type_info, *arguments)
 
         try:
             self._parser.parse()
@@ -914,14 +915,15 @@ class JsonReader:
             self._object: typing.Any = None
             self._bitbuffer_adapter: typing.Optional[JsonReader._BitBufferAdapter] = None
 
-        def set_type(self, type_info: TypeInfo) -> None:
+        def set_type(self, type_info: TypeInfo, *arguments: typing.List[typing.Any]) -> None:
             """
             Sets type which shall be created next. Resets the current object.
 
             :param type_info: Type info of the type which is to be created.
+            :param arguments: Arguments of type defining the expected zserio object tree.
             """
 
-            self._creator = ZserioTreeCreator(type_info)
+            self._creator = ZserioTreeCreator(type_info, *arguments)
             self._object = None
 
         def get(self) -> typing.Any:

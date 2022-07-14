@@ -13,14 +13,17 @@ class ZserioTreeCreator:
     Allows to build zserio object tree defined by the given type info.
     """
 
-    def __init__(self, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> None:
+    def __init__(self, type_info: typing.Union[TypeInfo, RecursiveTypeInfo],
+                 *arguments: typing.List[typing.Any]) -> None:
         """
         Constructor.
 
         :param type_info: Type info defining the tree.
+        :param arguments: Arguments for type which defines the tree.
         """
 
-        self._type_info = type_info
+        self._root_type_info = type_info
+        self._root_arguments = arguments
         self._member_info_stack: typing.List[MemberInfo] = []
         self._value_stack: typing.List[typing.Any] = []
         self._state = ZserioTreeCreator._State.BEFORE_ROOT
@@ -33,7 +36,7 @@ class ZserioTreeCreator:
         if self._state != ZserioTreeCreator._State.BEFORE_ROOT:
             raise PythonRuntimeException(f"ZserioTreeCreator: Cannot begin root in state '{self._state}'!")
 
-        self._value_stack.append(self._type_info.py_type())
+        self._value_stack.append(self._root_type_info.py_type(*self._root_arguments))
         self._state = ZserioTreeCreator._State.IN_COMPOUND
 
     def end_root(self) -> typing.Any:
@@ -245,7 +248,7 @@ class ZserioTreeCreator:
         return member_info.type_info
 
     def _get_type_info(self) -> typing.Union[TypeInfo, RecursiveTypeInfo]:
-        return self._member_info_stack[-1].type_info if self._member_info_stack else self._type_info
+        return self._member_info_stack[-1].type_info if self._member_info_stack else self._root_type_info
 
     @staticmethod
     def _find_member_info(type_info: typing.Union[TypeInfo, RecursiveTypeInfo], name: str) -> MemberInfo:

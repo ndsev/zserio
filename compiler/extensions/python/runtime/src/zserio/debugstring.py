@@ -119,7 +119,8 @@ def to_json_file(obj: typing.Any, filename: str, *, indent: typing.Union[None, i
     with open(filename, "w", encoding="utf-8") as text_io:
         to_json_stream(obj, text_io, indent=indent, walk_filter=walk_filter)
 
-def from_json_stream(obj_class: typing.Type[typing.Any], text_io: typing.TextIO) -> typing.Any:
+def from_json_stream(obj_class: typing.Type[typing.Any], text_io: typing.TextIO,
+                     *arguments: typing.List[typing.Any]) -> typing.Any:
     """
     Parses JSON debug string from given text stream and creates instance of the requested zserio object
     according to the data contained in the debug string.
@@ -137,14 +138,16 @@ def from_json_stream(obj_class: typing.Type[typing.Any], text_io: typing.TextIO)
 
     :param obj_class: Class instance of the generated object to create.
     :param text_io: Text stream to use.
+    :param arguments: Arguments of the generated zserio object.
     :returns: Instance of the requested zserio object.
     :raises PythonRuntimeException: In case of any error.
     """
 
     json_reader = JsonReader(text_io)
-    return json_reader.read(obj_class.type_info())
+    return json_reader.read(obj_class.type_info(), *arguments)
 
-def from_json_string(obj_class: typing.Type[typing.Any], json_string: str) -> typing.Any:
+def from_json_string(obj_class: typing.Type[typing.Any], json_string: str,
+                     *arguments: typing.List[typing.Any]) -> typing.Any:
     """
     Parses JSON debug string and creates instance of the requested zserio object
     according to the data contained in the debug string.
@@ -161,13 +164,15 @@ def from_json_string(obj_class: typing.Type[typing.Any], json_string: str) -> ty
 
     :param obj_class: Class instance of the generated object to create.
     :param json_string: JSON debug string to parse.
+    :param arguments: Arguments of the generated zserio object.
     :returns: Instance of the requested zserio object.
     :raises PythonRuntimeException: In case of any error.
     """
 
-    return from_json_stream(obj_class, io.StringIO(json_string))
+    return from_json_stream(obj_class, io.StringIO(json_string), *arguments)
 
-def from_json_file(obj_class: typing.Type[typing.Any], filename: str) -> typing.Any:
+def from_json_file(obj_class: typing.Type[typing.Any], filename: str,
+                   *arguments: typing.List[typing.Any]) -> typing.Any:
     """
     Parses JSON debug string from given file and creates instance of the requested zserio object
     according to the data contained in the debug string.
@@ -183,9 +188,10 @@ def from_json_file(obj_class: typing.Type[typing.Any], filename: str) -> typing.
 
     :param obj_class: Class instance of the generated object to create.
     :param filename: File name to read.
+    :param arguments: Arguments of the generated zserio object.
     :returns: Instance of the requested zserio object.
     :raises PythonRuntimeException: In case of any error.
     """
 
     with open(filename, "r", encoding="utf-8") as text_io:
-        return from_json_stream(obj_class, text_io)
+        return from_json_stream(obj_class, text_io, *arguments)
