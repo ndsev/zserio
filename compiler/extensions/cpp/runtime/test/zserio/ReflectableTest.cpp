@@ -1,5 +1,6 @@
 #include <string>
 #include <functional>
+#include <type_traits>
 
 #include "gtest/gtest.h"
 
@@ -167,9 +168,38 @@ class DummyChild
 public:
     using allocator_type = std::allocator<uint8_t>;
 
-    explicit DummyChild(const allocator_type& = allocator_type()) : m_value(uint32_t()) {}
-    explicit DummyChild(uint32_t value) : m_value(value) {}
-    explicit DummyChild(BitStreamReader& in) : m_value(readValue(in)) {}
+    explicit DummyChild(const allocator_type& = allocator_type()) :
+            m_isInitialized(false), m_value(uint32_t())
+    {}
+
+    explicit DummyChild(uint32_t value) :
+            m_isInitialized(false), m_value(value)
+    {}
+
+    explicit DummyChild(BitStreamReader& in, int32_t dummyParam_, string<>& stringParam_) :
+            m_dummyParam_(dummyParam_), m_stringParam_(&stringParam_), m_isInitialized(true),
+            m_value(readValue(in))
+    {}
+
+    DummyChild(const DummyChild& other) :
+            m_value(other.m_value)
+    {
+        if (other.m_isInitialized)
+            initialize(other.m_dummyParam_, *(other.m_stringParam_));
+        else
+            m_isInitialized = false;
+    }
+
+    DummyChild& operator=(const DummyChild& other)
+    {
+        m_value = other.m_value;
+        if (other.m_isInitialized)
+            initialize(other.m_dummyParam_, *(other.m_stringParam_));
+        else
+            m_isInitialized = false;
+
+        return *this;
+    }
 
     static const ITypeInfo& typeInfo()
     {
@@ -194,10 +224,14 @@ public:
             }
         };
 
-        static const std::array<ParameterInfo, 1> parameters = {
+        static const std::array<ParameterInfo, 2> parameters = {
             ParameterInfo{
                 makeStringView("dummyParam"),
                 BuiltinTypeInfo<>::getFixedSignedBitField(31)
+            },
+            ParameterInfo{ // non-simple parameter to check reference_wrapper
+                makeStringView("stringParam"),
+                BuiltinTypeInfo<>::getString()
             }
         };
 
@@ -260,14 +294,15 @@ public:
             {
                 if (name == makeStringView("dummyParam"))
                 {
-                    // dummyParam is just a hack to test more code in runtime
-                    return ReflectableFactory::getFixedUnsignedBitField(
-                            31, m_object.getValue(), get_allocator());
+                    return ReflectableFactory::getFixedSignedBitField(
+                            31, m_object.getDummyParam(), get_allocator());
                 }
-                else
+                if (name == makeStringView("stringParam"))
                 {
-                    throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                    return ReflectableFactory::getString(m_object.getStringParam(), get_allocator());
                 }
+
+                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
             }
 
             virtual IReflectableConstPtr callFunction(StringView name) const override
@@ -317,6 +352,15 @@ public:
             virtual void initializeChildren() override
             {}
 
+            virtual void initialize(const vector<AnyHolder<>>& typeArguments) override
+            {
+                if (typeArguments.size() != 2)
+                    throw CppRuntimeException("Wrong number of type arguments!");
+
+                m_object.initialize(typeArguments[0].get<int32_t>(),
+                        typeArguments[1].get<std::reference_wrapper<string<>>>().get());
+            }
+
             virtual IReflectableConstPtr getField(StringView name) const override
             {
                 if (name == makeStringView("value"))
@@ -347,28 +391,30 @@ public:
             {
                 if (name == makeStringView("dummyParam"))
                 {
-                    // dummyParam is just a hack to test more code in runtime
-                    return ReflectableFactory::getFixedUnsignedBitField(
-                            31, m_object.getValue(), get_allocator());
+                    return ReflectableFactory::getFixedSignedBitField(
+                            31, m_object.getDummyParam(), get_allocator());
                 }
-                else
+                if (name == makeStringView("stringParam"))
                 {
-                    throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                    return ReflectableFactory::getString(m_object.getStringParam(), get_allocator());
                 }
+
+                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
             }
 
             virtual IReflectablePtr getParameter(StringView name) override
             {
                 if (name == makeStringView("dummyParam"))
                 {
-                    // dummyParam is just a hack to test more code in runtime
-                    return ReflectableFactory::getFixedUnsignedBitField(
-                            31, m_object.getValue(), get_allocator());
+                    return ReflectableFactory::getFixedSignedBitField(
+                            31, m_object.getDummyParam(), get_allocator());
                 }
-                else
+                if (name == makeStringView("stringParam"))
                 {
-                    throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                    return ReflectableFactory::getString(m_object.getStringParam(), get_allocator());
                 }
+
+                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
             }
 
             virtual IReflectableConstPtr callFunction(StringView name) const override
@@ -435,6 +481,34 @@ public:
         return std::allocate_shared<Reflectable>(allocator, *this, allocator);
     }
 
+    void initialize(int32_t dummyParam_, string<>& stringParam_)
+    {
+        m_dummyParam_ = dummyParam_;
+        m_stringParam_ = &stringParam_;
+        m_isInitialized = true;
+    }
+
+    int32_t getDummyParam() const
+    {
+        if (!m_isInitialized)
+            throw CppRuntimeException("Not initialized!");
+        return m_dummyParam_;
+    }
+
+    string<>& getStringParam()
+    {
+        if (!m_isInitialized)
+            throw CppRuntimeException("Not initialized!");
+        return *m_stringParam_;
+    }
+
+    const string<>& getStringParam() const
+    {
+        if (!m_isInitialized)
+            throw CppRuntimeException("Not initialized!");
+        return *m_stringParam_;
+    }
+
     bool operator==(const DummyChild& other) const
     {
         return m_value == other.m_value;
@@ -460,7 +534,7 @@ public:
         writer.writeBits(m_value, 31);
     }
 
-    size_t bitSizeOf(size_t) const
+    size_t bitSizeOf(size_t = 0) const
     {
         return 31;
     }
@@ -471,6 +545,9 @@ private:
         return in.readBits(31);
     }
 
+    int32_t m_dummyParam_;
+    string<>* m_stringParam_;
+    bool m_isInitialized;
     uint32_t m_value;
 };
 
@@ -479,20 +556,64 @@ class DummyParent
 public:
     using allocator_type = std::allocator<uint8_t>;
 
-    explicit DummyParent(const allocator_type& allocator = allocator_type()) : m_dummyChild(allocator) {}
-    explicit DummyParent(DummyChild dummyChild) : m_dummyChild(dummyChild) {}
-    explicit DummyParent(BitStreamReader& in) : m_dummyChild(readDummyChild(in)) {}
+    explicit DummyParent(const allocator_type& allocator = allocator_type()) :
+            m_areChildrenInitialized(false), m_dummyChild(allocator) {}
+    explicit DummyParent(const string<>& stringField, const DummyChild& dummyChild) :
+            m_areChildrenInitialized(false), m_stringField(stringField), m_dummyChild(dummyChild) {}
+    explicit DummyParent(BitStreamReader& in):
+            m_areChildrenInitialized(true),
+            m_stringField(readStringField(in)),
+            m_dummyChild(readDummyChild(in))
+    {}
+
+    DummyParent(const DummyParent& other) :
+            m_stringField(other.m_stringField),
+            m_dummyChild(other.m_dummyChild)
+    {
+        if (other.m_areChildrenInitialized)
+            initializeChildren();
+        else
+            m_areChildrenInitialized = false;
+    }
+
+    DummyParent& operator=(const DummyParent& other)
+    {
+        m_stringField = other.m_stringField;
+        m_dummyChild = other.m_dummyChild;
+
+        if (other.m_areChildrenInitialized)
+            initializeChildren();
+        else
+            m_areChildrenInitialized = false;
+
+        return *this;
+    }
 
     static const ITypeInfo& typeInfo()
     {
         static const StringView templateName;
         static const Span<TemplateArgumentInfo> templateArguments;
 
-        static const std::array<FieldInfo, 1> fields = {
+        static const std::array<FieldInfo, 2> fields = {
+            FieldInfo{
+                makeStringView("stringField"), // schemaName
+                BuiltinTypeInfo<>::getString(), // typeInfo
+                {}, // typeArguments
+                {}, // alignment
+                {}, // offset
+                {}, // initializer
+                false, // isOptional
+                {}, // optionalClause
+                {}, // constraint
+                false, // isArray
+                {}, // arrayLength
+                false, // isPacked
+                false // isImplicit
+            },
             FieldInfo{
                 makeStringView("dummyChild"), // schemaName
                 DummyChild::typeInfo(), // typeInfo
-                {}, // typeArguments
+                {}, // typeArguments (omitted since not needed in test)
                 {}, // alignment
                 {}, // offset
                 {}, // initializer
@@ -576,7 +697,9 @@ public:
             {}
 
             virtual void initializeChildren() override
-            {}
+            {
+                m_object.initializeChildren();
+            }
 
             virtual IReflectableConstPtr getField(StringView name) const override
             {
@@ -637,9 +760,25 @@ public:
         return std::allocate_shared<Reflectable>(allocator, *this, allocator);
     }
 
+    void initializeChildren()
+    {
+        m_dummyChild.initialize(static_cast<int32_t>(13), m_stringField);
+        m_areChildrenInitialized = true;
+    }
+
     bool operator==(const DummyParent& other) const
     {
         return m_dummyChild == other.m_dummyChild;
+    }
+
+    const string<>& getStringField() const
+    {
+        return m_stringField;
+    }
+
+    string<>& getStringField()
+    {
+        return m_stringField;
     }
 
     const DummyChild& getDummyChild() const
@@ -659,22 +798,37 @@ public:
 
     void write(BitStreamWriter& out) const
     {
+        out.writeString(m_stringField);
         m_dummyChild.write(out);
     }
 
     size_t bitSizeOf(size_t bitPosition = 0) const
     {
-        return m_dummyChild.bitSizeOf(bitPosition);
+        return bitSizeOfString(m_stringField) + m_dummyChild.bitSizeOf(bitPosition);
     }
 
 private:
-    DummyChild readDummyChild(BitStreamReader& in)
+    string<> readStringField(::zserio::BitStreamReader& in)
     {
-        return DummyChild(in);
+        return in.readString();
     }
 
+    DummyChild readDummyChild(BitStreamReader& in)
+    {
+        return DummyChild(in, static_cast<int32_t>(13), getStringField());
+    }
+
+    bool m_areChildrenInitialized;
+    string<> m_stringField;
     DummyChild m_dummyChild;
 };
+
+DummyParent createInitializedDummyParent(const string<>& stringField, uint32_t dummyChildValue)
+{
+    DummyParent dummyParent(stringField, DummyChild{dummyChildValue});
+    dummyParent.initializeChildren();
+    return dummyParent;
+}
 
 } // namespace
 
@@ -886,6 +1040,7 @@ protected:
     void checkNonCompound(const IReflectablePtr& reflectable)
     {
         ASSERT_THROW(reflectable->initializeChildren(), CppRuntimeException);
+        ASSERT_THROW(reflectable->initialize(vector<AnyHolder<>>()), CppRuntimeException);
         ASSERT_THROW(reflectable->setField("field", AnyHolder<>{}), CppRuntimeException);
         ASSERT_THROW(reflectable->createField("field"), CppRuntimeException);
 
@@ -1116,7 +1271,10 @@ protected:
         ASSERT_EQ(dummyParent.getDummyChild().getValue(), (*reflectable)["dummyChild.value"]->toDouble());
 
         // find parameter
-        ASSERT_EQ(dummyParent.getDummyChild().getValue(), (*reflectable)["dummyChild.dummyParam"]->getUInt32());
+        ASSERT_NO_THROW(reflectable->getField("dummyChild")->getParameter("dummyParam"));
+        ASSERT_EQ(13, (*reflectable)["dummyChild.dummyParam"]->getInt32());
+        ASSERT_NO_THROW(reflectable->getField("dummyChild")->getParameter("stringParam"));
+        ASSERT_EQ(dummyParent.getStringField(), (*reflectable)["dummyChild.stringParam"]->toString());
         ASSERT_THROW(reflectable->getField("dummyChild")->getParameter("nonexistent"), CppRuntimeException);
 
         // find function
@@ -1156,13 +1314,14 @@ protected:
         checkWriteRead(dummyParent, reflectable,
                 [](BitStreamReader& reader) {
                     return DummyParent(reader);
-                }, 31
+                }, dummyParent.bitSizeOf()
         );
 
+        string<> stringParam = "stringParam";
         checkWriteRead(dummyParent.getDummyChild(), reflectable->getField("dummyChild"),
-                [](BitStreamReader& reader) {
-                    return DummyChild(reader);
-                }, 31
+                [&stringParam](BitStreamReader& reader) {
+                    return DummyChild(reader, static_cast<int32_t>(13), stringParam);
+                }, dummyParent.getDummyChild().bitSizeOf()
         );
     }
 
@@ -1177,17 +1336,18 @@ protected:
         checkCompoundConstMethods(dummyParent, static_cast<IReflectableConstPtr>(reflectable));
 
         // setter
-        reflectable->initializeChildren();
         reflectable->getField("dummyChild")->setField("value", AnyHolder<>(static_cast<uint32_t>(11)));
         ASSERT_EQ(11, dummyParent.getDummyChild().getValue());
-        reflectable->setField("dummyChild", AnyHolder<>(DummyChild{42}));
-        ASSERT_EQ(42, dummyParent.getDummyChild().getValue());
         ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
         ASSERT_THROW(reflectable->find("dummyChild")->setField("nonexistent", AnyHolder<>()),
                 CppRuntimeException);
 
         reflectable->createField("dummyChild");
         ASSERT_EQ(uint32_t(), dummyParent.getDummyChild().getValue());
+
+        reflectable->setField("dummyChild", AnyHolder<>(DummyChild{42}));
+        ASSERT_EQ(42, dummyParent.getDummyChild().getValue());
+        reflectable->initializeChildren(); // keep the reflectable initialized for following tests
     }
 };
 
@@ -1844,12 +2004,19 @@ TEST_F(ReflectableTest, enumArray)
 
 TEST_F(ReflectableTest, compoundConst)
 {
-    const DummyParent dummyParent = DummyParent{DummyChild{13}};
+    {
+        const DummyParent dummyParentUninitialized = DummyParent{"test", DummyChild{13}};
+        auto reflectable = dummyParentUninitialized.reflectable();
+        ASSERT_FALSE(reflectable->find("dummyChild.stringParam"));
+    }
+
+    const DummyParent dummyParent = createInitializedDummyParent("test", 13);
     auto reflectable = dummyParent.reflectable();
     checkCompound(dummyParent, reflectable);
 
     IReflectablePtr nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
     ASSERT_THROW(nonConstReflectable->initializeChildren(), CppRuntimeException);
+    ASSERT_THROW(nonConstReflectable->initialize(vector<AnyHolder<>>()), CppRuntimeException);
     ASSERT_NO_THROW(reflectable->getField("dummyChild"));
     ASSERT_THROW(nonConstReflectable->getField("dummyChild"), CppRuntimeException);
     IReflectableConstPtr childReflectable = reflectable->getField("dummyChild");
@@ -1864,14 +2031,26 @@ TEST_F(ReflectableTest, compoundConst)
 
 TEST_F(ReflectableTest, compound)
 {
-    DummyParent dummyParent = DummyParent{DummyChild{13}};
+    DummyParent dummyParent = DummyParent{"test", DummyChild{13}};
     auto reflectable = dummyParent.reflectable();
+
+    // not initialized
+    ASSERT_THROW(reflectable->getField("dummyChild")->getParameter("dummyParam"), CppRuntimeException);
+    ASSERT_THROW(reflectable->getField("dummyChild")->getParameter("stringParam"), CppRuntimeException);
+    ASSERT_FALSE(static_cast<IReflectableConstPtr>(reflectable)->find("dummyChild.stringParam"));
+
+    reflectable->initializeChildren();
     checkCompound(dummyParent, reflectable);
 }
 
 TEST_F(ReflectableTest, compoundConstArray)
 {
-    const auto rawArray = std::vector<DummyParent>{{DummyParent{DummyChild{13}}, DummyParent{DummyChild{42}}}};
+    DummyParent dummyParent1;
+    dummyParent1 = createInitializedDummyParent("1", 13); // to cover assignment operator
+    const auto rawArray = std::vector<DummyParent>{{
+        dummyParent1,
+        createInitializedDummyParent("2", 42)
+    }};
     auto reflectable = ReflectableFactory::getCompoundArray(rawArray);
     checkArray(rawArray, reflectable,
             [&](const DummyParent& value, const IReflectableConstPtr& elementReflectable) {
@@ -1883,13 +2062,18 @@ TEST_F(ReflectableTest, compoundConstArray)
     ASSERT_THROW(nonConstReflectable->at(0), CppRuntimeException);
     ASSERT_THROW((*nonConstReflectable)[0], CppRuntimeException);
     ASSERT_THROW(nonConstReflectable->resize(nonConstReflectable->size() + 1), CppRuntimeException);
-    ASSERT_THROW(nonConstReflectable->setAt(AnyHolder<>(DummyParent{DummyChild{0}}), 0), CppRuntimeException);
-    ASSERT_THROW(nonConstReflectable->append(AnyHolder<>(DummyParent{DummyChild{0}})), CppRuntimeException);
+    ASSERT_THROW(nonConstReflectable->setAt(AnyHolder<>(DummyParent{"test", DummyChild{0}}), 0),
+            CppRuntimeException);
+    ASSERT_THROW(nonConstReflectable->append(AnyHolder<>(DummyParent{"test", DummyChild{0}})),
+            CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compoundArray)
 {
-    auto rawArray = std::vector<DummyParent>{{DummyParent{DummyChild{13}}, DummyParent{DummyChild{42}}}};
+    auto rawArray = std::vector<DummyParent>{{
+        createInitializedDummyParent("1", 13),
+        createInitializedDummyParent("2", 42)
+    }};
     auto reflectable = ReflectableFactory::getCompoundArray(rawArray);
     checkArray(rawArray, reflectable,
             [&](const DummyParent& value, const IReflectablePtr& elementReflectable) {
@@ -1906,9 +2090,9 @@ TEST_F(ReflectableTest, compoundArray)
     IReflectablePtr newCompound = reflectable->at(reflectable->size() - 1);
     ASSERT_TRUE(newCompound);
 
-    reflectable->setAt(AnyHolder<>(DummyParent{DummyChild{0}}), 0);
+    reflectable->setAt(AnyHolder<>(DummyParent{"test", DummyChild{0}}), 0);
     ASSERT_EQ(0, reflectable->at(0)->find("dummyChild.value")->getUInt32());
-    reflectable->append(AnyHolder<>(DummyParent{DummyChild{1}}));
+    reflectable->append(AnyHolder<>(DummyParent{"test|", DummyChild{1}}));
     ASSERT_EQ(1, reflectable->at(reflectable->size() - 1)->find("dummyChild.value")->getUInt32());
 }
 
@@ -1961,6 +2145,8 @@ TEST_F(ReflectableTest, reflectableOwner)
     ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
     ASSERT_THROW(reflectable->toString(), CppRuntimeException);
 
+    ASSERT_NO_THROW(reflectable->initializeChildren());
+
     const size_t bitSizeOfValue = reflectable->bitSizeOf();
     BitBuffer bitBuffer(bitSizeOfValue);
     BitStreamWriter writer(bitBuffer);
@@ -1970,6 +2156,15 @@ TEST_F(ReflectableTest, reflectableOwner)
     // for better coverage
     auto dummyChildReflectable = DummyChild::typeInfo().createInstance();
     ASSERT_NO_THROW(dummyChildReflectable->initializeChildren());
+
+    ASSERT_THROW(dummyChildReflectable->initialize( // wrong number of arguments
+            vector<AnyHolder<>>{AnyHolder<>{static_cast<int32_t>(13)}}), CppRuntimeException);
+    string<> stringParam = "stringParam";
+    ASSERT_THROW(dummyChildReflectable->initialize( // wrong type of first argument
+            {{ AnyHolder<>{static_cast<uint32_t>(13)}, AnyHolder<>{std::ref(stringParam)} }}),
+            CppRuntimeException);
+    ASSERT_NO_THROW(dummyChildReflectable->initialize(
+            {{ AnyHolder<>{static_cast<int32_t>(13)}, AnyHolder<>{std::ref(stringParam)} }}));
 }
 
 } // namespace zserio
