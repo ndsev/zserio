@@ -1,4 +1,43 @@
 <#include "TypeInfo.inc.ftl">
+<#macro reflectable_initialize_children needsChildrenInitialization indent=2>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}virtual void initializeChildren() override
+${I}{
+    <#if needsChildrenInitialization>
+${I}    m_object.initializeChildren();
+    </#if>
+${I}}
+</#macro>
+
+<#macro reflectable_initialize compoundName parameterList indent=2>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}virtual void initialize(
+${I}        const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocator_type>& typeArguments) override
+${I}{
+${I}    if (typeArguments.size() != ${parameterList?size})
+${I}    {
+${I}        throw ::zserio::CppRuntimeException("Not enough arguments to ${name}::initialize, ") +
+${I}                "expecting ${parameterList?size}, got " + typeArguments.size();
+${I}    }
+
+${I}    m_object.initialize(
+    <#list parameterList as parameter>
+${I}        typeArguments[${parameter?index}].get<<#rt>
+        <#if parameter.typeInfo.isSimple>
+            ${parameter.typeInfo.typeFullName}>()<#t>
+        <#else>
+            ::std::reference_wrapper<${parameter.typeInfo.typeFullName}>>().get()<#t>
+        </#if>
+        <#if parameter?has_next>
+                <#lt>,
+        <#else>
+
+        </#if>
+    </#list>
+${I}    );
+${I}}
+</#macro>
+
 <#macro reflectable_get_field compoundName fieldList isConst indent=2>
     <#local I>${""?left_pad(indent * 4)}</#local>
 ${I}virtual <#if isConst>${types.reflectableConstPtr.name}<#else>${types.reflectablePtr.name}</#if> getField(<#rt>

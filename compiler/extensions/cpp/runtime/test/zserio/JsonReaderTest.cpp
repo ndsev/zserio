@@ -113,6 +113,33 @@ TEST(JsonReaderTest, readTwoObjects)
     ASSERT_EQ("test"_sv, obj2->getField("text")->getStringView());
 }
 
+TEST(JsonReaderTest, readParameterizedObject)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"value\": 10,\n"
+        "    \"text\": \"nested\",\n"
+        "    \"data\": {\n"
+        "         \"bitSize\": 12,\n"
+        "         \"buffer\": [\n"
+        "             203,\n"
+        "             240\n"
+        "         ]\n"
+        "    },\n"
+        "    \"dummyEnum\": 0,\n"
+        "    \"dummyBitmask\": 1\n"
+        "}\n"
+    );
+
+    JsonReader jsonReader(str);
+    auto reflectable = jsonReader.read(DummyNested::typeInfo());
+
+    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{static_cast<uint32_t>(13)}});
+
+    ASSERT_EQ(13, reflectable->getParameter("param")->getUInt32());
+    ASSERT_EQ(10, reflectable->getField("value")->getUInt32());
+}
+
 TEST(JsonReaderTest, readUnonrderedBitBuffer)
 {
     std::stringstream str(

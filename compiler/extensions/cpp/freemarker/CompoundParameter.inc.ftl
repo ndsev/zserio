@@ -133,3 +133,12 @@ ${compoundParameter.typeInfo.typeFullName} ${compoundName}::${compoundParameter.
     result = ::zserio::calcHashCode(result, ${compoundParameter.getterName}());
     </#list>
 </#macro>
+
+<#function has_non_simple_parameter compoundParametersData>
+    <#list compoundParametersData.list as compoundParameter>
+        <#if !compoundParameter.typeInfo.isSimple>
+            <#return true>
+        </#if>
+    </#list>
+    <#return false>
+</#function>

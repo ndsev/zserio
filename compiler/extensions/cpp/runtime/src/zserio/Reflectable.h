@@ -50,6 +50,7 @@ public:
     virtual bool isArray() const override;
 
     virtual void initializeChildren() override;
+    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
 
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
@@ -1012,6 +1013,7 @@ public:
     using Base::getTypeInfo;
 
     virtual void initializeChildren() override;
+    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
@@ -1039,6 +1041,7 @@ public:
     }
 
     virtual void initializeChildren() override;
+    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
 
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
@@ -1667,6 +1670,11 @@ public:
         m_reflectable->initializeChildren();
     }
 
+    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override
+    {
+        m_reflectable->initialize(typeArguments);
+    }
+
     virtual void write(BitStreamWriter& writer) const override
     {
         m_reflectable->write(writer);
@@ -2189,6 +2197,12 @@ void ReflectableBase<ALLOC>::initializeChildren()
 }
 
 template <typename ALLOC>
+void ReflectableBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
+{
+    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no type arguments!";
+}
+
+template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView) const
 {
     throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to get!";
@@ -2427,6 +2441,12 @@ void ReflectableConstAllocatorHolderBase<ALLOC>::initializeChildren()
 }
 
 template <typename ALLOC>
+void ReflectableConstAllocatorHolderBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
+{
+    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+}
+
+template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::getField(StringView)
 {
     throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
@@ -2452,6 +2472,12 @@ IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::callFunc
 
 template <typename ALLOC>
 void ReflectableArrayBase<ALLOC>::initializeChildren()
+{
+    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+}
+
+template <typename ALLOC>
+void ReflectableArrayBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
 {
     throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
 }

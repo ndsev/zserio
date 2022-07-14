@@ -190,7 +190,7 @@ ${I}}<#if comma>,</#if>
 
 <#macro field_info_compound_type_arguments parameters>
     <#list parameters as parameter>
-        ::zserio::makeStringView("${parameter.expression}")<#if parameter?has_next>, </#if>
+        ::zserio::makeStringView("${parameter.expression?j_string}")<#if parameter?has_next>, </#if>
     </#list>
 </#macro>
 

@@ -244,7 +244,10 @@ const ITypeInfo& DummyNested::typeInfo()
     static const Span<FunctionInfo> functions;
 
     static const StructTypeInfo<std::allocator<uint8_t>> typeInfo = {
-        makeStringView("DummyNested"), nullptr,
+        makeStringView("DummyNested"),
+        [](const std::allocator<uint8_t>& allocator) -> IReflectablePtr {
+            return std::allocate_shared<ReflectableOwner<DummyNested>>(allocator, allocator);
+        },
         templateName, templateArguments, fields, parameters, functions
     };
 
@@ -374,6 +377,16 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
             }
 
             throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyNested'!";
+        }
+
+        virtual void initialize(const vector<AnyHolder<>>& typeArguments) override
+        {
+            if (typeArguments.size() != 1)
+            {
+                throw CppRuntimeException("No enough arguments to DummyNested::initialize, expecting 1, got") +
+                        typeArguments.size();
+            }
+            m_object.initialize(typeArguments[0].get<uint32_t>());
         }
 
         virtual void write(BitStreamWriter&) const override

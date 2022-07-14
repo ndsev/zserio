@@ -22,6 +22,9 @@
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
+<#if withReflectionCode && has_non_simple_parameter(compoundParametersData)>
+#include <functional>
+</#if>
 <@system_includes cppSystemIncludes/>
 
 <@user_include package.path, "${name}.h"/>
@@ -192,12 +195,11 @@ ${I}return {};
     <#if fieldList?has_content>
         <#if !isConst>
 
-        virtual void initializeChildren() override
-        {
-            <#if needsChildrenInitialization>
-            m_object.initializeChildren();
+        <@reflectable_initialize_children needsChildrenInitialization/>
+            <#if needs_compound_initialization(compoundConstructorsData)>
+
+        <@reflectable_initialize name compoundParametersData.list/>
             </#if>
-        }
         </#if>
 
         <@reflectable_get_field name, fieldList, true/>

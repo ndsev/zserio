@@ -88,16 +88,16 @@ struct DummyObject
 
     IBasicReflectablePtr<ALLOC> reflectable(const ALLOC& allocator = ALLOC())
     {
-        class Reflectable : public ReflectableConstAllocatorHolderBase<ALLOC>
+        class Reflectable : public ReflectableAllocatorHolderBase<ALLOC>
         {
         public:
-            using ReflectableConstAllocatorHolderBase<ALLOC>::get_allocator;
-            using ReflectableConstAllocatorHolderBase<ALLOC>::getField;
-            using ReflectableConstAllocatorHolderBase<ALLOC>::getParameter;
-            using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
+            using ReflectableAllocatorHolderBase<ALLOC>::get_allocator;
+            using ReflectableAllocatorHolderBase<ALLOC>::getField;
+            using ReflectableAllocatorHolderBase<ALLOC>::getParameter;
+            using ReflectableAllocatorHolderBase<ALLOC>::callFunction;
 
             explicit Reflectable(DummyObject& owner, const ALLOC& allocator) :
-                    ReflectableConstAllocatorHolderBase<ALLOC>(typeInfo(), allocator),
+                    ReflectableAllocatorHolderBase<ALLOC>(typeInfo(), allocator),
                     m_owner(owner)
             {}
 
@@ -150,7 +150,221 @@ private:
     string<ALLOC> m_text_;
 };
 
-const std::string TEST_NAME = "DebugStringUtilTest";
+template <typename ALLOC = std_alloc>
+class ParameterizedDummyObject
+{
+public:
+    using allocator_type = ALLOC;
+
+    explicit ParameterizedDummyObject(const allocator_type& allocator = allocator_type()) noexcept :
+            m_isInitialized(false),
+            m_text_(allocator)
+    {}
+
+    explicit ParameterizedDummyObject(const string<ALLOC>& text_,
+            const allocator_type& = allocator_type()) noexcept :
+            m_isInitialized(false),
+            m_text_(text_)
+    {}
+
+    static const IBasicTypeInfo<ALLOC>& typeInfo()
+    {
+        static const StringView templateName;
+        static const Span<BasicTemplateArgumentInfo<allocator_type>> templateArguments;
+
+        static const ::std::array<BasicFieldInfo<allocator_type>, 1> fields = {
+            BasicFieldInfo<allocator_type>{
+                makeStringView("text"), // schemaName
+                BuiltinTypeInfo<allocator_type>::getString(), // typeInfo
+                {}, // typeArguments
+                {}, // alignment
+                {}, // offset
+                {}, // initializer
+                false, // isOptional
+                {}, // optionalClause
+                {}, // constraint
+                false, // isArray
+                {}, // arrayLength
+                false, // isPacked
+                false // isImplicit
+            }
+        };
+
+        static const ::std::array<BasicParameterInfo<allocator_type>, 1> parameters = {
+            BasicParameterInfo<allocator_type>{
+                makeStringView("param"),
+                BuiltinTypeInfo<allocator_type>::getInt32()
+            }
+        };
+
+        static const Span<BasicFunctionInfo<allocator_type>> functions;
+
+        static const StructTypeInfo<allocator_type> typeInfo = {
+            makeStringView("ParameterizedDummyObject"),
+            [](const allocator_type& allocator) -> IReflectablePtr
+            {
+                return std::allocate_shared<ReflectableOwner<ParameterizedDummyObject>>(allocator, allocator);
+            },
+            templateName, templateArguments,
+            fields, parameters, functions
+        };
+
+        return typeInfo;
+    }
+
+    IBasicReflectableConstPtr<ALLOC> reflectable(const allocator_type& allocator) const
+    {
+        class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
+        {
+        public:
+            using ReflectableConstAllocatorHolderBase<allocator_type>::get_allocator;
+            using ReflectableConstAllocatorHolderBase<allocator_type>::getField;
+            using ReflectableConstAllocatorHolderBase<allocator_type>::getParameter;
+            using ReflectableConstAllocatorHolderBase<allocator_type>::callFunction;
+
+            explicit Reflectable(const ParameterizedDummyObject& object, const allocator_type& allocator) :
+                    ReflectableConstAllocatorHolderBase<allocator_type>(ParameterizedDummyObject::typeInfo(), allocator),
+                    m_object(object)
+            {}
+
+            virtual IReflectableConstPtr getField(StringView name) const override
+            {
+                if (name == makeStringView("text"))
+                {
+                    return ReflectableFactory::getString(m_object.getText(), get_allocator());
+                }
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+            }
+
+            virtual IReflectableConstPtr getParameter(StringView name) const override
+            {
+                if (name == makeStringView("param"))
+                {
+                    return ReflectableFactory::getInt32(m_object.getParam(), get_allocator());
+                }
+                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {}
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+        private:
+            const ParameterizedDummyObject& m_object;
+        };
+
+        return std::allocate_shared<Reflectable>(allocator, *this, allocator);
+    }
+
+    IBasicReflectablePtr<ALLOC> reflectable(const allocator_type& allocator)
+    {
+        class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
+        {
+        public:
+            using ReflectableAllocatorHolderBase<allocator_type>::get_allocator;
+            using ReflectableAllocatorHolderBase<allocator_type>::getField;
+            using ReflectableAllocatorHolderBase<allocator_type>::getParameter;
+            using ReflectableAllocatorHolderBase<allocator_type>::callFunction;
+
+            explicit Reflectable(ParameterizedDummyObject& object, const allocator_type& allocator) :
+                    ReflectableAllocatorHolderBase<allocator_type>(ParameterizedDummyObject::typeInfo(), allocator),
+                    m_object(object)
+            {}
+
+            virtual void initialize(
+                    const vector<AnyHolder<allocator_type>, allocator_type>& typeArguments) override
+            {
+                if (typeArguments.size() != 1)
+                {
+                    throw CppRuntimeException("No enough arguments to ParameterizedDummyObject::initialize, ") +
+                            "expecting 1, got " + typeArguments.size();
+                }
+
+                m_object.initialize(
+                    typeArguments[0].template get<int32_t>()
+                );
+            }
+
+            virtual IReflectablePtr getField(StringView name) override
+            {
+                if (name == makeStringView("text"))
+                {
+                    return ReflectableFactory::getString(m_object.getText(), get_allocator());
+                }
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+            }
+
+            virtual void setField(StringView name,
+                    const AnyHolder<allocator_type>& value) override
+            {
+                if (name == makeStringView("text"))
+                {
+                    m_object.setText(value.template get<string<>>());
+                    return;
+                }
+                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+            }
+
+            virtual IReflectablePtr getParameter(StringView name) override
+            {
+                if (name == makeStringView("param"))
+                {
+                    return ReflectableFactory::getInt32(m_object.getParam(), get_allocator());
+                }
+                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {}
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+        private:
+            ParameterizedDummyObject& m_object;
+        };
+
+        return std::allocate_shared<Reflectable>(allocator, *this, allocator);
+    }
+
+    void initialize(int32_t param_)
+    {
+        m_param_ = param_;
+        m_isInitialized = true;
+    }
+
+    int32_t getParam() const
+    {
+        if (!m_isInitialized)
+        {
+            throw CppRuntimeException(
+                    "Parameter 'param' of compound 'ParameterizedDummyObject' is not initialized!");
+        }
+
+        return m_param_;
+    }
+
+    const string<>& getText() const
+    {
+        return m_text_;
+    }
+
+    void setText(const string<>& text_)
+    {
+        m_text_ = text_;
+    }
+
+private:
+    int32_t m_param_;
+    bool m_isInitialized;
+    string<> m_text_;
+};
 
 } // namespace
 
@@ -489,7 +703,7 @@ TEST(DebugStringUtilTest, toJsonFileIndent2FilterWithPolymorphicAlloc)
     ASSERT_EQ("{\n  \"text\": \"test\"\n}", ss.str());
 }
 
-TEST(DebugStringUtilTest, fromJsonStream)
+TEST(DebugStringUtilTest, fromJsonStreamTypeInfo)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonStream(DummyObject<>::typeInfo(), ss);
@@ -498,7 +712,20 @@ TEST(DebugStringUtilTest, fromJsonStream)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStreamWithAlloc)
+TEST(DebugStringUtilTest, fromJsonStreamParameterizedTypeInfo)
+{
+    std::istringstream ss("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonStream(ParameterizedDummyObject<>::typeInfo(), ss);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithAlloc)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonStream(DummyObject<>::typeInfo(), ss, std_alloc());
@@ -507,7 +734,7 @@ TEST(DebugStringUtilTest, fromJsonStreamWithAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStreamWithPolymorphicAllocDefault)
+TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithPolymorphicAllocDefault)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -517,7 +744,7 @@ TEST(DebugStringUtilTest, fromJsonStreamWithPolymorphicAllocDefault)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStreamWithPolymorphicAlloc)
+TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithPolymorphicAlloc)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -527,7 +754,7 @@ TEST(DebugStringUtilTest, fromJsonStreamWithPolymorphicAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStreamUsingType)
+TEST(DebugStringUtilTest, fromJsonStreamType)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonStream<DummyObject<>>(ss);
@@ -536,7 +763,21 @@ TEST(DebugStringUtilTest, fromJsonStreamUsingType)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStreamUsingTypeWithAlloc)
+TEST(DebugStringUtilTest, fromJsonStreamParameterizedType)
+{
+    std::istringstream ss("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonStream<ParameterizedDummyObject<>>(ss);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonStreamTypeWithAlloc)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonStream<DummyObject<>>(ss, std_alloc());
@@ -545,7 +786,7 @@ TEST(DebugStringUtilTest, fromJsonStreamUsingTypeWithAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStreamUsingTypeWithPolymorphicAllocDefault)
+TEST(DebugStringUtilTest, fromJsonStreamTypeWithPolymorphicAllocDefault)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonStream<DummyObject<pmr_alloc>>(ss);
@@ -554,7 +795,7 @@ TEST(DebugStringUtilTest, fromJsonStreamUsingTypeWithPolymorphicAllocDefault)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStreamUsingTypeWithPolymorphicAlloc)
+TEST(DebugStringUtilTest, fromJsonStreamTypeWithPolymorphicAlloc)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -564,7 +805,7 @@ TEST(DebugStringUtilTest, fromJsonStreamUsingTypeWithPolymorphicAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonString)
+TEST(DebugStringUtilTest, fromJsonStringTypeInfo)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonString(DummyObject<>::typeInfo(), jsonString);
@@ -573,7 +814,21 @@ TEST(DebugStringUtilTest, fromJsonString)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStringWithAlloc)
+TEST(DebugStringUtilTest, fromJsonStringParameterizedTypeInfo)
+{
+    std::string jsonString("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonString(ParameterizedDummyObject<>::typeInfo(), jsonString);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonStringTypeInfoWithAlloc)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable =
@@ -583,7 +838,7 @@ TEST(DebugStringUtilTest, fromJsonStringWithAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStringWithPolymorphicAllocDefault)
+TEST(DebugStringUtilTest, fromJsonStringTypeInfoWithPolymorphicAllocDefault)
 {
     string<pmr_alloc> jsonString("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -593,7 +848,7 @@ TEST(DebugStringUtilTest, fromJsonStringWithPolymorphicAllocDefault)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStringWithPolymorphicAlloc)
+TEST(DebugStringUtilTest, fromJsonStringTypeInfoWithPolymorphicAlloc)
 {
     string<pmr_alloc> jsonString("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -603,7 +858,7 @@ TEST(DebugStringUtilTest, fromJsonStringWithPolymorphicAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStringUsingType)
+TEST(DebugStringUtilTest, fromJsonStringType)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonString<DummyObject<>>(jsonString);
@@ -612,7 +867,21 @@ TEST(DebugStringUtilTest, fromJsonStringUsingType)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStringUsingTypeWithAlloc)
+TEST(DebugStringUtilTest, fromJsonStringParameterizedType)
+{
+    std::string jsonString("{\n  \"text\": \"something\"\n}");
+    IReflectablePtr reflectable = fromJsonString<ParameterizedDummyObject<>>(jsonString);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonStringTypeWithAlloc)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
     IReflectablePtr reflectable = fromJsonString<DummyObject<>>(jsonString, std_alloc());
@@ -621,7 +890,7 @@ TEST(DebugStringUtilTest, fromJsonStringUsingTypeWithAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStringUsingTypeWithPolymorphicAllocDefault)
+TEST(DebugStringUtilTest, fromJsonStringTypeWithPolymorphicAllocDefault)
 {
     string<pmr_alloc> jsonString("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonString<DummyObject<pmr_alloc>>(jsonString);
@@ -630,7 +899,7 @@ TEST(DebugStringUtilTest, fromJsonStringUsingTypeWithPolymorphicAllocDefault)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonStringUsingTypeWithPolymorphicAlloc)
+TEST(DebugStringUtilTest, fromJsonStringTypeWithPolymorphicAlloc)
 {
     string<pmr_alloc> jsonString("{\n  \"text\": \"something\"\n}");
     IBasicReflectablePtr<pmr_alloc> reflectable =
@@ -640,9 +909,9 @@ TEST(DebugStringUtilTest, fromJsonStringUsingTypeWithPolymorphicAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFile)
+TEST(DebugStringUtilTest, fromJsonFileTypeInfo)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFile.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfo.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -654,9 +923,28 @@ TEST(DebugStringUtilTest, fromJsonFile)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFileWithAlloc)
+TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeInfo)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFileWithAlloc.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileParameterizedTypeInfo.json";
+    {
+        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
+        os << "{\n  \"text\": \"something\"\n}";
+    }
+
+    IReflectablePtr reflectable = fromJsonFile(ParameterizedDummyObject<>::typeInfo(), fileName);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonFileTypeInfoWithAlloc)
+{
+    const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfoWithAlloc.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -668,9 +956,9 @@ TEST(DebugStringUtilTest, fromJsonFileWithAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFileWithPolymorphicAllocDefault)
+TEST(DebugStringUtilTest, fromJsonFileTypeInfoWithPolymorphicAllocDefault)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFileWithPolymorphicAllocDefault.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfoWithPolymorphicAllocDefault.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -683,9 +971,9 @@ TEST(DebugStringUtilTest, fromJsonFileWithPolymorphicAllocDefault)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFileWithPolymorphicAlloc)
+TEST(DebugStringUtilTest, fromJsonFileTypeInfoWithPolymorphicAlloc)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFileWithPolymorphicAlloc.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileTypeInfoWithPolymorphicAlloc.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -698,9 +986,9 @@ TEST(DebugStringUtilTest, fromJsonFileWithPolymorphicAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFileUsingType)
+TEST(DebugStringUtilTest, fromJsonFileType)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFileUsingType.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileType.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -712,9 +1000,28 @@ TEST(DebugStringUtilTest, fromJsonFileUsingType)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFileUsingTypeWithAlloc)
+TEST(DebugStringUtilTest, fromJsonFileParameterizedType)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFileUsingTypeWithAlloc.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileParameterizedType.json";
+    {
+        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
+        os << "{\n  \"text\": \"something\"\n}";
+    }
+
+    IReflectablePtr reflectable = fromJsonFile<ParameterizedDummyObject<>>(fileName);
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonFileTypeWithAlloc)
+{
+    const char* fileName = "DebugStringUtilTest_fromJsonFileTypeWithAlloc.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -726,9 +1033,9 @@ TEST(DebugStringUtilTest, fromJsonFileUsingTypeWithAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFileUsingTypeWithPolymorphicAllocDefault)
+TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAllocDefault)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFileUsingTypeWithPolymorphicAllocDefault.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileTypeWithPolymorphicAllocDefault.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -740,9 +1047,9 @@ TEST(DebugStringUtilTest, fromJsonFileUsingTypeWithPolymorphicAllocDefault)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
-TEST(DebugStringUtilTest, fromJsonFileUsingTypeWithPolymorphicAlloc)
+TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAlloc)
 {
-    const char* fileName = "DebugStringUtilTest_fromJsonFileUsingTypeWithPolymorphicAlloc.json";
+    const char* fileName = "DebugStringUtilTest_fromJsonFileTypeWithPolymorphicAlloc.json";
     {
         std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
         os << "{\n  \"text\": \"something\"\n}";
@@ -751,6 +1058,8 @@ TEST(DebugStringUtilTest, fromJsonFileUsingTypeWithPolymorphicAlloc)
     IBasicReflectablePtr<pmr_alloc> reflectable =
             fromJsonFile<DummyObject<pmr_alloc>>(fileName, pmr_alloc());
     ASSERT_TRUE(reflectable);
+
+    //PRIDAT!
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }

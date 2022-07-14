@@ -4,8 +4,8 @@
 #include <memory>
 
 #include "zserio/BitBuffer.h"
-#include "zserio/Span.h"
 #include "zserio/String.h"
+#include "zserio/Vector.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/AnyHolder.h"
 #include "zserio/BitStreamWriter.h"
@@ -64,6 +64,16 @@ public:
      * \throw CppRuntimeException When the reflected object is not a compound type.
      */
     virtual void initializeChildren() = 0;
+
+    /**
+     * Initializes the reflected parameterized compound object. Calls initialize method on the generated
+     * C++ object. Note that the arguments must exactly match. In case that the argument is a compound type,
+     * which is normally passed as a reference, it must be wrapped in a reference wrapper.
+     *
+     * \throw CppRuntimeException When the reflected object is not parameterized or when the arguments
+     *                            do not match.
+     */
+    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) = 0;
 
     /**
      * Gets reflectable view to the field (i.e. member) with the given schema name.
