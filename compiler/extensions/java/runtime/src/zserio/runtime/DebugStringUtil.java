@@ -359,13 +359,14 @@ public class DebugStringUtil
      *
      * @param typeInfo Type info of the generated zserio object to create.
      * @param reader Text stream to use.
+     * @param arguments Arguments of the generated zserio object.
      *
      * @return Instance of the requested zserio object.
      */
-    public static Object fromJsonStream(TypeInfo typeInfo, Reader reader)
+    public static Object fromJsonStream(TypeInfo typeInfo, Reader reader, Object... arguments)
     {
         final JsonReader jsonReader = new JsonReader(reader);
-        return jsonReader.read(typeInfo);
+        return jsonReader.read(typeInfo, arguments);
     }
 
     /**
@@ -387,12 +388,13 @@ public class DebugStringUtil
      *
      * @param zserioClass Class instance of the generated zserio object to create.
      * @param reader Text stream to use.
+     * @param arguments Arguments of the generated zserio object.
      *
      * @return Instance of the requested zserio object.
      */
-    public static Object fromJsonStream(Class<?> zserioClass, Reader reader)
+    public static Object fromJsonStream(Class<?> zserioClass, Reader reader, Object... arguments)
     {
-        return fromJsonStream(getTypeInfo(zserioClass), reader);
+        return fromJsonStream(getTypeInfo(zserioClass), reader, arguments);
     }
 
     /**
@@ -412,13 +414,14 @@ public class DebugStringUtil
      *
      * @param typeInfo Type info of the generated zserio object to create.
      * @param jsonString JSON debug string to parse.
+     * @param arguments Arguments of the generated zserio object.
      *
      * @return Instance of the requested zserio object.
      */
-    public static Object fromJsonString(TypeInfo typeInfo, String jsonString)
+    public static Object fromJsonString(TypeInfo typeInfo, String jsonString, Object... arguments)
     {
         final Reader reader = new StringReader(jsonString);
-        return fromJsonStream(typeInfo, reader);
+        return fromJsonStream(typeInfo, reader, arguments);
     }
 
     /**
@@ -438,13 +441,13 @@ public class DebugStringUtil
      *
      * @param zserioClass Class instance of the generated zserio object to create.
      * @param jsonString JSON debug string to parse.
+     * @param arguments Arguments of the generated zserio object.
      *
      * @return Instance of the requested zserio object.
      */
-    public static Object fromJsonString(Class<?> zserioClass, String jsonString)
+    public static Object fromJsonString(Class<?> zserioClass, String jsonString, Object... arguments)
     {
-        final Reader reader = new StringReader(jsonString);
-        return fromJsonStream(zserioClass, reader);
+        return fromJsonString(getTypeInfo(zserioClass), jsonString, arguments);
     }
 
     /**
@@ -464,16 +467,18 @@ public class DebugStringUtil
      *
      * @param typeInfo Type info of the generated zserio object to create.
      * @param fileName Name of the JSON debug file.
+     * @param arguments Arguments of the generated zserio object.
      *
      * @return Instance of the requested zserio object.
      *
      * @throws FileNotFoundException If given JSON debug file name does not exist.
      */
-    public static Object fromJsonFile(TypeInfo typeInfo, String fileName) throws FileNotFoundException
+    public static Object fromJsonFile(TypeInfo typeInfo, String fileName, Object... arguments)
+            throws FileNotFoundException
     {
         final InputStream inputStream = new FileInputStream(fileName);
         final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return fromJsonStream(typeInfo, reader);
+        return fromJsonStream(typeInfo, reader, arguments);
     }
 
     /**
@@ -493,16 +498,16 @@ public class DebugStringUtil
      *
      * @param zserioClass Class instance of the generated zserio object to create.
      * @param fileName Name of the JSON debug file.
+     * @param arguments Arguments of the generated zserio object.
      *
      * @return Instance of the requested zserio object.
      *
      * @throws FileNotFoundException If given JSON debug file name does not exist.
      */
-    public static Object fromJsonFile(Class<?> zserioClass, String fileName) throws FileNotFoundException
+    public static Object fromJsonFile(Class<?> zserioClass, String fileName, Object... arguments)
+            throws FileNotFoundException
     {
-        final InputStream inputStream = new FileInputStream(fileName);
-        final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        return fromJsonStream(zserioClass, reader);
+        return fromJsonFile(getTypeInfo(zserioClass), fileName, arguments);
     }
 
     private static TypeInfo getTypeInfo(Class<?> zserioClass)

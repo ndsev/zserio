@@ -43,12 +43,13 @@ public class JsonReader implements AutoCloseable
      * Reads a zserio object tree defined by the given type info from the text steam.
      *
      * @param typeInfo Type info defining the expected zserio object tree.
+     * @param arguments Arguments of type defining the expected zserio object tree.
      *
      * @return Zserio object tree initialized using the JSON data.
      */
-    public Object read(TypeInfo typeInfo)
+    public Object read(TypeInfo typeInfo, Object... arguments)
     {
-        creatorAdapter.setType(typeInfo);
+        creatorAdapter.setType(typeInfo, arguments);
 
         try
         {
@@ -217,10 +218,11 @@ public class JsonReader implements AutoCloseable
          * Sets type which shall be created next. Resets the current object.
          *
          * @param typeInfo Type info of the type which is to be created.
+         * @param arguments Arguments of type defining the expected zserio object tree.
          */
-        public void setType(TypeInfo typeInfo)
+        public void setType(TypeInfo typeInfo, Object... arguments)
         {
-            creator = new ZserioTreeCreator(typeInfo);
+            creator = new ZserioTreeCreator(typeInfo, arguments);
             object = null;
         }
 

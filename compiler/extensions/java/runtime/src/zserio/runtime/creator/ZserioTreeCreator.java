@@ -28,10 +28,12 @@ public class ZserioTreeCreator
      * Constructor.
      *
      * @param typeInfo Type info defining the tree.
+     * @param arguments Arguments of type which defines the tree.
      */
-    public ZserioTreeCreator(TypeInfo typeInfo)
+    public ZserioTreeCreator(TypeInfo typeInfo, Object... arguments)
     {
-        this.typeInfo = typeInfo;
+        this.rootTypeInfo = typeInfo;
+        this.rootArguments = arguments;
         fieldInfoStack = new Stack<FieldInfo>();
         valueStack = new Stack<Object>();
         this.state = State.BEFORE_ROOT;
@@ -45,7 +47,7 @@ public class ZserioTreeCreator
         if (state != State.BEFORE_ROOT)
             throw new ZserioError("ZserioTreeCreator: Cannot begin root in state '" + state + "'!");
 
-        final Object root = createRoot(typeInfo);
+        final Object root = createObject(rootTypeInfo, rootArguments);
         valueStack.push(root);
         state = State.IN_COMPOUND;
     }
@@ -285,7 +287,7 @@ public class ZserioTreeCreator
 
     private TypeInfo getTypeInfo()
     {
-        return fieldInfoStack.empty() ? typeInfo : fieldInfoStack.peek().getTypeInfo();
+        return fieldInfoStack.empty() ? rootTypeInfo : fieldInfoStack.peek().getTypeInfo();
     }
 
     private static FieldInfo findFieldInfo(TypeInfo typeInfo, String fieldName)
@@ -301,12 +303,17 @@ public class ZserioTreeCreator
                 typeInfo.getSchemaName() + "'!");
     }
 
-    private static Object createRoot(TypeInfo typeInfo)
+    private static Object createObject(TypeInfo typeInfo, Object[] arguments)
     {
+        final List<ParameterInfo> parameters = typeInfo.getParameters();
+        final Class<?>[] parametersTypes = new Class<?>[parameters.size()];
+        for (int i = 0; i < parameters.size(); ++i)
+            parametersTypes[i] = parameters.get(i).getTypeInfo().getJavaClass();
+
         try
         {
-            final Constructor<?> constructor = typeInfo.getJavaClass().getDeclaredConstructor();
-            return constructor.newInstance();
+            final Constructor<?> constructor = typeInfo.getJavaClass().getDeclaredConstructor(parametersTypes);
+            return constructor.newInstance(arguments);
         }
         catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                 InvocationTargetException excpt)
@@ -323,31 +330,13 @@ public class ZserioTreeCreator
 
     private static Object createObject(FieldInfo fieldInfo, Object parent, Integer elementIndex)
     {
+        final List<BiFunction<Object, Integer, Object>> typeArguments = fieldInfo.getTypeArguments();
+        final Object[] arguments = new Object[typeArguments.size()];
+        for (int i = 0; i < typeArguments.size(); ++i)
+            arguments[i] = typeArguments.get(i).apply(parent, elementIndex);
         final TypeInfo typeInfo = fieldInfo.getTypeInfo();
-        final List<ParameterInfo> parameters = typeInfo.getParameters();
-        final Class<?>[] parametersTypes = new Class<?>[parameters.size()];
-        for (int i = 0; i < parameters.size(); ++i)
-            parametersTypes[i] = parameters.get(i).getTypeInfo().getJavaClass();
-        try
-        {
-            final Constructor<?> constructor = typeInfo.getJavaClass().getDeclaredConstructor(parametersTypes);
 
-            final Object[] arguments = new Object[parameters.size()];
-            if (!parameters.isEmpty())
-            {
-                final List<BiFunction<Object, Integer, Object>> typeArguments = fieldInfo.getTypeArguments();
-                for (int i = 0; i < typeArguments.size(); ++i)
-                    arguments[i] = typeArguments.get(i).apply(parent, elementIndex);
-            }
-
-            return constructor.newInstance(arguments);
-        }
-        catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                InvocationTargetException excpt)
-        {
-            throw new ZserioError("ZserioTreeCreator: Cannot create Zserio object '" +
-                    typeInfo.getSchemaName() + "'!", excpt);
-        }
+        return createObject(typeInfo, arguments);
     }
 
     private static Object createArray(FieldInfo fieldInfo, List<?> list)
@@ -414,7 +403,8 @@ public class ZserioTreeCreator
         unboxedToBoxedClassMap.put(double.class, Double.class);
     }
 
-    private final TypeInfo typeInfo;
+    private final TypeInfo rootTypeInfo;
+    private final Object[] rootArguments;
     private final Stack<FieldInfo> fieldInfoStack;
     private final Stack<Object> valueStack;
 
