@@ -16,8 +16,8 @@ size_t enumToOrdinal(DummyEnum value)
     case DummyEnum::TWO:
         return 1;
     default:
-        throw ::zserio::CppRuntimeException("Unknown value for enumeration DarkColor: ") +
-                static_cast<typename ::std::underlying_type<DummyEnum>::type>(value) + "!";
+        throw CppRuntimeException("Unknown value for enumeration DarkColor: ") <<
+                static_cast<typename ::std::underlying_type<DummyEnum>::type>(value) << "!";
     }
 }
 
@@ -287,7 +287,7 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
                 return m_object.getDummyBitmask().reflectable(get_allocator());
             }
 
-            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+            throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
         }
 
         virtual IReflectableConstPtr getField(StringView name) const override
@@ -313,7 +313,7 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
                 return m_object.getDummyBitmask().reflectable(get_allocator());
             }
 
-            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+            throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
         }
 
         virtual void setField(StringView name,
@@ -356,7 +356,7 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
                 return;
             }
 
-            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+            throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
         }
 
         virtual IReflectablePtr getParameter(StringView name) override
@@ -366,7 +366,7 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
                 return ReflectableFactory::getUInt32(m_object.getParam(), get_allocator());
             }
 
-            throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyNested'!";
+            throw CppRuntimeException("Parameter '") << name << "' doesn't exist in 'DummyNested'!";
         }
 
         virtual IReflectableConstPtr getParameter(StringView name) const override
@@ -376,14 +376,14 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
                 return ReflectableFactory::getUInt32(m_object.getParam(), get_allocator());
             }
 
-            throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyNested'!";
+            throw CppRuntimeException("Parameter '") << name << "' doesn't exist in 'DummyNested'!";
         }
 
         virtual void initialize(const vector<AnyHolder<>>& typeArguments) override
         {
             if (typeArguments.size() != 1)
             {
-                throw CppRuntimeException("No enough arguments to DummyNested::initialize, expecting 1, got") +
+                throw CppRuntimeException("No enough arguments to DummyNested::initialize, expecting 1, got") <<
                         typeArguments.size();
             }
             m_object.initialize(typeArguments[0].get<uint32_t>());
@@ -688,7 +688,7 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
                 return m_object.getOptionalNested().reflectable(get_allocator());
             }
 
-            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
+            throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyObject'!";
         }
 
         virtual IReflectableConstPtr getField(StringView name) const override
@@ -737,7 +737,7 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
                 return m_object.getOptionalNested().reflectable(get_allocator());
             }
 
-            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
+            throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyObject'!";
         }
 
         virtual void setField(StringView name,
@@ -769,7 +769,7 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
 
             // note that unused setters are omitted!
 
-            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
+            throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyObject'!";
         }
 
         virtual IReflectablePtr createField(StringView name) override
@@ -793,7 +793,7 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
                 return m_object.getOptionalNested().reflectable(get_allocator());
             }
 
-            throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
+            throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyObject'!";
         }
 
         virtual void initializeChildren() override

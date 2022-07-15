@@ -178,8 +178,8 @@ ${I}${streamObjectName}.alignTo(UINT32_C(8));
 ${I}// check offset
 ${I}if (::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) != (${field.offset.getter}))
 ${I}{
-${I}    throw ::zserio::CppRuntimeException("${actionName}: Wrong offset for field ${compoundName}.${field.name}: ") +
-${I}            ::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) + " != " + (${field.offset.getter}) + "!";
+${I}    throw ::zserio::CppRuntimeException("${actionName}: Wrong offset for field ${compoundName}.${field.name}: ") <<
+${I}            ::zserio::bitsToBytes(${streamObjectName}.getBitPosition()) << " != " << (${field.offset.getter}) << "!";
 ${I}}
 </#macro>
 
@@ -264,9 +264,9 @@ ${I}    throw ::zserio::ConstraintException("${actionName}: Constraint violated 
 ${I}// check array length
 ${I}if (<@compound_get_field field/>.getRawArray().size() != static_cast<size_t>(${field.array.length}))
 ${I}{
-${I}    throw ::zserio::CppRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: ") +
-${I}            <@compound_get_field field/>.getRawArray().size() + " != " +
-${I}            static_cast<size_t>(${field.array.length}) + "!";
+${I}    throw ::zserio::CppRuntimeException("Write: Wrong array length for field ${compoundName}.${field.name}: ") <<
+${I}            <@compound_get_field field/>.getRawArray().size() << " != " <<
+${I}            static_cast<size_t>(${field.array.length}) << "!";
 ${I}}
     </#if>
 </#macro>
@@ -283,8 +283,8 @@ ${I}// check parameters
                 </#local>
 ${I}if (<@compound_get_field field/>.${parameter.getterName}() != ${instantiatedExpression})
 ${I}{
-${I}    throw ::zserio::CppRuntimeException("Write: Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: ") +
-${I}            <@compound_get_field field/>.${parameter.getterName}() + " != " + ${instantiatedExpression} + "!";
+${I}    throw ::zserio::CppRuntimeException("Write: Wrong parameter ${parameter.name} for field ${compoundName}.${field.name}: ") <<
+${I}            <@compound_get_field field/>.${parameter.getterName}() << " != " << ${instantiatedExpression} << "!";
 ${I}}
             <#else>
 ${I}if (&(<@compound_get_field field/>.${parameter.getterName}()) != &(${instantiatedParameter.expression}))
@@ -331,9 +331,11 @@ ${I}const ${typeName} lowerBound = ${integerRange.lowerBound};
 ${I}const ${typeName} upperBound = ${integerRange.upperBound};
     </#if>
 ${I}if (<#if integerRange.checkLowerBound>${value} < lowerBound || </#if>${value} > upperBound)
-${I}    throw ::zserio::CppRuntimeException("Value ") + ${value} +
-${I}            " of ${compoundName}.${valueName} exceeds the range of <" +
-${I}            lowerBound + ".." + upperBound + ">!";
+${I}{
+${I}    throw ::zserio::CppRuntimeException("Value ") << ${value} <<
+${I}            " of ${compoundName}.${valueName} exceeds the range of <" <<
+${I}            lowerBound << ".." << upperBound << ">!";
+${I}}
 </#macro>
 
 <#macro array_field_packed_suffix field packed>
@@ -448,8 +450,8 @@ void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t ind
 {
     if (byteOffset != (${field.offset.indirectGetter}))
     {
-        throw ::zserio::CppRuntimeException("Wrong offset for field ${compoundName}.${field.name}: ") +
-                byteOffset + " != " + (${field.offset.indirectGetter}) + "!";
+        throw ::zserio::CppRuntimeException("Wrong offset for field ${compoundName}.${field.name}: ") <<
+                byteOffset << " != " << (${field.offset.indirectGetter}) << "!";
     }
 }
 </#macro>

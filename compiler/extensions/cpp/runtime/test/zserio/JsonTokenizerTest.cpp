@@ -286,18 +286,18 @@ TEST(JsonTokenizerTest, unknownToken)
     }, JsonParserException);
 }
 
-TEST(JsonTokenizerTest, jsonTokenName)
+TEST(JsonTokenizerTest, cppRuntimeExceptionOperator)
 {
-    ASSERT_EQ(std::string("UNKNOWN"), jsonTokenName(JsonToken::UNKNOWN));
-    ASSERT_EQ(std::string("BEGIN_OF_FILE"), jsonTokenName(JsonToken::BEGIN_OF_FILE));
-    ASSERT_EQ(std::string("END_OF_FILE"), jsonTokenName(JsonToken::END_OF_FILE));
-    ASSERT_EQ(std::string("BEGIN_OBJECT"), jsonTokenName(JsonToken::BEGIN_OBJECT));
-    ASSERT_EQ(std::string("END_OBJECT"), jsonTokenName(JsonToken::END_OBJECT));
-    ASSERT_EQ(std::string("BEGIN_ARRAY"), jsonTokenName(JsonToken::BEGIN_ARRAY));
-    ASSERT_EQ(std::string("END_ARRAY"), jsonTokenName(JsonToken::END_ARRAY));
-    ASSERT_EQ(std::string("KEY_SEPARATOR"), jsonTokenName(JsonToken::KEY_SEPARATOR));
-    ASSERT_EQ(std::string("ITEM_SEPARATOR"), jsonTokenName(JsonToken::ITEM_SEPARATOR));
-    ASSERT_EQ(std::string("VALUE"), jsonTokenName(JsonToken::VALUE));
+    ASSERT_STREQ("UNKNOWN", (JsonParserException() << (JsonToken::UNKNOWN)).what());
+    ASSERT_STREQ("BEGIN_OF_FILE", (JsonParserException() << (JsonToken::BEGIN_OF_FILE)).what());
+    ASSERT_STREQ("END_OF_FILE", (JsonParserException() << (JsonToken::END_OF_FILE)).what());
+    ASSERT_STREQ("BEGIN_OBJECT", (JsonParserException() << (JsonToken::BEGIN_OBJECT)).what());
+    ASSERT_STREQ("END_OBJECT", (JsonParserException() << (JsonToken::END_OBJECT)).what());
+    ASSERT_STREQ("BEGIN_ARRAY", (JsonParserException() << (JsonToken::BEGIN_ARRAY)).what());
+    ASSERT_STREQ("END_ARRAY", (JsonParserException() << (JsonToken::END_ARRAY)).what());
+    ASSERT_STREQ("KEY_SEPARATOR", (JsonParserException() << (JsonToken::KEY_SEPARATOR)).what());
+    ASSERT_STREQ("ITEM_SEPARATOR", (JsonParserException() << (JsonToken::ITEM_SEPARATOR)).what());
+    ASSERT_STREQ("VALUE", (JsonParserException() << (JsonToken::VALUE)).what());
 }
 
 } // namespace zserio

@@ -255,4 +255,10 @@ TEST(BitBufferTest, getBytes)
     }
 }
 
+TEST(BitBufferTest, cppRuntimeExceptionOperator)
+{
+    CppRuntimeException exception = CppRuntimeException() << BitBuffer();
+    ASSERT_STREQ("BitBuffer([...], 0)", exception.what());
+}
+
 } // namespace zserio

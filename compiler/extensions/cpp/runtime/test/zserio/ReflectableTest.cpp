@@ -285,7 +285,7 @@ public:
                 }
                 else
                 {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyChild'!";
+                    throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyChild'!";
                 }
             }
 
@@ -301,7 +301,7 @@ public:
                     return ReflectableFactory::getString(m_object.getStringParam(), get_allocator());
                 }
 
-                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                throw CppRuntimeException("Parameter '") << name << "' doesn't exist in 'DummyChild'!";
             }
 
             virtual IReflectableConstPtr callFunction(StringView name) const override
@@ -317,7 +317,7 @@ public:
                 }
                 else
                 {
-                    throw CppRuntimeException("Function '") + name + "' doesn't exist in 'DummyChild'!";
+                    throw CppRuntimeException("Function '") << name << "' doesn't exist in 'DummyChild'!";
                 }
             }
 
@@ -369,7 +369,7 @@ public:
                 }
                 else
                 {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyChild'!";
+                    throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyChild'!";
                 }
             }
 
@@ -382,7 +382,7 @@ public:
                 }
                 else
                 {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyChild'!";
+                    throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyChild'!";
                 }
             }
 
@@ -398,7 +398,7 @@ public:
                     return ReflectableFactory::getString(m_object.getStringParam(), get_allocator());
                 }
 
-                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                throw CppRuntimeException("Parameter '") << name << "' doesn't exist in 'DummyChild'!";
             }
 
             virtual IReflectablePtr getParameter(StringView name) override
@@ -413,7 +413,7 @@ public:
                     return ReflectableFactory::getString(m_object.getStringParam(), get_allocator());
                 }
 
-                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'DummyChild'!";
+                throw CppRuntimeException("Parameter '") << name << "' doesn't exist in 'DummyChild'!";
             }
 
             virtual IReflectableConstPtr callFunction(StringView name) const override
@@ -429,7 +429,7 @@ public:
                 }
                 else
                 {
-                    throw CppRuntimeException("Function '") + name + "' doesn't exist in 'DummyChild'!";
+                    throw CppRuntimeException("Function '") << name << "' doesn't exist in 'DummyChild'!";
                 }
             }
 
@@ -446,7 +446,7 @@ public:
                 }
                 else
                 {
-                    throw CppRuntimeException("Function '") + name + "' doesn't exist in 'DummyChild'!";
+                    throw CppRuntimeException("Function '") << name << "' doesn't exist in 'DummyChild'!";
                 }
             }
 
@@ -459,7 +459,7 @@ public:
                 }
                 else
                 {
-                    throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyChild'!";
+                    throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyChild'!";
                 }
             }
 
@@ -665,7 +665,7 @@ public:
                     return m_object.getDummyChild().reflectable(get_allocator());
                 }
 
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyParent'!";
             }
 
             virtual void write(BitStreamWriter& writer) const override
@@ -707,7 +707,7 @@ public:
                     return m_object.getDummyChild().reflectable(get_allocator());
                 }
 
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyParent'!";
             }
 
             virtual IReflectablePtr getField(StringView name) override
@@ -717,7 +717,7 @@ public:
                     return m_object.getDummyChild().reflectable(get_allocator());
                 }
 
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyParent'!";
             }
 
             virtual IReflectablePtr createField(StringView name) override
@@ -728,7 +728,7 @@ public:
                     return m_object.getDummyChild().reflectable(get_allocator());
                 }
 
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyParent'!";
             }
 
             virtual void setField(StringView name, const AnyHolder<allocator_type>& value) override
@@ -739,7 +739,7 @@ public:
                     return;
                 }
 
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyParent'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyParent'!";
             }
 
             virtual void write(BitStreamWriter& writer) const override
@@ -962,6 +962,9 @@ protected:
             else
                 elementChecker(rawArray[i], (*reflectable)[i]);
         }
+
+        ASSERT_THROW(reflectable->at(rawArray.size()), CppRuntimeException);
+        ASSERT_THROW((*reflectable)[rawArray.size()], CppRuntimeException);
 
         ASSERT_THROW(reflectable->getBool(), CppRuntimeException);
         ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
@@ -1807,6 +1810,9 @@ TEST_F(ReflectableTest, uint8Array)
     ASSERT_EQ(42, reflectable->at(0)->getUInt8());
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
+
+    // out of range
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(static_cast<uint8_t>(42)), 2), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, dynamicSignedBitField5ConstArray)
@@ -1860,6 +1866,9 @@ TEST_F(ReflectableTest, dynamicSignedBitField5Array)
     ASSERT_EQ(42, reflectable->at(0)->getInt8());
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
+
+    // out of range
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(static_cast<int8_t>(42)), 2), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, stringConstArray)
@@ -1898,6 +1907,9 @@ TEST_F(ReflectableTest, stringArray)
     ASSERT_EQ("set"_sv, reflectable->at(0)->getStringView());
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
+
+    // out of range
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(std::string("set")), 2), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, bitmaskConst)
@@ -1954,6 +1966,9 @@ TEST_F(ReflectableTest, bitmaskArray)
     ASSERT_EQ(DummyBitmask::Values::CREATE, DummyBitmask(reflectable->at(0)->getUInt8()));
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
+
+    // out of range
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(DummyBitmask::Values::CREATE), 2), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, enumeration)
@@ -1999,6 +2014,9 @@ TEST_F(ReflectableTest, enumArray)
     ASSERT_EQ(enumToValue(DummyEnum::VALUE2), reflectable->at(0)->getInt8());
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
+
+    // out of range
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(DummyEnum::VALUE2), 2), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compoundConst)
@@ -2093,6 +2111,9 @@ TEST_F(ReflectableTest, compoundArray)
     ASSERT_EQ(0, reflectable->at(0)->find("dummyChild.value")->getUInt32());
     reflectable->append(AnyHolder<>(DummyParent{"test|", DummyChild{1}}));
     ASSERT_EQ(1, reflectable->at(reflectable->size() - 1)->find("dummyChild.value")->getUInt32());
+
+    const size_t size = reflectable->size();
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(), size), CppRuntimeException); // out of range
 }
 
 TEST_F(ReflectableTest, reflectableOwner)

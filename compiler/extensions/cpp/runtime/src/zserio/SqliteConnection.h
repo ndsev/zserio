@@ -161,7 +161,7 @@ inline void SqliteConnection::executeUpdate(StringView sqlQuery)
     int result = sqlite3_step(statement.get());
     if (result != SQLITE_DONE)
     {
-        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_step failed: ") +
+        throw SqliteException("SqliteConnection::executeUpdate(): sqlite3_step failed: ") <<
                 SqliteErrorCode(result);
     }
 }
@@ -173,7 +173,7 @@ inline sqlite3_stmt* SqliteConnection::prepareStatement(StringView sqlQuery)
             &statement, nullptr);
     if (result != SQLITE_OK)
     {
-        throw SqliteException("SqliteConnection::prepareStatement(): sqlite3_prepare_v2() failed: ") +
+        throw SqliteException("SqliteConnection::prepareStatement(): sqlite3_prepare_v2() failed: ") <<
                 SqliteErrorCode(result);
     }
 

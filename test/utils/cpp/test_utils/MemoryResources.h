@@ -13,14 +13,14 @@ class InvalidMemoryResource : public zserio::pmr::MemoryResource
 private:
     virtual void* doAllocate(size_t bytes, size_t align) override
     {
-        throw zserio::CppRuntimeException("Trying to allocate using default memory resource (") + bytes +
-                ", " + align + ")!";
+        throw zserio::CppRuntimeException("Trying to allocate using default memory resource (") << bytes <<
+                ", " << align << ")!";
     }
 
     virtual void doDeallocate(void*, size_t bytes, size_t align) override
     {
-        throw zserio::CppRuntimeException("Trying to deallocate using default memory resource (") + bytes +
-                ", " + align + ")!";
+        throw zserio::CppRuntimeException("Trying to deallocate using default memory resource (") << bytes <<
+                ", " << align << ")!";
     }
 
     virtual bool doIsEqual(const MemoryResource& other) const noexcept override
@@ -94,7 +94,7 @@ public:
 
         const size_t usedBytes = static_cast<size_t>(m_nextPtr - m_buffer);
         if (usedBytes > BUFFER_SIZE)
-            throw zserio::CppRuntimeException(m_name) + ": Buffer overflow (" + usedBytes + ")!";
+            throw zserio::CppRuntimeException(m_name) << ": Buffer overflow (" << usedBytes << ")!";
 
         ++m_numAllocations;
         m_allocatedSize += bytes;

@@ -448,9 +448,12 @@ struct BasicMessageInfo
 template <typename ALLOC = std::allocator<uint8_t>>
 struct BasicMethodInfo
 {
-    StringView schemaName; /**< service schema name */
-    const IBasicTypeInfo<ALLOC>& responseTypeInfo; /**< reference to type information for a method response type */
-    const IBasicTypeInfo<ALLOC>& requestTypeInfo; /**< reference to type information for a method request type */
+    /** service schema name */
+    StringView schemaName;
+    /** reference to type information for a method response type */
+    const IBasicTypeInfo<ALLOC>& responseTypeInfo;
+    /** reference to type information for a method request type */
+    const IBasicTypeInfo<ALLOC>& requestTypeInfo;
 };
 
 /**

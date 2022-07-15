@@ -70,7 +70,7 @@ struct DummyObject
                 {
                     return BasicReflectableFactory<ALLOC>::getString(m_owner.getText(), get_allocator());
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
             virtual void write(BitStreamWriter&) const override
@@ -110,7 +110,7 @@ struct DummyObject
                 {
                     return BasicReflectableFactory<ALLOC>::getString(m_owner.getText(), get_allocator());
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
             virtual void setField(StringView name, const AnyHolder<ALLOC>& any) override
@@ -120,7 +120,7 @@ struct DummyObject
                     m_owner.setText(any.template get<string<ALLOC>>());
                     return;
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
             virtual void write(BitStreamWriter&) const override
@@ -226,7 +226,8 @@ public:
             using ReflectableConstAllocatorHolderBase<allocator_type>::callFunction;
 
             explicit Reflectable(const ParameterizedDummyObject& object, const allocator_type& allocator) :
-                    ReflectableConstAllocatorHolderBase<allocator_type>(ParameterizedDummyObject::typeInfo(), allocator),
+                    ReflectableConstAllocatorHolderBase<allocator_type>(
+                            ParameterizedDummyObject::typeInfo(), allocator),
                     m_object(object)
             {}
 
@@ -236,7 +237,8 @@ public:
                 {
                     return BasicReflectableFactory<ALLOC>::getString(m_object.getText(), get_allocator());
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+                throw CppRuntimeException("Field '") << name <<
+                        "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
             virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
@@ -245,7 +247,8 @@ public:
                 {
                     return BasicReflectableFactory<ALLOC>::getInt32(m_object.getParam(), get_allocator());
                 }
-                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+                throw CppRuntimeException("Parameter '") << name <<
+                        "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
             virtual void write(BitStreamWriter&) const override
@@ -274,7 +277,8 @@ public:
             using ReflectableAllocatorHolderBase<allocator_type>::callFunction;
 
             explicit Reflectable(ParameterizedDummyObject& object, const allocator_type& allocator) :
-                    ReflectableAllocatorHolderBase<allocator_type>(ParameterizedDummyObject::typeInfo(), allocator),
+                    ReflectableAllocatorHolderBase<allocator_type>(
+                            ParameterizedDummyObject::typeInfo(), allocator),
                     m_object(object)
             {}
 
@@ -283,8 +287,8 @@ public:
             {
                 if (typeArguments.size() != 1)
                 {
-                    throw CppRuntimeException("No enough arguments to ParameterizedDummyObject::initialize, ") +
-                            "expecting 1, got " + typeArguments.size();
+                    throw CppRuntimeException("No enough arguments to ParameterizedDummyObject::initialize, "
+                            "expecting 1, got ") << typeArguments.size();
                 }
 
                 m_object.initialize(
@@ -298,7 +302,8 @@ public:
                 {
                     return BasicReflectableFactory<ALLOC>::getString(m_object.getText(), get_allocator());
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+                throw CppRuntimeException("Field '") << name <<
+                        "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
             virtual void setField(StringView name,
@@ -309,7 +314,8 @@ public:
                     m_object.setText(value.template get<string<ALLOC>>());
                     return;
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+                throw CppRuntimeException("Field '") << name <<
+                        "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
             virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
@@ -318,7 +324,8 @@ public:
                 {
                     return BasicReflectableFactory<ALLOC>::getInt32(m_object.getParam(), get_allocator());
                 }
-                throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
+                throw CppRuntimeException("Parameter '") << name <<
+                        "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
             virtual void write(BitStreamWriter&) const override

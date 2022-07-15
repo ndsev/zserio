@@ -4,11 +4,12 @@
 #include <type_traits>
 
 #include "zserio/AllocatorHolder.h"
+#include "zserio/BitSizeOfCalculator.h"
+#include "zserio/CppRuntimeException.h"
 #include "zserio/IReflectable.h"
 #include "zserio/StringConvertUtil.h"
 #include "zserio/TypeInfo.h"
 #include "zserio/TypeInfoUtil.h"
-#include "zserio/BitSizeOfCalculator.h"
 
 namespace zserio
 {
@@ -837,7 +838,11 @@ IBasicReflectablePtr<ALLOC> callFunctionInObject(IBasicReflectable<ALLOC>& objec
     {
         const auto& functions = typeInfo.getFunctions();
         auto functionsIt = std::find_if(functions.begin(), functions.end(),
-                [name](const BasicFunctionInfo<ALLOC>& functionInfo) { return functionInfo.schemaName == name; });
+                [name](const BasicFunctionInfo<ALLOC>& functionInfo)
+                {
+                    return functionInfo.schemaName == name;
+                }
+        );
         if (functionsIt != functions.end())
             return object.callFunction(name);
     }
@@ -1113,6 +1118,7 @@ private:
             typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
 
 public:
+    using Base::getTypeInfo;
     using Base::at;
     using Base::operator[];
 
@@ -1128,8 +1134,14 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
         return std::allocate_shared<BuiltinReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray.at(index));
+                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1151,7 +1163,10 @@ private:
             typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
 
 public:
-    BuiltinReflectableArray(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator, RAW_ARRAY& rawArray) :
+    using Base::getTypeInfo;
+
+    BuiltinReflectableArray(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator,
+            RAW_ARRAY& rawArray) :
             Base(typeInfo, allocator), m_rawArray(rawArray)
     {}
 
@@ -1167,14 +1182,26 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
         return std::allocate_shared<BuiltinReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray.at(index));
+                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
     }
 
     virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
         return std::allocate_shared<BuiltinReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray.at(index));
+                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index]);
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1189,7 +1216,13 @@ public:
 
     virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
-        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
     }
 
     virtual void append(const AnyHolder<ALLOC>& value) override
@@ -1219,6 +1252,7 @@ private:
             typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
 
 public:
+    using Base::getTypeInfo;
     using Base::at;
     using Base::operator[];
 
@@ -1234,8 +1268,14 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
         return std::allocate_shared<IntegralReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray.at(index), m_dynamicBitSize);
+                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1258,6 +1298,8 @@ private:
             typename detail::ReflectableTraits<ALLOC, typename RAW_ARRAY::value_type>::Type;
 
 public:
+    using Base::getTypeInfo;
+
     IntegralReflectableArray(const IBasicTypeInfo<ALLOC>& typeInfo, const ALLOC& allocator,
             RAW_ARRAY& rawArray, uint8_t dynamicBitSize) :
             Base(typeInfo, allocator), m_rawArray(rawArray), m_dynamicBitSize(dynamicBitSize)
@@ -1275,14 +1317,26 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
         return std::allocate_shared<IntegralReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray.at(index), m_dynamicBitSize);
+                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
     }
 
     virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
         return std::allocate_shared<IntegralReflectable>(
-                Base::get_allocator(), Base::getTypeInfo(), m_rawArray.at(index), m_dynamicBitSize);
+                Base::get_allocator(), Base::getTypeInfo(), m_rawArray[index], m_dynamicBitSize);
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1297,7 +1351,13 @@ public:
 
     virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
-        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
     }
 
     virtual void append(const AnyHolder<ALLOC>& value) override
@@ -1324,6 +1384,7 @@ private:
     using ElementType = typename RAW_ARRAY::value_type;
 
 public:
+    using Base::getTypeInfo;
     using Base::at;
     using Base::operator[];
 
@@ -1338,7 +1399,13 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
-        return m_rawArray.at(index).reflectable(Base::get_allocator());
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1359,6 +1426,8 @@ private:
     using ElementType = typename RAW_ARRAY::value_type;
 
 public:
+    using Base::getTypeInfo;
+
     CompoundReflectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
             Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
     {}
@@ -1375,12 +1444,24 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
-        return m_rawArray.at(index).reflectable(Base::get_allocator());
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
     virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
-        return m_rawArray.at(index).reflectable(Base::get_allocator());
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return m_rawArray[index].reflectable(Base::get_allocator());
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1395,7 +1476,13 @@ public:
 
     virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
-        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
     }
 
     virtual void append(const AnyHolder<ALLOC>& value) override
@@ -1428,6 +1515,7 @@ private:
     using ElementType = typename RAW_ARRAY::value_type;
 
 public:
+    using Base::getTypeInfo;
     using Base::at;
     using Base::operator[];
 
@@ -1442,7 +1530,13 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
-        return enumReflectable(m_rawArray.at(index), Base::get_allocator());
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return enumReflectable(m_rawArray[index], Base::get_allocator());
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1463,6 +1557,8 @@ private:
     using ElementType = typename RAW_ARRAY::value_type;
 
 public:
+    using Base::getTypeInfo;
+
     EnumReflectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
             Base(enumTypeInfo<ElementType, ALLOC>(), allocator), m_rawArray(rawArray)
     {}
@@ -1479,12 +1575,24 @@ public:
 
     virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
     {
-        return enumReflectable(m_rawArray.at(index), Base::get_allocator());
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return enumReflectable(m_rawArray[index], Base::get_allocator());
     }
 
     virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
     {
-        return enumReflectable(m_rawArray.at(index), Base::get_allocator());
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return enumReflectable(m_rawArray[index], Base::get_allocator());
     }
 
     virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
@@ -1499,7 +1607,13 @@ public:
 
     virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
     {
-        m_rawArray.at(index) = value.template get<typename RAW_ARRAY::value_type>();
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
     }
 
     virtual void append(const AnyHolder<ALLOC>& value) override
@@ -1852,8 +1966,8 @@ public:
     {
         if (bitSize > 8)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'int8_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'int8_t' value!";
         }
         return std::allocate_shared<Int8Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1864,8 +1978,8 @@ public:
     {
         if (bitSize <= 8 || bitSize > 16)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'int16_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'int16_t' value!";
         }
         return std::allocate_shared<Int16Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1876,8 +1990,8 @@ public:
     {
         if (bitSize <= 16 || bitSize > 32)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'int32_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'int32_t' value!";
         }
         return std::allocate_shared<Int32Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1888,8 +2002,8 @@ public:
     {
         if (bitSize <= 32 || bitSize > 64)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'int64_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedSignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'int64_t' value!";
         }
         return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedSignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1900,8 +2014,8 @@ public:
     {
         if (bitSize > 8)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'uint8_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint8_t' value!";
         }
         return std::allocate_shared<UInt8Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1912,8 +2026,8 @@ public:
     {
         if (bitSize <= 8 || bitSize > 16)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'uint16_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint16_t' value!";
         }
         return std::allocate_shared<UInt16Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1924,8 +2038,8 @@ public:
     {
         if (bitSize <= 16 || bitSize > 32)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'uint32_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint32_t' value!";
         }
         return std::allocate_shared<UInt32Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1936,8 +2050,8 @@ public:
     {
         if (bitSize <= 32 || bitSize > 64)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") +
-                    " - invalid bit size '" + bitSize + "' for 'uint64_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getFixedUnsignedBitField") <<
+                    " - invalid bit size '" << bitSize << "' for 'uint64_t' value!";
         }
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getFixedUnsignedBitField(bitSize), value, static_cast<uint8_t>(0));
@@ -1948,8 +2062,8 @@ public:
     {
         if (maxBitSize > 8)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'int8_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int8_t' value!";
         }
         return std::allocate_shared<Int8Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
@@ -1960,8 +2074,8 @@ public:
     {
         if (maxBitSize <= 8 || maxBitSize > 16)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'int16_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int16_t' value!";
         }
         return std::allocate_shared<Int16Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
@@ -1972,8 +2086,8 @@ public:
     {
         if (maxBitSize <= 16 || maxBitSize > 32)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'int32_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int32_t' value!";
         }
         return std::allocate_shared<Int32Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
@@ -1984,8 +2098,8 @@ public:
     {
         if (maxBitSize <= 32 || maxBitSize > 64)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'int16_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int16_t' value!";
         }
         return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
@@ -1996,8 +2110,8 @@ public:
     {
         if (maxBitSize > 8)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'uint8_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint8_t' value!";
         }
         return std::allocate_shared<UInt8Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
@@ -2008,8 +2122,8 @@ public:
     {
         if (maxBitSize <= 8 || maxBitSize > 16)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'uint16_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint16_t' value!";
         }
         return std::allocate_shared<UInt16Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
@@ -2020,8 +2134,8 @@ public:
     {
         if (maxBitSize <= 16 || maxBitSize > 32)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'uint32_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint32_t' value!";
         }
         return std::allocate_shared<UInt32Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
@@ -2032,8 +2146,8 @@ public:
     {
         if (maxBitSize <= 32 || maxBitSize > 64)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") +
-                    " - invalid max bit size '" + maxBitSize + "' for 'uint64_t' value!";
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint64_t' value!";
         }
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
@@ -2065,8 +2179,8 @@ public:
         if (typeInfo.getSchemaType() == SchemaType::DYNAMIC_SIGNED_BITFIELD ||
                 typeInfo.getSchemaType() == SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray") +
-                    " - dynamic bit field array must be created with dynamicBitSize argument!";
+            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
+                    " - dynamic bit field array must be created with dynamicBitSize argument!");
         }
 
         return std::allocate_shared<IntegralReflectableConstArray<ALLOC, RAW_ARRAY>>(
@@ -2081,8 +2195,8 @@ public:
         if (typeInfo.getSchemaType() == SchemaType::DYNAMIC_SIGNED_BITFIELD ||
                 typeInfo.getSchemaType() == SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray") +
-                    " - dynamic bit field array must be created with dynamicBitSize argument!";
+            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
+                    " - dynamic bit field array must be created with dynamicBitSize argument!");
         }
 
         return std::allocate_shared<IntegralReflectableArray<ALLOC, RAW_ARRAY>>(
@@ -2098,8 +2212,8 @@ public:
         if (typeInfo.getSchemaType() != SchemaType::DYNAMIC_SIGNED_BITFIELD &&
                 typeInfo.getSchemaType() != SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray") +
-                    " - expected a dynamic bit field array!";
+            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
+                    " - expected a dynamic bit field array!");
         }
 
         return std::allocate_shared<IntegralReflectableConstArray<ALLOC, RAW_ARRAY>>(
@@ -2115,8 +2229,8 @@ public:
         if (typeInfo.getSchemaType() != SchemaType::DYNAMIC_SIGNED_BITFIELD &&
                 typeInfo.getSchemaType() != SchemaType::DYNAMIC_UNSIGNED_BITFIELD)
         {
-            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray") +
-                    " - expected a dynamic bit field array!";
+            throw CppRuntimeException("BasicReflectableFactory::getBuiltinArray"
+                    " - expected a dynamic bit field array!");
         }
 
         return std::allocate_shared<IntegralReflectableArray<ALLOC, RAW_ARRAY>>(
@@ -2193,67 +2307,67 @@ bool ReflectableBase<ALLOC>::isArray() const
 template <typename ALLOC>
 void ReflectableBase<ALLOC>::initializeChildren()
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not a compound type!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not a compound type!";
 }
 
 template <typename ALLOC>
 void ReflectableBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no type arguments!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no type arguments!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView) const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to get!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no fields to get!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to get!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no fields to get!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::createField(StringView)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to create!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no fields to create!";
 }
 
 template <typename ALLOC>
 void ReflectableBase<ALLOC>::setField(StringView, const AnyHolder<ALLOC>&)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no fields to set!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no fields to set!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::getParameter(StringView) const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no parameters to get!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no parameters to get!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::getParameter(StringView)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no parameters to get!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no parameters to get!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::callFunction(StringView) const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no functions to call!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no functions to call!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::callFunction(StringView)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' has no functions to call!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no functions to call!";
 }
 
 template <typename ALLOC>
 StringView ReflectableBase<ALLOC>::getChoice() const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is neither choice nor union!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is neither choice nor union!";
 }
 
 template <typename ALLOC>
@@ -2283,401 +2397,401 @@ IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::operator[](StringView path)
 template <typename ALLOC>
 size_t ReflectableBase<ALLOC>::size() const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 void ReflectableBase<ALLOC>::resize(size_t)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::at(size_t) const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::at(size_t)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::operator[](size_t) const
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableBase<ALLOC>::operator[](size_t)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 void ReflectableBase<ALLOC>::setAt(const AnyHolder<ALLOC>&, size_t)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 void ReflectableBase<ALLOC>::append(const AnyHolder<ALLOC>&)
 {
-    throw CppRuntimeException("Type '") + getTypeInfo().getSchemaName() + "' is not an array!";
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not an array!";
 }
 
 template <typename ALLOC>
 bool ReflectableBase<ALLOC>::getBool() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not boolean type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not boolean type!";
 }
 
 template <typename ALLOC>
 int8_t ReflectableBase<ALLOC>::getInt8() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not int8 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not int8 type!";
 }
 
 template <typename ALLOC>
 int16_t ReflectableBase<ALLOC>::getInt16() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not int16 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not int16 type!";
 }
 
 template <typename ALLOC>
 int32_t ReflectableBase<ALLOC>::getInt32() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not int32 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not int32 type!";
 }
 
 template <typename ALLOC>
 int64_t ReflectableBase<ALLOC>::getInt64() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not int64 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not int64 type!";
 }
 
 template <typename ALLOC>
 uint8_t ReflectableBase<ALLOC>::getUInt8() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not uint8 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not uint8 type!";
 }
 
 template <typename ALLOC>
 uint16_t ReflectableBase<ALLOC>::getUInt16() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not uint16 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not uint16 type!";
 }
 
 template <typename ALLOC>
 uint32_t ReflectableBase<ALLOC>::getUInt32() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not uint32 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not uint32 type!";
 }
 
 template <typename ALLOC>
 uint64_t ReflectableBase<ALLOC>::getUInt64() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not uint64 type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not uint64 type!";
 }
 
 template <typename ALLOC>
 float ReflectableBase<ALLOC>::getFloat() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not float type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not float type!";
 }
 
 template <typename ALLOC>
 double ReflectableBase<ALLOC>::getDouble() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not double type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not double type!";
 }
 
 template <typename ALLOC>
 StringView ReflectableBase<ALLOC>::getStringView() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not string type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not string type!";
 }
 
 template <typename ALLOC>
 const BasicBitBuffer<ALLOC>& ReflectableBase<ALLOC>::getBitBuffer() const
 {
-    throw CppRuntimeException(getTypeInfo().getSchemaName()) + "' is not an extern type!";
+    throw CppRuntimeException("'") << getTypeInfo().getSchemaName() << "' is not an extern type!";
 }
 
 template <typename ALLOC>
 int64_t ReflectableBase<ALLOC>::toInt() const
 {
-    throw CppRuntimeException("Conversion from '") + getTypeInfo().getSchemaName() +
+    throw CppRuntimeException("Conversion from '") << getTypeInfo().getSchemaName() <<
             "' to signed integer is not available!";
 }
 
 template <typename ALLOC>
 uint64_t ReflectableBase<ALLOC>::toUInt() const
 {
-    throw CppRuntimeException("Conversion from '") + getTypeInfo().getSchemaName() +
+    throw CppRuntimeException("Conversion from '") << getTypeInfo().getSchemaName() <<
             "' to unsigned integer is not available!";
 }
 
 template <typename ALLOC>
 double ReflectableBase<ALLOC>::toDouble() const
 {
-    throw CppRuntimeException("Conversion from '") + getTypeInfo().getSchemaName() +
+    throw CppRuntimeException("Conversion from '") << getTypeInfo().getSchemaName() <<
             "' to double is not available!";
 }
 
 template <typename ALLOC>
 string<ALLOC> ReflectableBase<ALLOC>::toString(const ALLOC&) const
 {
-    throw CppRuntimeException("Conversion from '") + getTypeInfo().getSchemaName() +
+    throw CppRuntimeException("Conversion from '") << getTypeInfo().getSchemaName() <<
             "' to string is not available!";
 }
 
 template <typename ALLOC>
 void ReflectableConstAllocatorHolderBase<ALLOC>::initializeChildren()
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
 }
 
 template <typename ALLOC>
 void ReflectableConstAllocatorHolderBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::getField(StringView)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
 }
 
 template <typename ALLOC>
 void ReflectableConstAllocatorHolderBase<ALLOC>::setField(StringView, const AnyHolder<ALLOC>&)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::getParameter(StringView)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::callFunction(StringView)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
 }
 
 template <typename ALLOC>
 void ReflectableArrayBase<ALLOC>::initializeChildren()
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 void ReflectableArrayBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableArrayBase<ALLOC>::getField(StringView) const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::getField(StringView)
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::createField(StringView)
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 void ReflectableArrayBase<ALLOC>::setField(StringView, const AnyHolder<ALLOC>&)
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableArrayBase<ALLOC>::getParameter(StringView) const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::getParameter(StringView)
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableArrayBase<ALLOC>::callFunction(StringView) const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableArrayBase<ALLOC>::callFunction(StringView)
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 StringView ReflectableArrayBase<ALLOC>::getChoice() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 bool ReflectableArrayBase<ALLOC>::getBool() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 int8_t ReflectableArrayBase<ALLOC>::getInt8() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 int16_t ReflectableArrayBase<ALLOC>::getInt16() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 int32_t ReflectableArrayBase<ALLOC>::getInt32() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 int64_t ReflectableArrayBase<ALLOC>::getInt64() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 uint8_t ReflectableArrayBase<ALLOC>::getUInt8() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 uint16_t ReflectableArrayBase<ALLOC>::getUInt16() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 uint32_t ReflectableArrayBase<ALLOC>::getUInt32() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 uint64_t ReflectableArrayBase<ALLOC>::getUInt64() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 float ReflectableArrayBase<ALLOC>::getFloat() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 double ReflectableArrayBase<ALLOC>::getDouble() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 StringView ReflectableArrayBase<ALLOC>::getStringView() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 const BasicBitBuffer<ALLOC>& ReflectableArrayBase<ALLOC>::getBitBuffer() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 int64_t ReflectableArrayBase<ALLOC>::toInt() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 uint64_t ReflectableArrayBase<ALLOC>::toUInt() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 double ReflectableArrayBase<ALLOC>::toDouble() const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 string<ALLOC> ReflectableArrayBase<ALLOC>::toString(const ALLOC&) const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 void ReflectableArrayBase<ALLOC>::write(BitStreamWriter&) const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 size_t ReflectableArrayBase<ALLOC>::bitSizeOf(size_t) const
 {
-    throw CppRuntimeException("Reflectable is an array '") + getTypeInfo().getSchemaName() + "[]'!";
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
 
 template <typename ALLOC>
 void ReflectableConstArrayBase<ALLOC>::resize(size_t)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstArrayBase<ALLOC>::at(size_t)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstArrayBase<ALLOC>::operator[](size_t)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
 }
 
 template <typename ALLOC>
 void ReflectableConstArrayBase<ALLOC>::setAt(const AnyHolder<ALLOC>&, size_t)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
 }
 
 template <typename ALLOC>
 void ReflectableConstArrayBase<ALLOC>::append(const AnyHolder<ALLOC>&)
 {
-    throw CppRuntimeException("Reflectable '") + getTypeInfo().getSchemaName() + "' is constant array!";
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant array!";
 }
 
 } // namespace zserio

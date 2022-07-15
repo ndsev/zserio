@@ -16,8 +16,8 @@ ${I}        const ::zserio::vector<::zserio::AnyHolder<allocator_type>, allocato
 ${I}{
 ${I}    if (typeArguments.size() != ${parameterList?size})
 ${I}    {
-${I}        throw ::zserio::CppRuntimeException("Not enough arguments to ${name}::initialize, ") +
-${I}                "expecting ${parameterList?size}, got " + typeArguments.size();
+${I}        throw ::zserio::CppRuntimeException("Not enough arguments to ${name}::initialize, ") <<
+${I}                "expecting ${parameterList?size}, got " << typeArguments.size();
 ${I}    }
 
 ${I}    m_object.initialize(
@@ -54,7 +54,7 @@ ${I}            return nullptr;
 ${I}        return <@reflectable_field_create field/>;
 ${I}    }
     </#list>
-${I}    throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
+${I}    throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
@@ -70,7 +70,7 @@ ${I}        m_object.${field.setterName}(<@field_raw_cpp_type_name field/>(<#rt>
 ${I}        return <@reflectable_field_create field/>;
 ${I}    }
     </#list>
-${I}    throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
+${I}    throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
@@ -111,7 +111,7 @@ ${I}        m_object.${field.setterName}(value.get<<@field_raw_cpp_type_name fie
 ${I}        return;
 ${I}    }
     </#list>
-${I}    throw ::zserio::CppRuntimeException("Field '") + name + "' doesn't exist in '${compoundName}'!";
+${I}    throw ::zserio::CppRuntimeException("Field '") << name << "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
@@ -126,7 +126,7 @@ ${I}    {
 ${I}        return <@reflectable_parameter_create parameter/>;
 ${I}    }
     </#list>
-${I}    throw ::zserio::CppRuntimeException("Parameter '") + name + "' doesn't exist in '${compoundName}'!";
+${I}    throw ::zserio::CppRuntimeException("Parameter '") << name << "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 
@@ -141,7 +141,7 @@ ${I}    {
 ${I}        return <@reflectable_function_create function/>;
 ${I}    }
     </#list>
-${I}    throw ::zserio::CppRuntimeException("Function '") + name + "' doesn't exist in '${compoundName}'!";
+${I}    throw ::zserio::CppRuntimeException("Function '") << name << "' doesn't exist in '${compoundName}'!";
 ${I}}
 </#macro>
 

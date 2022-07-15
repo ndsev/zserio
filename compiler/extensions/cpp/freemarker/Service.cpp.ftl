@@ -52,7 +52,7 @@ ${types.serviceDataPtr.name} Service::callMethod(
         return ${method.name}Method(requestData, context);
 </#list>
     else
-        throw ::zserio::ServiceException("${serviceFullName}: Method '") + methodName + "' does not exist!";
+        throw ::zserio::ServiceException("${serviceFullName}: Method '") << methodName << "' does not exist!";
 }
 
 ::zserio::StringView Service::serviceFullName() noexcept

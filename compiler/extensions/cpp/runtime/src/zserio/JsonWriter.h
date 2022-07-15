@@ -98,16 +98,18 @@ public:
     virtual void beginRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
     virtual void endRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
 
-    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) override;
-    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>& array, const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    virtual void beginArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
+    virtual void endArray(const IBasicReflectableConstPtr<ALLOC>& array,
+            const BasicFieldInfo<ALLOC>& fieldInfo) override;
 
-    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const BasicFieldInfo<ALLOC>& fieldInfo,
-            size_t elementIndex) override;
-    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound, const BasicFieldInfo<ALLOC>& fieldInfo,
-            size_t elementIndex) override;
+    virtual void beginCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
+    virtual void endCompound(const IBasicReflectableConstPtr<ALLOC>& compound,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
-    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>& value, const BasicFieldInfo<ALLOC>& fieldInfo,
-            size_t elementIndex) override;
+    virtual void visitValue(const IBasicReflectableConstPtr<ALLOC>& value,
+            const BasicFieldInfo<ALLOC>& fieldInfo, size_t elementIndex) override;
 
 private:
     BasicJsonWriter(std::ostream& out, InplaceOptionalHolder<string<ALLOC>>&& optionalIndent,
@@ -374,8 +376,8 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectableConstPtr<ALLOC>& 
             JsonEncoder::encodeIntegral(m_out, reflectable->toUInt());
         break;
     default:
-        throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '") +
-                typeInfo.getSchemaName() + "'!";
+        throw CppRuntimeException("JsonWriter: Unexpected not-null value of type '") <<
+                typeInfo.getSchemaName() << "'!";
     }
 
     m_out.flush();

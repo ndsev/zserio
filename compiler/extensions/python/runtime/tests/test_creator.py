@@ -1,12 +1,12 @@
 import io
 import unittest
 
+from test_creator_object import DummyEnum, DummyBitmask, DummyObject
+
 from zserio.exception import PythonRuntimeException
 from zserio.creator import ZserioTreeCreator
 from zserio.json import JsonReader, JsonParserException
 from zserio.bitbuffer import BitBuffer
-
-from test_creator_object import DummyEnum, DummyBitmask, DummyObject
 
 class ZserioTreeCreatorTest(unittest.TestCase):
 

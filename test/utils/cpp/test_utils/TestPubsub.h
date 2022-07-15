@@ -42,7 +42,7 @@ public:
     {
         const auto found = m_subscriptions.find(id);
         if (found == m_subscriptions.end())
-            throw zserio::PubsubException("TestPubsub: Invalid subscription ID '") + id + "'!";
+            throw zserio::PubsubException("TestPubsub: Invalid subscription ID '") << id << "'!";
         m_subscriptions.erase(found);
     }
 

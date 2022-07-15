@@ -856,121 +856,121 @@ CppType TypeInfoBase<ALLOC>::getCppType() const
 template <typename ALLOC>
 uint8_t TypeInfoBase<ALLOC>::getBitSize() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a fixed size type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a fixed size type!";
 }
 
 template <typename ALLOC>
 Span<const BasicFieldInfo<ALLOC>> TypeInfoBase<ALLOC>::getFields() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a compound type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a compound type!";
 }
 
 template <typename ALLOC>
 Span<const BasicParameterInfo<ALLOC>> TypeInfoBase<ALLOC>::getParameters() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a compound type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a compound type!";
 }
 
 template <typename ALLOC>
 Span<const BasicFunctionInfo<ALLOC>> TypeInfoBase<ALLOC>::getFunctions() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a compound type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a compound type!";
 }
 
 template <typename ALLOC>
 StringView TypeInfoBase<ALLOC>::getSelector() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a choice type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a choice type!";
 }
 
 template <typename ALLOC>
 Span<const BasicCaseInfo<ALLOC>> TypeInfoBase<ALLOC>::getCases() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a choice type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a choice type!";
 }
 
 template <typename ALLOC>
 const IBasicTypeInfo<ALLOC>& TypeInfoBase<ALLOC>::getUnderlyingType() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' does not have underlying type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' does not have underlying type!";
 }
 
 template <typename ALLOC>
 Span<const StringView> TypeInfoBase<ALLOC>::getUnderlyingTypeArguments() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' does not have underlying type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' does not have underlying type!";
 }
 
 template <typename ALLOC>
 Span<const ItemInfo> TypeInfoBase<ALLOC>::getEnumItems() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not an enum type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not an enum type!";
 }
 
 template <typename ALLOC>
 Span<const ItemInfo> TypeInfoBase<ALLOC>::getBitmaskValues() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a bitmask type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a bitmask type!";
 }
 
 template <typename ALLOC>
 Span<const BasicColumnInfo<ALLOC>> TypeInfoBase<ALLOC>::getColumns() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a SQL table type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a SQL table type!";
 }
 
 template <typename ALLOC>
 StringView TypeInfoBase<ALLOC>::getSqlConstraint() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a SQL table type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a SQL table type!";
 }
 
 template <typename ALLOC>
 StringView TypeInfoBase<ALLOC>::getVirtualTableUsing() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a SQL table type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a SQL table type!";
 }
 
 template <typename ALLOC>
 bool TypeInfoBase<ALLOC>::isWithoutRowId() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a SQL table type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a SQL table type!";
 }
 
 template <typename ALLOC>
 Span<const BasicTableInfo<ALLOC>> TypeInfoBase<ALLOC>::getTables() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a SQL database type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a SQL database type!";
 }
 
 template <typename ALLOC>
 StringView TypeInfoBase<ALLOC>::getTemplateName() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a templatable type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a templatable type!";
 }
 
 template <typename ALLOC>
 Span<const BasicTemplateArgumentInfo<ALLOC>> TypeInfoBase<ALLOC>::getTemplateArguments() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a templatable type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a templatable type!";
 }
 
 template <typename ALLOC>
 Span<const BasicMessageInfo<ALLOC>> TypeInfoBase<ALLOC>::getMessages() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a pubsub type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a pubsub type!";
 }
 
 template <typename ALLOC>
 Span<const BasicMethodInfo<ALLOC>> TypeInfoBase<ALLOC>::getMethods() const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a service type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a service type!";
 }
 
 template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> TypeInfoBase<ALLOC>::createInstance(const ALLOC&) const
 {
-    throw CppRuntimeException("Type '") + getSchemaName() + "' is not a compound type!";
+    throw CppRuntimeException("Type '") << getSchemaName() << "' is not a compound type!";
 }
 
 template <typename ALLOC>
@@ -1166,8 +1166,8 @@ const IBasicTypeInfo<ALLOC>& BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(ui
 {
     if (maxBitSize == 0 || maxBitSize > 64)
     {
-        throw CppRuntimeException("BuiltinTypeInfo::getDynamicSignedBitField: Invalid max bit size '") +
-                maxBitSize + "'!";
+        throw CppRuntimeException("BuiltinTypeInfo::getDynamicSignedBitField: Invalid max bit size '") <<
+                maxBitSize << "'!";
     }
 
     if (maxBitSize <= 8)
@@ -1205,8 +1205,8 @@ const IBasicTypeInfo<ALLOC>& BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(
 {
     if (maxBitSize == 0 || maxBitSize > 64)
     {
-        throw CppRuntimeException("BuiltinTypeInfo::getDynamicUnsignedBitField: Invalid max bit size '") +
-                maxBitSize + "'!";
+        throw CppRuntimeException("BuiltinTypeInfo::getDynamicUnsignedBitField: Invalid max bit size '") <<
+                maxBitSize << "'!";
     }
 
     if (maxBitSize <= 8)
@@ -1364,8 +1364,8 @@ const IBasicTypeInfo<ALLOC>& FixedSizeBuiltinTypeInfo<ALLOC>::getFixedSignedBitF
 {
     if (bitSize == 0 || bitSize > 64)
     {
-        throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedSignedBitField: Invalid bit size '") +
-                bitSize + "'!";
+        throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedSignedBitField: Invalid bit size '") <<
+                bitSize << "'!";
     }
 
     static const std::array<FixedSizeBuiltinTypeInfo<ALLOC>, 64> bitFieldTypeInfoArray = {{
@@ -1443,8 +1443,8 @@ const IBasicTypeInfo<ALLOC>& FixedSizeBuiltinTypeInfo<ALLOC>::getFixedUnsignedBi
 {
     if (bitSize == 0 || bitSize > 64)
     {
-        throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedUnsignedBitField: Invalid bit size '") +
-                bitSize + "'!";
+        throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedUnsignedBitField: Invalid bit size '") <<
+                bitSize << "'!";
     }
 
     static const std::array<FixedSizeBuiltinTypeInfo<ALLOC>, 64> bitFieldTypeInfoArray = {{
@@ -1578,7 +1578,7 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> CompoundTypeInfoBase<ALLOC>::createInstance(const ALLOC& allocator) const
 {
     if (!m_createInstanceFunc)
-        throw CppRuntimeException("Cannot create reflectable instance of '") + getSchemaName() + "'!";
+        throw CppRuntimeException("Cannot create reflectable instance of '") << getSchemaName() << "'!";
     return m_createInstanceFunc(allocator);
 }
 

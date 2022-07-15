@@ -74,7 +74,7 @@ TEST_F(DynamicBitRangeCheckTest, numBitsAboveMax)
     }
     catch (const zserio::CppRuntimeException& excpt)
     {
-        ASSERT_STREQ("Asking for bound of bitfield with invalid length 65", excpt.what());
+        ASSERT_STREQ("Asking for bound of bitfield with invalid length 65!", excpt.what());
     }
 }
 

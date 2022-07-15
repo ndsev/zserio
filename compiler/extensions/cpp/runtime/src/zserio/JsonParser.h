@@ -223,7 +223,7 @@ void BasicJsonParser<ALLOC>::parseMember()
     const AnyHolder<ALLOC>& key = m_tokenizer.getValue();
     if (!key.template isType<string<ALLOC>>())
     {
-        throw JsonParserException("JsonParser:") + getLine() + ":" + getColumn() +
+        throw JsonParserException("JsonParser:") << getLine() << ":" << getColumn() <<
                 ": Key must be a string value!";
     }
     m_observer.visitKey(key.template get<string<ALLOC>>());
@@ -314,21 +314,21 @@ template <typename ALLOC>
 void BasicJsonParser<ALLOC>::throwUnexpectedToken(Span<const JsonToken> expecting) const
 {
     JsonParserException error("JsonParser:");
-    error + getLine() + ":" + getColumn() + ": unexpected token: " + jsonTokenName(m_tokenizer.getToken());
+    error << getLine() << ":" << getColumn() << ": unexpected token: " << m_tokenizer.getToken();
     if (expecting.size() == 1)
     {
-        error + ", expecting " + jsonTokenName(expecting[0]) + "!";
+        error << ", expecting " << expecting[0] << "!";
     }
     else
     {
-        error + ", expecting one of [";
+        error << ", expecting one of [";
         for (size_t i = 0; i < expecting.size(); ++i)
         {
             if (i > 0)
-                error + ", ";
-            error + jsonTokenName(expecting[i]);
+                error << ", ";
+            error << expecting[i];
         }
-        error + "]!";
+        error << "]!";
     }
     throw error;
 }

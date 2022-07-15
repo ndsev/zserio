@@ -116,8 +116,8 @@ static size_t bitSizeOfVarIntImpl(uint64_t value, const uint64_t* maxValues, siz
 
     if (byteSize > numMaxValues)
     {
-        throw CppRuntimeException("BitSizeOfCalculator: Value '") + value +
-                "' is out of range for " + varIntName + "!";
+        throw CppRuntimeException("BitSizeOfCalculator: Value '") << value <<
+                "' is out of range for " << varIntName << "!";
     }
 
     return bytesToBits(byteSize);

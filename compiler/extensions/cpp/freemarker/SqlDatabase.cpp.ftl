@@ -32,7 +32,7 @@ ${name}::${name}(const ${types.string.name}& dbFileName, const TRelocationMap& t
     m_db.reset(internalConnection, ::zserio::SqliteConnection::INTERNAL_CONNECTION);
     if (result != SQLITE_OK)
     {
-        throw ::zserio::SqliteException("${name}::open(): can't open DB ") + dbFileName.c_str() + ": " +
+        throw ::zserio::SqliteException("${name}::open(): can't open DB ") << dbFileName.c_str() << ": " <<
                 ::zserio::SqliteErrorCode(result);
     }
 

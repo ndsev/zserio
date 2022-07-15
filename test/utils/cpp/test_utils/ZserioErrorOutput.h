@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <algorithm>
+#include <stdexcept>
 
 namespace test_utils
 {

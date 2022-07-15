@@ -4,12 +4,14 @@
 #include <limits>
 #include <type_traits>
 
+#include "zserio/BitBuffer.h"
+#include "zserio/CppRuntimeException.h"
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
 #include "zserio/TypeInfoUtil.h"
-#include "zserio/CppRuntimeException.h"
 #include "zserio/Traits.h"
 #include "zserio/Vector.h"
+#include "zserio/Types.h"
 
 namespace zserio
 {
@@ -56,18 +58,6 @@ bool checkArithmeticValueRanges(U value)
     return true;
 }
 
-template <typename T>
-T convertValueForException(T value)
-{
-    return value;
-}
-
-template <typename ALLOC>
-const char* convertValueForException(const BasicBitBuffer<ALLOC>&)
-{
-    return "BitBuffer";
-}
-
 template <typename T, typename ALLOC>
 AnyHolder<ALLOC> makeAnyBoolValue(bool value, const ALLOC& allocator)
 {
@@ -77,14 +67,14 @@ AnyHolder<ALLOC> makeAnyBoolValue(bool value, const ALLOC& allocator)
 template <typename T, typename U, typename ALLOC>
 AnyHolder<ALLOC> makeAnyBoolValue(const U& value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Value '") + convertValueForException(value) +
+    throw CppRuntimeException("ZserioTreeCreator: Value '") << value <<
             "' cannot be converted to bool value!";
 }
 
 template <typename T, typename ALLOC>
 AnyHolder<ALLOC> makeAnyIntegralValue(bool value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Bool value '") + convertValueForException(value) +
+    throw CppRuntimeException("ZserioTreeCreator: Bool value '") << value <<
             "' cannot be converted to integral type!";
 }
 
@@ -95,8 +85,8 @@ AnyHolder<ALLOC> makeAnyIntegralValue(U value, const ALLOC& allocator)
     // check ranges of integers
     if (!checkArithmeticValueRanges<T>(value))
     {
-        throw CppRuntimeException("ZserioTreeCreator: Integral value '") + value + "' overflow (<" +
-                std::numeric_limits<T>::min() + ", " + std::numeric_limits<T>::max() + ">)!";
+        throw CppRuntimeException("ZserioTreeCreator: Integral value '") << value << "' overflow (<" <<
+                std::numeric_limits<T>::min() << ", " << std::numeric_limits<T>::max() << ">)!";
     }
 
     return AnyHolder<ALLOC>(static_cast<T>(value), allocator);
@@ -106,14 +96,14 @@ template <typename T, typename U, typename ALLOC,
         typename std::enable_if<!std::is_integral<typename std::decay<U>::type>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyIntegralValue(const U& value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Value '") + convertValueForException(value) +
+    throw CppRuntimeException("ZserioTreeCreator: Value '") << value <<
             "' cannot be converted to integral value!";
 }
 
 template <typename T, typename ALLOC>
 AnyHolder<ALLOC> makeAnyFloatingValue(bool value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Bool value '") + convertValueForException(value) +
+    throw CppRuntimeException("ZserioTreeCreator: Bool value '") << value <<
             "' cannot be converted to floating type!";
 }
 
@@ -129,7 +119,7 @@ template <typename T, typename U, typename ALLOC,
         typename std::enable_if<!std::is_arithmetic<typename std::decay<U>::type>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyFloatingValue(const U& value, const ALLOC&)
 {
-    throw CppRuntimeException("ZserioTreeCreator: Value '") + convertValueForException(value) +
+    throw CppRuntimeException("ZserioTreeCreator: Value '") << value <<
             "' cannot be converted to floating value!";
 }
 
@@ -409,7 +399,7 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginRoot()
 {
     if (m_state != State::BEFORE_ROOT)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin root in state '") + stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin root in state '") << stateName() << "'!";
 
     m_valueStack.push_back(m_typeInfo.createInstance(get_allocator()));
     m_state = State::IN_COMPOUND;
@@ -419,7 +409,7 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> BasicZserioTreeCreator<ALLOC>::endRoot()
 {
     if (m_state != State::IN_COMPOUND || m_valueStack.size() != 1)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end root in state '") + stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end root in state '") << stateName() << "'!";
 
     m_state = State::BEFORE_ROOT;
     auto value = m_valueStack.back();
@@ -431,12 +421,15 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginArray(const string<ALLOC>& name)
 {
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin array in state '") + stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin array in state '") << stateName() << "'!";
 
     const auto& parentTypeInfo = getTypeInfo();
     const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
     if (!fieldInfo.isArray)
-        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "' is not an array!";
+    {
+        throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName <<
+                 "' is not an array!";
+    }
 
     m_fieldInfoStack.push_back(fieldInfo);
     if (TypeInfoUtil::hasChoice(parentTypeInfo.getCppType()) || fieldInfo.isOptional)
@@ -456,7 +449,7 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::endArray()
 {
     if (m_state != State::IN_ARRAY)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end array in state '") + stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end array in state '") << stateName() << "'!";
 
     m_fieldInfoStack.pop_back();
     m_valueStack.pop_back();
@@ -467,15 +460,18 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::beginCompound(const string<ALLOC>& name)
 {
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound in state '") + stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound in state '") << stateName() << "'!";
 
     const auto& parentTypeInfo = getTypeInfo();
     const auto& fieldInfo = findFieldInfo(parentTypeInfo, name);
     if (fieldInfo.isArray)
-        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "' is an array!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName << "' is an array!";
 
     if (!TypeInfoUtil::isCompound(fieldInfo.typeInfo.getCppType()))
-        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName + "' is not a compound!";
+    {
+        throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName <<
+                "' is not a compound!";
+    }
 
     m_fieldInfoStack.push_back(fieldInfo);
     if (TypeInfoUtil::hasChoice(parentTypeInfo.getCppType()) || fieldInfo.isOptional)
@@ -496,8 +492,8 @@ void BasicZserioTreeCreator<ALLOC>::endCompound()
 {
     if (m_state != State::IN_COMPOUND || m_fieldInfoStack.empty())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound in state '") + stateName() +
-                "'" + (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "!'");
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound in state '") << stateName() <<
+                "'" << (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "!'");
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -513,13 +509,13 @@ template <typename T>
 void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, T&& value)
 {
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot set value in state '") + stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot set value in state '") << stateName() << "'!";
 
     const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
     if (fieldInfo.isArray)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Expecting array in member '") +
-                fieldInfo.schemaName + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Expecting array in member '") <<
+                fieldInfo.schemaName << "'!";
     }
 
     m_valueStack.back()->setField(fieldInfo.schemaName,
@@ -530,7 +526,10 @@ template <typename ALLOC>
 void BasicZserioTreeCreator<ALLOC>::setValue(const string<ALLOC>& name, std::nullptr_t nullValue)
 {
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot set value (null) in state '") + stateName() + "'!";
+    {
+        throw CppRuntimeException("ZserioTreeCreator: Cannot set value (null) in state '") << stateName() <<
+                "'!";
+    }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = findFieldInfo(getTypeInfo(), name);
     if (fieldInfo.isOptional)
@@ -550,7 +549,7 @@ template <typename ALLOC>
 const IBasicTypeInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::getFieldType(const string<ALLOC>& name) const
 {
     if (m_state != State::IN_COMPOUND)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot get field type in state '") + stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot get field type in state '") << stateName() << "'!";
 
     return findFieldInfo(getTypeInfo(), name).typeInfo;
 }
@@ -560,14 +559,14 @@ void BasicZserioTreeCreator<ALLOC>::beginCompoundElement()
 {
     if (m_state != State::IN_ARRAY)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound element in state '") +
-                stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot begin compound element in state '") <<
+                stateName() << "'!";
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
     if (!TypeInfoUtil::isCompound(fieldInfo.typeInfo.getCppType()))
     {
-        throw CppRuntimeException("ZserioTreeCreator: Member '") + fieldInfo.schemaName +
+        throw CppRuntimeException("ZserioTreeCreator: Member '") << fieldInfo.schemaName <<
                 "' is not a compound!";
     }
 
@@ -582,8 +581,8 @@ void BasicZserioTreeCreator<ALLOC>::endCompoundElement()
 {
     if (m_state != State::IN_COMPOUND || m_fieldInfoStack.empty())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound element in state '") +
-                stateName() + (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "'!");
+        throw CppRuntimeException("ZserioTreeCreator: Cannot end compound element in state '") <<
+                stateName() << (m_fieldInfoStack.empty() ? ", expecting endRoot!" : "'!");
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -600,8 +599,8 @@ void BasicZserioTreeCreator<ALLOC>::addValueElement(T&& value)
 {
     if (m_state != State::IN_ARRAY)
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") +
-                stateName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Cannot add value element in state '") <<
+                stateName() << "'!";
     }
 
     const BasicFieldInfo<ALLOC>& fieldInfo = m_fieldInfoStack.back();
@@ -612,7 +611,10 @@ template <typename ALLOC>
 const IBasicTypeInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::getElementType() const
 {
     if (m_state != State::IN_ARRAY)
-        throw CppRuntimeException("ZserioTreeCreator: Cannot get element type in state '") + stateName() + "'!";
+    {
+        throw CppRuntimeException("ZserioTreeCreator: Cannot get element type in state '") << stateName() <<
+                "'!";
+    }
 
     return m_fieldInfoStack.back().get().typeInfo;
 }
@@ -632,8 +634,8 @@ const BasicFieldInfo<ALLOC>& BasicZserioTreeCreator<ALLOC>::findFieldInfo(
             [name](const BasicFieldInfo<ALLOC>& field){ return field.schemaName == name; });
     if (found_it == fields.end())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Member '") + name +  "' not found in '" +
-                typeInfo.getSchemaName() + "'!";
+        throw CppRuntimeException("ZserioTreeCreator: Member '") << name <<  "' not found in '" <<
+                typeInfo.getSchemaName() << "'!";
     }
 
     return *found_it;

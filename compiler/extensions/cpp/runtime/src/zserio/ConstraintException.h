@@ -9,10 +9,10 @@ namespace zserio
 /**
  * Exception thrown when a constraint check fails.
  */
-class ConstraintException : public detail::CppRuntimeExceptionHelper<ConstraintException>
+class ConstraintException : public CppRuntimeException
 {
 public:
-    using BaseType::CppRuntimeExceptionHelper;
+    using CppRuntimeException::CppRuntimeException;
 };
 
 } // namespace zserio

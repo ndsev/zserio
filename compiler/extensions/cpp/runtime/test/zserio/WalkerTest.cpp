@@ -90,7 +90,7 @@ public:
                 {
                     return ReflectableFactory::getString(m_object.getText(), get_allocator());
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyNested'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
             virtual void write(BitStreamWriter&) const override
@@ -235,7 +235,7 @@ public:
                 {
                     return ReflectableFactory::getCompoundArray(m_object.getNestedArray(), get_allocator());
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyUnion'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyUnion'!";
             }
 
             virtual StringView getChoice() const override
@@ -497,7 +497,7 @@ public:
                     return ReflectableFactory::getCompoundArray(
                             m_object.getOptionalUnionArray(), get_allocator());
                 }
-                throw CppRuntimeException("Field '") + name + "' doesn't exist in 'DummyObject'!";
+                throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyObject'!";
             }
 
             virtual void write(BitStreamWriter&) const override

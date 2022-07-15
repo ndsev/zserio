@@ -192,7 +192,10 @@ typename BasicJsonDecoder<ALLOC>::DecoderResult BasicJsonDecoder<ALLOC>::decodeS
                     const size_t unicodeEscapeLen = 4;
                     const size_t numReadChars = strnlen(pInput, unicodeEscapeLen);
                     if (numReadChars < unicodeEscapeLen)
-                        return DecoderResult(static_cast<size_t>(pInput + numReadChars - input), get_allocator());
+                    {
+                        return DecoderResult(static_cast<size_t>(pInput + numReadChars - input),
+                                get_allocator());
+                    }
                     if (!decodeUnicodeEscape(pInput, value))
                     {
                         // unsupported unicode escape

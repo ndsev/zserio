@@ -461,7 +461,7 @@ void BasicWalker<ALLOC>::walk(const IBasicReflectableConstPtr<ALLOC>& compound)
     const IBasicTypeInfo<ALLOC>& typeInfo = compound->getTypeInfo();
     if (!TypeInfoUtil::isCompound(typeInfo.getSchemaType()))
     {
-        throw CppRuntimeException("Walker: Root object '") + typeInfo.getSchemaName() +
+        throw CppRuntimeException("Walker: Root object '") << typeInfo.getSchemaName() <<
                 "' is not a compound type!";
     }
 

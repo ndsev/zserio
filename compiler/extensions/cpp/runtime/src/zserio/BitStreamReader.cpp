@@ -158,7 +158,7 @@ namespace
     inline void checkEof(const ReaderContext& ctx, uint8_t numBits)
     {
         if (ctx.bitIndex + numBits > ctx.bufferBitSize)
-            throw CppRuntimeException("BitStreamReader: Reached eof(), reading from stream failed.");
+            throw CppRuntimeException("BitStreamReader: Reached eof(), reading from stream failed!");
     }
 
     /** Checks numBits validity for 32-bit reads. */
@@ -166,8 +166,8 @@ namespace
     {
         if (numBits > 32)
         {
-            throw CppRuntimeException("BitStreamReader: ReadBits #") + numBits +
-                    " is not valid, reading from stream failed.";
+            throw CppRuntimeException("BitStreamReader: ReadBits #") << numBits <<
+                    " is not valid, reading from stream failed!";
         }
     }
 
@@ -176,8 +176,8 @@ namespace
     {
         if (numBits > 64)
         {
-            throw CppRuntimeException("BitStreamReader: ReadBits64 #") + numBits +
-                    " is not valid, reading from stream failed.";
+            throw CppRuntimeException("BitStreamReader: ReadBits64 #") << numBits <<
+                    " is not valid, reading from stream failed!";
         }
     }
 
@@ -313,7 +313,7 @@ BitStreamReader::ReaderContext::ReaderContext(const uint8_t* constBuffer, size_t
     const size_t bufferByteSize = (bufferBitSize + 7) / 8;
     if (bufferByteSize > MAX_BUFFER_SIZE)
     {
-        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '") + MAX_BUFFER_SIZE +
+        throw CppRuntimeException("BitStreamReader: Buffer size exceeded limit '") << MAX_BUFFER_SIZE <<
                 "' bytes!";
     }
 }
@@ -660,7 +660,7 @@ uint32_t BitStreamReader::readVarSize()
 
     result = result << 8 | static_cast<uint8_t>(readBitsImpl(m_context, 8)); // byte 5
     if (result > VARSIZE_MAX_VALUE)
-        throw CppRuntimeException("BitStreamReader: Read value '") + result +
+        throw CppRuntimeException("BitStreamReader: Read value '") << result <<
                 "' is out of range for varsize type!";
 
     return result;
@@ -699,7 +699,7 @@ bool BitStreamReader::readBool()
 void BitStreamReader::setBitPosition(BitPosType position)
 {
     if (position > m_context.bufferBitSize)
-        throw CppRuntimeException("BitStreamReader: Reached eof(), setting of bit position failed.");
+        throw CppRuntimeException("BitStreamReader: Reached eof(), setting of bit position failed!");
 
     m_context.bitIndex = (position / 8) * 8; // set to byte aligned position
     m_context.cacheNumBits = 0; // invalidate cache

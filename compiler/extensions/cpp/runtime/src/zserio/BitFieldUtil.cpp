@@ -7,7 +7,7 @@ namespace zserio
 static void checkBitFieldLength(size_t length)
 {
     if (length == 0 || length > 64)
-        throw CppRuntimeException("Asking for bound of bitfield with invalid length ") + length;
+        throw CppRuntimeException("Asking for bound of bitfield with invalid length ") << length << "!";
 }
 
 int64_t getBitFieldLowerBound(size_t length, bool isSigned)

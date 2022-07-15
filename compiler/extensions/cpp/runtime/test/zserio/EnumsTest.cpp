@@ -42,8 +42,8 @@ inline size_t enumToOrdinal<Color>(Color value)
     case Color::BLACK:
         return 3;
     default:
-        throw zserio::CppRuntimeException("Unknown value for enumeration Color: ") +
-                static_cast<uint8_t>(value) + "!";
+        throw CppRuntimeException("Unknown value for enumeration Color: ") <<
+                static_cast<uint8_t>(value) << "!";
     }
 }
 
@@ -58,7 +58,7 @@ inline Color valueToEnum<Color>(typename std::underlying_type<Color>::type rawVa
     case UINT8_C(7):
         return Color(rawValue);
     default:
-        throw zserio::CppRuntimeException("Unknown value for enumeration Color: ") + rawValue + "!";
+        throw CppRuntimeException("Unknown value for enumeration Color: ") << rawValue << "!";
     }
 }
 

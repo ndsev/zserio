@@ -375,7 +375,7 @@ TEST_F(ControlValidationTest, validateSkipTableAfter2ErrorsInRows)
     ASSERT_EQ("blob", errors.at(2).fieldName);
     ASSERT_EQ(std::vector<std::string>{"1"}, errors.at(2).primaryKeyValues);
     ASSERT_EQ(zserio::IValidationObserver::BLOB_PARSE_FAILED, errors.at(2).errorType);
-    ASSERT_EQ("BitStreamReader: Reached eof(), reading from stream failed.", errors.at(2).message);
+    ASSERT_EQ("BitStreamReader: Reached eof(), reading from stream failed!", errors.at(2).message);
 
     // table3
     ASSERT_EQ("table3", errors.at(3).tableName);

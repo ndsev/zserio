@@ -36,22 +36,22 @@ private:
 };
 
 /** Exception thrown when an error in an SQLite operation occurs. */
-class SqliteException : public detail::CppRuntimeExceptionHelper<SqliteException>
+class SqliteException : public CppRuntimeException
 {
 public:
-    using BaseType::CppRuntimeExceptionHelper;
-    using BaseType::operator+;
-
-    /**
-     * Appends SQLite error string appropriate for given sqlite error code.
-     *
-     * \param code SQLite error code to append the error string for.
-     */
-    SqliteException& operator+(SqliteErrorCode code)
-    {
-        return operator+(code.getErrorString());
-    }
+    using CppRuntimeException::CppRuntimeException;
 };
+
+/**
+ * Allow to append SqliteErrorCode to CppRuntimeException.
+ *
+ * \param exception Exception to modify.
+ * \param code SQLite error code.
+ */
+inline CppRuntimeException& operator<<(CppRuntimeException& exception, SqliteErrorCode code)
+{
+    return exception << code.getErrorString();
+}
 
 } // namespace zserio
 

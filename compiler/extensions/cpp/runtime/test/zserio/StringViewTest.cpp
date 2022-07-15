@@ -92,7 +92,7 @@ TEST(StringViewTest, At)
         ASSERT_EQ(str[i], sv.at(i));
     }
 
-    ASSERT_THROW(sv.at(11), std::out_of_range);
+    ASSERT_THROW(sv.at(11), CppRuntimeException);
 }
 
 TEST(StringViewTest, Front)
@@ -197,7 +197,7 @@ TEST(StringViewTest, Copy)
     ASSERT_EQ('a', buffer[3]);
     ASSERT_EQ('n', buffer[4]);
     ASSERT_EQ(0x55, buffer[5]);
-    ASSERT_THROW(sv.copy(buffer, 5, 11), std::out_of_range);
+    ASSERT_THROW(sv.copy(buffer, 5, 11), CppRuntimeException);
 }
 
 TEST(StringViewTest, Substr)
@@ -208,7 +208,7 @@ TEST(StringViewTest, Substr)
     ASSERT_EQ(5, subView.size());
     ASSERT_EQ(str + 2, subView.data());
 
-    ASSERT_THROW(sv.substr(11), std::out_of_range);
+    ASSERT_THROW(sv.substr(11), CppRuntimeException);
 }
 
 TEST(StringViewTest, CompareStringView)
@@ -740,6 +740,12 @@ TEST(StringViewTest, FindLastNotOfCharStr)
     ASSERT_EQ(5, str.find_last_not_of("arb", 5));
     ASSERT_EQ(0, str.find_last_not_of("arb", 4));
     ASSERT_EQ(0, str.find_last_not_of("arb", 0));
+}
+
+TEST(StringViewTest, cppRuntimeExceptionOperator)
+{
+    CppRuntimeException exception = CppRuntimeException() << "test"_sv;
+    ASSERT_STREQ("test", exception.what());
 }
 
 } // namespace zserio

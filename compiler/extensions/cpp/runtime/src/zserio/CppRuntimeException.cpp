@@ -8,12 +8,7 @@ namespace zserio
 
 CppRuntimeException::CppRuntimeException(const char* message)
 {
-    appendImpl(message, strlen(message));
-}
-
-CppRuntimeException::CppRuntimeException(StringView message)
-{
-    appendImpl(message.data(), message.size());
+    append(message, strlen(message));
 }
 
 const char* CppRuntimeException::what() const noexcept
@@ -21,37 +16,7 @@ const char* CppRuntimeException::what() const noexcept
     return m_buffer;
 }
 
-CppRuntimeException& CppRuntimeException::append(const char* message)
-{
-    appendImpl(message, strlen(message));
-    return *this;
-}
-
-CppRuntimeException& CppRuntimeException::append(StringView message)
-{
-    appendImpl(message.data(), message.size());
-    return *this;
-}
-
-CppRuntimeException& CppRuntimeException::append(bool value)
-{
-    return append(value ? ::zserio::makeStringView("true") : ::zserio::makeStringView("false"));
-}
-
-CppRuntimeException& CppRuntimeException::append(float value)
-{
-    char buffer[48];
-    const char* stringValue = convertFloatToString(buffer, value);
-
-    return append(stringValue);
-}
-
-CppRuntimeException& CppRuntimeException::append(double value)
-{
-    return append(static_cast<float>(value));
-}
-
-void CppRuntimeException::appendImpl(const char* message, size_t messageLen)
+void CppRuntimeException::append(const char* message, size_t messageLen)
 {
     if (messageLen > 0)
     {
@@ -62,6 +27,29 @@ void CppRuntimeException::appendImpl(const char* message, size_t messageLen)
         m_len += len;
     }
     *(m_buffer + m_len) = 0;
+}
+
+CppRuntimeException& operator<<(CppRuntimeException& exception, const char* message)
+{
+    exception.append(message, strlen(message));
+    return exception;
+}
+
+CppRuntimeException& operator<<(CppRuntimeException& exception, bool value)
+{
+    return exception << (value ? "true" : "false");
+}
+
+CppRuntimeException& operator<<(CppRuntimeException& exception, float value)
+{
+    char buffer[48];
+    const char* stringValue = convertFloatToString(buffer, value);
+    return exception << stringValue;
+}
+
+CppRuntimeException& operator<<(CppRuntimeException& exception, double value)
+{
+    return exception << (static_cast<float>(value));
 }
 
 } // namespace zserio

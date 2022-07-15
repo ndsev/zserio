@@ -62,8 +62,7 @@ struct ValidationSqliteUtil
         const int result = sqlite3_step(statement.get());
         if (result != SQLITE_ROW)
         {
-            throw SqliteException(
-                    "ValidationSqliteUtils.getNumberOfTableRows: sqlite3_step() failed: ") +
+            throw SqliteException("ValidationSqliteUtils.getNumberOfTableRows: sqlite3_step() failed: ") <<
                     SqliteErrorCode(result);
         }
 
@@ -112,8 +111,7 @@ struct ValidationSqliteUtil
 
         if (result != SQLITE_DONE)
         {
-            throw SqliteException(
-                    "ValidationSqliteUtils.getTableSchema: sqlite3_step() failed: ") +
+            throw SqliteException("ValidationSqliteUtils.getTableSchema: sqlite3_step() failed: ") <<
                     SqliteErrorCode(result);
         }
     }

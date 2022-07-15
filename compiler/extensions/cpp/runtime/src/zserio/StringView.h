@@ -2,13 +2,14 @@
 #define ZSERIO_STRING_VIEW_H_INC
 
 #include <cstddef>
-#include <string>
-#include <stdexcept>
 #include <algorithm>
 #include <utility>
 #include <memory>
 #include <limits>
 
+#include "zserio/CppRuntimeException.h"
+#include "zserio/String.h"
+#include "zserio/StringConvertUtil.h"
 #include "zserio/RebindAlloc.h"
 
 namespace zserio
@@ -186,12 +187,15 @@ public:
      * \param pos Index of the element to access.
      * \return Reference to the string element at given index.
      *
-     * \throw std::out_of_range if pos is not less than size().
+     * \throw CppRuntimeException if pos is not less than size().
      */
     const_reference at(const size_type pos) const
     {
-        if (pos >= m_size)
-            throw std::out_of_range("String view position out of range.");
+        if (pos >= size())
+        {
+            throw CppRuntimeException("StringView: Position ") << pos << " out of range for view size "
+                    << size() << "!";
+        }
         return m_data[pos];
     }
 
@@ -304,11 +308,16 @@ public:
      * \param count Number of elements to copy.
      * \param pos Offset in the string view, where the copy should begin.
      * \return Number of elements actually copied.
+     *
+     * \throw CppRuntimeException if pos is > size().
      */
     size_type copy(CharT* dest, size_type count, size_type pos = 0) const
     {
         if (pos > size())
-            throw std::out_of_range("String view position out of range.");
+        {
+            throw CppRuntimeException("StringView: Position ") << pos << " out of range for view size " <<
+                    size() << "!";
+        }
         const size_t rcount = std::min(count, size() - pos);
         Traits::copy(dest, data() + pos, rcount);
         return rcount;
@@ -320,11 +329,16 @@ public:
      * \param pos Position in this view, where the sub-view should start.
      * \param count Number of element in the sub-view.
      * \return Calculated sub-view.
+     *
+     * \throw CppRuntimeException if pos is > size().
      */
     BasicStringView substr(size_type pos = 0, size_type count = npos) const
     {
         if (pos > size())
-            throw std::out_of_range("String view position out of range.");
+        {
+            throw CppRuntimeException("StringView: Position ") << pos << " out of range for view size " <<
+                    size() << "!";
+        }
         const size_t rcount = std::min(count, size() - pos);
         return BasicStringView(m_data + pos, rcount);
     }
@@ -917,6 +931,30 @@ std::basic_string<CharT, Traits, ALLOC>& operator+=(
  * Specialization of BasicStringView for char.
  */
 using StringView = BasicStringView<char, std::char_traits<char>>;
+
+/**
+ * Converts a string view to string using the given allocator. Defined for convenience.
+ *
+ * \param value String view to convert.
+ * \param allocator Allocator to use for the string allocation.
+ */
+template <typename ALLOC>
+string<ALLOC> toString(StringView value, const ALLOC& allocator = ALLOC())
+{
+    return stringViewToString(value, allocator);
+}
+
+/**
+ * Allow to append StringView to CppRuntimeException.
+ *
+ * \param exception Exception to modify.
+ * \param view String view.
+ */
+inline CppRuntimeException& operator<<(CppRuntimeException& exception, StringView view)
+{
+    exception.append(view.data(), view.size());
+    return exception;
+}
 
 inline namespace literals
 {

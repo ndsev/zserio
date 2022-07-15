@@ -35,6 +35,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/BitStreamTest.cpp
     zserio/BitStreamWriterTest.cpp
     zserio/BuildInOperatorsTest.cpp
+    zserio/ConstraintExceptionTest.cpp
     zserio/CppRuntimeExceptionTest.cpp
     zserio/DebugStringUtilTest.cpp
     zserio/EnumsTest.cpp
@@ -52,10 +53,12 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/MemoryResourceTest.cpp
     zserio/NewDeleteResourceTest.cpp
     zserio/PolymorphicAllocatorTest.cpp
+    zserio/PubsubExceptionTest.cpp
     zserio/ReflectableTest.cpp
     zserio/ReflectableUtilTest.cpp
     zserio/SerializeUtilTest.cpp
     zserio/SpanTest.cpp
+    zserio/ServiceExceptionTest.cpp
     zserio/SqliteConnectionTest.cpp
     zserio/StringConvertUtilTest.cpp
     zserio/StringViewTest.cpp

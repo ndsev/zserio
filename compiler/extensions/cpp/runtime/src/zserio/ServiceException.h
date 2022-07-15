@@ -9,10 +9,10 @@ namespace zserio
 /**
  * Exception thrown when a call of a service method fails.
  */
-class ServiceException : public detail::CppRuntimeExceptionHelper<ServiceException>
+class ServiceException : public CppRuntimeException
 {
 public:
-    using BaseType::CppRuntimeExceptionHelper;
+    using CppRuntimeException::CppRuntimeException;
 };
 
 } // namespace zserio

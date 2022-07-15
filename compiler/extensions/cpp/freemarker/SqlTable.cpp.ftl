@@ -181,7 +181,7 @@ ${name}::Row ${name}::Reader::next()
 {
     if (!hasNext())
     {
-        throw ::zserio::SqliteException("Table::Reader::next: next row is not available: ") +
+        throw ::zserio::SqliteException("Table::Reader::next: next row is not available: ") <<
                 ::zserio::SqliteErrorCode(m_lastResult);
     }
 
@@ -232,7 +232,7 @@ void ${name}::Reader::makeStep()
     m_lastResult = sqlite3_step(m_stmt.get());
     if (m_lastResult != SQLITE_ROW && m_lastResult != SQLITE_DONE)
     {
-        throw ::zserio::SqliteException("${name}::Read: sqlite3_step() failed: ") +
+        throw ::zserio::SqliteException("${name}::Read: sqlite3_step() failed: ") <<
                 ::zserio::SqliteErrorCode(m_lastResult);
     }
 }
@@ -266,7 +266,7 @@ void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterPro
         int result = sqlite3_step(statement.get());
         if (result != SQLITE_DONE)
         {
-            throw ::zserio::SqliteException("Write: sqlite3_step() failed: ") +
+            throw ::zserio::SqliteException("Write: sqlite3_step() failed: ") <<
                     ::zserio::SqliteErrorCode(result);
         }
 
@@ -274,7 +274,7 @@ void ${name}::write(<#if needsParameterProvider>IParameterProvider& parameterPro
         result = sqlite3_reset(statement.get());
         if (result != SQLITE_OK)
         {
-            throw ::zserio::SqliteException("Write: sqlite3_reset() failed: ") +
+            throw ::zserio::SqliteException("Write: sqlite3_reset() failed: ") <<
                     ::zserio::SqliteErrorCode(result);
         }
     }
@@ -302,7 +302,7 @@ void ${name}::update(<#if needsParameterProvider>IParameterProvider& parameterPr
     writeRow(<#if needsParameterProvider>parameterProvider, </#if>row, *statement);
     const int result = sqlite3_step(statement.get());
     if (result != SQLITE_DONE)
-        throw ::zserio::SqliteException("Update: sqlite3_step() failed: ") + ::zserio::SqliteErrorCode(result);
+        throw ::zserio::SqliteException("Update: sqlite3_step() failed: ") << ::zserio::SqliteErrorCode(result);
 }
 <#if withValidationCode>
 
@@ -349,7 +349,7 @@ bool ${name}::validate(::zserio::IValidationObserver& validationObserver<#rt>
         }
         if (result != SQLITE_DONE && (continueTableValidation || result != SQLITE_ROW))
         {
-            throw ::zserio::SqliteException("Validate: sqlite3_step() failed: ") +
+            throw ::zserio::SqliteException("Validate: sqlite3_step() failed: ") <<
                     ::zserio::SqliteErrorCode(result);
         }
     }
@@ -695,7 +695,7 @@ void ${name}::writeRow(<#if needsParameterProvider>IParameterProvider& parameter
     }
     if (result != SQLITE_OK)
     {
-        throw ::zserio::SqliteException("${name}::WriteRow: sqlite3_bind() for field ${field.name} failed: ") +
+        throw ::zserio::SqliteException("${name}::WriteRow: sqlite3_bind() for field ${field.name} failed: ") <<
                 ::zserio::SqliteErrorCode(result);
     }
         <#if field?has_next>

@@ -200,8 +200,8 @@ BasicBitBuffer<ALLOC>::BasicBitBuffer(const vector<uint8_t, ALLOC>& buffer, size
     const size_t byteSize = (bitSize + 7) / 8;
     if (buffer.size() < byteSize)
     {
-        throw CppRuntimeException("BitBuffer: Bit size ") + bitSize +
-                " out of range for given vector byte size " + buffer.size() + "!";
+        throw CppRuntimeException("BitBuffer: Bit size ") << bitSize <<
+                " out of range for given vector byte size " << buffer.size() << "!";
     }
 
     m_buffer.assign(buffer.data(), buffer.data() + byteSize);
@@ -220,8 +220,8 @@ BasicBitBuffer<ALLOC>::BasicBitBuffer(vector<uint8_t, ALLOC>&& buffer, size_t bi
     const size_t byteSize = (bitSize + 7) / 8;
     if (m_buffer.size() < byteSize)
     {
-        throw CppRuntimeException("BitBuffer: Bit size ") + bitSize +
-                " out of range for given vector byte size " + buffer.size() + "!";
+        throw CppRuntimeException("BitBuffer: Bit size ") << bitSize <<
+                " out of range for given vector byte size " << buffer.size() << "!";
     }
 }
 
@@ -327,7 +327,20 @@ uint8_t BasicBitBuffer<ALLOC>::getMaskedLastByte() const
             (m_buffer[roundedByteSize] & (0xFF << (8 - lastByteBits)));
 }
 
+/** Typedef to BitBuffer provided for convenience - using std::allocator<uint8_t>. */
 using BitBuffer = BasicBitBuffer<>;
+
+/**
+ * Allow to append BitBuffer to CppRuntimeException.
+ *
+ * \param exception Exception to modify.
+ * \param bitBuffer Bit buffer value.
+ */
+template <typename ALLOC>
+CppRuntimeException& operator<<(CppRuntimeException& exception, const BasicBitBuffer<ALLOC>& bitBuffer)
+{
+    return exception << "BitBuffer([...], " << bitBuffer.getBitSize() << ")";
+}
 
 } // namespace zserio
 

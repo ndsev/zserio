@@ -39,7 +39,7 @@ ${name}::${name}(underlying_type value) :
         m_value(value)
 {
     if (m_value > ${upperBound})
-        throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") + value + "!";
+        throw ::zserio::CppRuntimeException("Value for bitmask '${name}' out of bounds: ") << value << "!";
 }
 </#if>
 <#if withTypeInfoCode>

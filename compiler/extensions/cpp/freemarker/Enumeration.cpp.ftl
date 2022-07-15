@@ -110,8 +110,8 @@ size_t enumToOrdinal(${fullName} value)
         return ${item?index};
 </#list>
     default:
-        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: ") +
-                static_cast<typename ::std::underlying_type<${fullName}>::type>(value) + "!";
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: ") <<
+                static_cast<typename ::std::underlying_type<${fullName}>::type>(value) << "!";
     }
 }
 
@@ -126,7 +126,7 @@ ${fullName} valueToEnum(
 </#list>
         return ${fullName}(rawValue);
     default:
-        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: ") + rawValue + "!";
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration ${name}: ") << rawValue << "!";
     }
 }
 

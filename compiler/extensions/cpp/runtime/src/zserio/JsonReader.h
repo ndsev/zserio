@@ -148,8 +148,8 @@ public:
         }
         catch (const CppRuntimeException& e)
         {
-            throw CppRuntimeException(e.what()) +
-                    " (JsonParser:" + m_parser.getLine() + ":" + m_parser.getColumn() + ")";
+            throw CppRuntimeException(e.what()) <<
+                    " (JsonParser:" << m_parser.getLine() << ":" << m_parser.getColumn() << ")";
         }
 
         return m_creatorAdapter.get();
@@ -215,7 +215,7 @@ void BitBufferAdapter<ALLOC>::visitKey(StringView key)
         else if (key == "bitSize"_sv)
             m_state = VISIT_VALUE_BITSIZE;
         else
-            throw CppRuntimeException("JsonReader: Unexpected key '") + key + "' in BitBuffer!";
+            throw CppRuntimeException("JsonReader: Unexpected key '") << key << "' in BitBuffer!";
     }
     else
     {
@@ -248,8 +248,8 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
     {
         if (uintValue > static_cast<uint64_t>(std::numeric_limits<uint8_t>::max()))
         {
-            throw CppRuntimeException("JsonReader: Cannot create byte for Bit Buffer from value '") +
-                    uintValue + "'!";
+            throw CppRuntimeException("JsonReader: Cannot create byte for Bit Buffer from value '") <<
+                    uintValue << "'!";
         }
 
         if (!m_buffer.hasValue())
@@ -261,8 +261,8 @@ void BitBufferAdapter<ALLOC>::visitValue(uint64_t uintValue)
     {
         if (uintValue != static_cast<uint64_t>(static_cast<size_t>(uintValue)))
         {
-            throw CppRuntimeException("JsonReader: Cannot create size_t for Bit Buffer size from value '") +
-                    uintValue + "'!";
+            throw CppRuntimeException("JsonReader: Cannot create size_t for Bit Buffer size from value '") <<
+                    uintValue << "'!";
         }
 
         m_bitSize = static_cast<size_t>(uintValue);

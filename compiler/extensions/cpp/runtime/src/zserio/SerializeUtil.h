@@ -81,7 +81,8 @@ BasicBitBuffer<ALLOC> serialize(T& object, const ALLOC& allocator, ARGS&&... arg
  *
  *     const zserio::pmr::PolymorphicAllocator<> allocator;
  *     SomeZserioObject object(allocator);
- *     const zserio::BasicBitBuffer<zserio::pmr::PolymorphicAllocator<>> bitBuffer = zserio::serialize(object, allocator);
+ *     const zserio::BasicBitBuffer<zserio::pmr::PolymorphicAllocator<>> bitBuffer =
+ *             zserio::serialize(object, allocator);
  * \endcode
  *
  * \param object Generated object to serialize.

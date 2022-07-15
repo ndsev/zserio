@@ -136,7 +136,7 @@ namespace detail
         // due to gcovr bug, exclusion markers must be defined in this way
         virtual IHolder<ALLOC>* clone(void*) const override
         {
-            throw std::logic_error("Unexpected clone call.");
+            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
         virtual IHolder<ALLOC>* move(const ALLOC& allocator) override
@@ -149,7 +149,7 @@ namespace detail
         // due to gcovr bug, exclusion markers must be defined in this way
         virtual IHolder<ALLOC>* move(void*) override
         {
-            throw std::logic_error("Unexpected clone call.");
+            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
         virtual void destroy(const ALLOC& allocator) override
@@ -178,7 +178,7 @@ namespace detail
         // due to gcovr bug, exclusion markers must be defined in this way
         virtual IHolder<ALLOC>* clone(const ALLOC&) const override
         {
-            throw std::logic_error("Unexpected clone call.");
+            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
         virtual IHolder<ALLOC>* clone(void* storage) const override
@@ -191,7 +191,7 @@ namespace detail
         // due to gcovr bug, exclusion markers must be defined in this way
         virtual IHolder<ALLOC>* move(const ALLOC&) override
         {
-            throw std::logic_error("Unexpected clone call.");
+            throw CppRuntimeException("AnyHolder: Unexpected clone call.");
         }
 
         virtual IHolder<ALLOC>* move(void* storage) override

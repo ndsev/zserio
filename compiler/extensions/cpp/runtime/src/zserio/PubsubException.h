@@ -9,10 +9,10 @@ namespace zserio
 /**
  * Exception thrown when an error in Pub/Sub occurs.
  */
-class PubsubException : public detail::CppRuntimeExceptionHelper<PubsubException>
+class PubsubException : public CppRuntimeException
 {
 public:
-    using BaseType::CppRuntimeExceptionHelper;
+    using CppRuntimeException::CppRuntimeException;
 };
 
 } // namespace zserio

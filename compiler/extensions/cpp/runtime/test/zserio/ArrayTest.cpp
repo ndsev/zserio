@@ -249,7 +249,7 @@ inline DummyEnum valueToEnum(typename std::underlying_type<DummyEnum>::type rawV
     case UINT8_C(2):
         return DummyEnum(rawValue);
     default:
-        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") + rawValue + "!";
+        throw CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
     }
 }
 
@@ -945,8 +945,7 @@ TEST_F(ArrayTest, enumArray)
     testArray(rawArray, EnumArrayTraits<DummyEnum>(), elementBitSize);
 
     std::vector<DummyEnum> invalidRawArray = {static_cast<DummyEnum>(10)};
-    ASSERT_THROW(testArray(invalidRawArray, EnumArrayTraits<DummyEnum>(), elementBitSize),
-            zserio::CppRuntimeException);
+    ASSERT_THROW(testArray(invalidRawArray, EnumArrayTraits<DummyEnum>(), elementBitSize), CppRuntimeException);
 }
 
 TEST_F(ArrayTest, bitmaskArray)

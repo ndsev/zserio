@@ -2,14 +2,14 @@ import io
 import unittest
 import math
 
+from test_creator import DummyBitmask, DummyEnum, DummyObject
+
 from zserio.bitbuffer import BitBuffer
 from zserio.json import (JsonWriter, JsonEncoder, JsonParser, JsonTokenizer, JsonToken, JsonParserException,
                          JsonDecoder, JsonReader)
 from zserio.typeinfo import TypeInfo, MemberInfo, ItemInfo, TypeAttribute, MemberAttribute
 from zserio.limits import INT64_MIN, UINT64_MAX
 from zserio.exception import PythonRuntimeException
-
-from test_creator import DummyBitmask, DummyEnum, DummyObject
 
 class JsonWriterTest(unittest.TestCase):
 

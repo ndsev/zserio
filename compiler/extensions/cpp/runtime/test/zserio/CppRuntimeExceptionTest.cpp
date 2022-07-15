@@ -5,8 +5,6 @@
 
 #include "zserio/CppRuntimeException.h"
 
-using namespace zserio::literals;
-
 namespace zserio
 {
 
@@ -18,29 +16,22 @@ TEST(CppRuntimeExceptionTest, emptyConstructor)
 
 TEST(CppRuntimeExceptionTest, cStringConstructor)
 {
-    CppRuntimeException noDescriptionException("");
+    CppRuntimeException noDescriptionException;
     ASSERT_EQ(std::string(), noDescriptionException.what());
+
+    CppRuntimeException emptyDescriptionException("");
+    ASSERT_EQ(std::string(), emptyDescriptionException.what());
 
     const std::string testMessage = "this is the test message";
     CppRuntimeException exception(testMessage.c_str());
     ASSERT_EQ(testMessage, exception.what());
 }
 
-TEST(CppRuntimeExceptionTest, stringViewConstructor)
-{
-    CppRuntimeException noDescriptionException{StringView()};
-    ASSERT_EQ(std::string(), noDescriptionException.what());
-
-    const StringView testMessage = "this is the test message"_sv;
-    CppRuntimeException exception(testMessage);
-    ASSERT_EQ(testMessage, StringView(exception.what()));
-}
-
 TEST(CppRuntimeExceptionTest, appendCString)
 {
     std::string testMessage = "1234567890123456";
     const std::string appendix = "1234567890123456";
-    CppRuntimeException exception = CppRuntimeException(testMessage.c_str()) + appendix.c_str();
+    CppRuntimeException exception = CppRuntimeException(testMessage.c_str()) << appendix.c_str();
     testMessage += appendix;
     ASSERT_EQ(testMessage, exception.what());
 
@@ -48,7 +39,7 @@ TEST(CppRuntimeExceptionTest, appendCString)
     const size_t maxLen = exceptionBufferSize - 1;
     for (int i = 0; i < 100; ++i)
     {
-        exception = exception + appendix.c_str();
+        exception = exception << appendix.c_str();
         testMessage += appendix;
         const size_t len = std::min(testMessage.size(), maxLen);
         ASSERT_EQ(testMessage.substr(0, len), exception.what());
@@ -58,11 +49,11 @@ TEST(CppRuntimeExceptionTest, appendCString)
 TEST(CppRuntimeExceptionTest, appendBool)
 {
     std::string testMessage = "test true: ";
-    CppRuntimeException exception = CppRuntimeException(testMessage.c_str()) + true;
+    CppRuntimeException exception = CppRuntimeException(testMessage.c_str()) << true;
     testMessage += "true";
     ASSERT_EQ(testMessage, exception.what());
 
-    exception = exception + ", and false: " + false;
+    exception << ", and false: " << false;
     testMessage += ", and false: false";
     ASSERT_EQ(testMessage, exception.what());
 }
@@ -70,21 +61,21 @@ TEST(CppRuntimeExceptionTest, appendBool)
 TEST(CppRuntimeExceptionTest, appendFloat)
 {
     const float value = 123.456f;
-    CppRuntimeException exception = CppRuntimeException("") + value;
+    CppRuntimeException exception = CppRuntimeException() << value;
     ASSERT_EQ(std::string("123.456"), exception.what());
 }
 
 TEST(CppRuntimeExceptionTest, appendDouble)
 {
     const double value = 123.456;
-    CppRuntimeException exception = CppRuntimeException("") + value;
+    CppRuntimeException exception = CppRuntimeException() << value;
     ASSERT_EQ(std::string("123.456"), exception.what());
 }
 
 TEST(CppRuntimeExceptionTest, appendInt)
 {
     const int value = 42;
-    CppRuntimeException exception = CppRuntimeException("") + value;
+    CppRuntimeException exception = CppRuntimeException() << value;
     ASSERT_EQ(std::to_string(value), exception.what());
 }
 
@@ -120,15 +111,15 @@ size_t enumToOrdinal(Enumeration value)
     case Enumeration::WHITE:
         return 2;
     default:
-        throw ::zserio::CppRuntimeException("Unknown value for enumeration Enumeration: ") +
-                static_cast<typename ::std::underlying_type<Enumeration>::type>(value) + "!";
+        throw CppRuntimeException("Unknown value for enumeration Enumeration: ") <<
+                static_cast<typename ::std::underlying_type<Enumeration>::type>(value) << "!";
     }
 }
 
 TEST(CppRuntimeExceptionTest, appendEnum)
 {
-    CppRuntimeException exception = CppRuntimeException("") + Enumeration::BLACK +
-            Enumeration::RED + Enumeration::WHITE;
+    CppRuntimeException exception = CppRuntimeException() << Enumeration::BLACK <<
+            Enumeration::RED << Enumeration::WHITE;
     ASSERT_EQ(std::string(EnumTraits<Enumeration>::names[0]) + EnumTraits<Enumeration>::names[1] +
             EnumTraits<Enumeration>::names[2], exception.what());
 }
@@ -160,8 +151,8 @@ private:
 TEST(CppRuntimeExceptionTest, appendBitmask)
 {
     const Bitmask value(Bitmask::Values::WRITE);
-    CppRuntimeException exception = CppRuntimeException("") + value;
-    ASSERT_EQ(std::string("2"), exception.what());
+    CppRuntimeException exception = CppRuntimeException() << value;
+    ASSERT_STREQ("2", exception.what());
 }
 
 } // namespace zserio

@@ -228,8 +228,8 @@ public:
      *
      * \return Reflectable view to an array element on the given index.
      *
-     * \throw CppRuntimeException When the reflected object is not an array.
-     * \throw std::out_of_range When the given index is out of bounds of the underlying array.
+     * \throw CppRuntimeException When the reflected object is not an array or when the given index is
+     *                            out of bounds of the underlying array.
      */
     /** \{ */
     virtual ConstPtr at(size_t index) const = 0;

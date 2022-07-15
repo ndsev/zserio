@@ -3,30 +3,30 @@
 namespace zserio
 {
 
-const char* jsonTokenName(JsonToken token)
+CppRuntimeException& operator<<(CppRuntimeException& exception, JsonToken token)
 {
     switch (token)
     {
     case JsonToken::UNKNOWN:
-        return "UNKNOWN";
+        return exception << "UNKNOWN";
     case JsonToken::BEGIN_OF_FILE:
-        return "BEGIN_OF_FILE";
+        return exception << "BEGIN_OF_FILE";
     case JsonToken::END_OF_FILE:
-        return "END_OF_FILE";
+        return exception << "END_OF_FILE";
     case JsonToken::BEGIN_OBJECT:
-        return "BEGIN_OBJECT";
+        return exception << "BEGIN_OBJECT";
     case JsonToken::END_OBJECT:
-        return "END_OBJECT";
+        return exception << "END_OBJECT";
     case JsonToken::BEGIN_ARRAY:
-        return "BEGIN_ARRAY";
+        return exception << "BEGIN_ARRAY";
     case JsonToken::END_ARRAY:
-        return "END_ARRAY";
+        return exception << "END_ARRAY";
     case JsonToken::KEY_SEPARATOR:
-        return "KEY_SEPARATOR";
+        return exception << "KEY_SEPARATOR";
     case JsonToken::ITEM_SEPARATOR:
-        return "ITEM_SEPARATOR";
+        return exception << "ITEM_SEPARATOR";
     default: // VALUE
-        return "VALUE";
+        return exception << "VALUE";
     }
 }
 

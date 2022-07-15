@@ -29,6 +29,16 @@ enum class JsonToken : int8_t
     VALUE
 };
 
+
+/**
+ * Exception used to distinguish exceptions from the JsonParser.
+ */
+class JsonParserException : public CppRuntimeException
+{
+public:
+    using CppRuntimeException::CppRuntimeException;
+};
+
 /**
  * Gets name of the given JSON token.
  *
@@ -36,16 +46,7 @@ enum class JsonToken : int8_t
  *
  * \return Name of the JSON token.
  */
-const char* jsonTokenName(JsonToken token);
-
-/**
- * Exception used to distinguish exceptions from the JsonParser.
- */
-class JsonParserException : public detail::CppRuntimeExceptionHelper<JsonParserException>
-{
-public:
-    using BaseType::CppRuntimeExceptionHelper;
-};
+CppRuntimeException& operator<<(CppRuntimeException& exception, JsonToken token);
 
 /**
  * Json Tokenizer used by Json Parser.
@@ -287,12 +288,12 @@ void BasicJsonTokenizer<ALLOC>::setTokenValue()
 {
     if (!m_decoderResult.value.hasValue())
     {
-        JsonParserException excpt = JsonParserException("JsonTokenizer:") + m_lineNumber + ":" +
-                m_tokenColumnNumber + ": ";
+        JsonParserException excpt("JsonTokenizer:");
+        excpt << m_lineNumber << ":" << m_tokenColumnNumber << ": ";
         if (m_decoderResult.integerOverflow)
-            excpt = excpt + "Value is outside of the 64-bit integer range!";
+            excpt << "Value is outside of the 64-bit integer range!";
         else
-            excpt = excpt + "Unknown token!";
+            excpt << "Unknown token!";
         throw excpt;
     }
 
