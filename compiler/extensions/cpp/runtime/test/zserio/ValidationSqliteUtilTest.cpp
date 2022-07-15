@@ -6,8 +6,6 @@
 #include "zserio/SqliteConnection.h"
 #include "zserio/SqliteFinalizer.h"
 
-using namespace zserio::literals;
-
 namespace zserio
 {
 

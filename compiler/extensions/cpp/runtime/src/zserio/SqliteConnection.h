@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "zserio/StringView.h"
 #include "zserio/SqliteException.h"
 #include "zserio/SqliteFinalizer.h"
 

@@ -3,7 +3,6 @@
 
 #include "zserio/String.h"
 #include "zserio/RebindAlloc.h"
-#include "zserio/StringView.h"
 #include <sstream>
 #include <limits>
 
@@ -166,18 +165,6 @@ template <typename ALLOC>
 string<ALLOC> toString(bool value, const ALLOC& allocator = ALLOC())
 {
     return string<ALLOC>(convertBoolToString(value), allocator);
-}
-
-/**
- * Converts a string view to string using the given allocator. Defined for convenience.
- *
- * \param value String view to convert.
- * \param allocator Allocator to use for the string allocation.
- */
-template <typename ALLOC>
-string<ALLOC> toString(StringView value, const ALLOC& allocator = ALLOC())
-{
-    return stringViewToString(value, allocator);
 }
 
 /**

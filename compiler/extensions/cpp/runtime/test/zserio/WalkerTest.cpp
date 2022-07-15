@@ -10,8 +10,6 @@
 #include "zserio/BitStreamWriter.h"
 #include <zserio/OptionalHolder.h>
 
-using namespace zserio::literals;
-
 namespace zserio
 {
 

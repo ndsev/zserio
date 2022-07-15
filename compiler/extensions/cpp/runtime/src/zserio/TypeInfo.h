@@ -1170,8 +1170,6 @@ const IBasicTypeInfo<ALLOC>& BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(ui
                 maxBitSize + "'!";
     }
 
-    using namespace zserio::literals;
-
     if (maxBitSize <= 8)
     {
         static const BuiltinTypeInfo<ALLOC> typeInfo = {
@@ -1210,8 +1208,6 @@ const IBasicTypeInfo<ALLOC>& BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(
         throw CppRuntimeException("BuiltinTypeInfo::getDynamicUnsignedBitField: Invalid max bit size '") +
                 maxBitSize + "'!";
     }
-
-    using namespace zserio::literals;
 
     if (maxBitSize <= 8)
     {
@@ -1372,8 +1368,6 @@ const IBasicTypeInfo<ALLOC>& FixedSizeBuiltinTypeInfo<ALLOC>::getFixedSignedBitF
                 bitSize + "'!";
     }
 
-    using namespace zserio::literals;
-
     static const std::array<FixedSizeBuiltinTypeInfo<ALLOC>, 64> bitFieldTypeInfoArray = {{
         { "int:1"_sv, SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT8, 1 },
         { "int:2"_sv, SchemaType::FIXED_SIGNED_BITFIELD, CppType::INT8, 2 },
@@ -1452,8 +1446,6 @@ const IBasicTypeInfo<ALLOC>& FixedSizeBuiltinTypeInfo<ALLOC>::getFixedUnsignedBi
         throw CppRuntimeException("FixedSizeBuiltinTypeInfo::getFixedUnsignedBitField: Invalid bit size '") +
                 bitSize + "'!";
     }
-
-    using namespace zserio::literals;
 
     static const std::array<FixedSizeBuiltinTypeInfo<ALLOC>, 64> bitFieldTypeInfoArray = {{
         { "bit:1"_sv, SchemaType::FIXED_UNSIGNED_BITFIELD, CppType::UINT8, 1 },

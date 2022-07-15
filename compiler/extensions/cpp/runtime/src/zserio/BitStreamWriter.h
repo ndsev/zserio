@@ -10,7 +10,7 @@
 #include "zserio/Span.h"
 #include "zserio/BitBuffer.h"
 #include "zserio/VarSizeUtil.h"
-#include "zserio/String.h"
+#include "zserio/StringView.h"
 
 namespace zserio
 {

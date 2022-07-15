@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "zserio/CppRuntimeException.h"
+#include "zserio/StringView.h"
 #include "zserio/DebugStringUtil.h"
 #include "zserio/Reflectable.h"
 #include "zserio/pmr/PolymorphicAllocator.h"

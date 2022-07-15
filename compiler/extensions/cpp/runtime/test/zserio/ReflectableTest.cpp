@@ -10,7 +10,6 @@
 #include "zserio/BitSizeOfCalculator.h"
 #include "zserio/ArrayTraits.h"
 
-using namespace zserio::literals;
 using namespace std::placeholders;
 
 namespace zserio

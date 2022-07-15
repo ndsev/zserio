@@ -6,8 +6,6 @@
 #include "zserio/TypeInfo.h"
 #include "zserio/Reflectable.h"
 
-using namespace zserio::literals;
-
 namespace zserio
 {
 

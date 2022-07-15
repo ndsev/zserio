@@ -4,8 +4,6 @@
 
 #include "zserio/TypeInfo.h"
 
-using namespace zserio::literals;
-
 namespace zserio
 {
 

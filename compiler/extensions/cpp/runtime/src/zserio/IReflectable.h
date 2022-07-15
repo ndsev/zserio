@@ -5,6 +5,7 @@
 
 #include "zserio/BitBuffer.h"
 #include "zserio/String.h"
+#include "zserio/StringView.h"
 #include "zserio/Vector.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/AnyHolder.h"

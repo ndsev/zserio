@@ -6,6 +6,7 @@
 
 #include "zserio/JsonParser.h"
 #include "zserio/OptionalHolder.h"
+#include "zserio/StringView.h"
 #include "zserio/ZserioTreeCreator.h"
 
 namespace zserio

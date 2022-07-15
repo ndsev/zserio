@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 
 #include "zserio/StringConvertUtil.h"
+#include "zserio/StringView.h"
 
 namespace zserio
 {
