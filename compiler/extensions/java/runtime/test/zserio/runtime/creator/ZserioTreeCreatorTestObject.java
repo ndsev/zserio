@@ -1,5 +1,41 @@
 package zserio.runtime.creator;
 
+/**
+ * Corresponds to the following schema:
+ *
+ * enum uint8 DummyEnum
+ * {
+ *     ONE,
+ *     TWO
+ * };
+ *
+ * enum uint8 DummyBitmask
+ * {
+ *     READ = 1,
+ *     WRITE = 2
+ * };
+ *
+ * struct DummyNested(uint32 param)
+ * {
+ *     uint32 value;
+ *     string text;
+ *     extern data;
+ *     DummyEnum dummyEnum;
+ *     DummyBitmask dummyBitmask;
+ * };
+ *
+ * struct DummyObject
+ * {
+ *     uint32 value;
+ *     DummyNested(value) nested;
+ *     string text;
+ *     DummyNested(value) nestedArray[];
+ *     string textArray[];
+ *     extern externArray[];
+ *     optional bool optionalBool;
+ *     optional DummyNested(value) optionalNested;
+ * };
+ */
 public class ZserioTreeCreatorTestObject
 {
     public static enum DummyEnum implements zserio.runtime.io.InitializeOffsetsWriter,
