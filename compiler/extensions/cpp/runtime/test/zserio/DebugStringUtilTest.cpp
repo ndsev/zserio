@@ -37,7 +37,8 @@ struct DummyObject
 
         static const StructTypeInfo<ALLOC> typeInfo{
             "Dummy"_sv,
-            [](const ALLOC& allocator) -> IBasicReflectablePtr<ALLOC> {
+            [](const ALLOC& allocator) -> IBasicReflectablePtr<ALLOC>
+            {
                 return std::allocate_shared<ReflectableOwner<DummyObject>>(allocator, allocator);
             },
             {}, {}, fields, {}, {}
@@ -201,7 +202,7 @@ public:
 
         static const StructTypeInfo<allocator_type> typeInfo = {
             makeStringView("ParameterizedDummyObject"),
-            [](const allocator_type& allocator) -> IReflectablePtr
+            [](const allocator_type& allocator) -> IBasicReflectablePtr<allocator_type>
             {
                 return std::allocate_shared<ReflectableOwner<ParameterizedDummyObject>>(allocator, allocator);
             },
@@ -227,20 +228,20 @@ public:
                     m_object(object)
             {}
 
-            virtual IReflectableConstPtr getField(StringView name) const override
+            virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
                 if (name == makeStringView("text"))
                 {
-                    return ReflectableFactory::getString(m_object.getText(), get_allocator());
+                    return BasicReflectableFactory<ALLOC>::getString(m_object.getText(), get_allocator());
                 }
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual IReflectableConstPtr getParameter(StringView name) const override
+            virtual IBasicReflectableConstPtr<ALLOC> getParameter(StringView name) const override
             {
                 if (name == makeStringView("param"))
                 {
-                    return ReflectableFactory::getInt32(m_object.getParam(), get_allocator());
+                    return BasicReflectableFactory<ALLOC>::getInt32(m_object.getParam(), get_allocator());
                 }
                 throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
             }
@@ -289,11 +290,11 @@ public:
                 );
             }
 
-            virtual IReflectablePtr getField(StringView name) override
+            virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
                 {
-                    return ReflectableFactory::getString(m_object.getText(), get_allocator());
+                    return BasicReflectableFactory<ALLOC>::getString(m_object.getText(), get_allocator());
                 }
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
             }
@@ -303,17 +304,17 @@ public:
             {
                 if (name == makeStringView("text"))
                 {
-                    m_object.setText(value.template get<string<>>());
+                    m_object.setText(value.template get<string<ALLOC>>());
                     return;
                 }
                 throw CppRuntimeException("Field '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual IReflectablePtr getParameter(StringView name) override
+            virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override
             {
                 if (name == makeStringView("param"))
                 {
-                    return ReflectableFactory::getInt32(m_object.getParam(), get_allocator());
+                    return BasicReflectableFactory<ALLOC>::getInt32(m_object.getParam(), get_allocator());
                 }
                 throw CppRuntimeException("Parameter '") + name + "' doesn't exist in 'ParameterizedDummyObject'!";
             }
@@ -350,12 +351,12 @@ public:
         return m_param_;
     }
 
-    const string<>& getText() const
+    const string<ALLOC>& getText() const
     {
         return m_text_;
     }
 
-    void setText(const string<>& text_)
+    void setText(const string<ALLOC>& text_)
     {
         m_text_ = text_;
     }
@@ -363,7 +364,7 @@ public:
 private:
     int32_t m_param_;
     bool m_isInitialized;
-    string<> m_text_;
+    string<ALLOC> m_text_;
 };
 
 } // namespace
@@ -986,6 +987,26 @@ TEST(DebugStringUtilTest, fromJsonFileTypeInfoWithPolymorphicAlloc)
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
 
+TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeInfoWithPolymorphicAlloc)
+{
+    const char* fileName = "DebugStringUtilTest_fromJsonFileParameterizedTypeInfoWithPolymorphicAlloc.json";
+    {
+        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
+        os << "{\n  \"text\": \"something\"\n}";
+    }
+
+    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonFile(
+            ParameterizedDummyObject<pmr_alloc>::typeInfo(), fileName, pmr_alloc());
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<pmr_alloc>, pmr_alloc>{AnyHolder<pmr_alloc>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
+
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
 TEST(DebugStringUtilTest, fromJsonFileType)
 {
     const char* fileName = "DebugStringUtilTest_fromJsonFileType.json";
@@ -1055,11 +1076,28 @@ TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAlloc)
         os << "{\n  \"text\": \"something\"\n}";
     }
 
-    IBasicReflectablePtr<pmr_alloc> reflectable =
-            fromJsonFile<DummyObject<pmr_alloc>>(fileName, pmr_alloc());
+    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonFile<DummyObject<pmr_alloc>>(fileName, pmr_alloc());
     ASSERT_TRUE(reflectable);
 
-    //PRIDAT!
+    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+}
+
+TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeWithPolymorphicAlloc)
+{
+    const char* fileName = "DebugStringUtilTest_fromJsonFileParameteriezedTypeWithPolymorphicAlloc.json";
+    {
+        std::ofstream os(fileName, std::ofstream::out | std::ofstream::trunc);
+        os << "{\n  \"text\": \"something\"\n}";
+    }
+
+    IBasicReflectablePtr<pmr_alloc> reflectable =
+            fromJsonFile<ParameterizedDummyObject<pmr_alloc>>(fileName, pmr_alloc());
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
+    reflectable->initialize(vector<AnyHolder<pmr_alloc>, pmr_alloc>{AnyHolder<pmr_alloc>{10}});
+
+    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
 
     ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
 }
