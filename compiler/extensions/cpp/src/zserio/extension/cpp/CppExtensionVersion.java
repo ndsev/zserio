@@ -9,5 +9,5 @@ package zserio.extension.cpp;
 public class CppExtensionVersion
 {
     /** C++ extension version string. */
-    public static final String VERSION_STRING = "2.6.1";
+    public static final String VERSION_STRING = "2.7.0";
 }
