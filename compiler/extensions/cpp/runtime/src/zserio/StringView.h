@@ -945,10 +945,12 @@ string<ALLOC> toString(StringView value, const ALLOC& allocator = ALLOC())
 }
 
 /**
- * Allow to append StringView to CppRuntimeException.
+ * Allows to append StringView to CppRuntimeException.
  *
  * \param exception Exception to modify.
  * \param view String view.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 inline CppRuntimeException& operator<<(CppRuntimeException& exception, StringView view)
 {

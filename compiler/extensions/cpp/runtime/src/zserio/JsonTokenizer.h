@@ -40,11 +40,12 @@ public:
 };
 
 /**
- * Gets name of the given JSON token.
+ * Allows to append JsonToken to CppRuntimeException.
  *
- * \param token JSON token.
+ * \param exception Exception to modify.
+ * \param token JSON Token to append.
  *
- * \return Name of the JSON token.
+ * \return Reference to the exception to allow operator chaining.
  */
 CppRuntimeException& operator<<(CppRuntimeException& exception, JsonToken token);
 

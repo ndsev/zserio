@@ -331,10 +331,12 @@ uint8_t BasicBitBuffer<ALLOC>::getMaskedLastByte() const
 using BitBuffer = BasicBitBuffer<>;
 
 /**
- * Allow to append BitBuffer to CppRuntimeException.
+ * Allows to append BitBuffer to CppRuntimeException.
  *
  * \param exception Exception to modify.
  * \param bitBuffer Bit buffer value.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 template <typename ALLOC>
 CppRuntimeException& operator<<(CppRuntimeException& exception, const BasicBitBuffer<ALLOC>& bitBuffer)

@@ -47,9 +47,19 @@ public:
      *
      * \param message Description of the error to append.
      */
+    void append(const char* message);
+
+    /**
+     * Appends a message of a known length to the description.
+     *
+     * \param message Description of the error to append.
+     * \param messageLen Length of the message.
+     */
     void append(const char* message, size_t messageLen);
 
 private:
+    void appendImpl(const char* message, size_t numCharsToAppend);
+
     // Note: If you move this to public section, old MSVC 2015 compiler will fail with internal compiler error!
     static constexpr size_t BUFFER_SIZE = 512;
 
@@ -62,6 +72,8 @@ private:
  *
  * \param exception Exception to modify.
  * \param message Description of the error to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 CppRuntimeException& operator<<(CppRuntimeException& exception, const char* message);
 
@@ -70,6 +82,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, const char* mess
  *
  * \param exception Exception to modify.
  * \param value Bool value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 CppRuntimeException& operator<<(CppRuntimeException& exception, bool value);
 
@@ -78,6 +92,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, bool value);
  *
  * \param exception Exception to modify.
  * \param value Float value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 CppRuntimeException& operator<<(CppRuntimeException& exception, float value);
 
@@ -86,6 +102,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, float value);
  *
  * \param exception Exception to modify.
  * \param value Double value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 CppRuntimeException& operator<<(CppRuntimeException& exception, double value);
 
@@ -94,6 +112,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, double value);
  *
  * \param exception Exception to modify.
  * \param value Integral value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 template <typename T, typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
 CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
@@ -108,6 +128,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
  *
  * \param exception Exception to modify.
  * \param value Enumeration value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 template <typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
 CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
@@ -121,6 +143,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
  *
  * \param exception Exception to modify.
  * \param value Object with getValue() method to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 template <typename T, typename std::enable_if<has_get_value<T>::value, int>::type = 0>
 CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
@@ -134,6 +158,8 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
  *
  * \param exception Exception to modify.
  * \param value String value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
  */
 template <typename ALLOC>
 CppRuntimeException& operator<<(CppRuntimeException& exception,
@@ -162,6 +188,8 @@ using CppRuntimeExceptionRValueInsertion = EXCEPTION&&;
  *
  * \param exception Exception to modify.
  * \param value Value to append.
+ *
+ * \return R-value reference to the original exception to allow operator chaining.
  */
 template <typename CPP_RUNTIME_EXCEPTION, typename T>
 detail::CppRuntimeExceptionRValueInsertion<CPP_RUNTIME_EXCEPTION, T>
