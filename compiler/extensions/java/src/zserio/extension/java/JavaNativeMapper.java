@@ -8,6 +8,7 @@ import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.PackageName;
@@ -220,10 +221,7 @@ final class JavaNativeMapper
     private JavaNativeTypes mapDynamicBitField(DynamicBitFieldInstantiation instantiation)
             throws ZserioExtensionException
     {
-        final boolean isSigned = instantiation.getBaseType().isSigned();
-        final int numBits = instantiation.getMaxBitSize();
-
-        return mapFixedInteger(numBits, isSigned);
+        return mapFixedInteger(instantiation.getMaxBitSize(), instantiation.getBaseType().isSigned());
     }
 
     private JavaNativeTypes mapFixedInteger(int numBits, boolean isSigned)
@@ -403,6 +401,13 @@ final class JavaNativeMapper
         public void visitFixedBitFieldType(FixedBitFieldType type)
         {
             javaTypes = mapFixedInteger(type.getBitSize(), type.isSigned());
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType type)
+        {
+            // this is only for reference to dynamic bit field type (e.g. when used as compound parameter)
+            javaTypes = mapFixedInteger(DynamicBitFieldType.MAX_BIT_SIZE, type.isSigned());
         }
 
         @Override

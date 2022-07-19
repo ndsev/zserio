@@ -25,14 +25,14 @@ public class DynamicBitFieldType extends IntegerType
         if (isSigned)
         {
             // (1 << (bitSize - 1)) - 1
-            upperBound = BigInteger.ONE.shiftLeft(MAX_DYNAMIC_BIT_FIELD_BIT_SIZE - 1).subtract(BigInteger.ONE);
+            upperBound = BigInteger.ONE.shiftLeft(MAX_BIT_SIZE - 1).subtract(BigInteger.ONE);
             // -(1 << (bitSize - 1))
-            lowerBound = BigInteger.ONE.shiftLeft(MAX_DYNAMIC_BIT_FIELD_BIT_SIZE - 1).negate();
+            lowerBound = BigInteger.ONE.shiftLeft(MAX_BIT_SIZE - 1).negate();
         }
         else
         {
             // (1 << bitSize) - 1
-            upperBound = BigInteger.ONE.shiftLeft(MAX_DYNAMIC_BIT_FIELD_BIT_SIZE).subtract(BigInteger.ONE);
+            upperBound = BigInteger.ONE.shiftLeft(MAX_BIT_SIZE).subtract(BigInteger.ONE);
             lowerBound = BigInteger.ZERO;
         }
     }
@@ -61,7 +61,7 @@ public class DynamicBitFieldType extends IntegerType
         return isSigned;
     }
 
-    static final int MAX_DYNAMIC_BIT_FIELD_BIT_SIZE = 64;
+    public static final int MAX_BIT_SIZE = 64;
 
     private final boolean isSigned;
     private final BigInteger upperBound;

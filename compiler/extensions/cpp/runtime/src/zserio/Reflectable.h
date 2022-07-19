@@ -2099,10 +2099,22 @@ public:
         if (maxBitSize <= 32 || maxBitSize > 64)
         {
             throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
-                    " - invalid max bit size '" << maxBitSize << "' for 'int16_t' value!";
+                    " - invalid max bit size '" << maxBitSize << "' for 'int64_t' value!";
         }
         return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, dynamicBitSize);
+    }
+
+    static IBasicReflectablePtr<ALLOC> getDynamicSignedBitField(
+            uint8_t maxBitSize, int64_t value, const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize != 64)
+        {
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicSignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'int64_t' value!";
+        }
+        return std::allocate_shared<Int64Reflectable<ALLOC>>(allocator,
+                BuiltinTypeInfo<ALLOC>::getDynamicSignedBitField(maxBitSize), value, maxBitSize);
     }
 
     static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
@@ -2151,6 +2163,18 @@ public:
         }
         return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator,
                 BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, dynamicBitSize);
+    }
+
+    static IBasicReflectablePtr<ALLOC> getDynamicUnsignedBitField(
+            uint8_t maxBitSize, uint64_t value, const ALLOC& allocator = ALLOC())
+    {
+        if (maxBitSize != 64)
+        {
+            throw CppRuntimeException("BasicReflectableFactory::getDynamicUnsignedBitField") <<
+                    " - invalid max bit size '" << maxBitSize << "' for 'uint64_t' value!";
+        }
+        return std::allocate_shared<UInt64Reflectable<ALLOC>>(allocator,
+                BuiltinTypeInfo<ALLOC>::getDynamicUnsignedBitField(maxBitSize), value, maxBitSize);
     }
 
     template <typename RAW_ARRAY,

@@ -193,14 +193,20 @@ public class CppRuntimeFunctionDataCreator
         {
             try
             {
-                final StringBuilder suffix = new StringBuilder("Fixed");
-                if (type.isSigned())
-                    suffix.append("Signed");
-                else
-                    suffix.append("Unsigned");
-                suffix.append("BitField");
-                templateData = new RuntimeFunctionTemplateData(suffix.toString(),
-                        CppLiteralFormatter.formatUInt8Literal(type.getBitSize()));
+                templateData = mapFixedBitFieldType(type.isSigned(), type.getBitSize());
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType type)
+        {
+            try
+            {
+                templateData = mapDynamicBitFieldType(type.isSigned(), DynamicBitFieldType.MAX_BIT_SIZE);
             }
             catch (ZserioExtensionException exception)
             {
@@ -223,17 +229,34 @@ public class CppRuntimeFunctionDataCreator
         public static RuntimeFunctionTemplateData mapDynamicBitFieldType(
                 DynamicBitFieldInstantiation instantiation) throws ZserioExtensionException
         {
-            final DynamicBitFieldType type = instantiation.getBaseType();
+            return mapDynamicBitFieldType(instantiation.getBaseType().isSigned(),
+                    instantiation.getMaxBitSize());
+        }
 
-            final StringBuilder suffix = new StringBuilder("Dynamic");
-            if (type.isSigned())
+        private static RuntimeFunctionTemplateData mapDynamicBitFieldType(boolean isSigned, int numBits)
+                throws ZserioExtensionException
+        {
+            return mapBitFieldType("Dynamic", isSigned, numBits);
+        }
+
+        private static RuntimeFunctionTemplateData mapFixedBitFieldType(boolean isSigned, int numBits)
+                throws ZserioExtensionException
+        {
+            return mapBitFieldType("Fixed", isSigned, numBits);
+        }
+
+        private static RuntimeFunctionTemplateData mapBitFieldType(String prefix, boolean isSigned, int numBits)
+                throws ZserioExtensionException
+        {
+            final StringBuilder suffix = new StringBuilder(prefix);
+            if (isSigned)
                 suffix.append("Signed");
             else
                 suffix.append("Unsigned");
             suffix.append("BitField");
 
             return new RuntimeFunctionTemplateData(suffix.toString(),
-                    CppLiteralFormatter.formatUInt8Literal(instantiation.getMaxBitSize()));
+                    CppLiteralFormatter.formatUInt8Literal(numBits));
         }
     }
 }

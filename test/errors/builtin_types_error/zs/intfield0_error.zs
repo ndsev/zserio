@@ -1,6 +1,6 @@
 package intfield0_error;
 
-struct WrongBitfield
+struct WrongIntfield
 {
     int<0>  wrong;
 };

@@ -7,6 +7,11 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/array_element_param/Database.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParam.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/dynamic_bitfield_param/DynamicBitfieldParamHolder.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/Access.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/Access.h
     ${ZSERIO_GEN_DIR}/parameterized_types/fixed_and_variable_param/ArrayHolder.cpp
@@ -45,6 +50,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Parent.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_inner_classes_clashing/Parent.h
 
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_param/Param.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_param/Param.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_param/ParameterizedParam.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_param/ParameterizedParam.h
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_param/ParameterizedParamHolder.cpp
+    ${ZSERIO_GEN_DIR}/parameterized_types/parameterized_param/ParameterizedParamHolder.h
+
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.cpp
     ${ZSERIO_GEN_DIR}/parameterized_types/simple_param/Item.h
 
@@ -67,10 +79,12 @@ zserio_add_library(TARGET parameterized_types_zs
 
 add_test_sources(
     cpp/ArrayElementParamTest.cpp
+    cpp/DynamicBitfieldParamTest.cpp
     cpp/FixedAndVariableParamTest.cpp
     cpp/GrandChildParamTest.cpp
     cpp/PackedArrayElementParamTest.cpp
     cpp/ParameterizedInnerClassesClashingTest.cpp
+    cpp/ParameterizedParamTest.cpp
     cpp/SimpleParamTest.cpp
     cpp/SubtypedBitfieldParamTest.cpp
 )

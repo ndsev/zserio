@@ -5,6 +5,7 @@ import zserio.ast.AstNode;
 import zserio.ast.BitmaskType;
 import zserio.ast.Constant;
 import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.InstantiateType;
 import zserio.ast.PackageName;
@@ -284,9 +285,7 @@ public class CppNativeMapper
     private static CppNativeType mapDynamicBitField(DynamicBitFieldInstantiation instantiation)
             throws ZserioExtensionException
     {
-        final boolean isSigned = instantiation.getBaseType().isSigned();
-        final int numBits = instantiation.getMaxBitSize();
-        return mapBitFieldType(isSigned, numBits);
+        return mapBitFieldType(instantiation.getBaseType().isSigned(), instantiation.getMaxBitSize());
     }
 
     private static CppNativeType mapBitFieldType(boolean isSigned, int numBits)
@@ -503,6 +502,13 @@ public class CppNativeMapper
         public void visitFixedBitFieldType(FixedBitFieldType type)
         {
             cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), type.getBitSize());
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType type)
+        {
+            // this is only for reference to dynamic bit field type (e.g. when used as compound parameter)
+            cppType = CppNativeMapper.mapBitFieldType(type.isSigned(), DynamicBitFieldType.MAX_BIT_SIZE);
         }
 
         private void mapCompoundType(CompoundType type)

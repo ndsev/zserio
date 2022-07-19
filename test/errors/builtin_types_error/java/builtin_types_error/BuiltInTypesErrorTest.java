@@ -49,6 +49,13 @@ public class BuiltInTypesErrorTest
     }
 
     @Test
+    public void bitfieldWithoutArg()
+    {
+        final String error = "bitfield_without_arg_error.zs:5:5: Missing length for the dynamic bitfield type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
     public void bitfield0()
     {
         final String error = "bitfield0_error.zs:5:9: Invalid length '0' for the dynamic bit field. " +
@@ -61,6 +68,21 @@ public class BuiltInTypesErrorTest
     {
         final String error = "bitfield65_error.zs:5:9: Invalid length '65' for the dynamic bit field. " +
                 "Length must be within range [1,64]!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void boolWithBitfieldArg()
+    {
+        final String error =
+                "bool_with_bitfield_arg_error.zs:5:5: Referenced type 'bool' is not a dynamic bit field type!";
+        assertTrue(zserioErrors.isPresent(error));
+    }
+
+    @Test
+    public void intfieldWithoutArg()
+    {
+        final String error = "intfield_without_arg_error.zs:5:5: Missing length for the dynamic bitfield type!";
         assertTrue(zserioErrors.isPresent(error));
     }
 

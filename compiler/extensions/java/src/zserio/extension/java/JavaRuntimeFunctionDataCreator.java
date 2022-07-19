@@ -266,14 +266,20 @@ public class JavaRuntimeFunctionDataCreator
         {
             try
             {
-                final StringBuilder suffix = new StringBuilder("Fixed");
-                if (type.isSigned())
-                    suffix.append("Signed");
-                else
-                    suffix.append("Unsigned");
-                suffix.append("BitField");
-                templateData = new RuntimeFunctionTemplateData(suffix.toString(),
-                        JavaLiteralFormatter.formatIntLiteral(type.getBitSize()));
+                templateData = mapFixedBitFieldType(type.isSigned(), type.getBitSize());
+            }
+            catch (ZserioExtensionException exception)
+            {
+                thrownException = exception;
+            }
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType type)
+        {
+            try
+            {
+                templateData = mapDynamicBitFieldType(type.isSigned(), DynamicBitFieldType.MAX_BIT_SIZE);
             }
             catch (ZserioExtensionException exception)
             {
@@ -296,17 +302,33 @@ public class JavaRuntimeFunctionDataCreator
         public static RuntimeFunctionTemplateData mapDynamicBitFieldType(
                 DynamicBitFieldInstantiation instantiation) throws ZserioExtensionException
         {
-            final DynamicBitFieldType type = instantiation.getBaseType();
+            return mapDynamicBitFieldType(instantiation.getBaseType().isSigned(),
+                    instantiation.getMaxBitSize());
+        }
 
-            final StringBuilder suffix = new StringBuilder("Dynamic");
-            if (type.isSigned())
+        private static RuntimeFunctionTemplateData mapDynamicBitFieldType(boolean isSigned, int bitSize)
+                throws ZserioExtensionException
+        {
+            return mapBitFieldType("Dynamic", isSigned, bitSize);
+        }
+
+        private static RuntimeFunctionTemplateData mapFixedBitFieldType(boolean isSigned, int bitSize)
+                throws ZserioExtensionException
+        {
+            return mapBitFieldType("Fixed", isSigned, bitSize);
+        }
+        private static RuntimeFunctionTemplateData mapBitFieldType(String prefix, boolean isSigned, int bitSize)
+                throws ZserioExtensionException
+        {
+            final StringBuilder suffix = new StringBuilder(prefix);
+            if (isSigned)
                 suffix.append("Signed");
             else
                 suffix.append("Unsigned");
             suffix.append("BitField");
 
             return new RuntimeFunctionTemplateData(suffix.toString(),
-                    JavaLiteralFormatter.formatIntLiteral(instantiation.getMaxBitSize()));
+                    JavaLiteralFormatter.formatIntLiteral(bitSize));
         }
     }
 }
