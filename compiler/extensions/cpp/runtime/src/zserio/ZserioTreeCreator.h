@@ -429,15 +429,14 @@ void BasicZserioTreeCreator<ALLOC>::beginArray(const string<ALLOC>& name)
     }
 
     m_fieldInfoStack.push_back(fieldInfo);
-    if (TypeInfoUtil::hasChoice(parentTypeInfo.getCppType()) || fieldInfo.isOptional)
-    {
-        // optional field, or field within choice or union -> create the new compound
-        m_valueStack.push_back(m_valueStack.back()->createField(name));
-    }
-    else
-    {
-        m_valueStack.push_back(m_valueStack.back()->getField(name));
-    }
+
+    // note that we cannot just call getField() in case that the array is not optional like we do it in
+    // setValue() and beginCompound() methods because in case of arrays we would join multiple arrays together
+    // when this method is called multiple times with the same name - thus we will just create a new array
+    //
+    // moreover we need to properly initialize arrays of dynamic bit fields
+    // see https://github.com/ndsev/zserio/issues/414
+    m_valueStack.push_back(m_valueStack.back()->createField(name));
 
     m_state = detail::CreatorState::IN_ARRAY;
 }

@@ -58,6 +58,21 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
                 m_value(value)
         {}
 
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return ::zserio::bitSizeOf(m_value);
+        }
+
+        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
+        {
+            <#if withWriterCode>
+            ::zserio::write(writer, m_value);
+            <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Writer code is disabled by -withoutWriterCode zserio option!";
+            </#if>
+        }
+
         virtual ${underlyingTypeInfo.typeFullName} get<#rt>
                 <#lt><#if !underlyingTypeInfo.isSigned>U</#if>Int${underlyingTypeInfo.typeNumBits}() const override
         {
@@ -78,21 +93,6 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
                 const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
         {
             return ${types.string.name}(::zserio::enumToString(m_value), allocator);
-        }
-
-        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
-        {
-            <#if withWriterCode>
-            ::zserio::write(writer, m_value);
-            <#else>
-            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
-                    "Writer code is disabled by -withoutWriterCode zserio option!";
-            </#if>
-        }
-
-        virtual size_t bitSizeOf(size_t) const override
-        {
-            return ::zserio::bitSizeOf(m_value);
         }
 
     private:

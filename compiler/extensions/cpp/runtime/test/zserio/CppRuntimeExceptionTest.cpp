@@ -155,4 +155,16 @@ TEST(CppRuntimeExceptionTest, appendBitmask)
     ASSERT_STREQ("2", exception.what());
 }
 
+TEST(CppRuntimeExceptionTest, appendString)
+{
+    CppRuntimeException exception = CppRuntimeException() << std::string("test");
+    ASSERT_STREQ("test", exception.what());
+}
+
+TEST(CppRuntimeExceptionTest, appendVector)
+{
+    CppRuntimeException exception = CppRuntimeException() << std::vector<int>{{1, 2, 3}};
+    ASSERT_STREQ("vector([...], 3)", exception.what());
+}
+
 } // namespace zserio

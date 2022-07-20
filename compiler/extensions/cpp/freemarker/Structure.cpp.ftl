@@ -143,15 +143,37 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
                         <#lt>${fullName}::typeInfo(), allocator),
                 m_object(object)
         {}
-    <#if fieldList?has_content>
-        <#if !isConst>
+    <#if !isConst>
 
         <@reflectable_initialize_children needsChildrenInitialization/>
-            <#if needs_compound_initialization(compoundConstructorsData)>
+        <#if needs_compound_initialization(compoundConstructorsData)>
 
         <@reflectable_initialize name compoundParametersData.list/>
-            </#if>
         </#if>
+    </#if>
+
+        virtual size_t bitSizeOf(size_t bitPosition) const override
+        {
+            return m_object.bitSizeOf(bitPosition);
+        }
+    <#if !isConst>
+
+        virtual size_t initializeOffsets(size_t bitPosition) override
+        {
+            return m_object.initializeOffsets(bitPosition);
+        }
+    </#if>
+
+        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
+        {
+    <#if withWriterCode>
+            m_object.write(writer);
+    <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Writer code is disabled by '-withoutWriterCode' zserio option!";
+    </#if>
+        }
+    <#if fieldList?has_content>
 
         <@reflectable_get_field name, fieldList, true/>
         <#if !isConst>
@@ -179,21 +201,6 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
         <@reflectable_call_function name, compoundFunctionsData.list, false/>
         </#if>
     </#if>
-
-        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
-        {
-    <#if withWriterCode>
-            m_object.write(writer);
-    <#else>
-            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
-                    "Writer code is disabled by '-withoutWriterCode' zserio option!";
-    </#if>
-        }
-
-        virtual size_t bitSizeOf(size_t bitPosition) const override
-        {
-            return m_object.bitSizeOf(bitPosition);
-        }
 
     private:
         <#if isConst>const </#if>${fullName}& m_object;

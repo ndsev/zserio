@@ -28,11 +28,11 @@ noExplicitConstructor:*/src/zserio/StringView.h:54
 noExplicitConstructor:*/src/zserio/StringView.h:74
 noExplicitConstructor:*/test/zserio/TrackingAllocator.h:66
 noExplicitConstructor:*/test/zserio/ZserioTreeCreatorTestObject.h:60
-uninitMemberVar:*/src/zserio/Reflectable.h:143
+uninitMemberVar:*/src/zserio/Reflectable.h:144
 uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:162
 uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:167
-uninitMemberVar:*/test/zserio/ReflectableTest.cpp:170
-uninitMemberVar:*/test/zserio/ReflectableTest.cpp:174
+uninitMemberVar:*/test/zserio/ReflectableTest.cpp:205
+uninitMemberVar:*/test/zserio/ReflectableTest.cpp:209
 uninitMemberVar:*/test/zserio/ZserioTreeCreatorTestObject.cpp:145
 unusedStructMember:*/src/zserio/BitStreamReader.h:55
 unusedStructMember:*/src/zserio/BitStreamReader.h:56

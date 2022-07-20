@@ -4,6 +4,7 @@
 
 #include "zserio/StringView.h"
 #include "zserio/TypeInfoUtil.h"
+#include "zserio/ZserioTreeCreator.h"
 
 using namespace zserio::literals;
 
@@ -15,6 +16,8 @@ using string_type = zserio::string<allocator_type>;
 template <typename T>
 using vector_type = zserio::vector<T, allocator_type>;
 using IReflectable = zserio::IBasicReflectable<allocator_type>;
+using IReflectablePtr = zserio::IBasicReflectablePtr<allocator_type>;
+using ZserioTreeCreator = zserio::BasicZserioTreeCreator<allocator_type>;
 using AnyHolder = zserio::AnyHolder<allocator_type>;
 using BitBuffer = zserio::BasicBitBuffer<allocator_type>;
 
@@ -61,6 +64,93 @@ protected:
             BitBuffer{{0xAB, 0xCD}, 16},
             vector_type<BitBuffer>{BitBuffer{{0x02}, 2}, BitBuffer{{0x01}, 1}}
         };
+    }
+
+    static void createReflectableParameterized(ZserioTreeCreator& creator, uint8_t param)
+    {
+        creator.beginArray("array");
+        for (uint8_t i = 0; i < param; ++i)
+            creator.addValueElement(i+1);
+        creator.endArray();
+    }
+
+    // the created object shall match to the struct created via createStruct() above
+    static void createReflectableStruct(ZserioTreeCreator& creator)
+    {
+        creator.beginArray("childArray");
+        creator.beginCompoundElement();
+        creator.setValue("id", 0);
+        creator.setValue("name", "zero");
+        creator.setValue("hasNicknames", false);
+        creator.endCompoundElement();
+        creator.beginCompoundElement();
+        creator.setValue("id", 1);
+        creator.setValue("name", "one");
+        creator.setValue("hasNicknames", true);
+        creator.beginArray("nicknames");
+        creator.addValueElement("best");
+        creator.addValueElement("first");
+        creator.endArray();
+        creator.endCompoundElement();
+        creator.beginCompoundElement();
+        creator.setValue("id", 2);
+        creator.setValue("name", "two");
+        creator.setValue("hasNicknames", false);
+        creator.endCompoundElement();
+        creator.endArray();
+        const uint8_t param = 5;
+        creator.setValue("param", param);
+        creator.beginCompound("parameterized");
+        createReflectableParameterized(creator, 5);
+        creator.endCompound();
+        const size_t len = 4;
+        creator.setValue("len", len);
+        creator.beginArray("offsets");
+        for (size_t i = 0; i < len; ++i)
+            creator.addValueElement(0);
+        creator.endArray();
+        creator.beginArray("parameterizedArray");
+        for (size_t i = 0; i < len; ++i)
+        {
+            creator.beginCompoundElement();
+            createReflectableParameterized(creator, param);
+            creator.endCompoundElement();
+        }
+        creator.endArray();
+        creator.setValue("bitmaskField", (Bitmask::Values::FLAG1 | Bitmask::Values::FLAG2).getValue());
+        creator.beginArray("bitmaskArray");
+        creator.addValueElement(Bitmask(Bitmask::Values::FLAG1).getValue());
+        creator.addValueElement((Bitmask::Values::FLAG2 | Bitmask::Values::FLAG3).getValue());
+        creator.endArray();
+        creator.setValue("enumField", zserio::enumToValue(Selector::STRUCT));
+        creator.beginArray("enumArray");
+        creator.addValueElement(zserio::enumToValue(Selector::STRUCT));
+        creator.addValueElement(zserio::enumToValue(SelectorEnum::UNION));
+        creator.addValueElement(zserio::enumToValue(Selector::BITMASK));
+        creator.endArray();
+        creator.setValue("dynamicBitField", 31);
+        creator.beginArray("dynamicBitFieldArray");
+        creator.addValueElement(10);
+        creator.addValueElement(20);
+        creator.addValueElement(30);
+        creator.endArray();
+        // dynamicIntField is optional - omitted
+        creator.beginArray("dynamicIntFieldArray");
+        creator.addValueElement(-3);
+        creator.addValueElement(-1);
+        creator.addValueElement(1);
+        creator.addValueElement(3);
+        creator.endArray();
+        creator.beginArray("boolArray");
+        creator.addValueElement(true);
+        creator.addValueElement(false);
+        creator.addValueElement(true);
+        creator.endArray();
+        creator.setValue("externField", BitBuffer({0xAB, 0xCD}, 16));
+        creator.beginArray("externArray");
+        creator.addValueElement(BitBuffer{{0x02}, 2});
+        creator.addValueElement(BitBuffer{{0x01}, 1});
+        creator.endArray();
     }
 
     void checkWriteThrows(IReflectable& reflectable)
@@ -396,6 +486,29 @@ TEST_F(WithReflectionCodeTest, checkChoiceWithStructure)
     ASSERT_EQ(13, reflectable->find("structField.dynamicBitField")->toUInt());
 
     // write read check on choice
+    checkWriteRead(*reflectable, choice, Selector::STRUCT);
+}
+
+// fully created via reflectable interface
+TEST_F(WithReflectionCodeTest, checkReflectableChoiceWithStruct)
+{
+    ZserioTreeCreator creator(Choice::typeInfo());
+    creator.beginRoot();
+    creator.beginCompound("structField");
+    createReflectableStruct(creator);
+    creator.endCompound();
+    IReflectablePtr reflectable = creator.endRoot();
+    ASSERT_TRUE(reflectable);
+    reflectable->initialize(vector_type<AnyHolder>{AnyHolder{Selector::STRUCT}});
+    reflectable->initializeOffsets();
+
+    Choice choice;
+    choice.setStructField(createStruct());
+    choice.initialize(Selector::STRUCT);
+    choice.initializeOffsets();
+
+    // check that write-read of object created via reflections gets the same object as the one
+    // created via generated classes
     checkWriteRead(*reflectable, choice, Selector::STRUCT);
 }
 

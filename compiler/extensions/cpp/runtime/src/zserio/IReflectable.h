@@ -77,6 +77,41 @@ public:
     virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) = 0;
 
     /**
+     * Gets the number of bits needed for serialization of the reflected object.
+     *
+     * \note Works for all reflectable types except arrays!
+     *
+     * \param bitPosition The bit stream position to be used for calculation.
+     *
+     * \throw CppRuntimeException When the reflected object is an array.
+     *
+     * \return The size of the serialized reflected object in bits.
+     */
+    virtual size_t bitSizeOf(size_t bitPosition = 0) const = 0;
+
+    /**
+     * Initializes indexed offsets of the reflected compound object.
+     *
+     * \param bitPosition The bit stream position to be used for calculation.
+     *
+     * \throw CppRuntimeException When the reflected object is not a compound.
+     *
+     * \return Updated bit position which points to the first bit after the compound.
+     */
+    virtual size_t initializeOffsets(size_t bitPosition = 0) = 0;
+
+    /**
+     * Writes the reflected object to a bit stream using the given bit stream writer.
+     *
+     * \note Works for all reflectable types except arrays!
+     *
+     * \param writer Bit stream writer to use.
+     *
+     * \throw CppRuntimeException When the reflected object is an array.
+     */
+    virtual void write(BitStreamWriter& writer) const = 0;
+
+    /**
      * Gets reflectable view to the field (i.e. member) with the given schema name.
      *
      * \note Can be called only when the reflected object is a zserio compound type.
@@ -413,30 +448,6 @@ public:
      * \return String value representing the reflected object.
      */
     virtual string<ALLOC> toString(const ALLOC& allocator = ALLOC()) const = 0;
-
-    /**
-     * Writes the reflected object to a bit stream using the given bit stream writer.
-     *
-     * \note Works for all reflectable types except arrays!
-     *
-     * \param writer Bit stream writer to use.
-     *
-     * \throw CppRuntimeException When the reflected object is an array.
-     */
-    virtual void write(BitStreamWriter& writer) const = 0;
-
-    /**
-     * Gets the number of bits needed for serialization of the reflected object.
-     *
-     * \note Works for all reflectable types except arrays!
-     *
-     * \param bitPosition The bit stream position to be used for calculation.
-     *
-     * \throw CppRuntimeException When the reflected object is an array.
-     *
-     * \return The size of the serialized reflected object in bits.
-     */
-    virtual size_t bitSizeOf(size_t bitPosition = 0) const = 0;
 };
 
 /** Typedef to reflectable smart pointer needed for convenience in generated code. */

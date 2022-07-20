@@ -52,6 +52,7 @@ public:
 
     virtual void initializeChildren() override;
     virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
+    virtual size_t initializeOffsets(size_t bitPosition) override;
 
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
@@ -97,7 +98,7 @@ public:
     virtual int64_t toInt() const override;
     virtual uint64_t toUInt() const override;
     virtual double toDouble() const override;
-    virtual string<ALLOC> toString(const ALLOC& allocator = ALLOC()) const override;
+    virtual string<ALLOC> toString(const ALLOC& allocator) const override;
 
 private:
     const IBasicTypeInfo<ALLOC>& m_typeInfo;
@@ -174,14 +175,58 @@ public:
             Base(typeInfo, value), m_dynamicBitSize(dynamicBitSize)
     {}
 
-    virtual double toDouble() const override
+    virtual size_t bitSizeOf(size_t) const override
     {
-        return static_cast<double>(Base::getValue());
-    }
-
-    virtual string<ALLOC> toString(const ALLOC& allocator) const override
-    {
-        return ::zserio::toString<ALLOC>(Base::getValue(), allocator);
+        const IBasicTypeInfo<ALLOC>& typeInfo = Base::getTypeInfo();
+        switch (typeInfo.getSchemaType())
+        {
+        case SchemaType::BOOL:
+            return 1;
+        case SchemaType::INT8:
+            return 8;
+        case SchemaType::INT16:
+            return 16;
+        case SchemaType::INT32:
+            return 32;
+        case SchemaType::INT64:
+            return 64;
+        case SchemaType::UINT8:
+            return 8;
+        case SchemaType::UINT16:
+            return 16;
+        case SchemaType::UINT32:
+            return 32;
+        case SchemaType::UINT64:
+            return 64;
+        case SchemaType::VARINT16:
+            return zserio::bitSizeOfVarInt16(static_cast<int16_t>(Base::getValue()));
+        case SchemaType::VARINT32:
+            return zserio::bitSizeOfVarInt32(static_cast<int32_t>(Base::getValue()));
+        case SchemaType::VARINT64:
+            return zserio::bitSizeOfVarInt64(static_cast<int64_t>(Base::getValue()));
+        case SchemaType::VARINT:
+            return zserio::bitSizeOfVarInt(static_cast<int64_t>(Base::getValue()));
+        case SchemaType::VARUINT16:
+            return zserio::bitSizeOfVarUInt16(static_cast<uint16_t>(Base::getValue()));
+        case SchemaType::VARUINT32:
+            return zserio::bitSizeOfVarUInt32(static_cast<uint32_t>(Base::getValue()));
+        case SchemaType::VARUINT64:
+            return zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(Base::getValue()));
+        case SchemaType::VARUINT:
+            return zserio::bitSizeOfVarUInt(static_cast<uint64_t>(Base::getValue()));
+        case SchemaType::VARSIZE:
+            return zserio::bitSizeOfVarSize(static_cast<uint32_t>(Base::getValue()));
+        case SchemaType::FIXED_SIGNED_BITFIELD:
+            return typeInfo.getBitSize();
+        case SchemaType::FIXED_UNSIGNED_BITFIELD:
+            return typeInfo.getBitSize();
+        case SchemaType::DYNAMIC_SIGNED_BITFIELD:
+            return m_dynamicBitSize;
+        case SchemaType::DYNAMIC_UNSIGNED_BITFIELD:
+            return m_dynamicBitSize;
+        default:
+            throw CppRuntimeException("IntegralReflectableBase::bitSizeOf - Unexpected integral type!");
+        }
     }
 
     virtual void write(BitStreamWriter& writer) const override
@@ -312,58 +357,14 @@ public:
         }
     }
 
-    virtual size_t bitSizeOf(size_t) const override
+    virtual double toDouble() const override
     {
-        const IBasicTypeInfo<ALLOC>& typeInfo = Base::getTypeInfo();
-        switch (typeInfo.getSchemaType())
-        {
-        case SchemaType::BOOL:
-            return 1;
-        case SchemaType::INT8:
-            return 8;
-        case SchemaType::INT16:
-            return 16;
-        case SchemaType::INT32:
-            return 32;
-        case SchemaType::INT64:
-            return 64;
-        case SchemaType::UINT8:
-            return 8;
-        case SchemaType::UINT16:
-            return 16;
-        case SchemaType::UINT32:
-            return 32;
-        case SchemaType::UINT64:
-            return 64;
-        case SchemaType::VARINT16:
-            return zserio::bitSizeOfVarInt16(static_cast<int16_t>(Base::getValue()));
-        case SchemaType::VARINT32:
-            return zserio::bitSizeOfVarInt32(static_cast<int32_t>(Base::getValue()));
-        case SchemaType::VARINT64:
-            return zserio::bitSizeOfVarInt64(static_cast<int64_t>(Base::getValue()));
-        case SchemaType::VARINT:
-            return zserio::bitSizeOfVarInt(static_cast<int64_t>(Base::getValue()));
-        case SchemaType::VARUINT16:
-            return zserio::bitSizeOfVarUInt16(static_cast<uint16_t>(Base::getValue()));
-        case SchemaType::VARUINT32:
-            return zserio::bitSizeOfVarUInt32(static_cast<uint32_t>(Base::getValue()));
-        case SchemaType::VARUINT64:
-            return zserio::bitSizeOfVarUInt64(static_cast<uint64_t>(Base::getValue()));
-        case SchemaType::VARUINT:
-            return zserio::bitSizeOfVarUInt(static_cast<uint64_t>(Base::getValue()));
-        case SchemaType::VARSIZE:
-            return zserio::bitSizeOfVarSize(static_cast<uint32_t>(Base::getValue()));
-        case SchemaType::FIXED_SIGNED_BITFIELD:
-            return typeInfo.getBitSize();
-        case SchemaType::FIXED_UNSIGNED_BITFIELD:
-            return typeInfo.getBitSize();
-        case SchemaType::DYNAMIC_SIGNED_BITFIELD:
-            return m_dynamicBitSize;
-        case SchemaType::DYNAMIC_UNSIGNED_BITFIELD:
-            return m_dynamicBitSize;
-        default:
-            throw CppRuntimeException("IntegralReflectableBase::bitSizeOf - Unexpected integral type!");
-        }
+        return static_cast<double>(Base::getValue());
+    }
+
+    virtual string<ALLOC> toString(const ALLOC& allocator) const override
+    {
+        return ::zserio::toString<ALLOC>(Base::getValue(), allocator);
     }
 
 private:
@@ -627,9 +628,12 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual float getFloat() const override
+    virtual size_t bitSizeOf(size_t) const override
     {
-        return Base::getValue();
+        if (Base::getTypeInfo().getSchemaType() == SchemaType::FLOAT16)
+            return 16;
+        else
+            return 32;
     }
 
     virtual void write(BitStreamWriter& writer) const override
@@ -640,12 +644,9 @@ public:
             writer.writeFloat32(Base::getValue());
     }
 
-    virtual size_t bitSizeOf(size_t) const override
+    virtual float getFloat() const override
     {
-        if (Base::getTypeInfo().getSchemaType() == SchemaType::FLOAT16)
-            return 16;
-        else
-            return 32;
+        return Base::getValue();
     }
 };
 
@@ -663,9 +664,9 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual double getDouble() const override
+    virtual size_t bitSizeOf(size_t) const override
     {
-        return Base::getValue();
+        return 64;
     }
 
     virtual void write(BitStreamWriter& writer) const override
@@ -673,9 +674,9 @@ public:
         writer.writeFloat64(Base::getValue());
     }
 
-    virtual size_t bitSizeOf(size_t) const override
+    virtual double getDouble() const override
     {
-        return 64;
+        return Base::getValue();
     }
 };
 
@@ -693,6 +694,16 @@ public:
             Base(typeInfo, value)
     {}
 
+    virtual size_t bitSizeOf(size_t) const override
+    {
+        return zserio::bitSizeOfString(Base::getValue());
+    }
+
+    virtual void write(BitStreamWriter& writer) const override
+    {
+        writer.writeString(Base::getValue());
+    }
+
     virtual StringView getStringView() const override
     {
         return Base::getValue();
@@ -701,16 +712,6 @@ public:
     virtual string<ALLOC> toString(const ALLOC& allocator) const override
     {
         return zserio::toString(Base::getValue(), allocator);
-    }
-
-    virtual void write(BitStreamWriter& writer) const override
-    {
-        writer.writeString(Base::getValue());
-    }
-
-    virtual size_t bitSizeOf(size_t) const override
-    {
-        return zserio::bitSizeOfString(Base::getValue());
     }
 };
 
@@ -728,9 +729,9 @@ public:
             Base(typeInfo, value)
     {}
 
-    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override
+    virtual size_t bitSizeOf(size_t) const override
     {
-        return Base::getValue();
+        return zserio::bitSizeOfBitBuffer(Base::getValue());
     }
 
     virtual void write(BitStreamWriter& writer) const override
@@ -738,9 +739,9 @@ public:
         writer.writeBitBuffer(Base::getValue());
     }
 
-    virtual size_t bitSizeOf(size_t) const override
+    virtual const BasicBitBuffer<ALLOC>& getBitBuffer() const override
     {
-        return zserio::bitSizeOfBitBuffer(Base::getValue());
+        return Base::getValue();
     }
 };
 
@@ -1019,6 +1020,8 @@ public:
 
     virtual void initializeChildren() override;
     virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
+    virtual size_t initializeOffsets(size_t bitPosition) override;
+
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
     virtual void setField(StringView name, const AnyHolder<ALLOC>& value) override;
     virtual IBasicReflectablePtr<ALLOC> getParameter(StringView name) override;
@@ -1047,6 +1050,9 @@ public:
 
     virtual void initializeChildren() override;
     virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override;
+    virtual size_t bitSizeOf(size_t bitPosition) const override;
+    virtual size_t initializeOffsets(size_t bitPosition) override;
+    virtual void write(BitStreamWriter& writer) const override;
 
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override;
     virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override;
@@ -1077,9 +1083,6 @@ public:
     virtual uint64_t toUInt() const override;
     virtual double toDouble() const override;
     virtual string<ALLOC> toString(const ALLOC& allocator = ALLOC()) const override;
-
-    virtual void write(BitStreamWriter& writer) const override;
-    virtual size_t bitSizeOf(size_t) const override;
 };
 
 /**
@@ -1777,6 +1780,31 @@ public:
         return m_reflectable->isArray();
     }
 
+    virtual void initializeChildren() override
+    {
+        m_reflectable->initializeChildren();
+    }
+
+    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override
+    {
+        m_reflectable->initialize(typeArguments);
+    }
+
+    virtual size_t bitSizeOf(size_t bitPosition) const override
+    {
+        return m_reflectable->bitSizeOf(bitPosition);
+    }
+
+    virtual size_t initializeOffsets(size_t bitPosition) override
+    {
+        return m_reflectable->initializeOffsets(bitPosition);
+    }
+
+    virtual void write(BitStreamWriter& writer) const override
+    {
+        m_reflectable->write(writer);
+    }
+
     virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
     {
         return m_reflectable->getField(name);
@@ -1904,26 +1932,6 @@ public:
     virtual string<RebindAlloc<ALLOC, char>> toString(const ALLOC& allocator = ALLOC()) const override
     {
         return m_reflectable->toString(allocator);
-    }
-
-    virtual void initializeChildren() override
-    {
-        m_reflectable->initializeChildren();
-    }
-
-    virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) override
-    {
-        m_reflectable->initialize(typeArguments);
-    }
-
-    virtual void write(BitStreamWriter& writer) const override
-    {
-        m_reflectable->write(writer);
-    }
-
-    virtual size_t bitSizeOf(size_t bitPosition = 0) const override
-    {
-        return m_reflectable->bitSizeOf(bitPosition);
     }
 
 private:
@@ -2468,6 +2476,12 @@ void ReflectableBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
 }
 
 template <typename ALLOC>
+size_t ReflectableBase<ALLOC>::initializeOffsets(size_t)
+{
+    throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' is not a compound type!";
+}
+
+template <typename ALLOC>
 IBasicReflectableConstPtr<ALLOC> ReflectableBase<ALLOC>::getField(StringView) const
 {
     throw CppRuntimeException("Type '") << getTypeInfo().getSchemaName() << "' has no fields to get!";
@@ -2712,6 +2726,12 @@ void ReflectableConstAllocatorHolderBase<ALLOC>::initialize(const vector<AnyHold
 }
 
 template <typename ALLOC>
+size_t ReflectableConstAllocatorHolderBase<ALLOC>::initializeOffsets(size_t)
+{
+    throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
+}
+
+template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> ReflectableConstAllocatorHolderBase<ALLOC>::getField(StringView)
 {
     throw CppRuntimeException("Reflectable '") << getTypeInfo().getSchemaName() << "' is constant!";
@@ -2743,6 +2763,24 @@ void ReflectableArrayBase<ALLOC>::initializeChildren()
 
 template <typename ALLOC>
 void ReflectableArrayBase<ALLOC>::initialize(const vector<AnyHolder<ALLOC>, ALLOC>&)
+{
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
+}
+
+template <typename ALLOC>
+size_t ReflectableArrayBase<ALLOC>::bitSizeOf(size_t) const
+{
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
+}
+
+template <typename ALLOC>
+size_t ReflectableArrayBase<ALLOC>::initializeOffsets(size_t)
+{
+    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
+}
+
+template <typename ALLOC>
+void ReflectableArrayBase<ALLOC>::write(BitStreamWriter&) const
 {
     throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }
@@ -2899,18 +2937,6 @@ double ReflectableArrayBase<ALLOC>::toDouble() const
 
 template <typename ALLOC>
 string<ALLOC> ReflectableArrayBase<ALLOC>::toString(const ALLOC&) const
-{
-    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
-}
-
-template <typename ALLOC>
-void ReflectableArrayBase<ALLOC>::write(BitStreamWriter&) const
-{
-    throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
-}
-
-template <typename ALLOC>
-size_t ReflectableArrayBase<ALLOC>::bitSizeOf(size_t) const
 {
     throw CppRuntimeException("Reflectable is an array '") << getTypeInfo().getSchemaName() << "[]'!";
 }

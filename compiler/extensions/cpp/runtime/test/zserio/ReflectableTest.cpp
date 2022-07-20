@@ -18,6 +18,41 @@ namespace zserio
 namespace
 {
 
+/*
+Corresponds to the following schema:
+(compiled -withTypeInfoCode -withReflectionCode)
+
+enum int8 DummyEnum
+{
+    VALUE1 = -1,
+    VALUE2,
+    VALUE3
+};
+
+bitmask uint8 DummyBitmask
+{
+    CREATE,
+    READ,
+    WRITE
+};
+
+struct DummyChild(int:31 param, string stringParam)
+{
+    bit:31 value;
+
+    function bit:31 getValue()
+    {
+        return value;
+    }
+};
+
+struct DummyParent
+{
+    string stringField;
+    DummyChild(13, stringField) dummyChild;
+};
+*/
+
 class DummyBitmask
 {
 public:
@@ -237,12 +272,12 @@ public:
         static const std::array<FunctionInfo, 2> functions = {
             FunctionInfo{
                 makeStringView("getValue"),
-                BuiltinTypeInfo<>::getFixedSignedBitField(31),
+                BuiltinTypeInfo<>::getFixedUnsignedBitField(31),
                 makeStringView("getValue()")
             },
             FunctionInfo{
                 makeStringView("throwingFunction"),
-                BuiltinTypeInfo<>::getFixedSignedBitField(31),
+                BuiltinTypeInfo<>::getFixedUnsignedBitField(31),
                 makeStringView("getValue()")
             }
         };
@@ -473,6 +508,11 @@ public:
                 return m_object.bitSizeOf(bitPosition);
             }
 
+            virtual size_t initializeOffsets(size_t bitPosition) override
+            {
+                return m_object.initializeOffsets(bitPosition);
+            }
+
         private:
             DummyChild& m_object;
         };
@@ -536,6 +576,11 @@ public:
     size_t bitSizeOf(size_t = 0) const
     {
         return 31;
+    }
+
+    size_t initializeOffsets(size_t bitPosition = 0) const
+    {
+        return bitPosition + 31;
     }
 
 private:
@@ -752,6 +797,11 @@ public:
                 return m_object.bitSizeOf(bitPosition);
             }
 
+            virtual size_t initializeOffsets(size_t bitPosition) override
+            {
+                return m_object.initializeOffsets(bitPosition);
+            }
+
         private:
             DummyParent& m_object;
         };
@@ -804,6 +854,16 @@ public:
     size_t bitSizeOf(size_t bitPosition = 0) const
     {
         return bitSizeOfString(m_stringField) + m_dummyChild.bitSizeOf(bitPosition);
+    }
+
+    size_t initializeOffsets(size_t bitPosition = 0)
+    {
+        size_t endBitPosition = bitPosition;
+
+        endBitPosition += ::zserio::bitSizeOfString(m_stringField);
+        endBitPosition = m_dummyChild.initializeOffsets(endBitPosition);
+
+        return endBitPosition;
     }
 
 private:
@@ -1045,6 +1105,7 @@ protected:
         ASSERT_THROW(reflectable->initialize(vector<AnyHolder<>>()), CppRuntimeException);
         ASSERT_THROW(reflectable->setField("field", AnyHolder<>{}), CppRuntimeException);
         ASSERT_THROW(reflectable->createField("field"), CppRuntimeException);
+        ASSERT_THROW(reflectable->initializeOffsets(), CppRuntimeException);
 
         checkNonCompoundConstMethods(reflectable);
     }
@@ -2058,6 +2119,7 @@ TEST_F(ReflectableTest, compoundConst)
     ASSERT_THROW(nonConstChildReflectable->getParameter("dummyParam"), CppRuntimeException);
     ASSERT_NO_THROW(childReflectable->callFunction("getValue"));
     ASSERT_THROW(nonConstChildReflectable->callFunction("getValue"), CppRuntimeException);
+    ASSERT_THROW(nonConstChildReflectable->initializeOffsets(0), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compound)
@@ -2180,6 +2242,7 @@ TEST_F(ReflectableTest, reflectableOwner)
     ASSERT_THROW(reflectable->toString(), CppRuntimeException);
 
     ASSERT_NO_THROW(reflectable->initializeChildren());
+    ASSERT_EQ(reflectable->bitSizeOf(), reflectable->initializeOffsets());
 
     const size_t bitSizeOfValue = reflectable->bitSizeOf();
     BitBuffer bitBuffer(bitSizeOfValue);
@@ -2199,6 +2262,7 @@ TEST_F(ReflectableTest, reflectableOwner)
             CppRuntimeException);
     ASSERT_NO_THROW(dummyChildReflectable->initialize(
             {{ AnyHolder<>{static_cast<int32_t>(13)}, AnyHolder<>{std::ref(stringParam)} }}));
+    ASSERT_NO_THROW(dummyChildReflectable->initializeOffsets());
 }
 
 } // namespace zserio

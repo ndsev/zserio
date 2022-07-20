@@ -71,6 +71,21 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
                 m_bitmask(bitmask)
         {}
 
+        virtual size_t bitSizeOf(size_t bitPosition) const override
+        {
+            return m_bitmask.bitSizeOf(bitPosition);
+        }
+
+        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
+        {
+            <#if withWriterCode>
+            m_bitmask.write(writer);
+            <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Writer code is disabled by -withoutWriterCode zserio option!";
+            </#if>
+        }
+
         <#-- bitmask is always unsigned -->
         virtual ${underlyingTypeInfo.typeFullName} getUInt${underlyingTypeInfo.typeNumBits}() const override
         {
@@ -91,21 +106,6 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
                 const ${types.allocator.default}& allocator = ${types.allocator.default}()) const override
         {
             return m_bitmask.toString(allocator);
-        }
-
-        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
-        {
-            <#if withWriterCode>
-            m_bitmask.write(writer);
-            <#else>
-            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
-                    "Writer code is disabled by -withoutWriterCode zserio option!";
-            </#if>
-        }
-
-        virtual size_t bitSizeOf(size_t bitPosition) const override
-        {
-            return m_bitmask.bitSizeOf(bitPosition);
         }
 
     private:

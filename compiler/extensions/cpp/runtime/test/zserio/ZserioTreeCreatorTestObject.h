@@ -178,6 +178,7 @@ public:
     void setText(const string<>& text_);
 
     vector<DummyNested>& getNestedArray();
+    void setNestedArray(const vector<DummyNested>& nestedArray_);
 
     vector<string<>>& getTextArray();
     void setTextArray(const vector<string<>>& textArray_);

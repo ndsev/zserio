@@ -780,9 +780,22 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
                 return ReflectableFactory::getString(m_object.getText(), get_allocator());
             }
 
+            if (name == makeStringView("textArray"))
+            {
+                m_object.setTextArray(vector<string<>>());
+                return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getString(),
+                        m_object.getTextArray(), get_allocator());
+            }
+
+            if (name == makeStringView("nestedArray"))
+            {
+                m_object.setNestedArray(vector<DummyNested>(get_allocator()));
+                return ReflectableFactory::getCompoundArray(m_object.getNestedArray(), get_allocator());
+            }
+
             if (name == makeStringView("externArray"))
             {
-                m_object.setExternArray(std::vector<BitBuffer>(get_allocator()));
+                m_object.setExternArray(vector<BitBuffer>(get_allocator()));
                 return ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getBitBuffer(),
                         m_object.getExternArray(), get_allocator());
             }
@@ -855,6 +868,12 @@ void DummyObject::setText(const string<>& text_)
 vector<DummyNested>& DummyObject::getNestedArray()
 {
     return m_nestedArray_.getRawArray();
+}
+
+void DummyObject::setNestedArray(const vector<DummyNested>& nestedArray_)
+{
+    m_nestedArray_ = ZserioArrayType_nestedArray(nestedArray_,
+            ObjectArrayTraits<DummyNested, ZserioElementFactory_nestedArray>());
 }
 
 vector<string<>>& DummyObject::getTextArray()

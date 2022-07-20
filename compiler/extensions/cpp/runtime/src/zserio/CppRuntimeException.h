@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <exception>
 #include <string>
+#include <vector>
 
 #include "zserio/StringConvertUtil.h"
 #include "zserio/Enums.h"
@@ -167,6 +168,20 @@ CppRuntimeException& operator<<(CppRuntimeException& exception,
 {
     exception.append(value.c_str(), value.size());
     return exception;
+}
+
+/**
+ * Appends a vector value to the exception's description.
+ *
+ * \param exception Exception to modify.
+ * \param value Vector value to append.
+ *
+ * \return Reference to the exception to allow operator chaining.
+ */
+template <typename T, typename ALLOC>
+CppRuntimeException& operator<<(CppRuntimeException& exception, const std::vector<T, ALLOC>& value)
+{
+    return exception << "vector([...], " << value.size() << ")";
 }
 
 namespace detail
