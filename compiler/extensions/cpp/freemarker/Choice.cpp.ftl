@@ -146,7 +146,7 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
 
     static const ::zserio::ChoiceTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),
-    <#if withReflectionCode>
+    <#if withWriterCode && withReflectionCode>
         [](const allocator_type& allocator) -> ${types.reflectablePtr.name}
         {
             return std::allocate_shared<::zserio::ReflectableOwner<${name}>>(allocator, allocator);
@@ -231,16 +231,21 @@ ${I}return {};
 
         virtual ::zserio::StringView getChoice() const override
         {
-        <#if fieldList?has_content>
+    <#if fieldList?has_content>
             <@choice_switch "choice_get_choice", "choice_get_choice_no_match", objectIndirectSelectorExpression, 3/>
-        <#else>
+    <#else>
             return {};
-        </#if>
+    </#if>
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
+    <#if withWriterCode>
             m_object.write(writer);
+    <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Writer code is disabled by -withoutWriterCode zserio option!";
+    </#if>
         }
 
         virtual size_t bitSizeOf(size_t bitPosition) const override
@@ -257,8 +262,10 @@ ${I}return {};
 </#macro>
 <@choice_reflectable true/>
 
+        <#if withWriterCode>
 <@choice_reflectable false/>
 
+        </#if>
     </#if>
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>

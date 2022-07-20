@@ -1,5 +1,6 @@
 #include <fstream>
 #include <string>
+#include <type_traits>
 
 #include "gtest/gtest.h"
 
@@ -7,6 +8,7 @@
 #include "without_writer_code/WorldDb.h"
 
 #include "zserio/SerializeUtil.h"
+#include "zserio/StringView.h"
 #include "zserio/RebindAlloc.h"
 #include "zserio/pmr/PolymorphicAllocator.h"
 
@@ -15,46 +17,88 @@ namespace without_writer_code
 
 using allocator_type = zserio::RebindAlloc<Tile::allocator_type, uint8_t>;
 
+// TODO[Mi-L@]: Currently we ignore interface for packed arrays.
+
 template <typename ALLOC>
 struct MethodNames
 {
     // TODO[Mi-L@]: Since we don't know allocator name provided by user, we use just the fixed substring here
 
-    // all
+    // all compounds
+    static constexpr const char* TYPE_INFO_DECLARATION =
+            "typeInfo();";
+    static constexpr const char* REFLECTABLE_CONST_DECLARATION =
+            "reflectable(const allocator_type& allocator = allocator_type()) const;";
     static constexpr const char* REFLECTABLE_DECLARATION =
-            "reflectable(";
+            "reflectable(const allocator_type& allocator = allocator_type());";
+
+    // ItemType
+    static constexpr const char* ITEM_TYPE_TYPE_INFO =
+            "enumTypeInfo<::without_writer_code::ItemType";
+    static constexpr const char* ITEM_TYPE_REFLECTABLE =
+            "enumReflectable(::without_writer_code::ItemType value,";
 
     // VersionAvailability
+    static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
+            "VersionAvailability::typeInfo()";
+    static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
+            "reflectable(const ";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DEFINITION =
-            "VersionAvailability::reflectable(";
+            "VersionAvailability::reflectable(const ";
     static constexpr const char* TO_STRING_DECLARATION =
             "toString(const zserio::string<"; // ...>::allocator_type...
     static constexpr const char* TO_STRING_DEFINITION =
             "VersionAvailability::toString(const zserio::string<"; // ...>::allocator_type...
 
     // ExtraParamUnion
+    static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
+            "ExtraParamUnion::typeInfo()";
+    static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
+            "ExtraParamUnion::reflectable(const allocator_type& allocator) const";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_DEFINITION =
-            "ExtraParamUnion::reflectable(";
+            "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // Item
+    static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
+            "Item::typeInfo()";
+    static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
+            "Item::reflectable(const allocator_type& allocator) const";
     static constexpr const char* ITEM_REFLECTABLE_DEFINITION =
-            "Item::reflectable(";
+            "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // ItemChoice
+    static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
+            "ItemChoice::typeInfo()";
+    static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
+            "ItemChoice::reflectable(const allocator_type& allocator) const";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_DEFINITION =
-            "ItemChoice::reflectable(";
+            "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // ItemChoiceHolder
+    static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
+            "ItemChoiceHolder::typeInfo()";
+    static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
+            "ItemChoiceHolder::reflectable(const allocator_type& allocator) const";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_DEFINITION =
-            "ItemChoiceHolder::reflectable(";
+            "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // Tile
+    static constexpr const char* TILE_TYPE_INFO_DEFINITION =
+            "Tile::typeInfo()";
+    static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
+            "Tile::reflectable(const allocator_type& allocator) const";
     static constexpr const char* TILE_REFLECTABLE_DEFINITION =
-            "Tile::reflectable(";
+            "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
     static constexpr const char* GET_VERSION_STRING_DECLARATION = "& getVersionString(";
     static constexpr const char* GET_VERSION_STRING_DEFINITION = "& Tile::getVersionString(";
 
+    // GeoMapTable
+    static constexpr const char* GEO_MAP_TABLE_TYPE_INFO_DEFINITION =
+            "GeoMapTable::typeInfo()";
+
     // WorldDb
+    static constexpr const char* WORLD_DB_TYPE_INFO_DEFINITION =
+            "WorldDb::typeInfo()";
     static constexpr const char* WORLD_DB_CTOR_DECLARATION = "WorldDb(const ::zserio::string<";
     static constexpr const char* WORLD_DB_CTOR_DEFINITION = "WorldDb::WorldDb(const ::zserio::string<";
 };
@@ -62,11 +106,25 @@ struct MethodNames
 template <>
 struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 {
-    // all
+    // all compounds
+    static constexpr const char* TYPE_INFO_DECLARATION =
+            "static const ::zserio::pmr::ITypeInfo& typeInfo();";
+    static constexpr const char* REFLECTABLE_CONST_DECLARATION =
+            "::zserio::pmr::IReflectableConstPtr reflectable(";
     static constexpr const char* REFLECTABLE_DECLARATION =
             "::zserio::pmr::IReflectablePtr reflectable(";
 
+    // ItemType
+    static constexpr const char* ITEM_TYPE_TYPE_INFO =
+            "const ::zserio::pmr::ITypeInfo& enumTypeInfo<::without_writer_code::ItemType";
+    static constexpr const char* ITEM_TYPE_REFLECTABLE =
+            ":zserio::pmr::IReflectablePtr enumReflectable(::without_writer_code::ItemType value,";
+
     // VersionAvailability
+    static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& VersionAvailability::typeInfo()";
+    static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
+            "::zserio::pmr::IReflectablePtr reflectable(";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DEFINITION =
             "::zserio::pmr::IReflectablePtr VersionAvailability::reflectable(";
     static constexpr const char* TO_STRING_DECLARATION =
@@ -76,22 +134,42 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
                     "const ::zserio::pmr::string::allocator_type& allocator) const";
 
     // ExtraParamUnion
+    static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& ExtraParamUnion::typeInfo()";
+    static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::pmr::IReflectableConstPtr ExtraParamUnion::reflectable(";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_DEFINITION =
             "::zserio::pmr::IReflectablePtr ExtraParamUnion::reflectable(";
 
     // Item
+    static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& Item::typeInfo()";
+    static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::pmr::IReflectableConstPtr Item::reflectable(";
     static constexpr const char* ITEM_REFLECTABLE_DEFINITION =
             "::zserio::pmr::IReflectablePtr Item::reflectable(";
 
     // ItemChoice
+    static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& ItemChoice::typeInfo()";
+    static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::pmr::IReflectableConstPtr ItemChoice::reflectable(";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_DEFINITION =
             "::zserio::pmr::IReflectablePtr ItemChoice::reflectable(";
 
     // ItemChoiceHolder
+    static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& ItemChoiceHolder::typeInfo()";
+    static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::pmr::IReflectableConstPtr ItemChoiceHolder::reflectable(";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_DEFINITION =
             "::zserio::pmr::IReflectablePtr ItemChoiceHolder::reflectable(";
 
     // Tile
+    static constexpr const char* TILE_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& Tile::typeInfo()";
+    static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::pmr::IReflectableConstPtr Tile::reflectable(";
     static constexpr const char* TILE_REFLECTABLE_DEFINITION =
             "::zserio::pmr::IReflectablePtr Tile::reflectable(";
     static constexpr const char* GET_VERSION_STRING_DECLARATION =
@@ -99,7 +177,13 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
     static constexpr const char* GET_VERSION_STRING_DEFINITION =
             "const ::zserio::pmr::string& Tile::getVersionString(";
 
+    // GeoMapTable
+    static constexpr const char* GEO_MAP_TABLE_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& GeoMapTable::typeInfo()";
+
     // WorldDb
+    static constexpr const char* WORLD_DB_TYPE_INFO_DEFINITION =
+            "const ::zserio::pmr::ITypeInfo& WorldDb::typeInfo()";
     static constexpr const char* WORLD_DB_CTOR_DECLARATION = "WorldDb(const ::zserio::pmr::string&";
     static constexpr const char* WORLD_DB_CTOR_DEFINITION = "WorldDb::WorldDb(const ::zserio::pmr::string&";
 };
@@ -107,11 +191,25 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 template <>
 struct MethodNames<std::allocator<uint8_t>>
 {
-    // all
+    // all compounds
+    static constexpr const char* TYPE_INFO_DECLARATION =
+            "static const ::zserio::ITypeInfo& typeInfo();";
+    static constexpr const char* REFLECTABLE_CONST_DECLARATION =
+            "::zserio::IReflectableConstPtr reflectable(";
     static constexpr const char* REFLECTABLE_DECLARATION =
             "::zserio::IReflectablePtr reflectable(";
 
+    // ItemType
+    static constexpr const char* ITEM_TYPE_TYPE_INFO =
+            "const ::zserio::ITypeInfo& enumTypeInfo<::without_writer_code::ItemType";
+    static constexpr const char* ITEM_TYPE_REFLECTABLE =
+            "::zserio::IReflectablePtr enumReflectable(::without_writer_code::ItemType value,";
+
     // VersionAvailability
+    static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& VersionAvailability::typeInfo()";
+    static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
+            "::zserio::IReflectablePtr reflectable(";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DEFINITION =
             "::zserio::IReflectablePtr VersionAvailability::reflectable(";
     static constexpr const char* TO_STRING_DECLARATION =
@@ -121,22 +219,42 @@ struct MethodNames<std::allocator<uint8_t>>
                     "const ::zserio::string<>::allocator_type& allocator) const";
 
     // ExtraParamUnion
+    static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& ExtraParamUnion::typeInfo()";
+    static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::IReflectableConstPtr ExtraParamUnion::reflectable(";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_DEFINITION =
             "::zserio::IReflectablePtr ExtraParamUnion::reflectable(";
 
     // Item
+    static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& Item::typeInfo()";
+    static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::IReflectableConstPtr Item::reflectable(";
     static constexpr const char* ITEM_REFLECTABLE_DEFINITION =
             "::zserio::IReflectablePtr Item::reflectable(";
 
     // ItemChoice
+    static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& ItemChoice::typeInfo()";
+    static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::IReflectableConstPtr ItemChoice::reflectable(";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_DEFINITION =
             "::zserio::IReflectablePtr ItemChoice::reflectable(";
 
     // ItemChoiceHolder
+    static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& ItemChoiceHolder::typeInfo()";
+    static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::IReflectableConstPtr ItemChoiceHolder::reflectable(";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_DEFINITION =
             "::zserio::IReflectablePtr ItemChoiceHolder::reflectable(";
 
     // Tile
+    static constexpr const char* TILE_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& Tile::typeInfo()";
+    static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
+            "::zserio::IReflectableConstPtr Tile::reflectable(";
     static constexpr const char* TILE_REFLECTABLE_DEFINITION =
             "::zserio::IReflectablePtr Tile::reflectable(";
     static constexpr const char* GET_VERSION_STRING_DECLARATION =
@@ -144,7 +262,13 @@ struct MethodNames<std::allocator<uint8_t>>
     static constexpr const char* GET_VERSION_STRING_DEFINITION =
             "const ::zserio::string<>& Tile::getVersionString(";
 
+    // GeoMapTable
+    static constexpr const char* GEO_MAP_TABLE_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& GeoMapTable::typeInfo()";
+
     // WorldDb
+    static constexpr const char* WORLD_DB_TYPE_INFO_DEFINITION =
+            "const ::zserio::ITypeInfo& WorldDb::typeInfo()";
     static constexpr const char* WORLD_DB_CTOR_DECLARATION = "WorldDb(const ::zserio::string<>&";
     static constexpr const char* WORLD_DB_CTOR_DEFINITION = "WorldDb::WorldDb(const ::zserio::string<>&";
 };
@@ -273,6 +397,16 @@ protected:
         }
     }
 
+    void checkTile(Tile& tile)
+    {
+        checkTile(static_cast<const Tile&>(tile));
+
+        // const version must be called since non-const version is not available
+        static_assert(std::is_same<
+                zserio::IBasicReflectableConstPtr<allocator_type>,
+                decltype(tile.reflectable())>::value, "Const version shall be called!");
+    }
+
     void checkTile(const Tile& tile)
     {
         ASSERT_EQ(VERSION, tile.getVersion());
@@ -297,6 +431,14 @@ protected:
         const ItemChoice& itemChoice1 = data[1].getItemChoice();
         ASSERT_FALSE(itemChoice1.getHasItem());
         ASSERT_EQ(PARAMS[1], itemChoice1.getParam());
+
+        auto reflectable = tile.reflectable();
+        ASSERT_TRUE(reflectable);
+
+        // not implemented without writer code
+        zserio::BitBuffer dummyBitBuffer;
+        zserio::BitStreamWriter writer(dummyBitBuffer);
+        ASSERT_THROW(reflectable->write(writer), zserio::CppRuntimeException);
     }
 
     static const std::string BLOB_NAME;
@@ -329,10 +471,17 @@ TEST_F(WithoutWriterCode, checkItemTypeMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets<", "size_t initializeOffsets(");
     assertMethodNotPresent(type, "void write<", "void write<");
 
+    assertMethodPresent(type, MethodNames<allocator_type>::ITEM_TYPE_TYPE_INFO,
+            MethodNames<allocator_type>::ITEM_TYPE_TYPE_INFO),
+    assertMethodPresent(type, MethodNames<allocator_type>::ITEM_TYPE_REFLECTABLE,
+            MethodNames<allocator_type>::ITEM_TYPE_REFLECTABLE),
+
     assertMethodPresent(type, "size_t enumToOrdinal<", "size_t enumToOrdinal(");
     assertMethodPresent(type, "ItemType valueToEnum<", "ItemType valueToEnum(");
-    assertMethodPresent(type, "size_t bitSizeOf<" , "size_t bitSizeOf(");
-    assertMethodPresent(type, "ItemType read<", "ItemType read(");
+    assertMethodPresent(type, "size_t bitSizeOf<::without_writer_code::ItemType>" ,
+            "size_t bitSizeOf(::without_writer_code::ItemType");
+    assertMethodPresent(type, "ItemType read<::without_writer_code::ItemType",
+            "ItemType read(::zserio::BitStreamReader&");
 }
 
 TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
@@ -341,8 +490,6 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
 
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t VersionAvailability::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void VersionAvailability::write(");
-    assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
-            MethodNames<allocator_type>::VERSION_AVAILABILITY_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "constexpr VersionAvailability() noexcept", nullptr);
     assertMethodPresent(type, "VersionAvailability(::zserio::BitStreamReader&",
@@ -356,8 +503,10 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
     assertMethodPresent(type, "VersionAvailability(VersionAvailability&&) = default;", nullptr);
     assertMethodPresent(type, "VersionAvailability& operator=(VersionAvailability&&) = default;", nullptr);
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& VersionAvailability::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::VERSION_AVAILABILITY_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames<allocator_type>::VERSION_AVAILABILITY_REFLECTABLE_DECLARATION,
+            MethodNames<allocator_type>::VERSION_AVAILABILITY_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "constexpr explicit operator underlying_type() const", nullptr);
     assertMethodPresent(type, "constexpr underlying_type getValue() const", nullptr);
@@ -388,8 +537,10 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
     assertMethodPresent(type, "ExtraParamUnion(::zserio::PropagateAllocatorT,",
             "ExtraParamUnion::ExtraParamUnion(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& ExtraParamUnion::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
+            MethodNames<allocator_type>::EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "ChoiceTag choiceTag(", "ChoiceTag ExtraParamUnion::choiceTag(");
     assertMethodPresent(type, "uint16_t getValue16(", "uint16_t ExtraParamUnion::getValue16(");
@@ -422,8 +573,10 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodPresent(type, "Item(::zserio::PropagateAllocatorT,",
             "Item::Item(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& Item::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::ITEM_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
+            MethodNames<allocator_type>::ITEM_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initialize(", "void Item::initialize(");
     assertMethodPresent(type, "bool isInitialized(", "bool Item::isInitialized(");
@@ -458,8 +611,10 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodPresent(type, "ItemChoice(::zserio::PropagateAllocatorT,",
             "ItemChoice::ItemChoice(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& ItemChoice::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::ITEM_CHOICE_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
+            MethodNames<allocator_type>::ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initialize(", "void ItemChoice::initialize(");
     assertMethodPresent(type, "bool isInitialized(", "bool ItemChoice::isInitialized(");
@@ -496,8 +651,10 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
     assertMethodPresent(type, "ItemChoiceHolder(::zserio::PropagateAllocatorT,",
             "ItemChoiceHolder::ItemChoiceHolder(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& ItemChoiceHolder::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
+            MethodNames<allocator_type>::ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initializeChildren(", "void ItemChoiceHolder::initializeChildren(");
     assertMethodPresent(type, "bool getHasItem(", "bool ItemChoiceHolder::getHasItem(");
@@ -535,8 +692,10 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodPresent(type, "Tile(::zserio::PropagateAllocatorT,",
             "Tile::Tile(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& Tile::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::TILE_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
+            MethodNames<allocator_type>::TILE_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initializeChildren(", "void Tile::initializeChildren(");
     assertMethodPresent(type, "VersionAvailability getVersionAvailability() const",
@@ -553,6 +712,12 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Tile::bitSizeOf(");
     assertMethodPresent(type, "bool operator==(", "bool Tile::operator==");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Tile::hashCode(");
+
+    const auto& typeInfo = Tile::typeInfo();
+    ASSERT_EQ("without_writer_code.Tile", zserio::toString(typeInfo.getSchemaName()));
+
+    // not implemented without writer code
+    ASSERT_THROW(typeInfo.createInstance(), zserio::CppRuntimeException);
 }
 
 TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
@@ -577,8 +742,8 @@ TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
     assertMethodPresent(type, "GeoMapTable(GeoMapTable&&) = delete;", nullptr);
     assertMethodPresent(type, "GeoMapTable& operator=(GeoMapTable&&) = delete;", nullptr);
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& GeoMapTable::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::GEO_MAP_TABLE_TYPE_INFO_DEFINITION);
 
     assertMethodPresent(type, "Reader createReader(", "Reader GeoMapTable::createReader(");
 }
@@ -599,8 +764,8 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
     assertMethodPresent(type, "WorldDb(WorldDb&&) = delete;", nullptr);
     assertMethodPresent(type, "WorldDb& operator=(WorldDb&&) = delete;", nullptr);
 
-    assertMethodPresent(type, "static const ::zserio::ITypeInfo& typeInfo();",
-            "const ::zserio::ITypeInfo& WorldDb::typeInfo()");
+    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
+            MethodNames<allocator_type>::WORLD_DB_TYPE_INFO_DEFINITION);
 
     assertMethodPresent(type, "::zserio::SqliteConnection& connection(",
             "::zserio::SqliteConnection& WorldDb::connection(");

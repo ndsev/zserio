@@ -257,13 +257,6 @@ public class CommandLineArgumentsTest
     }
 
     @Test
-    public void withoutWriterCodeWithReflectionCodeConflict() throws ParseException
-    {
-        final String[] args = { "-withoutWriterCode", "-withReflectionCode" };
-        assertThrows(ParseException.class, () -> parse(args));
-    }
-
-    @Test
     public void withUnusedWarnings() throws ParseException
     {
         final String[] args = { "-withUnusedWarnings" };

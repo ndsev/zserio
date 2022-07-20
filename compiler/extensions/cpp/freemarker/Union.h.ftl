@@ -72,7 +72,9 @@ public:
     static const ${types.typeInfo.name}& typeInfo();
     <#if withReflectionCode>
     ${types.reflectableConstPtr.name} reflectable(const allocator_type& allocator = allocator_type()) const;
+        <#if withWriterCode>
     ${types.reflectablePtr.name} reflectable(const allocator_type& allocator = allocator_type());
+        </#if>
     </#if>
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData) || needsChildrenInitialization>

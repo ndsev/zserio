@@ -93,9 +93,14 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             return m_bitmask.toString(allocator);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
+            <#if withWriterCode>
             m_bitmask.write(writer);
+            <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Writer code is disabled by -withoutWriterCode zserio option!";
+            </#if>
         }
 
         virtual size_t bitSizeOf(size_t bitPosition) const override

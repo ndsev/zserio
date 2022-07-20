@@ -27,7 +27,7 @@ zserio_add_library(TARGET without_writer_code_zs
     OUT_FILES ${ZSERIO_GENERATED_SOURCES}
     ZSERIO_CORE_DIR ${ZSERIO_JAR_DIR}
     ZSERIO_CPP_DIR ${ZSERIO_CPP_DISTR_DIR}
-    ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation -withTypeInfoCode
+    ZSERIO_OPTIONS -withoutWriterCode -withoutSourcesAmalgamation -withTypeInfoCode -withReflectionCode
 )
 
 target_include_directories(without_writer_code_zs SYSTEM PRIVATE ${SQLITE_INCDIR})

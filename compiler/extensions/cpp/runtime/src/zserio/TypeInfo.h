@@ -1578,7 +1578,10 @@ template <typename ALLOC>
 IBasicReflectablePtr<ALLOC> CompoundTypeInfoBase<ALLOC>::createInstance(const ALLOC& allocator) const
 {
     if (!m_createInstanceFunc)
-        throw CppRuntimeException("Cannot create reflectable instance of '") << getSchemaName() << "'!";
+    {
+        throw CppRuntimeException("Reflectable '") << getSchemaName() << "': Cannot create instance, " <<
+                "either '-withoutWriterCode' or '-withoutReflectionCode' zserio option is used!";
+    }
     return m_createInstanceFunc(allocator);
 }
 

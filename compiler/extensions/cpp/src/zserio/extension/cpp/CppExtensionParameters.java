@@ -169,11 +169,6 @@ public class CppExtensionParameters
         final boolean withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
         if (withReflectionCode)
         {
-            if (parameters.getWithWriterCode() == false)
-            {
-                throw new ZserioExtensionException("The specified option '" + OptionWithReflectionCode +
-                        "' needs enabled writing interface code ('withoutWriterCode')!");
-            }
             if (parameters.getWithTypeInfoCode() == false)
             {
                 throw new ZserioExtensionException("The specified option '" + OptionWithReflectionCode +

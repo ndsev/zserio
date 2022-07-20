@@ -47,8 +47,7 @@ const ${types.typeInfo.name}& enumTypeInfo<${fullName}, ${types.allocator.defaul
     <#if withReflectionCode>
 
 template <>
-${types.reflectablePtr.name} enumReflectable(
-        ${fullName} value, const ${types.allocator.default}& allocator)
+${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.allocator.default}& allocator)
 {
     class Reflectable : public ::zserio::ReflectableBase<${types.allocator.default}>
     {
@@ -81,9 +80,14 @@ ${types.reflectablePtr.name} enumReflectable(
             return ${types.string.name}(::zserio::enumToString(m_value), allocator);
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
+            <#if withWriterCode>
             ::zserio::write(writer, m_value);
+            <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Writer code is disabled by -withoutWriterCode zserio option!";
+            </#if>
         }
 
         virtual size_t bitSizeOf(size_t) const override

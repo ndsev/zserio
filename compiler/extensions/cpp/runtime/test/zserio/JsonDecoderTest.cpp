@@ -125,7 +125,7 @@ TEST_F(JsonDecoderTest, decodeNegativeInfinity)
 
     checkDecoderFailure("-Infinvalid", 9);
     checkDecoderFailure("-Infin", 6);
-    checkDecoderFailure("-Infix", 6); // TODO[Mi-L@]: Not in java...
+    checkDecoderFailure("-Infix", 6);
 }
 
 TEST_F(JsonDecoderTest, decodeSignedIntegral)

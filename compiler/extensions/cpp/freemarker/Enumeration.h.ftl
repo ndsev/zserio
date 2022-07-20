@@ -56,8 +56,7 @@ const ${types.typeInfo.name}& enumTypeInfo<${fullName}, ${types.allocator.defaul
     <#if withReflectionCode>
 
 template <>
-${types.reflectablePtr.name} enumReflectable(
-        ${fullName} value, const ${types.allocator.default}& allocator);
+${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.allocator.default}& allocator);
     </#if>
 </#if>
 

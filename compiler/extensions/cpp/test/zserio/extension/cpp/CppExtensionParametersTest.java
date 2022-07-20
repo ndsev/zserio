@@ -63,18 +63,6 @@ public class CppExtensionParametersTest
     }
 
     @Test
-    public void checkWithReflectionCodeWithoutWriterCode()
-    {
-        final String setCppAllocator = "std";
-        final boolean withReflectionCode = true;
-        final boolean withWriterCode = false;
-        final boolean withTypeInfoCode = true;
-        final TestExtensionParameters extensionParameters = new TestExtensionParameters(setCppAllocator,
-                withReflectionCode, withWriterCode, withTypeInfoCode);
-        assertThrows(ZserioExtensionException.class, () -> CppExtensionParameters.check(extensionParameters));
-    }
-
-    @Test
     public void checkWithReflectionCodeWithoutTypeInfoCode()
     {
         final String setCppAllocator = "std";

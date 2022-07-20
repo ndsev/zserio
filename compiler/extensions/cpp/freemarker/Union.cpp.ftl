@@ -157,7 +157,7 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
 
     static const ::zserio::UnionTypeInfo<allocator_type> typeInfo = {
         ::zserio::makeStringView("${schemaTypeName}"),
-    <#if withReflectionCode>
+    <#if withWriterCode && withReflectionCode>
         [](const allocator_type& allocator) -> ${types.reflectablePtr.name}
         {
             return std::allocate_shared<::zserio::ReflectableOwner<${name}>>(allocator, allocator);
@@ -244,9 +244,14 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
     </#if>
         }
 
-        virtual void write(::zserio::BitStreamWriter& writer) const override
+        virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
+    <#if withWriterCode>
             m_object.write(writer);
+    <#else>
+            throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
+                    "Writer code is disabled by -withoutWriterCode zserio option!";
+    </#if>
         }
 
         virtual size_t bitSizeOf(size_t bitPosition) const override
@@ -263,8 +268,10 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
 </#macro>
 <@union_reflectable true/>
 
+        <#if withWriterCode>
 <@union_reflectable false/>
 
+        </#if>
     </#if>
 </#if>
 <#if needs_compound_initialization(compoundConstructorsData)>
