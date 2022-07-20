@@ -132,11 +132,12 @@ main()
 
     set_common_variables
 
-    local BLOBS_0=($("${FIND}" "${PARAM_DIRS[0]}" -name "*.blob" | sort))
+    local FIND_PARAMS="-name *.blob -o -name *.json -not -path *.mypy_cache*"
+    local BLOBS_0=($("${FIND}" "${PARAM_DIRS[0]}" ${FIND_PARAMS} | sort))
     local NUM_BLOBS=${#BLOBS_0[@]}
     local CMP_RESULT=0
     for DIR in ${PARAM_DIRS[@]:1}; do
-        local BLOBS_N=($("${FIND}" "${DIR}" -name "*.blob" | sort))
+        local BLOBS_N=($("${FIND}" "${DIR}" ${FIND_PARAMS} | sort))
 
         if [ ${NUM_BLOBS} -ne ${#BLOBS_N[@]} ] ; then
             stderr_echo "Wrong number of BLOBs!"

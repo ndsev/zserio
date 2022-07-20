@@ -42,22 +42,6 @@ protected:
                 zserio::toString<allocator_type>(arrayLength) + ".json";
     }
 
-    void checkJsonFile(const string_type& createdJsonFileName)
-    {
-        const string_type createdJsonBaseName = createdJsonFileName.substr(
-                createdJsonFileName.find_last_of("/") + 1);
-        const string_type jsonDataFileName("arguments/with_type_info_code/data/" + createdJsonBaseName);
-
-        std::ifstream jsonCreatedFile(createdJsonFileName.c_str());
-        std::ifstream jsonExpectedFile(jsonDataFileName.c_str());
-        string_type createdLine;
-        string_type expectedLine;
-        while (std::getline(jsonCreatedFile, createdLine) && std::getline(jsonExpectedFile, expectedLine))
-            ASSERT_EQ(expectedLine, createdLine);
-        ASSERT_TRUE(jsonCreatedFile.eof());
-        ASSERT_TRUE(jsonExpectedFile.eof());
-    }
-
     void checkReflectable(const WithTypeInfoCode& withTypeInfoCode, const IReflectablePtr& readReflectable)
     {
         auto origReflectable = withTypeInfoCode.reflectable();
@@ -169,7 +153,6 @@ TEST_F(DebugStringTest, jsonWriterWithOptionals)
 
     {
         zserio::toJsonFile(withTypeInfoCode, JSON_NAME_WITH_OPTIONALS);
-        checkJsonFile(JSON_NAME_WITH_OPTIONALS);
 
         auto reflectable = zserio::fromJsonFile(WithTypeInfoCode::typeInfo(), JSON_NAME_WITH_OPTIONALS,
                 allocator_type());
@@ -181,7 +164,6 @@ TEST_F(DebugStringTest, jsonWriterWithOptionals)
         // constant reflectable
         const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
         zserio::toJsonFile(withTypeInfoCodeConst, JSON_NAME_WITH_OPTIONALS);
-        checkJsonFile(JSON_NAME_WITH_OPTIONALS);
 
         auto reflectable = zserio::fromJsonFile<WithTypeInfoCode>(JSON_NAME_WITH_OPTIONALS, allocator_type());
         ASSERT_TRUE(reflectable);
@@ -199,7 +181,6 @@ TEST_F(DebugStringTest, jsonWriterWithoutOptionals)
 
     {
         zserio::toJsonFile(withTypeInfoCode, JSON_NAME_WITHOUT_OPTIONALS);
-        checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
 
         auto reflectable = zserio::fromJsonFile<WithTypeInfoCode>(JSON_NAME_WITHOUT_OPTIONALS,
                 allocator_type());
@@ -211,7 +192,6 @@ TEST_F(DebugStringTest, jsonWriterWithoutOptionals)
         // constant reflectable
         const WithTypeInfoCode& withTypeInfoCodeConst = withTypeInfoCode;
         zserio::toJsonFile(withTypeInfoCodeConst, JSON_NAME_WITHOUT_OPTIONALS);
-        checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
 
         auto reflectable = zserio::fromJsonFile(WithTypeInfoCode::typeInfo(), JSON_NAME_WITHOUT_OPTIONALS,
                 allocator_type());
@@ -238,7 +218,6 @@ TEST_F(DebugStringTest, jsonWriterWithArrayLengthFilter)
                 ArrayLengthWalkFilter walkFilter(i);
                 Walker walker(jsonWriter, walkFilter);
                 walker.walk(withTypeInfoCode.reflectable());
-                checkJsonFile(jsonFileName);
             }
             {
                 std::ifstream jsonFile(jsonFileName.c_str());
@@ -257,7 +236,6 @@ TEST_F(DebugStringTest, jsonWriterWithArrayLengthFilter)
                 ArrayLengthWalkFilter walkFilter(i);
                 Walker walker(jsonWriter, walkFilter);
                 walker.walk(withTypeInfoCodeConst.reflectable());
-                checkJsonFile(jsonFileName);
             }
             {
                 std::ifstream jsonFile(jsonFileName.c_str());
@@ -283,7 +261,6 @@ TEST_F(DebugStringTest, jsonWriterWithDepth0Filter)
             DepthWalkFilter walkFilter(0);
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode.reflectable());
-            checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str());
@@ -302,7 +279,6 @@ TEST_F(DebugStringTest, jsonWriterWithDepth0Filter)
             DepthWalkFilter walkFilter(0);
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCodeConst.reflectable());
-            checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_DEPTH0_FILTER.c_str());
@@ -333,7 +309,6 @@ TEST_F(DebugStringTest, jsonWriterWithDepth1ArrayLength0Filter)
             });
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode.reflectable());
-            checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str());
@@ -358,7 +333,6 @@ TEST_F(DebugStringTest, jsonWriterWithDepth1ArrayLength0Filter)
             });
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCodeConst.reflectable());
-            checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER.c_str());
@@ -383,7 +357,6 @@ TEST_F(DebugStringTest, jsonWriterWithDepth5Filter)
             DepthWalkFilter walkFilter(5);
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode.reflectable());
-            checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str());
@@ -403,7 +376,6 @@ TEST_F(DebugStringTest, jsonWriterWithDepth5Filter)
             DepthWalkFilter walkFilter(5);
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCodeConst.reflectable());
-            checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_DEPTH5_FILTER.c_str());
@@ -430,7 +402,6 @@ TEST_F(DebugStringTest, jsonWriterWithRegexFilter)
             RegexWalkFilter walkFilter(".*fieldOffset");
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode.reflectable());
-            checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str());
@@ -449,7 +420,6 @@ TEST_F(DebugStringTest, jsonWriterWithRegexFilter)
             RegexWalkFilter walkFilter(".*fieldOffset");
             Walker walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCodeConst.reflectable());
-            checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
         }
         {
             std::ifstream jsonFile(JSON_NAME_WITH_REGEX_FILTER.c_str());

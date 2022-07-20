@@ -38,7 +38,6 @@ public class DebugStringTest
         withTypeInfoCode.initializeOffsets(0);
 
         DebugStringUtil.toJsonFile(withTypeInfoCode, JSON_NAME_WITH_OPTIONALS);
-        checkJsonFile(JSON_NAME_WITH_OPTIONALS);
 
         final Object readObject = DebugStringUtil.fromJsonFile(WithTypeInfoCode.class,
                 JSON_NAME_WITH_OPTIONALS);
@@ -55,7 +54,6 @@ public class DebugStringTest
         withTypeInfoCode.initializeOffsets(0);
 
         DebugStringUtil.toJsonFile(withTypeInfoCode, JSON_NAME_WITHOUT_OPTIONALS);
-        checkJsonFile(JSON_NAME_WITHOUT_OPTIONALS);
 
         final Object readObject = DebugStringUtil.fromJsonFile(WithTypeInfoCode.class,
                 JSON_NAME_WITHOUT_OPTIONALS);
@@ -83,7 +81,6 @@ public class DebugStringTest
                 final Walker walker = new Walker(jsonWriter, walkFilter);
                 walker.walk(withTypeInfoCode);
             }
-            checkJsonFile(jsonFileName);
 
             final InputStream inputStream = new FileInputStream(jsonFileName);
             final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -111,7 +108,6 @@ public class DebugStringTest
             final Walker walker = new Walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode);
         }
-        checkJsonFile(JSON_NAME_WITH_DEPTH0_FILTER);
 
         final InputStream inputStream = new FileInputStream(JSON_NAME_WITH_DEPTH0_FILTER);
         final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -141,7 +137,6 @@ public class DebugStringTest
             final Walker walker = new Walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode);
         }
-        checkJsonFile(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
 
         final InputStream inputStream = new FileInputStream(JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER);
         final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -168,7 +163,6 @@ public class DebugStringTest
             final Walker walker = new Walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode);
         }
-        checkJsonFile(JSON_NAME_WITH_DEPTH5_FILTER);
 
         final InputStream inputStream = new FileInputStream(JSON_NAME_WITH_DEPTH5_FILTER);
         final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -195,7 +189,6 @@ public class DebugStringTest
             final Walker walker = new Walker(jsonWriter, walkFilter);
             walker.walk(withTypeInfoCode);
         }
-        checkJsonFile(JSON_NAME_WITH_REGEX_FILTER);
 
         final InputStream inputStream = new FileInputStream(JSON_NAME_WITH_REGEX_FILTER);
         final InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -271,26 +264,6 @@ public class DebugStringTest
     private String getJsonNameWithArrayLengthFilter(int arrayLength)
     {
         return "with_type_info_code_array_length_" + arrayLength + ".json";
-    }
-
-    private void checkJsonFile(String createdJsonFileName) throws IOException
-    {
-        final String jsonDataFileName = "data" + File.separator + createdJsonFileName;
-
-        try (final BufferedReader jsonCreatedReader =
-                    Files.newBufferedReader(Paths.get(createdJsonFileName),StandardCharsets.UTF_8);
-             final BufferedReader jsonExpectedReader =
-                    Files.newBufferedReader(Paths.get(jsonDataFileName),StandardCharsets.UTF_8))
-        {
-            String createdLine;
-            String expectedLine;
-            do
-            {
-                createdLine = jsonCreatedReader.readLine();
-                expectedLine = jsonExpectedReader.readLine();
-                assertEquals(createdLine, expectedLine);
-            } while (createdLine != null && expectedLine != null);
-        }
     }
 
     private static final String JSON_NAME_WITH_OPTIONALS = "with_type_info_code_optionals.json";

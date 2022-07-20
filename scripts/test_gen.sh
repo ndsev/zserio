@@ -381,7 +381,7 @@ print_help()
 {
     cat << EOF
 Description:
-    Tests given zserio sources with zserio release compiled in release-ver directory.
+    Tests correctness of repetitive compilation of gif schema using release compiled in release-ver directory.
 
 Usage:
     $0 [-h] [-e] [-p] [-o <dir>] generator...

@@ -66,9 +66,3 @@ add_test_sources(
 )
 
 add_test_dependencies(with_type_info_code_zs)
-
-add_custom_command(TARGET with_type_info_code_zs POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/data
-                           ${CMAKE_CURRENT_BINARY_DIR}/data
-                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/data
-                   COMMENT "Copying data directory for with_type_info_code test")

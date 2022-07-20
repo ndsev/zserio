@@ -2,7 +2,6 @@ import unittest
 import os
 import json
 import zserio
-import itertools
 
 from WithTypeInfoCodeCreator import createWithTypeInfoCode
 
@@ -20,7 +19,6 @@ class DebugStringTest(unittest.TestCase):
         zserio.to_json_file(withTypeInfoCode, self.JSON_NAME_WITH_OPTIONALS)
 
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_OPTIONALS, createdOptionals=True)
-        self._checkJsonFile(self.JSON_NAME_WITH_OPTIONALS)
 
         readWithTypeInfoCode = zserio.from_json_file(self.api.WithTypeInfoCode, self.JSON_NAME_WITH_OPTIONALS)
         self.assertEqual(withTypeInfoCode, readWithTypeInfoCode)
@@ -31,7 +29,6 @@ class DebugStringTest(unittest.TestCase):
         zserio.to_json_file(withTypeInfoCode, self.JSON_NAME_WITHOUT_OPTIONALS)
 
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITHOUT_OPTIONALS, createdOptionals=False)
-        self._checkJsonFile(self.JSON_NAME_WITHOUT_OPTIONALS)
 
         readWithTypeInfoCode = zserio.from_json_file(self.api.WithTypeInfoCode,
                                                      self.JSON_NAME_WITHOUT_OPTIONALS)
@@ -47,7 +44,6 @@ class DebugStringTest(unittest.TestCase):
                 walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
                 walker.walk(withTypeInfoCode)
             self._checkWithTypeInfoCodeJson(jsonFileName, maxArrayLength=i)
-            self._checkJsonFile(jsonFileName)
 
             with open(jsonFileName, "r", encoding="utf-8") as jsonFile:
                 jsonReader = zserio.JsonReader(text_io=jsonFile)
@@ -79,7 +75,6 @@ class DebugStringTest(unittest.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeDepth1ArrayLength0Json(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER)
-        self._checkJsonFile(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER)
 
         with open(self.JSON_NAME_WITH_DEPTH1_ARRAY_LENGTH0_FILTER, "r", encoding="utf-8") as jsonFile:
             jsonReader = zserio.JsonReader(text_io=jsonFile)
@@ -94,7 +89,6 @@ class DebugStringTest(unittest.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeJson(self.JSON_NAME_WITH_DEPTH5_FILTER)
-        self._checkJsonFile(self.JSON_NAME_WITH_DEPTH5_FILTER)
 
         with open(self.JSON_NAME_WITH_DEPTH5_FILTER, "r", encoding="utf-8") as jsonFile:
             jsonReader = zserio.JsonReader(text_io=jsonFile)
@@ -109,7 +103,6 @@ class DebugStringTest(unittest.TestCase):
             walker = zserio.Walker(zserio.JsonWriter(text_io=jsonFile, indent=4), walkFilter)
             walker.walk(withTypeInfoCode)
         self._checkWithTypeInfoCodeRegexJson(self.JSON_NAME_WITH_REGEX_FILTER)
-        self._checkJsonFile(self.JSON_NAME_WITH_REGEX_FILTER)
 
         with open(self.JSON_NAME_WITH_REGEX_FILTER, "r", encoding="utf-8") as jsonFile:
             jsonReader = zserio.JsonReader(text_io=jsonFile)
@@ -370,16 +363,6 @@ class DebugStringTest(unittest.TestCase):
     def _getJsonNameWithArrayLengthFilter(arrayLength):
         return os.path.join(getApiDir(os.path.dirname(__file__)),
                             "with_type_info_code_array_length_" + str(arrayLength) + ".json")
-
-    def _checkJsonFile(self, createdJsonFileName):
-        createdJsonBaseName = os.path.basename(createdJsonFileName)
-        jsonDataFileName = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "data",
-                                        createdJsonBaseName)
-
-        with open(createdJsonFileName, encoding="utf-8") as jsonCreatedFile:
-            with open(jsonDataFileName, encoding="utf-8") as jsonExpectedFile:
-                for createdLine, expectedLine in itertools.zip_longest(jsonCreatedFile, jsonExpectedFile):
-                    self.assertEqual(expectedLine, createdLine)
 
     JSON_NAME_WITH_OPTIONALS = os.path.join(getApiDir(os.path.dirname(__file__)),
                                             "with_type_info_code_optionals.json")
