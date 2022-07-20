@@ -17,14 +17,18 @@ namespace without_writer_code
 
 using allocator_type = zserio::RebindAlloc<Tile::allocator_type, uint8_t>;
 
-// TODO[Mi-L@]: Currently we ignore interface for packed arrays.
-
 template <typename ALLOC>
-struct MethodNames
+struct BasicMethodNames
 {
     // TODO[Mi-L@]: Since we don't know allocator name provided by user, we use just the fixed substring here
 
     // all compounds
+    static constexpr const char* CREATE_PACKING_CONTEXT_DECLARATION =
+            "static void createPackingContext(";
+    static constexpr const char* INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(";
+    static constexpr const char* BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* TYPE_INFO_DECLARATION =
             "typeInfo();";
     static constexpr const char* REFLECTABLE_CONST_DECLARATION =
@@ -37,8 +41,30 @@ struct MethodNames
             "enumTypeInfo<::without_writer_code::ItemType";
     static constexpr const char* ITEM_TYPE_REFLECTABLE =
             "enumReflectable(::without_writer_code::ItemType value,";
+    static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext<::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void initPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf<::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t bitSizeOf(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_TYPE_READ_PACKED_DECLARATION =
+            "ItemType read<::without_writer_code::ItemType, ::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_TYPE_READ_PACKED_DEFINITION =
+            "ItemType read(::zserio::BasicPackingContextNode<";
 
     // VersionAvailability
+    static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DECLARATION =
+            "VersionAvailability(::zserio::BasicPackingContextNode<";
+    static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DEFINITION =
+            "VersionAvailability::VersionAvailability(::zserio::BasicPackingContextNode<";
+    static constexpr const char* VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void VersionAvailability::createPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION =
+            "void VersionAvailability::initPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t VersionAvailability::bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
             "VersionAvailability::typeInfo()";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
@@ -51,6 +77,16 @@ struct MethodNames
             "VersionAvailability::toString(const zserio::string<"; // ...>::allocator_type...
 
     // ExtraParamUnion
+    static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DECLARATION =
+            "ExtraParamUnion(::zserio::BasicPackingContextNode<";
+    static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DEFINITION =
+            "ExtraParamUnion::ExtraParamUnion(::zserio::BasicPackingContextNode<";
+    static constexpr const char* EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ExtraParamUnion::createPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ExtraParamUnion::initPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ExtraParamUnion::bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
             "ExtraParamUnion::typeInfo()";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
@@ -59,6 +95,16 @@ struct MethodNames
             "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // Item
+    static constexpr const char* ITEM_READ_CTOR_PACKED_DECLARATION =
+            "Item(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_READ_CTOR_PACKED_DEFINITION =
+            "Item::Item(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void Item::createPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DEFINITION =
+            "void Item::initPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t Item::bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
             "Item::typeInfo()";
     static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
@@ -67,6 +113,16 @@ struct MethodNames
             "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // ItemChoice
+    static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DECLARATION =
+            "ItemChoice(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DEFINITION =
+            "ItemChoice::ItemChoice(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoice::createPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoice::initPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ItemChoice::bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
             "ItemChoice::typeInfo()";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
@@ -75,6 +131,16 @@ struct MethodNames
             "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // ItemChoiceHolder
+    static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DECLARATION =
+            "ItemChoiceHolder(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DEFINITION =
+            "ItemChoiceHolder::ItemChoiceHolder(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoiceHolder::createPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoiceHolder::initPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ItemChoiceHolder::bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
             "ItemChoiceHolder::typeInfo()";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
@@ -83,6 +149,16 @@ struct MethodNames
             "::zserio::IBasicReflectablePtr<"; // return type only to prevent clash with const version
 
     // Tile
+    static constexpr const char* TILE_READ_CTOR_PACKED_DECLARATION =
+            "Tile(::zserio::BasicPackingContextNode<";
+    static constexpr const char* TILE_READ_CTOR_PACKED_DEFINITION =
+            "Tile::Tile(::zserio::BasicPackingContextNode<";
+    static constexpr const char* TILE_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void Tile::createPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* TILE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void Tile::initPackingContext(::zserio::BasicPackingContextNode<";
+    static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t Tile::bitSizeOf(::zserio::BasicPackingContextNode<";
     static constexpr const char* TILE_TYPE_INFO_DEFINITION =
             "Tile::typeInfo()";
     static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
@@ -104,9 +180,15 @@ struct MethodNames
 };
 
 template <>
-struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
+struct BasicMethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 {
     // all compounds
+    static constexpr const char* CREATE_PACKING_CONTEXT_DECLARATION =
+            "static void createPackingContext(::zserio::pmr::PackingContextNode& contextNode);";
+    static constexpr const char* INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(::zserio::pmr::PackingContextNode& contextNode) const;";
+    static constexpr const char* BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, size_t bitPosition) const;";
     static constexpr const char* TYPE_INFO_DECLARATION =
             "static const ::zserio::pmr::ITypeInfo& typeInfo();";
     static constexpr const char* REFLECTABLE_CONST_DECLARATION =
@@ -119,8 +201,32 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
             "const ::zserio::pmr::ITypeInfo& enumTypeInfo<::without_writer_code::ItemType";
     static constexpr const char* ITEM_TYPE_REFLECTABLE =
             ":zserio::pmr::IReflectablePtr enumReflectable(::without_writer_code::ItemType value,";
+    static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext<::zserio::pmr::PackingContextNode, ::without_writer_code::ItemType>";
+    static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void initPackingContext(::zserio::pmr::PackingContextNode& contextNode, "
+                    "::without_writer_code::ItemType";
+    static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf<::zserio::pmr::PackingContextNode, ::without_writer_code::ItemType>";
+    static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t bitSizeOf(::zserio::pmr::PackingContextNode& contextNode, "
+                    "::without_writer_code::ItemType";
+    static constexpr const char* ITEM_TYPE_READ_PACKED_DECLARATION =
+            "ItemType read<::without_writer_code::ItemType, ::zserio::pmr::PackingContextNode>";
+    static constexpr const char* ITEM_TYPE_READ_PACKED_DEFINITION =
+            "ItemType read(::zserio::pmr::PackingContextNode& contextNode, ";
 
     // VersionAvailability
+    static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DECLARATION =
+            "VersionAvailability(::zserio::pmr::PackingContextNode& contextNode, ::zserio::BitStreamReader&";
+    static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DEFINITION =
+            "VersionAvailability::VersionAvailability(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void VersionAvailability::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION =
+            "void VersionAvailability::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t VersionAvailability::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
     static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& VersionAvailability::typeInfo()";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
@@ -134,6 +240,16 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
                     "const ::zserio::pmr::string::allocator_type& allocator) const";
 
     // ExtraParamUnion
+    static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DECLARATION =
+            "ExtraParamUnion(::zserio::pmr::PackingContextNode& contextNode,";
+    static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DEFINITION =
+            "ExtraParamUnion::ExtraParamUnion(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ExtraParamUnion::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ExtraParamUnion::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ExtraParamUnion::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
     static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& ExtraParamUnion::typeInfo()";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
@@ -142,6 +258,16 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
             "::zserio::pmr::IReflectablePtr ExtraParamUnion::reflectable(";
 
     // Item
+    static constexpr const char* ITEM_READ_CTOR_PACKED_DECLARATION =
+            "Item(::zserio::pmr::PackingContextNode& contextNode,";
+    static constexpr const char* ITEM_READ_CTOR_PACKED_DEFINITION =
+            "Item::Item(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void Item::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DEFINITION =
+            "void Item::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t Item::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
     static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& Item::typeInfo()";
     static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
@@ -150,6 +276,16 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
             "::zserio::pmr::IReflectablePtr Item::reflectable(";
 
     // ItemChoice
+    static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DECLARATION =
+            "ItemChoice(::zserio::pmr::PackingContextNode& contextNode,";
+    static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DEFINITION =
+            "ItemChoice::ItemChoice(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoice::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoice::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ItemChoice::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
     static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& ItemChoice::typeInfo()";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
@@ -158,6 +294,16 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
             "::zserio::pmr::IReflectablePtr ItemChoice::reflectable(";
 
     // ItemChoiceHolder
+    static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DECLARATION =
+            "ItemChoiceHolder(::zserio::pmr::PackingContextNode& contextNode,";
+    static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DEFINITION =
+            "ItemChoiceHolder::ItemChoiceHolder(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoiceHolder::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoiceHolder::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ItemChoiceHolder::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
     static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& ItemChoiceHolder::typeInfo()";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
@@ -166,6 +312,16 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
             "::zserio::pmr::IReflectablePtr ItemChoiceHolder::reflectable(";
 
     // Tile
+    static constexpr const char* TILE_READ_CTOR_PACKED_DECLARATION =
+            "Tile(::zserio::pmr::PackingContextNode& contextNode,";
+    static constexpr const char* TILE_READ_CTOR_PACKED_DEFINITION =
+            "Tile::Tile(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* TILE_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void Tile::createPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* TILE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void Tile::initPackingContext(::zserio::pmr::PackingContextNode& contextNode";
+    static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t Tile::bitSizeOf(::zserio::pmr::PackingContextNode& contextNode";
     static constexpr const char* TILE_TYPE_INFO_DEFINITION =
             "const ::zserio::pmr::ITypeInfo& Tile::typeInfo()";
     static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
@@ -189,9 +345,15 @@ struct MethodNames<zserio::pmr::PropagatingPolymorphicAllocator<uint8_t>>
 };
 
 template <>
-struct MethodNames<std::allocator<uint8_t>>
+struct BasicMethodNames<std::allocator<uint8_t>>
 {
     // all compounds
+    static constexpr const char* CREATE_PACKING_CONTEXT_DECLARATION =
+            "static void createPackingContext(::zserio::PackingContextNode& contextNode);";
+    static constexpr const char* INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext(::zserio::PackingContextNode& contextNode) const;";
+    static constexpr const char* BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf(::zserio::PackingContextNode& contextNode, size_t bitPosition) const;";
     static constexpr const char* TYPE_INFO_DECLARATION =
             "static const ::zserio::ITypeInfo& typeInfo();";
     static constexpr const char* REFLECTABLE_CONST_DECLARATION =
@@ -204,8 +366,32 @@ struct MethodNames<std::allocator<uint8_t>>
             "const ::zserio::ITypeInfo& enumTypeInfo<::without_writer_code::ItemType";
     static constexpr const char* ITEM_TYPE_REFLECTABLE =
             "::zserio::IReflectablePtr enumReflectable(::without_writer_code::ItemType value,";
+    static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION =
+            "void initPackingContext<::zserio::PackingContextNode, ::without_writer_code::ItemType>";
+    static constexpr const char* ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void initPackingContext(::zserio::PackingContextNode& contextNode, "
+                    "::without_writer_code::ItemType";
+    static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DECLARATION =
+            "size_t bitSizeOf<::zserio::PackingContextNode, ::without_writer_code::ItemType>";
+    static constexpr const char* ITEM_TYPE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t bitSizeOf(::zserio::PackingContextNode& contextNode, "
+                    "::without_writer_code::ItemType";
+    static constexpr const char* ITEM_TYPE_READ_PACKED_DECLARATION =
+            "ItemType read<::without_writer_code::ItemType, ::zserio::PackingContextNode>";
+    static constexpr const char* ITEM_TYPE_READ_PACKED_DEFINITION =
+            "ItemType read(::zserio::PackingContextNode& contextNode, ";
 
     // VersionAvailability
+    static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DECLARATION =
+            "VersionAvailability(::zserio::PackingContextNode& contextNode, ::zserio::BitStreamReader&";
+    static constexpr const char* VERSION_AVAILABILITY_READ_CTOR_PACKED_DEFINITION =
+            "VersionAvailability::VersionAvailability(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void VersionAvailability::createPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION =
+            "void VersionAvailability::initPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t VersionAvailability::bitSizeOf(::zserio::PackingContextNode& contextNode";
     static constexpr const char* VERSION_AVAILABILITY_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& VersionAvailability::typeInfo()";
     static constexpr const char* VERSION_AVAILABILITY_REFLECTABLE_DECLARATION =
@@ -219,6 +405,16 @@ struct MethodNames<std::allocator<uint8_t>>
                     "const ::zserio::string<>::allocator_type& allocator) const";
 
     // ExtraParamUnion
+    static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DECLARATION =
+            "ExtraParamUnion(::zserio::PackingContextNode& contextNode,";
+    static constexpr const char* EXTRA_PARAM_UNION_READ_CTOR_PACKED_DEFINITION =
+            "ExtraParamUnion::ExtraParamUnion(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ExtraParamUnion::createPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ExtraParamUnion::initPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ExtraParamUnion::bitSizeOf(::zserio::PackingContextNode& contextNode";
     static constexpr const char* EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& ExtraParamUnion::typeInfo()";
     static constexpr const char* EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION =
@@ -227,6 +423,16 @@ struct MethodNames<std::allocator<uint8_t>>
             "::zserio::IReflectablePtr ExtraParamUnion::reflectable(";
 
     // Item
+    static constexpr const char* ITEM_READ_CTOR_PACKED_DECLARATION =
+            "Item(::zserio::PackingContextNode& contextNode,";
+    static constexpr const char* ITEM_READ_CTOR_PACKED_DEFINITION =
+            "Item::Item(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void Item::createPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_INIT_PACKING_CONTEXT_DEFINITION =
+            "void Item::initPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t Item::bitSizeOf(::zserio::PackingContextNode& contextNode";
     static constexpr const char* ITEM_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& Item::typeInfo()";
     static constexpr const char* ITEM_REFLECTABLE_CONST_DEFINITION =
@@ -235,6 +441,16 @@ struct MethodNames<std::allocator<uint8_t>>
             "::zserio::IReflectablePtr Item::reflectable(";
 
     // ItemChoice
+    static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DECLARATION =
+            "ItemChoice(::zserio::PackingContextNode& contextNode,";
+    static constexpr const char* ITEM_CHOICE_READ_CTOR_PACKED_DEFINITION =
+            "ItemChoice::ItemChoice(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoice::createPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoice::initPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ItemChoice::bitSizeOf(::zserio::PackingContextNode& contextNode";
     static constexpr const char* ITEM_CHOICE_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& ItemChoice::typeInfo()";
     static constexpr const char* ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION =
@@ -243,6 +459,16 @@ struct MethodNames<std::allocator<uint8_t>>
             "::zserio::IReflectablePtr ItemChoice::reflectable(";
 
     // ItemChoiceHolder
+    static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DECLARATION =
+            "ItemChoiceHolder(::zserio::PackingContextNode& contextNode,";
+    static constexpr const char* ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DEFINITION =
+            "ItemChoiceHolder::ItemChoiceHolder(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoiceHolder::createPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION =
+            "void ItemChoiceHolder::initPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t ItemChoiceHolder::bitSizeOf(::zserio::PackingContextNode& contextNode";
     static constexpr const char* ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& ItemChoiceHolder::typeInfo()";
     static constexpr const char* ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION =
@@ -251,6 +477,16 @@ struct MethodNames<std::allocator<uint8_t>>
             "::zserio::IReflectablePtr ItemChoiceHolder::reflectable(";
 
     // Tile
+    static constexpr const char* TILE_READ_CTOR_PACKED_DECLARATION =
+            "Tile(::zserio::PackingContextNode& contextNode,";
+    static constexpr const char* TILE_READ_CTOR_PACKED_DEFINITION =
+            "Tile::Tile(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* TILE_CREATE_PACKING_CONTEXT_DEFINITION =
+            "void Tile::createPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* TILE_INIT_PACKING_CONTEXT_DEFINITION =
+            "void Tile::initPackingContext(::zserio::PackingContextNode& contextNode";
+    static constexpr const char* TILE_BIT_SIZE_OF_PACKED_DEFINITION =
+            "size_t Tile::bitSizeOf(::zserio::PackingContextNode& contextNode";
     static constexpr const char* TILE_TYPE_INFO_DEFINITION =
             "const ::zserio::ITypeInfo& Tile::typeInfo()";
     static constexpr const char* TILE_REFLECTABLE_CONST_DEFINITION =
@@ -272,6 +508,8 @@ struct MethodNames<std::allocator<uint8_t>>
     static constexpr const char* WORLD_DB_CTOR_DECLARATION = "WorldDb(const ::zserio::string<>&";
     static constexpr const char* WORLD_DB_CTOR_DEFINITION = "WorldDb::WorldDb(const ::zserio::string<>&";
 };
+
+using MethodNames = BasicMethodNames<allocator_type>;
 
 class WithoutWriterCode : public ::testing::Test
 {
@@ -471,17 +709,21 @@ TEST_F(WithoutWriterCode, checkItemTypeMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets<", "size_t initializeOffsets(");
     assertMethodNotPresent(type, "void write<", "void write<");
 
-    assertMethodPresent(type, MethodNames<allocator_type>::ITEM_TYPE_TYPE_INFO,
-            MethodNames<allocator_type>::ITEM_TYPE_TYPE_INFO),
-    assertMethodPresent(type, MethodNames<allocator_type>::ITEM_TYPE_REFLECTABLE,
-            MethodNames<allocator_type>::ITEM_TYPE_REFLECTABLE),
+    assertMethodPresent(type, MethodNames::ITEM_TYPE_TYPE_INFO, MethodNames::ITEM_TYPE_TYPE_INFO),
+    assertMethodPresent(type, MethodNames::ITEM_TYPE_REFLECTABLE, MethodNames::ITEM_TYPE_REFLECTABLE),
 
+    assertMethodPresent(type, MethodNames::ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION,
+            MethodNames::ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION);
     assertMethodPresent(type, "size_t enumToOrdinal<", "size_t enumToOrdinal(");
     assertMethodPresent(type, "ItemType valueToEnum<", "ItemType valueToEnum(");
     assertMethodPresent(type, "size_t bitSizeOf<::without_writer_code::ItemType>" ,
             "size_t bitSizeOf(::without_writer_code::ItemType");
+    assertMethodPresent(type, MethodNames::ITEM_TYPE_BIT_SIZE_OF_PACKED_DECLARATION,
+            MethodNames::ITEM_TYPE_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "ItemType read<::without_writer_code::ItemType",
             "ItemType read(::zserio::BitStreamReader&");
+    assertMethodPresent(type, MethodNames::ITEM_TYPE_READ_PACKED_DECLARATION,
+            MethodNames::ITEM_TYPE_READ_PACKED_DEFINITION);
 }
 
 TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
@@ -494,6 +736,8 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
     assertMethodPresent(type, "constexpr VersionAvailability() noexcept", nullptr);
     assertMethodPresent(type, "VersionAvailability(::zserio::BitStreamReader&",
             "VersionAvailability::VersionAvailability(::zserio::BitStreamReader&");
+    assertMethodPresent(type, MethodNames::VERSION_AVAILABILITY_READ_CTOR_PACKED_DECLARATION,
+            MethodNames::VERSION_AVAILABILITY_READ_CTOR_PACKED_DEFINITION);
     assertMethodPresent(type, "constexpr VersionAvailability(Values value) noexcept :", nullptr);
     assertMethodPresent(type, "VersionAvailability(underlying_type value)",
             "VersionAvailability::VersionAvailability(underlying_type value)");
@@ -503,18 +747,25 @@ TEST_F(WithoutWriterCode, checkVersionAvailabilityMethods)
     assertMethodPresent(type, "VersionAvailability(VersionAvailability&&) = default;", nullptr);
     assertMethodPresent(type, "VersionAvailability& operator=(VersionAvailability&&) = default;", nullptr);
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::VERSION_AVAILABILITY_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames<allocator_type>::VERSION_AVAILABILITY_REFLECTABLE_DECLARATION,
-            MethodNames<allocator_type>::VERSION_AVAILABILITY_REFLECTABLE_DEFINITION);
+    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
+            MethodNames::VERSION_AVAILABILITY_CREATE_PACKING_CONTEXT_DEFINITION);
+    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+            MethodNames::VERSION_AVAILABILITY_INIT_PACKING_CONTEXT_DEFINITION);
+
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::VERSION_AVAILABILITY_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::VERSION_AVAILABILITY_REFLECTABLE_DECLARATION,
+            MethodNames::VERSION_AVAILABILITY_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "constexpr explicit operator underlying_type() const", nullptr);
     assertMethodPresent(type, "constexpr underlying_type getValue() const", nullptr);
     assertMethodPresent(type, "size_t bitSizeOf(size_t bitPosition = 0) const",
             "size_t VersionAvailability::bitSizeOf(size_t) const");
+    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+            MethodNames::VERSION_AVAILABILITY_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "uint32_t hashCode() const", "uint32_t VersionAvailability::hashCode() const");
-    assertMethodPresent(type, MethodNames<allocator_type>::TO_STRING_DECLARATION,
-            MethodNames<allocator_type>::TO_STRING_DEFINITION);
+    assertMethodPresent(type, MethodNames::TO_STRING_DECLARATION,
+            MethodNames::TO_STRING_DEFINITION);
 }
 
 TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
@@ -524,11 +775,13 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
     assertMethodNotPresent(type, " ExtraParamUnion()", "ExtraParamUnion::ExtraParamUnion()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ExtraParamUnion::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ExtraParamUnion::write(");
-    assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
-            MethodNames<allocator_type>::EXTRA_PARAM_UNION_REFLECTABLE_DEFINITION);
+    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+            MethodNames::EXTRA_PARAM_UNION_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "ExtraParamUnion(::zserio::BitStreamReader&",
             "ExtraParamUnion::ExtraParamUnion(::zserio::BitStreamReader&");
+    assertMethodPresent(type, MethodNames::EXTRA_PARAM_UNION_READ_CTOR_PACKED_DECLARATION,
+            MethodNames::EXTRA_PARAM_UNION_READ_CTOR_PACKED_DEFINITION);
     assertMethodPresent(type, "~ExtraParamUnion() = default;", nullptr);
     assertMethodPresent(type, "ExtraParamUnion(const ExtraParamUnion&) = default;", nullptr);
     assertMethodPresent(type, "ExtraParamUnion& operator=(const ExtraParamUnion&) = default;", nullptr);
@@ -537,15 +790,22 @@ TEST_F(WithoutWriterCode, checkExtraParamUnionMethods)
     assertMethodPresent(type, "ExtraParamUnion(::zserio::PropagateAllocatorT,",
             "ExtraParamUnion::ExtraParamUnion(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
-            MethodNames<allocator_type>::EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION);
+    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
+            MethodNames::EXTRA_PARAM_UNION_CREATE_PACKING_CONTEXT_DEFINITION);
+    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+            MethodNames::EXTRA_PARAM_UNION_INIT_PACKING_CONTEXT_DEFINITION);
+
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::EXTRA_PARAM_UNION_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+            MethodNames::EXTRA_PARAM_UNION_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "ChoiceTag choiceTag(", "ChoiceTag ExtraParamUnion::choiceTag(");
     assertMethodPresent(type, "uint16_t getValue16(", "uint16_t ExtraParamUnion::getValue16(");
     assertMethodPresent(type, "uint32_t getValue32(", "uint32_t ExtraParamUnion::getValue32(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ExtraParamUnion::bitSizeOf(");
+    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+            MethodNames::EXTRA_PARAM_UNION_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool ExtraParamUnion::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ExtraParamUnion::hashCode(");
 }
@@ -561,10 +821,12 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodNotPresent(type, "void setParam(", "void Item::setParam(");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Item::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Item::write(");
-    assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
-            MethodNames<allocator_type>::ITEM_REFLECTABLE_DEFINITION);
+    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+            MethodNames::ITEM_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "Item(::zserio::BitStreamReader&", "Item::Item(::zserio::BitStreamReader&");
+    assertMethodPresent(type, MethodNames::ITEM_READ_CTOR_PACKED_DECLARATION,
+            MethodNames::ITEM_READ_CTOR_PACKED_DEFINITION);
     assertMethodPresent(type, "~Item() = default;", nullptr);
     assertMethodPresent(type, "Item(const Item&", "Item::Item(const Item&");
     assertMethodPresent(type, "Item& operator=(const Item&", "Item& Item::operator=(const Item&");
@@ -573,10 +835,15 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodPresent(type, "Item(::zserio::PropagateAllocatorT,",
             "Item::Item(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::ITEM_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
-            MethodNames<allocator_type>::ITEM_REFLECTABLE_CONST_DEFINITION);
+    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
+            MethodNames::ITEM_CREATE_PACKING_CONTEXT_DEFINITION);
+    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+            MethodNames::ITEM_INIT_PACKING_CONTEXT_DEFINITION);
+
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::ITEM_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+            MethodNames::ITEM_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initialize(", "void Item::initialize(");
     assertMethodPresent(type, "bool isInitialized(", "bool Item::isInitialized(");
@@ -585,6 +852,8 @@ TEST_F(WithoutWriterCode, checkItemMethods)
     assertMethodPresent(type, "& getExtraParam(", "& Item::getExtraParam(");
     assertMethodPresent(type, "bool isExtraParamUsed(", "bool Item::isExtraParamUsed(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Item::bitSizeOf(");
+    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+            MethodNames::ITEM_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool Item::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Item::hashCode(");
 }
@@ -596,11 +865,13 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodNotPresent(type, " ItemChoice()", "ItemChoice::ItemChoice()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoice::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ItemChoice::write(");
-    assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
-            MethodNames<allocator_type>::ITEM_CHOICE_REFLECTABLE_DEFINITION);
+    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+            MethodNames::ITEM_CHOICE_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "ItemChoice(::zserio::BitStreamReader&",
             "ItemChoice::ItemChoice(::zserio::BitStreamReader&");
+    assertMethodPresent(type, MethodNames::ITEM_CHOICE_READ_CTOR_PACKED_DECLARATION,
+            MethodNames::ITEM_CHOICE_READ_CTOR_PACKED_DEFINITION);
     assertMethodPresent(type, "~ItemChoice() = default;", nullptr);
     assertMethodPresent(type, "ItemChoice(const ItemChoice&", "ItemChoice::ItemChoice(const ItemChoice&");
     assertMethodPresent(type, "ItemChoice& operator=(const ItemChoice&",
@@ -611,10 +882,15 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodPresent(type, "ItemChoice(::zserio::PropagateAllocatorT,",
             "ItemChoice::ItemChoice(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::ITEM_CHOICE_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
-            MethodNames<allocator_type>::ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION);
+    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
+            MethodNames::ITEM_CHOICE_CREATE_PACKING_CONTEXT_DEFINITION);
+    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+            MethodNames::ITEM_CHOICE_INIT_PACKING_CONTEXT_DEFINITION);
+
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::ITEM_CHOICE_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+            MethodNames::ITEM_CHOICE_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initialize(", "void ItemChoice::initialize(");
     assertMethodPresent(type, "bool isInitialized(", "bool ItemChoice::isInitialized(");
@@ -623,6 +899,8 @@ TEST_F(WithoutWriterCode, checkItemChoiceMethods)
     assertMethodPresent(type, "Item& getItem(", "Item& ItemChoice::getItem(");
     assertMethodPresent(type, "uint16_t getParam(", "uint16_t ItemChoice::getParam(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoice::bitSizeOf(");
+    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+            MethodNames::ITEM_CHOICE_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool ItemChoice::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoice::hashCode(");
 }
@@ -634,11 +912,13 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
     assertMethodNotPresent(type, " ItemChoiceHolder()", "ItemChoiceHolder::ItemChoiceHolder()");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t ItemChoiceHolder::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void ItemChoiceHolder::write(");
-    assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
-            MethodNames<allocator_type>::ITEM_CHOICE_HOLDER_REFLECTABLE_DEFINITION);
+    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+            MethodNames::ITEM_CHOICE_HOLDER_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "ItemChoiceHolder(::zserio::BitStreamReader&",
             "ItemChoiceHolder::ItemChoiceHolder(::zserio::BitStreamReader&");
+    assertMethodPresent(type, MethodNames::ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DECLARATION,
+            MethodNames::ITEM_CHOICE_HOLDER_READ_CTOR_PACKED_DEFINITION);
     assertMethodPresent(type, "~ItemChoiceHolder() = default;", nullptr);
     assertMethodPresent(type, "ItemChoiceHolder(const ItemChoiceHolder&",
             "ItemChoiceHolder::ItemChoiceHolder(const ItemChoiceHolder&");
@@ -651,15 +931,22 @@ TEST_F(WithoutWriterCode, checkItemChoiceHolderMethods)
     assertMethodPresent(type, "ItemChoiceHolder(::zserio::PropagateAllocatorT,",
             "ItemChoiceHolder::ItemChoiceHolder(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
-            MethodNames<allocator_type>::ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION);
+    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
+            MethodNames::ITEM_CHOICE_HOLDER_CREATE_PACKING_CONTEXT_DEFINITION);
+    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+            MethodNames::ITEM_CHOICE_HOLDER_INIT_PACKING_CONTEXT_DEFINITION);
+
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::ITEM_CHOICE_HOLDER_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+            MethodNames::ITEM_CHOICE_HOLDER_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initializeChildren(", "void ItemChoiceHolder::initializeChildren(");
     assertMethodPresent(type, "bool getHasItem(", "bool ItemChoiceHolder::getHasItem(");
     assertMethodPresent(type, "ItemChoice& getItemChoice(", "ItemChoice& ItemChoiceHolder::getItemChoice(");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t ItemChoiceHolder::bitSizeOf(");
+    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+            MethodNames::ITEM_CHOICE_HOLDER_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool ItemChoiceHolder::operator==(");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t ItemChoiceHolder::hashCode(");
 }
@@ -680,10 +967,12 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodNotPresent(type, "void setData(", "void Tile::setData(");
     assertMethodNotPresent(type, "size_t initializeOffsets(", "size_t Tile::initializeOffsets(");
     assertMethodNotPresent(type, "void write(", "void Tile::write(");
-    assertMethodNotPresent(type, MethodNames<allocator_type>::REFLECTABLE_DECLARATION,
-            MethodNames<allocator_type>::TILE_REFLECTABLE_DEFINITION);
+    assertMethodNotPresent(type, MethodNames::REFLECTABLE_DECLARATION,
+            MethodNames::TILE_REFLECTABLE_DEFINITION);
 
     assertMethodPresent(type, "Tile(::zserio::BitStreamReader&", "Tile::Tile(::zserio::BitStreamReader&");
+    assertMethodPresent(type, MethodNames::TILE_READ_CTOR_PACKED_DECLARATION,
+            MethodNames::TILE_READ_CTOR_PACKED_DEFINITION);
     assertMethodPresent(type, "~Tile() = default;", nullptr);
     assertMethodPresent(type, "Tile(const Tile&) = default;", nullptr);
     assertMethodPresent(type, "Tile& operator=(const Tile&) = default;", nullptr);
@@ -692,24 +981,31 @@ TEST_F(WithoutWriterCode, checkTileMethods)
     assertMethodPresent(type, "Tile(::zserio::PropagateAllocatorT,",
             "Tile::Tile(::zserio::PropagateAllocatorT,");
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::TILE_TYPE_INFO_DEFINITION);
-    assertMethodPresent(type, MethodNames<allocator_type>::REFLECTABLE_CONST_DECLARATION,
-            MethodNames<allocator_type>::TILE_REFLECTABLE_CONST_DEFINITION);
+    assertMethodPresent(type, MethodNames::CREATE_PACKING_CONTEXT_DECLARATION,
+            MethodNames::TILE_CREATE_PACKING_CONTEXT_DEFINITION);
+    assertMethodPresent(type, MethodNames::INIT_PACKING_CONTEXT_DECLARATION,
+            MethodNames::TILE_INIT_PACKING_CONTEXT_DEFINITION);
+
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::TILE_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::REFLECTABLE_CONST_DECLARATION,
+            MethodNames::TILE_REFLECTABLE_CONST_DEFINITION);
 
     assertMethodPresent(type, "void initializeChildren(", "void Tile::initializeChildren(");
     assertMethodPresent(type, "VersionAvailability getVersionAvailability() const",
             "VersionAvailability Tile::getVersionAvailability() const");
     assertMethodPresent(type, "uint8_t getVersion(", "uint8_t Tile::getVersion(");
     assertMethodPresent(type, "bool isVersionUsed(", "bool Tile::isVersionUsed(");
-    assertMethodPresent(type, MethodNames<allocator_type>::GET_VERSION_STRING_DECLARATION,
-            MethodNames<allocator_type>::GET_VERSION_STRING_DEFINITION);
+    assertMethodPresent(type, MethodNames::GET_VERSION_STRING_DECLARATION,
+            MethodNames::GET_VERSION_STRING_DEFINITION);
     assertMethodPresent(type, "bool isVersionStringUsed(", "bool Tile::isVersionStringUsed(");
     assertMethodPresent(type, "uint32_t getNumElementsOffset(", "uint32_t Tile::getNumElementsOffset(");
     assertMethodPresent(type, "uint32_t getNumElements(", "uint32_t Tile::getNumElements(");
     assertMethodPresent(type, "& getOffsets() const", "& Tile::getOffsets() const");
     assertMethodPresent(type, "& getData() const", "& Tile::getData() const");
     assertMethodPresent(type, "size_t bitSizeOf(", "size_t Tile::bitSizeOf(");
+    assertMethodPresent(type, MethodNames::BIT_SIZE_OF_PACKED_DECLARATION,
+            MethodNames::TILE_BIT_SIZE_OF_PACKED_DEFINITION);
     assertMethodPresent(type, "bool operator==(", "bool Tile::operator==");
     assertMethodPresent(type, "uint32_t hashCode(", "uint32_t Tile::hashCode(");
 
@@ -742,8 +1038,8 @@ TEST_F(WithoutWriterCode, checkGeoMapTableMethods)
     assertMethodPresent(type, "GeoMapTable(GeoMapTable&&) = delete;", nullptr);
     assertMethodPresent(type, "GeoMapTable& operator=(GeoMapTable&&) = delete;", nullptr);
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::GEO_MAP_TABLE_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::GEO_MAP_TABLE_TYPE_INFO_DEFINITION);
 
     assertMethodPresent(type, "Reader createReader(", "Reader GeoMapTable::createReader(");
 }
@@ -755,8 +1051,8 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
     assertMethodNotPresent(type,"void createSchema(", "void WorldDb::createSchema(");
     assertMethodNotPresent(type, "void deleteSchema(", "void WorldDb::deleteSchema(");
 
-    assertMethodPresent(type, MethodNames<allocator_type>::WORLD_DB_CTOR_DECLARATION,
-            MethodNames<allocator_type>::WORLD_DB_CTOR_DEFINITION);
+    assertMethodPresent(type, MethodNames::WORLD_DB_CTOR_DECLARATION,
+            MethodNames::WORLD_DB_CTOR_DEFINITION);
     assertMethodPresent(type, "WorldDb(sqlite3*", "WorldDb::WorldDb(sqlite3*");
     assertMethodPresent(type, "~WorldDb()", "WorldDb::~WorldDb(");
     assertMethodPresent(type, "WorldDb(const WorldDb&) = delete;", nullptr);
@@ -764,8 +1060,8 @@ TEST_F(WithoutWriterCode, checkWorldDbMethods)
     assertMethodPresent(type, "WorldDb(WorldDb&&) = delete;", nullptr);
     assertMethodPresent(type, "WorldDb& operator=(WorldDb&&) = delete;", nullptr);
 
-    assertMethodPresent(type, MethodNames<allocator_type>::TYPE_INFO_DECLARATION,
-            MethodNames<allocator_type>::WORLD_DB_TYPE_INFO_DEFINITION);
+    assertMethodPresent(type, MethodNames::TYPE_INFO_DECLARATION,
+            MethodNames::WORLD_DB_TYPE_INFO_DEFINITION);
 
     assertMethodPresent(type, "::zserio::SqliteConnection& connection(",
             "::zserio::SqliteConnection& WorldDb::connection(");
