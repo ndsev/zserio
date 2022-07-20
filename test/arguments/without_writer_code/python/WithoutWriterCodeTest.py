@@ -17,7 +17,11 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodNotPresent(userType, "write")
 
         self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "from_reader_packed")
+        self._assertMethodPresent(userType, "create_packing_context")
+        self._assertMethodPresent(userType, "init_packing_context")
         self._assertMethodPresent(userType, "bitsizeof")
+        self._assertMethodPresent(userType, "bitsizeof_packed")
 
     def testVersionAvailabilityMethods(self):
         userType = self.api.VersionAvailability
@@ -28,6 +32,7 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "from_value")
         self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "from_reader_packed")
         self._assertMethodPresent(userType, "__eq__")
         self._assertMethodPresent(userType, "__hash__")
         self._assertMethodPresent(userType, "__str__")
@@ -35,7 +40,10 @@ class WithoutWriterCodeTest(unittest.TestCase):
         self._assertMethodPresent(userType, "__and__")
         self._assertMethodPresent(userType, "__xor__")
         self._assertMethodPresent(userType, "__invert__")
+        self._assertMethodPresent(userType, "create_packing_context")
+        self._assertMethodPresent(userType, "init_packing_context")
         self._assertMethodPresent(userType, "bitsizeof")
+        self._assertMethodPresent(userType, "bitsizeof_packed")
 
         self._assertPropertyPresent(userType, "value", readOnly=True)
 
@@ -47,8 +55,13 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
+        self._assertMethodPresent(userType, "read_packed")
         self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "from_reader_packed")
+        self._assertMethodPresent(userType, "create_packing_context")
+        self._assertMethodPresent(userType, "init_packing_context")
         self._assertMethodPresent(userType, "bitsizeof")
+        self._assertMethodPresent(userType, "bitsizeof_packed")
 
         self._assertPropertyPresent(userType, "choice_tag", readOnly=True)
         self._assertPropertyPresent(userType, "value16", readOnly=True)
@@ -64,8 +77,13 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
+        self._assertMethodPresent(userType, "read_packed")
         self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "from_reader_packed")
+        self._assertMethodPresent(userType, "create_packing_context")
+        self._assertMethodPresent(userType, "init_packing_context")
         self._assertMethodPresent(userType, "bitsizeof")
+        self._assertMethodPresent(userType, "bitsizeof_packed")
 
         self._assertPropertyPresent(userType, "item_type", readOnly=True)
         self._assertPropertyPresent(userType, "param", readOnly=True)
@@ -79,8 +97,13 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
+        self._assertMethodPresent(userType, "read_packed")
         self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "from_reader_packed")
+        self._assertMethodPresent(userType, "create_packing_context")
+        self._assertMethodPresent(userType, "init_packing_context")
         self._assertMethodPresent(userType, "bitsizeof")
+        self._assertMethodPresent(userType, "bitsizeof_packed")
 
         self._assertPropertyPresent(userType, "has_item", readOnly=True)
         self._assertPropertyPresent(userType, "item", readOnly=True)
@@ -95,8 +118,13 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
+        self._assertMethodPresent(userType, "read_packed")
         self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "from_reader_packed")
+        self._assertMethodPresent(userType, "create_packing_context")
+        self._assertMethodPresent(userType, "init_packing_context")
         self._assertMethodPresent(userType, "bitsizeof")
+        self._assertMethodPresent(userType, "bitsizeof_packed")
 
         self._assertPropertyPresent(userType, "has_item", readOnly=True)
         self._assertPropertyPresent(userType, "item_choice", readOnly=True)
@@ -112,8 +140,13 @@ class WithoutWriterCodeTest(unittest.TestCase):
 
         self._assertMethodPresent(userType, "__init__")
         self._assertMethodPresent(userType, "read")
+        self._assertMethodPresent(userType, "read_packed")
         self._assertMethodPresent(userType, "from_reader")
+        self._assertMethodPresent(userType, "from_reader_packed")
+        self._assertMethodPresent(userType, "create_packing_context")
+        self._assertMethodPresent(userType, "init_packing_context")
         self._assertMethodPresent(userType, "bitsizeof")
+        self._assertMethodPresent(userType, "bitsizeof_packed")
 
         self._assertPropertyPresent(userType, "version", readOnly=True)
         self._assertPropertyPresent(userType, "num_elements_offset", readOnly=True)

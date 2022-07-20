@@ -37,12 +37,16 @@ public class WithoutWriterCodeTest
         assertMethodNotPresent(methods, "write(");
 
         assertMethodPresent(methods, "ItemType(");
-        assertMethodPresent(methods, "readEnum(");
+        assertMethodPresent(methods, "getValue()");
+        assertMethodPresent(methods, "getGenericValue()");
+        assertMethodPresent(methods, "createPackingContext(");
+        assertMethodPresent(methods, "initPackingContext(");
+        assertMethodPresent(methods, "readEnum(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(methods, "readEnum(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "toEnum(byte)");
         assertMethodPresent(methods, "bitSizeOf()");
         assertMethodPresent(methods, "bitSizeOf(long)");
-        assertMethodPresent(methods, "getValue()");
-        assertMethodPresent(methods, "getGenericValue()");
+        assertMethodPresent(methods, "bitSizeOf(zserio.runtime.array.PackingContextNode,");
     }
 
     @Test
@@ -56,12 +60,17 @@ public class WithoutWriterCodeTest
         assertMethodPresent(methods, "VersionAvailability()");
         assertMethodPresent(methods, "VersionAvailability(byte)");
         assertMethodPresent(methods, "VersionAvailability(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(methods, "VersionAvailability(zserio.runtime.array.PackingContextNode,");
+        assertMethodPresent(methods, "createPackingContext(");
+        assertMethodPresent(methods, "initPackingContext(");
         assertMethodPresent(methods, "bitSizeOf()");
         assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(methods, "bitSizeOf(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "equals(java.lang.Object)");
         assertMethodPresent(methods, "hashCode()");
         assertMethodPresent(methods, "toString()");
         assertMethodPresent(methods, "getValue()");
+        assertMethodPresent(methods, "getGenericValue()");
         assertMethodPresent(methods, "or(without_writer_code.VersionAvailability)");
         assertMethodPresent(methods, "and(without_writer_code.VersionAvailability)");
         assertMethodPresent(methods, "xor(without_writer_code.VersionAvailability)");
@@ -79,14 +88,19 @@ public class WithoutWriterCodeTest
 
         assertMethodPresent(methods, "ExtraParamUnion(java.io.File");
         assertMethodPresent(methods, "ExtraParamUnion(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(methods, "ExtraParamUnion(zserio.runtime.array.PackingContextNode,");
+        assertMethodPresent(methods, "createPackingContext(");
+        assertMethodPresent(methods, "initPackingContext(");
         assertMethodPresent(methods, "bitSizeOf()");
         assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(methods, "bitSizeOf(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "choiceTag()");
         assertMethodPresent(methods, "equals(java.lang.Object)");
         assertMethodPresent(methods, "hashCode()");
         assertMethodPresent(methods, "getValue16()");
         assertMethodPresent(methods, "getValue32()");
         assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(methods, "read(zserio.runtime.array.PackingContextNode,");
     }
 
     @Test
@@ -103,8 +117,12 @@ public class WithoutWriterCodeTest
 
         assertMethodPresent(methods, "Item(java.io.File");
         assertMethodPresent(methods, "Item(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(methods, "Item(zserio.runtime.array.PackingContextNode,");
+        assertMethodPresent(methods, "createPackingContext(");
+        assertMethodPresent(methods, "initPackingContext(");
         assertMethodPresent(methods, "bitSizeOf()");
         assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(methods, "bitSizeOf(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "equals(java.lang.Object)");
         assertMethodPresent(methods, "hashCode()");
         assertMethodPresent(methods, "getExtraParam()");
@@ -112,6 +130,7 @@ public class WithoutWriterCodeTest
         assertMethodPresent(methods, "getParam()");
         assertMethodPresent(methods, "isExtraParamUsed()");
         assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(methods, "read(zserio.runtime.array.PackingContextNode");
     }
 
     @Test
@@ -127,14 +146,19 @@ public class WithoutWriterCodeTest
 
         assertMethodPresent(methods, "ItemChoice(java.io.File");
         assertMethodPresent(methods, "ItemChoice(zserio.runtime.io.BitStreamReader");
+        assertMethodPresent(methods, "ItemChoice(zserio.runtime.array.PackingContextNode,");
+        assertMethodPresent(methods, "createPackingContext(");
+        assertMethodPresent(methods, "initPackingContext(");
         assertMethodPresent(methods, "bitSizeOf()");
         assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(methods, "bitSizeOf(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "equals(java.lang.Object)");
         assertMethodPresent(methods, "hashCode()");
         assertMethodPresent(methods, "getHasItem()");
         assertMethodPresent(methods, "getItem()");
         assertMethodPresent(methods, "getParam()");
         assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(methods, "read(zserio.runtime.array.PackingContextNode,");
     }
 
     @Test
@@ -151,13 +175,18 @@ public class WithoutWriterCodeTest
 
         assertMethodPresent(methods, "ItemChoiceHolder(java.io.File)");
         assertMethodPresent(methods, "ItemChoiceHolder(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(methods, "ItemChoiceHolder(zserio.runtime.array.PackingContextNode,");
+        assertMethodPresent(methods, "createPackingContext(");
+        assertMethodPresent(methods, "initPackingContext(");
         assertMethodPresent(methods, "bitSizeOf()");
         assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(methods, "bitSizeOf(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "equals(java.lang.Object)");
         assertMethodPresent(methods, "hashCode()");
         assertMethodPresent(methods, "getHasItem()");
         assertMethodPresent(methods, "getItemChoice()");
         assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(methods, "read(zserio.runtime.array.PackingContextNode,");
     }
 
     @Test
@@ -179,8 +208,12 @@ public class WithoutWriterCodeTest
 
         assertMethodPresent(methods, "Tile(java.io.File)");
         assertMethodPresent(methods, "Tile(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(methods, "Tile(zserio.runtime.array.PackingContextNode,");
+        assertMethodPresent(methods, "createPackingContext(");
+        assertMethodPresent(methods, "initPackingContext(");
         assertMethodPresent(methods, "bitSizeOf()");
         assertMethodPresent(methods, "bitSizeOf(long)");
+        assertMethodPresent(methods, "bitSizeOf(zserio.runtime.array.PackingContextNode,");
         assertMethodPresent(methods, "equals(java.lang.Object)");
         assertMethodPresent(methods, "hashCode()");
         assertMethodPresent(methods, "getData()");
@@ -188,6 +221,7 @@ public class WithoutWriterCodeTest
         assertMethodPresent(methods, "getNumElements()");
         assertMethodPresent(methods, "getVersion()");
         assertMethodPresent(methods, "read(zserio.runtime.io.BitStreamReader)");
+        assertMethodPresent(methods, "read(zserio.runtime.array.PackingContextNode,");
     }
 
     @Test
@@ -319,7 +353,7 @@ public class WithoutWriterCodeTest
                 break;
             }
         }
-        assertFalse(present);
+        assertFalse(present, "Method '" + methodPattern + "' is present!");
     }
 
     private void assertMethodPresent(Set<String> methods, String methodPattern)
@@ -333,7 +367,7 @@ public class WithoutWriterCodeTest
                 break;
             }
         }
-        assertTrue(present);
+        assertTrue(present, "Method '" + methodPattern + "' is not present!");
     }
 
     private Connection createWorldDb() throws SQLException, IOException

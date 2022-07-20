@@ -709,8 +709,8 @@ TEST_F(WithoutWriterCode, checkItemTypeMethods)
     assertMethodNotPresent(type, "size_t initializeOffsets<", "size_t initializeOffsets(");
     assertMethodNotPresent(type, "void write<", "void write<");
 
-    assertMethodPresent(type, MethodNames::ITEM_TYPE_TYPE_INFO, MethodNames::ITEM_TYPE_TYPE_INFO),
-    assertMethodPresent(type, MethodNames::ITEM_TYPE_REFLECTABLE, MethodNames::ITEM_TYPE_REFLECTABLE),
+    assertMethodPresent(type, MethodNames::ITEM_TYPE_TYPE_INFO, MethodNames::ITEM_TYPE_TYPE_INFO);
+    assertMethodPresent(type, MethodNames::ITEM_TYPE_REFLECTABLE, MethodNames::ITEM_TYPE_REFLECTABLE);
 
     assertMethodPresent(type, MethodNames::ITEM_TYPE_INIT_PACKING_CONTEXT_DECLARATION,
             MethodNames::ITEM_TYPE_INIT_PACKING_CONTEXT_DEFINITION);
