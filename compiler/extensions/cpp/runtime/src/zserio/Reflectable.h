@@ -1498,10 +1498,130 @@ private:
 /** Reflectable for arrays of bitmask types. */
 /** \{ */
 template <typename ALLOC, typename RAW_ARRAY>
-using BitmaskReflectableConstArray = CompoundReflectableConstArray<ALLOC, RAW_ARRAY>;
+class BitmaskReflectableConstArray : public ReflectableConstArrayBase<ALLOC>
+{
+private:
+    using Base = ReflectableConstArrayBase<ALLOC>;
+
+    using ElementType = typename RAW_ARRAY::value_type;
+
+public:
+    using Base::getTypeInfo;
+    using Base::at;
+    using Base::operator[];
+
+    BitmaskReflectableConstArray(const ALLOC& allocator, const RAW_ARRAY& rawArray) :
+            Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
+    {}
+
+    virtual size_t size() const override
+    {
+        return m_rawArray.size();
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return m_rawArray[index].reflectable(Base::get_allocator());
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    {
+        return at(index);
+    }
+
+private:
+    const RAW_ARRAY& m_rawArray;
+};
 
 template <typename ALLOC, typename RAW_ARRAY>
-using BitmaskReflectableArray = CompoundReflectableArray<ALLOC, RAW_ARRAY>;
+class BitmaskReflectableArray : public ReflectableArrayBase<ALLOC>
+{
+private:
+    using Base = ReflectableArrayBase<ALLOC>;
+
+    using ElementType = typename RAW_ARRAY::value_type;
+    using UnderlyingElementType = typename ElementType::underlying_type;
+
+public:
+    using Base::getTypeInfo;
+
+    BitmaskReflectableArray(const ALLOC& allocator, RAW_ARRAY& rawArray) :
+            Base(ElementType::typeInfo(), allocator), m_rawArray(rawArray)
+    {}
+
+    virtual size_t size() const override
+    {
+        return m_rawArray.size();
+    }
+
+    virtual void resize(size_t size) override
+    {
+        m_rawArray.resize(size);
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> at(size_t index) const override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return m_rawArray[index].reflectable(Base::get_allocator());
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> at(size_t index) override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        return m_rawArray[index].reflectable(Base::get_allocator());
+    }
+
+    virtual IBasicReflectableConstPtr<ALLOC> operator[](size_t index) const override
+    {
+        return at(index);
+    }
+
+    virtual IBasicReflectablePtr<ALLOC> operator[](size_t index) override
+    {
+        return at(index);
+    }
+
+    virtual void setAt(const AnyHolder<ALLOC>& value, size_t index) override
+    {
+        if (index >= size())
+        {
+            throw CppRuntimeException("Index ") << index << " out of range for reflectable array '" <<
+                    getTypeInfo().getSchemaName() << "' of size " << size() << "!";
+        }
+
+        if (value.template isType<ElementType>())
+            m_rawArray[index] = value.template get<ElementType>();
+        else
+            m_rawArray[index] = ElementType(value.template get<UnderlyingElementType>());
+    }
+
+    virtual void append(const AnyHolder<ALLOC>& value) override
+    {
+        if (value.template isType<ElementType>())
+            m_rawArray.push_back(value.template get<ElementType>());
+        else
+            m_rawArray.push_back(ElementType(value.template get<UnderlyingElementType>()));
+    }
+
+private:
+    RAW_ARRAY& m_rawArray;
+};
 /** \} */
 
 /** Reflectable for arrays of enum types. */
@@ -1555,6 +1675,7 @@ private:
     using Base = ReflectableArrayBase<ALLOC>;
 
     using ElementType = typename RAW_ARRAY::value_type;
+    using UnderlyingElementType = typename std::underlying_type<ElementType>::type;
 
 public:
     using Base::getTypeInfo;
@@ -1613,12 +1734,18 @@ public:
                     getTypeInfo().getSchemaName() << "' of size " << size() << "!";
         }
 
-        m_rawArray[index] = value.template get<typename RAW_ARRAY::value_type>();
+        if (value.template isType<ElementType>())
+            m_rawArray[index] = value.template get<ElementType>();
+        else
+            m_rawArray[index] = valueToEnum<ElementType>(value.template get<UnderlyingElementType>());
     }
 
     virtual void append(const AnyHolder<ALLOC>& value) override
     {
-        m_rawArray.push_back(value.template get<typename RAW_ARRAY::value_type>());
+        if (value.template isType<ElementType>())
+            m_rawArray.push_back(value.template get<ElementType>());
+        else
+            m_rawArray.push_back(valueToEnum<ElementType>(value.template get<UnderlyingElementType>()));
     }
 
 private:

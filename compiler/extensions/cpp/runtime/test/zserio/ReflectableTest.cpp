@@ -1967,8 +1967,15 @@ TEST_F(ReflectableTest, bitmaskArray)
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
 
+    reflectable->append(AnyHolder<>(DummyBitmask(DummyBitmask::Values::WRITE).getValue()));
+    ASSERT_EQ(3, reflectable->size());
+    ASSERT_EQ(DummyBitmask::Values::WRITE, DummyBitmask(reflectable->at(2)->getUInt8()));
+    reflectable->setAt(AnyHolder<>(DummyBitmask(DummyBitmask::Values::READ).getValue()), 2);
+    ASSERT_EQ(3, reflectable->size());
+    ASSERT_EQ(DummyBitmask::Values::READ, DummyBitmask(reflectable->at(2)->getUInt8()));
+
     // out of range
-    ASSERT_THROW(reflectable->setAt(AnyHolder<>(DummyBitmask::Values::CREATE), 2), CppRuntimeException);
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(DummyBitmask::Values::CREATE), 3), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, enumeration)
@@ -2015,8 +2022,15 @@ TEST_F(ReflectableTest, enumArray)
     reflectable->resize(2);
     ASSERT_EQ(2, reflectable->size());
 
+    reflectable->append(AnyHolder<>(enumToValue(DummyEnum::VALUE1)));
+    ASSERT_EQ(3, reflectable->size());
+    ASSERT_EQ(enumToValue(DummyEnum::VALUE1), reflectable->at(2)->getInt8());
+    reflectable->setAt(AnyHolder<>(enumToValue(DummyEnum::VALUE2)), 2);
+    ASSERT_EQ(3, reflectable->size());
+    ASSERT_EQ(enumToValue(DummyEnum::VALUE2), reflectable->at(2)->getInt8());
+
     // out of range
-    ASSERT_THROW(reflectable->setAt(AnyHolder<>(DummyEnum::VALUE2), 2), CppRuntimeException);
+    ASSERT_THROW(reflectable->setAt(AnyHolder<>(DummyEnum::VALUE2), 3), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compoundConst)
