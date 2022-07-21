@@ -152,9 +152,16 @@ main()
             if [ ${VERBOSE} -ne 0 ] ; then
                 echo "  ${BLOBS_0[$i]##*/} <-> ${BLOBS_N[$i]##*/}"
             fi
-            cmp "${BLOBS_0[$i]}" "${BLOBS_N[$i]}"
-            if [ $? -ne 0 ] ; then
-                CMP_RESULT=1
+            if [ ${BLOBS_0[$i]} == *.blob ] ; then
+                cmp "${BLOBS_0[$i]}" "${BLOBS_N[$i]}"
+                if [ $? -ne 0 ] ; then
+                    CMP_RESULT=1
+                fi
+            else
+                diff --strip-trailing-cr "${BLOBS_0[$i]}" "${BLOBS_N[$i]}"
+                if [ $? -ne 0 ] ; then
+                    CMP_RESULT=1
+                fi
             fi
         done
     done
