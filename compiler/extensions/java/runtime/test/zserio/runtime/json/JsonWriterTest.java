@@ -33,7 +33,7 @@ public class JsonWriterTest
         final JsonWriter jsonWriter = new JsonWriter(stringWriter);
         jsonWriter.close();
 
-        assertEquals("", stringWriter.toString());
+        assertJsonEquals("", stringWriter.toString());
     }
 
     @Test
@@ -45,7 +45,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(null, TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"text\": null", stringWriter.toString());
+            assertJsonEquals("\"text\": null", stringWriter.toString());
         }
     }
 
@@ -58,7 +58,7 @@ public class JsonWriterTest
             jsonWriter.visitValue("test", TEXT_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"text\": \"test\"", stringWriter.toString());
+            assertJsonEquals("\"text\": \"test\"", stringWriter.toString());
         }
     }
 
@@ -71,7 +71,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(true, BOOL_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"boolField\": true", stringWriter.toString());
+            assertJsonEquals("\"boolField\": true", stringWriter.toString());
         }
     }
 
@@ -84,7 +84,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(Integer.MIN_VALUE, INT32_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"int32Field\": " + Integer.toString(Integer.MIN_VALUE), stringWriter.toString());
+            assertJsonEquals("\"int32Field\": " + Integer.toString(Integer.MIN_VALUE), stringWriter.toString());
         }
     }
 
@@ -99,7 +99,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(uint64Max, UINT64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"uint64Field\": " + uint64Max.toString(), stringWriter.toString());
+            assertJsonEquals("\"uint64Field\": " + uint64Max.toString(), stringWriter.toString());
         }
     }
 
@@ -112,7 +112,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(3.5f, FLOAT_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"floatField\": 3.5", stringWriter.toString());
+            assertJsonEquals("\"floatField\": 3.5", stringWriter.toString());
         }
     }
 
@@ -125,7 +125,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(9.875, DOUBLE_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"doubleField\": 9.875", stringWriter.toString());
+            assertJsonEquals("\"doubleField\": 9.875", stringWriter.toString());
         }
     }
 
@@ -147,7 +147,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(new ZeroDummyEnum(), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"enumField\": 0", stringWriter.toString());
+            assertJsonEquals("\"enumField\": 0", stringWriter.toString());
         }
     }
 
@@ -172,7 +172,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(new UInt64MaxDummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"enum64Field\": " + uint64Max.toString(), stringWriter.toString());
+            assertJsonEquals("\"enum64Field\": " + uint64Max.toString(), stringWriter.toString());
         }
     }
 
@@ -194,7 +194,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(new ZeroDummyBitmask(), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"bitmaskField\": 0", stringWriter.toString());
+            assertJsonEquals("\"bitmaskField\": 0", stringWriter.toString());
         }
     }
 
@@ -218,7 +218,7 @@ public class JsonWriterTest
             jsonWriter.visitValue(new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
             // note that this is not valid json
-            assertEquals("\"bitmask64Field\": " + uint64Max.toString(), stringWriter.toString());
+            assertJsonEquals("\"bitmask64Field\": " + uint64Max.toString(), stringWriter.toString());
         }
     }
 
@@ -235,7 +235,7 @@ public class JsonWriterTest
                     WalkerConst.NOT_ELEMENT);
             jsonWriter.endRoot(null);
 
-            assertEquals("{\"identifier\": 13, \"text\": \"test\", \"data\": " +
+            assertJsonEquals("{\"identifier\": 13, \"text\": \"test\", \"data\": " +
                     "{\"buffer\": [255, 31], \"bitSize\": 13}}", stringWriter.toString());
         }
     }
@@ -248,7 +248,7 @@ public class JsonWriterTest
         {
             walkNested(jsonWriter);
 
-            assertEquals("{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}", stringWriter.toString());
+            assertJsonEquals("{\"identifier\": 13, \"nested\": {\"text\": \"test\"}}", stringWriter.toString());
         }
     }
 
@@ -260,19 +260,19 @@ public class JsonWriterTest
         {
             walkArray(jsonWriter);
 
-            assertEquals("{\"array\": [1, 2]}", stringWriter.toString());
+            assertJsonEquals("{\"array\": [1, 2]}", stringWriter.toString());
         }
     }
 
     @Test
-    public void arrayWithIndnet()
+    public void arrayWithIndent()
     {
         StringWriter stringWriter = new StringWriter();
         try (final JsonWriter jsonWriter = new JsonWriter(stringWriter, 2))
         {
             walkArray(jsonWriter);
 
-            assertEquals("{\n  \"array\": [\n    1,\n    2\n  ]\n}", stringWriter.toString());
+            assertJsonEquals("{\n  \"array\": [\n    1,\n    2\n  ]\n}", stringWriter.toString());
         }
     }
 
@@ -284,7 +284,7 @@ public class JsonWriterTest
         {
             walkNested(jsonWriter);
 
-            assertEquals("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}",
+            assertJsonEquals("{\n\"identifier\": 13,\n\"nested\": {\n\"text\": \"test\"\n}\n}",
                     stringWriter.toString());
         }
     }
@@ -297,7 +297,7 @@ public class JsonWriterTest
         {
             walkNested(jsonWriter);
 
-            assertEquals("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}",
+            assertJsonEquals("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}",
                     stringWriter.toString());
         }
     }
@@ -310,7 +310,7 @@ public class JsonWriterTest
         {
             walkNested(jsonWriter);
 
-            assertEquals("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}",
+            assertJsonEquals("{\n  \"identifier\": 13,\n  \"nested\": {\n    \"text\": \"test\"\n  }\n}",
                     stringWriter.toString());
         }
     }
@@ -326,8 +326,13 @@ public class JsonWriterTest
 
             walkNested(jsonWriter);
 
-            assertEquals("{\"identifier\":13,\"nested\":{\"text\":\"test\"}}", stringWriter.toString());
+            assertJsonEquals("{\"identifier\":13,\"nested\":{\"text\":\"test\"}}", stringWriter.toString());
         }
+    }
+
+    private void assertJsonEquals(String expectedJson, String providedJson)
+    {
+        assertEquals(expectedJson.replaceAll("\n", System.lineSeparator()), providedJson);
     }
 
     private void walkNested(WalkObserver observer)

@@ -150,7 +150,7 @@ public class JsonWriter implements WalkObserver, AutoCloseable
             out.write(itemSeparator);
 
         if (indent != null)
-            out.write('\n');
+            out.write(System.lineSeparator());
 
         writeIndent();
     }
@@ -171,7 +171,7 @@ public class JsonWriter implements WalkObserver, AutoCloseable
     private void endObject()
     {
         if (indent != null)
-            out.write('\n');
+            out.write(System.lineSeparator());
 
         level -= 1;
 
@@ -191,7 +191,7 @@ public class JsonWriter implements WalkObserver, AutoCloseable
     private void endArray()
     {
         if (indent != null)
-            out.write('\n');
+            out.write(System.lineSeparator());
 
         level -= 1;
 

@@ -34,7 +34,7 @@ public class DebugStringUtilTest
         final StringWriter stringWriter = new StringWriter();
         final DummyObject dummyObject = new DummyObject("test");
         DebugStringUtil.toJsonStream(dummyObject, stringWriter);
-        assertEquals("{\n    \"text\": \"test\"\n}", stringWriter.toString());
+        assertJsonEquals("{\n    \"text\": \"test\"\n}", stringWriter.toString());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class DebugStringUtilTest
         final StringWriter stringWriter = new StringWriter();
         final DummyObject dummyObject = new DummyObject("test");
         DebugStringUtil.toJsonStream(dummyObject, stringWriter, 2);
-        assertEquals("{\n  \"text\": \"test\"\n}", stringWriter.toString());
+        assertJsonEquals("{\n  \"text\": \"test\"\n}", stringWriter.toString());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class DebugStringUtilTest
         final StringWriter stringWriter = new StringWriter();
         final DummyObject dummyObject = new DummyObject("test");
         DebugStringUtil.toJsonStream(dummyObject, stringWriter, new DepthWalkFilter(0));
-        assertEquals("{\n}", stringWriter.toString());
+        assertJsonEquals("{\n}", stringWriter.toString());
     }
 
     @Test
@@ -61,35 +61,35 @@ public class DebugStringUtilTest
         final StringWriter stringWriter = new StringWriter();
         final DummyObject dummyObject = new DummyObject("test");
         DebugStringUtil.toJsonStream(dummyObject, stringWriter, 2, new DefaultWalkFilter());
-        assertEquals("{\n  \"text\": \"test\"\n}", stringWriter.toString());
+        assertJsonEquals("{\n  \"text\": \"test\"\n}", stringWriter.toString());
     }
 
     @Test
     public void toJsonStringDefault()
     {
         final DummyObject dummyObject = new DummyObject("test");
-        assertEquals("{\n    \"text\": \"test\"\n}", DebugStringUtil.toJsonString(dummyObject));
+        assertJsonEquals("{\n    \"text\": \"test\"\n}", DebugStringUtil.toJsonString(dummyObject));
     }
 
     @Test
     public void toJsonStringIndent2()
     {
         final DummyObject dummyObject = new DummyObject("test");
-        assertEquals("{\n  \"text\": \"test\"\n}", DebugStringUtil.toJsonString(dummyObject, 2));
+        assertJsonEquals("{\n  \"text\": \"test\"\n}", DebugStringUtil.toJsonString(dummyObject, 2));
     }
 
     @Test
     public void toJsonStringFilter()
     {
         final DummyObject dummyObject = new DummyObject("test");
-        assertEquals("{\n}", DebugStringUtil.toJsonString(dummyObject, new DepthWalkFilter(0)));
+        assertJsonEquals("{\n}", DebugStringUtil.toJsonString(dummyObject, new DepthWalkFilter(0)));
     }
 
     @Test
     public void toJsonStringIndent2Filter()
     {
         final DummyObject dummyObject = new DummyObject("test");
-        assertEquals("{\n  \"text\": \"test\"\n}",
+        assertJsonEquals("{\n  \"text\": \"test\"\n}",
                 DebugStringUtil.toJsonString(dummyObject, 2, new DefaultWalkFilter()));
     }
 
@@ -100,7 +100,7 @@ public class DebugStringUtilTest
         DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME);
 
         final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);
-        assertEquals("{\n    \"text\": \"test\"\n}", json);
+        assertJsonEquals("{\n    \"text\": \"test\"\n}", json);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class DebugStringUtilTest
         DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME, 2);
 
         final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);
-        assertEquals("{\n  \"text\": \"test\"\n}", json);
+        assertJsonEquals("{\n  \"text\": \"test\"\n}", json);
     }
 
     @Test
@@ -120,7 +120,7 @@ public class DebugStringUtilTest
         DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME, new DepthWalkFilter(0));
 
         final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);
-        assertEquals("{\n}", json);
+        assertJsonEquals("{\n}", json);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class DebugStringUtilTest
         DebugStringUtil.toJsonFile(dummyObject, TEST_FILE_NAME, 2, new DefaultWalkFilter());
 
         final String json = new String(Files.readAllBytes(Paths.get(TEST_FILE_NAME)), StandardCharsets.UTF_8);
-        assertEquals("{\n  \"text\": \"test\"\n}", json);
+        assertJsonEquals("{\n  \"text\": \"test\"\n}", json);
     }
 
     @Test
@@ -274,6 +274,11 @@ public class DebugStringUtilTest
         assertTrue(zserioObject instanceof ParameterizedDummyObject);
         assertEquals(10, ((ParameterizedDummyObject)zserioObject).getParam());
         assertEquals("something", ((ParameterizedDummyObject)zserioObject).getText());
+    }
+
+    private void assertJsonEquals(String expectedJson, String providedJson)
+    {
+        assertEquals(expectedJson.replaceAll("\n", System.lineSeparator()), providedJson);
     }
 
     private static final String TEST_FILE_NAME = "DebugStringTest.json";
