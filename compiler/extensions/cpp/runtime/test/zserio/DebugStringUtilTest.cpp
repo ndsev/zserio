@@ -58,11 +58,21 @@ struct DummyObject
             using ReflectableConstAllocatorHolderBase<ALLOC>::getField;
             using ReflectableConstAllocatorHolderBase<ALLOC>::getParameter;
             using ReflectableConstAllocatorHolderBase<ALLOC>::callFunction;
+            using ReflectableConstAllocatorHolderBase<ALLOC>::getAnyValue;
 
             explicit Reflectable(const DummyObject& owner, const ALLOC& allocator) :
                     ReflectableConstAllocatorHolderBase<ALLOC>(typeInfo(), allocator),
                     m_owner(owner)
             {}
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {
+            }
 
             virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
             {
@@ -73,13 +83,9 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual void write(BitStreamWriter&) const override
+            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
-            }
-
-            virtual size_t bitSizeOf(size_t) const override
-            {
-                return 0;
+                return AnyHolder<ALLOC>(std::cref(m_owner), allocator);
             }
 
         private:
@@ -104,6 +110,15 @@ struct DummyObject
                     m_owner(owner)
             {}
 
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {
+            }
+
             virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
@@ -123,13 +138,14 @@ struct DummyObject
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual void write(BitStreamWriter&) const override
+            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
+                return AnyHolder<ALLOC>(std::cref(m_owner), allocator);
             }
 
-            virtual size_t bitSizeOf(size_t) const override
+            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
             {
-                return 0;
+                return AnyHolder<ALLOC>(std::ref(m_owner), allocator);
             }
 
         private:
@@ -219,16 +235,27 @@ public:
     {
         class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
         {
+        private:
+            using Base = ReflectableConstAllocatorHolderBase<allocator_type>;
+
         public:
-            using ReflectableConstAllocatorHolderBase<allocator_type>::get_allocator;
-            using ReflectableConstAllocatorHolderBase<allocator_type>::getField;
-            using ReflectableConstAllocatorHolderBase<allocator_type>::getParameter;
-            using ReflectableConstAllocatorHolderBase<allocator_type>::callFunction;
+            using Base::get_allocator;
+            using Base::getField;
+            using Base::getParameter;
+            using Base::callFunction;
+            using Base::getAnyValue;
 
             explicit Reflectable(const ParameterizedDummyObject& object, const allocator_type& allocator) :
-                    ReflectableConstAllocatorHolderBase<allocator_type>(
-                            ParameterizedDummyObject::typeInfo(), allocator),
+                    Base(ParameterizedDummyObject::typeInfo(), allocator),
                     m_object(object)
+            {}
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+            virtual void write(BitStreamWriter&) const override
             {}
 
             virtual IBasicReflectableConstPtr<ALLOC> getField(StringView name) const override
@@ -251,12 +278,9 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual void write(BitStreamWriter&) const override
-            {}
-
-            virtual size_t bitSizeOf(size_t) const override
+            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const
             {
-                return 0;
+                return AnyHolder<ALLOC>(std::cref(m_object), allocator);
             }
 
         private:
@@ -296,6 +320,14 @@ public:
                 );
             }
 
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {}
+
             virtual IBasicReflectablePtr<ALLOC> getField(StringView name) override
             {
                 if (name == makeStringView("text"))
@@ -328,12 +360,14 @@ public:
                         "' doesn't exist in 'ParameterizedDummyObject'!";
             }
 
-            virtual void write(BitStreamWriter&) const override
-            {}
-
-            virtual size_t bitSizeOf(size_t) const override
+            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) const override
             {
-                return 0;
+                return AnyHolder<ALLOC>(std::cref(m_object), allocator);
+            }
+
+            virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator) override
+            {
+                return AnyHolder<ALLOC>(std::ref(m_object), allocator);
             }
 
         private:

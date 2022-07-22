@@ -16,6 +16,7 @@
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
     <#if withReflectionCode>
+<@type_includes types.anyHolder/>
 <@type_includes types.reflectableFactory/>
     </#if>
 </#if>
@@ -133,9 +134,10 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
     {
     public:
     <#if isConst>
-        using ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>::getField;
-        using ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>::getParameter;
-        using ::zserio::Reflectable<#if isConst>Const</#if>AllocatorHolderBase<allocator_type>::callFunction;
+        using ::zserio::ReflectableConstAllocatorHolderBase<allocator_type>::getField;
+        using ::zserio::ReflectableConstAllocatorHolderBase<allocator_type>::getParameter;
+        using ::zserio::ReflectableConstAllocatorHolderBase<allocator_type>::callFunction;
+        using ::zserio::ReflectableConstAllocatorHolderBase<allocator_type>::getAnyValue;
 
     </#if>
         explicit Reflectable(<#if isConst>const </#if>${fullName}& object, const allocator_type& allocator) :
@@ -150,19 +152,17 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
 
         <@reflectable_initialize name compoundParametersData.list/>
         </#if>
-    </#if>
-
-        virtual size_t bitSizeOf(size_t bitPosition) const override
-        {
-            return m_object.bitSizeOf(bitPosition);
-        }
-    <#if !isConst>
 
         virtual size_t initializeOffsets(size_t bitPosition) override
         {
             return m_object.initializeOffsets(bitPosition);
         }
     </#if>
+
+        virtual size_t bitSizeOf(size_t bitPosition) const override
+        {
+            return m_object.bitSizeOf(bitPosition);
+        }
 
         virtual void write(::zserio::BitStreamWriter&<#if withWriterCode> writer</#if>) const override
         {
@@ -200,6 +200,18 @@ const ${types.typeInfo.name}& ${name}::typeInfo()
 
         <@reflectable_call_function name, compoundFunctionsData.list, false/>
         </#if>
+    </#if>
+
+        virtual ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) const override
+        {
+            return ${types.anyHolder.name}(::std::cref(m_object), allocator);
+        }
+    <#if !isConst>
+
+        virtual ${types.anyHolder.name} getAnyValue(const allocator_type& allocator) override
+        {
+            return ${types.anyHolder.name}(::std::ref(m_object), allocator);
+        }
     </#if>
 
     private:

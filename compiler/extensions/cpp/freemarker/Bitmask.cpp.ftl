@@ -10,6 +10,7 @@
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
     <#if withReflectionCode>
+<@type_includes types.anyHolder/>
 <@type_includes types.reflectableFactory/>
     </#if>
 </#if>
@@ -84,6 +85,16 @@ ${types.reflectablePtr.name} ${name}::reflectable(const ${types.allocator.defaul
             throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
                     "Writer code is disabled by -withoutWriterCode zserio option!";
             </#if>
+        }
+
+        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
+        {
+            return ${types.anyHolder.name}(m_bitmask, allocator);
+        }
+
+        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
+        {
+            return ${types.anyHolder.name}(m_bitmask, allocator);
         }
 
         <#-- bitmask is always unsigned -->

@@ -77,6 +77,17 @@ public:
     virtual void initialize(const vector<AnyHolder<ALLOC>, ALLOC>& typeArguments) = 0;
 
     /**
+     * Initializes indexed offsets of the reflected compound object.
+     *
+     * \param bitPosition The bit stream position to be used for calculation.
+     *
+     * \throw CppRuntimeException When the reflected object is not a compound.
+     *
+     * \return Updated bit position which points to the first bit after the compound.
+     */
+    virtual size_t initializeOffsets(size_t bitPosition = 0) = 0;
+
+    /**
      * Gets the number of bits needed for serialization of the reflected object.
      *
      * \note Works for all reflectable types except arrays!
@@ -88,17 +99,6 @@ public:
      * \return The size of the serialized reflected object in bits.
      */
     virtual size_t bitSizeOf(size_t bitPosition = 0) const = 0;
-
-    /**
-     * Initializes indexed offsets of the reflected compound object.
-     *
-     * \param bitPosition The bit stream position to be used for calculation.
-     *
-     * \throw CppRuntimeException When the reflected object is not a compound.
-     *
-     * \return Updated bit position which points to the first bit after the compound.
-     */
-    virtual size_t initializeOffsets(size_t bitPosition = 0) = 0;
 
     /**
      * Writes the reflected object to a bit stream using the given bit stream writer.
@@ -299,6 +299,23 @@ public:
      * \throws CppRuntimeException When the reflected object is not an array.
      */
     virtual void append(const AnyHolder<ALLOC>& value) = 0;
+
+    /**
+     * Gets any value within the reflected object.
+     *
+     * For builtin types, enums and bitmasks the value is "returned by value" - i.e. it's copied
+     * into the any holder, for string the any holder contains an appropriate StringView and for compounds,
+     * bit buffers and arrays the value is "returned by reference" - i.e. the any holder contains
+     * std::reference_wrapper<T> with the reference to the compound type or the raw array type.
+     *
+     * \note For bit buffers only const reference is available.
+     *
+     * \return Any value.
+     */
+    /** \{ */
+    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator = ALLOC()) const = 0;
+    virtual AnyHolder<ALLOC> getAnyValue(const ALLOC& allocator = ALLOC()) = 0;
+    /** \} */
 
     /**
      * Gets bool value of the bool reflectable.

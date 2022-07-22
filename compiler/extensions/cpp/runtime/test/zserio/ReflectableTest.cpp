@@ -124,6 +124,26 @@ public:
                     m_bitmask(bitmask)
             {}
 
+            virtual size_t bitSizeOf(size_t bitPosition) const override
+            {
+                return m_bitmask.bitSizeOf(bitPosition);
+            }
+
+            virtual void write(BitStreamWriter& writer) const override
+            {
+                m_bitmask.write(writer);
+            }
+
+            virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
+            {
+                return AnyHolder<>(m_bitmask, allocator);
+            }
+
+            virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+            {
+                return AnyHolder<>(m_bitmask, allocator);
+            }
+
             virtual uint8_t getUInt8() const override
             {
                 return m_bitmask.getValue();
@@ -143,16 +163,6 @@ public:
                     const std::allocator<uint8_t>& allocator = std::allocator<uint8_t>()) const override
             {
                 return m_bitmask.toString(allocator);
-            }
-
-            virtual void write(BitStreamWriter& writer) const override
-            {
-                m_bitmask.write(writer);
-            }
-
-            virtual size_t bitSizeOf(size_t bitPosition) const override
-            {
-                return m_bitmask.bitSizeOf(bitPosition);
             }
 
         private:
@@ -305,11 +315,22 @@ public:
             using Base::getField;
             using Base::getParameter;
             using Base::callFunction;
+            using Base::getAnyValue;
 
             explicit Reflectable(const DummyChild& object, const allocator_type& allocator) :
                     Base(DummyChild::typeInfo(), allocator),
                     m_object(object)
             {}
+
+            virtual size_t bitSizeOf(size_t bitPosition) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
+            virtual void write(BitStreamWriter& writer) const override
+            {
+                m_object.write(writer);
+            }
 
             virtual IReflectableConstPtr getField(StringView name) const override
             {
@@ -356,14 +377,9 @@ public:
                 }
             }
 
-            virtual void write(BitStreamWriter& writer) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
             {
-                m_object.write(writer);
-            }
-
-            virtual size_t bitSizeOf(size_t bitPosition) const override
-            {
-                return m_object.bitSizeOf(bitPosition);
+                return AnyHolder<allocator_type>(std::cref(m_object), allocator);
             }
 
         private:
@@ -393,6 +409,21 @@ public:
 
                 m_object.initialize(typeArguments[0].get<int32_t>(),
                         typeArguments[1].get<std::reference_wrapper<string<>>>().get());
+            }
+
+            virtual size_t initializeOffsets(size_t bitPosition) override
+            {
+                return m_object.initializeOffsets(bitPosition);
+            }
+
+            virtual size_t bitSizeOf(size_t bitPosition) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
+            virtual void write(BitStreamWriter& writer) const override
+            {
+                m_object.write(writer);
             }
 
             virtual IReflectableConstPtr getField(StringView name) const override
@@ -498,19 +529,14 @@ public:
                 }
             }
 
-            virtual void write(BitStreamWriter& writer) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
             {
-                m_object.write(writer);
+                return AnyHolder<allocator_type>(std::cref(m_object), allocator);
             }
 
-            virtual size_t bitSizeOf(size_t bitPosition) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) override
             {
-                return m_object.bitSizeOf(bitPosition);
-            }
-
-            virtual size_t initializeOffsets(size_t bitPosition) override
-            {
-                return m_object.initializeOffsets(bitPosition);
+                return AnyHolder<allocator_type>(std::ref(m_object), allocator);
             }
 
         private:
@@ -698,10 +724,21 @@ public:
             using Base::getField;
             using Base::getParameter;
             using Base::callFunction;
+            using Base::getAnyValue;
 
             explicit Reflectable(const DummyParent& object, const allocator_type& allocator) :
                     Base(DummyParent::typeInfo(), allocator), m_object(object)
             {}
+
+            virtual size_t bitSizeOf(size_t bitPosition) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
+            virtual void write(BitStreamWriter& writer) const override
+            {
+                m_object.write(writer);
+            }
 
             virtual IReflectableConstPtr getField(StringView name) const override
             {
@@ -713,14 +750,9 @@ public:
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyParent'!";
             }
 
-            virtual void write(BitStreamWriter& writer) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
             {
-                m_object.write(writer);
-            }
-
-            virtual size_t bitSizeOf(size_t bitPosition) const override
-            {
-                return m_object.bitSizeOf(bitPosition);
+                return AnyHolder<allocator_type>(std::cref(m_object), allocator);
             }
 
         private:
@@ -743,6 +775,21 @@ public:
             virtual void initializeChildren() override
             {
                 m_object.initializeChildren();
+            }
+
+            virtual size_t initializeOffsets(size_t bitPosition) override
+            {
+                return m_object.initializeOffsets(bitPosition);
+            }
+
+            virtual size_t bitSizeOf(size_t bitPosition) const override
+            {
+                return m_object.bitSizeOf(bitPosition);
+            }
+
+            virtual void write(BitStreamWriter& writer) const override
+            {
+                m_object.write(writer);
             }
 
             virtual IReflectableConstPtr getField(StringView name) const override
@@ -787,19 +834,14 @@ public:
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyParent'!";
             }
 
-            virtual void write(BitStreamWriter& writer) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
             {
-                m_object.write(writer);
+                return AnyHolder<allocator_type>(std::cref(m_object), allocator);
             }
 
-            virtual size_t bitSizeOf(size_t bitPosition) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) override
             {
-                return m_object.bitSizeOf(bitPosition);
-            }
-
-            virtual size_t initializeOffsets(size_t bitPosition) override
-            {
-                return m_object.initializeOffsets(bitPosition);
+                return AnyHolder<allocator_type>(std::ref(m_object), allocator);
             }
 
         private:
@@ -968,6 +1010,26 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
                 m_value(value)
         {}
 
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return zserio::bitSizeOf(m_value);
+        }
+
+        virtual void write(BitStreamWriter& writer) const override
+        {
+            zserio::write(writer, m_value);
+        }
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
+        {
+            return AnyHolder<>(m_value, allocator);
+        }
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        {
+            return AnyHolder<>(m_value, allocator);
+        }
+
         virtual int8_t getInt8() const override
         {
             return static_cast<typename std::underlying_type<DummyEnum>::type>(m_value);
@@ -987,16 +1049,6 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
                 const std::allocator<uint8_t>& allocator = std::allocator<uint8_t>()) const override
         {
             return string<>(enumToString(m_value), allocator);
-        }
-
-        virtual void write(BitStreamWriter& writer) const override
-        {
-            zserio::write(writer, m_value);
-        }
-
-        virtual size_t bitSizeOf(size_t) const override
-        {
-            return zserio::bitSizeOf(m_value);
         }
 
     private:
@@ -1025,6 +1077,18 @@ protected:
 
         ASSERT_THROW(reflectable->at(rawArray.size()), CppRuntimeException);
         ASSERT_THROW((*reflectable)[rawArray.size()], CppRuntimeException);
+
+        using ReflectableType = typename REFLECTABLE_PTR::element_type;
+        if (std::is_const<ReflectableType>::value)
+        {
+            ASSERT_EQ(rawArray,
+                    reflectable->getAnyValue().template get<std::reference_wrapper<const RAW_ARRAY>>().get());
+        }
+        else
+        {
+            ASSERT_EQ(rawArray,
+                    reflectable->getAnyValue().template get<std::reference_wrapper<RAW_ARRAY>>().get());
+        }
 
         ASSERT_THROW(reflectable->getBool(), CppRuntimeException);
         ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
@@ -1210,6 +1274,8 @@ protected:
     {
         ASSERT_EQ(value, ((*reflectable).*getter)());
 
+        ASSERT_EQ(value, reflectable->getAnyValue().template get<T>());
+
         ASSERT_EQ(value, reflectable->toDouble());
         ASSERT_EQ(zserio::toString(value), reflectable->toString());
 
@@ -1252,6 +1318,8 @@ protected:
     {
         ASSERT_EQ(value, reflectable->getStringView());
 
+        ASSERT_EQ(value, reflectable->getAnyValue().template get<StringView>());
+
         ASSERT_EQ(toString(value), reflectable->toString());
         ASSERT_THROW(reflectable->toInt(), CppRuntimeException);
         ASSERT_THROW(reflectable->toUInt(), CppRuntimeException);
@@ -1283,6 +1351,8 @@ protected:
     {
         ASSERT_EQ(bitmask.getValue(), reflectable->getUInt8());
 
+        ASSERT_EQ(bitmask, reflectable->getAnyValue().template get<DummyBitmask>());
+
         ASSERT_EQ(bitmask.getValue(), reflectable->toUInt());
         ASSERT_EQ(bitmask.getValue(), reflectable->toDouble());
         ASSERT_EQ(bitmask.toString(), reflectable->toString());
@@ -1302,6 +1372,8 @@ protected:
     void checkEnum(DummyEnum enumeration, const REFLECTABLE_PTR& reflectable)
     {
         ASSERT_EQ(enumToValue(enumeration), reflectable->getInt8());
+
+        ASSERT_EQ(enumeration, reflectable->getAnyValue().template get<DummyEnum>());
 
         ASSERT_EQ(enumToValue(enumeration), reflectable->toInt());
         ASSERT_EQ(enumToValue(enumeration), reflectable->toDouble());
@@ -1352,6 +1424,17 @@ protected:
         ASSERT_EQ(nullptr, reflectable->find("dummyChild.getValue.nonexistent"));
         // find failed because the underlying code throws
         ASSERT_EQ(nullptr, reflectable->find("dummyChild.throwingFunction.nonexistent"));
+
+        if (std::is_const<typename REFLECTABLE_PTR::element_type>::value)
+        {
+            ASSERT_EQ(dummyParent,
+                    reflectable->getAnyValue().template get<std::reference_wrapper<const DummyParent>>().get());
+        }
+        else
+        {
+            ASSERT_EQ(dummyParent,
+                    reflectable->getAnyValue().template get<std::reference_wrapper<DummyParent>>().get());
+        }
 
         ASSERT_THROW(reflectable->getBool(), CppRuntimeException);
         ASSERT_THROW(reflectable->getInt8(), CppRuntimeException);
@@ -1796,8 +1879,13 @@ TEST_F(ReflectableTest, bitBufferReflectable)
 {
     const BitBuffer value = BitBuffer{std::vector<uint8_t>{{0xAB, 0xF0}}, 12};
     auto reflectable = ReflectableFactory::getBitBuffer(value);
+    IReflectableConstPtr constReflectable = reflectable;
 
     ASSERT_EQ(value, reflectable->getBitBuffer());
+
+    ASSERT_EQ(value, reflectable->getAnyValue().template get<std::reference_wrapper<const BitBuffer>>().get());
+    ASSERT_EQ(value,
+            constReflectable->getAnyValue().template get<std::reference_wrapper<const BitBuffer>>().get());
 
     ASSERT_THROW(reflectable->toString(), CppRuntimeException);
     ASSERT_THROW(reflectable->toDouble(), CppRuntimeException);
@@ -1835,6 +1923,9 @@ TEST_F(ReflectableTest, uint8ConstArray)
                         std::bind(&BitStreamReader::readBits, _1, 8));
             }
     );
+
+    auto nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_THROW(nonConstReflectable->getAnyValue(), CppRuntimeException);
 
     // call version with dynamic bit size
     ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray, 8), CppRuntimeException);
@@ -1890,6 +1981,9 @@ TEST_F(ReflectableTest, dynamicSignedBitField5ConstArray)
             }
     );
 
+    auto nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_THROW(nonConstReflectable->getAnyValue(), CppRuntimeException);
+
     // call version without dynamic bit size
     ASSERT_THROW(ReflectableFactory::getBuiltinArray(typeInfo, rawArray), CppRuntimeException);
 }
@@ -1941,6 +2035,9 @@ TEST_F(ReflectableTest, stringConstArray)
                 checkString(value, elementReflectable);
             }
     );
+
+    auto nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_THROW(nonConstReflectable->getAnyValue(), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, stringArray)
@@ -1998,6 +2095,9 @@ TEST_F(ReflectableTest, bitmaskConstArray)
                 checkBitmask(value, elementReflectable);
             }
     );
+
+    auto nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_THROW(nonConstReflectable->getAnyValue(), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, bitmaskArray)
@@ -2055,6 +2155,9 @@ TEST_F(ReflectableTest, enumConstArray)
                 checkEnum(value, elementReflectable);
             }
     );
+
+    auto nonConstReflectable = std::const_pointer_cast<IReflectable>(reflectable);
+    ASSERT_THROW(nonConstReflectable->getAnyValue(), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, enumArray)
@@ -2111,6 +2214,9 @@ TEST_F(ReflectableTest, compoundConst)
     ASSERT_THROW(nonConstReflectable->initialize(vector<AnyHolder<>>()), CppRuntimeException);
     ASSERT_NO_THROW(reflectable->getField("dummyChild"));
     ASSERT_THROW(nonConstReflectable->getField("dummyChild"), CppRuntimeException);
+    ASSERT_NO_THROW(reflectable->getAnyValue());
+    ASSERT_THROW(nonConstReflectable->getAnyValue(), CppRuntimeException);
+
     IReflectableConstPtr childReflectable = reflectable->getField("dummyChild");
     IReflectablePtr nonConstChildReflectable =std::const_pointer_cast<IReflectable>(childReflectable);
     ASSERT_THROW(nonConstChildReflectable->setField("value", AnyHolder<>(static_cast<uint32_t>(11))),
@@ -2159,6 +2265,7 @@ TEST_F(ReflectableTest, compoundConstArray)
             CppRuntimeException);
     ASSERT_THROW(nonConstReflectable->append(AnyHolder<>(DummyParent{"test", DummyChild{0}})),
             CppRuntimeException);
+    ASSERT_THROW(nonConstReflectable->getAnyValue(), CppRuntimeException);
 }
 
 TEST_F(ReflectableTest, compoundArray)
@@ -2196,6 +2303,12 @@ TEST_F(ReflectableTest, reflectableOwner)
 {
     auto reflectable = DummyParent::typeInfo().createInstance();
     IReflectableConstPtr constReflectable = reflectable;
+
+    // same as default initialized
+    ASSERT_EQ(DummyParent(),
+            reflectable->getAnyValue().template get<std::reference_wrapper<DummyParent>>().get());
+    ASSERT_EQ(DummyParent(),
+            constReflectable->getAnyValue().template get<std::reference_wrapper<DummyParent>>().get());
 
     ASSERT_FALSE(reflectable->isArray());
     reflectable->setField("dummyChild", AnyHolder<>(DummyChild{42}));

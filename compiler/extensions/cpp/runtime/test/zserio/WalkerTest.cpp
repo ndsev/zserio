@@ -19,7 +19,7 @@ namespace
 class DummyNested
 {
 public:
-    using allocator_type = ::std::allocator<uint8_t>;
+    using allocator_type = std::allocator<uint8_t>;
 
     explicit DummyNested(const allocator_type& allocator = allocator_type()) :
             m_text_(allocator)
@@ -32,7 +32,7 @@ public:
             const allocator_type& allocator = allocator_type()) :
             DummyNested(allocator)
     {
-        m_text_ = ::std::forward<ZSERIO_T_text>(text_);
+        m_text_ = std::forward<ZSERIO_T_text>(text_);
     }
 
     static void createPackingContext(PackingContextNode&)
@@ -43,7 +43,7 @@ public:
         static const StringView templateName;
         static const Span<TemplateArgumentInfo> templateArguments;
 
-        static const ::std::array<FieldInfo, 1> fields = {
+        static const std::array<FieldInfo, 1> fields = {
             FieldInfo{
                 makeStringView("text"), // schemaName
                 BuiltinTypeInfo<>::getString(), // typeInfo
@@ -76,13 +76,28 @@ public:
 
     IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
     {
-        class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
+        class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
         {
+        private:
+            using Base = ReflectableConstAllocatorHolderBase<allocator_type>;
+
         public:
+            using Base::getField;
+            using Base::getAnyValue;
+
             explicit Reflectable(const DummyNested& object, const allocator_type& allocator) :
-                    ReflectableAllocatorHolderBase<allocator_type>(DummyNested::typeInfo(), allocator),
+                    Base(DummyNested::typeInfo(), allocator),
                     m_object(object)
             {}
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {
+            }
 
             virtual IReflectableConstPtr getField(StringView name) const override
             {
@@ -93,13 +108,9 @@ public:
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyNested'!";
             }
 
-            virtual void write(BitStreamWriter&) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
             {
-            }
-
-            virtual size_t bitSizeOf(size_t) const override
-            {
-                return 0;
+                return AnyHolder<allocator_type>(std::cref(m_object), allocator);
             }
 
         private:
@@ -124,12 +135,12 @@ private:
     class ZserioElementFactory_nestedArray
     {};
 
-    using ZserioArrayType_nestedArray = Array<::std::vector<DummyNested>,
+    using ZserioArrayType_nestedArray = Array<std::vector<DummyNested>,
             ObjectArrayTraits<DummyNested, ZserioElementFactory_nestedArray>,
             ArrayType::AUTO>;
 
 public:
-    using allocator_type = ::std::allocator<uint8_t>;
+    using allocator_type = std::allocator<uint8_t>;
 
     enum ChoiceTag : int32_t
     {
@@ -150,7 +161,7 @@ public:
         static const StringView templateName;
         static const Span<TemplateArgumentInfo> templateArguments;
 
-        static const ::std::array<FieldInfo, 3> fields = {
+        static const std::array<FieldInfo, 3> fields = {
             FieldInfo{
                 makeStringView("value"), // schemaName
                 BuiltinTypeInfo<>::getUInt32(), // typeInfo
@@ -213,13 +224,28 @@ public:
 
     IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
     {
-        class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
+        class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
         {
+        private:
+            using Base = ReflectableConstAllocatorHolderBase<allocator_type>;
+
         public:
+            using Base::getField;
+            using Base::getAnyValue;
+
             explicit Reflectable(const DummyUnion& object, const allocator_type& allocator) :
-                    ReflectableAllocatorHolderBase<allocator_type>(DummyUnion::typeInfo(), allocator),
+                    Base(DummyUnion::typeInfo(), allocator),
                     m_object(object)
             {}
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {
+            }
 
             virtual IReflectableConstPtr getField(StringView name) const override
             {
@@ -253,13 +279,9 @@ public:
                 }
             }
 
-            virtual void write(BitStreamWriter&) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
             {
-            }
-
-            virtual size_t bitSizeOf(size_t) const override
-            {
-                return 0;
+                return AnyHolder<allocator_type>(std::cref(m_object), allocator);
             }
 
         private:
@@ -296,12 +318,12 @@ public:
         m_objectChoice = text_;
     }
 
-    const ::std::vector<DummyNested>& getNestedArray() const
+    const std::vector<DummyNested>& getNestedArray() const
     {
         return m_objectChoice.get<ZserioArrayType_nestedArray>().getRawArray();
     }
 
-    void setNestedArray(const ::std::vector<DummyNested>& nestedArray_)
+    void setNestedArray(const std::vector<DummyNested>& nestedArray_)
     {
         m_choiceTag = CHOICE_nestedArray;
         m_objectChoice = ZserioArrayType_nestedArray(nestedArray_,
@@ -322,14 +344,14 @@ private:
     class ZserioElementFactory_optionalUnionArray
     {};
 
-    using ZserioArrayType_unionArray = Array<::std::vector<DummyUnion>,
+    using ZserioArrayType_unionArray = Array<std::vector<DummyUnion>,
             ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>, ArrayType::AUTO>;
 
-    using ZserioArrayType_optionalUnionArray = Array<::std::vector<DummyUnion>,
+    using ZserioArrayType_optionalUnionArray = Array<std::vector<DummyUnion>,
             ObjectArrayTraits<DummyUnion, ZserioElementFactory_optionalUnionArray>, ArrayType::AUTO>;
 
 public:
-    using allocator_type = ::std::allocator<uint8_t>;
+    using allocator_type = std::allocator<uint8_t>;
 
     DummyObject(const allocator_type& allocator = allocator_type()) :
             m_identifier_(uint32_t()),
@@ -353,12 +375,12 @@ public:
             DummyObject(allocator)
     {
         m_identifier_ = identifier_;
-        m_nested_ = ::std::forward<ZSERIO_T_nested>(nested_);
-        m_text_ = ::std::forward<ZSERIO_T_text>(text_);
-        m_unionArray_ = ZserioArrayType_unionArray(::std::forward<ZSERIO_T_unionArray>(unionArray_),
+        m_nested_ = std::forward<ZSERIO_T_nested>(nested_);
+        m_text_ = std::forward<ZSERIO_T_text>(text_);
+        m_unionArray_ = ZserioArrayType_unionArray(std::forward<ZSERIO_T_unionArray>(unionArray_),
                 ObjectArrayTraits<DummyUnion, ZserioElementFactory_unionArray>());
         m_optionalUnionArray_ = createOptionalArray<ZserioArrayType_optionalUnionArray>(
-                ::std::forward<ZSERIO_T_optionalUnionArray>(optionalUnionArray_),
+                std::forward<ZSERIO_T_optionalUnionArray>(optionalUnionArray_),
                 ObjectArrayTraits<DummyUnion, ZserioElementFactory_optionalUnionArray>());
     }
 
@@ -367,7 +389,7 @@ public:
         static const StringView templateName;
         static const Span<TemplateArgumentInfo> templateArguments;
 
-        static const ::std::array<FieldInfo, 5> fields = {
+        static const std::array<FieldInfo, 5> fields = {
             FieldInfo{
                 makeStringView("identifier"), // schemaName
                 BuiltinTypeInfo<>::getUInt32(), // typeInfo
@@ -460,13 +482,28 @@ public:
 
     IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const
     {
-        class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>
+        class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
         {
+        private:
+            using Base = ReflectableConstAllocatorHolderBase<allocator_type>;
+
         public:
+            using Base::getField;
+            using Base::getAnyValue;
+
             explicit Reflectable(const DummyObject& object, const allocator_type& allocator) :
-                    ReflectableAllocatorHolderBase<allocator_type>(DummyObject::typeInfo(), allocator),
+                    Base(DummyObject::typeInfo(), allocator),
                     m_object(object)
             {}
+
+            virtual size_t bitSizeOf(size_t) const override
+            {
+                return 0;
+            }
+
+            virtual void write(BitStreamWriter&) const override
+            {
+            }
 
             virtual IReflectableConstPtr getField(StringView name) const override
             {
@@ -500,13 +537,9 @@ public:
                 throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyObject'!";
             }
 
-            virtual void write(BitStreamWriter&) const override
+            virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
             {
-            }
-
-            virtual size_t bitSizeOf(size_t) const override
-            {
-                return 0;
+                return AnyHolder<allocator_type>(std::cref(m_object), allocator);
             }
 
         private:
@@ -536,12 +569,12 @@ public:
         return m_text_;
     }
 
-    const ::std::vector<DummyUnion>& getUnionArray() const
+    const std::vector<DummyUnion>& getUnionArray() const
     {
         return m_unionArray_.getRawArray();
     }
 
-    const ::std::vector<DummyUnion>& getOptionalUnionArray() const
+    const std::vector<DummyUnion>& getOptionalUnionArray() const
     {
         return m_optionalUnionArray_.value().getRawArray();
     }
@@ -713,25 +746,35 @@ public:
     }
 
     IReflectableConstPtr reflectable(
-            const ::std::allocator<uint8_t>& allocator = ::std::allocator<uint8_t>()) const
+            const std::allocator<uint8_t>& allocator = std::allocator<uint8_t>()) const
     {
-        class Reflectable : public ReflectableBase<::std::allocator<uint8_t>>
+        class Reflectable : public ReflectableBase<std::allocator<uint8_t>>
         {
         public:
             explicit Reflectable(DummyBitmask) :
-                    ReflectableBase<::std::allocator<uint8_t>>(DummyBitmask::typeInfo())
-            {}
-
-            void write(BitStreamWriter&) const override
+                    ReflectableBase<std::allocator<uint8_t>>(DummyBitmask::typeInfo())
             {}
 
             size_t bitSizeOf(size_t) const override
             {
                 return 0;
             }
+
+            void write(BitStreamWriter&) const override
+            {}
+
+            AnyHolder<> getAnyValue(const std::allocator<uint8_t>&) const override
+            {
+                return AnyHolder<>();
+            }
+
+            AnyHolder<> getAnyValue(const std::allocator<uint8_t>&) override
+            {
+                return AnyHolder<>();
+            }
         };
 
-        return ::std::allocate_shared<Reflectable>(allocator, *this);
+        return std::allocate_shared<Reflectable>(allocator, *this);
     }
 };
 

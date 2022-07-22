@@ -198,7 +198,7 @@ TEST(JsonWriterTest, enumValue)
                 ReflectableBase<std::allocator<uint8_t>>(ENUM_TYPE_INFO)
         {}
 
-        virtual int64_t toInt() const override
+        virtual size_t bitSizeOf(size_t) const override
         {
             return 0;
         }
@@ -207,7 +207,17 @@ TEST(JsonWriterTest, enumValue)
         {
         }
 
-        virtual size_t bitSizeOf(size_t) const override
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
+        {
+            return AnyHolder<>(static_cast<int8_t>(0), allocator);
+        }
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        {
+            return AnyHolder<>(static_cast<int8_t>(0), allocator);
+        }
+
+        virtual int64_t toInt() const override
         {
             return 0;
         }
@@ -239,7 +249,7 @@ TEST(JsonWriterTest, bitmaskValue)
                 ReflectableBase<std::allocator<uint8_t>>(BITMASK_TYPE_INFO)
         {}
 
-        virtual uint64_t toUInt() const override
+        virtual size_t bitSizeOf(size_t) const override
         {
             return 0;
         }
@@ -248,7 +258,17 @@ TEST(JsonWriterTest, bitmaskValue)
         {
         }
 
-        virtual size_t bitSizeOf(size_t) const override
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
+        {
+            return AnyHolder<>(static_cast<uint8_t>(0), allocator);
+        }
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        {
+            return AnyHolder<>(static_cast<uint8_t>(0), allocator);
+        }
+
+        virtual uint64_t toUInt() const override
         {
             return 0;
         }

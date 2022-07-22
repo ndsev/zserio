@@ -7,6 +7,7 @@
 <#if withTypeInfoCode>
 #include <zserio/TypeInfo.h>
     <#if withReflectionCode>
+<@type_includes types.anyHolder/>
 <@type_includes types.reflectableFactory/>
     </#if>
 </#if>
@@ -71,6 +72,16 @@ ${types.reflectablePtr.name} enumReflectable(${fullName} value, const ${types.al
             throw ::zserio::CppRuntimeException("Reflectable '${name}': ") <<
                     "Writer code is disabled by -withoutWriterCode zserio option!";
             </#if>
+        }
+
+        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) const override
+        {
+            return ${types.anyHolder.name}(m_value, allocator);
+        }
+
+        virtual ${types.anyHolder.name} getAnyValue(const ${types.allocator.default}& allocator) override
+        {
+            return ${types.anyHolder.name}(m_value, allocator);
         }
 
         virtual ${underlyingTypeInfo.typeFullName} get<#rt>

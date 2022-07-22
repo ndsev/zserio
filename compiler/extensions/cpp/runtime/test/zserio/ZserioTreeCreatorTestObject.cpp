@@ -52,15 +52,25 @@ const ITypeInfo& enumTypeInfo<DummyEnum, std::allocator<uint8_t>>()
 }
 
 template <>
-IReflectablePtr enumReflectable(DummyEnum value, const ::std::allocator<uint8_t>& allocator)
+IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& allocator)
 {
-    class Reflectable : public ReflectableBase<::std::allocator<uint8_t>>
+    class Reflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
         explicit Reflectable(DummyEnum value) :
-                ReflectableBase<::std::allocator<uint8_t>>(enumTypeInfo<DummyEnum>()),
+                ReflectableBase<std::allocator<uint8_t>>(enumTypeInfo<DummyEnum>()),
                 m_value(value)
         {}
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
+        {
+            return AnyHolder<>(m_value, allocator);
+        }
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        {
+            return AnyHolder<>(m_value, allocator);
+        }
 
         virtual uint8_t getUInt8() const override
         {
@@ -106,15 +116,25 @@ const ITypeInfo& DummyBitmask::typeInfo()
     return typeInfo;
 }
 
-IReflectablePtr DummyBitmask::reflectable(const ::std::allocator<uint8_t>& allocator) const
+IReflectablePtr DummyBitmask::reflectable(const std::allocator<uint8_t>& allocator) const
 {
-    class Reflectable : public ReflectableBase<::std::allocator<uint8_t>>
+    class Reflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
         explicit Reflectable(DummyBitmask bitmask) :
-                ReflectableBase<::std::allocator<uint8_t>>(DummyBitmask::typeInfo()),
+                ReflectableBase<std::allocator<uint8_t>>(DummyBitmask::typeInfo()),
                 m_bitmask(bitmask)
         {}
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
+        {
+            return AnyHolder<>(m_bitmask, allocator);
+        }
+
+        virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
+        {
+            return AnyHolder<>(m_bitmask, allocator);
+        }
 
         virtual uint8_t getUInt8() const override
         {
@@ -264,6 +284,24 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
                 m_object(object)
         {}
 
+        virtual void initialize(const vector<AnyHolder<>>& typeArguments) override
+        {
+            if (typeArguments.size() != 1)
+            {
+                throw CppRuntimeException("No enough arguments to DummyNested::initialize, expecting 1, got") <<
+                        typeArguments.size();
+            }
+            m_object.initialize(typeArguments[0].get<uint32_t>());
+        }
+
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return 0;
+        }
+
+        virtual void write(BitStreamWriter&) const override
+        {}
+
         virtual IReflectablePtr getField(StringView name) override
         {
             if (name == makeStringView("value"))
@@ -379,22 +417,14 @@ IReflectablePtr DummyNested::reflectable(const allocator_type& allocator)
             throw CppRuntimeException("Parameter '") << name << "' doesn't exist in 'DummyNested'!";
         }
 
-        virtual void initialize(const vector<AnyHolder<>>& typeArguments) override
+        virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
         {
-            if (typeArguments.size() != 1)
-            {
-                throw CppRuntimeException("No enough arguments to DummyNested::initialize, expecting 1, got") <<
-                        typeArguments.size();
-            }
-            m_object.initialize(typeArguments[0].get<uint32_t>());
+            return AnyHolder<allocator_type>(std::cref(m_object), allocator);
         }
 
-        virtual void write(BitStreamWriter&) const override
-        {}
-
-        virtual size_t bitSizeOf(size_t) const override
+        virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) override
         {
-            return 0;
+            return AnyHolder<allocator_type>(std::ref(m_object), allocator);
         }
 
     private:
@@ -642,6 +672,19 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
                 m_object(object)
         {}
 
+        virtual void initializeChildren() override
+        {
+            m_object.initializeChildren();
+        }
+
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return 0;
+        }
+
+        virtual void write(BitStreamWriter&) const override
+        {}
+
         virtual IReflectablePtr getField(StringView name) override
         {
             if (name == makeStringView("value"))
@@ -809,17 +852,14 @@ IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
             throw CppRuntimeException("Field '") << name << "' doesn't exist in 'DummyObject'!";
         }
 
-        virtual void initializeChildren() override
+        virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
         {
-            m_object.initializeChildren();
+            return AnyHolder<allocator_type>(std::cref(m_object), allocator);
         }
 
-        virtual void write(BitStreamWriter&) const override
-        {}
-
-        virtual size_t bitSizeOf(size_t) const override
+        virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) override
         {
-            return 0;
+            return AnyHolder<allocator_type>(std::ref(m_object), allocator);
         }
 
     private:

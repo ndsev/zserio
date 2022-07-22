@@ -358,32 +358,46 @@ TEST(ZserioTreeCreator, exceptionsInCompoundElement)
     ASSERT_THROW(creator.addValueElement(13), CppRuntimeException);
 }
 
-// just to improve test coverage
-TEST(ZserioTreeCreator, dummyObjectCoverage)
+// just to improve test coverage of ZserioTreeCreatorTestObject
+TEST(ZserioTreeCreator, testObjectCoverage)
 {
     BitBuffer bitBuffer(0);
     BitStreamWriter writer(bitBuffer);
     DummyEnum dummyEnum = DummyEnum::ONE;
     auto reflectable = enumReflectable(dummyEnum);
+    IReflectableConstPtr constReflectable = reflectable;
     ASSERT_EQ(8, reflectable->bitSizeOf());
     ASSERT_NO_THROW(reflectable->write(writer));
+    ASSERT_EQ(enumToValue(dummyEnum), enumToValue(reflectable->getAnyValue().template get<DummyEnum>()));
+    ASSERT_EQ(enumToValue(dummyEnum), enumToValue(constReflectable->getAnyValue().template get<DummyEnum>()));
+    ASSERT_STREQ("ONE", enumToString(DummyEnum::ONE));
+    ASSERT_STREQ("TWO", enumToString(DummyEnum::TWO));
+    ASSERT_THROW(enumToOrdinal(static_cast<DummyEnum>(10)), CppRuntimeException);
 
     DummyBitmask dummyBitmask = DummyBitmask::Values::READ;
     reflectable = dummyBitmask.reflectable();
+    constReflectable = reflectable;
     ASSERT_EQ(8, reflectable->bitSizeOf());
     ASSERT_NO_THROW(reflectable->write(writer));
+    ASSERT_EQ(dummyBitmask.getValue(), reflectable->getAnyValue().template get<DummyBitmask>().getValue());
+    ASSERT_EQ(dummyBitmask.getValue(), constReflectable->getAnyValue().template get<DummyBitmask>().getValue());
 
     DummyNested dummyNested;
     reflectable = dummyNested.reflectable();
+    constReflectable = reflectable;
     ASSERT_THROW(reflectable->getField("nonexistent"), CppRuntimeException);
     ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
     ASSERT_THROW(reflectable->getParameter("nonexistent"), CppRuntimeException);
     ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException); // not initalized
     ASSERT_EQ(0, reflectable->bitSizeOf());
     ASSERT_NO_THROW(reflectable->write(writer));
+    ASSERT_NO_THROW(reflectable->getAnyValue().template get<std::reference_wrapper<DummyNested>>().get());
+    ASSERT_NO_THROW(
+            constReflectable->getAnyValue().template get<std::reference_wrapper<const DummyNested>>().get());
 
     DummyObject dummyObject;
     reflectable = dummyObject.reflectable();
+    constReflectable = reflectable;
     ASSERT_THROW(reflectable->getField("nonexistent"), CppRuntimeException);
     ASSERT_EQ(nullptr, reflectable->getField("externArray"));
     ASSERT_THROW(reflectable->setField("nonexistent", AnyHolder<>()), CppRuntimeException);
@@ -391,6 +405,9 @@ TEST(ZserioTreeCreator, dummyObjectCoverage)
     ASSERT_THROW(reflectable->getParameter("nonexistent"), CppRuntimeException);
     ASSERT_EQ(0, reflectable->bitSizeOf());
     ASSERT_NO_THROW(reflectable->write(writer));
+    ASSERT_NO_THROW(reflectable->getAnyValue().template get<std::reference_wrapper<DummyObject>>().get());
+    ASSERT_NO_THROW(
+            constReflectable->getAnyValue().template get<std::reference_wrapper<const DummyObject>>().get());
 }
 
 } // namespace zserio
