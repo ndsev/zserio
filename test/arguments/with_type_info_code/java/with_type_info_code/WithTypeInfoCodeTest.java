@@ -937,7 +937,7 @@ public class WithTypeInfoCodeTest
         assertEquals(0, typeInfo.getTemplateArguments().size());
 
         final List<FieldInfo> fields = typeInfo.getFields();
-        assertEquals(11, fields.size());
+        assertEquals(13, fields.size());
 
         // simpleStruct
         final FieldInfo simpleStructField = fields.get(0);
@@ -1202,6 +1202,50 @@ public class WithTypeInfoCodeTest
         assertEquals(null, optionalExternField.getArrayLength());
         assertFalse(optionalExternField.isPacked());
         assertFalse(optionalExternField.isImplicit());
+
+        // enumArray
+        final FieldInfo enumArrayField = fields.get(11);
+        assertEquals("enumArray", enumArrayField.getSchemaName());
+        assertEquals("getEnumArray", enumArrayField.getGetterName());
+        assertEquals("setEnumArray", enumArrayField.getSetterName());
+
+        checkTestEnum(enumArrayField.getTypeInfo());
+
+        assertEquals(0, enumArrayField.getTypeArguments().size());
+        assertEquals(null, enumArrayField.getAlignment());
+        assertEquals(null, enumArrayField.getOffset());
+        assertEquals(null, enumArrayField.getInitializer());
+        assertFalse(enumArrayField.isOptional());
+        assertEquals(null, enumArrayField.getOptionalCondition());
+        assertEquals("", enumArrayField.getIsUsedIndicatorName());
+        assertEquals("", enumArrayField.getIsSetIndicatorName());
+        assertEquals(null, enumArrayField.getConstraint());
+        assertTrue(enumArrayField.isArray());
+        assertEquals(2, enumArrayField.getArrayLength().applyAsInt(complexStruct));
+        assertFalse(enumArrayField.isPacked());
+        assertFalse(enumArrayField.isImplicit());
+
+        // bitmaskArray
+        final FieldInfo bitmaskArrayField = fields.get(12);
+        assertEquals("bitmaskArray", bitmaskArrayField.getSchemaName());
+        assertEquals("getBitmaskArray", bitmaskArrayField.getGetterName());
+        assertEquals("setBitmaskArray", bitmaskArrayField.getSetterName());
+
+        checkTestBitmask(bitmaskArrayField.getTypeInfo());
+
+        assertEquals(0, bitmaskArrayField.getTypeArguments().size());
+        assertEquals(null, bitmaskArrayField.getAlignment());
+        assertEquals(null, bitmaskArrayField.getOffset());
+        assertEquals(null, bitmaskArrayField.getInitializer());
+        assertFalse(bitmaskArrayField.isOptional());
+        assertEquals(null, bitmaskArrayField.getOptionalCondition());
+        assertEquals("", bitmaskArrayField.getIsUsedIndicatorName());
+        assertEquals("", bitmaskArrayField.getIsSetIndicatorName());
+        assertEquals(null, bitmaskArrayField.getConstraint());
+        assertTrue(bitmaskArrayField.isArray());
+        assertEquals(5, bitmaskArrayField.getArrayLength().applyAsInt(complexStruct));
+        assertFalse(bitmaskArrayField.isPacked());
+        assertFalse(bitmaskArrayField.isImplicit());
     }
 
     private void checkParameterizedStruct(TypeInfo typeInfo)

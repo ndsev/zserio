@@ -73,6 +73,16 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
         const vector_type<uint8_t> buffer = {0xCB, 0xF0};
         complexStruct.setOptionalExtern(BitBuffer(buffer, 12));
     }
+
+    vector_type<TestEnum> enumArray;
+    enumArray.push_back(TestEnum::TWO);
+    enumArray.push_back(TestEnum::ItemThree);
+    complexStruct.setEnumArray(enumArray);
+
+    vector_type<TestBitmask> bitmaskArray;
+    for (size_t i = 0; i < static_cast<size_t>(TestEnum::TWO); ++i)
+        bitmaskArray.push_back(TestBitmask::Values::Green);
+    complexStruct.setBitmaskArray(bitmaskArray);
 }
 
 static void fillRecursiveStruct(RecursiveStruct& recursiveStruct)

@@ -607,7 +607,7 @@ protected:
         ASSERT_EQ(0, typeInfo.getTemplateArguments().size());
 
         const zserio::Span<const FieldInfo> fields = typeInfo.getFields();
-        ASSERT_EQ(11, fields.size());
+        ASSERT_EQ(13, fields.size());
 
         // simpleStruct
         const FieldInfo& simpleStructField = fields[0];
@@ -824,6 +824,42 @@ protected:
         ASSERT_EQ(""_sv, optionalExternField.arrayLength);
         ASSERT_EQ(false, optionalExternField.isPacked);
         ASSERT_EQ(false, optionalExternField.isImplicit);
+
+        // enumArray
+        const FieldInfo& enumArrayField = fields[11];
+        ASSERT_EQ("enumArray"_sv, enumArrayField.schemaName);
+
+        checkTestEnum(enumArrayField.typeInfo);
+
+        ASSERT_EQ(0, enumArrayField.typeArguments.size());
+        ASSERT_EQ(""_sv, enumArrayField.alignment);
+        ASSERT_EQ(""_sv, enumArrayField.offset);
+        ASSERT_EQ(""_sv, enumArrayField.initializer);
+        ASSERT_EQ(false, enumArrayField.isOptional);
+        ASSERT_EQ(""_sv, enumArrayField.optionalCondition);
+        ASSERT_EQ(""_sv, enumArrayField.constraint);
+        ASSERT_EQ(true, enumArrayField.isArray);
+        ASSERT_EQ("2"_sv, enumArrayField.arrayLength);
+        ASSERT_EQ(false, enumArrayField.isPacked);
+        ASSERT_EQ(false, enumArrayField.isImplicit);
+
+        // bitmaskArray
+        const FieldInfo& bitmaskArrayField = fields[12];
+        ASSERT_EQ("bitmaskArray"_sv, bitmaskArrayField.schemaName);
+
+        checkTestBitmask(bitmaskArrayField.typeInfo);
+
+        ASSERT_EQ(0, bitmaskArrayField.typeArguments.size());
+        ASSERT_EQ(""_sv, bitmaskArrayField.alignment);
+        ASSERT_EQ(""_sv, bitmaskArrayField.offset);
+        ASSERT_EQ(""_sv, bitmaskArrayField.initializer);
+        ASSERT_EQ(false, bitmaskArrayField.isOptional);
+        ASSERT_EQ(""_sv, bitmaskArrayField.optionalCondition);
+        ASSERT_EQ(""_sv, bitmaskArrayField.constraint);
+        ASSERT_EQ(true, bitmaskArrayField.isArray);
+        ASSERT_EQ("::zserio::enumToValue(::with_type_info_code::TestEnum::TWO)"_sv, bitmaskArrayField.arrayLength);
+        ASSERT_EQ(false, bitmaskArrayField.isPacked);
+        ASSERT_EQ(false, bitmaskArrayField.isImplicit);
     }
 
     void checkParameterizedStruct(const ITypeInfo& typeInfo)

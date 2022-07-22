@@ -271,7 +271,19 @@ class DebugStringTest(unittest.TestCase):
             self.assertEqual(None, complexStruct["optionalBitmask"])
             self.assertEqual(None, complexStruct["optionalExtern"])
 
-        self.assertEqual(11, len(complexStruct.keys()))
+        enumArray = [self.api.TestEnum.TWO, self.api.TestEnum.ITEM_THREE]
+        enumArrayLength = len(enumArray) if (maxArrayLength is None or
+                                             len(enumArray) <= maxArrayLength) else maxArrayLength
+        self.assertEqual(enumArrayLength, len(complexStruct["enumArray"]))
+        for i, jsonArrayElement in enumerate(complexStruct["enumArray"]):
+            self.assertEqual(enumArray[i].value, jsonArrayElement)
+
+        bitmaskArrayLen = 5 if maxArrayLength is None or maxArrayLength > 5 else maxArrayLength
+        self.assertEqual(bitmaskArrayLen, len(complexStruct["bitmaskArray"]))
+        for jsonArrayElement in complexStruct["bitmaskArray"]:
+            self.assertEqual(self.api.TestBitmask.Values.GREEN.value, jsonArrayElement)
+
+        self.assertEqual(13, len(complexStruct.keys()))
 
     def _checkParameterizedStructJson(self, parameterizedStruct, fieldU32, maxArrayLength):
         arrayLength = fieldU32 if maxArrayLength is None or maxArrayLength > fieldU32 else maxArrayLength

@@ -43,7 +43,10 @@ def _createComplexStruct(api, createOptionals):
         list(range(1, 65536, 2)),
         api.TestEnum.ITEM_THREE if createOptionals else None,
         api.TestBitmask.Values.RED if createOptionals else None,
-        _createOptionalExternData() if createOptionals else None)
+        _createOptionalExternData() if createOptionals else None,
+        [api.TestEnum.TWO, api.TestEnum.ITEM_THREE],
+        [api.TestBitmask.Values.GREEN, api.TestBitmask.Values.GREEN, api.TestBitmask.Values.GREEN,
+         api.TestBitmask.Values.GREEN, api.TestBitmask.Values.GREEN])
 
     return complexStruct
 

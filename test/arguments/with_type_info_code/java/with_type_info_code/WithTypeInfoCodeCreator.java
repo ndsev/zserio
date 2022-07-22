@@ -63,7 +63,10 @@ public class WithTypeInfoCodeCreator
             dynamicBitFieldArray,
             (createOptionals) ? TestEnum.ItemThree : null,
             (createOptionals) ? TestBitmask.Values.RED : null,
-            (createOptionals) ? new BitBuffer(new byte[]{(byte)0xCB, (byte)0xF0}, 12) : null);
+            (createOptionals) ? new BitBuffer(new byte[]{(byte)0xCB, (byte)0xF0}, 12) : null,
+            new TestEnum[] { TestEnum.TWO, TestEnum.ItemThree},
+            new TestBitmask[] { TestBitmask.Values.Green, TestBitmask.Values.Green, TestBitmask.Values.Green,
+                    TestBitmask.Values.Green, TestBitmask.Values.Green });
 
         return complexStruct;
     }

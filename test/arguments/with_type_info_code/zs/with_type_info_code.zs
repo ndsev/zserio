@@ -26,6 +26,8 @@ struct ComplexStruct
     optional TestEnum optionalEnum;
     optional TestBitmask optionalBitmask;
     optional extern optionalExtern;
+    TestEnum enumArray[2];
+    TestBitmask bitmaskArray[valueof(TestEnum.TWO)];
 
     function uint32 firstArrayElement()
     {
