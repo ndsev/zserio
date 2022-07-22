@@ -3,21 +3,129 @@
 
 #include <cmath>
 #include <limits>
+#include <functional>
 
-#include "IReflectable.h"
-#include "ITypeInfo.h"
-#include "TypeInfoUtil.h"
-#include "CppRuntimeException.h"
+#include "zserio/CppRuntimeException.h"
+#include "zserio/IReflectable.h"
+#include "zserio/ITypeInfo.h"
+#include "zserio/TypeInfoUtil.h"
+#include "zserio/StringView.h"
+#include "zserio/Traits.h"
 
 namespace zserio
 {
 
+namespace detail
+{
+
+template <typename T>
+struct gets_value_by_value : std::integral_constant<bool,
+        std::is_arithmetic<T>::value ||
+        std::is_same<StringView, T>::value ||
+        std::is_enum<T>::value ||
+        is_bitmask<T>::value>
+{};
+
+} // namespace detail
+
+/**
+ * Utilities on zserio reflectable interface.
+ */
 template <typename ALLOC = std::allocator<uint8_t>>
 struct ReflectableUtil
 {
 public:
+    /**
+     * Makes "deep" comparison of given reflectables.
+     *
+     * \note Floating point values are compared using "almost equal" strategy.
+     *
+     * \param lhs Left-hand side reflectable.
+     * \param rhs Right-hand side reflectable.
+     *
+     * \return True when the reflectables are equal, false otherwise.
+     */
     static bool equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
             const IBasicReflectableConstPtr<ALLOC>& rhs);
+
+    /**
+     * Gets native value from the given reflectable.
+     *
+     * Overload for types where the value is returned by value:
+     *
+     * - arithmetic types, enums, bitmasks and strings (via string view).
+     *
+     * \param reflectable Reflectable to use for value extraction.
+     *
+     * \return Value of the type T.
+     */
+    template <typename T,
+            typename std::enable_if<detail::gets_value_by_value<T>::value, int>::type = 0>
+    static T getValue(const IBasicReflectableConstPtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC())
+    {
+        return reflectable->getAnyValue(allocator).template get<T>();
+    }
+
+    /**
+     * Gets constant reference to the native value from the given constant reflectable.
+     *
+     * Overload for types where the value is returned by const reference:
+     *
+     * - compound, bit buffers and arrays.
+     *
+     * \param reflectable Constant reflectable to use for value extraction.
+     *
+     * \return Constant reference to the value of the type T.
+     *
+     * \throw CppRuntimeException When wrong type is requested ("Bad type in AnyHolder").
+     */
+    template <typename T,
+            typename std::enable_if<!detail::gets_value_by_value<T>::value, int>::type = 0>
+    static const T& getValue(const IBasicReflectableConstPtr<ALLOC>& reflectable,
+            const ALLOC& allocator = ALLOC())
+    {
+        return reflectable->getAnyValue(allocator).template get<std::reference_wrapper<const T>>().get();
+    }
+
+    /**
+     * Gets reference to the native value from the given reflectable.
+     *
+     * Overload for types where the value is returned by reference:
+     *
+     * - compound, arrays.
+     *
+     * \param reflectable Reflectable to use for value extraction.
+     *
+     * \return Reference to the value of the type T.
+     *
+     * \throw CppRuntimeException When wrong type is requested ("Bad type in AnyHolder").
+     */
+    template <typename T,
+            typename std::enable_if<
+                    !detail::gets_value_by_value<T>::value &&
+                    !std::is_same<BasicBitBuffer<ALLOC>, T>::value, int>::type = 0>
+    static T& getValue(const IBasicReflectablePtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC())
+    {
+        return reflectable->getAnyValue(allocator).template get<std::reference_wrapper<T>>().get();
+    }
+
+    /**
+     * Gets constant reference to the native value from the given reflectable.
+     *
+     * Overload for bit buffers which are currently returned only by constant reference.
+     *
+     * \param reflectable Reflectable to use for value extraction.
+     *
+     * \return Constant reference to the bit buffer value.
+     *
+     * \throw CppRuntimeException When wrong type is requested ("Bad type in AnyHolder").
+     */
+    template <typename T,
+            typename std::enable_if<std::is_same<BasicBitBuffer<ALLOC>, T>::value, int>::type = 0>
+    static const T& getValue(const IBasicReflectablePtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC())
+    {
+        return reflectable->getAnyValue(allocator).template get<std::reference_wrapper<const T>>().get();
+    }
 
 private:
     static bool arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,

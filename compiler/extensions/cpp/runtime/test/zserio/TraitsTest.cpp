@@ -57,6 +57,8 @@ public:
 class DummyBitmask
 {
 public:
+    using underlying_type = int;
+
     int getValue() { return 0; }
 };
 
@@ -134,14 +136,14 @@ TEST(TraitsTest, hasReflectable)
     ASSERT_FALSE(has_reflectable<std::vector<uint8_t>>::value);
 }
 
-TEST(TraitsTest, hasGetValue)
+TEST(TraitsTest, isBitmask)
 {
-    ASSERT_TRUE(has_get_value<DummyBitmask>::value);
+    ASSERT_TRUE(is_bitmask<DummyBitmask>::value);
     ASSERT_EQ(0, DummyBitmask().getValue());
-    ASSERT_FALSE(has_get_value<DummyObjectInitializeChildren>::value);
-    ASSERT_FALSE(has_get_value<DummyObjectInitialize>::value);
-    ASSERT_FALSE(has_get_value<std::string>::value);
-    ASSERT_FALSE(has_get_value<std::vector<uint8_t>>::value);
+    ASSERT_FALSE(is_bitmask<DummyObjectInitializeChildren>::value);
+    ASSERT_FALSE(is_bitmask<DummyObjectInitialize>::value);
+    ASSERT_FALSE(is_bitmask<std::string>::value);
+    ASSERT_FALSE(is_bitmask<std::vector<uint8_t>>::value);
 }
 
 TEST(TraitsTest, isFieldConstructorEnabled)

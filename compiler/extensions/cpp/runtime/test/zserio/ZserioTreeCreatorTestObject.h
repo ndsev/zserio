@@ -165,6 +165,7 @@ public:
     ~DummyObject() = default;
 
     static const ITypeInfo& typeInfo();
+    IReflectableConstPtr reflectable(const allocator_type& allocator = allocator_type()) const;
     IReflectablePtr reflectable(const allocator_type& allocator = allocator_type());
 
     void initializeChildren();

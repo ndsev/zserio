@@ -662,6 +662,38 @@ const ITypeInfo& DummyObject::typeInfo()
     return typeInfo;
 }
 
+IReflectableConstPtr DummyObject::reflectable(const allocator_type& allocator) const
+{
+    class Reflectable : public ReflectableConstAllocatorHolderBase<allocator_type>
+    {
+    public:
+        using ReflectableConstAllocatorHolderBase<allocator_type>::getAnyValue;
+
+        explicit Reflectable(const DummyObject& object, const allocator_type& allocator) :
+                ReflectableConstAllocatorHolderBase<allocator_type>(DummyObject::typeInfo(), allocator),
+                m_object(object)
+        {}
+
+        virtual size_t bitSizeOf(size_t) const override
+        {
+            return 0;
+        }
+
+        virtual void write(BitStreamWriter&) const override
+        {}
+
+        virtual AnyHolder<allocator_type> getAnyValue(const allocator_type& allocator) const override
+        {
+            return AnyHolder<allocator_type>(std::cref(m_object), allocator);
+        }
+
+    private:
+        const DummyObject& m_object;
+    };
+
+    return std::allocate_shared<Reflectable>(allocator, *this, allocator);
+}
+
 IReflectablePtr DummyObject::reflectable(const allocator_type& allocator)
 {
     class Reflectable : public ReflectableAllocatorHolderBase<allocator_type>

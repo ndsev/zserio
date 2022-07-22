@@ -169,14 +169,14 @@ AnyHolder<ALLOC> makeAnyEnumValue(T enumRawValue, const IBasicTypeInfo<ALLOC>& u
 }
 
 template <typename T, typename ALLOC,
-        typename std::enable_if<has_get_value<T>::value, int>::type = 0>
+        typename std::enable_if<is_bitmask<T>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskValue, const IBasicTypeInfo<ALLOC>&, const ALLOC& allocator)
 {
     return AnyHolder<ALLOC>(bitmaskValue, allocator);
 }
 
 template <typename T, typename ALLOC,
-        typename std::enable_if<!has_get_value<T>::value, int>::type = 0>
+        typename std::enable_if<!is_bitmask<T>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskRawValue, const IBasicTypeInfo<ALLOC>& underlyingTypeInfo,
         const ALLOC& allocator)
 {

@@ -127,15 +127,16 @@ struct has_reflectable<T, detail::void_t<typename detail::decltype_reflectable<T
 /** \} */
 
 /**
- * Trait used to check whether the type T has getValue method - i.e. whether it's a bitmask.
+ * Trait used to check whether the type T is a zserio bitmask.
  * \{
  */
 template <typename T, typename = void>
-struct has_get_value : std::false_type
+struct is_bitmask : std::false_type
 {};
 
 template <typename T>
-struct has_get_value<T, detail::void_t<typename detail::decltype_get_value<T>::type>> : std::true_type
+struct is_bitmask<T, detail::void_t<typename detail::decltype_get_value<T>::type,
+        typename T::underlying_type>> : std::true_type
 {};
 /**
  * \}

@@ -147,7 +147,7 @@ CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
  *
  * \return Reference to the exception to allow operator chaining.
  */
-template <typename T, typename std::enable_if<has_get_value<T>::value, int>::type = 0>
+template <typename T, typename std::enable_if<is_bitmask<T>::value, int>::type = 0>
 CppRuntimeException& operator<<(CppRuntimeException& exception, T value)
 {
     exception << value.getValue();

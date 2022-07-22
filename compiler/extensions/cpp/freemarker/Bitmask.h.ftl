@@ -23,7 +23,7 @@
 class ${name}
 {
 public:
-    typedef ${underlyingTypeInfo.typeFullName} underlying_type;
+    using underlying_type = ${underlyingTypeInfo.typeFullName};
 
     enum class Values : underlying_type
     {

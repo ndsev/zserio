@@ -4,6 +4,7 @@
 
 #include "zserio/ReflectableUtil.h"
 #include "zserio/Reflectable.h"
+#include "zserio/TypeInfo.h"
 #include "zserio/ZserioTreeCreatorTestObject.h"
 
 namespace zserio
@@ -248,6 +249,104 @@ TEST(ReflectableUtilTest, equalCompounds)
     // array and non array
     ASSERT_FALSE(ReflectableUtil<>::equal(dummy1.reflectable()->getField("textArray"),
             dummy1.reflectable()->getField("textArray")->at(0)));
+}
+
+TEST(ReflectableUtilTest, getValueArithmeticType)
+{
+    ASSERT_FALSE(ReflectableUtil<>::getValue<bool>(ReflectableFactory::getBool(false)));
+
+    ASSERT_EQ(1, ReflectableUtil<>::getValue<uint8_t>(ReflectableFactory::getUInt8(1)));
+    ASSERT_EQ(12, ReflectableUtil<>::getValue<uint16_t>(ReflectableFactory::getUInt16(12)));
+    ASSERT_EQ(123, ReflectableUtil<>::getValue<uint32_t>(ReflectableFactory::getUInt32(123)));
+    ASSERT_EQ(1234, ReflectableUtil<>::getValue<uint64_t>(ReflectableFactory::getUInt64(1234)));
+
+    ASSERT_EQ(-1, ReflectableUtil<>::getValue<int8_t>(ReflectableFactory::getInt8(-1)));
+    ASSERT_EQ(-12, ReflectableUtil<>::getValue<int16_t>(ReflectableFactory::getInt16(-12)));
+    ASSERT_EQ(-123, ReflectableUtil<>::getValue<int32_t>(ReflectableFactory::getInt32(-123)));
+    ASSERT_EQ(-1234, ReflectableUtil<>::getValue<int64_t>(ReflectableFactory::getInt64(-1234)));
+
+    ASSERT_EQ(12, ReflectableUtil<>::getValue<uint16_t>(ReflectableFactory::getVarUInt16(12)));
+    ASSERT_EQ(123, ReflectableUtil<>::getValue<uint32_t>(ReflectableFactory::getVarUInt32(123)));
+    ASSERT_EQ(1234, ReflectableUtil<>::getValue<uint64_t>(ReflectableFactory::getVarUInt64(1234)));
+    ASSERT_EQ(UINT64_MAX, ReflectableUtil<>::getValue<uint64_t>(ReflectableFactory::getVarUInt(UINT64_MAX)));
+
+    ASSERT_EQ(-12, ReflectableUtil<>::getValue<int16_t>(ReflectableFactory::getVarInt16(-12)));
+    ASSERT_EQ(-123, ReflectableUtil<>::getValue<int32_t>(ReflectableFactory::getVarInt32(-123)));
+    ASSERT_EQ(-1234, ReflectableUtil<>::getValue<int64_t>(ReflectableFactory::getVarInt64(-1234)));
+    ASSERT_EQ(INT64_MIN, ReflectableUtil<>::getValue<int64_t>(ReflectableFactory::getVarInt(INT64_MIN)));
+    ASSERT_EQ(INT64_MAX, ReflectableUtil<>::getValue<int64_t>(ReflectableFactory::getVarInt(INT64_MAX)));
+
+    ASSERT_EQ(0, ReflectableUtil<>::getValue<uint32_t>(ReflectableFactory::getVarSize(0)));
+
+    ASSERT_EQ(1.0f, ReflectableUtil<>::getValue<float>(ReflectableFactory::getFloat16(1.0f)));
+    ASSERT_EQ(3.5f, ReflectableUtil<>::getValue<float>(ReflectableFactory::getFloat32(3.5f)));
+    ASSERT_EQ(9.875, ReflectableUtil<>::getValue<double>(ReflectableFactory::getFloat64(9.875)));
+}
+
+TEST(ReflectableUtilTest, getValueString)
+{
+    ASSERT_EQ("test"_sv, ReflectableUtil<>::getValue<StringView>(ReflectableFactory::getString("test")));
+}
+
+TEST(ReflectableUtilTest, getValueBitBuffer)
+{
+    const BitBuffer bitBuffer;
+    auto reflectable = ReflectableFactory::getBitBuffer(bitBuffer);
+    const BitBuffer& bitBufferRef = ReflectableUtil<>::getValue<BitBuffer>(reflectable);
+    ASSERT_EQ(bitBuffer, bitBufferRef);
+}
+
+TEST(ReflectableUtilTest, getValueEnum)
+{
+    DummyEnum dummyEnum = DummyEnum::ONE;
+    auto reflectable = enumReflectable(dummyEnum);
+    ASSERT_EQ(dummyEnum, ReflectableUtil<>::getValue<DummyEnum>(reflectable));
+}
+
+TEST(ReflectableUtilTest, getValueBitmask)
+{
+    DummyBitmask dummyBitmask = DummyBitmask::Values::READ;
+    auto reflectable = dummyBitmask.reflectable();
+    ASSERT_EQ(dummyBitmask, ReflectableUtil<>::getValue<DummyBitmask>(reflectable));
+}
+
+TEST(ReflectableUtilTest, getValueCompound)
+{
+    DummyObject dummyObject;
+    auto reflectable = dummyObject.reflectable();
+    ASSERT_EQ(&dummyObject, &ReflectableUtil<>::getValue<DummyObject>(reflectable));
+
+    DummyObject& dummyObjectRef = ReflectableUtil<>::getValue<DummyObject>(reflectable);
+    dummyObjectRef.setValue(32);
+    ASSERT_EQ(32, dummyObject.getValue());
+
+    auto constReflectable = static_cast<const DummyObject&>(dummyObject).reflectable();
+    const DummyObject& dummyObjectConstRef = ReflectableUtil<>::getValue<DummyObject>(constReflectable);
+    ASSERT_EQ(32, dummyObjectConstRef.getValue());
+    ASSERT_EQ(&dummyObject, &dummyObjectConstRef);
+}
+
+TEST(ReflectableUtilTest, getValueBuiltinArray)
+{
+    std::vector<uint8_t> uint8Array{{1, 2, 3}};
+    auto reflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt8(), uint8Array);
+    std::vector<uint8_t>& uint8ArrayRef = ReflectableUtil<>::getValue<std::vector<uint8_t>>(reflectable);
+    ASSERT_EQ(&uint8Array, &uint8ArrayRef);
+
+    auto constReflectable = ReflectableFactory::getBuiltinArray(BuiltinTypeInfo<>::getUInt8(),
+            static_cast<const std::vector<uint8_t>&>(uint8Array));
+    const std::vector<uint8_t>& uint8ArrayConstRef =
+            ReflectableUtil<>::getValue<std::vector<uint8_t>>(constReflectable);
+    ASSERT_EQ(&uint8Array, &uint8ArrayConstRef);
+}
+
+TEST(ReflectableUtilTest, getValueCompoundArray)
+{
+    DummyObject dummyObject;
+    auto reflectable = ReflectableFactory::getCompoundArray(dummyObject.getNestedArray());
+    std::vector<DummyNested>& nestedArrayRef =
+            ReflectableUtil<>::getValue<std::vector<DummyNested>>(reflectable);
+    ASSERT_EQ(&dummyObject.getNestedArray(), &nestedArrayRef);
 }
 
 } // namespace zserio

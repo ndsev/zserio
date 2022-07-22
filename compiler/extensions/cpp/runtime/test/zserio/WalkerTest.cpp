@@ -732,6 +732,8 @@ private:
 class DummyBitmask
 {
 public:
+    using underlying_type = uint32_t;
+
     static const ITypeInfo& typeInfo()
     {
         static const std::array<ItemInfo, 1> values = {
