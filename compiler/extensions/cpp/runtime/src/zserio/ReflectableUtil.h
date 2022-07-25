@@ -128,15 +128,15 @@ public:
     }
 
 private:
-    template <typename ALLOC = std::allocator<uint8_t>>
+    template <typename ALLOC>
     static bool arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,
             const IBasicReflectableConstPtr<ALLOC>& rhsArray);
 
-    template <typename ALLOC = std::allocator<uint8_t>>
+    template <typename ALLOC>
     static bool compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhsCompound,
             const IBasicReflectableConstPtr<ALLOC>& rhsCompound);
 
-    template <typename ALLOC = std::allocator<uint8_t>>
+    template <typename ALLOC>
     static bool valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsValue,
             const IBasicReflectableConstPtr<ALLOC>& rhsValue);
 
@@ -161,15 +161,15 @@ bool ReflectableUtil::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
     {
         if (!lhs->isArray() || !rhs->isArray())
             return false;
-        return arraysEqual(lhs, rhs);
+        return arraysEqual<ALLOC>(lhs, rhs);
     }
     else if (TypeInfoUtil::isCompound(lhsTypeInfo.getSchemaType()))
     {
-        return compoundsEqual(lhs, rhs);
+        return compoundsEqual<ALLOC>(lhs, rhs);
     }
     else
     {
-        return valuesEqual(lhs, rhs);
+        return valuesEqual<ALLOC>(lhs, rhs);
     }
 }
 
@@ -182,7 +182,7 @@ bool ReflectableUtil::arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArr
 
     for (size_t i = 0; i < lhsArray->size(); ++i)
     {
-        if (!equal(lhsArray->at(i), rhsArray->at(i)))
+        if (!equal<ALLOC>(lhsArray->at(i), rhsArray->at(i)))
             return false;
     }
 
@@ -197,7 +197,7 @@ bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhs
     {
         auto lhsParameter = lhsCompound->getParameter(parameterInfo.schemaName);
         auto rhsParameter = rhsCompound->getParameter(parameterInfo.schemaName);
-        if (!equal(lhsParameter, rhsParameter))
+        if (!equal<ALLOC>(lhsParameter, rhsParameter))
             return false;
     }
 
@@ -210,7 +210,7 @@ bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhs
         {
             auto lhsField = lhsCompound->getField(lhsCompound->getChoice());
             auto rhsField = rhsCompound->getField(lhsCompound->getChoice());
-            if (!equal(lhsField, rhsField))
+            if (!equal<ALLOC>(lhsField, rhsField))
                 return false;
         }
     }
@@ -220,7 +220,7 @@ bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhs
         {
             auto lhsField = lhsCompound->getField(fieldInfo.schemaName);
             auto rhsField = rhsCompound->getField(fieldInfo.schemaName);
-            if (!equal(lhsField, rhsField))
+            if (!equal<ALLOC>(lhsField, rhsField))
                 return false;
         }
     }
