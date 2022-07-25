@@ -44,8 +44,14 @@ protected:
 
     void checkReflectable(const WithTypeInfoCode& withTypeInfoCode, const IReflectablePtr& readReflectable)
     {
+        // check using objects
+        const WithTypeInfoCode& readWithTypeInfoCode =
+                zserio::ReflectableUtil::getValue<WithTypeInfoCode, allocator_type>(readReflectable);
+        ASSERT_EQ(withTypeInfoCode, readWithTypeInfoCode);
+
+        // check using reflectables
         auto origReflectable = withTypeInfoCode.reflectable();
-        ASSERT_TRUE(zserio::ReflectableUtil<allocator_type>::equal(origReflectable, readReflectable));
+        ASSERT_TRUE(zserio::ReflectableUtil::equal<allocator_type>(origReflectable, readReflectable));
     }
 
     void checkWithTypeInfoCodeArrayLength(const IReflectablePtr& reflectable, size_t maxArrayLength)

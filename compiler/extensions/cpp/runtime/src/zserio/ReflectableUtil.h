@@ -31,8 +31,7 @@ struct gets_value_by_value : std::integral_constant<bool,
 /**
  * Utilities on zserio reflectable interface.
  */
-template <typename ALLOC = std::allocator<uint8_t>>
-struct ReflectableUtil
+class ReflectableUtil
 {
 public:
     /**
@@ -45,6 +44,7 @@ public:
      *
      * \return True when the reflectables are equal, false otherwise.
      */
+    template <typename ALLOC = std::allocator<uint8_t>>
     static bool equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
             const IBasicReflectableConstPtr<ALLOC>& rhs);
 
@@ -59,7 +59,7 @@ public:
      *
      * \return Value of the type T.
      */
-    template <typename T,
+    template <typename T, typename ALLOC = std::allocator<uint8_t>,
             typename std::enable_if<detail::gets_value_by_value<T>::value, int>::type = 0>
     static T getValue(const IBasicReflectableConstPtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC())
     {
@@ -79,7 +79,7 @@ public:
      *
      * \throw CppRuntimeException When wrong type is requested ("Bad type in AnyHolder").
      */
-    template <typename T,
+    template <typename T, typename ALLOC = std::allocator<uint8_t>,
             typename std::enable_if<!detail::gets_value_by_value<T>::value, int>::type = 0>
     static const T& getValue(const IBasicReflectableConstPtr<ALLOC>& reflectable,
             const ALLOC& allocator = ALLOC())
@@ -100,7 +100,7 @@ public:
      *
      * \throw CppRuntimeException When wrong type is requested ("Bad type in AnyHolder").
      */
-    template <typename T,
+    template <typename T, typename ALLOC = std::allocator<uint8_t>,
             typename std::enable_if<
                     !detail::gets_value_by_value<T>::value &&
                     !std::is_same<BasicBitBuffer<ALLOC>, T>::value, int>::type = 0>
@@ -120,7 +120,7 @@ public:
      *
      * \throw CppRuntimeException When wrong type is requested ("Bad type in AnyHolder").
      */
-    template <typename T,
+    template <typename T, typename ALLOC = std::allocator<uint8_t>,
             typename std::enable_if<std::is_same<BasicBitBuffer<ALLOC>, T>::value, int>::type = 0>
     static const T& getValue(const IBasicReflectablePtr<ALLOC>& reflectable, const ALLOC& allocator = ALLOC())
     {
@@ -128,12 +128,15 @@ public:
     }
 
 private:
+    template <typename ALLOC = std::allocator<uint8_t>>
     static bool arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,
             const IBasicReflectableConstPtr<ALLOC>& rhsArray);
 
+    template <typename ALLOC = std::allocator<uint8_t>>
     static bool compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhsCompound,
             const IBasicReflectableConstPtr<ALLOC>& rhsCompound);
 
+    template <typename ALLOC = std::allocator<uint8_t>>
     static bool valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsValue,
             const IBasicReflectableConstPtr<ALLOC>& rhsValue);
 
@@ -141,7 +144,7 @@ private:
 };
 
 template <typename ALLOC>
-bool ReflectableUtil<ALLOC>::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
+bool ReflectableUtil::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
         const IBasicReflectableConstPtr<ALLOC>& rhs)
 {
     if (lhs == nullptr || rhs == nullptr)
@@ -171,7 +174,7 @@ bool ReflectableUtil<ALLOC>::equal(const IBasicReflectableConstPtr<ALLOC>& lhs,
 }
 
 template <typename ALLOC>
-bool ReflectableUtil<ALLOC>::arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,
+bool ReflectableUtil::arraysEqual(const IBasicReflectableConstPtr<ALLOC>& lhsArray,
         const IBasicReflectableConstPtr<ALLOC>& rhsArray)
 {
     if (lhsArray->size() != rhsArray->size())
@@ -187,7 +190,7 @@ bool ReflectableUtil<ALLOC>::arraysEqual(const IBasicReflectableConstPtr<ALLOC>&
 }
 
 template <typename ALLOC>
-bool ReflectableUtil<ALLOC>::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhsCompound,
+bool ReflectableUtil::compoundsEqual(const IBasicReflectableConstPtr<ALLOC>& lhsCompound,
         const IBasicReflectableConstPtr<ALLOC>& rhsCompound)
 {
     for (const auto& parameterInfo : lhsCompound->getTypeInfo().getParameters())
@@ -226,7 +229,7 @@ bool ReflectableUtil<ALLOC>::compoundsEqual(const IBasicReflectableConstPtr<ALLO
 }
 
 template <typename ALLOC>
-bool ReflectableUtil<ALLOC>::valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsValue,
+bool ReflectableUtil::valuesEqual(const IBasicReflectableConstPtr<ALLOC>& lhsValue,
         const IBasicReflectableConstPtr<ALLOC>& rhsValue)
 {
     CppType cppType = lhsValue->getTypeInfo().getCppType();
@@ -259,8 +262,7 @@ bool ReflectableUtil<ALLOC>::valuesEqual(const IBasicReflectableConstPtr<ALLOC>&
     }
 }
 
-template <typename ALLOC>
-bool ReflectableUtil<ALLOC>::doubleValuesAlmostEqual(double lhs, double rhs)
+inline bool ReflectableUtil::doubleValuesAlmostEqual(double lhs, double rhs)
 {
     if (std::isinf(lhs) || std::isinf(rhs))
         return std::isinf(lhs) && std::isinf(rhs) && ((lhs > 0.0 && rhs > 0.0) || (lhs < 0.0 && rhs < 0.0));
