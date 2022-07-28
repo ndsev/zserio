@@ -18,16 +18,14 @@ import zserio.extension.cpp.types.NativeStringViewType;
  */
 public class CompoundFunctionTemplateData
 {
-    public CompoundFunctionTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,
-            ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
-                    throws ZserioExtensionException
+    public CompoundFunctionTemplateData(TemplateDataContext context, CompoundType compoundType,
+            IncludeCollector includeCollector) throws ZserioExtensionException
     {
         compoundFunctionList = new ArrayList<CompoundFunction>();
         final Iterable<Function> functionList = compoundType.getFunctions();
         for (Function function : functionList)
         {
-            compoundFunctionList.add(new CompoundFunction(function, cppNativeMapper,
-                    cppExpressionFormatter, includeCollector));
+            compoundFunctionList.add(new CompoundFunction(context, function, includeCollector));
         }
     }
 
@@ -38,10 +36,10 @@ public class CompoundFunctionTemplateData
 
     public static class CompoundFunction
     {
-        public CompoundFunction(Function function, CppNativeMapper cppNativeMapper,
-                ExpressionFormatter cppExpressionFormatter, IncludeCollector includeCollector)
-                        throws ZserioExtensionException
+        public CompoundFunction(TemplateDataContext context, Function function,
+                IncludeCollector includeCollector) throws ZserioExtensionException
         {
+            final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
             final TypeReference returnTypeReference = function.getReturnTypeReference();
             final ZserioType returnBaseType = returnTypeReference.getBaseTypeReference().getType();
             if (returnBaseType instanceof StringType)
@@ -60,6 +58,7 @@ public class CompoundFunctionTemplateData
                 returnTypeInfo = new NativeTypeInfoTemplateData(returnNativeType, returnTypeReference);
             }
 
+            final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
             resultExpression = cppExpressionFormatter.formatGetter(function.getResultExpression());
             schemaName = function.getName();
             name = AccessorNameFormatter.getFunctionName(function);

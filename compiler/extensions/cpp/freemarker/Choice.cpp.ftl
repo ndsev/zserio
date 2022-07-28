@@ -22,7 +22,8 @@
 <#if has_field_with_constraint(fieldList)>
 #include <zserio/ConstraintException.h>
 </#if>
-<#if withReflectionCode && has_non_simple_parameter(compoundParametersData)>
+<#if (withReflectionCode && has_non_simple_parameter(compoundParametersData)) ||
+        has_inner_classes(name, fieldList)>
 #include <functional>
 </#if>
 <@system_includes cppSystemIncludes/>

@@ -25,7 +25,7 @@
     <#if arrayTraits.isTemplated>
             <${fullName}::underlying_type><#t>
     </#if>
-    (<#if arrayTraits.requiresElementBitSize>${bitSize.value}</#if>)<#t>
+    (<#if arrayTraits.requiresElementFixedBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 ${name}::${name}(::zserio::BitStreamReader& in) :
         m_value(readValue(in))

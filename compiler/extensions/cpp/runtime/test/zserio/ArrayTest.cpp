@@ -127,6 +127,20 @@ const DummyBitmask DummyBitmask::Values::CREATE = DummyBitmask(UINT8_C(1));
 const DummyBitmask DummyBitmask::Values::READ = DummyBitmask(UINT8_C(2));
 const DummyBitmask DummyBitmask::Values::WRITE = DummyBitmask(UINT8_C(8));
 
+class ElementBitSize
+{
+public:
+    explicit ElementBitSize(uint8_t bitSize) : m_bitSize(bitSize) {}
+
+    uint8_t get() const
+    {
+        return m_bitSize;
+    }
+
+private:
+    uint8_t m_bitSize;
+};
+
 class DummyObject
 {
 public:
@@ -165,7 +179,8 @@ public:
         size_t endBitPosition = bitPosition;
 
         auto& context = contextNode.getChildren().at(0).getContext();
-        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31), m_value);
+        endBitPosition += context.bitSizeOf(BitFieldArrayTraits<uint32_t>(31),
+                m_value);
 
         return endBitPosition - bitPosition;
     }
@@ -210,7 +225,7 @@ private:
     uint32_t m_value;
 };
 
-class ArrayTestDummyObjectElementInitializer
+class DummyObjectElementInitializer
 {
 public:
     void initialize(DummyObject& element, size_t _index) const
@@ -222,7 +237,7 @@ public:
     static const uint32_t ELEMENT_VALUE = 0x12;
 };
 
-class ArrayTestDummyObjectElementFactory
+class DummyObjectElementFactory
 {
 public:
     static void create(std::vector<DummyObject>& array, BitStreamReader& in, size_t)
@@ -346,8 +361,8 @@ protected:
     void testArrayInitializeElements(const RAW_ARRAY& rawArray, const ARRAY_TRAITS& arrayTraits)
     {
         Array<RAW_ARRAY, ARRAY_TRAITS, ArrayType::NORMAL> array{rawArray, arrayTraits};
-        array.initializeElements(ArrayTestDummyObjectElementInitializer());
-        const uint32_t expectedValue = ArrayTestDummyObjectElementInitializer::ELEMENT_VALUE;
+        array.initializeElements(DummyObjectElementInitializer());
+        const uint32_t expectedValue = DummyObjectElementInitializer::ELEMENT_VALUE;
         for (const auto& element : array.getRawArray())
             ASSERT_EQ(expectedValue, element.getValue());
     }
@@ -707,6 +722,70 @@ TEST_F(ArrayTest, bitField36Array)
     testArray(rawArray, BitFieldArrayTraits<uint64_t>(numBits), numBits);
 }
 
+TEST_F(ArrayTest, dynamicIntField4Array)
+{
+    const size_t numBits = 4;
+    std::vector<int8_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<int8_t, ElementBitSize>(elementBitSize), numBits);
+}
+
+TEST_F(ArrayTest, dynamicIntField12Array)
+{
+    const size_t numBits = 12;
+    std::vector<int16_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<int16_t, ElementBitSize>(elementBitSize), numBits);
+}
+
+TEST_F(ArrayTest, dynamicIntField20Array)
+{
+    const size_t numBits = 20;
+    std::vector<int32_t> rawArray = {-(1 << (numBits - 1)), 7, (1 << (numBits - 1)) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<int32_t, ElementBitSize>(elementBitSize), numBits);
+}
+
+TEST_F(ArrayTest, dynamicIntField36Array)
+{
+    const size_t numBits = 36;
+    std::vector<int64_t> rawArray = {-(INT64_C(1) << (numBits - 1)), 7, (INT64_C(1) << (numBits - 1)) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<int64_t, ElementBitSize>(elementBitSize), numBits);
+}
+
+TEST_F(ArrayTest, dynamicBitField4Array)
+{
+    const size_t numBits = 4;
+    std::vector<uint8_t> rawArray = {0, 7, (1 << numBits) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<uint8_t, ElementBitSize>(elementBitSize), numBits);
+}
+
+TEST_F(ArrayTest, dynamicBitField12Array)
+{
+    const size_t numBits = 12;
+    std::vector<uint16_t> rawArray = {0, 7, (1 << numBits) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<uint16_t, ElementBitSize>(elementBitSize), numBits);
+}
+
+TEST_F(ArrayTest, dynamicBitField20Array)
+{
+    const size_t numBits = 20;
+    std::vector<uint32_t> rawArray = {0, 7, (1 << numBits) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<uint32_t, ElementBitSize>(elementBitSize), numBits);
+}
+
+TEST_F(ArrayTest, dynamicBitField36Array)
+{
+    const size_t numBits = 36;
+    std::vector<uint64_t> rawArray = {0, 7, (UINT64_C(1) << numBits) - 1};
+    const ElementBitSize elementBitSize(numBits);
+    testArray(rawArray, DynamicBitFieldArrayTraits<uint64_t, ElementBitSize>(elementBitSize), numBits);
+}
+
 TEST_F(ArrayTest, stdInt8Array)
 {
     std::vector<int8_t> rawArray = {INT8_MIN, 7, INT8_MAX};
@@ -959,9 +1038,9 @@ TEST_F(ArrayTest, bitmaskArray)
 TEST_F(ArrayTest, objectArray)
 {
     std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
-    testArrayInitializeElements(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>());
-    testArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(), 31,
-            ArrayTestDummyObjectElementFactory());
+    testArrayInitializeElements(rawArray, ObjectArrayTraits<DummyObject, DummyObjectElementFactory>());
+    testArray(rawArray, ObjectArrayTraits<DummyObject, DummyObjectElementFactory>(), 31,
+            DummyObjectElementFactory());
 }
 
 TEST_F(ArrayTest, stdInt8PackedArray)
@@ -1106,8 +1185,8 @@ TEST_F(ArrayTest, bitmaskPackedArray)
 TEST_F(ArrayTest, objectPackedArray)
 {
     std::vector<DummyObject> rawArray = {DummyObject(0xAB), DummyObject(0xCD), DummyObject(0xEF)};
-    testPackedArray(rawArray, ObjectArrayTraits<DummyObject, ArrayTestDummyObjectElementFactory>(),
-            ArrayTestDummyObjectElementFactory());
+    testPackedArray(rawArray, ObjectArrayTraits<DummyObject, DummyObjectElementFactory>(),
+            DummyObjectElementFactory());
 }
 
 } // namespace zserio

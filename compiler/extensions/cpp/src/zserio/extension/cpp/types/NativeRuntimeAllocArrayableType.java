@@ -24,11 +24,7 @@ public class NativeRuntimeAllocArrayableType extends NativeRuntimeAllocType impl
 
         arrayTraits = new NativeArrayTraits(nativeArrayTraitsDefinition.getPackage(),
                 getName(nativeArrayTraitsDefinition, allocatorDefinition, ""),
-                nativeArrayTraitsDefinition.getSystemInclude(),
-                false, // isTemplated
-                false, // requiresElementBitSize
-                false // requiresElementFactory
-        );
+                nativeArrayTraitsDefinition.getSystemInclude());
         addIncludeFiles(arrayTraits);
     }
 

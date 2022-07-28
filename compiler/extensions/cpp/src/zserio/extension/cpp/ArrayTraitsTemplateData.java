@@ -22,9 +22,14 @@ public class ArrayTraitsTemplateData
         return nativeTraits.isTemplated();
     }
 
-    public boolean getRequiresElementBitSize()
+    public boolean getRequiresElementFixedBitSize()
     {
-        return nativeTraits.requiresElementBitSize();
+        return nativeTraits.requiresElementFixedBitSize();
+    }
+
+    public boolean getRequiresElementDynamicBitSize()
+    {
+        return nativeTraits.requiresElementDynamicBitSize();
     }
 
     public boolean getRequiresElementFactory()

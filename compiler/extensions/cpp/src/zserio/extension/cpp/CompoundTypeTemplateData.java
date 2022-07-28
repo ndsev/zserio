@@ -5,7 +5,6 @@ import java.util.List;
 
 import zserio.ast.CompoundType;
 import zserio.ast.Field;
-import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 
 /**
@@ -20,8 +19,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
 
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
-        final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
-        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         for (Field fieldType : fieldTypeList)
         {
             final CompoundFieldTemplateData data = new CompoundFieldTemplateData(context,
@@ -30,11 +27,10 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
             fieldList.add(data);
         }
 
-        compoundParametersData = new CompoundParameterTemplateData(cppNativeMapper, compoundType, this);
-        compoundFunctionsData = new CompoundFunctionTemplateData(cppNativeMapper, compoundType,
-                cppExpressionFormatter, this);
-        compoundConstructorsData = new CompoundConstructorTemplateData(cppNativeMapper, compoundType,
-                compoundParametersData, fieldList);
+        compoundParametersData = new CompoundParameterTemplateData(context, compoundType, this);
+        compoundFunctionsData = new CompoundFunctionTemplateData(context, compoundType, this);
+        compoundConstructorsData = new CompoundConstructorTemplateData(compoundType, compoundParametersData,
+                fieldList);
 
         // TODO[Mi-L@] Similar logic is done in freemarker template function (has_field_with_initialization).
         //             Try to unify the logic!

@@ -22,7 +22,7 @@
     <#if arrayTraits.isTemplated>
             <typename ::std::underlying_type<${fullName}>::type><#t>
     </#if>
-    (<#if arrayTraits.requiresElementBitSize>${bitSize.value}</#if>)<#t>
+    (<#if arrayTraits.requiresElementFixedBitSize>${bitSize.value}</#if>)<#t>
 </#macro>
 // This is full specialization of enumeration traits and methods for ${name} enumeration.
 constexpr ::std::array<const char*, ${items?size}> EnumTraits<${fullName}>::names;

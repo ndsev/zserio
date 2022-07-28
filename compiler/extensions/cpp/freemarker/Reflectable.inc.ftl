@@ -163,8 +163,8 @@ ${I}}
         <#else>
             ${types.reflectableFactory.name}::getBuiltinArray(<#t>
                     <@type_info field.array.elementTypeInfo/>, m_object.${field.getterName}(), <#t>
-            <#if field.array.elementObjectIndirectDynamicBitSizeValue??>
-                    static_cast<uint8_t>(${field.array.elementObjectIndirectDynamicBitSizeValue}), <#t>
+            <#if field.array.elementBitSize?? && field.array.elementBitSize.objectIndirectValue??>
+                    static_cast<uint8_t>(${field.array.elementBitSize.objectIndirectValue}), <#t>
             </#if>
                     get_allocator())<#t>
         </#if>
@@ -173,8 +173,8 @@ ${I}}
             ${types.reflectableFactory.name}::get${field.typeInfo.typeInfoGetter.suffix}(<#t>
                     <#if field.typeInfo.typeInfoGetter.arg??>${field.typeInfo.typeInfoGetter.arg}, </#if><#t>
                     m_object.${field.getterName}(), <#t>
-            <#if field.objectIndirectDynamicBitSizeValue??>
-                    static_cast<uint8_t>(${field.objectIndirectDynamicBitSizeValue}), <#t>
+            <#if field.bitSize?? && field.bitSize.objectIndirectValue??>
+                    static_cast<uint8_t>(${field.bitSize.objectIndirectValue}), <#t>
             </#if>
                     get_allocator())<#t>
         <#elseif field.typeInfo.isEnum>

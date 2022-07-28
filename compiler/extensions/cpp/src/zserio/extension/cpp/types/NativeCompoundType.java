@@ -10,6 +10,6 @@ public class NativeCompoundType extends NativeUserArrayableType
     public NativeCompoundType(PackageName packageName, String name, String includeFileName)
     {
         super(packageName, name, includeFileName, false,
-                new NativeArrayTraits("ObjectArrayTraits", true, false, true));
+                new NativeArrayTraits("ObjectArrayTraits", NativeArrayTraits.TYPE.REQUIRES_ELEMENT_FACTORY));
     }
 }

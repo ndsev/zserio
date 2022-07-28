@@ -123,7 +123,10 @@ inline void write_bits<uint64_t>(BitStreamWriter& out, uint64_t value, uint8_t n
 } // namespace detail
 
 /**
- * Array traits for bit field Zserio types (int:5, bit:5, etc...).
+ * Array traits for bit field Zserio types.
+ *
+ * These traits are used for all fixed bit fields (int:N or bit:N) or for dynamic bit fields which
+ * have constant bit size available during generation (int<N> or bit<N>).
  */
 template <typename T>
 class BitFieldArrayTraits
@@ -213,6 +216,99 @@ public:
 
 private:
     uint8_t m_numBits;
+};
+
+/**
+ * Array traits for dynamic bit field Zserio types with dynamic bit size (int<bitSize> or bit<bitSize>).
+ */
+template <typename T, typename ELEMENT_BIT_SIZE>
+class DynamicBitFieldArrayTraits
+{
+public:
+    /** Element type. */
+    using ElementType = T;
+
+    /**
+     * Constructor.
+     *
+     * \param elementBitSize Element bit size abstraction to get num bits of the dynamic bit field.
+     */
+    explicit DynamicBitFieldArrayTraits(const ELEMENT_BIT_SIZE& elementBitSize = ELEMENT_BIT_SIZE()) :
+            m_elementBitSize(elementBitSize)
+    {}
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    size_t bitSizeOf() const
+    {
+        return m_elementBitSize.get();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    size_t bitSizeOf(ElementType) const
+    {
+        return bitSizeOf();
+    }
+
+    /**
+     * Calculates bit size of the array element.
+     *
+     * \return Bit size of the array element.
+     */
+    size_t bitSizeOf(size_t, ElementType) const
+    {
+        return bitSizeOf();
+    }
+
+    /**
+     * Initializes indexed offsets of the single array element.
+     *
+     * \param bitPosition Current bit position.
+     *
+     * \return Updated bit position which points to the first bit after the array element.
+     */
+    size_t initializeOffsets(size_t bitPosition, ElementType) const
+    {
+        return bitPosition + bitSizeOf();
+    }
+
+    /**
+     * Reads the single array element.
+     *
+     * \param in Bit stream reader.
+     *
+     * \return Read element.
+     */
+    ElementType read(BitStreamReader& in) const
+    {
+        return detail::read_bits<T>(in, m_elementBitSize.get());
+    }
+
+    /**
+     * Writes the single array element.
+     *
+     * \param out Bit stream writer to use.
+     * \param element Element to write.
+     */
+    void write(BitStreamWriter& out, ElementType element) const
+    {
+        detail::write_bits(out, element, m_elementBitSize.get());
+    }
+
+    /** Determines whether the bit size of the single element is constant. */
+    static const bool IS_BITSIZEOF_CONSTANT = true;
+    /** Determines whether the bit size depends on current bit position. */
+    static const bool NEEDS_BITSIZEOF_POSITION = false;
+
+private:
+    ELEMENT_BIT_SIZE m_elementBitSize;
 };
 
 /**

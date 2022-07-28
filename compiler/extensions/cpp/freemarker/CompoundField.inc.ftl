@@ -364,12 +364,14 @@ ${I}}
         ${field.array.traits.name}<#t>
         <#if field.array.traits.isTemplated>
                 <${field.array.elementTypeInfo.typeFullName}<#t>
+                <#if field.array.traits.requiresElementDynamicBitSize>, <@element_bit_size_name field.name/></#if><#t>
                 <#if field.array.traits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
     <#else>
         ${field.typeInfo.arrayTraits.name}<#t>
         <#if field.typeInfo.arrayTraits.isTemplated>
                 <${field.typeInfo.typeFullName}<#t>
+                <#if field.typeInfo.arrayTraits.requiresElementDynamicBitSize>, <@element_bit_size_name field.name/></#if><#t>
                 <#if field.typeInfo.arrayTraits.requiresElementFactory>, <@element_factory_name field.name/></#if>><#t>
         </#if>
     </#if>
@@ -379,20 +381,18 @@ ${I}}
     <@array_traits_type_name field/>
             (<#t>
     <#if field.array??>
-        <#if field.array.elementBitSize??>
-            <#if field.array.elementBitSize.isDynamicBitField>
-                static_cast<uint8_t>(${field.array.elementBitSize.value})<#t>
-            <#else>
-                ${field.array.elementBitSize.value}<#t>
-            </#if>
+        <#if field.array.traits.requiresElementFixedBitSize>
+            static_cast<uint8_t>(${field.array.elementBitSize.value})<#t>
+        </#if>
+        <#if field.array.traits.requiresElementDynamicBitSize>
+            <@element_bit_size_name field.name/>(*this)<#t>
         </#if>
     <#else>
-        <#if field.typeInfo.arrayTraits.requiresElementBitSize>
-            <#if field.bitSize.isDynamicBitField>
-                static_cast<uint8_t>(${field.bitSize.value})<#t>
-            <#else>
-                ${field.bitSize.value}<#t>
-            </#if>
+        <#if field.typeInfo.arrayTraits.requiresElementFixedBitSize>
+            static_cast<uint8_t>(${field.bitSize.value})<#t>
+        </#if>
+        <#if field.typeInfo.arrayTraits.requiresElementDynamicBitSize>
+            <@element_bit_size_name field.name/>(*this)<#t>
         </#if>
     </#if>
             )<#t>
@@ -437,13 +437,13 @@ ${I}}
         void checkOffset(size_t index, size_t byteOffset) const;
 
     private:
-        const ${compoundName}& m_owner;
+        std::reference_wrapper<const ${compoundName}> m_ownerRef;
     };
 </#macro>
 
 <#macro define_offset_checker_methods compoundName field>
 ${compoundName}::<@offset_checker_name field.name/>::<@offset_checker_name field.name/>(const ${compoundName}& owner) :
-        m_owner(owner)
+        m_ownerRef(owner)
 {}
 
 void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t index, size_t byteOffset) const
@@ -473,14 +473,14 @@ void ${compoundName}::<@offset_checker_name field.name/>::checkOffset(size_t ind
         void initializeOffset(size_t index, size_t byteOffset) const;
 
     private:
-        ${compoundName}& m_owner;
+        std::reference_wrapper<${compoundName}> m_ownerRef;
     };
 </#macro>
 
 <#macro define_offset_initializer_methods compoundName field>
 ${compoundName}::<@offset_initializer_name field.name/>::<@offset_initializer_name field.name/>(<#rt>
         <#lt>${compoundName}& owner) :
-        m_owner(owner)
+        m_ownerRef(owner)
 {}
 
 void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(size_t index, size_t byteOffset) const
@@ -512,7 +512,7 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
                 ::zserio::BitStreamReader& in, size_t index) const;
 
     private:
-        ${compoundName}& m_owner;
+        std::reference_wrapper<${compoundName}> m_ownerRef;
     };
 </#macro>
 
@@ -523,7 +523,7 @@ void ${compoundName}::<@offset_initializer_name field.name/>::initializeOffset(s
         </#if>
     </#local>
 ${compoundName}::<@element_factory_name field.name/>::<@element_factory_name field.name/>(${compoundName}& owner) :
-        m_owner(owner)
+        m_ownerRef(owner)
 {}
 
 void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
@@ -565,14 +565,14 @@ void ${compoundName}::<@element_factory_name field.name/>::create(<#rt>
         void initialize(${field.array.elementTypeInfo.typeFullName}& element, size_t index) const;
 
     private:
-        ${compoundName}& m_owner;
+        std::reference_wrapper<${compoundName}> m_ownerRef;
     };
 </#macro>
 
 <#macro define_element_initializer_methods compoundName field>
 ${compoundName}::<@element_initializer_name field.name/>::<@element_initializer_name field.name/>(<#rt>
         <#lt>${compoundName}& owner) :
-        m_owner(owner)
+        m_ownerRef(owner)
 {}
 
 void ${compoundName}::<@element_initializer_name field.name/>::initialize(<#rt>
@@ -603,6 +603,44 @@ void ${compoundName}::<@element_children_initializer_name field.name/>::initiali
 }
 </#macro>
 
+<#function needs_field_element_bit_size field>
+    <#return (field.array?? && field.array.traits.requiresElementDynamicBitSize) ||
+            (field.typeInfo.arrayTraits?? && field.typeInfo.arrayTraits.requiresElementDynamicBitSize)>
+</#function>
+
+<#macro element_bit_size_name fieldName>
+    ZserioElementBitSize_${fieldName}<#t>
+</#macro>
+
+<#macro declare_element_bit_size compoundName field>
+    class <@element_bit_size_name field.name/>
+    {
+    public:
+        explicit <@element_bit_size_name field.name/>(const ${compoundName}& owner);
+
+        uint8_t get() const;
+
+    private:
+        std::reference_wrapper<const ${compoundName}> m_ownerRef;
+    };
+</#macro>
+
+<#macro define_element_bit_size_methods compoundName field>
+${compoundName}::<@element_bit_size_name field.name/>::<@element_bit_size_name field.name/>(<#rt>
+        <#lt>const ${compoundName}& owner) :
+        m_ownerRef(owner)
+{}
+
+uint8_t ${compoundName}::<@element_bit_size_name field.name/>::get() const
+{
+    <#if field.array??>
+    return static_cast<uint8_t>(${field.array.elementBitSize.ownerIndirectValue});
+    <#else>
+    return static_cast<uint8_t>(${field.bitSize.ownerIndirectValue});
+    </#if>
+}
+</#macro>
+
 <#macro inner_classes_declaration compoundName fieldList>
     <#list fieldList as field>
         <#if needs_field_offset_checker(field)>
@@ -625,6 +663,10 @@ void ${compoundName}::<@element_children_initializer_name field.name/>::initiali
 
                 </#if>
             </#if>
+        </#if>
+        <#if needs_field_element_bit_size(field)>
+    <@declare_element_bit_size compoundName, field/>
+
         </#if>
     </#list>
 </#macro>
@@ -652,8 +694,18 @@ void ${compoundName}::<@element_children_initializer_name field.name/>::initiali
                 </#if>
             </#if>
         </#if>
+        <#if needs_field_element_bit_size(field)>
+<@define_element_bit_size_methods compoundName, field/>
+
+        </#if>
     </#list>
 </#macro>
+
+<#function has_inner_classes compoundName fieldList>
+    <#local innerClasses><@inner_classes_declaration compoundName, fieldList/></#local>
+
+    <#return innerClasses?has_content>
+</#function>
 
 <#macro arrays_typedefs fieldList>
     <#list fieldList as field>

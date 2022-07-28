@@ -21,11 +21,13 @@ import zserio.extension.common.ZserioExtensionException;
  */
 public class CppRuntimeFunctionDataCreator
 {
-    public static RuntimeFunctionTemplateData createData(TypeInstantiation typeInstantiation,
-            ExpressionFormatter cppExpressionFormatter) throws ZserioExtensionException
+    public static RuntimeFunctionTemplateData createData(TemplateDataContext context,
+            TypeInstantiation typeInstantiation, IncludeCollector includeCollector)
+                    throws ZserioExtensionException
     {
         if (typeInstantiation instanceof DynamicBitFieldInstantiation)
         {
+            final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(includeCollector);
             return mapDynamicBitField((DynamicBitFieldInstantiation)typeInstantiation, cppExpressionFormatter);
         }
         else

@@ -14,15 +14,15 @@ import zserio.extension.cpp.types.CppNativeType;
  */
 public class CompoundParameterTemplateData
 {
-    public CompoundParameterTemplateData(CppNativeMapper cppNativeMapper, CompoundType compoundType,
+    public CompoundParameterTemplateData(TemplateDataContext context, CompoundType compoundType,
             IncludeCollector includeCollector) throws ZserioExtensionException
     {
         final List<Parameter> compoundParameterTypeList = compoundType.getTypeParameters();
         compoundParameterList = new ArrayList<CompoundParameter>(compoundParameterTypeList.size());
         for (Parameter compoundParameterType : compoundParameterTypeList)
         {
-            final CompoundParameter parameter = new CompoundParameter(cppNativeMapper,
-                    compoundParameterType, includeCollector);
+            final CompoundParameter parameter = new CompoundParameter(context, compoundParameterType,
+                    includeCollector);
             compoundParameterList.add(parameter);
         }
     }
@@ -34,10 +34,11 @@ public class CompoundParameterTemplateData
 
     public static class CompoundParameter
     {
-        public CompoundParameter(CppNativeMapper cppNativeMapper, Parameter parameter,
+        public CompoundParameter(TemplateDataContext context, Parameter parameter,
                 IncludeCollector includeCollector) throws ZserioExtensionException
         {
             final TypeReference parameterTypeReference = parameter.getTypeReference();
+            final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
             final CppNativeType cppNativeType = cppNativeMapper.getCppType(parameterTypeReference);
             includeCollector.addHeaderIncludesForType(cppNativeType);
 

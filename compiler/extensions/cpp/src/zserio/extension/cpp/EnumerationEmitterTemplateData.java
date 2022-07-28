@@ -6,7 +6,6 @@ import java.util.List;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.TypeInstantiation;
-import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
 import zserio.extension.cpp.types.NativeIntegralType;
@@ -30,10 +29,8 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
 
         underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, enumTypeInstantiation);
 
-        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        bitSize = BitSizeTemplateData.create(enumTypeInstantiation, cppExpressionFormatter);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(enumTypeInstantiation,
-                cppExpressionFormatter);
+        bitSize = BitSizeTemplateData.create(context, enumTypeInstantiation, this);
+        runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, enumTypeInstantiation, this);
 
         final List<EnumItem> enumItems = enumType.getItems();
         items = new ArrayList<EnumItemData>(enumItems.size());

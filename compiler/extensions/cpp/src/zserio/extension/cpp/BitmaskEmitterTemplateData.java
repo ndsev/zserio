@@ -10,7 +10,6 @@ import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
-import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.NativeIntegralType;
 
@@ -32,10 +31,8 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
 
         underlyingTypeInfo = new NativeIntegralTypeInfoTemplateData(nativeBaseType, bitmaskTypeInstantiation);
 
-        final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
-        bitSize = BitSizeTemplateData.create(bitmaskTypeInstantiation, cppExpressionFormatter);
-        runtimeFunction = CppRuntimeFunctionDataCreator.createData(
-                bitmaskTypeInstantiation, cppExpressionFormatter);
+        bitSize = BitSizeTemplateData.create(context, bitmaskTypeInstantiation, this);
+        runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, bitmaskTypeInstantiation, this);
 
         final BigInteger upperBound = getUpperBound(bitmaskTypeInstantiation);
         this.upperBound = upperBound.equals(nativeBaseType.getUpperBound()) ? null :
