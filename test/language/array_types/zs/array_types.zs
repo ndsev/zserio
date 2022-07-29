@@ -3,6 +3,7 @@ zserio_compatibility_version("2.5.0");
 package array_types;
 
 import array_types.arrays_mapping.*;
+import array_types.auto_array_bitfield_param.*;
 import array_types.auto_array_struct_recursion.*;
 import array_types.auto_array_subtyped_uint8.*;
 import array_types.auto_array_uint8.*;

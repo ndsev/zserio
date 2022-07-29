@@ -9,6 +9,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.cpp
     ${ZSERIO_GEN_DIR}/array_types/arrays_mapping/TestStructure.h
 
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
+    ${ZSERIO_GEN_DIR}/array_types/auto_array_bitfield_param/ParameterizedBitfieldLength.h
+
     ${ZSERIO_GEN_DIR}/array_types/auto_array_struct_recursion/AutoArrayRecursion.cpp
     ${ZSERIO_GEN_DIR}/array_types/auto_array_struct_recursion/AutoArrayRecursion.h
 
@@ -115,6 +118,7 @@ zserio_add_library(TARGET array_types_zs
 
 add_test_sources(
     cpp/ArraysMappingTest.cpp
+    cpp/AutoArrayBitfieldParamTest.cpp
     cpp/AutoArrayStructRecursionTest.cpp
     cpp/AutoArraySubtypedUInt8Test.cpp
     cpp/AutoArrayUInt8Test.cpp
