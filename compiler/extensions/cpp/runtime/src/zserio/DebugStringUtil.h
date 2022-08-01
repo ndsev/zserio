@@ -17,10 +17,11 @@
 #include <fstream>
 #include <utility>
 
-#include "zserio/Walker.h"
 #include "zserio/JsonReader.h"
 #include "zserio/JsonWriter.h"
+#include "zserio/ReflectableUtil.h"
 #include "zserio/Traits.h"
+#include "zserio/Walker.h"
 
 namespace zserio
 {
@@ -442,8 +443,7 @@ void toJsonFile(const T& object, const string<ALLOC>& fileName, uint8_t indent, 
  */
 template <typename ALLOC = std::allocator<uint8_t>>
 typename detail::DebugStringTraits<ALLOC>::ReflectablePtr
-fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is,
-        const ALLOC& allocator = ALLOC())
+fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is, const ALLOC& allocator = ALLOC())
 {
     BasicJsonReader<ALLOC> jsonReader(is, allocator);
     return jsonReader.read(typeInfo);
@@ -454,6 +454,7 @@ fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is,
  * according to the data contained in the debug string.
  *
  * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note An reflectable instance is created first and then the object is move-constructed from it's any value.
  *
  * Example:
  * \code{.cpp}
@@ -461,22 +462,21 @@ fromJsonStream(const IBasicTypeInfo<ALLOC>& typeInfo, std::istream& is,
  *     #include <zserio/DebugStringUtil.h>
  *
  *     std::istringstream is("{ \"fieldU32\": 13 }");
- *     IReflectablePtr reflectable = fromJsonStream<SomeZserioObject>(is);
+ *     SomeZserioObject someZserioObject = fromJsonStream<SomeZserioObject>(is);
  *
- *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ *     someZserioObject.getFieldU32(); // 13
  * \endcode
  *
  * \param is Text stream to use.
  * \param allocator Allocator to use.
  *
- * \return Reflectable instance of the requested zserio object.
+ * \return Instance of the requested zserio object.
  * \throw CppRuntimeException In case of any error.
  */
 template <typename T, typename ALLOC = typename T::allocator_type>
-typename detail::DebugStringTraits<ALLOC>::ReflectablePtr
-fromJsonStream(std::istream& is, const ALLOC& allocator = ALLOC())
+T fromJsonStream(std::istream& is, const ALLOC& allocator = ALLOC())
 {
-    return fromJsonStream(T::typeInfo(), is, allocator);
+    return std::move(ReflectableUtil::getValue<T, ALLOC>(fromJsonStream(T::typeInfo(), is, allocator)));
 }
 
 /**
@@ -491,7 +491,7 @@ fromJsonStream(std::istream& is, const ALLOC& allocator = ALLOC())
  *     #include <zserio/DebugStringUtil.h>
  *
  *     std::string str("{ \"fieldU32\": 13 }")
- *     IReflectablePtr reflectable = fromJsonStream(SomeZserioObject::typeInfo(), str);
+ *     IReflectablePtr reflectable = fromJsonString(SomeZserioObject::typeInfo(), str);
  *
  *     reflectable->getField("fieldU32")->getUInt32(); // 13
  * \endcode
@@ -517,6 +517,7 @@ fromJsonString(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& json,
  * according to the data contained in the debug string.
  *
  * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note An reflectable instance is created first and then the object is move-constructed from it's any value.
  *
  * Example:
  * \code{.cpp}
@@ -524,22 +525,21 @@ fromJsonString(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& json,
  *     #include <zserio/DebugStringUtil.h>
  *
  *     std::string str("{ \"fieldU32\": 13 }")
- *     IReflectablePtr reflectable = fromJsonStream<SomeZserioObject>(str);
+ *     SomeZserioObject someZserioObject = fromJsonString<SomeZserioObject>(str);
  *
- *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ *     someZserioObject.getFieldU32(); // 13
  * \endcode
  *
  * \param json String to use.
  * \param allocator Allocator to use.
  *
- * \return Reflectable instance of the requested zserio object.
+ * \return Instance of the requested zserio object.
  * \throw CppRuntimeException In case of any error.
  */
 template <typename T, typename ALLOC = typename T::allocator_type>
-typename detail::DebugStringTraits<ALLOC>::ReflectablePtr
-fromJsonString(const string<ALLOC>& json, const ALLOC& allocator = ALLOC())
+T fromJsonString(const string<ALLOC>& json, const ALLOC& allocator = ALLOC())
 {
-    return fromJsonString(T::typeInfo(), json, allocator);
+    return std::move(ReflectableUtil::getValue<T, ALLOC>(fromJsonString(T::typeInfo(), json, allocator)));
 }
 
 /**
@@ -553,8 +553,7 @@ fromJsonString(const string<ALLOC>& json, const ALLOC& allocator = ALLOC())
  *     #include <sstream>
  *     #include <zserio/DebugStringUtil.h>
  *
- *     std::ifstream is("FileName.json");
- *     IReflectablePtr reflectable = fromJsonStream(SomeZserioObject::typeInfo(), is);
+ *     IReflectablePtr reflectable = fromJsonFile(SomeZserioObject::typeInfo(), "FileName.json");
  *
  *     reflectable->getField("fieldU32")->getUInt32(); // 13
  * \endcode
@@ -582,29 +581,28 @@ fromJsonFile(const IBasicTypeInfo<ALLOC>& typeInfo, const string<ALLOC>& fileNam
  * according to the data contained in the debug string.
  *
  * \note The created object can be only partially initialzed depending on the JSON debug string.
+ * \note An reflectable instance is created first and then the object is move-constructed from it's any value.
  *
  * Example:
  * \code{.cpp}
  *     #include <sstream>
  *     #include <zserio/DebugStringUtil.h>
  *
- *     std::ifstream is("FileName.json");
- *     IReflectablePtr reflectable = fromJsonStream<SomeZserioObject>(is);
+ *     SomeZserioObject someZserioObject = fromJsonFile<SomeZserioObject>("FileName.json");
  *
- *     reflectable->getField("fieldU32")->getUInt32(); // 13
+ *     someZserioObject.getFieldU32(); // 13
  * \endcode
  *
  * \param fileName Name of file to read.
  * \param allocator Allocator to use.
  *
- * \return Reflectable instance of the requested zserio object.
+ * \return Instance of the requested zserio object.
  * \throw CppRuntimeException In case of any error.
  */
 template <typename T, typename ALLOC = typename T::allocator_type>
-typename detail::DebugStringTraits<ALLOC>::ReflectablePtr
-fromJsonFile(const string<ALLOC>& fileName, const ALLOC& allocator = ALLOC())
+T fromJsonFile(const string<ALLOC>& fileName, const ALLOC& allocator = ALLOC())
 {
-    return fromJsonFile(T::typeInfo(), fileName, allocator);
+    return std::move(ReflectableUtil::getValue<T, ALLOC>(fromJsonFile(T::typeInfo(), fileName, allocator)));
 }
 
 } // namespace zserio

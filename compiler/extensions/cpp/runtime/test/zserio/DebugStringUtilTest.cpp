@@ -30,6 +30,10 @@ struct DummyObject
             m_text_(text_)
     {}
 
+    DummyObject(const DummyObject& other) = delete;
+
+    DummyObject(DummyObject&& other) = default;
+
     static const IBasicTypeInfo<ALLOC>& typeInfo()
     {
         static const std::array<BasicFieldInfo<ALLOC>, 1> fields{BasicFieldInfo<ALLOC>{
@@ -185,6 +189,17 @@ public:
             m_isInitialized(false),
             m_text_(text_)
     {}
+
+    ParameterizedDummyObject(const ParameterizedDummyObject& other) = delete;
+
+    ParameterizedDummyObject(ParameterizedDummyObject&& other) :
+        m_text_(std::move(other.m_text_))
+    {
+        if (other.m_isInitialized)
+            initialize(other.m_param_);
+        else
+            m_isInitialized = false;
+    }
 
     static const IBasicTypeInfo<ALLOC>& typeInfo()
     {
@@ -801,52 +816,43 @@ TEST(DebugStringUtilTest, fromJsonStreamTypeInfoWithPolymorphicAlloc)
 TEST(DebugStringUtilTest, fromJsonStreamType)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonStream<DummyObject<>>(ss);
-    ASSERT_TRUE(reflectable);
+    DummyObject<> dummyObject = fromJsonStream<DummyObject<>>(ss);
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamParameterizedType)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonStream<ParameterizedDummyObject<>>(ss);
-    ASSERT_TRUE(reflectable);
+    ParameterizedDummyObject<> parameterizedDummyObject = fromJsonStream<ParameterizedDummyObject<>>(ss);
 
-    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
-    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+    ASSERT_THROW(parameterizedDummyObject.getParam(), CppRuntimeException);
 
-    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
-
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", parameterizedDummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeWithAlloc)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonStream<DummyObject<>>(ss, std_alloc());
-    ASSERT_TRUE(reflectable);
+    DummyObject<> dummyObject = fromJsonStream<DummyObject<>>(ss, std_alloc());
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeWithPolymorphicAllocDefault)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonStream<DummyObject<pmr_alloc>>(ss);
-    ASSERT_TRUE(reflectable);
+    DummyObject<pmr_alloc> dummyObject = fromJsonStream<DummyObject<pmr_alloc>>(ss);
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStreamTypeWithPolymorphicAlloc)
 {
     std::istringstream ss("{\n  \"text\": \"something\"\n}");
-    IBasicReflectablePtr<pmr_alloc> reflectable =
-            fromJsonStream<DummyObject<pmr_alloc>>(ss, pmr_alloc());
-    ASSERT_TRUE(reflectable);
+    DummyObject<pmr_alloc> dummyObject = fromJsonStream<DummyObject<pmr_alloc>>(ss, pmr_alloc());
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStringTypeInfo)
@@ -905,52 +911,44 @@ TEST(DebugStringUtilTest, fromJsonStringTypeInfoWithPolymorphicAlloc)
 TEST(DebugStringUtilTest, fromJsonStringType)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonString<DummyObject<>>(jsonString);
-    ASSERT_TRUE(reflectable);
+    DummyObject<> dummyObject = fromJsonString<DummyObject<>>(jsonString);
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStringParameterizedType)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonString<ParameterizedDummyObject<>>(jsonString);
-    ASSERT_TRUE(reflectable);
+    ParameterizedDummyObject<> parameterizedDummyObject =
+            fromJsonString<ParameterizedDummyObject<>>(jsonString);
 
-    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
-    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+    ASSERT_THROW(parameterizedDummyObject.getParam(), CppRuntimeException);
 
-    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
-
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", parameterizedDummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStringTypeWithAlloc)
 {
     std::string jsonString("{\n  \"text\": \"something\"\n}");
-    IReflectablePtr reflectable = fromJsonString<DummyObject<>>(jsonString, std_alloc());
-    ASSERT_TRUE(reflectable);
+    DummyObject<> dummyObject = fromJsonString<DummyObject<>>(jsonString, std_alloc());
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStringTypeWithPolymorphicAllocDefault)
 {
     string<pmr_alloc> jsonString("{\n  \"text\": \"something\"\n}");
-    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonString<DummyObject<pmr_alloc>>(jsonString);
-    ASSERT_TRUE(reflectable);
+    DummyObject<pmr_alloc> dummyObject = fromJsonString<DummyObject<pmr_alloc>>(jsonString);
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonStringTypeWithPolymorphicAlloc)
 {
     string<pmr_alloc> jsonString("{\n  \"text\": \"something\"\n}");
-    IBasicReflectablePtr<pmr_alloc> reflectable =
-            fromJsonString<DummyObject<pmr_alloc>>(jsonString, pmr_alloc());
-    ASSERT_TRUE(reflectable);
+    DummyObject<pmr_alloc> dummyObject = fromJsonString<DummyObject<pmr_alloc>>(jsonString, pmr_alloc());
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonFileTypeInfo)
@@ -1058,10 +1056,9 @@ TEST(DebugStringUtilTest, fromJsonFileType)
         os << "{\n  \"text\": \"something\"\n}";
     }
 
-    IReflectablePtr reflectable = fromJsonFile<DummyObject<>>(fileName);
-    ASSERT_TRUE(reflectable);
+    DummyObject<> dummyObject = fromJsonFile<DummyObject<>>(fileName);
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonFileParameterizedType)
@@ -1072,15 +1069,11 @@ TEST(DebugStringUtilTest, fromJsonFileParameterizedType)
         os << "{\n  \"text\": \"something\"\n}";
     }
 
-    IReflectablePtr reflectable = fromJsonFile<ParameterizedDummyObject<>>(fileName);
-    ASSERT_TRUE(reflectable);
+    ParameterizedDummyObject<> parameterizedDummyObject = fromJsonFile<ParameterizedDummyObject<>>(fileName);
 
-    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
-    reflectable->initialize(vector<AnyHolder<>>{AnyHolder<>{10}});
+    ASSERT_THROW(parameterizedDummyObject.getParam(), CppRuntimeException);
 
-    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
-
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", parameterizedDummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonFileTypeWithAlloc)
@@ -1091,10 +1084,9 @@ TEST(DebugStringUtilTest, fromJsonFileTypeWithAlloc)
         os << "{\n  \"text\": \"something\"\n}";
     }
 
-    IReflectablePtr reflectable = fromJsonFile<DummyObject<>>(fileName, std_alloc());
-    ASSERT_TRUE(reflectable);
+    DummyObject<> dummyObject = fromJsonFile<DummyObject<>>(fileName, std_alloc());
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAllocDefault)
@@ -1105,10 +1097,9 @@ TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAllocDefault)
         os << "{\n  \"text\": \"something\"\n}";
     }
 
-    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonFile<DummyObject<pmr_alloc>>(fileName);
-    ASSERT_TRUE(reflectable);
+    DummyObject<pmr_alloc> dummyObject = fromJsonFile<DummyObject<pmr_alloc>>(fileName);
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAlloc)
@@ -1119,10 +1110,9 @@ TEST(DebugStringUtilTest, fromJsonFileTypeWithPolymorphicAlloc)
         os << "{\n  \"text\": \"something\"\n}";
     }
 
-    IBasicReflectablePtr<pmr_alloc> reflectable = fromJsonFile<DummyObject<pmr_alloc>>(fileName, pmr_alloc());
-    ASSERT_TRUE(reflectable);
+    DummyObject<pmr_alloc> dummyObject = fromJsonFile<DummyObject<pmr_alloc>>(fileName, pmr_alloc());
 
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", dummyObject.getText());
 }
 
 TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeWithPolymorphicAlloc)
@@ -1133,16 +1123,12 @@ TEST(DebugStringUtilTest, fromJsonFileParameterizedTypeWithPolymorphicAlloc)
         os << "{\n  \"text\": \"something\"\n}";
     }
 
-    IBasicReflectablePtr<pmr_alloc> reflectable =
+    ParameterizedDummyObject<pmr_alloc> parameterizedDummyObject =
             fromJsonFile<ParameterizedDummyObject<pmr_alloc>>(fileName, pmr_alloc());
-    ASSERT_TRUE(reflectable);
 
-    ASSERT_THROW(reflectable->getParameter("param"), CppRuntimeException);
-    reflectable->initialize(vector<AnyHolder<pmr_alloc>, pmr_alloc>{AnyHolder<pmr_alloc>{10}});
+    ASSERT_THROW(parameterizedDummyObject.getParam(), CppRuntimeException);
 
-    ASSERT_EQ(10, reflectable->getParameter("param")->getInt32());
-
-    ASSERT_EQ("something"_sv, reflectable->getField("text")->getStringView());
+    ASSERT_EQ("something", parameterizedDummyObject.getText());
 }
 
 } // namespace zserio
