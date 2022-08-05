@@ -233,7 +233,7 @@ public:
      *
      * \param elementBitSize Element bit size abstraction to get num bits of the dynamic bit field.
      */
-    explicit DynamicBitFieldArrayTraits(const ELEMENT_BIT_SIZE& elementBitSize = ELEMENT_BIT_SIZE()) :
+    explicit DynamicBitFieldArrayTraits(const ELEMENT_BIT_SIZE& elementBitSize) :
             m_elementBitSize(elementBitSize)
     {}
 
