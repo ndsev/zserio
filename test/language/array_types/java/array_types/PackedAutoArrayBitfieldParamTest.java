@@ -9,9 +9,9 @@ import java.io.IOException;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.FileBitStreamReader;
 
-import array_types.auto_array_bitfield_param.ParameterizedBitfieldLength;
+import array_types.packed_auto_array_bitfield_param.ParameterizedBitfieldLength;
 
-public class AutoArrayBitfieldParamTest
+public class PackedAutoArrayBitfieldParamTest
 {
     @Test
     public void writeReadFile() throws IOException
@@ -19,9 +19,6 @@ public class AutoArrayBitfieldParamTest
         final ParameterizedBitfieldLength parameterizedBitfieldLength = createParameterizedBitfieldLength();
         final File file = new File(BLOB_NAME);
         parameterizedBitfieldLength.write(file);
-        final BitStreamReader reader = new FileBitStreamReader(file);
-        checkParameterizedBitfieldLengthInStream(reader, parameterizedBitfieldLength);
-        reader.close();
         final ParameterizedBitfieldLength readParameterizedBitfieldLength =
                 new ParameterizedBitfieldLength(file, NUM_BITS_PARAM);
         assertEquals(parameterizedBitfieldLength, readParameterizedBitfieldLength);
@@ -39,16 +36,7 @@ public class AutoArrayBitfieldParamTest
         return parameterizedBitfieldLength;
     }
 
-    private void checkParameterizedBitfieldLengthInStream(BitStreamReader reader,
-            ParameterizedBitfieldLength parameterizedBitfieldLength) throws IOException
-    {
-        assertEquals(NUM_BITS_PARAM, parameterizedBitfieldLength.getNumBits());
-        assertEquals(DYNAMIC_BITFIELD_ARRAY_SIZE, reader.readVarSize());
-        for (short i = 0; i < DYNAMIC_BITFIELD_ARRAY_SIZE; ++i)
-            assertEquals(i, reader.readBits(NUM_BITS_PARAM));
-    }
-
-    private static final String BLOB_NAME = "auto_array_bitfield_param.blob";
+    private static final String BLOB_NAME = "packed_auto_array_bitfield_param.blob";
     private static final byte NUM_BITS_PARAM = 9;
     private static final int DYNAMIC_BITFIELD_ARRAY_SIZE = (1 << 9) - 1;
 }

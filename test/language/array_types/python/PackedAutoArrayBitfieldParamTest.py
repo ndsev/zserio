@@ -4,10 +4,10 @@ import zserio
 
 from testutils import getZserioApi, getApiDir
 
-class AutoArrayBitfieldParamTest(unittest.TestCase):
+class PackedAutoArrayBitfieldParamTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.api = getZserioApi(__file__, "array_types.zs").auto_array_bitfield_param
+        cls.api = getZserioApi(__file__, "array_types.zs").packed_auto_array_bitfield_param
 
     def testWriteRead(self):
         parameterizedBitfieldLength = self._createParameterizedBitfieldLength()
@@ -15,8 +15,6 @@ class AutoArrayBitfieldParamTest(unittest.TestCase):
         parameterizedBitfieldLength.write(writer)
 
         reader = zserio.BitStreamReader(writer.byte_array, writer.bitposition)
-        self._checkParameterizedBitfieldLengthInStream(reader, parameterizedBitfieldLength)
-        reader.bitposition = 0
         readParameterizedBitfieldLength = self.api.ParameterizedBitfieldLength.from_reader(reader,
                                                                                            self.NUM_BITS_PARAM)
         self.assertEqual(parameterizedBitfieldLength, readParameterizedBitfieldLength)
@@ -36,13 +34,7 @@ class AutoArrayBitfieldParamTest(unittest.TestCase):
 
         return parameterizedBitfieldLength
 
-    def _checkParameterizedBitfieldLengthInStream(self, reader, parameterizedBitfieldLength):
-        self.assertEqual(self.NUM_BITS_PARAM, parameterizedBitfieldLength.num_bits)
-        self.assertEqual(self.DYNAMIC_BITFIELD_ARRAY_SIZE, reader.read_varsize())
-        for i in range(self.DYNAMIC_BITFIELD_ARRAY_SIZE):
-            self.assertEqual(i, reader.read_bits(self.NUM_BITS_PARAM))
-
-    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "auto_array_bitfield_param.blob")
+    BLOB_NAME = os.path.join(getApiDir(os.path.dirname(__file__)), "packed_auto_array_bitfield_param.blob")
 
     NUM_BITS_PARAM = 9
     DYNAMIC_BITFIELD_ARRAY_SIZE = (1 << 9) - 1

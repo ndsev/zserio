@@ -34,6 +34,9 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/PackedArraysMapping.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_arrays_mapping/TestEnum.h
 
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.cpp
+    ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_bitfield_param/ParameterizedBitfieldLength.h
+
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.cpp
     ${ZSERIO_GEN_DIR}/array_types/packed_auto_array_struct_recursion/PackedAutoArrayRecursion.h
 
@@ -124,6 +127,7 @@ add_test_sources(
     cpp/AutoArrayUInt8Test.cpp
     cpp/FixedArrayUInt8Test.cpp
     cpp/PackedArraysMappingTest.cpp
+    cpp/PackedAutoArrayBitfieldParamTest.cpp
     cpp/PackedAutoArrayStructRecursionTest.cpp
     cpp/PackedAutoArrayStructWithExternTest.cpp
     cpp/PackedAutoArrayStructWithUnpackedFieldTest.cpp

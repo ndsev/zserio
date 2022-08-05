@@ -9,6 +9,7 @@ import array_types.auto_array_subtyped_uint8.*;
 import array_types.auto_array_uint8.*;
 import array_types.fixed_array_uint8.*;
 import array_types.packed_arrays_mapping.*;
+import array_types.packed_auto_array_bitfield_param.*;
 import array_types.packed_auto_array_struct_recursion.*;
 import array_types.packed_auto_array_struct_with_extern.*;
 import array_types.packed_auto_array_struct_with_unpacked_field.*;
