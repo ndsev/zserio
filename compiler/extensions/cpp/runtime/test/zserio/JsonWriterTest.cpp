@@ -61,7 +61,7 @@ const FieldInfo ARRAY_FIELD_INFO{
     {}, {}, {}, {}, false, {}, {}, true, {}, false, false
 };
 
-const std::array<ItemInfo, 1> ENUM_ITEMS{ItemInfo{"ZERO"_sv, "0"_sv}};
+const std::array<ItemInfo, 1> ENUM_ITEMS{ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)}};
 
 const EnumTypeInfo<std::allocator<uint8_t>> ENUM_TYPE_INFO{
     "DummyEnum"_sv, BuiltinTypeInfo<>::getInt8(), {}, ENUM_ITEMS
@@ -72,7 +72,7 @@ const FieldInfo ENUM_FIELD_INFO{
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
-const std::array<ItemInfo, 1> BITMASK_ITEMS{ItemInfo{"ZERO"_sv, "0"_sv}};
+const std::array<ItemInfo, 1> BITMASK_ITEMS{ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)}};
 
 const BitmaskTypeInfo<std::allocator<uint8_t>> BITMASK_TYPE_INFO{
     "DummyBitmask"_sv, BuiltinTypeInfo<>::getUInt32(), {}, BITMASK_ITEMS
@@ -187,10 +187,6 @@ TEST(JsonWriterTest, doubleValue)
 
 TEST(JsonWriterTest, enumValue)
 {
-    std::ostringstream os;
-    JsonWriter jsonWriter(os);
-    IWalkObserver& observer = jsonWriter;
-
     class DummyEnumReflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
@@ -224,24 +220,37 @@ TEST(JsonWriterTest, enumValue)
     };
 
     IReflectablePtr reflectable = std::make_shared<DummyEnumReflectable>();
-    observer.visitValue(reflectable, ENUM_FIELD_INFO);
 
-    // note that this is not valid json
-    ASSERT_EQ("\"dummyEnum\": 0", os.str());
+    {
+        std::ostringstream os;
+        JsonWriter jsonWriter(os);
+        IWalkObserver& observer = jsonWriter;
+        observer.visitValue(reflectable, ENUM_FIELD_INFO);
 
-    // just improve coverage
-    ASSERT_EQ(0, reflectable->bitSizeOf());
-    BitBuffer bitBuffer(0);
-    BitStreamWriter writer(bitBuffer);
-    ASSERT_NO_THROW(reflectable->write(writer));
+        // note that this is not valid json
+        ASSERT_EQ("\"dummyEnum\": \"ZERO\"", os.str());
+
+        // just improve coverage
+        ASSERT_EQ(0, reflectable->bitSizeOf());
+        BitBuffer bitBuffer(0);
+        BitStreamWriter writer(bitBuffer);
+        ASSERT_NO_THROW(reflectable->write(writer));
+    }
+
+    {
+        std::ostringstream os;
+        JsonWriter jsonWriter(os);
+        jsonWriter.setStringifyEnumerables(false);
+        IWalkObserver& observer = jsonWriter;
+        observer.visitValue(reflectable, ENUM_FIELD_INFO);
+
+        // note that this is not valid json
+        ASSERT_EQ("\"dummyEnum\": 0", os.str());
+    }
 }
 
 TEST(JsonWriterTest, bitmaskValue)
 {
-    std::ostringstream os;
-    JsonWriter jsonWriter(os);
-    IWalkObserver& observer = jsonWriter;
-
     class DummyBitmaskReflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
@@ -275,16 +284,33 @@ TEST(JsonWriterTest, bitmaskValue)
     };
 
     IReflectablePtr reflectable = std::make_shared<DummyBitmaskReflectable>();
-    observer.visitValue(reflectable, BITMASK_FIELD_INFO);
 
-    // note that this is not valid json
-    ASSERT_EQ("\"dummyBitmask\": 0", os.str());
+    {
+        std::ostringstream os;
+        JsonWriter jsonWriter(os);
+        IWalkObserver& observer = jsonWriter;
+        observer.visitValue(reflectable, BITMASK_FIELD_INFO);
 
-    // just improve coverage
-    ASSERT_EQ(0, reflectable->bitSizeOf());
-    BitBuffer bitBuffer(0);
-    BitStreamWriter writer(bitBuffer);
-    ASSERT_NO_THROW(reflectable->write(writer));
+        // note that this is not valid json
+        ASSERT_EQ("\"dummyBitmask\": \"0[ZERO]\"", os.str());
+
+        // just improve coverage
+        ASSERT_EQ(0, reflectable->bitSizeOf());
+        BitBuffer bitBuffer(0);
+        BitStreamWriter writer(bitBuffer);
+        ASSERT_NO_THROW(reflectable->write(writer));
+    }
+
+    {
+        std::ostringstream os;
+        JsonWriter jsonWriter(os);
+        jsonWriter.setStringifyEnumerables(false);
+        IWalkObserver& observer = jsonWriter;
+        observer.visitValue(reflectable, BITMASK_FIELD_INFO);
+
+        // note that this is not valid json
+        ASSERT_EQ("\"dummyBitmask\": 0", os.str());
+    }
 }
 
 TEST(JsonWriterTest, compound)

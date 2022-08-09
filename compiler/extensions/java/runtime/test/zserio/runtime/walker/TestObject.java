@@ -1275,7 +1275,7 @@ public class TestObject
                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt32(),
                     new java.util.ArrayList<java.util.function.Supplier<Object>>(),
                     java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("ZERO", "1L")
+                            new zserio.runtime.typeinfo.ItemInfo("ZERO", () -> 1)
                     )
             );
         }

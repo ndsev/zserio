@@ -13,6 +13,7 @@ import java.util.Stack;
 import zserio.runtime.ZserioError;
 import zserio.runtime.creator.ZserioTreeCreator;
 import zserio.runtime.io.BitBuffer;
+import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.JavaType;
 import zserio.runtime.typeinfo.TypeInfo;
 
@@ -406,11 +407,15 @@ public class JsonReader implements AutoCloseable
             switch (expectedJavaType)
             {
             case ENUM:
+                if (value instanceof String)
+                    return createEnum((String)value, typeInfo);
                 if (value instanceof BigInteger)
                     return createEnum((BigInteger)value, typeInfo);
                 break;
 
             case BITMASK:
+                if (value instanceof String)
+                    return createBitmask((String)value, typeInfo);
                 if (value instanceof BigInteger)
                     return createBitmask((BigInteger)value, typeInfo);
                 break;
@@ -430,6 +435,24 @@ public class JsonReader implements AutoCloseable
             return value;
         }
 
+        private static Object createEnum(String value, TypeInfo typeInfo)
+        {
+            for (ItemInfo itemInfo : typeInfo.getEnumItems())
+            {
+                if (value.equals(itemInfo.getSchemaName()))
+                {
+                    final Number numberValue = itemInfo.getValue().get();
+                    if (numberValue instanceof BigInteger)
+                        return createEnum((BigInteger)numberValue, typeInfo);
+                    else
+                        return createEnum(BigInteger.valueOf(numberValue.longValue()), typeInfo);
+                }
+            }
+
+            throw new ZserioError("JsonReader: Cannot create enum '" + typeInfo.getSchemaName() +
+                    "' from string value '" + value + "'!");
+        }
+
         private static Object createEnum(BigInteger value, TypeInfo typeInfo)
         {
             try
@@ -447,6 +470,23 @@ public class JsonReader implements AutoCloseable
             {
                 throw new ZserioError("JsonReader: Cannot create enum '" + typeInfo.getSchemaName() +
                         "' from value '" + value.toString() + "'!", excpt);
+            }
+        }
+
+        private static Object createBitmask(String value, TypeInfo typeInfo)
+        {
+            try
+            {
+                int bracketIndex = value.indexOf('[');
+                if (bracketIndex != -1)
+                    return createBitmask(new BigInteger(value.substring(0, bracketIndex)), typeInfo);
+                else
+                    return createBitmask(new BigInteger(value), typeInfo);
+            }
+            catch (NumberFormatException excpt)
+            {
+                throw new ZserioError("JsonReader: Cannot create bitmask '" + typeInfo.getSchemaName() +
+                        "' from string value '" + value + "'!", excpt);
             }
         }
 

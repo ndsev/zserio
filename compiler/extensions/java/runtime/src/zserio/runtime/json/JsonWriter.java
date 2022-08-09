@@ -8,7 +8,9 @@ import zserio.runtime.ZserioBitmask;
 import zserio.runtime.ZserioEnum;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
+import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.TypeInfo;
 import zserio.runtime.walker.WalkObserver;
 import zserio.runtime.walker.WalkerConst;
 
@@ -73,6 +75,16 @@ public class JsonWriter implements WalkObserver, AutoCloseable
     public void setKeySeparator(String keySeparator)
     {
         this.keySeparator = keySeparator;
+    }
+
+    /**
+     * Sets whether to stringify enumerable types or not.
+     *
+     * @param stringifyEnumerables True when enumerable types shall be stringified, false otherwise.
+     */
+    public void setStringifyEnumerables(boolean stringifyEnumerables)
+    {
+        this.stringifyEnumerables = stringifyEnumerables;
     }
 
     @Override
@@ -249,10 +261,22 @@ public class JsonWriter implements WalkObserver, AutoCloseable
             writeBitBuffer((BitBuffer)value);
             break;
         case ENUM:
-            JsonEncoder.encodeIntegral(out, ((ZserioEnum)value).getGenericValue());
+            {
+                final Number genericValue = ((ZserioEnum)value).getGenericValue();
+                if (stringifyEnumerables)
+                    JsonEncoder.encodeString(out, stringifyEnum(genericValue, fieldInfo.getTypeInfo()));
+                else
+                    JsonEncoder.encodeIntegral(out, genericValue);
+            }
             break;
         case BITMASK:
-            JsonEncoder.encodeIntegral(out, ((ZserioBitmask)value).getGenericValue());
+            {
+                final Number genericValue = ((ZserioBitmask)value).getGenericValue();
+                if (stringifyEnumerables)
+                    JsonEncoder.encodeString(out, stringifyBitmask(genericValue, fieldInfo.getTypeInfo()));
+                else
+                    JsonEncoder.encodeIntegral(out, genericValue);
+            }
             break;
         default:
             throw new ZserioError("JsonWriter: Unexpected not-null value of type '" +
@@ -284,11 +308,50 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         endObject();
     }
 
+    private static String stringifyEnum(Number value, TypeInfo typeInfo)
+    {
+        final BigInteger bigValue = numberToBigInteger(value);
+        for (ItemInfo itemInfo : typeInfo.getEnumItems())
+        {
+            final BigInteger bigItemValue = numberToBigInteger(itemInfo.getValue().get());
+            if (bigValue.equals(bigItemValue))
+                return itemInfo.getSchemaName();
+        }
+
+        return value.toString();
+    }
+
+    private static String stringifyBitmask(Number value, TypeInfo typeInfo)
+    {
+        final BigInteger bigValue = numberToBigInteger(value);
+        final StringBuilder stringValue = new StringBuilder();
+        for (ItemInfo itemInfo : typeInfo.getBitmaskValues())
+        {
+            final BigInteger bigItemValue = numberToBigInteger(itemInfo.getValue().get());
+            if (bigValue.and(bigItemValue).equals(bigItemValue) ||
+                (bigValue.equals(BigInteger.ZERO) && bigItemValue.equals(BigInteger.ZERO)))
+            {
+                if (stringValue.length() > 0)
+                    stringValue.append("|");
+                stringValue.append(itemInfo.getSchemaName());
+            }
+        }
+        return value.toString() + "[" + stringValue.toString() + "]";
+    }
+
+    private static BigInteger numberToBigInteger(Number number)
+    {
+        if (number instanceof BigInteger)
+            return (BigInteger)number;
+        else
+            return BigInteger.valueOf(number.longValue());
+    }
+
     private void flush()
     {
         out.flush();
         if (out.checkError())
-            throw new ZserioError("JsonWriter: Output stream error occured!");
+            throw new ZserioError("JsonWriter: Output stream error occurred!");
     }
 
     /**
@@ -306,10 +369,16 @@ public class JsonWriter implements WalkObserver, AutoCloseable
      */
     public static final String DEFAULT_KEY_SEPARATOR = ": ";
 
+    /**
+     * Default setting for stringifying of enumerable types.
+     */
+    public static final boolean DEFAULT_STRINGIFY_ENUMERABLES = true;
+
     private final PrintWriter out;
     private final String indent;
     private String itemSeparator;
     private String keySeparator = DEFAULT_KEY_SEPARATOR;
+    private boolean stringifyEnumerables = DEFAULT_STRINGIFY_ENUMERABLES;
 
     private boolean isFirst = true;
     private int level = 0;

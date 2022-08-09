@@ -4,6 +4,7 @@
 #include <istream>
 #include <limits>
 
+#include "zserio/AllocatorHolder.h"
 #include "zserio/JsonParser.h"
 #include "zserio/OptionalHolder.h"
 #include "zserio/StringView.h"
@@ -16,7 +17,7 @@ namespace detail
 {
 
 template <typename ALLOC>
-class BitBufferAdapter : public BasicJsonParser<ALLOC>::IObserver, AllocatorHolder<ALLOC>
+class BitBufferAdapter : public BasicJsonParser<ALLOC>::IObserver, public AllocatorHolder<ALLOC>
 {
 public:
     using AllocatorHolder<ALLOC>::get_allocator;
@@ -70,7 +71,7 @@ private:
 };
 
 template <typename ALLOC>
-class CreatorAdapter : public BasicJsonParser<ALLOC>::IObserver, AllocatorHolder<ALLOC>
+class CreatorAdapter : public BasicJsonParser<ALLOC>::IObserver, public AllocatorHolder<ALLOC>
 {
 public:
     using AllocatorHolder<ALLOC>::get_allocator;

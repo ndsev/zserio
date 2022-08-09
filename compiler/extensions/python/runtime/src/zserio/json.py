@@ -19,7 +19,9 @@ class JsonWriter(WalkObserver):
     """
 
     def __init__(self, *, text_io: typing.Optional[typing.TextIO] = None,
-                 item_separator: str = None, key_separator: str = None,
+                 stringify_enumerables: typing.Optional[bool] = True,
+                 item_separator: typing.Optional[str] = None,
+                 key_separator: typing.Optional[str] = None,
                  indent: typing.Union[str, int] = None) -> None:
         """
         Constructor.
@@ -27,13 +29,18 @@ class JsonWriter(WalkObserver):
         :param text_io: Optional text stream for JSON output, io.StringIO is used by default.
         :param item_separator: Optional item separator, default is ', ' if indent is None, ',' otherwise.
         :param key_separator: Optional key separator, default is ': '.
+        :param stringify_enumerables: Optional bool whether to stringify enumerable types, True by default.
         :param indent: String or (non-negative) integer defining the indent. If not None, newlines are inserted.
         """
 
-        self._io = text_io if text_io else io.StringIO()
-        self._item_separator = item_separator if item_separator else ("," if indent is not None else ", ")
-        self._key_separator = key_separator if key_separator else ": "
-        self._indent = (indent if isinstance(indent, str) else " " * indent) if indent is not None else None
+        self._io : typing.TextIO = text_io if text_io else io.StringIO()
+        self._item_separator : str = item_separator if item_separator else ("," if indent is not None else ", ")
+        self._key_separator : str = key_separator if key_separator else ": "
+        self._stringify_enumerables = stringify_enumerables
+
+        self._indent : typing.Optional[str] = (
+            (indent if isinstance(indent, str) else " " * indent) if indent is not None else None
+        )
 
         self._is_first = True
         self._level = 0
@@ -148,12 +155,16 @@ class JsonWriter(WalkObserver):
             type_info = member_info.type_info
             if (TypeAttribute.ENUM_ITEMS in type_info.attributes or
                 TypeAttribute.BITMASK_VALUES in type_info.attributes):
-                json_value = self._json_encoder.encode_value(value.value)
+                if self._stringify_enumerables:
+                    json_value = self._json_encoder.encode_value(
+                        self._stringify_enumerable(value, member_info.type_info))
+                else:
+                    json_value = self._json_encoder.encode_value(value.value)
             else:
                 json_value = self._json_encoder.encode_value(value)
             self._io.write(json_value)
 
-    def _write_bitbuffer(self, value: typing.Any):
+    def _write_bitbuffer(self, value: typing.Any) -> None:
         self._begin_object()
         self._begin_item()
         self._write_key("buffer")
@@ -170,12 +181,29 @@ class JsonWriter(WalkObserver):
         self._end_item()
         self._end_object()
 
+    @staticmethod
+    def _stringify_enumerable(value: typing.Any,
+                              type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        if TypeAttribute.ENUM_ITEMS in type_info.attributes:
+            for item in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
+                if item.py_item == value:
+                    return item.schema_name
+            return str(value.value)
+        else:
+            string_value = ""
+            for bitmask_value in type_info.attributes[TypeAttribute.BITMASK_VALUES]:
+                if (value.value & bitmask_value.py_item.value == bitmask_value.py_item.value or
+                    (value.value == 0 and bitmask_value.py_item.value == 0)):
+                    string_value += ("|" if string_value else "") + bitmask_value.schema_name
+            return f"{value.value}[{string_value}]"
+
+
 class JsonEncoder:
     """
     Converts zserio values to Json string representation.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Constructor.
         """
@@ -1039,8 +1067,35 @@ class JsonReader:
                 return None
 
             if TypeAttribute.ENUM_ITEMS in type_info.attributes:
-                return type_info.py_type(value)
+                if isinstance(value, str):
+                    return JsonReader._CreatorAdapter._enum_from_string(value, type_info)
+                else:
+                    return type_info.py_type(value)
             elif TypeAttribute.BITMASK_VALUES in type_info.attributes:
-                return type_info.py_type.from_value(value)
+                if isinstance(value, str):
+                    return JsonReader._CreatorAdapter._bitmask_from_string(value, type_info)
+                else:
+                    return type_info.py_type.from_value(value)
             else:
                 return value
+
+        @staticmethod
+        def _enum_from_string(value: str, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+            for item in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
+                if item.schema_name == value:
+                    return item.py_item
+            raise PythonRuntimeException(f"JsonReader: Cannot create enum '{type_info.schema_name}' "
+                                         f"from string value '{value}'!")
+
+        @staticmethod
+        def _bitmask_from_string(value: str,
+                                 type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+            try:
+                bracket_idx = value.find('[')
+                if bracket_idx != -1:
+                    return type_info.py_type.from_value(int(value[0:bracket_idx]))
+                else:
+                    return type_info.py_type.from_value(int(value))
+            except Exception as err:
+                raise PythonRuntimeException(f"JsonReader: Cannot create bitmask '{type_info.schema_name}' "
+                                             f"from string value '{value}'!") from err

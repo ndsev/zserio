@@ -84,7 +84,8 @@ public class JsonReaderTest
         assertEquals("nested", dummyObject.getNested().getText());
         assertEquals(new BitBuffer(new byte[] {(byte)0xCB, (byte)0xF0}, 12), dummyObject.getNested().getData());
         assertEquals(ZserioTreeCreatorTestObject.DummyEnum.ONE, dummyObject.getNested().getDummyEnum());
-        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.READ, dummyObject.getNested().getDummyBitmask());
+        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.READ,
+                dummyObject.getNested().getDummyBitmask());
         assertEquals("test", dummyObject.getText());
         assertEquals(1, dummyObject.getNestedArray().length);
         assertEquals(5, dummyObject.getNestedArray()[0].getValue());
@@ -92,7 +93,7 @@ public class JsonReaderTest
         assertEquals(new BitBuffer(new byte[] {(byte)0xCA, (byte)0xFE}, 15),
                 dummyObject.getNestedArray()[0].getData());
         assertEquals(ZserioTreeCreatorTestObject.DummyEnum.TWO, dummyObject.getNestedArray()[0].getDummyEnum());
-        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.WRITE,
+        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE,
                 dummyObject.getNestedArray()[0].getDummyBitmask());
         assertEquals(4, dummyObject.getTextArray().length);
         assertEquals("this", dummyObject.getTextArray()[0]);
@@ -170,9 +171,98 @@ public class JsonReaderTest
         assertEquals("nested", dummyObject.getNested().getText());
         assertEquals(new BitBuffer(new byte[] {(byte)0xCB, (byte)0xF0}, 12), dummyObject.getNested().getData());
         assertEquals(ZserioTreeCreatorTestObject.DummyEnum.ONE, dummyObject.getNested().getDummyEnum());
-        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.READ, dummyObject.getNested().getDummyBitmask());
+        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.READ,
+                dummyObject.getNested().getDummyBitmask());
 
         jsonReader.close();
+    }
+
+    @Test
+    public void readStringifiedEnum() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"dummyEnum\": \"TWO\"\n" +
+                "    }\n" +
+                "}"
+                );
+
+        try (final JsonReader jsonReader = new JsonReader(reader))
+        {
+            final Object zserioObject = jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+            assertTrue(zserioObject != null);
+            assertTrue(zserioObject instanceof ZserioTreeCreatorTestObject.DummyObject);
+            final ZserioTreeCreatorTestObject.DummyObject dummyObject =
+                    (ZserioTreeCreatorTestObject.DummyObject)zserioObject;
+
+            assertEquals(ZserioTreeCreatorTestObject.DummyEnum.TWO, dummyObject.getNested().getDummyEnum());
+        }
+    }
+
+    @Test
+    public void readStringifiedEnumException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"dummyEnum\": \"NONEXISTING\"\n" +
+                "    }\n" +
+                "}"
+                );
+
+        try (final JsonReader jsonReader = new JsonReader(reader))
+        {
+            final ZserioError exception = assertThrows(ZserioError.class,
+                    () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+            assertEquals("JsonReader: Cannot create enum 'DummyEnum' " +
+                         "from string value 'NONEXISTING'! (JsonParser:3:22)", exception.getMessage());
+        }
+    }
+
+    @Test
+    public void readStringifiedBitmask() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"dummyBitmask\": \"3[READ|WRITE]\"\n" +
+                "    }\n" +
+                "}"
+                );
+
+        try (final JsonReader jsonReader = new JsonReader(reader))
+        {
+            final Object zserioObject = jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo());
+            assertTrue(zserioObject != null);
+            assertTrue(zserioObject instanceof ZserioTreeCreatorTestObject.DummyObject);
+            final ZserioTreeCreatorTestObject.DummyObject dummyObject =
+                    (ZserioTreeCreatorTestObject.DummyObject)zserioObject;
+
+            assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.READ.or(
+                    ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE),
+                    dummyObject.getNested().getDummyBitmask());
+        }
+    }
+
+    @Test
+    public void readStringifiedBitmaskException() throws IOException
+    {
+        final Reader reader = new StringReader(
+                "{\n" +
+                "    \"nested\": {\n" +
+                "        \"dummyBitmask\": \"NONEXISTING\"\n" +
+                "    }\n" +
+                "}"
+                );
+
+        try (final JsonReader jsonReader = new JsonReader(reader))
+        {
+            final ZserioError exception = assertThrows(ZserioError.class,
+                    () -> jsonReader.read(ZserioTreeCreatorTestObject.DummyObject.typeInfo()));
+            assertEquals("JsonReader: Cannot create bitmask 'DummyBitmask' " +
+                         "from string value 'NONEXISTING'! (JsonParser:3:25)", exception.getMessage());
+        }
     }
 
     @Test

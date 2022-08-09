@@ -42,6 +42,7 @@ unusedStructMember:*/src/zserio/ITypeInfo.h:353
 unusedStructMember:*/src/zserio/ITypeInfo.h:355
 unusedStructMember:*/src/zserio/ITypeInfo.h:356
 unusedStructMember:*/src/zserio/ITypeInfo.h:387
+unusedStructMember:*/src/zserio/ITypeInfo.h:396
 unusedStructMember:*/src/zserio/ITypeInfo.h:410
 unusedStructMember:*/src/zserio/ITypeInfo.h:440
 unusedStructMember:*/src/zserio/ITypeInfo.h:441
@@ -49,5 +50,7 @@ unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:29
 unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:30
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:101
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:150
+useStlAlgorithm:*/src/zserio/JsonWriter.h:456
 useStlAlgorithm:*/src/zserio/Walker.h:427
+useStlAlgorithm:*/src/zserio/ZserioTreeCreator.h:164
 useStlAlgorithm:*/src/zserio/ZserioTreeCreator.cpp:53

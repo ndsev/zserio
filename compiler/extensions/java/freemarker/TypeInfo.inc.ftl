@@ -172,7 +172,7 @@ ${I}),
 </#macro>
 
 <#macro item_info name value>
-    new zserio.runtime.typeinfo.ItemInfo("${name}", "${value?j_string}")<#t>
+    new zserio.runtime.typeinfo.ItemInfo("${name}", () -> ${value})<#t>
 </#macro>
 
 <#macro underlying_type_info_type_arguments bitSize>

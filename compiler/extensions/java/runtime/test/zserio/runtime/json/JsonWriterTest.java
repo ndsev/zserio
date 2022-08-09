@@ -141,13 +141,27 @@ public class JsonWriterTest
             }
         }
 
-        final StringWriter stringWriter = new StringWriter();
-        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new ZeroDummyEnum(), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            final StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.visitValue(new ZeroDummyEnum(), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
-            // note that this is not valid json
-            assertJsonEquals("\"enumField\": 0", stringWriter.toString());
+                // note that this is not valid json
+                assertJsonEquals("\"enumField\": \"ZERO\"", stringWriter.toString());
+            }
+        }
+
+        {
+            final StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.setStringifyEnumerables(false);
+                jsonWriter.visitValue(new ZeroDummyEnum(), ENUM_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+
+                // note that this is not valid json
+                assertJsonEquals("\"enumField\": 0", stringWriter.toString());
+            }
         }
     }
 
@@ -166,13 +180,27 @@ public class JsonWriterTest
         }
 
         // test BigInteger
-        StringWriter stringWriter = new StringWriter();
-        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new UInt64MaxDummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.visitValue(new UInt64MaxDummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
-            // note that this is not valid json
-            assertJsonEquals("\"enum64Field\": " + uint64Max.toString(), stringWriter.toString());
+                // note that this is not valid json
+                assertJsonEquals("\"enum64Field\": \"UINT64_MAX\"", stringWriter.toString());
+            }
+        }
+
+        {
+            StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.setStringifyEnumerables(false);
+                jsonWriter.visitValue(new UInt64MaxDummyEnum(), ENUM64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+
+                // note that this is not valid json
+                assertJsonEquals("\"enum64Field\": " + uint64Max.toString(), stringWriter.toString());
+            }
         }
     }
 
@@ -188,13 +216,27 @@ public class JsonWriterTest
             }
         }
 
-        StringWriter stringWriter = new StringWriter();
-        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new ZeroDummyBitmask(), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.visitValue(new ZeroDummyBitmask(), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);
 
-            // note that this is not valid json
-            assertJsonEquals("\"bitmaskField\": 0", stringWriter.toString());
+                // note that this is not valid json
+                assertJsonEquals("\"bitmaskField\": \"0[ZERO]\"", stringWriter.toString());
+            }
+        }
+
+        {
+            StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.setStringifyEnumerables(false);
+                jsonWriter.visitValue(new ZeroDummyBitmask(), BITMASK_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+
+                // note that this is not valid json
+                assertJsonEquals("\"bitmaskField\": 0", stringWriter.toString());
+            }
         }
     }
 
@@ -212,13 +254,30 @@ public class JsonWriterTest
             }
         }
 
-        StringWriter stringWriter = new StringWriter();
-        try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
         {
-            jsonWriter.visitValue(new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO, WalkerConst.NOT_ELEMENT);
+            StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.visitValue(new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO,
+                        WalkerConst.NOT_ELEMENT);
 
-            // note that this is not valid json
-            assertJsonEquals("\"bitmask64Field\": " + uint64Max.toString(), stringWriter.toString());
+                // note that this is not valid json
+                assertJsonEquals("\"bitmask64Field\": \"" + uint64Max.toString() + "[UINT64_MAX]\"",
+                        stringWriter.toString());
+            }
+        }
+
+        {
+            StringWriter stringWriter = new StringWriter();
+            try (final JsonWriter jsonWriter = new JsonWriter(stringWriter))
+            {
+                jsonWriter.setStringifyEnumerables(false);
+                jsonWriter.visitValue(new UInt64MaxDummyBitmask(), BITMASK64_FIELD_INFO,
+                        WalkerConst.NOT_ELEMENT);
+
+                // note that this is not valid json
+                assertJsonEquals("\"bitmask64Field\": " + uint64Max.toString(), stringWriter.toString());
+            }
         }
     }
 
@@ -493,7 +552,7 @@ public class JsonWriterTest
                     DummyEnum.class, // javaClass
                     BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("ZERO", "0")) // enumItems
+                    Arrays.asList(new ItemInfo("ZERO", () -> 0)) // enumItems
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             null, // alignment
@@ -519,7 +578,8 @@ public class JsonWriterTest
                     DummyEnum.class, // javaClass
                     BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615")) // enumItems
+                    Arrays.asList( // enumItems
+                            new ItemInfo("UINT64_MAX", () -> new BigInteger("18446744073709551615")))
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             null, // alignment
@@ -554,7 +614,7 @@ public class JsonWriterTest
                     DummyBitmask.class, // javaClass
                     BuiltinTypeInfo.getInt8(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("ZERO", "0")) // bitmaskValues
+                    Arrays.asList(new ItemInfo("ZERO", () -> 0)) // bitmaskValues
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             null, // alignment
@@ -580,7 +640,8 @@ public class JsonWriterTest
                     DummyBitmask.class, // javaClass
                     BuiltinTypeInfo.getUInt64(), // underlyingType
                     new ArrayList<java.util.function.Supplier<Object>>(), // underlyingTypeArguments
-                    Arrays.asList(new ItemInfo("UINT64_MAX", "18446744073709551615")) // bitmaskValues
+                    Arrays.asList( // bitmaskValues
+                            new ItemInfo("UINT64_MAX", () -> new BigInteger("18446744073709551615")))
             ),
             new java.util.ArrayList<java.util.function.BiFunction<Object, Integer, Object>>(), // typeArguments
             null, // alignment

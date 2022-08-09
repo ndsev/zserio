@@ -87,6 +87,12 @@ inline bool operator==(const DummyBitmask& lhs, const DummyBitmask& rhs)
     return lhs.getValue() == rhs.getValue();
 }
 
+inline DummyBitmask operator|(DummyBitmask::Values lhs, DummyBitmask::Values rhs)
+{
+    return DummyBitmask(static_cast<DummyBitmask::underlying_type>(lhs) |
+            static_cast<DummyBitmask::underlying_type>(rhs));
+}
+
 class DummyNested
 {
 public:

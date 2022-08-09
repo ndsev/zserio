@@ -393,7 +393,7 @@ struct BasicCaseInfo
 struct ItemInfo
 {
     StringView schemaName; /**< enumeration item or bitmask value schema name */
-    StringView value; /**< enumeration item value or bitmask value or empty if it is not specified */
+    uint64_t value; /**< enumeration item or bitmask value cast to uint64_t */
 };
 
 /**
@@ -404,10 +404,10 @@ struct BasicColumnInfo
 {
     StringView schemaName; /**< column schema name */
     const IBasicTypeInfo<ALLOC>& typeInfo; /**< reference to type information for a column type */
-    Span<const StringView> typeArguments; /** sequence of column type arguments */
-    StringView sqlTypeName; /* column SQL type name */
-    StringView sqlConstraint; /* column constraint or empty if column does not have any constraint */
-    bool isVirtual; /* true if SQL table is virtual */
+    Span<const StringView> typeArguments; /**< sequence of column type arguments */
+    StringView sqlTypeName; /**< column SQL type name */
+    StringView sqlConstraint; /**< column constraint or empty if column does not have any constraint */
+    bool isVirtual; /**< true if SQL table is virtual */
 };
 
 /**

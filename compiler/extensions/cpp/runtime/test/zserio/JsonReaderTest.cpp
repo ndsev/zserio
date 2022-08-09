@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "zserio/JsonReader.h"
+#include "zserio/ReflectableUtil.h"
 #include "zserio/ZserioTreeCreatorTestObject.h"
 
 namespace zserio
@@ -175,6 +176,91 @@ TEST(JsonReaderTest, readUnonrderedBitBuffer)
     ASSERT_EQ(enumToValue(DummyEnum::ONE), reflectable->find("nested.dummyEnum")->getUInt8());
     ASSERT_EQ(DummyBitmask(DummyBitmask::Values::READ).getValue(),
             reflectable->find("nested.dummyBitmask")->getUInt8());
+}
+
+TEST(JsonReaderTest, readStringifiedEnum)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"nested\": {\n"
+        "        \"dummyEnum\": \"TWO\"\n"
+        "    }\n"
+        "}"
+    );
+
+    JsonReader jsonReader(str);
+    auto reflectable = jsonReader.read(DummyObject::typeInfo());
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ(DummyEnum::TWO, ReflectableUtil::getValue<DummyEnum>(reflectable->find("nested.dummyEnum")));
+}
+
+TEST(JsonReaderTest, readStringifiedEnumException)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"nested\": {\n"
+        "        \"dummyEnum\": \"NONEXISTING\"\n"
+        "    }\n"
+        "}"
+    );
+
+    JsonReader jsonReader(str);
+    ASSERT_THROW({
+        try
+        {
+            jsonReader.read(DummyObject::typeInfo());
+        }
+        catch (const CppRuntimeException& e)
+        {
+            ASSERT_STREQ("ZserioTreeCreator: Cannot create enum 'DummyEnum' "
+                         "from string value 'NONEXISTING'! (JsonParser:3:22)", e.what());
+            throw;
+        }
+    }, CppRuntimeException);
+}
+
+TEST(JsonReaderTest, readStringifiedBitmask)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"nested\": {\n"
+        "        \"dummyBitmask\": \"3[READ|WRITE]\"\n"
+        "    }\n"
+        "}"
+    );
+
+    JsonReader jsonReader(str);
+    auto reflectable = jsonReader.read(DummyObject::typeInfo());
+    ASSERT_TRUE(reflectable);
+
+    ASSERT_EQ(DummyBitmask::Values::READ | DummyBitmask::Values::WRITE,
+            ReflectableUtil::getValue<DummyBitmask>(reflectable->find("nested.dummyBitmask")));
+}
+
+TEST(JsonReaderTest, readStringifiedBitmaskException)
+{
+    std::stringstream str(
+        "{\n"
+        "    \"nested\": {\n"
+        "        \"dummyBitmask\": \"NONEXISTING\"\n"
+        "    }\n"
+        "}"
+    );
+
+    JsonReader jsonReader(str);
+    ASSERT_THROW({
+        try
+        {
+            jsonReader.read(DummyObject::typeInfo());
+        }
+        catch (const CppRuntimeException& e)
+        {
+            ASSERT_STREQ("ZserioTreeCreator: Cannot create bitmask 'DummyBitmask' "
+                         "from string value 'NONEXISTING'! (JsonParser:3:25)", e.what());
+            throw;
+        }
+    }, CppRuntimeException);
 }
 
 TEST(JsonReaderTest, jsonParserException)

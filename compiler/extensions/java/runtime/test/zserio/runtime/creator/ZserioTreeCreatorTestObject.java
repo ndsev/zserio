@@ -9,7 +9,7 @@ package zserio.runtime.creator;
  *     TWO
  * };
  *
- * enum uint8 DummyBitmask
+ * bitmask uint8 DummyBitmask
  * {
  *     READ = 1,
  *     WRITE = 2
@@ -68,8 +68,8 @@ public class ZserioTreeCreatorTestObject
                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt8(),
                     new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                     java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("ONE", "(short)0"),
-                            new zserio.runtime.typeinfo.ItemInfo("TWO", "(short)1")
+                            new zserio.runtime.typeinfo.ItemInfo("ONE", () -> 0),
+                            new zserio.runtime.typeinfo.ItemInfo("TWO", () -> 1)
                     )
                 );
         }
@@ -171,40 +171,49 @@ public class ZserioTreeCreatorTestObject
         private short value;
     }
 
-    public static enum DummyBitmask implements zserio.runtime.io.InitializeOffsetsWriter,
-            zserio.runtime.SizeOf, zserio.runtime.ZserioEnum
+    public static class DummyBitmask implements zserio.runtime.io.InitializeOffsetsWriter,
+            zserio.runtime.SizeOf, zserio.runtime.ZserioBitmask
     {
-        READ((short)1),
-        WRITE((short)2);
-
-        private DummyBitmask(short value)
+        public DummyBitmask()
         {
+            this((short)0);
+        }
+
+        public DummyBitmask(short value)
+        {
+            if (value < (short)0 || value > (short)255)
+            {
+                throw new java.lang.IllegalArgumentException(
+                        "Value for bitmask 'DummyBitmask' out of bounds: " + value + "!");
+            }
             this.value = value;
         }
 
-        public short getValue()
+        public DummyBitmask(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
         {
-            return value;
+            value = in.readUnsignedByte();
         }
 
-        @Override
-        public java.lang.Number getGenericValue()
+        public DummyBitmask(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
+                throws java.io.IOException
         {
-            return value;
+            value = ((zserio.runtime.array.ArrayElement.ShortArrayElement)
+                    contextNode.getContext().read(
+                            new zserio.runtime.array.ArrayTraits.BitFieldShortArrayTraits(8), in)).get();
         }
 
         public static zserio.runtime.typeinfo.TypeInfo typeInfo()
         {
-            return new zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo(
+            return new zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo(
                     "DummyBitmask",
                     DummyBitmask.class,
                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt8(),
                     new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                     java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("READ", "(short)1"),
-                            new zserio.runtime.typeinfo.ItemInfo("WRITE", "(short)2")
+                            new zserio.runtime.typeinfo.ItemInfo("READ", () -> 1),
+                            new zserio.runtime.typeinfo.ItemInfo("WRITE", () -> 2)
                     )
-                );
+            );
         }
 
         public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
@@ -241,7 +250,7 @@ public class ZserioTreeCreatorTestObject
         }
 
         @Override
-        public long initializeOffsets(long bitPosition) throws zserio.runtime.ZserioError
+        public long initializeOffsets(long bitPosition)
         {
             return bitPosition + bitSizeOf(bitPosition);
         }
@@ -250,6 +259,39 @@ public class ZserioTreeCreatorTestObject
         public long initializeOffsets(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
         {
             return bitPosition + bitSizeOf(contextNode, bitPosition);
+        }
+
+        @Override
+        public boolean equals(java.lang.Object other)
+        {
+            if (!(other instanceof DummyBitmask))
+                return false;
+
+            final DummyBitmask otherDummyBitmask = (DummyBitmask)other;
+            return value == otherDummyBitmask.value;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            int result = zserio.runtime.Util.HASH_SEED;
+
+            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value;
+
+            return result;
+        }
+
+        @Override
+        public java.lang.String toString()
+        {
+            final java.lang.StringBuilder builder = new java.lang.StringBuilder();
+
+            if (this.and(DummyBitmask.Values.READ).equals(DummyBitmask.Values.READ))
+                builder.append(builder.length() == 0 ? "READ" : " | READ");
+            if (this.and(DummyBitmask.Values.WRITE).equals(DummyBitmask.Values.WRITE))
+                builder.append(builder.length() == 0 ? "WRITE" : " | WRITE");
+
+            return java.lang.String.valueOf(value) + "[" + builder.toString() + "]";
         }
 
         @Override
@@ -262,7 +304,7 @@ public class ZserioTreeCreatorTestObject
         public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
                 throws java.io.IOException
         {
-            out.writeUnsignedByte(getValue());
+            out.writeUnsignedByte(value);
         }
 
         @Override
@@ -274,31 +316,41 @@ public class ZserioTreeCreatorTestObject
                     new zserio.runtime.array.ArrayElement.ShortArrayElement(value));
         }
 
-        public static DummyBitmask readEnum(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
+        public short getValue()
         {
-            return toEnum(in.readUnsignedByte());
+            return value;
         }
 
-        public static DummyBitmask readEnum(zserio.runtime.array.PackingContextNode contextNode,
-                zserio.runtime.io.BitStreamReader in) throws java.io.IOException
+        @Override
+        public java.lang.Number getGenericValue()
         {
-            return toEnum(((zserio.runtime.array.ArrayElement.ShortArrayElement)
-                    contextNode.getContext().read(
-                            new zserio.runtime.array.ArrayTraits.BitFieldShortArrayTraits(8), in)).get());
+            return value;
         }
 
-        public static DummyBitmask toEnum(short value)
+        public DummyBitmask or(DummyBitmask other)
         {
-            switch (value)
-            {
-                case (short)1:
-                    return READ;
-                case (short)2:
-                    return WRITE;
-                default:
-                    throw new java.lang.IllegalArgumentException(
-                            "Unknown value for enumeration DummyBitmask: " + value + "!");
-            }
+            return new DummyBitmask((short)(value | other.value));
+        }
+
+        public DummyBitmask and(DummyBitmask other)
+        {
+            return new DummyBitmask((short)(value & other.value));
+        }
+
+        public DummyBitmask xor(DummyBitmask other)
+        {
+            return new DummyBitmask((short)(value ^ other.value));
+        }
+
+        public DummyBitmask not()
+        {
+            return new DummyBitmask((short)(~value & (short)255));
+        }
+
+        public static final class Values
+        {
+            public static final DummyBitmask READ = new DummyBitmask((short)1);
+            public static final DummyBitmask WRITE = new DummyBitmask((short)2);
         }
 
         private short value;
@@ -640,7 +692,7 @@ public class ZserioTreeCreatorTestObject
 
             dummyEnum_ = DummyEnum.readEnum(in);
 
-            dummyBitmask_ = DummyBitmask.readEnum(in);
+            dummyBitmask_ = new DummyBitmask(in);
         }
 
         public void read(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
@@ -656,7 +708,7 @@ public class ZserioTreeCreatorTestObject
 
             dummyEnum_ = DummyEnum.readEnum(contextNode.getChildren().get(3), in);
 
-            dummyBitmask_ = DummyBitmask.readEnum(contextNode.getChildren().get(4), in);
+            dummyBitmask_ = new DummyBitmask(contextNode.getChildren().get(4), in);
         }
 
         @Override

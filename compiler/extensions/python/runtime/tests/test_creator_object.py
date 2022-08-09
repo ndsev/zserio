@@ -46,6 +46,10 @@ class DummyBitmask:
     def __eq__(self, other: object) -> bool:
         return self._value == other._value
 
+    @property
+    def value(self):
+        return self._value
+
     class Values:
         READ: 'DummyBitmask' = None
         WRITE: 'DummyBitmask' = None

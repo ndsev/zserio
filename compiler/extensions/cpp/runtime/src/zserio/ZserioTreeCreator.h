@@ -3,6 +3,8 @@
 
 #include <limits>
 #include <type_traits>
+#include <cerrno>
+#include <cstdlib>
 
 #include "zserio/BitBuffer.h"
 #include "zserio/CppRuntimeException.h"
@@ -153,6 +155,20 @@ AnyHolder<ALLOC> makeAnyStringValue(const T&, const ALLOC&)
     throw CppRuntimeException("ZserioTreeCreator: Trying to make any string value from unsupported type!");
 }
 
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyEnumValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    for (const auto& itemInfo : typeInfo.getEnumItems())
+    {
+        if (itemInfo.schemaName == stringValue)
+            return makeAnyValue(typeInfo.getUnderlyingType(), itemInfo.value, allocator);
+    }
+
+    throw CppRuntimeException("ZserioTreeCreator: Cannot create enum '") << typeInfo.getSchemaName() <<
+            "' from string value '" << stringValue << "'!";
+}
+
 template <typename T, typename ALLOC,
         typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
 AnyHolder<ALLOC> makeAnyEnumValue(T enumValue, const IBasicTypeInfo<ALLOC>&, const ALLOC& allocator)
@@ -162,10 +178,31 @@ AnyHolder<ALLOC> makeAnyEnumValue(T enumValue, const IBasicTypeInfo<ALLOC>&, con
 
 template <typename T, typename ALLOC,
         typename std::enable_if<!std::is_enum<T>::value, int>::type = 0>
-AnyHolder<ALLOC> makeAnyEnumValue(T enumRawValue, const IBasicTypeInfo<ALLOC>& underlyingTypeInfo,
+AnyHolder<ALLOC> makeAnyEnumValue(T enumRawValue, const IBasicTypeInfo<ALLOC>& typeInfo,
         const ALLOC& allocator)
 {
-    return makeAnyValue(underlyingTypeInfo, enumRawValue, allocator);
+    return makeAnyValue(typeInfo.getUnderlyingType(), enumRawValue, allocator);
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyBitmaskValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    size_t bracketIndex = stringValue.find('[');
+    string<ALLOC> numericStringValue(stringValue.begin(), bracketIndex != StringView::npos ?
+            stringValue.begin() + bracketIndex : stringValue.end());
+
+    const char* pBegin = numericStringValue.c_str();
+    char* pEnd = nullptr;
+    errno = 0;
+    const uint64_t value = strtoull(pBegin, &pEnd, 10);
+    if (static_cast<size_t>(pEnd - pBegin) != numericStringValue.size() || errno == ERANGE)
+    {
+        throw CppRuntimeException("ZserioTreeCreator: Cannot create bitmask '") << typeInfo.getSchemaName() <<
+                "' from string value '" << stringValue << "'!";
+    }
+
+    return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator);
 }
 
 template <typename T, typename ALLOC,
@@ -177,10 +214,10 @@ AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskValue, const IBasicTypeInfo<ALLOC>
 
 template <typename T, typename ALLOC,
         typename std::enable_if<!is_bitmask<T>::value, int>::type = 0>
-AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskRawValue, const IBasicTypeInfo<ALLOC>& underlyingTypeInfo,
+AnyHolder<ALLOC> makeAnyBitmaskValue(T bitmaskRawValue, const IBasicTypeInfo<ALLOC>& typeInfo,
         const ALLOC& allocator)
 {
-    return makeAnyValue(underlyingTypeInfo, bitmaskRawValue, allocator);
+    return makeAnyValue(typeInfo.getUnderlyingType(), bitmaskRawValue, allocator);
 }
 
 template <typename T, typename ALLOC>
@@ -213,9 +250,9 @@ AnyHolder<ALLOC> makeAnyValue(const IBasicTypeInfo<ALLOC>& typeInfo, T&& value, 
     case CppType::STRING:
         return makeAnyStringValue(std::forward<T>(value), allocator);
     case CppType::ENUM:
-        return makeAnyEnumValue(std::forward<T>(value), typeInfo.getUnderlyingType(), allocator);
+        return makeAnyEnumValue(std::forward<T>(value), typeInfo, allocator);
     case CppType::BITMASK:
-        return makeAnyBitmaskValue(std::forward<T>(value), typeInfo.getUnderlyingType(), allocator);
+        return makeAnyBitmaskValue(std::forward<T>(value), typeInfo, allocator);
     default:
         return AnyHolder<ALLOC>(std::forward<T>(value), allocator);
     }

@@ -55,14 +55,14 @@ public class ZserioTreeCreatorTest
         creator.setValue("text", "nested");
         creator.setValue("data", new BitBuffer(new byte[] {0x3c}, 6));
         creator.setValue("dummyEnum", ZserioTreeCreatorTestObject.DummyEnum.ONE);
-        creator.setValue("dummyBitmask", ZserioTreeCreatorTestObject.DummyBitmask.WRITE);
+        creator.setValue("dummyBitmask", ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE);
         creator.endCompound();
         creator.beginArray("nestedArray");
         creator.beginCompoundElement();
         creator.setValue("value", (long)5);
         creator.setValue("text", "nestedArray");
         creator.setValue("dummyEnum", ZserioTreeCreatorTestObject.DummyEnum.TWO);
-        creator.setValue("dummyBitmask", ZserioTreeCreatorTestObject.DummyBitmask.READ);
+        creator.setValue("dummyBitmask", ZserioTreeCreatorTestObject.DummyBitmask.Values.READ);
         creator.endCompoundElement();
         creator.endArray();
         creator.beginArray("textArray");
@@ -92,12 +92,12 @@ public class ZserioTreeCreatorTest
         assertArrayEquals(new byte[] {0x3c}, dummyObject.getNested().getData().getBuffer());
         assertEquals(6, dummyObject.getNested().getData().getBitSize());
         assertEquals(ZserioTreeCreatorTestObject.DummyEnum.ONE, dummyObject.getNested().getDummyEnum());
-        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.WRITE, dummyObject.getNested().getDummyBitmask());
+        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.WRITE, dummyObject.getNested().getDummyBitmask());
         assertEquals(1, dummyObject.getNestedArray().length);
         assertEquals(5, dummyObject.getNestedArray()[0].getValue());
         assertEquals("nestedArray", dummyObject.getNestedArray()[0].getText());
         assertEquals(ZserioTreeCreatorTestObject.DummyEnum.TWO, dummyObject.getNestedArray()[0].getDummyEnum());
-        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.READ,
+        assertEquals(ZserioTreeCreatorTestObject.DummyBitmask.Values.READ,
                 dummyObject.getNestedArray()[0].getDummyBitmask());
         assertArrayEquals(new String[] {"this", "is", "text", "array"}, dummyObject.getTextArray());
         assertEquals(1, dummyObject.getExternArray().length);

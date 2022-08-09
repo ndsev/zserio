@@ -101,9 +101,9 @@ public:
         static const Span<StringView> underlyingTypeArguments;
 
         static const std::array<ItemInfo, 3> values = {
-            ItemInfo{ makeStringView("CREATE"), makeStringView("UINT8_C(1)") },
-            ItemInfo{ makeStringView("READ"), makeStringView("UINT8_C(2)") },
-            ItemInfo{ makeStringView("WRITE"), makeStringView("UINT8_C(4)") }
+            ItemInfo{ makeStringView("CREATE"), static_cast<uint64_t>(1) },
+            ItemInfo{ makeStringView("READ"), static_cast<uint64_t>(2) },
+            ItemInfo{ makeStringView("WRITE"), static_cast<uint64_t>(4) }
         };
 
         static const BitmaskTypeInfo<std::allocator<uint8_t>> typeInfo = {
@@ -986,9 +986,9 @@ const ITypeInfo& enumTypeInfo<DummyEnum>()
     static const Span<StringView> underlyingTypeArguments;
 
     static const std::array<ItemInfo, 3> items = {
-        ItemInfo{ makeStringView("VALUE1"), makeStringView("INT8_C(-1)") },
-        ItemInfo{ makeStringView("VALUE2"), makeStringView("INT8_C(0)") },
-        ItemInfo{ makeStringView("VALUE3"), makeStringView("INT8_C(1)") }
+        ItemInfo{ makeStringView("VALUE1"), static_cast<uint64_t>(-1) },
+        ItemInfo{ makeStringView("VALUE2"), static_cast<uint64_t>(0) },
+        ItemInfo{ makeStringView("VALUE3"), static_cast<uint64_t>(1) }
     };
 
     static const EnumTypeInfo<std::allocator<uint8_t>> typeInfo = {
