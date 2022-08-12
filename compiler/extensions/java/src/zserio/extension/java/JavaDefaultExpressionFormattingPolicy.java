@@ -422,6 +422,12 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
         return new BinaryExpressionFormatting(".");
     }
 
+    @Override
+    public BinaryExpressionFormatting getIsSet(Expression expr)
+    {
+        return new BinaryExpressionFormatting("zserio.runtime.BuildInOperators.isSet(", ", ", ")");
+    }
+
     // ternary expressions formatting
 
     // getQuestionMark() is ok from the base class

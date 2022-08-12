@@ -7,6 +7,22 @@ namespace zserio
 {
 
 /**
+ * Checks whether the requiredMask is set within the bitmaskValue.
+ *
+ * This method implements zserio built-in operator isset.
+ *
+ * \param bitmaskValue Bitmask value to check.
+ * \param requiredMask Mask to use.
+ *
+ * \return True when the requiredMask is set within the bitmaskValue, false otherwise.
+ */
+template <typename BITMASK1, typename BITMASK2>
+bool isSet(BITMASK1 bitmaskValue, BITMASK2 requiredMask)
+{
+    return (bitmaskValue & requiredMask) == requiredMask;
+}
+
+/**
  * Gets the minimum number of bits required to encode <tt>numValues</tt> different values.
  *
  * This method implements Zserio build-in operator <tt>numbits</tt>.

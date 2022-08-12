@@ -5,6 +5,75 @@
 namespace zserio
 {
 
+namespace
+{
+
+class DummyBitmask
+{
+public:
+    typedef uint8_t underlying_type;
+
+    enum class Values : underlying_type
+    {
+        READ = 1,
+        WRITE = 2,
+        CREATE = 1 | 2
+    };
+
+    constexpr DummyBitmask(Values value) noexcept :
+            m_value(static_cast<underlying_type>(value))
+    {}
+
+    constexpr explicit DummyBitmask(underlying_type value) noexcept :
+            m_value(value)
+    {}
+
+    constexpr underlying_type getValue() const
+    {
+        return m_value;
+    }
+
+private:
+    underlying_type m_value;
+};
+
+inline bool operator==(const DummyBitmask& lhs, const DummyBitmask& rhs)
+{
+    return lhs.getValue() == rhs.getValue();
+}
+
+inline DummyBitmask operator|(DummyBitmask::Values lhs, DummyBitmask::Values rhs)
+{
+    return DummyBitmask(static_cast<DummyBitmask::underlying_type>(lhs) |
+            static_cast<DummyBitmask::underlying_type>(rhs));
+}
+
+
+inline DummyBitmask operator&(DummyBitmask::Values lhs, DummyBitmask::Values rhs)
+{
+    return DummyBitmask(static_cast<DummyBitmask::underlying_type>(lhs) &
+            static_cast<DummyBitmask::underlying_type>(rhs));
+}
+
+inline DummyBitmask operator&(const DummyBitmask& lhs, const DummyBitmask& rhs)
+{
+    return DummyBitmask(lhs.getValue() & rhs.getValue());
+}
+
+} // namespace
+
+TEST(BuildInOperatorsTest, isSet)
+{
+    // randomly mix bitmask instances with DummyBitmask::Values enum values to check that all variants work
+    ASSERT_TRUE(isSet(DummyBitmask(DummyBitmask::Values::READ), DummyBitmask::Values::READ));
+    ASSERT_TRUE(isSet(DummyBitmask::Values::CREATE, DummyBitmask::Values::READ));
+    ASSERT_TRUE(isSet(DummyBitmask::Values::CREATE, DummyBitmask(DummyBitmask::Values::WRITE)));
+    ASSERT_TRUE(isSet(DummyBitmask::Values::CREATE, DummyBitmask::Values::CREATE));
+    ASSERT_TRUE(isSet(DummyBitmask::Values::CREATE, DummyBitmask::Values::READ | DummyBitmask::Values::WRITE));
+    ASSERT_FALSE(isSet(DummyBitmask(DummyBitmask::Values::READ), DummyBitmask(DummyBitmask::Values::WRITE)));
+    ASSERT_FALSE(isSet(DummyBitmask::Values::READ, DummyBitmask::Values::CREATE));
+}
+
 TEST(BuildInOperatorsTest, getNumBits)
 {
     EXPECT_EQ(0, getNumBits(0));

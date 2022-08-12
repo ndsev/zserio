@@ -234,6 +234,14 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
         return new BinaryExpressionFormatting(".");
     }
 
+    @Override
+    public BinaryExpressionFormatting getIsSet(Expression expr)
+    {
+        includeCollector.addCppSystemIncludes(BUILD_IN_OPERATORS_INCLUDE);
+
+        return new BinaryExpressionFormatting("::zserio::isSet(", ", ", ")");
+    }
+
     protected String getAccessPrefixForCompoundType()
     {
         return "";

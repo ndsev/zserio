@@ -13,6 +13,7 @@ import expressions.full_const_type.*;
 import expressions.full_enumeration_type.*;
 import expressions.function_type.*;
 import expressions.index_operator.*;
+import expressions.isset_operator.*;
 import expressions.lengthof_operator.*;
 import expressions.modulo_operator.*;
 import expressions.negation_operator.*;

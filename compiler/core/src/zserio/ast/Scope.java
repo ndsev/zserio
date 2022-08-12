@@ -1,6 +1,8 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +34,8 @@ class Scope
     public Scope(Scope scope)
     {
         owner = scope.owner;
-        add(scope);
+        symbols.putAll(scope.symbols);
+        additionalScopes.addAll(scope.additionalScopes);
     }
 
     /**
@@ -72,7 +75,7 @@ class Scope
      */
     public void add(Scope addedScope)
     {
-        symbols.putAll(addedScope.symbols);
+        additionalScopes.add(addedScope);
     }
 
     /**
@@ -89,15 +92,67 @@ class Scope
     }
 
     /**
-     * Get the symbol object for the given name.
+     * Finds the symbol object together with its owner for the given name.
      *
      * @param name Name of the symbol to be looked up.
      *
-     * @return Corresponding symbol or null if no such symbol is visible.
+     * @return FoundSymbol or null if no such symbol is visible.
      */
-    public ScopeSymbol getSymbol(String name)
+    public FoundSymbol findSymbol(String name)
     {
-        return symbols.get(name);
+        ScopeSymbol symbol = symbols.get(name);
+        if (symbol != null)
+            return new FoundSymbol(symbol, owner);
+
+        for (Scope additionalScope : additionalScopes)
+        {
+            final FoundSymbol foundSymbol = additionalScope.findSymbol(name);
+            if (foundSymbol != null)
+                return foundSymbol;
+        }
+
+        return null;
+    }
+
+    /**
+     * Result of findSymbol() method.
+     */
+    public static class FoundSymbol
+    {
+        /**
+         * Constructor.
+         *
+         * @param symbol Found symbol.
+         * @param owner ZserioType which is an owner of the found symbol.
+         */
+        FoundSymbol(ScopeSymbol symbol, ZserioType owner)
+        {
+            this.symbol = symbol;
+            this.owner = owner;
+        }
+
+        /**
+         * Gets the found symbol.
+         *
+         * @return Scope symbol found by findSymbol() method.
+         */
+        public ScopeSymbol getSymbol()
+        {
+            return symbol;
+        }
+
+        /**
+         * Gets owner of the found symbol.
+         *
+         * @return ZserioType which is an owner of the found symbol.
+         */
+        public ZserioType getOwner()
+        {
+            return owner;
+        }
+
+        private final ScopeSymbol symbol;
+        private final ZserioType owner;
     }
 
     private final ZserioType owner;
@@ -106,4 +161,6 @@ class Scope
      * Symbol table containing local symbols defined within the current scope. The key is the symbol name.
      */
     private final Map<String, ScopeSymbol> symbols = new HashMap<String, ScopeSymbol>();
+
+    private final List<Scope> additionalScopes = new ArrayList<Scope>();
 }

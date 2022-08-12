@@ -8,6 +8,31 @@ import java.math.BigInteger;
 public class BuildInOperators
 {
     /**
+     * Checks whether the requiredMask is set within the bitmaskValue.
+     * <p>
+     * This method implements Zserio build-in operator <code>isset</code> for Zserio bitmask types.</p>
+     * <p>
+     * Example:</p>
+     * <code>issset(bitmaskField, Bitmask.READ)</code>
+     *
+     * @param bitmaskValue Bitmask value to check.
+     * @param requiredMask Mast to use.
+     *
+     * @return True when the required mask is set within the bitmaskValue, false otherwise.
+     */
+    public static boolean isSet(ZserioBitmask bitmaskValue, ZserioBitmask requiredMask)
+    {
+        final Number bitmaskValueGeneric = bitmaskValue.getGenericValue();
+        final BigInteger bigBitmaskValue = bitmaskValueGeneric instanceof BigInteger
+                ? (BigInteger)bitmaskValueGeneric : BigInteger.valueOf(bitmaskValueGeneric.longValue());
+        final Number requiredMaskGeneric = requiredMask.getGenericValue();
+        final BigInteger bigRequiredMask = requiredMaskGeneric instanceof BigInteger
+                ? (BigInteger)requiredMaskGeneric : BigInteger.valueOf(requiredMaskGeneric.longValue());
+
+        return bigBitmaskValue.and(bigRequiredMask).equals(bigRequiredMask);
+    }
+
+    /**
      * Gets the minimum number of bits required to encode <code>numValues</code> different values.
      * <p>
      * This method implements Zserio build-in operator <code>numbits</code> for Zserio uint8, uint16

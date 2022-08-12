@@ -2,6 +2,8 @@ package zserio.ast;
 
 import java.util.List;
 
+import zserio.antlr.ZserioLexer;
+
 /**
  * Implementation of ZserioAstVisitor which manages evaluating phase.
  */
@@ -136,7 +138,25 @@ public class ZserioAstEvaluator extends ZserioAstWalker
     @Override
     public void visitExpression(Expression expression)
     {
+        if (expression.getType() == ZserioLexer.ISSET)
+        {
+            // first operand of isset operator must be a bitmask, force it's evaluation
+            expression.op1().accept(this);
+
+            final ZserioType op1ZserioType = expression.op1().getExprZserioType();
+            if (op1ZserioType instanceof BitmaskType)
+            {
+                // use the bitmask type as an additional scope for second operand to allow
+                // direct use of bitmask values
+                final Scope additionalScope = ((BitmaskType)op1ZserioType).getScope();
+                final AddEvaluationScopeVisitor addScopeVisitor =
+                        new AddEvaluationScopeVisitor(additionalScope);
+                expression.op2().accept(addScopeVisitor);
+            }
+        }
+
         expression.visitChildren(this);
+
         if (evaluationScope == null)
             expression.evaluate();
         else

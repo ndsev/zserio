@@ -108,6 +108,12 @@ class DocExpressionFormattingPolicy extends DefaultExpressionFormattingPolicy
         return new BinaryExpressionFormatting(".");
     }
 
+    @Override
+    public BinaryExpressionFormatting getIsSet(Expression expr)
+    {
+        return new BinaryExpressionFormatting("isset(", ", ", ")");
+    }
+
     private final static String DOC_BINARY_LITERAL_SUFFIX = "b";
     private final static String DOC_HEXADECIMAL_LITERAL_PREFIX = "0x";
     private final static String DOC_OCTAL_LITERAL_PREFIX = "0";

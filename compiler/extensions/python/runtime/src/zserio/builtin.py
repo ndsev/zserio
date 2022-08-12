@@ -2,6 +2,21 @@
 The module provides implementation of zserio built-in operators.
 """
 
+import typing
+
+def isset(bitmask_value: typing.Any, required_mask: typing.Any) -> bool:
+    """
+    Checks whether the required_mask is set within the bitmask_value.
+
+    This method implements zserio built-in operator isset.
+
+    :param bitmask_value: Bitmask value to check.
+    :param required_mask: Mask to use.
+    :returns: True when the required_mask is set within the bitmask_value, False otherwise.
+    """
+
+    return (bitmask_value & required_mask) == required_mask
+
 def numbits(num_values: int) -> int:
     """
     Gets the minimum number of bits required to encode given number of different values.

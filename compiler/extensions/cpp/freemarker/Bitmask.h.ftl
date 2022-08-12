@@ -33,20 +33,20 @@ public:
     };
 
     constexpr ${name}() noexcept :
-        m_value(0)
+            m_value(0)
     {}
 
     explicit ${name}(::zserio::BitStreamReader& in);
     ${name}(${types.packingContextNode.name}& contextNode, ::zserio::BitStreamReader& in);
     constexpr ${name}(Values value) noexcept :
-        m_value(static_cast<underlying_type>(value))
+            m_value(static_cast<underlying_type>(value))
     {}
 
     <#if upperBound??>
     explicit ${name}(underlying_type value);
     <#else>
     constexpr explicit ${name}(underlying_type value) noexcept :
-        m_value(value)
+            m_value(value)
     {}
     </#if>
 

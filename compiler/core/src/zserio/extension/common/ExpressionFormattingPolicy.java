@@ -230,6 +230,7 @@ public interface ExpressionFormattingPolicy
     public BinaryExpressionFormatting getArrayElement(Expression expr, boolean isSetter)
             throws ZserioExtensionException;
     public BinaryExpressionFormatting getDot(Expression expr) throws ZserioExtensionException;
+    public BinaryExpressionFormatting getIsSet(Expression expr) throws ZserioExtensionException;
 
     // ternary expressions formatting
     public TernaryExpressionFormatting getQuestionMark(Expression expr) throws ZserioExtensionException;

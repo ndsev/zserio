@@ -780,6 +780,17 @@ public class ZserioAstBuilder extends ZserioParserBaseVisitor<Object>
     }
 
     @Override
+    public Object visitIsSetExpression(ZserioParser.IsSetExpressionContext ctx)
+    {
+        final AstLocation location = new AstLocation(ctx.getStart());
+        final Expression operand1 = (Expression)visit(ctx.expression(0));
+        final Expression operand2 = (Expression)visit(ctx.expression(1));
+
+        return new Expression(location, currentPackage, ctx.operator.getType(), ctx.operator.getText(),
+                Expression.ExpressionFlag.NONE, operand1, operand2);
+    }
+
+    @Override
     public Object visitLengthofExpression(ZserioParser.LengthofExpressionContext ctx)
     {
         final AstLocation location = new AstLocation(ctx.getStart());

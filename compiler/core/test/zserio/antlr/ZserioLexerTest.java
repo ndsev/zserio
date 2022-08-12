@@ -114,6 +114,7 @@ public class ZserioLexerTest
                 "int32 " +
                 "int64 " +
                 "int8 " +
+                "isset " +
                 "lengthof " +
                 "numbits " +
                 "on " +
@@ -182,6 +183,7 @@ public class ZserioLexerTest
         checkToken(lexer, ZserioLexer.INT32);
         checkToken(lexer, ZserioLexer.INT64);
         checkToken(lexer, ZserioLexer.INT8);
+        checkToken(lexer, ZserioLexer.ISSET);
         checkToken(lexer, ZserioLexer.LENGTHOF);
         checkToken(lexer, ZserioLexer.NUMBITS);
         checkToken(lexer, ZserioLexer.ON);

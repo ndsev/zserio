@@ -1,0 +1,10 @@
+<FindBugsFilter>
+    <Match>
+        <!-- *$SWITCH_TABLE$* is a volatile reference to an array - probably spotbugs issue #1296 -->
+        <Bug code="VO"/>
+        <And>
+            <Class name="zserio.extension.cpp.types.NativeArrayTraits"/>
+            <Field name="$SWITCH_TABLE$zserio$extension$cpp$types$NativeArrayTraits$TYPE"/>
+        </And>
+    </Match>
+</FindBugsFilter>

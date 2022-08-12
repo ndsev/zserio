@@ -55,6 +55,13 @@ set(ZSERIO_GENERATED_SOURCES
     ${ZSERIO_GEN_DIR}/expressions/index_operator/ElementList.cpp
     ${ZSERIO_GEN_DIR}/expressions/index_operator/ElementList.h
 
+    ${ZSERIO_GEN_DIR}/expressions/isset_operator/TestBitmask.cpp
+    ${ZSERIO_GEN_DIR}/expressions/isset_operator/TestBitmask.h
+    ${ZSERIO_GEN_DIR}/expressions/isset_operator/Parameterized.cpp
+    ${ZSERIO_GEN_DIR}/expressions/isset_operator/Parameterized.h
+    ${ZSERIO_GEN_DIR}/expressions/isset_operator/IsSetOperator.cpp
+    ${ZSERIO_GEN_DIR}/expressions/isset_operator/IsSetOperator.h
+
     ${ZSERIO_GEN_DIR}/expressions/lengthof_operator/LengthOfFunctions.cpp
     ${ZSERIO_GEN_DIR}/expressions/lengthof_operator/LengthOfFunctions.h
 
@@ -128,6 +135,7 @@ add_test_sources(
     cpp/FullEnumerationTypeTest.cpp
     cpp/FunctionTypeTest.cpp
     cpp/IndexOperatorTest.cpp
+    cpp/IsSetOperatorTest.cpp
     cpp/LengthOfOperatorTest.cpp
     cpp/ModuloOperatorTest.cpp
     cpp/NegationOperatorTest.cpp

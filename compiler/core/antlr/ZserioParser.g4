@@ -350,6 +350,7 @@ expression
     |   expression LPAREN operator=RPAREN                                           # functionCallExpression
     |   expression operator=LBRACKET expression RBRACKET                            # arrayExpression
     |   expression operator=DOT id                                                  # dotExpression
+    |   operator=ISSET LPAREN expression COMMA expression RPAREN                    # isSetExpression
     |   operator=LENGTHOF LPAREN expression RPAREN                                  # lengthofExpression
     |   operator=VALUEOF LPAREN expression RPAREN                                   # valueofExpression
     |   operator=NUMBITS LPAREN expression RPAREN                                   # numbitsExpression

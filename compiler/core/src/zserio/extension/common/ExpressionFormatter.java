@@ -324,6 +324,10 @@ public class ExpressionFormatter
                 formatting = policy.getDot(expr);
                 break;
 
+            case ZserioParser.ISSET:
+                formatting = policy.getIsSet(expr);
+                break;
+
             default:
                 throw new ZserioExtensionException("Unknown binary expression type " + expr.getType() + "!");
         }

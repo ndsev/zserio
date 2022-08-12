@@ -1,8 +1,45 @@
 import unittest
 
-from zserio.builtin import numbits
+from zserio.builtin import isset, numbits
 
 class BuiltinOperatorsTest(unittest.TestCase):
+
+    def test_isset(self):
+        class DummyBitmask:
+            def __init__(self):
+                self._value = 0
+
+            @classmethod
+            def from_value(cls: 'DummyBitmask', value: int) -> 'DummyBitmask':
+                instance = cls()
+                instance._value = value
+                return instance
+
+            class Values:
+                READ: 'DummyBitmask' = None
+                WRITE: 'DummyBitmask' = None
+                CREATE: 'DummyBitmask' = None
+
+            def __eq__(self, other: object) -> bool:
+                return self._value == other._value
+
+            def __and__(self, other: object) -> object:
+                return DummyBitmask.from_value(self._value & other._value)
+
+            def __or__(self, other: object) -> object:
+                return DummyBitmask.from_value(self._value | other._value)
+
+        DummyBitmask.Values.READ = DummyBitmask.from_value(1)
+        DummyBitmask.Values.WRITE = DummyBitmask.from_value(2)
+        DummyBitmask.Values.CREATE = DummyBitmask.from_value(1 | 2)
+
+        self.assertTrue(isset(DummyBitmask.Values.READ, DummyBitmask.Values.READ))
+        self.assertTrue(isset(DummyBitmask.Values.CREATE, DummyBitmask.Values.READ))
+        self.assertTrue(isset(DummyBitmask.Values.CREATE, DummyBitmask.Values.WRITE))
+        self.assertTrue(isset(DummyBitmask.Values.CREATE, DummyBitmask.Values.CREATE))
+        self.assertTrue(isset(DummyBitmask.Values.CREATE, DummyBitmask.Values.READ | DummyBitmask.Values.WRITE))
+        self.assertFalse(isset(DummyBitmask.Values.READ, DummyBitmask.Values.WRITE))
+        self.assertFalse(isset(DummyBitmask.Values.READ, DummyBitmask.Values.CREATE))
 
     def test_numbits(self):
         self.assertEqual(0, numbits(0))

@@ -199,6 +199,12 @@ class ExpressionComparator
             return new BinaryExpressionFormatting(ZSERIO_DOT_SEPARATOR);
         }
 
+        @Override
+        public BinaryExpressionFormatting getIsSet(Expression expr)
+        {
+            return new BinaryExpressionFormatting("isset(", ", ", ")");
+        }
+
         private static String formatSymbol(AstNode symbol)
         {
             return symbol.getClass().getSimpleName() + "@" + symbol.hashCode();

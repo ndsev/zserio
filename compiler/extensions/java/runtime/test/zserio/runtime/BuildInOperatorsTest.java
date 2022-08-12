@@ -1,12 +1,55 @@
 package zserio.runtime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 
 public class BuildInOperatorsTest
 {
+    private static class DummyBitmask implements ZserioBitmask
+    {
+        public DummyBitmask(short value)
+        {
+            this.value = value;
+        }
+
+        @Override
+        public Number getGenericValue()
+        {
+            return value;
+        }
+
+        public static final class Values
+        {
+            public static final DummyBitmask READ = new DummyBitmask((short)1);
+            public static final DummyBitmask WRITE = new DummyBitmask((short)2);
+            public static final DummyBitmask CREATE = new DummyBitmask((short)(1 | 2));
+        }
+
+        public DummyBitmask or(DummyBitmask other)
+        {
+            return new DummyBitmask((short)(value | other.value));
+        }
+
+        private short value;
+    }
+
+    @Test
+    public void isSet()
+    {
+        assertTrue(BuildInOperators.isSet(DummyBitmask.Values.READ, DummyBitmask.Values.READ));
+        assertTrue(BuildInOperators.isSet(DummyBitmask.Values.CREATE, DummyBitmask.Values.READ));
+        assertTrue(BuildInOperators.isSet(DummyBitmask.Values.CREATE, DummyBitmask.Values.WRITE));
+        assertTrue(BuildInOperators.isSet(DummyBitmask.Values.CREATE, DummyBitmask.Values.CREATE));
+        assertTrue(BuildInOperators.isSet(DummyBitmask.Values.CREATE,
+                DummyBitmask.Values.READ.or(DummyBitmask.Values.WRITE)));
+        assertFalse(BuildInOperators.isSet(DummyBitmask.Values.READ, DummyBitmask.Values.WRITE));
+        assertFalse(BuildInOperators.isSet(DummyBitmask.Values.READ, DummyBitmask.Values.CREATE));
+    }
+
     @Test
     public void getNumBits()
     {

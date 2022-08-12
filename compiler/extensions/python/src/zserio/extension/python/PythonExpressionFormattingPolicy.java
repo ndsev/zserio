@@ -328,6 +328,13 @@ class PythonExpressionFormattingPolicy implements ExpressionFormattingPolicy
         return new BinaryExpressionFormatting(".");
     }
 
+    @Override
+    public BinaryExpressionFormatting getIsSet(Expression expr)
+    {
+        importCollector.importPackage("zserio");
+        return new BinaryExpressionFormatting("zserio.builtin.isset(", ", ", ")");
+    }
+
     // ternary expressions formatting
 
     @Override

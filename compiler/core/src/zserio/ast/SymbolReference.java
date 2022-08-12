@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import zserio.ast.Scope.FoundSymbol;
+
 /**
  * The class represents symbol reference.
  *
@@ -90,13 +92,14 @@ public class SymbolReference
                 throw new ParserException(ownerNode, "Unresolved referenced symbol '" + symbolName + "'!");
 
             final Scope referencedScope = ((ZserioScopedType)referencedPackageSymbol).getScope();
-            referencedScopeSymbol = referencedScope.getSymbol(referencedScopeSymbolName);
-            if (referencedScopeSymbol == null)
+            final FoundSymbol foundSymbol = referencedScope.findSymbol(referencedScopeSymbolName);
+            if (foundSymbol == null)
             {
                 throw new ParserException(ownerNode, "Unresolved referenced symbol '" +
                         referencedScopeSymbolName + "' for type '" +
                         getUnresolvedSymbolName(referencedPackageSymbol) + "'!");
             }
+            referencedScopeSymbol = foundSymbol.getSymbol();
         }
     }
 

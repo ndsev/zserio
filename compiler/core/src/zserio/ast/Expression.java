@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import zserio.antlr.ZserioParser;
+import zserio.ast.Scope.FoundSymbol;
 
 /**
  * AST node for expressions defined in the language.
@@ -583,6 +584,10 @@ public class Expression extends AstNodeBase
                     evaluateDotExpression();
                     break;
 
+                case ZserioParser.ISSET:
+                    evaluateIsSetOperator();            // isSetExpression
+                    break;
+
                 case ZserioParser.LENGTHOF:
                     evaluateLengthOfOperator();         // lengthofExpression
                     break;
@@ -1114,15 +1119,15 @@ public class Expression extends AstNodeBase
         final EnumType enumType = (EnumType)(operand1.zserioType);
         final Scope enumScope = enumType.getScope();
         final String dotOperand = operand2.text;
-        final AstNode enumSymbol = enumScope.getSymbol(dotOperand);
-        if (!(enumSymbol instanceof EnumItem))
+        final FoundSymbol foundSymbol = enumScope.findSymbol(dotOperand);
+        if (foundSymbol == null || !(foundSymbol.getSymbol() instanceof EnumItem))
         {
             throw new ParserException(this, "'" + dotOperand + "' undefined in enumeration '" +
                     enumType.getName() + "'!");
         }
 
-        operand2.symbolObject = enumSymbol; // this is used by formatters (operand2 was not evaluated)
-        symbolObject = enumSymbol;
+        symbolObject = foundSymbol.getSymbol();
+        operand2.symbolObject = symbolObject; // this is used by formatters (operand2 was not evaluated)
         evaluateExpressionType(enumType);
     }
 
@@ -1131,15 +1136,15 @@ public class Expression extends AstNodeBase
         final BitmaskType bitmaskType = (BitmaskType)(operand1.zserioType);
         final Scope bitmaskScope = bitmaskType.getScope();
         final String dotOperand = operand2.text;
-        final AstNode bitmaskSymbol = bitmaskScope.getSymbol(dotOperand);
-        if (!(bitmaskSymbol instanceof BitmaskValue))
+        final FoundSymbol foundSymbol = bitmaskScope.findSymbol(dotOperand);
+        if (foundSymbol == null || !(foundSymbol.getSymbol() instanceof BitmaskValue))
         {
             throw new ParserException(this, "'" + dotOperand + "' undefined in bitmask '" +
                     bitmaskType.getName() + "'!");
         }
 
-        operand2.symbolObject = bitmaskSymbol; // this is used by formatters (operand2 was not evaluated)
-        symbolObject = bitmaskSymbol;
+        symbolObject = foundSymbol.getSymbol();
+        operand2.symbolObject = symbolObject; // this is used by formatters (operand2 was not evaluated)
         evaluateExpressionType(bitmaskType);
     }
 
@@ -1148,22 +1153,22 @@ public class Expression extends AstNodeBase
         final CompoundType compoundType = (CompoundType)(operand1.zserioType);
         final Scope compoundScope = compoundType.getScope();
         final String dotOperand = operand2.text;
-        final AstNode compoundSymbol = compoundScope.getSymbol(dotOperand);
-        if (compoundSymbol == null)
+        final FoundSymbol foundSymbol = compoundScope.findSymbol(dotOperand);
+        if (foundSymbol == null)
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
                     compoundType.getName() + "'!");
 
-        operand2.symbolObject = compoundSymbol; // this is used by formatter (operand2 was not evaluated)
-        symbolObject = compoundSymbol;
-        if (compoundSymbol instanceof Field)
+        symbolObject = foundSymbol.getSymbol();
+        operand2.symbolObject = symbolObject; // this is used by formatter (operand2 was not evaluated)
+        if (symbolObject instanceof Field)
         {
-            evaluateExpressionType(((Field)compoundSymbol).getTypeInstantiation());
+            evaluateExpressionType(((Field)symbolObject).getTypeInstantiation());
         }
-        else if (compoundSymbol instanceof Parameter)
+        else if (symbolObject instanceof Parameter)
         {
-            evaluateExpressionType(((Parameter)compoundSymbol).getTypeReference());
+            evaluateExpressionType(((Parameter)symbolObject).getTypeReference());
         }
-        else if (compoundSymbol instanceof Function)
+        else if (symbolObject instanceof Function)
         {
             // function type, we must wait for "()"
         }
@@ -1172,6 +1177,23 @@ public class Expression extends AstNodeBase
             throw new ParserException(this, "'" + dotOperand + "' undefined in compound '" +
                     compoundType.getName() + "'!");
         }
+    }
+
+    private void evaluateIsSetOperator()
+    {
+        if (operand1.expressionType != ExpressionType.BITMASK)
+            throw new ParserException(operand1, "'" + operand1.text + "' is not a bitmask!");
+
+        if (operand2.expressionType != ExpressionType.BITMASK)
+            throw new ParserException(operand2, "'" + operand2.text + "' is not a bitmask!");
+
+        if (operand1.zserioType != operand2.zserioType)
+        {
+            throw new ParserException(operand2, "'" + operand2.zserioType.getName() +
+                    "' does not match to '" + operand1.zserioType.getName() + "'!");
+        }
+
+        expressionType = ExpressionType.BOOLEAN;
     }
 
     private void evaluateLengthOfOperator()
@@ -1459,11 +1481,11 @@ public class Expression extends AstNodeBase
             // explicit identifier does not have to be evaluated
             if (expressionFlag != ExpressionFlag.IS_EXPLICIT)
             {
-                final ScopeSymbol identifierScopeSymbol = forcedEvaluationScope.getSymbol(text);
-                if (identifierScopeSymbol != null)
+                final FoundSymbol identifierFoundSymbol = forcedEvaluationScope.findSymbol(text);
+                if (identifierFoundSymbol != null)
                 {
                     // scope symbol
-                    evaluateIdentifierScopeSymbol(identifierScopeSymbol, forcedEvaluationScope);
+                    evaluateIdentifierScopeSymbol(identifierFoundSymbol);
                 }
                 else
                 {
@@ -1492,61 +1514,37 @@ public class Expression extends AstNodeBase
         }
     }
 
-    private void evaluateIdentifierScopeSymbol(ScopeSymbol identifierSymbol, Scope forcedEvaluationScope)
+    private void evaluateIdentifierScopeSymbol(FoundSymbol identifierFoundSymbol)
     {
+        final ScopeSymbol identifierSymbol = identifierFoundSymbol.getSymbol();
+        final ZserioType identifierSymbolOwner = identifierFoundSymbol.getOwner();
+
         symbolObject = identifierSymbol;
-        final ZserioType scopeOwner = forcedEvaluationScope.getOwner();
         if (identifierSymbol instanceof Field)
         {
             evaluateExpressionType(((Field)identifierSymbol).getTypeInstantiation());
-            expressionOwner = scopeOwner;
+            expressionOwner = identifierSymbolOwner;
         }
         else if (identifierSymbol instanceof Parameter)
         {
             evaluateExpressionType(((Parameter)identifierSymbol).getTypeReference());
-            expressionOwner = scopeOwner;
+            expressionOwner = identifierSymbolOwner;
         }
         else if (identifierSymbol instanceof Function)
         {
             // function type, we must wait for "()"
-            expressionOwner = scopeOwner;
+            expressionOwner = identifierSymbolOwner;
         }
-        else if (identifierSymbol instanceof EnumItem)
+        else if (identifierSymbol instanceof EnumItem && identifierSymbolOwner instanceof EnumType)
         {
-            // enumeration item (this can happen for enum choices where enum is visible or for enum itself)
-            if (scopeOwner instanceof ChoiceType)
-            {
-                // this enumeration item is in choice with enumeration type selector
-                final ChoiceType enumChoice = (ChoiceType)scopeOwner;
-                final Expression selectorExpression = enumChoice.getSelectorExpression();
-                final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
-                if (selectorExprZserioType instanceof EnumType)
-                {
-                    final EnumType enumType = (EnumType)selectorExprZserioType;
-                    evaluateExpressionType(enumType);
-                }
-            }
-            // if this enumeration item is in own enum, leave it unresolved (we have problem with it because
-            // such enumeration items cannot be evaluated yet)
+            // this can happen for enums when they are resolved from additional scopes - e.g. in enum choice
+            evaluateExpressionType((EnumType)identifierSymbolOwner);
         }
-        else if (identifierSymbol instanceof BitmaskValue)
+        else if (identifierSymbol instanceof BitmaskValue && identifierSymbolOwner instanceof BitmaskType)
         {
-            // bitmask value
-            // (this can happen for bitmask choices where bitmask is visible or for bitmask itself)
-            if (scopeOwner instanceof ChoiceType)
-            {
-                // this bitmaks value is in choice with bitmask type selector
-                final ChoiceType bitmaskChoice = (ChoiceType)scopeOwner;
-                final Expression selectorExpression = bitmaskChoice.getSelectorExpression();
-                final ZserioType selectorExprZserioType = selectorExpression.getExprZserioType();
-                if (selectorExprZserioType instanceof BitmaskType)
-                {
-                    final BitmaskType bitmaskType = (BitmaskType)selectorExprZserioType;
-                    evaluateExpressionType(bitmaskType);
-                }
-            }
-            // if this bitmask value is in own bitmask, leave it unresolved (we have problem with it because
-            // such bitmask values cannot be evaluated yet)
+            // this can happen for bitmasks when they are resolved from additional scopes
+            // e.g. in bitmask choice or within the isset operator
+            evaluateExpressionType((BitmaskType)identifierSymbolOwner);
         }
         else
         {
