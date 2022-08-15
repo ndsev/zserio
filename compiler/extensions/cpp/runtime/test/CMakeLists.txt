@@ -34,7 +34,7 @@ set(ZSERIO_CPP_RUNTIME_TEST_SRCS
     zserio/BitStreamReaderTest.cpp
     zserio/BitStreamTest.cpp
     zserio/BitStreamWriterTest.cpp
-    zserio/BuildInOperatorsTest.cpp
+    zserio/BuiltInOperatorsTest.cpp
     zserio/ConstraintExceptionTest.cpp
     zserio/CppRuntimeExceptionTest.cpp
     zserio/DebugStringUtilTest.cpp

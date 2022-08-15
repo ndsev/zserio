@@ -1,9 +1,12 @@
-#ifndef ZSERIO_BUILD_IN_OPERATORS_H_INC
-#define ZSERIO_BUILD_IN_OPERATORS_H_INC
+#ifndef ZSERIO_BUILTIN_BUILT_IN_OPERATORS_H_INC
+#define ZSERIO_BUILTIN_BUILT_IN_OPERATORS_H_INC
 
 #include "zserio/Types.h"
 
 namespace zserio
+{
+
+namespace builtin
 {
 
 /**
@@ -42,8 +45,10 @@ bool isSet(BITMASK1 bitmaskValue, BITMASK2 requiredMask)
  *
  * \return Number of bis required to encode <tt>numValues</tt> different values.
  */
-uint8_t getNumBits(uint64_t numValues);
+uint8_t numBits(uint64_t numValues);
+
+} // namespace builtin
 
 } // namespace zserio
 
-#endif // ifndef ZSERIO_BUILD_IN_OPERATORS_H_INC
+#endif // ifndef ZSERIO_BUILTIN_BUILT_IN_OPERATORS_H_INC

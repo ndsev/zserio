@@ -241,7 +241,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
-        return new UnaryExpressionFormatting("zserio.runtime.BuildInOperators.getNumBits(", ")");
+        return new UnaryExpressionFormatting("zserio.runtime.BuiltInOperators.numBits(", ")");
     }
 
     // binary expressions formatting
@@ -425,7 +425,7 @@ public abstract class JavaDefaultExpressionFormattingPolicy extends DefaultExpre
     @Override
     public BinaryExpressionFormatting getIsSet(Expression expr)
     {
-        return new BinaryExpressionFormatting("zserio.runtime.BuildInOperators.isSet(", ", ", ")");
+        return new BinaryExpressionFormatting("zserio.runtime.BuiltInOperators.isSet(", ", ", ")");
     }
 
     // ternary expressions formatting

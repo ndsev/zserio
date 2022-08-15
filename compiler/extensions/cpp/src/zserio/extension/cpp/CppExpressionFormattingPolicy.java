@@ -205,9 +205,9 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public UnaryExpressionFormatting getNumBits(Expression expr)
     {
-        includeCollector.addCppSystemIncludes(BUILD_IN_OPERATORS_INCLUDE);
+        includeCollector.addCppSystemIncludes(BUILT_IN_OPERATORS_INCLUDE);
 
-        return new UnaryExpressionFormatting("::zserio::getNumBits(", ")");
+        return new UnaryExpressionFormatting("::zserio::builtin::numBits(", ")");
     }
 
     @Override
@@ -237,9 +237,9 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     @Override
     public BinaryExpressionFormatting getIsSet(Expression expr)
     {
-        includeCollector.addCppSystemIncludes(BUILD_IN_OPERATORS_INCLUDE);
+        includeCollector.addCppSystemIncludes(BUILT_IN_OPERATORS_INCLUDE);
 
-        return new BinaryExpressionFormatting("::zserio::isSet(", ", ", ")");
+        return new BinaryExpressionFormatting("::zserio::builtin::isSet(", ", ", ")");
     }
 
     protected String getAccessPrefixForCompoundType()
@@ -420,7 +420,7 @@ public class CppExpressionFormattingPolicy extends DefaultExpressionFormattingPo
     private final static String CPP_GETTER_FUNCTION_CALL = "()";
     private final static String CPP_SETTER_FUNCTION_CALL = "(value)";
 
-    private final static List<String> BUILD_IN_OPERATORS_INCLUDE = Arrays.asList("zserio/BuildInOperators.h");
+    private final static List<String> BUILT_IN_OPERATORS_INCLUDE = Arrays.asList("zserio/BuiltInOperators.h");
 
     private final static String CPP_SIGNED_LONG_LONG_LITERAL_SUFFIX = "LL";
     private final static String CPP_UNSIGNED_LONG_LONG_LITERAL_SUFFIX = "ULL";

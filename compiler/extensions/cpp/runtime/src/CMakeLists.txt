@@ -52,8 +52,8 @@ set(ZSERIO_CPP_RUNTIME_LIB_SRCS
     zserio/BitStreamReader.h
     zserio/BitStreamWriter.cpp
     zserio/BitStreamWriter.h
-    zserio/BuildInOperators.cpp
-    zserio/BuildInOperators.h
+    zserio/BuiltInOperators.cpp
+    zserio/BuiltInOperators.h
     zserio/ConstraintException.h
     zserio/CppRuntimeException.cpp
     zserio/CppRuntimeException.h

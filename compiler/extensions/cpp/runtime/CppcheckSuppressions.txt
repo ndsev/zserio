@@ -26,7 +26,7 @@ noExplicitConstructor:*/src/zserio/Span.h:149
 noExplicitConstructor:*/src/zserio/Span.h:161
 noExplicitConstructor:*/src/zserio/StringView.h:54
 noExplicitConstructor:*/src/zserio/StringView.h:74
-noExplicitConstructor:*/test/zserio/BuildInOperatorsTest.cpp:23
+noExplicitConstructor:*/test/zserio/BuiltInOperatorsTest.cpp:26
 noExplicitConstructor:*/test/zserio/TrackingAllocator.h:66
 noExplicitConstructor:*/test/zserio/ZserioTreeCreatorTestObject.h:60
 uninitMemberVar:*/src/zserio/Reflectable.h:157

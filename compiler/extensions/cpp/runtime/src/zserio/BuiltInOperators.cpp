@@ -1,9 +1,12 @@
-#include "zserio/BuildInOperators.h"
+#include "zserio/BuiltInOperators.h"
 
 namespace zserio
 {
 
-uint8_t getNumBits(uint64_t numValues)
+namespace builtin
+{
+
+uint8_t numBits(uint64_t numValues)
 {
     if (numValues == 0)
         return 0;
@@ -18,5 +21,7 @@ uint8_t getNumBits(uint64_t numValues)
 
     return result;
 }
+
+} // namespace builtin
 
 } // namespace zserio

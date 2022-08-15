@@ -1,8 +1,11 @@
-#include "zserio/BuildInOperators.h"
+#include "zserio/BuiltInOperators.h"
 
 #include "gtest/gtest.h"
 
 namespace zserio
+{
+
+namespace builtin
 {
 
 namespace
@@ -62,7 +65,7 @@ inline DummyBitmask operator&(const DummyBitmask& lhs, const DummyBitmask& rhs)
 
 } // namespace
 
-TEST(BuildInOperatorsTest, isSet)
+TEST(BuiltInOperatorsTest, isSet)
 {
     // randomly mix bitmask instances with DummyBitmask::Values enum values to check that all variants work
     ASSERT_TRUE(isSet(DummyBitmask(DummyBitmask::Values::READ), DummyBitmask::Values::READ));
@@ -74,36 +77,38 @@ TEST(BuildInOperatorsTest, isSet)
     ASSERT_FALSE(isSet(DummyBitmask::Values::READ, DummyBitmask::Values::CREATE));
 }
 
-TEST(BuildInOperatorsTest, getNumBits)
+TEST(BuiltInOperatorsTest, numBits)
 {
-    EXPECT_EQ(0, getNumBits(0));
-    EXPECT_EQ(1, getNumBits(1));
-    EXPECT_EQ(1, getNumBits(2));
-    EXPECT_EQ(2, getNumBits(3));
-    EXPECT_EQ(2, getNumBits(4));
-    EXPECT_EQ(3, getNumBits(5));
-    EXPECT_EQ(3, getNumBits(6));
-    EXPECT_EQ(3, getNumBits(7));
-    EXPECT_EQ(3, getNumBits(8));
-    EXPECT_EQ(4, getNumBits(16));
-    EXPECT_EQ(5, getNumBits(32));
-    EXPECT_EQ(6, getNumBits(64));
-    EXPECT_EQ(7, getNumBits(128));
-    EXPECT_EQ(8, getNumBits(256));
-    EXPECT_EQ(9, getNumBits(512));
-    EXPECT_EQ(10, getNumBits(1024));
-    EXPECT_EQ(11, getNumBits(2048));
-    EXPECT_EQ(12, getNumBits(4096));
-    EXPECT_EQ(13, getNumBits(8192));
-    EXPECT_EQ(14, getNumBits(16384));
-    EXPECT_EQ(15, getNumBits(32768));
-    EXPECT_EQ(16, getNumBits(65536));
-    EXPECT_EQ(24, getNumBits(UINT64_C(1) << 24));
-    EXPECT_EQ(25, getNumBits((UINT64_C(1) << 24) + 1));
-    EXPECT_EQ(32, getNumBits(UINT64_C(1) << 32));
-    EXPECT_EQ(33, getNumBits((UINT64_C(1) << 32) + 1));
-    EXPECT_EQ(63, getNumBits(UINT64_C(1) << 63));
-    EXPECT_EQ(64, getNumBits((UINT64_C(1) << 63) + 1));
+    EXPECT_EQ(0, numBits(0));
+    EXPECT_EQ(1, numBits(1));
+    EXPECT_EQ(1, numBits(2));
+    EXPECT_EQ(2, numBits(3));
+    EXPECT_EQ(2, numBits(4));
+    EXPECT_EQ(3, numBits(5));
+    EXPECT_EQ(3, numBits(6));
+    EXPECT_EQ(3, numBits(7));
+    EXPECT_EQ(3, numBits(8));
+    EXPECT_EQ(4, numBits(16));
+    EXPECT_EQ(5, numBits(32));
+    EXPECT_EQ(6, numBits(64));
+    EXPECT_EQ(7, numBits(128));
+    EXPECT_EQ(8, numBits(256));
+    EXPECT_EQ(9, numBits(512));
+    EXPECT_EQ(10, numBits(1024));
+    EXPECT_EQ(11, numBits(2048));
+    EXPECT_EQ(12, numBits(4096));
+    EXPECT_EQ(13, numBits(8192));
+    EXPECT_EQ(14, numBits(16384));
+    EXPECT_EQ(15, numBits(32768));
+    EXPECT_EQ(16, numBits(65536));
+    EXPECT_EQ(24, numBits(UINT64_C(1) << 24));
+    EXPECT_EQ(25, numBits((UINT64_C(1) << 24) + 1));
+    EXPECT_EQ(32, numBits(UINT64_C(1) << 32));
+    EXPECT_EQ(33, numBits((UINT64_C(1) << 32) + 1));
+    EXPECT_EQ(63, numBits(UINT64_C(1) << 63));
+    EXPECT_EQ(64, numBits((UINT64_C(1) << 63) + 1));
 }
+
+} // namespace builtin
 
 } // namespace zserio
