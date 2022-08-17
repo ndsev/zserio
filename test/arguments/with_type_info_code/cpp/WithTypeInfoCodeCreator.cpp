@@ -69,7 +69,7 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
     if (createOptionals)
     {
         complexStruct.setOptionalEnum(TestEnum::ItemThree);
-        complexStruct.setOptionalBitmask(TestBitmask::Values::RED);
+        complexStruct.setOptionalBitmask(TestBitmask::Values::RED | TestBitmask::Values::Green);
         const vector_type<uint8_t> buffer = {0xCB, 0xF0};
         complexStruct.setOptionalExtern(BitBuffer(buffer, 12));
     }

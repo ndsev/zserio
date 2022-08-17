@@ -1,6 +1,6 @@
 package zserio.runtime.typeinfo;
 
-import java.util.function.Supplier;
+import java.math.BigInteger;
 
 /**
  * Type information for enumeration type item or for bitmask type value.
@@ -11,9 +11,9 @@ public class ItemInfo
      * Constructor.
      *
      * @param schemaName Item schema name.
-     * @param value Item value expression.
+     * @param value Item value.
      */
-    public ItemInfo(String schemaName, Supplier<Number> value)
+    public ItemInfo(String schemaName, BigInteger value)
     {
         this.schemaName = schemaName;
         this.value = value;
@@ -32,13 +32,13 @@ public class ItemInfo
     /**
      * Gets enumeration item value or bitmask value.
      *
-     * @return Item value expression.
+     * @return Item value.
      */
-    public Supplier<Number> getValue()
+    public BigInteger getValue()
     {
         return value;
     }
 
     private final String schemaName;
-    private final Supplier<Number> value;
+    private final BigInteger value;
 }

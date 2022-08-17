@@ -3,8 +3,8 @@
 namespace zserio
 {
 
-constexpr ::std::array<const char*, 2> EnumTraits<DummyEnum>::names;
-constexpr ::std::array<DummyEnum, 2> EnumTraits<DummyEnum>::values;
+constexpr ::std::array<const char*, 3> EnumTraits<DummyEnum>::names;
+constexpr ::std::array<DummyEnum, 3> EnumTraits<DummyEnum>::values;
 
 template <>
 size_t enumToOrdinal(DummyEnum value)
@@ -15,6 +15,8 @@ size_t enumToOrdinal(DummyEnum value)
         return 0;
     case DummyEnum::TWO:
         return 1;
+    case DummyEnum::MinusOne:
+        return 2;
     default:
         throw CppRuntimeException("Unknown value for enumeration DarkColor: ") <<
                 static_cast<typename ::std::underlying_type<DummyEnum>::type>(value) << "!";
@@ -22,14 +24,18 @@ size_t enumToOrdinal(DummyEnum value)
 }
 
 template <>
-DummyEnum valueToEnum(uint8_t rawValue)
+DummyEnum valueToEnum(int8_t rawValue)
 {
     switch (rawValue)
     {
-    case UINT8_C(0):
+    case INT8_C(0):
         return DummyEnum::ONE;
-    default:
+    case INT8_C(1):
         return DummyEnum::TWO;
+    case INT8_C(-1):
+        return DummyEnum::MinusOne;
+    default:
+        throw ::zserio::CppRuntimeException("Unknown value for enumeration DummyEnum: ") << rawValue << "!";
     }
 }
 
@@ -38,14 +44,15 @@ const ITypeInfo& enumTypeInfo<DummyEnum, std::allocator<uint8_t>>()
 {
     static const Span<StringView> underlyingTypeArguments;
 
-    static const ::std::array<ItemInfo, 2> items = {
+    static const ::std::array<ItemInfo, 3> items = {
         ItemInfo{ makeStringView("ONE"), static_cast<uint64_t>(0) },
-        ItemInfo{ makeStringView("TWO"), static_cast<uint64_t>(1) }
+        ItemInfo{ makeStringView("TWO"), static_cast<uint64_t>(1) },
+        ItemInfo{ makeStringView("MinusOne"), static_cast<uint64_t>(-1) },
     };
 
     static const EnumTypeInfo<std::allocator<uint8_t>> typeInfo = {
         makeStringView("DummyEnum"),
-        BuiltinTypeInfo<>::getUInt8(), underlyingTypeArguments, items
+        BuiltinTypeInfo<>::getInt8(), underlyingTypeArguments, items
     };
 
     return typeInfo;
@@ -72,7 +79,7 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
             return AnyHolder<>(m_value, allocator);
         }
 
-        virtual uint8_t getUInt8() const override
+        virtual int8_t getInt8() const override
         {
             return static_cast<typename ::std::underlying_type<DummyEnum>::type>(m_value);
         }
@@ -86,9 +93,9 @@ IReflectablePtr enumReflectable(DummyEnum value, const std::allocator<uint8_t>& 
             return 8;
         }
 
-        virtual uint64_t toUInt() const override
+        virtual int64_t toInt() const override
         {
-            return getUInt8();
+            return getInt8();
         }
 
     private:

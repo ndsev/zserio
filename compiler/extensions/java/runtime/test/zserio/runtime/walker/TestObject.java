@@ -1,5 +1,7 @@
 package zserio.runtime.walker;
 
+import java.math.BigInteger;
+
 public class TestObject
 {
     public static DummyObject createDummyObject()
@@ -1275,7 +1277,7 @@ public class TestObject
                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt32(),
                     new java.util.ArrayList<java.util.function.Supplier<Object>>(),
                     java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("ZERO", () -> 1)
+                            new zserio.runtime.typeinfo.ItemInfo("ZERO", BigInteger.valueOf(1))
                     )
             );
         }

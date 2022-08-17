@@ -1567,17 +1567,17 @@ public class WithTypeInfoCodeTest
         // One
         final ItemInfo OneItem = items.get(0);
         assertEquals("One", OneItem.getSchemaName());
-        assertEquals(0, OneItem.getValue().get().intValue());
+        assertEquals(0, OneItem.getValue().intValue());
 
         // TWO
         final ItemInfo TwoItem = items.get(1);
         assertEquals("TWO", TwoItem.getSchemaName());
-        assertEquals(5, TwoItem.getValue().get().intValue());
+        assertEquals(5, TwoItem.getValue().intValue());
 
         // ItemThree
         final ItemInfo ItemThreeItem = items.get(2);
         assertEquals("ItemThree", ItemThreeItem.getSchemaName());
-        assertEquals(6, ItemThreeItem.getValue().get().intValue());
+        assertEquals(6, ItemThreeItem.getValue().intValue());
     }
 
     private void checkSimpleChoice(TypeInfo typeInfo)
@@ -1784,17 +1784,17 @@ public class WithTypeInfoCodeTest
         // RED
         final ItemInfo redValue = values.get(0);
         assertEquals("RED", redValue.getSchemaName());
-        assertEquals((short)1, redValue.getValue().get().shortValue());
+        assertEquals((short)1, redValue.getValue().shortValue());
 
         // Green
         final ItemInfo greenValue = values.get(1);
         assertEquals("Green", greenValue.getSchemaName());
-        assertEquals((short)2, greenValue.getValue().get().shortValue());
+        assertEquals((short)2, greenValue.getValue().shortValue());
 
         // ColorBlue
         final ItemInfo colorBlueValue = values.get(2);
         assertEquals("ColorBlue", colorBlueValue.getSchemaName());
-        assertEquals((short)4, colorBlueValue.getValue().get().shortValue());
+        assertEquals((short)4, colorBlueValue.getValue().shortValue());
     }
 
     private void checkTS32(TypeInfo typeInfo)

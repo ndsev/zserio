@@ -13,13 +13,37 @@ from zserio.exception import PythonRuntimeException
 from zserio.typeinfo import TypeInfo, RecursiveTypeInfo, TypeAttribute, MemberInfo
 from zserio.walker import WalkObserver
 
+class JsonEnumerableFormat(enum.Enum):
+    """
+    Configuration for writing of enumerable types.
+    """
+
+    #: Print as JSON integral value.
+    NUMBER = enum.auto()
+    #: Print as JSON string according to the following rules:
+    #:
+    #: #. Enums
+    #:
+    #:    * when an exact match with an enumerable item is found, the item name is used - e.g. "FIRST",
+    #:    * when no exact match is found, it's an invalid value, the integral value is converted to string
+    #:      and an appropriate comment is included - e.g. "10 /\* no match \*/".
+    #:
+    #: #. Bitmasks
+    #:
+    #:    * when an exact mach with or-ed bitmask values is found, it's used - e.g. "READ | WRITE",
+    #:    * when no exact match is found, but some or-ed values match, the integral value is converted
+    #:      to string and the or-ed values are included in a comment - e.g. "127 /\* READ | CREATE \*/",
+    #:    * when no match is found at all, the integral value is converted to string and an appropriate
+    #:      comment is included - e.g. "13 /\* no match \*/".
+    STRING = enum.auto()
+
 class JsonWriter(WalkObserver):
     """
     Walker observer which dumps zserio objects to JSON format.
     """
 
     def __init__(self, *, text_io: typing.Optional[typing.TextIO] = None,
-                 stringify_enumerables: typing.Optional[bool] = True,
+                 enumerable_format: JsonEnumerableFormat = JsonEnumerableFormat.STRING,
                  item_separator: typing.Optional[str] = None,
                  key_separator: typing.Optional[str] = None,
                  indent: typing.Union[str, int] = None) -> None:
@@ -29,14 +53,14 @@ class JsonWriter(WalkObserver):
         :param text_io: Optional text stream for JSON output, io.StringIO is used by default.
         :param item_separator: Optional item separator, default is ', ' if indent is None, ',' otherwise.
         :param key_separator: Optional key separator, default is ': '.
-        :param stringify_enumerables: Optional bool whether to stringify enumerable types, True by default.
+        :param enumerable_format: Optional enumerable format to use, default is JsonEnumerableFormat.STRING.
         :param indent: String or (non-negative) integer defining the indent. If not None, newlines are inserted.
         """
 
         self._io : typing.TextIO = text_io if text_io else io.StringIO()
         self._item_separator : str = item_separator if item_separator else ("," if indent is not None else ", ")
         self._key_separator : str = key_separator if key_separator else ": "
-        self._stringify_enumerables = stringify_enumerables
+        self._enumerable_format = enumerable_format
 
         self._indent : typing.Optional[str] = (
             (indent if isinstance(indent, str) else " " * indent) if indent is not None else None
@@ -153,16 +177,18 @@ class JsonWriter(WalkObserver):
             self._write_bitbuffer(value)
         else:
             type_info = member_info.type_info
-            if (TypeAttribute.ENUM_ITEMS in type_info.attributes or
-                TypeAttribute.BITMASK_VALUES in type_info.attributes):
-                if self._stringify_enumerables:
-                    json_value = self._json_encoder.encode_value(
-                        self._stringify_enumerable(value, member_info.type_info))
+            if TypeAttribute.ENUM_ITEMS in type_info.attributes:
+                if self._enumerable_format == JsonEnumerableFormat.STRING:
+                    self._write_stringified_enum(value, type_info)
                 else:
-                    json_value = self._json_encoder.encode_value(value.value)
+                    self._io.write(self._json_encoder.encode_value(value.value))
+            elif TypeAttribute.BITMASK_VALUES in type_info.attributes:
+                if self._enumerable_format == JsonEnumerableFormat.STRING:
+                    self._write_stringified_bitmask(value, type_info)
+                else:
+                    self._io.write(self._json_encoder.encode_value(value.value))
             else:
-                json_value = self._json_encoder.encode_value(value)
-            self._io.write(json_value)
+                self._io.write(self._json_encoder.encode_value(value))
 
     def _write_bitbuffer(self, value: typing.Any) -> None:
         self._begin_object()
@@ -181,21 +207,41 @@ class JsonWriter(WalkObserver):
         self._end_item()
         self._end_object()
 
-    @staticmethod
-    def _stringify_enumerable(value: typing.Any,
-                              type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
-        if TypeAttribute.ENUM_ITEMS in type_info.attributes:
-            for item in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
-                if item.py_item == value:
-                    return item.schema_name
-            return str(value.value)
-        else:
-            string_value = ""
-            for bitmask_value in type_info.attributes[TypeAttribute.BITMASK_VALUES]:
-                if (value.value & bitmask_value.py_item.value == bitmask_value.py_item.value or
-                    (value.value == 0 and bitmask_value.py_item.value == 0)):
-                    string_value += ("|" if string_value else "") + bitmask_value.schema_name
-            return f"{value.value}[{string_value}]"
+    def _write_stringified_enum(self, value: typing.Any,
+                                type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        for item in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
+            if item.py_item == value:
+                # exact match
+                self._io.write(self._json_encoder.encode_value(item.schema_name))
+                return
+
+        #no match
+        self._io.write(self._json_encoder.encode_value(str(value.value) + " /* no match */"))
+
+    def _write_stringified_bitmask(self, value: typing.Any,
+                                  type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+        string_value = ""
+        bitmask_value = value.value
+        value_check = 0
+
+        for item_info in type_info.attributes[TypeAttribute.BITMASK_VALUES]:
+            is_zero = item_info.py_item.value == 0
+            if ((not is_zero and (bitmask_value & item_info.py_item.value == item_info.py_item.value)) or
+                (is_zero and bitmask_value == 0)):
+                value_check |= item_info.py_item.value
+                if string_value:
+                    string_value += " | "
+                string_value += item_info.schema_name
+
+        if not string_value:
+            # no match
+            string_value += str(bitmask_value) + " /* no match */"
+        elif bitmask_value != value_check:
+            # partial match
+            string_value = str(bitmask_value) + " /* " + string_value + " */"
+        # else exact match
+
+        self._io.write(self._json_encoder.encode_value(string_value))
 
 
 class JsonEncoder:
@@ -1080,22 +1126,68 @@ class JsonReader:
                 return value
 
         @staticmethod
-        def _enum_from_string(value: str, type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
-            for item in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
-                if item.schema_name == value:
-                    return item.py_item
+        def _enum_from_string(string_value: str,
+                              type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+            if string_value:
+                first_char = string_value[0]
+                if ('A' <= first_char <= 'Z') or ('a' <= first_char <= 'z') or first_char == '_':
+                    py_item = JsonReader._CreatorAdapter._parse_enum_string_value(string_value, type_info)
+                    if py_item is not None:
+                        return py_item
+                # else it's a no match
+
             raise PythonRuntimeException(f"JsonReader: Cannot create enum '{type_info.schema_name}' "
-                                         f"from string value '{value}'!")
+                                         f"from string value '{string_value}'!")
 
         @staticmethod
-        def _bitmask_from_string(value: str,
+        def _bitmask_from_string(string_value: str,
                                  type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
-            try:
-                bracket_idx = value.find('[')
-                if bracket_idx != -1:
-                    return type_info.py_type.from_value(int(value[0:bracket_idx]))
-                else:
-                    return type_info.py_type.from_value(int(value))
-            except Exception as err:
-                raise PythonRuntimeException(f"JsonReader: Cannot create bitmask '{type_info.schema_name}' "
-                                             f"from string value '{value}'!") from err
+            if string_value:
+                first_char = string_value[0]
+                if ('A' <= first_char <= 'Z') or ('a' <= first_char <= 'z') or first_char == '_':
+                    value = JsonReader._CreatorAdapter._parse_bitmask_string_value(string_value, type_info)
+                    if value is not None:
+                        return type_info.py_type.from_value(value)
+                elif '0' <= first_char <= '9': # bitmask can be only unsigned
+                    value = JsonReader._CreatorAdapter._parse_bitmask_numeric_string_value(string_value)
+                    if value is not None:
+                        return type_info.py_type.from_value(value)
+
+            raise PythonRuntimeException(f"JsonReader: Cannot create bitmask '{type_info.schema_name}' "
+                                         f"from string value '{string_value}'!")
+
+        @staticmethod
+        def _parse_enum_string_value(string_value: str,
+                                     type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+            for item_info in type_info.attributes[TypeAttribute.ENUM_ITEMS]:
+                if string_value == item_info.schema_name:
+                    return item_info.py_item
+
+            return None
+
+        @staticmethod
+        def _parse_bitmask_string_value(string_value: str,
+                                        type_info: typing.Union[TypeInfo, RecursiveTypeInfo]) -> typing.Any:
+            value = 0
+            identifiers = string_value.split('|')
+            for identifier_with_spaces in identifiers:
+                identifier = identifier_with_spaces.strip()
+                match = False
+                for item_info in type_info.attributes[TypeAttribute.BITMASK_VALUES]:
+                    if identifier == item_info.schema_name:
+                        match = True
+                        value |= item_info.py_item.value
+                        break
+
+                if not match:
+                    return None
+
+            return value
+
+        @staticmethod
+        def _parse_bitmask_numeric_string_value(string_value: str):
+            number_len = 1
+            while string_value[number_len] >= '0'and string_value[number_len] <= '9':
+                number_len += 1
+
+            return int(string_value[0:number_len])

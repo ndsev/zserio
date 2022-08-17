@@ -78,13 +78,47 @@ public class JsonWriter implements WalkObserver, AutoCloseable
     }
 
     /**
-     * Sets whether to stringify enumerable types or not.
-     *
-     * @param stringifyEnumerables True when enumerable types shall be stringified, false otherwise.
+     * Configuration for writing of enumerable types.
      */
-    public void setStringifyEnumerables(boolean stringifyEnumerables)
+    public enum EnumerableFormat
     {
-        this.stringifyEnumerables = stringifyEnumerables;
+        /** Print as JSON integral value. */
+        NUMBER,
+        /**
+         * Print as JSON string according to the following rules:
+         *
+         * <ol>
+         * <li> Enums
+         *   <ul>
+         *   <li> when an exact match with an enumerable item is found, the item name is used - e.g.
+         *        <code>"FIRST"</code>,
+         *   <li> when no exact match is found, it's an invalid value, the integral value is converted to string
+         *        and an appropriate comment is included - e.g.
+         *        <code>"10 /<span>*</span> no match <span>*</span>/"</code>.
+         *   </ul>
+         * <li> Bitmasks
+         *   <ul>
+         *   <li> when an exact mach with or-ed bitmask values is found, it's used - e.g.
+         *        <code>"READ | WRITE"</code>,
+         *   <li> when no exact match is found, but some or-ed values match, the integral value is converted
+         *        to string and the or-ed values are included in a comment - e.g.
+         *        <code>"127 /<span>*</span> READ | CREATE <span>*</span>/"</code>,
+         *   <li> when no match is found at all, the integral value is converted to string and an appropriate
+         *        comment is included - e.g. <code>"13 /<span>*</span> no match <span>*</span>/"</code>.
+         *   </ul>
+         * </ol>
+         */
+        STRING
+    };
+
+    /**
+     * Sets preferred formatting for enumerable types.
+     *
+     * @param enumerableFormat Enumerable format to use.
+     */
+    public void setEnumerableFormat(EnumerableFormat enumerableFormat)
+    {
+        this.enumerableFormat = enumerableFormat;
     }
 
     @Override
@@ -261,22 +295,16 @@ public class JsonWriter implements WalkObserver, AutoCloseable
             writeBitBuffer((BitBuffer)value);
             break;
         case ENUM:
-            {
-                final Number genericValue = ((ZserioEnum)value).getGenericValue();
-                if (stringifyEnumerables)
-                    JsonEncoder.encodeString(out, stringifyEnum(genericValue, fieldInfo.getTypeInfo()));
-                else
-                    JsonEncoder.encodeIntegral(out, genericValue);
-            }
+            if (enumerableFormat == EnumerableFormat.STRING)
+                writeStringifiedEnum((ZserioEnum)value, fieldInfo.getTypeInfo());
+            else
+                JsonEncoder.encodeIntegral(out, ((ZserioEnum)value).getGenericValue());
             break;
         case BITMASK:
-            {
-                final Number genericValue = ((ZserioBitmask)value).getGenericValue();
-                if (stringifyEnumerables)
-                    JsonEncoder.encodeString(out, stringifyBitmask(genericValue, fieldInfo.getTypeInfo()));
-                else
-                    JsonEncoder.encodeIntegral(out, genericValue);
-            }
+            if (enumerableFormat == EnumerableFormat.STRING)
+                writeStringifiedBitmask((ZserioBitmask)value, fieldInfo.getTypeInfo());
+            else
+                JsonEncoder.encodeIntegral(out, ((ZserioBitmask)value).getGenericValue());
             break;
         default:
             throw new ZserioError("JsonWriter: Unexpected not-null value of type '" +
@@ -308,35 +336,58 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         endObject();
     }
 
-    private static String stringifyEnum(Number value, TypeInfo typeInfo)
+    private void writeStringifiedEnum(ZserioEnum zserioEnum, TypeInfo typeInfo)
     {
-        final BigInteger bigValue = numberToBigInteger(value);
+        final BigInteger enumValue = numberToBigInteger(zserioEnum.getGenericValue());
         for (ItemInfo itemInfo : typeInfo.getEnumItems())
         {
-            final BigInteger bigItemValue = numberToBigInteger(itemInfo.getValue().get());
-            if (bigValue.equals(bigItemValue))
-                return itemInfo.getSchemaName();
+            // exact match
+            if (enumValue.equals(itemInfo.getValue()))
+            {
+                JsonEncoder.encodeString(out, itemInfo.getSchemaName());
+                return;
+            }
         }
 
-        return value.toString();
+        // no match
+        JsonEncoder.encodeString(out, enumValue.toString() + " /* no match */");
     }
 
-    private static String stringifyBitmask(Number value, TypeInfo typeInfo)
+    private void writeStringifiedBitmask(ZserioBitmask zserioBitmask, TypeInfo typeInfo)
     {
-        final BigInteger bigValue = numberToBigInteger(value);
-        final StringBuilder stringValue = new StringBuilder();
+        StringBuilder stringValue = new StringBuilder();
+        final BigInteger bitmaskValue = numberToBigInteger(zserioBitmask.getGenericValue());
+        BigInteger valueCheck = BigInteger.ZERO;
         for (ItemInfo itemInfo : typeInfo.getBitmaskValues())
         {
-            final BigInteger bigItemValue = numberToBigInteger(itemInfo.getValue().get());
-            if (bigValue.and(bigItemValue).equals(bigItemValue) ||
-                (bigValue.equals(BigInteger.ZERO) && bigItemValue.equals(BigInteger.ZERO)))
+            final boolean isZero = itemInfo.getValue().equals(BigInteger.ZERO);
+            if ((!isZero && bitmaskValue.and(itemInfo.getValue()).equals(itemInfo.getValue())) ||
+                    (isZero && bitmaskValue.equals(BigInteger.ZERO)))
             {
+                valueCheck = valueCheck.or(itemInfo.getValue());
                 if (stringValue.length() > 0)
-                    stringValue.append("|");
+                    stringValue.append(" | ");
                 stringValue.append(itemInfo.getSchemaName());
             }
         }
-        return value.toString() + "[" + stringValue.toString() + "]";
+
+        if (stringValue.length() == 0)
+        {
+            // no match
+            stringValue.append(bitmaskValue.toString());
+            stringValue.append(" /* no match */");
+        }
+        else if (!bitmaskValue.equals(valueCheck))
+        {
+            // partial match
+            stringValue = new StringBuilder(bitmaskValue.toString())
+                    .append(" /* ")
+                    .append(stringValue.toString())
+                    .append(" */");
+        }
+        // else exact match
+
+        JsonEncoder.encodeString(out, stringValue.toString());
     }
 
     private static BigInteger numberToBigInteger(Number number)
@@ -370,15 +421,15 @@ public class JsonWriter implements WalkObserver, AutoCloseable
     public static final String DEFAULT_KEY_SEPARATOR = ": ";
 
     /**
-     * Default setting for stringifying of enumerable types.
+     * Default configuration for enumerable types.
      */
-    public static final boolean DEFAULT_STRINGIFY_ENUMERABLES = true;
+    public static final EnumerableFormat DEFAULT_ENUMERABLE_FORMAT = EnumerableFormat.STRING;
 
     private final PrintWriter out;
     private final String indent;
     private String itemSeparator;
     private String keySeparator = DEFAULT_KEY_SEPARATOR;
-    private boolean stringifyEnumerables = DEFAULT_STRINGIFY_ENUMERABLES;
+    private EnumerableFormat enumerableFormat = DEFAULT_ENUMERABLE_FORMAT;
 
     private boolean isFirst = true;
     private int level = 0;

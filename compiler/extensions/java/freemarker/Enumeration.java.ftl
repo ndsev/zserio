@@ -8,6 +8,7 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
         </#if>
             )<#t>
 </#macro>
+<#assign isBigInteger=!underlyingTypeInfo.isSimple>
 
 public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
         </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioEnum
@@ -42,7 +43,7 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
                 <@underlying_type_info_type_arguments bitSize!/>,
                 java.util.Arrays.asList(
     <#list items as item>
-                        <@item_info item.name, item.value/><#if item?has_next>,</#if>
+                        <@item_info item.name, item.value, isBigInteger/><#if item?has_next>,</#if>
     </#list>
                 )
             );
@@ -138,10 +139,10 @@ public enum ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeO
 
     public static ${name} toEnum(${underlyingTypeInfo.typeFullName} value)
     {
-<#if underlyingTypeInfo.typeFullName == "long" || underlyingTypeInfo.typeFullName == "java.math.BigInteger">
+<#if underlyingTypeInfo.isLong || isBigInteger>
     <#-- can't use switch for long and for BigInteger -->
     <#list items as item>
-        <#if underlyingTypeInfo.typeFullName == "java.math.BigInteger">
+        <#if isBigInteger>
         if (value.compareTo(${item.value}) == 0)
         <#else>
         if (value == ${item.value})

@@ -1,12 +1,15 @@
 package zserio.runtime.creator;
 
+import java.math.BigInteger;
+
 /**
  * Corresponds to the following schema:
  *
- * enum uint8 DummyEnum
+ * enum int8 DummyEnum
  * {
  *     ONE,
- *     TWO
+ *     TWO,
+ *     MinusOne = -1
  * };
  *
  * bitmask uint8 DummyBitmask
@@ -41,15 +44,16 @@ public class ZserioTreeCreatorTestObject
     public static enum DummyEnum implements zserio.runtime.io.InitializeOffsetsWriter,
             zserio.runtime.SizeOf, zserio.runtime.ZserioEnum
     {
-        ONE((short)0),
-        TWO((short)1);
+        ONE((byte)0),
+        TWO((byte)1),
+        MinusOne((byte)-1);
 
-        private DummyEnum(short value)
+        private DummyEnum(byte value)
         {
             this.value = value;
         }
 
-        public short getValue()
+        public byte getValue()
         {
             return value;
         }
@@ -65,11 +69,12 @@ public class ZserioTreeCreatorTestObject
             return new zserio.runtime.typeinfo.TypeInfo.EnumTypeInfo(
                     "DummyEnum",
                     DummyEnum.class,
-                    zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt8(),
+                    zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getInt8(),
                     new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                     java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("ONE", () -> 0),
-                            new zserio.runtime.typeinfo.ItemInfo("TWO", () -> 1)
+                            new zserio.runtime.typeinfo.ItemInfo("ONE", BigInteger.valueOf(0)),
+                            new zserio.runtime.typeinfo.ItemInfo("TWO", BigInteger.valueOf(1)),
+                            new zserio.runtime.typeinfo.ItemInfo("MinusOne", BigInteger.valueOf(-1))
                     )
                 );
         }
@@ -83,8 +88,8 @@ public class ZserioTreeCreatorTestObject
         public void initPackingContext(zserio.runtime.array.PackingContextNode contextNode)
         {
             contextNode.getContext().init(
-                    new zserio.runtime.array.ArrayTraits.BitFieldShortArrayTraits(8),
-                    new zserio.runtime.array.ArrayElement.ShortArrayElement(value));
+                    new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits(8),
+                    new zserio.runtime.array.ArrayElement.ByteArrayElement(value));
         }
 
         @Override
@@ -103,8 +108,8 @@ public class ZserioTreeCreatorTestObject
         public int bitSizeOf(zserio.runtime.array.PackingContextNode contextNode, long bitPosition)
         {
             return contextNode.getContext().bitSizeOf(
-                    new zserio.runtime.array.ArrayTraits.BitFieldShortArrayTraits(8),
-                    new zserio.runtime.array.ArrayElement.ShortArrayElement(value));
+                    new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits(8),
+                    new zserio.runtime.array.ArrayElement.ByteArrayElement(value));
         }
 
         @Override
@@ -129,7 +134,7 @@ public class ZserioTreeCreatorTestObject
         public void write(zserio.runtime.io.BitStreamWriter out, boolean callInitializeOffsets)
                 throws java.io.IOException
         {
-            out.writeUnsignedByte(getValue());
+            out.writeByte(getValue());
         }
 
         @Override
@@ -138,37 +143,39 @@ public class ZserioTreeCreatorTestObject
         {
             contextNode.getContext().write(
                     new zserio.runtime.array.ArrayTraits.BitFieldShortArrayTraits(8), out,
-                    new zserio.runtime.array.ArrayElement.ShortArrayElement(value));
+                    new zserio.runtime.array.ArrayElement.ByteArrayElement(value));
         }
 
         public static DummyEnum readEnum(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
         {
-            return toEnum(in.readUnsignedByte());
+            return toEnum(in.readByte());
         }
 
         public static DummyEnum readEnum(zserio.runtime.array.PackingContextNode contextNode,
                 zserio.runtime.io.BitStreamReader in) throws java.io.IOException
         {
-            return toEnum(((zserio.runtime.array.ArrayElement.ShortArrayElement)
+            return toEnum(((zserio.runtime.array.ArrayElement.ByteArrayElement)
                     contextNode.getContext().read(
-                            new zserio.runtime.array.ArrayTraits.BitFieldShortArrayTraits(8), in)).get());
+                            new zserio.runtime.array.ArrayTraits.BitFieldByteArrayTraits(8), in)).get());
         }
 
-        public static DummyEnum toEnum(short value)
+        public static DummyEnum toEnum(byte value)
         {
             switch (value)
             {
-                case (short)0:
+                case (byte)0:
                     return ONE;
-                case (short)1:
+                case (byte)1:
                     return TWO;
+                case (byte)-1:
+                    return MinusOne;
                 default:
                     throw new java.lang.IllegalArgumentException(
                             "Unknown value for enumeration DummyEnum: " + value + "!");
             }
         }
 
-        private short value;
+        private byte value;
     }
 
     public static class DummyBitmask implements zserio.runtime.io.InitializeOffsetsWriter,
@@ -210,8 +217,8 @@ public class ZserioTreeCreatorTestObject
                     zserio.runtime.typeinfo.TypeInfo.BuiltinTypeInfo.getUInt8(),
                     new java.util.ArrayList<java.util.function.Supplier<java.lang.Object>>(),
                     java.util.Arrays.asList(
-                            new zserio.runtime.typeinfo.ItemInfo("READ", () -> 1),
-                            new zserio.runtime.typeinfo.ItemInfo("WRITE", () -> 2)
+                            new zserio.runtime.typeinfo.ItemInfo("READ", BigInteger.valueOf(1)),
+                            new zserio.runtime.typeinfo.ItemInfo("WRITE", BigInteger.valueOf(2))
                     )
             );
         }

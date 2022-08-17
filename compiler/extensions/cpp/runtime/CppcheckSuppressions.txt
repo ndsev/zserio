@@ -28,13 +28,13 @@ noExplicitConstructor:*/src/zserio/StringView.h:54
 noExplicitConstructor:*/src/zserio/StringView.h:74
 noExplicitConstructor:*/test/zserio/BuiltInOperatorsTest.cpp:26
 noExplicitConstructor:*/test/zserio/TrackingAllocator.h:66
-noExplicitConstructor:*/test/zserio/ZserioTreeCreatorTestObject.h:60
+noExplicitConstructor:*/test/zserio/ZserioTreeCreatorTestObject.h:63
 uninitMemberVar:*/src/zserio/Reflectable.h:157
 uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:182
 uninitMemberVar:*/test/zserio/DebugStringUtilTest.cpp:187
 uninitMemberVar:*/test/zserio/ReflectableTest.cpp:215
 uninitMemberVar:*/test/zserio/ReflectableTest.cpp:219
-uninitMemberVar:*/test/zserio/ZserioTreeCreatorTestObject.cpp:165
+uninitMemberVar:*/test/zserio/ZserioTreeCreatorTestObject.cpp:172
 unusedStructMember:*/src/zserio/BitStreamReader.h:55
 unusedStructMember:*/src/zserio/BitStreamReader.h:56
 unusedStructMember:*/src/zserio/ITypeInfo.h:350
@@ -50,7 +50,7 @@ unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:29
 unusedStructMember:*/src/zserio/ValidationSqliteUtil.h:30
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:101
 useStlAlgorithm:*/src/zserio/HashCodeUtil.h:150
-useStlAlgorithm:*/src/zserio/JsonWriter.h:456
+useStlAlgorithm:*/src/zserio/JsonWriter.h:475
 useStlAlgorithm:*/src/zserio/Walker.h:427
 useStlAlgorithm:*/src/zserio/ZserioTreeCreator.h:164
 useStlAlgorithm:*/src/zserio/ZserioTreeCreator.cpp:53

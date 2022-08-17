@@ -265,7 +265,7 @@ class DebugStringTest(unittest.TestCase):
 
         if createdOptionals:
             self.assertEqual("ItemThree", complexStruct["optionalEnum"])
-            self.assertEqual("1[RED]", complexStruct["optionalBitmask"])
+            self.assertEqual("RED | Green", complexStruct["optionalBitmask"])
             self._checkOptionalExternDataJson(complexStruct["optionalExtern"])
         else:
             self.assertEqual(None, complexStruct["optionalEnum"])
@@ -282,7 +282,7 @@ class DebugStringTest(unittest.TestCase):
         bitmaskArrayLen = 5 if maxArrayLength is None or maxArrayLength > 5 else maxArrayLength
         self.assertEqual(bitmaskArrayLen, len(complexStruct["bitmaskArray"]))
         for jsonArrayElement in complexStruct["bitmaskArray"]:
-            self.assertEqual("2[Green]", jsonArrayElement)
+            self.assertEqual("Green", jsonArrayElement)
 
         self.assertEqual(13, len(complexStruct.keys()))
 
@@ -322,7 +322,7 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual(1, len(recursiveChoice.keys()))
 
     def _checkSimpleUnionJson(self, simpleUnion):
-        self.assertEqual("2[Green]", simpleUnion["testBitmask"])
+        self.assertEqual("Green", simpleUnion["testBitmask"])
         self.assertEqual(1, len(simpleUnion.keys()))
 
     def _checkSimpleChoiceJson(self, simpleChoice, testEnum):

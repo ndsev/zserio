@@ -10,6 +10,7 @@
 #include "zserio/CppRuntimeException.h"
 #include "zserio/IReflectable.h"
 #include "zserio/ITypeInfo.h"
+#include "zserio/StringView.h"
 #include "zserio/TypeInfoUtil.h"
 #include "zserio/Traits.h"
 #include "zserio/Vector.h"
@@ -140,7 +141,7 @@ AnyHolder<ALLOC> makeAnyStringValue(string<ALLOC>&& value, const ALLOC& allocato
 template <typename ALLOC>
 AnyHolder<ALLOC> makeAnyStringValue(StringView value, const ALLOC& allocator)
 {
-    return AnyHolder<ALLOC>(stringViewToString(value, allocator), allocator);
+    return AnyHolder<ALLOC>(toString(value, allocator), allocator);
 }
 
 template <typename ALLOC>
@@ -156,17 +157,61 @@ AnyHolder<ALLOC> makeAnyStringValue(const T&, const ALLOC&)
 }
 
 template <typename ALLOC>
-AnyHolder<ALLOC> makeAnyEnumValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+AnyHolder<ALLOC> parseEnumStringValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
         const ALLOC& allocator)
 {
     for (const auto& itemInfo : typeInfo.getEnumItems())
     {
         if (itemInfo.schemaName == stringValue)
-            return makeAnyValue(typeInfo.getUnderlyingType(), itemInfo.value, allocator);
+        {
+            if (TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()))
+            {
+                return makeAnyValue(typeInfo.getUnderlyingType(), static_cast<int64_t>(itemInfo.value),
+                        allocator);
+            }
+            else
+            {
+                return makeAnyValue(typeInfo.getUnderlyingType(), itemInfo.value, allocator);
+            }
+        }
+    }
+
+    return AnyHolder<ALLOC>(allocator);
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyEnumValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    if (!stringValue.empty())
+    {
+        const char firstChar = stringValue[0];
+        if ((firstChar >= 'A' && firstChar <= 'Z') || (firstChar >= 'a' && firstChar <= 'z') ||
+                firstChar == '_')
+        {
+            AnyHolder<ALLOC> anyValue = parseEnumStringValue(stringValue, typeInfo, allocator);
+            if (anyValue.hasValue())
+                return anyValue;
+        }
+        // else it's a no match
     }
 
     throw CppRuntimeException("ZserioTreeCreator: Cannot create enum '") << typeInfo.getSchemaName() <<
             "' from string value '" << stringValue << "'!";
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyEnumValue(const string<ALLOC>& stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    return makeAnyEnumValue(StringView(stringValue), typeInfo, allocator);
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyEnumValue(const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    return makeAnyEnumValue(StringView(stringValue), typeInfo, allocator);
 }
 
 template <typename T, typename ALLOC,
@@ -185,24 +230,104 @@ AnyHolder<ALLOC> makeAnyEnumValue(T enumRawValue, const IBasicTypeInfo<ALLOC>& t
 }
 
 template <typename ALLOC>
+AnyHolder<ALLOC> parseBitmaskStringValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    uint64_t value = 0;
+    size_t pos = 0;
+    while (pos < stringValue.size())
+    {
+        bool match = false;
+        const size_t available = stringValue.size() - pos;
+        for (const auto& itemInfo : typeInfo.getBitmaskValues())
+        {
+            if (available >= itemInfo.schemaName.size() &&
+                    stringValue.substr(pos, itemInfo.schemaName.size()) == itemInfo.schemaName)
+            {
+                const size_t newPos = pos + itemInfo.schemaName.size();
+                // check that the identifier really ends here
+                if (newPos == stringValue.size() || stringValue[newPos] == ' ' || stringValue[newPos] == '|' )
+                {
+                    value |= itemInfo.value;
+                    if (newPos == stringValue.size())
+                        return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator); // end of string
+                    match = true;
+                    pos = itemInfo.schemaName.size();
+                    break;
+                }
+            }
+        }
+
+        if (!match)
+            break;
+
+        while (pos < stringValue.size() && stringValue[pos] == ' ')
+            ++pos;
+
+        if (pos < stringValue.size() && stringValue[pos] == '|')
+            ++pos;
+
+        while (pos < stringValue.size() && stringValue[pos] == ' ')
+            ++pos;
+    }
+
+    // invalid format or identifier
+    return AnyHolder<ALLOC>(allocator);
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> parseBitmaskNumericStringValue(const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    char *pEnd = nullptr;
+    errno = 0;
+    uint64_t value = std::strtoull(stringValue, &pEnd, 10);
+    if (static_cast<size_t>(pEnd - stringValue) == 0 || errno == ERANGE)
+        return AnyHolder<ALLOC>(allocator);
+    return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator);
+}
+
+template <typename ALLOC>
 AnyHolder<ALLOC> makeAnyBitmaskValue(StringView stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
         const ALLOC& allocator)
 {
-    size_t bracketIndex = stringValue.find('[');
-    string<ALLOC> numericStringValue(stringValue.begin(), bracketIndex != StringView::npos ?
-            stringValue.begin() + bracketIndex : stringValue.end());
-
-    const char* pBegin = numericStringValue.c_str();
-    char* pEnd = nullptr;
-    errno = 0;
-    const uint64_t value = strtoull(pBegin, &pEnd, 10);
-    if (static_cast<size_t>(pEnd - pBegin) != numericStringValue.size() || errno == ERANGE)
+    if (!stringValue.empty())
     {
-        throw CppRuntimeException("ZserioTreeCreator: Cannot create bitmask '") << typeInfo.getSchemaName() <<
-                "' from string value '" << stringValue << "'!";
+        const char firstChar = stringValue[0];
+        if ((firstChar >= 'A' && firstChar <= 'Z') || (firstChar >= 'a' && firstChar <= 'z') ||
+                firstChar == '_')
+        {
+            AnyHolder<ALLOC> anyValue = parseBitmaskStringValue(stringValue, typeInfo, allocator);
+            if (anyValue.hasValue())
+                return anyValue;
+        }
+        else if (firstChar >= '0' && firstChar <= '9') // bitmask can be only unsigned
+        {
+            // ensure zero-terminated string
+            const string<ALLOC> numericStringValue = toString(stringValue, allocator);
+            AnyHolder<ALLOC> anyValue = parseBitmaskNumericStringValue(numericStringValue.c_str(), typeInfo,
+                    allocator);
+            if (anyValue.hasValue())
+                return anyValue;
+        }
     }
 
-    return makeAnyValue(typeInfo.getUnderlyingType(), value, allocator);
+    throw CppRuntimeException("ZserioTreeCreator: Cannot create bitmask '") << typeInfo.getSchemaName() <<
+            "' from string value '" << stringValue << "'!";
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyBitmaskValue(const string<ALLOC>& stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    return makeAnyBitmaskValue(StringView(stringValue), typeInfo, allocator);
+}
+
+template <typename ALLOC>
+AnyHolder<ALLOC> makeAnyBitmaskValue(const char* stringValue, const IBasicTypeInfo<ALLOC>& typeInfo,
+        const ALLOC& allocator)
+{
+    return makeAnyBitmaskValue(StringView(stringValue), typeInfo, allocator);
 }
 
 template <typename T, typename ALLOC,

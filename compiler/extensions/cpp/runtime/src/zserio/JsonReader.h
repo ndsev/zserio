@@ -424,7 +424,7 @@ void CreatorAdapter<ALLOC>::visitKey(StringView key)
         if (!m_creator)
             throw CppRuntimeException("JsonReader: Adapter not initialized!");
 
-        m_keyStack.push_back(stringViewToString(key, get_allocator()));
+        m_keyStack.push_back(toString(key, get_allocator()));
     }
 }
 

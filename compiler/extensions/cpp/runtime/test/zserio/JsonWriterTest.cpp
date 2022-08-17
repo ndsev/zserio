@@ -61,25 +61,33 @@ const FieldInfo ARRAY_FIELD_INFO{
     {}, {}, {}, {}, false, {}, {}, true, {}, false, false
 };
 
-const std::array<ItemInfo, 1> ENUM_ITEMS{ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)}};
+const std::array<ItemInfo, 3> ENUM_ITEMS{
+    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)},
+    ItemInfo{"One"_sv, static_cast<uint64_t>(1)},
+    ItemInfo{"MINUS_ONE"_sv, static_cast<uint64_t>(-1)}
+};
 
 const EnumTypeInfo<std::allocator<uint8_t>> ENUM_TYPE_INFO{
     "DummyEnum"_sv, BuiltinTypeInfo<>::getInt8(), {}, ENUM_ITEMS
 };
 
 const FieldInfo ENUM_FIELD_INFO{
-    "dummyEnum"_sv, ENUM_TYPE_INFO,
+    "enumField"_sv, ENUM_TYPE_INFO,
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
-const std::array<ItemInfo, 1> BITMASK_ITEMS{ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)}};
+const std::array<ItemInfo, 3> BITMASK_ITEMS{
+    ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)},
+    ItemInfo{"One"_sv, static_cast<uint64_t>(1)},
+    ItemInfo{"TWO"_sv, static_cast<uint64_t>(2)}
+};
 
 const BitmaskTypeInfo<std::allocator<uint8_t>> BITMASK_TYPE_INFO{
     "DummyBitmask"_sv, BuiltinTypeInfo<>::getUInt32(), {}, BITMASK_ITEMS
 };
 
 const FieldInfo BITMASK_FIELD_INFO{
-    "dummyBitmask"_sv, BITMASK_TYPE_INFO,
+    "bitmaskField"_sv, BITMASK_TYPE_INFO,
     {}, {}, {}, {}, false, {}, {}, false, {}, false, false
 };
 
@@ -190,8 +198,9 @@ TEST(JsonWriterTest, enumValue)
     class DummyEnumReflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
-        explicit DummyEnumReflectable() :
-                ReflectableBase<std::allocator<uint8_t>>(ENUM_TYPE_INFO)
+        explicit DummyEnumReflectable(int8_t value) :
+                ReflectableBase<std::allocator<uint8_t>>(ENUM_TYPE_INFO),
+                m_value(value)
         {}
 
         virtual size_t bitSizeOf(size_t) const override
@@ -205,47 +214,63 @@ TEST(JsonWriterTest, enumValue)
 
         virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
         {
-            return AnyHolder<>(static_cast<int8_t>(0), allocator);
+            return AnyHolder<>(m_value, allocator);
         }
 
         virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
         {
-            return AnyHolder<>(static_cast<int8_t>(0), allocator);
+            return AnyHolder<>(m_value, allocator);
         }
 
         virtual int64_t toInt() const override
         {
-            return 0;
+            return m_value;
         }
+
+    private:
+        int8_t m_value;
     };
 
-    IReflectablePtr reflectable = std::make_shared<DummyEnumReflectable>();
+    IReflectablePtr reflectableZero = std::make_shared<DummyEnumReflectable>(0);
+    IReflectablePtr reflectableOne = std::make_shared<DummyEnumReflectable>(1);
+    IReflectablePtr reflectableTwo = std::make_shared<DummyEnumReflectable>(2);
+    IReflectablePtr reflectableMinusOne = std::make_shared<DummyEnumReflectable>(-1);
 
     {
         std::ostringstream os;
         JsonWriter jsonWriter(os);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectable, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableZero, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableOne, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableTwo, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableMinusOne, ENUM_FIELD_INFO);
 
         // note that this is not valid json
-        ASSERT_EQ("\"dummyEnum\": \"ZERO\"", os.str());
+        ASSERT_EQ(
+                "\"enumField\": \"ZERO\", "
+                "\"enumField\": \"One\", "
+                "\"enumField\": \"2 /* no match */\", "
+                "\"enumField\": \"MINUS_ONE\"", os.str());
+
 
         // just improve coverage
-        ASSERT_EQ(0, reflectable->bitSizeOf());
+        ASSERT_EQ(0, reflectableZero->bitSizeOf());
         BitBuffer bitBuffer(0);
         BitStreamWriter writer(bitBuffer);
-        ASSERT_NO_THROW(reflectable->write(writer));
+        ASSERT_NO_THROW(reflectableZero->write(writer));
     }
 
     {
         std::ostringstream os;
         JsonWriter jsonWriter(os);
-        jsonWriter.setStringifyEnumerables(false);
+        jsonWriter.setEnumerableFormat(JsonWriter::EnumerableFormat::NUMBER);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectable, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableZero, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableTwo, ENUM_FIELD_INFO);
+        observer.visitValue(reflectableMinusOne, ENUM_FIELD_INFO);
 
         // note that this is not valid json
-        ASSERT_EQ("\"dummyEnum\": 0", os.str());
+        ASSERT_EQ("\"enumField\": 0, \"enumField\": 2, \"enumField\": -1", os.str());
     }
 }
 
@@ -254,8 +279,9 @@ TEST(JsonWriterTest, bitmaskValue)
     class DummyBitmaskReflectable : public ReflectableBase<std::allocator<uint8_t>>
     {
     public:
-        explicit DummyBitmaskReflectable() :
-                ReflectableBase<std::allocator<uint8_t>>(BITMASK_TYPE_INFO)
+        explicit DummyBitmaskReflectable(uint8_t value) :
+                ReflectableBase<std::allocator<uint8_t>>(BITMASK_TYPE_INFO),
+                m_value(value)
         {}
 
         virtual size_t bitSizeOf(size_t) const override
@@ -269,47 +295,64 @@ TEST(JsonWriterTest, bitmaskValue)
 
         virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) const override
         {
-            return AnyHolder<>(static_cast<uint8_t>(0), allocator);
+            return AnyHolder<>(m_value, allocator);
         }
 
         virtual AnyHolder<> getAnyValue(const std::allocator<uint8_t>& allocator) override
         {
-            return AnyHolder<>(static_cast<uint8_t>(0), allocator);
+            return AnyHolder<>(m_value, allocator);
         }
 
         virtual uint64_t toUInt() const override
         {
-            return 0;
+            return m_value;
         }
+
+    private:
+        uint8_t m_value;
     };
 
-    IReflectablePtr reflectable = std::make_shared<DummyBitmaskReflectable>();
+    IReflectablePtr reflectableZero = std::make_shared<DummyBitmaskReflectable>(0);
+    IReflectablePtr reflectableTwo = std::make_shared<DummyBitmaskReflectable>(2);
+    IReflectablePtr reflectableThree = std::make_shared<DummyBitmaskReflectable>(3);
+    IReflectablePtr reflectableFour = std::make_shared<DummyBitmaskReflectable>(4);
+    IReflectablePtr reflectableSeven = std::make_shared<DummyBitmaskReflectable>(7);
 
     {
         std::ostringstream os;
         JsonWriter jsonWriter(os);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectable, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableZero, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableTwo, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableThree, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableFour, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableSeven, BITMASK_FIELD_INFO);
 
         // note that this is not valid json
-        ASSERT_EQ("\"dummyBitmask\": \"0[ZERO]\"", os.str());
+        ASSERT_EQ(
+                "\"bitmaskField\": \"ZERO\", "
+                "\"bitmaskField\": \"TWO\", "
+                "\"bitmaskField\": \"One | TWO\", "
+                "\"bitmaskField\": \"4 /* no match */\", "
+                "\"bitmaskField\": \"7 /* One | TWO */\"", os.str());
 
         // just improve coverage
-        ASSERT_EQ(0, reflectable->bitSizeOf());
+        ASSERT_EQ(0, reflectableZero->bitSizeOf());
         BitBuffer bitBuffer(0);
         BitStreamWriter writer(bitBuffer);
-        ASSERT_NO_THROW(reflectable->write(writer));
+        ASSERT_NO_THROW(reflectableZero->write(writer));
     }
 
     {
         std::ostringstream os;
         JsonWriter jsonWriter(os);
-        jsonWriter.setStringifyEnumerables(false);
+        jsonWriter.setEnumerableFormat(JsonWriter::EnumerableFormat::NUMBER);
         IWalkObserver& observer = jsonWriter;
-        observer.visitValue(reflectable, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableZero, BITMASK_FIELD_INFO);
+        observer.visitValue(reflectableSeven, BITMASK_FIELD_INFO);
 
         // note that this is not valid json
-        ASSERT_EQ("\"dummyBitmask\": 0", os.str());
+        ASSERT_EQ("\"bitmaskField\": 0, \"bitmaskField\": 7", os.str());
     }
 }
 
