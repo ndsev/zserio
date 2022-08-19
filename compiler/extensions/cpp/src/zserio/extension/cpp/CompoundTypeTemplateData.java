@@ -37,6 +37,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
 
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
+        docComments = new DocCommentsTemplateData(compoundType.getDocComments());
     }
 
     public Iterable<CompoundFieldTemplateData> getFieldList()
@@ -69,6 +70,11 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
+    }
+
     private final List<CompoundFieldTemplateData> fieldList;
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
@@ -77,4 +83,5 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     private final boolean needsChildrenInitialization;
 
     private final TemplateInstantiationTemplateData templateInstantiation;
+    private final DocCommentsTemplateData docComments;
 }

@@ -3,6 +3,7 @@
 <#include "CompoundParameter.inc.ftl">
 <#include "CompoundField.inc.ftl">
 <#include "CompoundFunction.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@file_header generatorDescription/>
 
 <@include_guard_begin package.path, name/>
@@ -33,6 +34,9 @@
 <@user_includes headerUserIncludes/>
 <@namespace_begin package.path/>
 
+<#if docComments??>
+<@doc_comments docComments/>
+</#if>
 class ${name}
 {
 <@top_private_section_declarations name, fieldList/>

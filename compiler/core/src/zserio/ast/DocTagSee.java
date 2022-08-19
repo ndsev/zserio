@@ -20,6 +20,7 @@ public class DocTagSee extends AstNodeBase
 
         // link alias is the same as a link name if no alias is available
         this.linkAlias = linkAlias != null ? linkAlias : linkName;
+        this.linkName = linkName;
         this.linkSymbolReference = new SymbolReference(this, linkName);
     }
 
@@ -37,6 +38,16 @@ public class DocTagSee extends AstNodeBase
     public String getLinkAlias()
     {
         return linkAlias;
+    }
+
+    /**
+     * Gets see tag link name.
+     *
+     * @return Link name.
+     */
+    public String getLinkName()
+    {
+        return linkName;
     }
 
     /**
@@ -68,5 +79,6 @@ public class DocTagSee extends AstNodeBase
     }
 
     private final String linkAlias;
+    private final String linkName;
     private final SymbolReference linkSymbolReference;
 }
