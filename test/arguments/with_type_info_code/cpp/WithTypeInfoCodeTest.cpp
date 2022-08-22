@@ -857,7 +857,8 @@ protected:
         ASSERT_EQ(""_sv, bitmaskArrayField.optionalCondition);
         ASSERT_EQ(""_sv, bitmaskArrayField.constraint);
         ASSERT_EQ(true, bitmaskArrayField.isArray);
-        ASSERT_EQ("::zserio::enumToValue(::with_type_info_code::TestEnum::TWO)"_sv, bitmaskArrayField.arrayLength);
+        ASSERT_EQ("::zserio::enumToValue(::with_type_info_code::TestEnum::_TWO)"_sv,
+                bitmaskArrayField.arrayLength);
         ASSERT_EQ(false, bitmaskArrayField.isPacked);
         ASSERT_EQ(false, bitmaskArrayField.isImplicit);
     }
@@ -1131,7 +1132,7 @@ protected:
 
         // TWO
         const ItemInfo& TwoItem = items[1];
-        ASSERT_EQ("TWO"_sv, TwoItem.schemaName);
+        ASSERT_EQ("_TWO"_sv, TwoItem.schemaName);
         ASSERT_EQ(5, TwoItem.value);
 
         // ItemThree
@@ -1222,7 +1223,7 @@ protected:
         // case TWO
         const CaseInfo& case1 = cases[1];
         ASSERT_EQ(1, case1.caseExpressions.size());
-        ASSERT_EQ("::with_type_info_code::TestEnum::TWO"_sv, case1.caseExpressions[0]);
+        ASSERT_EQ("::with_type_info_code::TestEnum::_TWO"_sv, case1.caseExpressions[0]);
         ASSERT_EQ(&fieldTwoField, case1.field);
 
         // default
@@ -1316,7 +1317,7 @@ protected:
 
         // Green
         const ItemInfo& greenValue = values[1];
-        ASSERT_EQ("Green"_sv, greenValue.schemaName);
+        ASSERT_EQ("_Green"_sv, greenValue.schemaName);
         ASSERT_EQ(2, greenValue.value);
 
         // ColorBlue

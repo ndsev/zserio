@@ -14,7 +14,7 @@ public class WithTypeInfoCodeCreator
     public static WithTypeInfoCode createWithTypeInfoCode(boolean createOptionals)
     {
         final SimpleStruct simpleStruct = createSimpleStruct();
-        final TestEnum testEnum = TestEnum.TWO;
+        final TestEnum testEnum = TestEnum._TWO;
         final TS32 ts32 = createTS32();
         final WithTypeInfoCode withTypeInfoCode = new WithTypeInfoCode(
             simpleStruct,
@@ -62,11 +62,11 @@ public class WithTypeInfoCodeCreator
             BigInteger.valueOf(8),
             dynamicBitFieldArray,
             (createOptionals) ? TestEnum.ItemThree : null,
-            (createOptionals) ? TestBitmask.Values.RED.or(TestBitmask.Values.Green) : null,
+            (createOptionals) ? TestBitmask.Values.RED.or(TestBitmask.Values._Green) : null,
             (createOptionals) ? new BitBuffer(new byte[]{(byte)0xCB, (byte)0xF0}, 12) : null,
-            new TestEnum[] { TestEnum.TWO, TestEnum.ItemThree},
-            new TestBitmask[] { TestBitmask.Values.Green, TestBitmask.Values.Green, TestBitmask.Values.Green,
-                    TestBitmask.Values.Green, TestBitmask.Values.Green });
+            new TestEnum[] { TestEnum._TWO, TestEnum.ItemThree},
+            new TestBitmask[] { TestBitmask.Values._Green, TestBitmask.Values._Green, TestBitmask.Values._Green,
+                    TestBitmask.Values._Green, TestBitmask.Values._Green });
 
         return complexStruct;
     }
@@ -77,8 +77,7 @@ public class WithTypeInfoCodeCreator
         for (int i = 0; i < array.length; i++)
             array[i] = (short)i;
         final ParameterizedStruct parameterizedStruct = new ParameterizedStruct(
-            simpleStruct,
-            array);
+                simpleStruct, array);
 
         return parameterizedStruct;
     }
@@ -125,7 +124,7 @@ public class WithTypeInfoCodeCreator
     private static SimpleUnion createSimpleUnion()
     {
         final SimpleUnion simpleUnion = new SimpleUnion();
-        simpleUnion.setTestBitmask(TestBitmask.Values.Green);
+        simpleUnion.setTestBitmask(TestBitmask.Values._Green);
 
         return simpleUnion;
     }
@@ -133,7 +132,7 @@ public class WithTypeInfoCodeCreator
     private static SimpleChoice createSimpleChoice(TestEnum testEnum)
     {
         final SimpleChoice simpleChoice = new SimpleChoice(testEnum);
-        if (testEnum == TestEnum.TWO)
+        if (testEnum == TestEnum._TWO)
             simpleChoice.setFieldTwo(createSimpleUnion());
         else
             simpleChoice.setFieldDefault("text");

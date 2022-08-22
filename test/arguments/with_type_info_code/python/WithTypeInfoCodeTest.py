@@ -570,8 +570,8 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         # TWO
         item_info = items[1]
-        self.assertEqual("TWO", item_info.schema_name)
-        self.assertEqual(self.api.TestEnum.TWO, item_info.py_item)
+        self.assertEqual("_TWO", item_info.schema_name)
+        self.assertEqual(self.api.TestEnum._TWO, item_info.py_item)
 
         # ThreeItem
         item_info = items[2]
@@ -602,8 +602,8 @@ class WithTypeInfoCodeTest(unittest.TestCase):
 
         # Green
         item_info = items[1]
-        self.assertEqual("Green", item_info.schema_name)
-        self.assertEqual(self.api.TestBitmask.Values.GREEN, item_info.py_item)
+        self.assertEqual("_Green", item_info.schema_name)
+        self.assertEqual(self.api.TestBitmask.Values._GREEN, item_info.py_item)
 
         # Color Blue
         item_info = items[2]
@@ -663,7 +663,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertEqual(1, len(parameters))
         self.assertIn(TypeAttribute.SELECTOR, type_info.attributes)
         selector_lambda = type_info.attributes[TypeAttribute.SELECTOR]
-        self.assertEqual(self.api.TestEnum.TWO, selector_lambda(self.api.SimpleChoice(self.api.TestEnum.TWO)))
+        self.assertEqual(self.api.TestEnum._TWO, selector_lambda(self.api.SimpleChoice(self.api.TestEnum._TWO)))
         self.assertIn(TypeAttribute.CASES, type_info.attributes)
         cases = type_info.attributes[TypeAttribute.CASES]
         self.assertEqual(3, len(cases))
@@ -691,7 +691,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         # case TWO
         case_info = cases[1]
         self.assertEqual(1, len(case_info.case_expressions))
-        self.assertEqual(self.api.TestEnum.TWO, case_info.case_expressions[0]())
+        self.assertEqual(self.api.TestEnum._TWO, case_info.case_expressions[0]())
         self.assertIsNotNone(case_info.field)
         self.assertEqual("fieldTwo", case_info.field.schema_name)
         self._checkSimpleUnion(case_info.field.type_info)
@@ -741,7 +741,7 @@ class WithTypeInfoCodeTest(unittest.TestCase):
         self.assertIn(MemberAttribute.FUNCTION_RESULT, memberInfo.attributes)
         function_result_lambda = memberInfo.attributes[MemberAttribute.FUNCTION_RESULT]
         self.assertEqual(42, function_result_lambda(
-            self.api.SimpleChoice(self.api.TestEnum.TWO, field_two_=self.api.SimpleUnion(
+            self.api.SimpleChoice(self.api.TestEnum._TWO, field_two_=self.api.SimpleUnion(
                 simple_struct_=self.api.SimpleStruct(field_u32_=42)
             ))
         ))

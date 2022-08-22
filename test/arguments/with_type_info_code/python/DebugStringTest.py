@@ -166,8 +166,8 @@ class DebugStringTest(unittest.TestCase):
         with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
 
-        testEnum = self.api.TestEnum.TWO
-        testEnumStringified = "TWO"
+        testEnum = self.api.TestEnum._TWO
+        testEnumStringified = "_TWO"
         ts32 = self.api.TS32(
             0xDEAD
             )
@@ -198,7 +198,7 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual({}, jsonData["recursiveStruct"])
         self.assertEqual({}, jsonData["recursiveUnion"])
         self.assertEqual({}, jsonData["recursiveChoice"])
-        self.assertEqual("TWO", jsonData["selector"])
+        self.assertEqual("_TWO", jsonData["selector"])
         self.assertEqual({}, jsonData["simpleChoice"])
         self.assertEqual({}, jsonData["templatedStruct"])
         self.assertEqual({}, jsonData["templatedParameterizedStruct"])
@@ -265,14 +265,14 @@ class DebugStringTest(unittest.TestCase):
 
         if createdOptionals:
             self.assertEqual("ItemThree", complexStruct["optionalEnum"])
-            self.assertEqual("RED | Green", complexStruct["optionalBitmask"])
+            self.assertEqual("RED | _Green", complexStruct["optionalBitmask"])
             self._checkOptionalExternDataJson(complexStruct["optionalExtern"])
         else:
             self.assertEqual(None, complexStruct["optionalEnum"])
             self.assertEqual(None, complexStruct["optionalBitmask"])
             self.assertEqual(None, complexStruct["optionalExtern"])
 
-        enumArray = ["TWO", "ItemThree"] # stringified
+        enumArray = ["_TWO", "ItemThree"] # stringified
         enumArrayLength = len(enumArray) if (maxArrayLength is None or
                                              len(enumArray) <= maxArrayLength) else maxArrayLength
         self.assertEqual(enumArrayLength, len(complexStruct["enumArray"]))
@@ -282,7 +282,7 @@ class DebugStringTest(unittest.TestCase):
         bitmaskArrayLen = 5 if maxArrayLength is None or maxArrayLength > 5 else maxArrayLength
         self.assertEqual(bitmaskArrayLen, len(complexStruct["bitmaskArray"]))
         for jsonArrayElement in complexStruct["bitmaskArray"]:
-            self.assertEqual("Green", jsonArrayElement)
+            self.assertEqual("_Green", jsonArrayElement)
 
         self.assertEqual(13, len(complexStruct.keys()))
 
@@ -322,11 +322,11 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual(1, len(recursiveChoice.keys()))
 
     def _checkSimpleUnionJson(self, simpleUnion):
-        self.assertEqual("Green", simpleUnion["testBitmask"])
+        self.assertEqual("_Green", simpleUnion["testBitmask"])
         self.assertEqual(1, len(simpleUnion.keys()))
 
     def _checkSimpleChoiceJson(self, simpleChoice, testEnum):
-        if testEnum == self.api.TestEnum.TWO:
+        if testEnum == self.api.TestEnum._TWO:
             self._checkSimpleUnionJson(simpleChoice["fieldTwo"])
         else:
             self.assertEqual("text", simpleChoice["fieldDefault"])

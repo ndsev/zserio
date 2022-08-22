@@ -27,7 +27,7 @@ struct ComplexStruct
     optional TestBitmask optionalBitmask;
     optional extern optionalExtern;
     TestEnum enumArray[2];
-    TestBitmask bitmaskArray[valueof(TestEnum.TWO)];
+    TestBitmask bitmaskArray[valueof(TestEnum._TWO)];
 
     function uint32 firstArrayElement()
     {
@@ -66,14 +66,14 @@ subtype uint16 EnumUnderlyingType;
 enum EnumUnderlyingType TestEnum
 {
     One,
-    TWO = 5,
+    _TWO = 5,
     ItemThree
 };
 
 bitmask bit<10> TestBitmask
 {
     RED,
-    Green,
+    _Green,
     ColorBlue
 };
 
@@ -92,7 +92,7 @@ choice SimpleChoice(TestEnum selector) on selector
 {
     case One:
         ; // empty
-    case TWO:
+    case _TWO:
         SimpleUnion fieldTwo;
     default:
         string fieldDefault;
