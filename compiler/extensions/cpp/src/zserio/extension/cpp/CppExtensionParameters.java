@@ -29,6 +29,7 @@ public class CppExtensionParameters
         withTypeInfoCode = parameters.getWithTypeInfoCode();
         withReflectionCode = parameters.argumentExists(OptionWithReflectionCode);
         withSourcesAmalgamation = !parameters.argumentExists(OptionWithoutSourcesAmalgamation);
+        withCodeComments = parameters.getWithCodeComments();
 
         final String cppAllocator = parameters.getCommandLineArg(OptionSetCppAllocator);
         if (cppAllocator == null || cppAllocator.equals(StdAllocator))
@@ -55,6 +56,8 @@ public class CppExtensionParameters
             description.add("reflectionCode");
         if (withSourcesAmalgamation)
             description.add("sourcesAmalgamation");
+        if (withCodeComments)
+            description.add("codeComments");
         addAllocatorDescription(description);
         parametersDescription = description.toString();
     }
@@ -107,6 +110,11 @@ public class CppExtensionParameters
     public boolean getWithSourcesAmalgamation()
     {
         return withSourcesAmalgamation;
+    }
+
+    public boolean getWithCodeComments()
+    {
+        return withCodeComments;
     }
 
     public TypesContext.AllocatorDefinition getAllocatorDefinition()
@@ -214,6 +222,7 @@ public class CppExtensionParameters
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
     private final boolean withSourcesAmalgamation;
+    private final boolean withCodeComments;
     private final TypesContext.AllocatorDefinition allocatorDefinition;
     private final String parametersDescription;
 }
