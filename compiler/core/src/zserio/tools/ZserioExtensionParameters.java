@@ -90,6 +90,12 @@ class ZserioExtensionParameters implements ExtensionParameters
     }
 
     @Override
+    public boolean getWithCodeComments()
+    {
+        return commandLineArguments.getWithCodeComments();
+    }
+
+    @Override
     public List<String> getTopLevelPackageNameIds()
     {
         return commandLineArguments.getTopLevelPackageNameIds();
