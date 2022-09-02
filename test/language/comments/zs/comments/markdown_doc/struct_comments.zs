@@ -26,7 +26,11 @@ enum bit:2 Direction
 
 **DirectionStructure**
 
- This is a structure which uses Direction enumeration type.
+This is a structure which uses Direction enumeration type.
+
+Parameter     | Description
+------------- | -----------
+hasExtraValue | True if the structure has extra value.
 
 !*/
 struct DirectionStructure(bool hasExtraValue)

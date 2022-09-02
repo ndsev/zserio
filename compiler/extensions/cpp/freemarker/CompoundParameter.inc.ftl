@@ -1,3 +1,4 @@
+<#include "DocComment.inc.ftl">
 <#macro parameter_member_name paramName>
     m_${paramName}_<#t>
 </#macro>
@@ -54,16 +55,64 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
         <#if !compoundParameter.typeInfo.isSimple>
             <#if withWriterCode>
             <#-- non-const getter is necessary for setting of offsets -->
+                <#if withCodeComments>
+    /**
+     * Gets the reference to the parameter ${compoundParameter.name}.
+     *
+     * This getter can be called internally during setting of the offsets.
+     *
+            <#if compoundParameter.docComments??>
+     * \b Description
+     *
+                <@doc_comments_inner compoundParameter.docComments, 4/>
+     *
+            </#if>
+     * \return The reference to the parameter ${compoundParameter.name}.
+     */
+                </#if>
     ${compoundParameter.typeInfo.typeFullName}& ${compoundParameter.getterName}();
+                <#if withCodeComments>
+
+                </#if>
+            </#if>
+            <#if withCodeComments>
+    /**
+     * Gets the const reference to the parameter ${compoundParameter.name}.
+     *
+            <#if compoundParameter.docComments??>
+     * \b Description
+     *
+                <@doc_comments_inner compoundParameter.docComments, 4/>
+     *
+            </#if>
+     * \return The const reference to the parameter ${compoundParameter.name}.
+     */
             </#if>
     const ${compoundParameter.typeInfo.typeFullName}& ${compoundParameter.getterName}() const;
-        <#else>
-    ${compoundParameter.typeInfo.typeFullName} ${compoundParameter.getterName}() const;
-        </#if>
-    </#list>
-    <#if compoundParametersData.list?has_content>
+            <#if withCodeComments>
 
-    </#if>
+            </#if>
+        <#else>
+            <#if withCodeComments>
+    /**
+     * Gets the value of the parameter ${compoundParameter.name}.
+     *
+            <#if compoundParameter.docComments??>
+     * \b Description
+     *
+                <@doc_comments_inner compoundParameter.docComments, 4/>
+     *
+            </#if>
+     * \return The value of the parameter ${compoundParameter.name}.
+     */
+            </#if>
+    ${compoundParameter.typeInfo.typeFullName} ${compoundParameter.getterName}() const;
+            <#if withCodeComments>
+
+            </#if>
+        </#if>
+
+    </#list>
 </#macro>
 
 <#macro compound_parameter_accessors_definition compoundName compoundParametersData>

@@ -67,6 +67,7 @@ public class CompoundFieldTemplateData
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation,
                 includeCollector);
         bitSize = BitSizeTemplateData.create(context, fieldTypeInstantiation, includeCollector);
+        docComments = new DocCommentsTemplateData(field.getDocComments());
     }
 
     public Optional getOptional()
@@ -162,6 +163,11 @@ public class CompoundFieldTemplateData
     public BitSizeTemplateData getBitSize()
     {
         return bitSize;
+    }
+
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
     }
 
     public static class Optional
@@ -666,4 +672,5 @@ public class CompoundFieldTemplateData
     private final Array array;
     private final RuntimeFunctionTemplateData runtimeFunction;
     private final BitSizeTemplateData bitSize;
+    private final DocCommentsTemplateData docComments;
 }

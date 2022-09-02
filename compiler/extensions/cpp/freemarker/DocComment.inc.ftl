@@ -1,49 +1,61 @@
-<#macro doc_comments docComments>
+<#macro doc_comments docComments spaceIndent=0>
     <#list docComments.comments as comment>
-        <@doc_comment comment/>
+        <@doc_comment comment, false, spaceIndent/>
     </#list>
 </#macro>
 
-<#macro doc_comment comment>
-    <#if comment.isOneLiner && comment.paragraphs?size == 1 && comment.paragraphs[0].elements?size == 1>
-/** <@doc_paragraph_element comment.paragraphs[0].elements[0]/> */
-    <#else>
-/**
-    <#list comment.paragraphs as paragraph>
-        <#if !paragraph?is_first>
- *
-        </#if>
-        <#list paragraph.elements as element>
- * <@doc_paragraph_element element/>
-        </#list>
+<#macro doc_comments_inner docComments spaceIndent=0>
+    <#list docComments.comments as comment>
+        <@doc_comment comment, true, spaceIndent/>
     </#list>
- */
+</#macro>
+
+<#macro doc_comment comment isInner spaceIndent>
+    <#local I>${""?left_pad(spaceIndent)}</#local>
+    <#if comment.isOneLiner && comment.paragraphs?size == 1 && comment.paragraphs[0].elements?size == 1>
+${I}<#if !isInner>/**<#else> *</#if> <@doc_paragraph_element comment.paragraphs[0].elements[0], spaceIndent/><#if !isInner> */</#if>
+    <#else>
+<#if !isInner>
+${I}/**
+</#if>
+        <#list comment.paragraphs as paragraph>
+            <#if !paragraph?is_first>
+${I} *
+            </#if>
+            <#list paragraph.elements as element>
+${I} * <@doc_paragraph_element element, spaceIndent/>
+            </#list>
+        </#list>
+<#if !isInner>
+${I} */
+</#if>
     </#if>
 </#macro>
 
-<#macro doc_paragraph_element paragraphElement>
+<#macro doc_paragraph_element paragraphElement spaceIndent>
     <#if paragraphElement.multiline??>
-<@doc_multiline paragraphElement.multiline, 0/><#rt>
+<@doc_multiline paragraphElement.multiline, spaceIndent, 0/><#rt>
     </#if>
     <#if paragraphElement.todoTag??>
-\todo <@doc_multiline paragraphElement.todoTag, 6/><#rt>
+\todo <@doc_multiline paragraphElement.todoTag, spaceIndent, 6/><#rt>
     </#if>
     <#if paragraphElement.seeTag??>
 \see \ref ${paragraphElement.seeTag.link} "${paragraphElement.seeTag.alias}"<#rt>
     </#if>
     <#if paragraphElement.paramTag??>
-\param ${paragraphElement.paramTag.name} <@doc_multiline paragraphElement.paramTag.description, 7/><#rt>
+\param ${paragraphElement.paramTag.name} <@doc_multiline paragraphElement.paramTag.description, spaceIndent, 7/><#rt>
     </#if>
     <#if paragraphElement.isDeprecated>
 \deprecated<#rt>
     </#if>
 </#macro>
 
-<#macro doc_multiline multiline spaceIndent>
+<#macro doc_multiline multiline spaceIndent multiLineIndent>
     <#local I>${""?left_pad(spaceIndent)}</#local>
+    <#local M>${""?left_pad(multiLineIndent)}</#local>
     <#list multiline.lines as line>
         <#if !line?is_first>
- * ${I}<#rt>
+${I} * ${M}<#rt>
         </#if>
         <#list line.lineElements as lineElement>
             <#if lineElement.docString??>

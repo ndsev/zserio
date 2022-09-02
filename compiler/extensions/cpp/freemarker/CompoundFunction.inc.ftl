@@ -2,11 +2,43 @@
     <#if compoundFunctionsData.list?has_content>
         <#list compoundFunctionsData.list as compoundFunction>
             <#if compoundFunction.returnTypeInfo.isSimple>
+                <#if withCodeComments>
+    /**
+     * Implementation of the function ${compoundFunction.name}.
+     *
+     * \return Result of the function ${compoundFunction.name}.
+     */
+                </#if>
     ${compoundFunction.returnTypeInfo.typeFullName} ${compoundFunction.name}() const;
+                <#if withCodeComments>
+
+                </#if>
             <#else>
+                <#if withCodeComments>
+    /**
+     * Implementation of the function ${compoundFunction.name} using const reference.
+     *
+     * \return Const reference to the result of the function ${compoundFunction.name}.
+     */
+                </#if>
     const ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}() const;
+                <#if withCodeComments>
+
+                </#if>
                 <#if withWriterCode>
+                    <#if withCodeComments>
+    /**
+     * Implementation of the function ${compoundFunction.name} using reference.
+     *
+     * This method can be called internally during setting of offsets.
+     *
+     * \return Reference to the result of the function ${compoundFunction.name}.
+     */
+                    </#if>
     ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}();
+                    <#if withCodeComments>
+
+                    </#if>
                 </#if>
             </#if>
 

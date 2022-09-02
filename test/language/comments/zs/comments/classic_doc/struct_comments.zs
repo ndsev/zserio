@@ -27,8 +27,10 @@ enum bit:2 Direction
  * @see Direction
  *
  * @param hasExtraValue True if the structure has extra value.
+ *        This parameter is not optional.
  *
  * @todo Update this comment.
+ *       Don't forget to check if this is really deprecated.
  *
  * @deprecated
  */
