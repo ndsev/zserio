@@ -849,25 +849,6 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
 </#macro>
 
 <#macro compound_field_accessors_declaration field>
-    <#if needs_field_getter(field)>
-        <#if withCodeComments>
-    /**
-     * Gets the reference to the field ${field.name}.
-     *
-            <#if field.docComments??>
-     * \b Description
-     *
-                <@doc_comments_inner field.docComments, 4/>
-     *
-            </#if>
-     * \return Reference to the field ${field.name}.
-     */
-        </#if>
-    <@field_raw_cpp_type_name field/>& ${field.getterName}();
-        <#if withCodeComments>
-
-        </#if>
-    </#if>
     <#if withCodeComments>
     /**
      * Gets the value of the field ${field.name}.
@@ -875,53 +856,63 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
         <#if field.docComments??>
      * \b Description
      *
-            <@doc_comments_inner field.docComments, 4/>
+     <@doc_comments_inner field.docComments, 4/>
      *
         </#if>
      * \return Value of the field ${field.name}.
      */
     </#if>
     <@field_raw_cpp_argument_type_name field/> ${field.getterName}() const;
-    <#if withCodeComments>
+    <#if needs_field_getter(field)>
+        <#if withCodeComments>
 
+    /**
+     * Gets the reference to the field ${field.name}.
+     *
+            <#if field.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner field.docComments, 4/>
+     *
+            </#if>
+     * \return Reference to the field ${field.name}.
+     */
+        </#if>
+    <@field_raw_cpp_type_name field/>& ${field.getterName}();
     </#if>
     <#if needs_field_setter(field)>
         <#if withCodeComments>
+
     /**
      * Sets the field ${field.name}.
      *
             <#if field.docComments??>
      * \b Description
      *
-                <@doc_comments_inner field.docComments, 4/>
+     <@doc_comments_inner field.docComments, 4/>
      *
             </#if>
      * \param <@field_argument_name field/> Value of the field ${field.name} to set.
      */
         </#if>
     void ${field.setterName}(<@field_raw_cpp_argument_type_name field/> <@field_argument_name field/>);
-        <#if withCodeComments>
-
-        </#if>
     </#if>
     <#if needs_field_rvalue_setter(field)>
         <#if withCodeComments>
+
     /**
      * Sets the field ${field.name} using r-value.
      *
             <#if field.docComments??>
      * \b Description
      *
-                <@doc_comments_inner field.docComments, 4/>
+     <@doc_comments_inner field.docComments, 4/>
      *
             </#if>
      * \param <@field_argument_name field/> R-value of the field ${field.name} to set.
      */
         </#if>
     void ${field.setterName}(<@field_raw_cpp_type_name field/>&& <@field_argument_name field/>);
-        <#if withCodeComments>
-
-        </#if>
     </#if>
 </#macro>
 

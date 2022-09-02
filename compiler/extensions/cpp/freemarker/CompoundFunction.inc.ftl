@@ -1,6 +1,7 @@
 <#macro compound_functions_declaration compoundFunctionsData>
     <#if compoundFunctionsData.list?has_content>
         <#list compoundFunctionsData.list as compoundFunction>
+
             <#if compoundFunction.returnTypeInfo.isSimple>
                 <#if withCodeComments>
     /**
@@ -10,9 +11,6 @@
      */
                 </#if>
     ${compoundFunction.returnTypeInfo.typeFullName} ${compoundFunction.name}() const;
-                <#if withCodeComments>
-
-                </#if>
             <#else>
                 <#if withCodeComments>
     /**
@@ -22,11 +20,9 @@
      */
                 </#if>
     const ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}() const;
-                <#if withCodeComments>
-
-                </#if>
                 <#if withWriterCode>
                     <#if withCodeComments>
+
     /**
      * Implementation of the function ${compoundFunction.name} using reference.
      *
@@ -36,12 +32,8 @@
      */
                     </#if>
     ${compoundFunction.returnTypeInfo.typeFullName}& ${compoundFunction.name}();
-                    <#if withCodeComments>
-
-                    </#if>
                 </#if>
             </#if>
-
         </#list>
     </#if>
 </#macro>

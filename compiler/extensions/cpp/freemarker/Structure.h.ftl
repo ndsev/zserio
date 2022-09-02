@@ -45,20 +45,20 @@ public:
     /** Definition for allocator type. */
     </#if>
     using allocator_type = ${types.allocator.default};
-
 <#if withWriterCode>
+
     <@compound_constructor_declaration compoundConstructorsData/>
     <#if fieldList?has_content>
 
-    <#if withCodeComments>
+        <#if withCodeComments>
     /**
      * Fields constructor.
      *
-        <#list compoundConstructorsData.fieldList as field>
+            <#list compoundConstructorsData.fieldList as field>
      * \param <@field_argument_name field/> Value of the field \ref ${field.getterName} "${field.name}".
-        </#list>
+            </#list>
      */
-    </#if>
+        </#if>
     <@compound_field_constructor_template_arg_list compoundConstructorsData.compoundName,
             compoundConstructorsData.fieldList/>
     <#if compoundConstructorsData.fieldList?size == 1>explicit </#if>${compoundConstructorsData.compoundName}(
@@ -76,17 +76,17 @@ public:
         </#list>
     }
     </#if>
+</#if>
+
+    <@compound_read_constructor_declaration compoundConstructorsData/>
+<#if withCodeComments>
 
 </#if>
-    <@compound_read_constructor_declaration compoundConstructorsData/>
-    <#if withCodeComments>
-
-    </#if>
     <@compound_read_constructor_declaration compoundConstructorsData, true/>
 
-    <#if withCodeComments>
+<#if withCodeComments>
     /** Default destructor. */
-    </#if>
+</#if>
     ~${name}() = default;
 <#if needs_compound_initialization(compoundConstructorsData) || has_field_with_initialization(fieldList)>
 
@@ -169,12 +169,13 @@ public:
     <@compound_initialize_children_declaration/>
     </#if>
 </#if>
-
     <@compound_parameter_accessors_declaration compoundParametersData/>
 <#list fieldList as field>
+
     <@compound_field_accessors_declaration field/>
     <#if field.optional??>
         <#if withCodeComments>
+
     /**
      * Checks if the optional field ${field.name} is used during serialization and deserialization.
      *
@@ -182,11 +183,9 @@ public:
      */
         </#if>
     bool ${field.optional.isUsedIndicatorName}() const;
-        <#if withCodeComments>
-
-        </#if>
         <#if withWriterCode>
             <#if withCodeComments>
+
     /**
      * Checks if the optional field ${field.name} is set.
      *
@@ -201,14 +200,11 @@ public:
      */
             </#if>
     void ${field.optional.resetterName}();
-            <#if withCodeComments>
-
-            </#if>
         </#if>
     </#if>
-
 </#list>
     <@compound_functions_declaration compoundFunctionsData/>
+
 <#if withCodeComments>
     /**
      * Creates context for packed arrays.
