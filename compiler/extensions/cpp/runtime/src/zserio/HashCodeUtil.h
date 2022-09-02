@@ -13,8 +13,10 @@
 
 namespace zserio
 {
-    static const uint32_t HASH_PRIME_NUMBER = 37; /**< Primer number for hash calculation. */
-    static const uint32_t HASH_SEED = 23; /** Initial seed for hash calculation. */
+    /** Prime number for hash calculation. */
+    static const uint32_t HASH_PRIME_NUMBER = 37;
+    /** Initial seed for hash calculation. */
+    static const uint32_t HASH_SEED = 23;
 
     /**
      * Gets initial hash code calculated from the given seed value.
@@ -115,7 +117,7 @@ namespace zserio
     inline typename std::enable_if<std::is_enum<ENUM_TYPE>::value, uint32_t>::type calcHashCode(
             uint32_t seedValue, ENUM_TYPE enumValue)
     {
-        return calcHashCode(seedValue, enumToValue(enumValue));
+        return calcHashCode(seedValue, enumHashCode(enumValue));
     }
 
     /**
@@ -153,7 +155,7 @@ namespace zserio
     }
 
     // must be last because of the two-phase lookup
-    // - we can have optional array (OptionaHolder<std::vector<T>>), but we cannot have array of optionals
+    // - we can have optional array (OptionalHolder<std::vector<T>>), but we cannot have array of optionals
     /**
      * Calculates hash code of the given Zserio optional field using the given seed value.
      *

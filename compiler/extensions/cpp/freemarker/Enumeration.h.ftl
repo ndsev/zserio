@@ -68,6 +68,9 @@ ${fullName} valueToEnum<${fullName}>(
         typename ::std::underlying_type<${fullName}>::type rawValue);
 
 template <>
+uint32_t enumHashCode<${fullName}>(${fullName} value);
+
+template <>
 void initPackingContext<${types.packingContextNode.name}, ${fullName}>(
         ${types.packingContextNode.name}& contextNode, ${fullName} value);
 
