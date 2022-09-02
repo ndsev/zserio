@@ -31,6 +31,12 @@ public class DocCommentMarkdown extends DocComment
     {
     }
 
+    @Override
+    public DocComment findParamDoc(String paramName)
+    {
+        return null;
+    }
+
     /**
      * Gets markdown documentation.
      *

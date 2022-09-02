@@ -40,6 +40,15 @@ public abstract class DocComment extends AstNodeBase
         return isOneLiner;
     }
 
+    /**
+     * Finds the documentation comment of the given parameter in this documentation comment.
+     *
+     * @param paramName Name of the parameter to find.
+     *
+     * @return Extracted documentation comment for the given parameter or null if such comment does not exist.
+     */
+    public abstract DocComment findParamDoc(String paramName);
+
     private final boolean isSticky;
     private final boolean isOneLiner;
 }

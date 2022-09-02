@@ -1,5 +1,6 @@
 package zserio.ast;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +36,31 @@ public class DocCommentClassic extends DocComment
     {
         for (DocParagraph paragraph : paragraphs)
             paragraph.accept(visitor);
+    }
+
+    @Override
+    public DocComment findParamDoc(String paramName)
+    {
+        for (DocParagraph docParagraph : paragraphs)
+        {
+            for (DocElement docElement : docParagraph.getDocElements())
+            {
+                final DocTagParam paramTag = docElement.getParamTag();
+                if (paramTag != null && paramTag.getParamName().equals(paramName))
+                {
+                    final DocParagraph foundParagraph = new DocParagraph(docParagraph.getLocation());
+                    final DocElement foundElement = new DocElement(docElement.getLocation(),
+                            (DocMultiline)paramTag);
+                    foundParagraph.addDocElement(foundElement);
+                    final List<DocParagraph> foundParagraphs = new ArrayList<DocParagraph>();
+                    foundParagraphs.add(foundParagraph);
+                    return new DocCommentClassic(foundParagraph.getLocation(), foundParagraphs, true,
+                            paramTag.getLines().size() == 1);
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
