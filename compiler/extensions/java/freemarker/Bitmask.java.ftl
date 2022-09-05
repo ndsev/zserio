@@ -131,21 +131,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     @Override
     public int hashCode()
     {
-        int result = zserio.runtime.Util.HASH_SEED;
-
-<#if isBigInteger>
-        <#-- big integer - use hashCode() -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value.hashCode();
-<#else>
-    <#if underlyingTypeInfo.isLong>
-        <#-- use shifting -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(value ^ (value >>> 32));
-    <#else>
-        <#-- use implicit casting to int -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value;
-    </#if>
-</#if>
-
+        int result = zserio.runtime.HashCodeUtil.HASH_SEED;
+        result = zserio.runtime.HashCodeUtil.calcHashCode(result, value);
         return result;
     }
 

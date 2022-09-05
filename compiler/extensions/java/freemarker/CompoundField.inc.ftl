@@ -419,34 +419,6 @@ ${I}endBitPosition += <@compound_get_field field/>.bitSizeOf(endBitPosition);
     </#if>
 </#macro>
 
-<#macro compound_hashcode_field field indent>
-    <#local I>${""?left_pad(indent * 4)}</#local>
-    <#if field.typeInfo.isSimple>
-        <#if field.typeInfo.isLong>
-            <#-- long type: use shifting -->
-${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(<@compound_get_field field/> ^ (<@compound_get_field field/> >>> 32));
-        <#elseif field.typeInfo.isFloat>
-            <#-- float type: use floatToIntBits() -->
-${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + java.lang.Float.floatToIntBits(<@compound_get_field field/>);
-        <#elseif field.typeInfo.isDouble>
-            <#-- double type: use doubleToLongBits() -->
-${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-${I}        (int)(java.lang.Double.doubleToLongBits(<@compound_get_field field/>) ^
-${I}                (java.lang.Double.doubleToLongBits(<@compound_get_field field/>) >>> 32));
-        <#elseif field.typeInfo.isBoolean>
-            <#-- bool type: convert it to int -->
-${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (<@compound_get_field field/> ? 1 : 0);
-        <#else>
-            <#-- others: use implicit casting to int -->
-${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + <@compound_get_field field/>;
-        </#if>
-    <#else>
-        <#-- complex type: use hashCode() but account for possible null -->
-${I}result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-${I}        ((<@compound_get_field field/> == null) ? 0 : <@compound_get_field field/>.hashCode());
-    </#if>
-</#macro>
-
 <#macro compound_create_packing_context_field field>
     <#if field.isPackable && !field.array?? && !(field.optional?? && field.optional.isRecursive)>
         <#if field.typeInfo.isIntegral>

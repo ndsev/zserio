@@ -9,11 +9,11 @@ package zserio.tools;
  * <pre>
  * public int hashCode()
  * {
- *     int result = Util.HASH_SEED;
+ *     int result = HashUtil.HASH_SEED;
  *
  *     // collect the contributions of various fields
- *     result = Util.hash(result, nativeType);
- *     result = Util.hash(result, objectType);
+ *     result = HashUtil.hash(result, nativeType);
+ *     result = HashUtil.hash(result, objectType);
 
  *     return result;
  * }

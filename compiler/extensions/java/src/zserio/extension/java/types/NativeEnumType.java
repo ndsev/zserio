@@ -11,7 +11,7 @@ public class NativeEnumType extends NativeArrayableType
             boolean withWriterCode)
     {
         super(packageName, name,
-                new NativeObjectRawArray(),
+                new NativeEnumRawArray(),
                 new NativeObjectArrayTraits(packageName, name, withWriterCode),
                 new NativeObjectArrayElement(packageName, name));
 

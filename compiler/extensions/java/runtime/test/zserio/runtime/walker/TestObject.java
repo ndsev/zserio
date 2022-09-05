@@ -2,6 +2,8 @@ package zserio.runtime.walker;
 
 import java.math.BigInteger;
 
+import zserio.runtime.HashCodeUtil;
+
 public class TestObject
 {
     public static DummyObject createDummyObject()
@@ -150,10 +152,9 @@ public class TestObject
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((text_ == null) ? 0 : text_.hashCode());
+            result = HashCodeUtil.calcHashCode(result, text_);
 
             return result;
         }
@@ -462,11 +463,24 @@ public class TestObject
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + choiceTag;
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((objectChoice == null) ? 0 : objectChoice.hashCode());
+            result = HashCodeUtil.calcHashCode(result, choiceTag);
+
+            switch (choiceTag)
+            {
+            case CHOICE_value:
+                result = HashCodeUtil.calcHashCode(result, (Long)objectChoice);
+                break;
+            case CHOICE_text:
+                result = HashCodeUtil.calcHashCode(result, (String)objectChoice);
+                break;
+            case CHOICE_nestedArray:
+                result = HashCodeUtil.calcHashCode(result, (zserio.runtime.array.Array)objectChoice);
+                break;
+            default:
+                throw new zserio.runtime.ZserioError("No match in union DummyUnion!");
+            };
 
             return result;
         }
@@ -998,19 +1012,15 @@ public class TestObject
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = zserio.runtime.HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(identifier_ ^ (identifier_ >>> 32));
+            result = HashCodeUtil.calcHashCode(result, identifier_);
             if (isNestedUsed())
-                result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                        ((nested_ == null) ? 0 : nested_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((text_ == null) ? 0 : text_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((unionArray_ == null) ? 0 : unionArray_.hashCode());
+                result = HashCodeUtil.calcHashCode(result, nested_);
+            result = HashCodeUtil.calcHashCode(result, text_);
+            result = HashCodeUtil.calcHashCode(result, unionArray_);
             if (isOptionalUnionArrayUsed())
-                result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                        ((optionalUnionArray_ == null) ? 0 : optionalUnionArray_.hashCode());
+                result = HashCodeUtil.calcHashCode(result, optionalUnionArray_);
 
             return result;
         }
@@ -1340,9 +1350,9 @@ public class TestObject
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = zserio.runtime.HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(value ^ (value >>> 32));
+            result = HashCodeUtil.calcHashCode(result, value);
 
             return result;
         }

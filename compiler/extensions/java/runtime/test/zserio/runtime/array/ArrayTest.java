@@ -12,6 +12,7 @@ import java.math.BigInteger;
 
 import zserio.runtime.BitPositionUtil;
 import zserio.runtime.BitSizeOfCalculator;
+import zserio.runtime.HashCodeUtil;
 import zserio.runtime.SizeOf;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -386,13 +387,11 @@ public class ArrayTest
     @Test
     public void stringArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.ObjectRawArray<String>(String.class, new String[] {
-                "Text1", "Text2"});
+        final RawArray rawArray1 = new RawArray.StringRawArray(new String[] { "Text1", "Text2"});
         final int array1BitSizeOf = 2 * (1 + 5) * 8;
         final int array1AlignedBitSizeOf = array1BitSizeOf;
-        final RawArray rawArray2 = new RawArray.ObjectRawArray<String>(String.class, new String[] {
-                "Text1", "Text3"});
-        final RawArray emptyRawArray = new RawArray.ObjectRawArray<String>(String.class);
+        final RawArray rawArray2 = new RawArray.StringRawArray(new String[] { "Text1", "Text3"});
+        final RawArray emptyRawArray = new RawArray.StringRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.StringArrayTraits();
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
@@ -425,15 +424,15 @@ public class ArrayTest
     @Test
     public void bitBufferArray() throws IOException
     {
-        final RawArray rawArray1 = new RawArray.ObjectRawArray<BitBuffer>(BitBuffer.class, new BitBuffer[] {
+        final RawArray rawArray1 = new RawArray.BitBufferRawArray(new BitBuffer[] {
                 new BitBuffer(new byte[] {(byte)0xAB, (byte)0xE0}, 11),
                 new BitBuffer(new byte[] {(byte)0xAB, (byte)0xCD, (byte)0xFE}, 23)});
         final int array1BitSizeOf = 8 + 11 + 8 + 23;
         final int array1AlignedBitSizeOf = 8 + 11 + 5 + 8 + 23;
-        final RawArray rawArray2 = new RawArray.ObjectRawArray<BitBuffer>(BitBuffer.class, new BitBuffer[] {
+        final RawArray rawArray2 = new RawArray.BitBufferRawArray(new BitBuffer[] {
                 new BitBuffer(new byte[] {(byte)0xBA, (byte)0xE0}, 11),
                 new BitBuffer(new byte[] {(byte)0xBA, (byte)0xCD, (byte)0xFE}, 23)});
-        final RawArray emptyRawArray = new RawArray.ObjectRawArray<BitBuffer>(BitBuffer.class);
+        final RawArray emptyRawArray = new RawArray.BitBufferRawArray();
         final ArrayTraits arrayTraits = new ArrayTraits.BitBufferArrayTraits();
         testArray(rawArray1, array1BitSizeOf, array1AlignedBitSizeOf, rawArray2, emptyRawArray, arrayTraits);
 
@@ -826,9 +825,9 @@ public class ArrayTest
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value;
+            result = HashCodeUtil.calcHashCode(result, value);
 
             return result;
         }
