@@ -329,6 +329,15 @@ public class HashCodeUtilTest
         }
 
         @Override
+        public boolean equals(Object other)
+        {
+            if (!(other instanceof Permissions))
+                return false;
+
+            return value == ((Permissions)other).value;
+        }
+
+        @Override
         public int hashCode()
         {
             int result = zserio.runtime.HashCodeUtil.HASH_SEED;
@@ -394,6 +403,7 @@ public class HashCodeUtilTest
 
             return hashCode == ((DummyObject)other).hashCode;
         }
+
         @Override
         public int hashCode()
         {
