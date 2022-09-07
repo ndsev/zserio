@@ -40,6 +40,12 @@ class ${name}(enum.Enum):
         return zserio.typeinfo.TypeInfo('${schemaTypeFullName}', ${name}, attributes=attribute_list)
 </#if>
 
+    <#-- we need custom hash implementation to get deterministic hash codes -->
+    def __hash__(self) -> int:
+        result = zserio.hashcode.HASH_SEED
+        result = zserio.hashcode.calc_hashcode_int(result, self.value)
+        return result
+
     @staticmethod
     def create_packing_context(context_node: zserio.array.PackingContextNode) -> None:
         context_node.create_context()

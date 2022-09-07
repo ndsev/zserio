@@ -4,6 +4,7 @@ import zserio.ast.BitmaskType;
 import zserio.ast.CompoundType;
 import zserio.ast.DynamicBitFieldType;
 import zserio.ast.EnumType;
+import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.TypeReference;
 import zserio.ast.ZserioType;
@@ -39,6 +40,9 @@ public class NativeTypeInfoTemplateData
         isDynamicBitField = baseType instanceof DynamicBitFieldType;
         arrayTraits = new ArrayTraitsTemplateData(pythonNativeType.getArrayTraits());
         schemaTypeFullName = ZserioTypeUtil.getFullName(typeReference.getType());
+        hashCodeFunc = baseType instanceof SqlTableType
+                ? null
+                : PythonRuntimeFunctionDataCreator.createHashCodeData(typeReference);
     }
 
     public String getTypeFullName()
@@ -81,6 +85,11 @@ public class NativeTypeInfoTemplateData
         return schemaTypeFullName;
     }
 
+    public RuntimeFunctionTemplateData getHashCodeFunc()
+    {
+        return hashCodeFunc;
+    }
+
     private final String typeFullName;
     private final boolean isBuiltin;
     private final boolean isEnum;
@@ -89,4 +98,5 @@ public class NativeTypeInfoTemplateData
     private final boolean isDynamicBitField;
     private final ArrayTraitsTemplateData arrayTraits;
     private final String schemaTypeFullName;
+    private final RuntimeFunctionTemplateData hashCodeFunc;
 }

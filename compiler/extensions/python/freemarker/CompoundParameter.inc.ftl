@@ -33,7 +33,8 @@ ${I}<#rt>
 
 <#macro compound_hashcode_parameters compoundParametersData>
     <#list compoundParametersData.list as parameter>
-        result = zserio.hashcode.calc_hashcode(result, hash(self.<@parameter_member_name parameter/>))
+        result = zserio.hashcode.calc_hashcode_${parameter.typeInfo.hashCodeFunc.suffix}(<#rt>
+                <#lt>result, self.<@parameter_member_name parameter/>)
     </#list>
 </#macro>
 

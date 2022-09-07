@@ -11,7 +11,9 @@ from zserio.bitsizeof import (bitsizeof_varuint16, bitsizeof_varuint32, bitsizeo
 from zserio.bitreader import BitStreamReader
 from zserio.bitwriter import BitStreamWriter
 from zserio.bitbuffer import BitBuffer
-from zserio.hashcode import calc_hashcode, HASH_SEED
+from zserio.hashcode import (HASH_SEED, calc_hashcode_bool_array, calc_hashcode_int_array,
+                             calc_hashcode_float32_array, calc_hashcode_float64_array,
+                             calc_hashcode_string_array, calc_hashcode_object_array)
 from zserio.exception import PythonRuntimeException
 
 class Array:
@@ -114,11 +116,7 @@ class Array:
         return False
 
     def __hash__(self) -> int:
-        hashcode = HASH_SEED
-        for element in self._raw_array:
-            hashcode = calc_hashcode(hashcode, hash(element))
-
-        return hashcode
+        return self._array_traits.CALC_HASHCODE_FUNC(HASH_SEED, self._raw_array)
 
     def __len__(self) -> int:
         return len(self._raw_array)
@@ -767,6 +765,7 @@ class BitFieldArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     def __init__(self, numbits: int) -> None:
         """
@@ -834,6 +833,7 @@ class SignedBitFieldArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     def __init__(self, numbits: int) -> None:
         """
@@ -901,6 +901,7 @@ class VarUInt16ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -964,6 +965,7 @@ class VarUInt32ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1027,6 +1029,7 @@ class VarUInt64ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1089,6 +1092,7 @@ class VarUIntArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1152,6 +1156,7 @@ class VarSizeArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1215,6 +1220,7 @@ class VarInt16ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1278,6 +1284,7 @@ class VarInt32ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1341,6 +1348,7 @@ class VarInt64ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1404,6 +1412,7 @@ class VarIntArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_int_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1467,6 +1476,7 @@ class Float16ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_float32_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1529,6 +1539,7 @@ class Float32ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_float32_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1591,6 +1602,7 @@ class Float64ArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_float64_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1653,6 +1665,7 @@ class StringArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_string_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1716,6 +1729,7 @@ class BoolArrayTraits:
     HAS_BITSIZEOF_CONSTANT = True
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_bool_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1778,6 +1792,7 @@ class BitBufferArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = False
     NEEDS_READ_INDEX = False
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_object_array)
 
     @property
     def packed_traits(self) -> PackedArrayTraits:
@@ -1841,6 +1856,7 @@ class ObjectArrayTraits:
     HAS_BITSIZEOF_CONSTANT = False
     NEEDS_BITSIZEOF_POSITION = True
     NEEDS_READ_INDEX = True
+    CALC_HASHCODE_FUNC = staticmethod(calc_hashcode_object_array)
 
     def __init__(self, object_creator: typing.Callable[[BitStreamReader, int], typing.Any],
                  packed_object_creator: typing.Callable[[PackingContextNode, BitStreamReader, int],

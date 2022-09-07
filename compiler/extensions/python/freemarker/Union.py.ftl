@@ -7,13 +7,17 @@
 <@file_header generatorDescription/>
 <@future_annotations/>
 <@all_imports packageImports symbolImports typeImports/>
-<#macro union_if memberActionMacroName packed=false index=0>
+<#macro union_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}raise zserio.PythonRuntimeException("No match in union ${name}!")
+</#macro>
+<#macro union_if memberActionMacroName noMatchMacroName packed=false index=0>
     <#list fieldList as field>
         <#if field?is_first>if <#else>elif </#if>self._choice_tag == self.<@choice_tag_name field/>:
             <@.vars[memberActionMacroName] field, 3, packed, field?index+1/>
     </#list>
         else:
-            raise zserio.PythonRuntimeException("No match in union ${name}!")
+            <@.vars[noMatchMacroName] name, 3/>
 </#macro>
 <#assign choiceTagArrayTraits="zserio.array.VarSizeArrayTraits">
 
@@ -122,11 +126,21 @@ class ${name}:
 
         return False
 
+<#macro union_hashcode_field field indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}result = zserio.hashcode.calc_hashcode_${field.typeInfo.hashCodeFunc.suffix}(result, self._choice)
+</#macro>
+<#macro union_hashcode_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}pass
+</#macro>
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
-        result = zserio.hashcode.calc_hashcode(result, hash(self._choice_tag))
-        result = zserio.hashcode.calc_hashcode(result, hash(self._choice))
+        result = zserio.hashcode.calc_hashcode_int(result, self._choice_tag)
+<#if fieldList?has_content>
+        <@union_if "union_hashcode_field", "union_hashcode_no_match"/>
+</#if>
 
         return result
 <#list compoundParametersData.list as parameter>
@@ -185,7 +199,7 @@ ${I}pass
 <#if fieldList?has_content>
         zserio_context_node.children[0].context.init(${choiceTagArrayTraits}(),
                                                      self._choice_tag)
-        <@union_if "union_init_packing_context", true/>
+        <@union_if "union_init_packing_context", "union_no_match", true/>
 <#else>
         del zserio_context_node
 </#if>
@@ -196,7 +210,7 @@ ${I}pass
 
         end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
 
-        <@union_if "compound_bitsizeof_field"/>
+        <@union_if "compound_bitsizeof_field", "union_no_match"/>
 
         return end_bitposition - bitposition
 <#else>
@@ -213,7 +227,7 @@ ${I}pass
         end_bitposition += zserio_context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
                                                                              self._choice_tag)
 
-        <@union_if "compound_bitsizeof_field", true/>
+        <@union_if "compound_bitsizeof_field", "union_no_match", true/>
 
         return end_bitposition - bitposition
 <#else>
@@ -230,7 +244,7 @@ ${I}pass
 
         end_bitposition += zserio.bitsizeof.bitsizeof_varsize(self._choice_tag)
 
-        <@union_if "compound_initialize_offsets_field"/>
+        <@union_if "compound_initialize_offsets_field", "union_no_match"/>
 
         return end_bitposition
     <#else>
@@ -245,7 +259,7 @@ ${I}pass
         end_bitposition += zserio_context_node.children[0].context.bitsizeof(${choiceTagArrayTraits}(),
                                                                              self._choice_tag)
 
-        <@union_if "compound_initialize_offsets_field", true/>
+        <@union_if "compound_initialize_offsets_field", "union_no_match", true/>
 
         return end_bitposition
     <#else>
@@ -261,7 +275,7 @@ ${I}pass
 <#if fieldList?has_content>
         self._choice_tag = zserio_reader.read_varsize()
 
-        <@union_if "union_read_field"/>
+        <@union_if "union_read_field", "union_no_match"/>
 <#else>
         del zserio_reader
 </#if>
@@ -272,7 +286,7 @@ ${I}pass
         self._choice_tag = zserio_context_node.children[0].context.read(${choiceTagArrayTraits}(),
                                                                         zserio_reader)
 
-        <@union_if "union_read_field", true/>
+        <@union_if "union_read_field", "union_no_match", true/>
 <#else>
         del zserio_context_node
         del zserio_reader
@@ -294,7 +308,7 @@ ${I}pass
 
         zserio_writer.write_varsize(self._choice_tag)
 
-        <@union_if "union_write_field"/>
+        <@union_if "union_write_field", "union_no_match"/>
     <#else>
         del zserio_writer
         del zserio_call_initialize_offsets
@@ -306,7 +320,7 @@ ${I}pass
         zserio_context_node.children[0].context.write(${choiceTagArrayTraits}(),
                                                       zserio_writer, self._choice_tag)
 
-        <@union_if "union_write_field", true/>
+        <@union_if "union_write_field", "union_no_match", true/>
     <#else>
         del zserio_context_node
         del zserio_writer

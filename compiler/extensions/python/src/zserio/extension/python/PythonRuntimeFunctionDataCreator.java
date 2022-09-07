@@ -1,14 +1,22 @@
 package zserio.extension.python;
 
+import zserio.ast.ArrayType;
+import zserio.ast.BitmaskType;
 import zserio.ast.BooleanType;
+import zserio.ast.ChoiceType;
 import zserio.ast.DynamicBitFieldInstantiation;
+import zserio.ast.DynamicBitFieldType;
+import zserio.ast.EnumType;
 import zserio.ast.ExternType;
 import zserio.ast.FixedBitFieldType;
 import zserio.ast.FixedSizeType;
 import zserio.ast.FloatType;
 import zserio.ast.StdIntegerType;
 import zserio.ast.StringType;
+import zserio.ast.StructureType;
 import zserio.ast.TypeInstantiation;
+import zserio.ast.TypeReference;
+import zserio.ast.UnionType;
 import zserio.ast.VarIntegerType;
 import zserio.ast.ZserioAstDefaultVisitor;
 import zserio.extension.common.ExpressionFormatter;
@@ -36,6 +44,22 @@ class PythonRuntimeFunctionDataCreator
             // template data can be null, this need to be handled specially in template
             return visitor.getTemplateData();
         }
+    }
+
+    public static RuntimeFunctionTemplateData createHashCodeData(TypeReference typeReference)
+            throws ZserioExtensionException
+    {
+        final HashCodeSuffixVisitor visitor = new HashCodeSuffixVisitor();
+        typeReference.getBaseTypeReference().getType().accept(visitor);
+
+        final RuntimeFunctionTemplateData templateData = visitor.getTemplateData();
+        if (templateData == null)
+        {
+            throw new ZserioExtensionException("Cannot map type '" + typeReference.getType().getName() +
+                    "' in createHashCodeData!");
+        }
+
+        return templateData;
     }
 
     private static RuntimeFunctionTemplateData mapDynamicBitField(DynamicBitFieldInstantiation instantiation,
@@ -122,6 +146,101 @@ class PythonRuntimeFunctionDataCreator
             final String suffix = getSuffixForIntegralType(isSigned);
             final String arg = PythonLiteralFormatter.formatDecimalLiteral(bitCount);
             templateData = new RuntimeFunctionTemplateData(suffix, arg);
+        }
+
+        private RuntimeFunctionTemplateData templateData = null;
+    }
+
+    private static class HashCodeSuffixVisitor extends ZserioAstDefaultVisitor
+    {
+        public RuntimeFunctionTemplateData getTemplateData()
+        {
+            return templateData;
+        }
+
+        @Override
+        public void visitArrayType(ArrayType type)
+        {
+            // python uses Array wrapper which implements __hash__ method
+            templateData = new RuntimeFunctionTemplateData("object");
+        }
+
+        @Override
+        public void visitBooleanType(BooleanType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("bool");
+        }
+
+        @Override
+        public void visitStdIntegerType(StdIntegerType stdIntegerType)
+        {
+            templateData = new RuntimeFunctionTemplateData("int");
+        }
+
+        @Override
+        public void visitVarIntegerType(VarIntegerType varIntegerType)
+        {
+            templateData = new RuntimeFunctionTemplateData("int");
+        }
+
+        @Override
+        public void visitFixedBitFieldType(FixedBitFieldType fixedFieldTypeType)
+        {
+            templateData = new RuntimeFunctionTemplateData("int");
+        }
+
+        @Override
+        public void visitDynamicBitFieldType(DynamicBitFieldType dynamicBitFieldType)
+        {
+            templateData = new RuntimeFunctionTemplateData("int");
+        }
+
+        @Override
+        public void visitFloatType(FloatType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("float" + (type.getBitSize() > 32 ? "64" : "32"));
+        }
+
+        @Override
+        public void visitStringType(StringType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("string");
+        }
+
+        @Override
+        public void visitExternType(ExternType type)
+        {
+            templateData = new RuntimeFunctionTemplateData("object");
+        }
+
+        @Override
+        public void visitStructureType(StructureType structureType)
+        {
+            templateData = new RuntimeFunctionTemplateData("object");
+        }
+
+        @Override
+        public void visitChoiceType(ChoiceType choiceType)
+        {
+            templateData = new RuntimeFunctionTemplateData("object");
+        }
+
+        @Override
+        public void visitUnionType(UnionType unionType)
+        {
+            templateData = new RuntimeFunctionTemplateData("object");
+        }
+
+        @Override
+        public void visitEnumType(EnumType enumType)
+        {
+            templateData = new RuntimeFunctionTemplateData("object");
+        }
+
+        @Override
+        public void visitBitmaskType(BitmaskType bitmaskType)
+        {
+            templateData = new RuntimeFunctionTemplateData("object");
         }
 
         private RuntimeFunctionTemplateData templateData = null;

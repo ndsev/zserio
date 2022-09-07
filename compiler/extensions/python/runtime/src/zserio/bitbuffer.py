@@ -6,7 +6,7 @@ import typing
 
 from zserio.exception import PythonRuntimeException
 from zserio.hashcode import HASH_SEED
-from zserio.hashcode import calc_hashcode
+from zserio.hashcode import calc_hashcode_int
 from zserio.bitposition import bitsize_to_bytesize
 
 class BitBuffer:
@@ -58,9 +58,9 @@ class BitBuffer:
         if bytesize > 0:
             if bytesize > 1:
                 for element in self._buffer[0:bytesize - 1]:
-                    result = calc_hashcode(result, hash(element))
+                    result = calc_hashcode_int(result, element)
 
-            result = calc_hashcode(result, hash(self._masked_last_byte()))
+            result = calc_hashcode_int(result, self._masked_last_byte())
 
         return result
 
