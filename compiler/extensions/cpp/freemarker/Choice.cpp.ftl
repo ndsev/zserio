@@ -494,7 +494,10 @@ bool ${name}::operator==(const ${name}& other) const
 }
 
 <#macro choice_hash_code_no_match name indent>
-    <#--ignore -->
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if canUseNativeSwitch>
+${I}break;
+    </#if>
 </#macro>
 <#macro choice_hash_code_member member packed index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>

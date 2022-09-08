@@ -4,6 +4,7 @@
         <Bug code="DB"/>
         <Class name="service_types.complex_types_service.ResponseData"/>
         <Or>
+            <Method name="hashCode"/>
             <Method name="bitSizeOf"/>
             <Method name="initializeOffsets"/>
         </Or>

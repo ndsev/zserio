@@ -40,11 +40,6 @@ public:
         return m_value;
     }
 
-    constexpr explicit operator underlying_type() const
-    {
-        return m_value;
-    }
-
     uint32_t hashCode() const
     {
         uint32_t result = HASH_SEED;

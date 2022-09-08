@@ -265,7 +265,10 @@ ${I}break;
     }
 
 <#macro choice_hash_code_no_match name indent>
-    <#--ignore -->
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if isSwitchAllowed>
+${I}break;
+    </#if>
 </#macro>
 <#macro choice_hash_code_member member indent packed index>
     <#local I>${""?left_pad(indent * 4)}</#local>
