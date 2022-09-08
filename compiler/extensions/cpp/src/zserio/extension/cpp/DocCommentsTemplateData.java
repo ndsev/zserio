@@ -3,6 +3,8 @@ package zserio.extension.cpp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import zserio.ast.DocComment;
 import zserio.ast.DocCommentClassic;
@@ -207,12 +209,63 @@ public class DocCommentsTemplateData
 
                 public DocLineData(String docLine)
                 {
-                    lineElements.add(new DocLineElementData(docLine));
+                    addMarkdownToDocLineElements(lineElements, docLine);
                 }
 
                 public Iterable<DocLineElementData> getLineElements()
                 {
                     return lineElements;
+                }
+
+                private static void addMarkdownToDocLineElements(List<DocLineElementData> lineElements,
+                    String markdownLine)
+                {
+                    final Pattern linkRegex =
+                            /*               ([^\\[]*) \\[ ([^\\[\\]]*) \\]  \\( ([^)]+) \\) (.*) */
+                            Pattern.compile("([^\\[]*)\\[([^\\[\\]]*)\\]\\(([^)]+)\\)(.*)");
+                    final Matcher linkMatcher = linkRegex.matcher(markdownLine);
+
+                    if (!linkMatcher.matches())
+                    {
+                        lineElements.add(new DocLineElementData(markdownLine));
+                    }
+                    else
+                    {
+                        final Pattern zsFileRegex =
+                                /*               ^(\.\.\/)* ([a-zA-Z_0-9\/]+) \.zs (#([a-zA-Z_0-9]+))? */
+                                Pattern.compile("^(\\.\\.\\/)*([a-zA-Z_0-9\\/]+)\\.zs(#([a-zA-Z_0-9]+))?");
+                        final String linkName = linkMatcher.group(3);
+                        final Matcher zsFileMatcher = zsFileRegex.matcher(linkName);
+
+                        if (!zsFileMatcher.matches())
+                        {
+                            lineElements.add(new DocLineElementData(markdownLine));
+                        }
+                        else
+                        {
+                            final String linePrefix = linkMatcher.group(1).trim();
+                            if (!linePrefix.isEmpty())
+                                lineElements.add(new DocLineElementData(linePrefix));
+
+                            final String seeTagAlias = linkMatcher.group(2);
+                            final String seeTagLink = createSeeTagLink(zsFileMatcher.group(2),
+                                    zsFileMatcher.group(4));
+                            lineElements.add(new DocLineElementData(seeTagAlias, seeTagLink));
+
+                            final String lineSuffix = linkMatcher.group(4).trim();
+                            if (!lineSuffix.isEmpty())
+                                addMarkdownToDocLineElements(lineElements, lineSuffix);
+                        }
+                    }
+                }
+
+                private static String createSeeTagLink(String zsFile, String zsTypeName)
+                {
+                    final String zsFileLink = zsFile.replace("/", "::");
+                    final String seeTagLink = (zsTypeName == null) ? zsFileLink :
+                            zsFileLink + "::" + zsTypeName;
+
+                    return seeTagLink;
                 }
 
                 private final List<DocLineElementData> lineElements = new ArrayList<DocLineElementData>();
@@ -233,6 +286,12 @@ public class DocCommentsTemplateData
                 {
                     docString = docLine;
                     seeTag = null;
+                }
+
+                public DocLineElementData(String seeTagAlias, String seeTagLink)
+                {
+                    docString = null;
+                    seeTag = new DocTagSeeData(seeTagAlias, seeTagLink);
                 }
 
                 public String getDocString()
@@ -258,6 +317,12 @@ public class DocCommentsTemplateData
             {
                 alias = docTagSee.getLinkAlias();
                 link = docTagSee.getLinkName();
+            }
+
+            public DocTagSeeData(String seeTagAlias, String seeTagLink)
+            {
+                alias = seeTagAlias;
+                link = seeTagLink;
             }
 
             public String getAlias()

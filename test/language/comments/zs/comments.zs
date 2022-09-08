@@ -7,6 +7,7 @@ import comments.classic_doc.sql_database_comments.*;
 import comments.classic_doc.sql_table_comments.*;
 import comments.classic_doc.struct_comments.*;
 import comments.classic_doc.struct_template_comments.*;
+import comments.classic_doc.union_comments.*;
 import comments.classic_doc.unknown_tag_matching_prefix.*;
 import comments.classic_doc.unknown_tag.*;
 
@@ -22,6 +23,7 @@ import comments.markdown_doc.sql_database_comments.*;
 import comments.markdown_doc.sql_table_comments.*;
 import comments.markdown_doc.struct_comments.*;
 import comments.markdown_doc.struct_template_comments.*;
+import comments.markdown_doc.union_comments.*;
 
 import comments.mixed_doc.struct_comments.*;
 
