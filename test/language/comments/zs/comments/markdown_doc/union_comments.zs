@@ -6,7 +6,7 @@ import comments.markdown_doc.enum_comments.Direction;
 
 **TestUnion**
 
-This is a enumeration which uses constraint in one case.
+This is an union which uses constraint in one case.
 
 See [Direction](../markdown_doc/enum_comments.zs#Direction) page.
 

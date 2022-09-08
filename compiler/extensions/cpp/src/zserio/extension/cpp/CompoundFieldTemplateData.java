@@ -2,6 +2,7 @@ package zserio.extension.cpp;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 import zserio.ast.ArrayInstantiation;
 import zserio.ast.DynamicBitFieldInstantiation;
@@ -9,6 +10,7 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.UnionType;
 import zserio.ast.ChoiceType;
 import zserio.ast.CompoundType;
+import zserio.ast.DocComment;
 import zserio.ast.ZserioType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -67,7 +69,8 @@ public class CompoundFieldTemplateData
         runtimeFunction = CppRuntimeFunctionDataCreator.createData(context, fieldTypeInstantiation,
                 includeCollector);
         bitSize = BitSizeTemplateData.create(context, fieldTypeInstantiation, includeCollector);
-        docComments = new DocCommentsTemplateData(field.getDocComments());
+        final List<DocComment> fieldDocComments = field.getDocComments();
+        docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
     }
 
     public Optional getOptional()

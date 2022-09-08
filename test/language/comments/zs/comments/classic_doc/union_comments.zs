@@ -3,11 +3,11 @@ package comments.classic_doc.union_comments;
 import comments.classic_doc.enum_comments.Direction;
 
 /**
- * This is a enumeration which uses constraint in one case.
+ * This is an union which uses constraint in one case.
  *
  * For more information, please have a look to the @see "documentation" Direction page.
  *
- * @see Direction
+ * @see "Direction" comments.classic_doc.enum_comments.Direction
  *
  * @param case1Allowed True if case1Field is allowed.
  *

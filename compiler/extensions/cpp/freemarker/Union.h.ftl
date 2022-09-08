@@ -13,8 +13,6 @@
 </#if>
 #include <zserio/BitStreamReader.h>
 #include <zserio/BitStreamWriter.h>
-#include <zserio/CppRuntimeException.h>
-#include <zserio/StringConvertUtil.h>
 #include <zserio/AllocatorPropagatingCopy.h>
 <#if withTypeInfoCode>
 <@type_includes types.typeInfo/>
