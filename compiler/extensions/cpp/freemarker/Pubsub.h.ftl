@@ -98,6 +98,12 @@ public:
     /**
      * Publishes given message as a topic '${message.name}'.
      *
+        <#if message.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner message.docComments, 1/>
+     *
+        </#if>
      * \param message Message to publish.
      * \param context Context specific for a particular Pub/Sub implementation.
      */
@@ -110,6 +116,12 @@ public:
     /**
      * Subscribes a topic '${message.name}'.
      *
+        <#if message.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner message.docComments, 1/>
+     *
+        </#if>
      * \param callback Callback to be called when a message with the specified topic arrives.
      * \param context Context specific for a particular Pub/Sub implementation.
      *

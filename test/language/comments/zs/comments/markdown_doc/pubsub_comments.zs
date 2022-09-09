@@ -17,9 +17,9 @@ struct UInt64Value
 /*! Definition of the simple pubsub inteface. !*/
 pubsub SimplePubsub
 {
-    /*! Topic to pass the request. !*/
+    /*! Topic which holds an input for power of two calculation. !*/
     topic("simple_pubsub/request") Int32Value request;
 
-    /*! Topic to publish power of two of the value from request. !*/
+    /*! Topic which calculates power of two. !*/
     topic("simple_pubsub/power_of_two") UInt64Value powerOfTwo;
 };
