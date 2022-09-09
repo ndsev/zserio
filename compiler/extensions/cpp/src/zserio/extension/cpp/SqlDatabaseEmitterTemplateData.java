@@ -21,7 +21,7 @@ public class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, databaseType);
+        super(context, databaseType, databaseType.getDocComments());
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final List<Field> dbFields = databaseType.getFields();

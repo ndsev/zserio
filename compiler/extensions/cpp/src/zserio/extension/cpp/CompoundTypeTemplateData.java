@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
-import zserio.ast.DocComment;
 import zserio.ast.Field;
 import zserio.extension.common.ZserioExtensionException;
 
@@ -16,7 +15,7 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     public CompoundTypeTemplateData(TemplateDataContext context, CompoundType compoundType)
             throws ZserioExtensionException
     {
-        super(context, compoundType);
+        super(context, compoundType, compoundType.getDocComments());
 
         final List<Field> fieldTypeList = compoundType.getFields();
         fieldList = new ArrayList<CompoundFieldTemplateData>(fieldTypeList.size());
@@ -38,8 +37,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         needsChildrenInitialization = compoundType.needsChildrenInitialization();
 
         templateInstantiation = TemplateInstantiationTemplateData.create(context, compoundType, this);
-        final List<DocComment> compoundDocComments = compoundType.getDocComments();
-        docComments = compoundDocComments.isEmpty() ? null : new DocCommentsTemplateData(compoundDocComments);
     }
 
     public Iterable<CompoundFieldTemplateData> getFieldList()
@@ -72,11 +69,6 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
         return templateInstantiation;
     }
 
-    public DocCommentsTemplateData getDocComments()
-    {
-        return docComments;
-    }
-
     private final List<CompoundFieldTemplateData> fieldList;
     private final CompoundParameterTemplateData compoundParametersData;
     private final CompoundFunctionTemplateData compoundFunctionsData;
@@ -85,5 +77,4 @@ public class CompoundTypeTemplateData extends UserTypeTemplateData
     private final boolean needsChildrenInitialization;
 
     private final TemplateInstantiationTemplateData templateInstantiation;
-    private final DocCommentsTemplateData docComments;
 }

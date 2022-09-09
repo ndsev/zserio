@@ -16,7 +16,7 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
             throws ZserioExtensionException
     {
-        super(context, serviceType);
+        super(context, serviceType, serviceType.getDocComments());
 
         final CppNativeMapper cppTypeMapper = context.getCppNativeMapper();
 

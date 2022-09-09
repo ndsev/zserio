@@ -41,7 +41,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
     {
-        super(context, tableType);
+        super(context, tableType, tableType.getDocComments());
 
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);
         sqlConstraint = createSqlConstraint(tableType.getSqlConstraint(), cppExpressionFormatter);

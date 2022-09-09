@@ -18,7 +18,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
             throws ZserioExtensionException
     {
-        super(context, pubsubType);
+        super(context, pubsubType, pubsubType.getDocComments());
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final ExpressionFormatter cppExpressionFormatter = context.getExpressionFormatter(this);

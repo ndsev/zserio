@@ -18,7 +18,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType);
+        super(context, enumType, enumType.getDocComments());
 
         final CppNativeMapper cppNativeMapper = context.getCppNativeMapper();
         final CppNativeType nativeEnumType = cppNativeMapper.getCppType(enumType);
