@@ -856,7 +856,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
         <#if field.docComments??>
      * \b Description
      *
-     <@doc_comments_inner field.docComments, 4/>
+     <@doc_comments_inner field.docComments, 1/>
      *
         </#if>
      * \return Value of the field ${field.name}.
@@ -872,7 +872,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
             <#if field.docComments??>
      * \b Description
      *
-     <@doc_comments_inner field.docComments, 4/>
+     <@doc_comments_inner field.docComments, 1/>
      *
             </#if>
      * \return Reference to the field ${field.name}.
@@ -889,7 +889,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
             <#if field.docComments??>
      * \b Description
      *
-     <@doc_comments_inner field.docComments, 4/>
+     <@doc_comments_inner field.docComments, 1/>
      *
             </#if>
      * \param <@field_argument_name field/> Value of the field ${field.name} to set.
@@ -906,7 +906,7 @@ ${I}endBitPosition = <@compound_get_field field/>.initializeOffsets(endBitPositi
             <#if field.docComments??>
      * \b Description
      *
-     <@doc_comments_inner field.docComments, 4/>
+     <@doc_comments_inner field.docComments, 1/>
      *
             </#if>
      * \param <@field_argument_name field/> R-value of the field ${field.name} to set.

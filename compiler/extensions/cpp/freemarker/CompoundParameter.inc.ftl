@@ -65,7 +65,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
                     <#if compoundParameter.docComments??>
      * \b Description
      *
-     <@doc_comments_inner compoundParameter.docComments, 4/>
+     <@doc_comments_inner compoundParameter.docComments, 1/>
      *
                     </#if>
      * \return The reference to the parameter ${compoundParameter.name}.
@@ -81,7 +81,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
                 <#if compoundParameter.docComments??>
      * \b Description
      *
-     <@doc_comments_inner compoundParameter.docComments, 4/>
+     <@doc_comments_inner compoundParameter.docComments, 1/>
      *
                 </#if>
      * \return The const reference to the parameter ${compoundParameter.name}.
@@ -96,7 +96,7 @@ ${I}${parameterType} <@parameter_argument_name compoundParameter.name/><#rt>
                 <#if compoundParameter.docComments??>
      * \b Description
      *
-     <@doc_comments_inner compoundParameter.docComments, 4/>
+     <@doc_comments_inner compoundParameter.docComments, 1/>
      *
                 </#if>
      * \return The value of the parameter ${compoundParameter.name}.

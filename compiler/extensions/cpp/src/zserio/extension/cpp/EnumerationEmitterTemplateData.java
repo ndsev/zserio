@@ -3,6 +3,7 @@ package zserio.extension.cpp;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.DocComment;
 import zserio.ast.EnumItem;
 import zserio.ast.EnumType;
 import zserio.ast.TypeInstantiation;
@@ -67,6 +68,8 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             fullName = CppFullNameFormatter.getFullName(nativeEnumType.getPackageName(),
                     nativeEnumType.getName(), enumItem.getName());
             value = nativeBaseType.formatLiteral(enumItem.getValue());
+            final List<DocComment> itemDocComments = enumItem.getDocComments();
+            docComments = itemDocComments.isEmpty() ? null : new DocCommentsTemplateData(itemDocComments);
         }
 
         public String getName()
@@ -84,9 +87,15 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
             return value;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String fullName;
         private final String value;
+        private final DocCommentsTemplateData docComments;
     };
 
     private final NativeIntegralTypeInfoTemplateData underlyingTypeInfo;

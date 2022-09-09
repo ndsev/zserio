@@ -39,7 +39,7 @@ public:
     {
 <#list values as value>
     <#if withCodeComments && value.docComments??>
-        <@doc_comments value.docComments, 8/>
+        <@doc_comments value.docComments, 2/>
     </#if>
         ${value.name} = ${value.value}<#if !value?is_last>,</#if>
 </#list>
