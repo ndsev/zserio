@@ -12,4 +12,7 @@ sql_database Db
 {
     /** Table field comment. */
     Table table;
+
+    /** Another table field comment. */
+    Table anotherTable;
 };
