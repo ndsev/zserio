@@ -132,7 +132,7 @@ main()
 
     set_common_variables
 
-    local FIND_PARAMS="-name *.blob -o -name *.json -not -path *.mypy_cache*"
+    local FIND_PARAMS="-name *.blob -o -name *.json -o name *.hash -not -path *.mypy_cache*"
     local BLOBS_0=($("${FIND}" "${PARAM_DIRS[0]}" ${FIND_PARAMS} | sort))
     local NUM_BLOBS=${#BLOBS_0[@]}
     local CMP_RESULT=0
