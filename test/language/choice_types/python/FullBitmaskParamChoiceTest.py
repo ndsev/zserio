@@ -60,6 +60,10 @@ class FullBitmaskParamChoiceTest(unittest.TestCase):
         fullBitmaskParamChoice2.black = diffValue
         self.assertTrue(hash(fullBitmaskParamChoice1) != hash(fullBitmaskParamChoice2))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(63110, hash(fullBitmaskParamChoice1))
+        self.assertEqual(63111, hash(fullBitmaskParamChoice2))
+
     def testGetSelector(self):
         selector = self.api.Selector.Values.BLACK
         fullBitmaskParamChoice = self.api.FullBitmaskParamChoice(selector)

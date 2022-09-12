@@ -59,6 +59,10 @@ class BitmaskParamChoiceTest(unittest.TestCase):
         bitmaskParamChoice2.black = diffValue
         self.assertTrue(hash(bitmaskParamChoice1) != hash(bitmaskParamChoice2))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(63110, hash(bitmaskParamChoice1))
+        self.assertEqual(63111, hash(bitmaskParamChoice2))
+
     def testGetSelector(self):
         selector = self.api.Selector.Values.BLACK
         bitmaskParamChoice = self.api.BitmaskParamChoice(selector)

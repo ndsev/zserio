@@ -218,42 +218,46 @@ TEST_F(FullEnumParamChoiceTest, initializeOffsets)
 
 TEST_F(FullEnumParamChoiceTest, operatorEquality)
 {
-    FullEnumParamChoice enumParamChoice1;
-    enumParamChoice1.initialize(Selector::BLACK);
-    FullEnumParamChoice enumParamChoice2;
-    enumParamChoice2.initialize(Selector::BLACK);
-    ASSERT_TRUE(enumParamChoice1 == enumParamChoice2);
+    FullEnumParamChoice fullEnumParamChoice1;
+    fullEnumParamChoice1.initialize(Selector::BLACK);
+    FullEnumParamChoice fullEnumParamChoice2;
+    fullEnumParamChoice2.initialize(Selector::BLACK);
+    ASSERT_TRUE(fullEnumParamChoice1 == fullEnumParamChoice2);
 
     const int8_t value = 99;
-    enumParamChoice1.setBlack(value);
-    ASSERT_FALSE(enumParamChoice1 == enumParamChoice2);
+    fullEnumParamChoice1.setBlack(value);
+    ASSERT_FALSE(fullEnumParamChoice1 == fullEnumParamChoice2);
 
-    enumParamChoice2.setBlack(value);
-    ASSERT_TRUE(enumParamChoice1 == enumParamChoice2);
+    fullEnumParamChoice2.setBlack(value);
+    ASSERT_TRUE(fullEnumParamChoice1 == fullEnumParamChoice2);
 
     const int8_t diffValue = value + 1;
-    enumParamChoice2.setBlack(diffValue);
-    ASSERT_FALSE(enumParamChoice1 == enumParamChoice2);
+    fullEnumParamChoice2.setBlack(diffValue);
+    ASSERT_FALSE(fullEnumParamChoice1 == fullEnumParamChoice2);
 }
 
 TEST_F(FullEnumParamChoiceTest, hashCode)
 {
-    FullEnumParamChoice enumParamChoice1;
-    enumParamChoice1.initialize(Selector::BLACK);
-    FullEnumParamChoice enumParamChoice2;
-    enumParamChoice2.initialize(Selector::BLACK);
-    ASSERT_EQ(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
+    FullEnumParamChoice fullEnumParamChoice1;
+    fullEnumParamChoice1.initialize(Selector::BLACK);
+    FullEnumParamChoice fullEnumParamChoice2;
+    fullEnumParamChoice2.initialize(Selector::BLACK);
+    ASSERT_EQ(fullEnumParamChoice1.hashCode(), fullEnumParamChoice2.hashCode());
 
     const int8_t value = 99;
-    enumParamChoice1.setBlack(value);
-    ASSERT_NE(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
+    fullEnumParamChoice1.setBlack(value);
+    ASSERT_NE(fullEnumParamChoice1.hashCode(), fullEnumParamChoice2.hashCode());
 
-    enumParamChoice2.setBlack(value);
-    ASSERT_EQ(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
+    fullEnumParamChoice2.setBlack(value);
+    ASSERT_EQ(fullEnumParamChoice1.hashCode(), fullEnumParamChoice2.hashCode());
 
     const int8_t diffValue = value + 1;
-    enumParamChoice2.setBlack(diffValue);
-    ASSERT_NE(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
+    fullEnumParamChoice2.setBlack(diffValue);
+    ASSERT_NE(fullEnumParamChoice1.hashCode(), fullEnumParamChoice2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(63073, fullEnumParamChoice1.hashCode());
+    ASSERT_EQ(63074, fullEnumParamChoice2.hashCode());
 }
 
 TEST_F(FullEnumParamChoiceTest, write)

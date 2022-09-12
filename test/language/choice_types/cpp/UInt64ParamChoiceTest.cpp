@@ -255,6 +255,10 @@ TEST_F(UInt64ParamChoiceTest, hashCode)
     const int8_t diffValue = value + 1;
     uint64ParamChoice2.setA(diffValue);
     ASSERT_NE(uint64ParamChoice1.hashCode(), uint64ParamChoice2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(31623, uint64ParamChoice1.hashCode());
+    ASSERT_EQ(31624, uint64ParamChoice2.hashCode());
 }
 
 TEST_F(UInt64ParamChoiceTest, writeRead)

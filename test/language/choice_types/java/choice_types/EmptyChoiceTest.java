@@ -98,6 +98,10 @@ public class EmptyChoiceTest
         final EmptyChoice emptyChoice3 = new EmptyChoice((short)0);
         assertEquals(emptyChoice1.hashCode(), emptyChoice2.hashCode());
         assertTrue(emptyChoice1.hashCode() != emptyChoice3.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(852, emptyChoice1.hashCode());
+        assertEquals(851, emptyChoice3.hashCode());
     }
 
     @Test

@@ -85,8 +85,18 @@ public class OptionalRecursionTest
         final Block block2 = createBlock(BLOCK1_DATA);
         assertEquals(block2.hashCode(), block1.hashCode());
 
-        final Block block12 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
-        assertTrue(block12.hashCode() != block1.hashCode());
+        final Block block12_1 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertTrue(block12_1.hashCode() != block1.hashCode());
+
+        final Block block12_2 = createBlock(BLOCK1_DATA, BLOCK2_DATA);
+        assertEquals(block12_1.hashCode(), block12_2.hashCode());
+
+        block12_1.setBlockTerminator((short)0);
+        assertNotEquals(block12_1.hashCode(), block12_2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(6240113, block12_1.hashCode());
+        assertEquals(1846174533, block12_2.hashCode());
     }
 
     @Test

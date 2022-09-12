@@ -59,6 +59,10 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         uint64ParamChoice2.a = diffValue
         self.assertTrue(hash(uint64ParamChoice1) != hash(uint64ParamChoice2))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(31623, hash(uint64ParamChoice1))
+        self.assertEqual(31624, hash(uint64ParamChoice2))
+
     def testGetSelector(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_C_SELECTOR)
         self.assertEqual(self.VARIANT_C_SELECTOR, uint64ParamChoice.selector)

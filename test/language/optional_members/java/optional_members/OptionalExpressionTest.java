@@ -133,6 +133,10 @@ public class OptionalExpressionTest
         container2.setBlackColor(createBlackColor(NUM_BLACK_TONES));
         assertTrue(container1.hashCode() != container2.hashCode());
 
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(1703, container1.hashCode());
+        assertEquals(2393199, container2.hashCode());
+
         container2.setBasicColor(BasicColor.WHITE);
         container2.setNumBlackTones(null);
         container2.setBlackColor(null);

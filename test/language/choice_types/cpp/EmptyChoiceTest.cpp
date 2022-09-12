@@ -148,6 +148,10 @@ TEST(EmptyChoiceTest, hashCode)
     emptyChoice3.initialize(0);
     ASSERT_EQ(emptyChoice1.hashCode(), emptyChoice2.hashCode());
     ASSERT_NE(emptyChoice1.hashCode(), emptyChoice3.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(852, emptyChoice1.hashCode());
+    ASSERT_EQ(851, emptyChoice3.hashCode());
 }
 
 TEST(EmptyChoiceTest, writeRead)

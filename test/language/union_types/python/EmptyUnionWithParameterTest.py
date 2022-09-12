@@ -32,6 +32,10 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
         self.assertEqual(hash(emptyUnionWithParameter1), hash(emptyUnionWithParameter2))
         self.assertTrue(hash(emptyUnionWithParameter1) != hash(emptyUnionWithParameter3))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(31523, hash(emptyUnionWithParameter1))
+        self.assertEqual(31486, hash(emptyUnionWithParameter3))
+
     def testChoiceTag(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)
         self.assertEqual(self.api.EmptyUnionWithParameter.UNDEFINED_CHOICE, emptyUnionWithParameter.choice_tag)
@@ -64,4 +68,4 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
         self.assertEqual(emptyUnionWithParameter, readEmptyUnionWithParameter)
 
     PARAM_VALUE1 = 1
-    PARAM_VALUE2 = 2
+    PARAM_VALUE2 = 0

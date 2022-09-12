@@ -123,6 +123,12 @@ TEST_F(Uint8BitmaskTest, hashCode)
     ASSERT_NE(readPermission.hashCode(), writePermission.hashCode());
     ASSERT_NE(readPermission.hashCode(), Permission(Permission::Values::NONE).hashCode());
     ASSERT_NE(writePermission.hashCode(), Permission(Permission::Values::NONE).hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(851, Permission(Permission::Values::NONE).hashCode());
+    ASSERT_EQ(853, Permission(Permission::Values::READ).hashCode());
+    ASSERT_EQ(855, Permission(Permission::Values::WRITE).hashCode());
+    ASSERT_EQ(858, Permission(Permission::Values::CREATE).hashCode());
 }
 
 TEST_F(Uint8BitmaskTest, write)

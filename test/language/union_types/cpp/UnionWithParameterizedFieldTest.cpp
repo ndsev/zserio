@@ -236,6 +236,11 @@ TEST_F(UnionWithParameterizedFieldTest, hashCode)
     testUnion2.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
     testUnion2.initializeChildren();
     ASSERT_NE(testUnion1.hashCode(), testUnion2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(31520, testUnion1.hashCode());
+    ASSERT_EQ(1174142900, testUnion2.hashCode());
+
     testUnion1.setArrayHolder(ArrayHolder{vector_type<uint32_t>(10)});
     ASSERT_THROW(testUnion1.hashCode(), zserio::CppRuntimeException);
     testUnion1.initializeChildren();

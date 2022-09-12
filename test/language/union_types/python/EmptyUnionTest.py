@@ -27,6 +27,9 @@ class EmptyUnionTest(unittest.TestCase):
         emptyUnion2 = self.api.EmptyUnion()
         self.assertEqual(hash(emptyUnion1), hash(emptyUnion2))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(850, hash(emptyUnion1))
+
     def testChoiceTag(self):
         emptyUnion = self.api.EmptyUnion()
         self.assertEqual(self.api.EmptyUnion.UNDEFINED_CHOICE, emptyUnion.choice_tag)

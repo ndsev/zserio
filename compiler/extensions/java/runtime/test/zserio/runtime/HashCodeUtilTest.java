@@ -42,13 +42,15 @@ public class HashCodeUtilTest
 
         final int intValue = 10;
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, intValue));
+        final int intValue2 = -1;
+        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER - 1, HashCodeUtil.calcHashCode(hashSeed, intValue2));
 
         final Integer intValueBoxed = Integer.valueOf(10);
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, intValueBoxed));
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, (Integer)null));
 
-        final long longValue = 10;
-        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, longValue));
+        final long longValue = -1;
+        assertEquals(HashCodeUtil.HASH_PRIME_NUMBER, HashCodeUtil.calcHashCode(hashSeed, longValue));
 
         final Long longValueBoxed = Long.valueOf(10);
         assertEquals(HashCodeUtil.HASH_PRIME_NUMBER + 10, HashCodeUtil.calcHashCode(hashSeed, longValueBoxed));

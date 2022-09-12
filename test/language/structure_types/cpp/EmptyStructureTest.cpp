@@ -93,6 +93,9 @@ TEST(EmptyStructureTest, hashCode)
     EmptyStructure emptyStructure1;
     EmptyStructure emptyStructure2;
     ASSERT_EQ(emptyStructure1.hashCode(), emptyStructure2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(23, emptyStructure1.hashCode());
 }
 
 TEST(EmptyStructureTest, write)

@@ -215,6 +215,10 @@ TEST_F(OptionalExpressionTest, hashCode)
     container2.initializeChildren();
     ASSERT_NE(container1.hashCode(), container2.hashCode());
 
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(1703, container1.hashCode());
+    ASSERT_EQ(2393199, container2.hashCode());
+
     container2.setBasicColor(BasicColor::WHITE); // set but not used
     ASSERT_EQ(container1.hashCode(), container2.hashCode());
 }

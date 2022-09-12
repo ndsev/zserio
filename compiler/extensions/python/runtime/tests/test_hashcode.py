@@ -3,7 +3,8 @@ import unittest
 
 from zserio.array import Array, SignedBitFieldArrayTraits
 from zserio.bitbuffer import BitBuffer
-from zserio.hashcode import (HASH_SEED, HASH_PRIME_NUMBER, calc_hashcode_bool, calc_hashcode_int,
+from zserio.hashcode import (HASH_SEED, HASH_PRIME_NUMBER, calc_hashcode_bool,
+                             calc_hashcode_int32, calc_hashcode_int64,
                              calc_hashcode_float32, calc_hashcode_float64,
                              calc_hashcode_string, calc_hashcode_object,
                              calc_hashcode_bool_array, calc_hashcode_int_array,
@@ -19,7 +20,7 @@ class Color(enum.Enum):
 
     def __hash__(self):
         result = HASH_SEED
-        result = calc_hashcode_int(result, self.value)
+        result = calc_hashcode_int32(result, self.value)
         return result
 
 class Permissions:
@@ -28,7 +29,7 @@ class Permissions:
 
     def __hash__(self):
         result = HASH_SEED
-        result = calc_hashcode_int(result, self.value)
+        result = calc_hashcode_int32(result, self.value)
         return result
 
     @property
@@ -63,9 +64,14 @@ class HashCodeTest(unittest.TestCase):
     def test_int_type(self):
         hash_seed = 1
         int_value = 10
-        self.assertEqual(HASH_PRIME_NUMBER + 10, calc_hashcode_int(hash_seed, int_value))
+        self.assertEqual(HASH_PRIME_NUMBER + 10, calc_hashcode_int32(hash_seed, int_value))
 
-        self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_int(hash_seed, None))
+        int_value = -1
+        self.assertEqual(HASH_PRIME_NUMBER - 1, calc_hashcode_int32(hash_seed, int_value))
+        self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_int64(hash_seed, int_value))
+
+        self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_int32(hash_seed, None))
+        self.assertEqual(HASH_PRIME_NUMBER, calc_hashcode_int64(hash_seed, None))
 
     def test_float32_type(self):
         hash_seed = 1

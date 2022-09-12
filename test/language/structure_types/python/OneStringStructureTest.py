@@ -45,6 +45,11 @@ class OneStringStructureTest(unittest.TestCase):
         oneStringStructure1.one_string = self.ONE_STRING
         self.assertTrue(hash(oneStringStructure1) != hash(oneStringStructure2))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(1773897624, hash(oneStringStructure1))
+        oneStringStructure2.one_string = ""
+        self.assertEqual(23, hash(oneStringStructure2))
+
         oneStringStructure2.one_string = self.ONE_STRING
         self.assertEqual(hash(oneStringStructure1), hash(oneStringStructure2))
 

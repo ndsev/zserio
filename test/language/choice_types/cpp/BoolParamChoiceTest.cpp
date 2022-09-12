@@ -219,6 +219,10 @@ TEST_F(BoolParamChoiceTest, hashCode)
     const int8_t diffValue = value + 1;
     boolParamChoice2.setBlack(diffValue);
     ASSERT_NE(boolParamChoice1.hashCode(), boolParamChoice2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(31623, boolParamChoice1.hashCode());
+    ASSERT_EQ(31624, boolParamChoice2.hashCode());
 }
 
 TEST_F(BoolParamChoiceTest, write)

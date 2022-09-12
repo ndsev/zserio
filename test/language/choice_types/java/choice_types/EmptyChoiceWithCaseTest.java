@@ -102,6 +102,10 @@ public class EmptyChoiceWithCaseTest
         final EmptyChoiceWithCase emptyChoiceWithCase3 = new EmptyChoiceWithCase((short)0);
         assertEquals(emptyChoiceWithCase1.hashCode(), emptyChoiceWithCase2.hashCode());
         assertTrue(emptyChoiceWithCase1.hashCode() != emptyChoiceWithCase3.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(852, emptyChoiceWithCase1.hashCode());
+        assertEquals(851, emptyChoiceWithCase3.hashCode());
     }
 
     @Test

@@ -29,36 +29,40 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         self.assertEqual(value, fullEnumParamChoice.grey)
 
     def testEq(self):
-        enumParamChoice1 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
-        enumParamChoice2 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
-        self.assertTrue(enumParamChoice1 == enumParamChoice2)
+        fullEnumParamChoice1 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
+        fullEnumParamChoice2 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
+        self.assertTrue(fullEnumParamChoice1 == fullEnumParamChoice2)
 
         value = 99
-        enumParamChoice1.black = value
-        self.assertFalse(enumParamChoice1 == enumParamChoice2)
+        fullEnumParamChoice1.black = value
+        self.assertFalse(fullEnumParamChoice1 == fullEnumParamChoice2)
 
-        enumParamChoice2.black = value
-        self.assertTrue(enumParamChoice1 == enumParamChoice2)
+        fullEnumParamChoice2.black = value
+        self.assertTrue(fullEnumParamChoice1 == fullEnumParamChoice2)
 
         diffValue = value + 1
-        enumParamChoice2.black = diffValue
-        self.assertFalse(enumParamChoice1 == enumParamChoice2)
+        fullEnumParamChoice2.black = diffValue
+        self.assertFalse(fullEnumParamChoice1 == fullEnumParamChoice2)
 
     def testHash(self):
-        enumParamChoice1 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
-        enumParamChoice2 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
-        self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
+        fullEnumParamChoice1 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
+        fullEnumParamChoice2 = self.api.FullEnumParamChoice(self.api.Selector.BLACK)
+        self.assertEqual(hash(fullEnumParamChoice1), hash(fullEnumParamChoice2))
 
         value = 99
-        enumParamChoice1.black = value
-        self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
+        fullEnumParamChoice1.black = value
+        self.assertTrue(hash(fullEnumParamChoice1) != hash(fullEnumParamChoice2))
 
-        enumParamChoice2.black = value
-        self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
+        fullEnumParamChoice2.black = value
+        self.assertEqual(hash(fullEnumParamChoice1), hash(fullEnumParamChoice2))
 
         diffValue = value + 1
-        enumParamChoice2.black = diffValue
-        self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
+        fullEnumParamChoice2.black = diffValue
+        self.assertTrue(hash(fullEnumParamChoice1) != hash(fullEnumParamChoice2))
+
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(63073, hash(fullEnumParamChoice1))
+        self.assertEqual(63074, hash(fullEnumParamChoice2))
 
     def testGetSelector(self):
         selector = self.api.Selector.BLACK

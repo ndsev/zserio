@@ -34,6 +34,10 @@ class EmptyChoiceTest(unittest.TestCase):
         self.assertEqual(hash(emptyChoice1), hash(emptyChoice2))
         self.assertTrue(hash(emptyChoice1) != hash(emptyChoice3))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(852, hash(emptyChoice1))
+        self.assertEqual(851, hash(emptyChoice3))
+
     def testGetSelector(self):
         selector = 1
         emptyChoice = self.api.EmptyChoice(selector)

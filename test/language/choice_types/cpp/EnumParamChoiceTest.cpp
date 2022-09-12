@@ -254,6 +254,10 @@ TEST_F(EnumParamChoiceTest, hashCode)
     const int8_t diffValue = value + 1;
     enumParamChoice2.setBlack(diffValue);
     ASSERT_NE(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(63073, enumParamChoice1.hashCode());
+    ASSERT_EQ(63074, enumParamChoice2.hashCode());
 }
 
 TEST_F(EnumParamChoiceTest, write)

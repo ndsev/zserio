@@ -137,7 +137,7 @@ ${I}pass
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
-        result = zserio.hashcode.calc_hashcode_int(result, self._choice_tag)
+        result = zserio.hashcode.calc_hashcode_int32(result, self._choice_tag)
 <#if fieldList?has_content>
         <@union_if "union_hashcode_field", "union_hashcode_no_match"/>
 </#if>

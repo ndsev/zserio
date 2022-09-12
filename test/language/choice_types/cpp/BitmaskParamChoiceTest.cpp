@@ -263,6 +263,10 @@ TEST_F(BitmaskParamChoiceTest, hashCode)
     const int8_t diffValue = value + 1;
     bitmaskParamChoice2.setBlack(diffValue);
     ASSERT_NE(bitmaskParamChoice1.hashCode(), bitmaskParamChoice2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(63110, bitmaskParamChoice1.hashCode());
+    ASSERT_EQ(63111, bitmaskParamChoice2.hashCode());
 }
 
 TEST_F(BitmaskParamChoiceTest, write)

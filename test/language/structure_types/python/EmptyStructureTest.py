@@ -23,6 +23,9 @@ class EmptyStructureTest(unittest.TestCase):
         emptyStructure2 = self.api.EmptyStructure()
         self.assertEqual(hash(emptyStructure1), hash(emptyStructure2))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(23, hash(emptyStructure1))
+
     def testBitSizeOf(self):
         bitPosition = 1
         emptyStructure = self.api.EmptyStructure()

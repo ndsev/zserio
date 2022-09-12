@@ -74,6 +74,10 @@ class SimpleStructureTest(unittest.TestCase):
         simpleStructure2.number_c = numberC
         self.assertTrue(hash(simpleStructure1) != hash(simpleStructure2))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(1178167, hash(simpleStructure1))
+        self.assertEqual(1178204, hash(simpleStructure2))
+
         simpleStructure2.number_b = numberB
         self.assertEqual(hash(simpleStructure1), hash(simpleStructure2))
 

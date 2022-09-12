@@ -33,6 +33,10 @@ class EmptyChoiceWithDefaultTest(unittest.TestCase):
         self.assertEqual(hash(emptyChoiceWithDefault1), hash(emptyChoiceWithDefault2))
         self.assertTrue(hash(emptyChoiceWithDefault1) != hash(emptyChoiceWithDefault3))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(852, hash(emptyChoiceWithDefault1))
+        self.assertEqual(851, hash(emptyChoiceWithDefault3))
+
     def testGetSelector(self):
         selector = 1
         emptyChoiceWithDefault = self.api.EmptyChoiceWithDefault(selector)

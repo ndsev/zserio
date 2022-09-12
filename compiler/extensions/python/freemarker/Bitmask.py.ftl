@@ -60,7 +60,7 @@ class ${name}:
 
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
-        result = zserio.hashcode.calc_hashcode_int(result, self._value)
+        result = zserio.hashcode.calc_hashcode_${underlyingTypeInfo.hashCodeFunc.suffix}(result, self._value)
         return result
 
     def __str__(self) -> str:

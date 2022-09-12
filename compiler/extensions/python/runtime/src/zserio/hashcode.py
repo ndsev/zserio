@@ -18,11 +18,11 @@ def calc_hashcode_bool(seed_value: int, value: bool) -> int:
     :returns: Calculated hash code.
     """
 
-    return calc_hashcode_int(seed_value, 1 if value else 0)
+    return calc_hashcode_int32(seed_value, 1 if value else 0)
 
-def calc_hashcode_int(seed_value: int, value: int) -> int:
+def calc_hashcode_int32(seed_value: int, value: int) -> int:
     """
-    Calculates hash code for an integral value.
+    Calculates hash code for a 32-bit integral value.
 
     :param seed_value: Seed value (current hash code).
     :param value: Value to use.
@@ -30,7 +30,21 @@ def calc_hashcode_int(seed_value: int, value: int) -> int:
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
+
+    return (HASH_PRIME_NUMBER * seed_value + value) & 0xFFFFFFFF
+
+def calc_hashcode_int64(seed_value: int, value: int) -> int:
+    """
+    Calculates hash code for a 64-bit integral value.
+
+    :param seed_value: Seed value (current hash code).
+    :param value: Value to use.
+    :returns: Calculated hash code.
+    """
+
+    if value is None:
+        return calc_hashcode_int32(seed_value, 0)
 
     int_value_for_hash = (value & 0xFFFFFFFF) ^ ((value & 0xFFFFFFFFFFFFFFFF) >> 32)
     return (HASH_PRIME_NUMBER * seed_value + int_value_for_hash) & 0xFFFFFFFF
@@ -45,10 +59,10 @@ def calc_hashcode_float32(seed_value: int, value: float) -> int:
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     int_value = float_to_uint32(value)
-    return calc_hashcode_int(seed_value, int_value)
+    return calc_hashcode_int32(seed_value, int_value)
 
 def calc_hashcode_float64(seed_value: int, value: float) -> int:
     """
@@ -60,10 +74,10 @@ def calc_hashcode_float64(seed_value: int, value: float) -> int:
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     int_value = float_to_uint64(value)
-    return calc_hashcode_int(seed_value, int_value)
+    return calc_hashcode_int64(seed_value, int_value)
 
 def calc_hashcode_string(seed_value: int, value: str) -> int:
     """
@@ -75,11 +89,11 @@ def calc_hashcode_string(seed_value: int, value: str) -> int:
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     result = seed_value
     for element in value:
-        result = calc_hashcode_int(result, ord(element))
+        result = calc_hashcode_int32(result, ord(element))
 
     return result
 
@@ -94,7 +108,7 @@ def calc_hashcode_object(seed_value: int, value: typing.Any) -> int:
     :returns: Calculated hash code.
     """
 
-    return calc_hashcode_int(seed_value, hash(value) if value else 0)
+    return calc_hashcode_int32(seed_value, hash(value) if value else 0)
 
 def calc_hashcode_bool_array(seed_value: int, value: typing.List[bool]) -> int:
     """
@@ -106,7 +120,7 @@ def calc_hashcode_bool_array(seed_value: int, value: typing.List[bool]) -> int:
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     result = seed_value
     for element in value:
@@ -123,11 +137,11 @@ def calc_hashcode_int_array(seed_value: int, value: typing.List[int]) -> int:
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     result = seed_value
     for element in value:
-        result = calc_hashcode_int(result, element)
+        result = calc_hashcode_int32(result, element)
     return result
 
 def calc_hashcode_float32_array(seed_value: int, value: typing.List[int]) -> int:
@@ -140,7 +154,7 @@ def calc_hashcode_float32_array(seed_value: int, value: typing.List[int]) -> int
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     result = seed_value
     for element in value:
@@ -157,7 +171,7 @@ def calc_hashcode_float64_array(seed_value: int, value: typing.List[int]) -> int
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     result = seed_value
     for element in value:
@@ -174,7 +188,7 @@ def calc_hashcode_string_array(seed_value: int, value: typing.List[str]) -> int:
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     result = seed_value
     for element in value:
@@ -194,7 +208,7 @@ def calc_hashcode_object_array(seed_value: int, value: typing.List[typing.Any]) 
     """
 
     if value is None:
-        return calc_hashcode_int(seed_value, 0)
+        return calc_hashcode_int32(seed_value, 0)
 
     result = seed_value
     for element in value:

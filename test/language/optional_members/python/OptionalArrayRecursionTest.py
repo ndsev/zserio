@@ -54,6 +54,11 @@ class OptionalArrayRecursionTest(unittest.TestCase):
         teamLead2 = self._createTeamLead()
         self.assertEqual(hash(teamLead1), hash(teamLead2))
 
+        teamLead1.title = self.api.Title.DEVELOPER
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(198054975, hash(teamLead1))
+        self.assertEqual(3595797558, hash(teamLead2))
+
     def testIsTeamMembersSetAndUsed(self):
         employee = self._createEmployee(self.EMPLOYEE_DEVELOPER1_NAME, self.EMPLOYEE_DEVELOPER1_SALARY,
                                         self.api.Title.DEVELOPER)

@@ -46,6 +46,22 @@ class PythonRuntimeFunctionDataCreator
         }
     }
 
+    public static RuntimeFunctionTemplateData createHashCodeData(TypeInstantiation typeInstantiation)
+            throws ZserioExtensionException
+    {
+        if (typeInstantiation instanceof DynamicBitFieldInstantiation)
+        {
+            if (((DynamicBitFieldInstantiation)typeInstantiation).getMaxBitSize() > 32)
+                return new RuntimeFunctionTemplateData("int64");
+            else
+                return new RuntimeFunctionTemplateData("int32");
+        }
+        else
+        {
+            return createHashCodeData(typeInstantiation.getTypeReference());
+        }
+    }
+
     public static RuntimeFunctionTemplateData createHashCodeData(TypeReference typeReference)
             throws ZserioExtensionException
     {
@@ -174,25 +190,28 @@ class PythonRuntimeFunctionDataCreator
         @Override
         public void visitStdIntegerType(StdIntegerType stdIntegerType)
         {
-            templateData = new RuntimeFunctionTemplateData("int");
+            final String suffix = (stdIntegerType.getBitSize() > 32) ? "int64" : "int32";
+            templateData = new RuntimeFunctionTemplateData(suffix);
         }
 
         @Override
         public void visitVarIntegerType(VarIntegerType varIntegerType)
         {
-            templateData = new RuntimeFunctionTemplateData("int");
+            final String suffix = (varIntegerType.getMaxBitSize() > 32) ? "int64" : "int32";
+            templateData = new RuntimeFunctionTemplateData(suffix);
         }
 
         @Override
-        public void visitFixedBitFieldType(FixedBitFieldType fixedFieldTypeType)
+        public void visitFixedBitFieldType(FixedBitFieldType fixedBitFieldType)
         {
-            templateData = new RuntimeFunctionTemplateData("int");
+            final String suffix = (fixedBitFieldType.getBitSize() > 32) ? "int64" : "int32";
+            templateData = new RuntimeFunctionTemplateData(suffix);
         }
 
         @Override
         public void visitDynamicBitFieldType(DynamicBitFieldType dynamicBitFieldType)
         {
-            templateData = new RuntimeFunctionTemplateData("int");
+            templateData = new RuntimeFunctionTemplateData("int64");
         }
 
         @Override

@@ -63,6 +63,12 @@ class UInt8BitmaskTest(unittest.TestCase):
         self.assertNotEqual(hash(read), hash(write))
         self.assertNotEqual(hash(read), hash(self.api.Permission.Values.NONE))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(851, hash(self.api.Permission.Values.NONE))
+        self.assertEqual(853, hash(self.api.Permission.Values.READ))
+        self.assertEqual(855, hash(self.api.Permission.Values.WRITE))
+        self.assertEqual(858, hash(self.api.Permission.Values.CREATE))
+
     def testStr(self):
         self.assertEqual("0[NONE]", str(self.api.Permission.Values.NONE))
         self.assertEqual("2[READ]", str(self.api.Permission.Values.READ))

@@ -101,9 +101,11 @@ TEST(HashCodeUtilTest, simpleTypes)
 
     const int32_t int32Value = 10;
     EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, int32Value));
+    const int32_t int32Value2 = -1;
+    EXPECT_EQ(HASH_PRIME_NUMBER - 1, calcHashCode(hashSeed, int32Value2));
 
-    const int64_t int64Value = 10;
-    EXPECT_EQ(HASH_PRIME_NUMBER + 10, calcHashCode(hashSeed, int64Value));
+    const int64_t int64Value = -1;
+    EXPECT_EQ(HASH_PRIME_NUMBER, calcHashCode(hashSeed, int64Value));
 
     const float floatValue = 10.0f;
     EXPECT_EQ(HASH_PRIME_NUMBER + convertFloatToUInt32(floatValue), calcHashCode(hashSeed, floatValue));

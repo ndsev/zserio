@@ -85,6 +85,11 @@ public class OptionalArrayRecursionTest
 
         final Employee teamLead2 = createTeamLead();
         assertEquals(teamLead1.hashCode(), teamLead2.hashCode());
+
+        teamLead1.setTitle(Title.DEVELOPER);
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(198054975, teamLead1.hashCode());
+        assertEquals((int)3595797558L, teamLead2.hashCode());
     }
 
     @Test

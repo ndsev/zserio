@@ -85,6 +85,10 @@ public class AutoOptionalTest
 
         container1.resetAutoOptionalInt();
         assertTrue(container1.hashCode() != container2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals((int)3735937536L, container1.hashCode());
+        assertEquals((int)3994118383L, container2.hashCode());
     }
 
     @Test

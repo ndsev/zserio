@@ -69,6 +69,15 @@ TEST_F(VarUIntEnumTest, valueToEnumFailure)
     ASSERT_THROW(zserio::valueToEnum<DarkColor>(3), zserio::CppRuntimeException);
 }
 
+TEST_F(VarUIntEnumTest, enumHashCode)
+{
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(1702, zserio::calcHashCode(zserio::HASH_SEED, DarkColor::NONE));
+    ASSERT_EQ(1703, zserio::calcHashCode(zserio::HASH_SEED, DarkColor::DARK_RED));
+    ASSERT_EQ(1704, zserio::calcHashCode(zserio::HASH_SEED, DarkColor::DARK_BLUE));
+    ASSERT_EQ(1957, zserio::calcHashCode(zserio::HASH_SEED, DarkColor::DARK_GREEN));
+}
+
 TEST_F(VarUIntEnumTest, bitSizeOf)
 {
     ASSERT_TRUE(zserio::bitSizeOf(DarkColor::NONE) == DARK_COLOR_NONE_BITSIZEOF);

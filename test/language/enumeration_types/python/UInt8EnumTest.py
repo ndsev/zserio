@@ -22,6 +22,17 @@ class UInt8EnumTest(unittest.TestCase):
         color = self.api.DarkColor.from_reader(reader)
         self.assertEqual(DARK_GREEN_VALUE, color.value)
 
+    def testCalcHashCode(self):
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(1702, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
+                                                                    self.api.DarkColor.NONE))
+        self.assertEqual(1703, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
+                                                                    self.api.DarkColor.DARK_RED))
+        self.assertEqual(1704, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
+                                                                    self.api.DarkColor.DARK_BLUE))
+        self.assertEqual(1709, zserio.hashcode.calc_hashcode_object(zserio.hashcode.HASH_SEED,
+                                                                    self.api.DarkColor.DARK_GREEN))
+
     def testBitSizeOf(self):
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.NONE.bitsizeof())
         self.assertEqual(DARK_COLOR_BITSIZEOF, self.api.DarkColor.DARK_RED.bitsizeof())

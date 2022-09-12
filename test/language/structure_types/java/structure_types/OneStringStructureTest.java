@@ -91,6 +91,11 @@ public class OneStringStructureTest
         oneStringStructure1.setOneString(ONE_STRING);
         assertTrue(oneStringStructure1.hashCode() != oneStringStructure2.hashCode());
 
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(1773897624, oneStringStructure1.hashCode());
+        oneStringStructure2.setOneString("");
+        assertEquals(23, oneStringStructure2.hashCode());
+
         oneStringStructure2.setOneString(ONE_STRING);
         assertEquals(oneStringStructure1.hashCode(), oneStringStructure2.hashCode());
     }

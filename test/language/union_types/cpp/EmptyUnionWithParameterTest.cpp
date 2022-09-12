@@ -177,8 +177,12 @@ TEST(EmptyUnionWithParameterTest, hashCode)
     emptyUnionWithParameter2.initialize(1);
     ASSERT_EQ(emptyUnionWithParameter1.hashCode(), emptyUnionWithParameter2.hashCode());
 
-    emptyUnionWithParameter2.initialize(2);
+    emptyUnionWithParameter2.initialize(0);
     ASSERT_NE(emptyUnionWithParameter1.hashCode(), emptyUnionWithParameter2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(31523, emptyUnionWithParameter1.hashCode());
+    ASSERT_EQ(31486, emptyUnionWithParameter2.hashCode());
 }
 
 TEST(EmptyUnionWithParameterTest, write)

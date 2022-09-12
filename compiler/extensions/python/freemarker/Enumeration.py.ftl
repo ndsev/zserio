@@ -43,7 +43,7 @@ class ${name}(enum.Enum):
     <#-- we need custom hash implementation to get deterministic hash codes -->
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
-        result = zserio.hashcode.calc_hashcode_int(result, self.value)
+        result = zserio.hashcode.calc_hashcode_${underlyingTypeInfo.hashCodeFunc.suffix}(result, self.value)
         return result
 
     @staticmethod

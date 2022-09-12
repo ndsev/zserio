@@ -195,6 +195,11 @@ TEST_F(OptionalArrayRecursionTest, hashCode)
 
     teamLead1.setTitle(Title::DEVELOPER); // set but not used
     ASSERT_NE(teamLead1.hashCode(), teamLead2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(198054975, teamLead1.hashCode());
+    ASSERT_EQ(3595797558, teamLead2.hashCode());
+
     teamLead2.setTitle(Title::DEVELOPER); // set but not used
     ASSERT_EQ(teamLead1.hashCode(), teamLead2.hashCode());
 }

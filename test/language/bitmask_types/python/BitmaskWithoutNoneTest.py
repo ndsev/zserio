@@ -64,6 +64,10 @@ class BitmaskWithoutNoneTest(unittest.TestCase):
         self.assertNotEqual(hash(read), hash(write))
         self.assertNotEqual(hash(read), hash(none))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(853, hash(self.api.Permission.Values.READ))
+        self.assertEqual(855, hash(self.api.Permission.Values.WRITE))
+
     def testStr(self):
         none = self.api.Permission()
         self.assertEqual("0[]", str(none))

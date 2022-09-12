@@ -33,6 +33,10 @@ class EmptyStructureTest(unittest.TestCase):
         self.assertEqual(hash(emptyStructureWithParameter1), hash(emptyStructureWithParameter2))
         self.assertTrue(hash(emptyStructureWithParameter1) != hash(emptyStructureWithParameter3))
 
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(852, hash(emptyStructureWithParameter1))
+        self.assertEqual(851, hash(emptyStructureWithParameter3))
+
     def testGetParam(self):
         param = 1
         emptyStructureWithParameter = self.api.EmptyStructureWithParameter(param)

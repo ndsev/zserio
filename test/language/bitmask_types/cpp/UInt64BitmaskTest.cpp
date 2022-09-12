@@ -124,6 +124,12 @@ TEST_F(Uint64BitmaskTest, hashCode)
     ASSERT_NE(readPermission.hashCode(), writePermission.hashCode());
     ASSERT_NE(readPermission.hashCode(), Permission(Permission::Values::nonePermission).hashCode());
     ASSERT_NE(writePermission.hashCode(), Permission(Permission::Values::nonePermission).hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(851, Permission(Permission::Values::nonePermission).hashCode());
+    ASSERT_EQ(853, Permission(Permission::Values::READ_PERMISSION).hashCode());
+    ASSERT_EQ(855, Permission(Permission::Values::write_permission).hashCode());
+    ASSERT_EQ(859, Permission(Permission::Values::CreatePermission).hashCode());
 }
 
 TEST_F(Uint64BitmaskTest, write)

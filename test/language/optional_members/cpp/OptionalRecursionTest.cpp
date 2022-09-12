@@ -194,6 +194,10 @@ TEST_F(OptionalRecursionTest, hashCode)
     block12_1.setBlockTerminator(0); // set but not used
     ASSERT_NE(block12_1.hashCode(), block12_2.hashCode());
 
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(6240113, block12_1.hashCode());
+    ASSERT_EQ(1846174533, block12_2.hashCode());
+
     block12_2.setBlockTerminator(0); // set but not used
     ASSERT_EQ(block12_1.hashCode(), block12_2.hashCode());
 }
