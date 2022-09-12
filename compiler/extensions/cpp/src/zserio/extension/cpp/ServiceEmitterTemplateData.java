@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeReference;
+import zserio.ast.DocComment;
 import zserio.ast.ServiceMethod;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.cpp.types.CppNativeType;
@@ -58,6 +59,9 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
             final TypeReference requestTypeReference = method.getRequestTypeReference();
             final CppNativeType cppRequestType = typeMapper.getCppType(requestTypeReference);
             requestTypeInfo = new NativeTypeInfoTemplateData(cppRequestType, requestTypeReference);
+
+            final List<DocComment> methodDocComments = method.getDocComments();
+            docComments = methodDocComments.isEmpty() ? null : new DocCommentsTemplateData(methodDocComments);
         }
 
         public String getName()
@@ -75,9 +79,15 @@ public class ServiceEmitterTemplateData extends UserTypeTemplateData
             return requestTypeInfo;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData responseTypeInfo;
         private final NativeTypeInfoTemplateData requestTypeInfo;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String servicePackageName;

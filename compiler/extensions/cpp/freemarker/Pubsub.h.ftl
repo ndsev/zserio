@@ -23,7 +23,7 @@ class ${name} : public zserio::AllocatorHolder<${types.allocator.default}>
 public:
 <#if withCodeComments>
     /**
-     * Constructor from Pub/Sub client backend.
+     * Constructor from the Pub/Sub client backend.
      *
      * \param pubsub Interface for Pub/Sub client backend.
      * \param allocator Allocator to construct from.
@@ -36,22 +36,22 @@ public:
 </#if>
     ~${name}() = default;
 
-    <#if withCodeComments>
+<#if withCodeComments>
     /** Disables copy constructor. */
-    </#if>
+</#if>
     ${name}(const ${name}&) = delete;
-    <#if withCodeComments>
+<#if withCodeComments>
     /** Disables assignment operator. */
-    </#if>
+</#if>
     ${name}& operator=(const ${name}&) = delete;
 
-    <#if withCodeComments>
+<#if withCodeComments>
     /** Default move constructor. */
-    </#if>
+</#if>
     ${name}(${name}&&) = default;
-    <#if withCodeComments>
+<#if withCodeComments>
     /** Disables move assignment operator. */
-    </#if>
+</#if>
     ${name}& operator=(${name}&&) = delete;
 <#if withTypeInfoCode>
 
