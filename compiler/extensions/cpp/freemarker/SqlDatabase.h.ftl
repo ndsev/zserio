@@ -224,7 +224,7 @@ public:
     /**
      * Validates all tables in the database.
      *
-     * \param validationObserver Validation observer using which users can obtain validation results.
+     * \param validationObserver Validation observer from which users can obtain validation results.
      * \param parameterProvider Provider of explicit parameters for all tables.
      */
     </#if>
