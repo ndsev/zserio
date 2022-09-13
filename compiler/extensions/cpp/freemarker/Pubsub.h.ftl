@@ -130,7 +130,7 @@ public:
      */
         </#if>
     ::zserio::IPubsub::SubscriptionId subscribe${message.name?cap_first}(
-            const std::shared_ptr<${name}Callback<${message.typeInfo.typeFullName}>>& callback,
+            const ::std::shared_ptr<${name}Callback<${message.typeInfo.typeFullName}>>& callback,
             void* context = nullptr);
     </#if>
 </#list>

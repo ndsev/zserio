@@ -41,7 +41,7 @@ private:
 } // namespace
 </#if>
 
-${name}::${name}(::zserio::IPubsub& pubsub, const ${types.allocator.default}& allocator) :
+${name}::${name}(::zserio::IPubsub& pubsub, const allocator_type& allocator) :
         ::zserio::AllocatorHolder<${types.allocator.default}>(allocator),
         m_pubsub(pubsub)
 {
