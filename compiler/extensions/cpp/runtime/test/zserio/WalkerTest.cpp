@@ -737,7 +737,7 @@ public:
     static const ITypeInfo& typeInfo()
     {
         static const std::array<ItemInfo, 1> values = {
-            ItemInfo{"ZERO"_sv, "UINT32_C(0)"_sv}
+            ItemInfo{"ZERO"_sv, static_cast<uint64_t>(0)}
         };
 
         static const BitmaskTypeInfo<std::allocator<uint8_t>> typeInfo = {

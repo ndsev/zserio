@@ -76,6 +76,9 @@ public class EmptyUnionTest
         final EmptyUnion emptyUnion1 = new EmptyUnion();
         final EmptyUnion emptyUnion2 = new EmptyUnion();
         assertEquals(emptyUnion1.hashCode(), emptyUnion2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(850, emptyUnion1.hashCode());
     }
 
     @Test

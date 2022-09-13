@@ -8,7 +8,9 @@ import zserio.runtime.ZserioBitmask;
 import zserio.runtime.ZserioEnum;
 import zserio.runtime.ZserioError;
 import zserio.runtime.io.BitBuffer;
+import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.FieldInfo;
+import zserio.runtime.typeinfo.TypeInfo;
 import zserio.runtime.walker.WalkObserver;
 import zserio.runtime.walker.WalkerConst;
 
@@ -73,6 +75,50 @@ public class JsonWriter implements WalkObserver, AutoCloseable
     public void setKeySeparator(String keySeparator)
     {
         this.keySeparator = keySeparator;
+    }
+
+    /**
+     * Configuration for writing of enumerable types.
+     */
+    public enum EnumerableFormat
+    {
+        /** Print as JSON integral value. */
+        NUMBER,
+        /**
+         * Print as JSON string according to the following rules:
+         *
+         * <ol>
+         * <li> Enums
+         *   <ul>
+         *   <li> when an exact match with an enumerable item is found, the item name is used - e.g.
+         *        <code>"FIRST"</code>,
+         *   <li> when no exact match is found, it's an invalid value, the integral value is converted to string
+         *        and an appropriate comment is included - e.g.
+         *        <code>"10 /<span>*</span> no match <span>*</span>/"</code>.
+         *   </ul>
+         * <li> Bitmasks
+         *   <ul>
+         *   <li> when an exact mach with or-ed bitmask values is found, it's used - e.g.
+         *        <code>"READ | WRITE"</code>,
+         *   <li> when no exact match is found, but some or-ed values match, the integral value is converted
+         *        to string and the or-ed values are included in a comment - e.g.
+         *        <code>"127 /<span>*</span> READ | CREATE <span>*</span>/"</code>,
+         *   <li> when no match is found at all, the integral value is converted to string and an appropriate
+         *        comment is included - e.g. <code>"13 /<span>*</span> no match <span>*</span>/"</code>.
+         *   </ul>
+         * </ol>
+         */
+        STRING
+    };
+
+    /**
+     * Sets preferred formatting for enumerable types.
+     *
+     * @param enumerableFormat Enumerable format to use.
+     */
+    public void setEnumerableFormat(EnumerableFormat enumerableFormat)
+    {
+        this.enumerableFormat = enumerableFormat;
     }
 
     @Override
@@ -249,10 +295,16 @@ public class JsonWriter implements WalkObserver, AutoCloseable
             writeBitBuffer((BitBuffer)value);
             break;
         case ENUM:
-            JsonEncoder.encodeIntegral(out, ((ZserioEnum)value).getGenericValue());
+            if (enumerableFormat == EnumerableFormat.STRING)
+                writeStringifiedEnum((ZserioEnum)value, fieldInfo.getTypeInfo());
+            else
+                JsonEncoder.encodeIntegral(out, ((ZserioEnum)value).getGenericValue());
             break;
         case BITMASK:
-            JsonEncoder.encodeIntegral(out, ((ZserioBitmask)value).getGenericValue());
+            if (enumerableFormat == EnumerableFormat.STRING)
+                writeStringifiedBitmask((ZserioBitmask)value, fieldInfo.getTypeInfo());
+            else
+                JsonEncoder.encodeIntegral(out, ((ZserioBitmask)value).getGenericValue());
             break;
         default:
             throw new ZserioError("JsonWriter: Unexpected not-null value of type '" +
@@ -284,11 +336,73 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         endObject();
     }
 
+    private void writeStringifiedEnum(ZserioEnum zserioEnum, TypeInfo typeInfo)
+    {
+        final BigInteger enumValue = numberToBigInteger(zserioEnum.getGenericValue());
+        for (ItemInfo itemInfo : typeInfo.getEnumItems())
+        {
+            // exact match
+            if (enumValue.equals(itemInfo.getValue()))
+            {
+                JsonEncoder.encodeString(out, itemInfo.getSchemaName());
+                return;
+            }
+        }
+
+        // no match
+        JsonEncoder.encodeString(out, enumValue.toString() + " /* no match */");
+    }
+
+    private void writeStringifiedBitmask(ZserioBitmask zserioBitmask, TypeInfo typeInfo)
+    {
+        StringBuilder stringValue = new StringBuilder();
+        final BigInteger bitmaskValue = numberToBigInteger(zserioBitmask.getGenericValue());
+        BigInteger valueCheck = BigInteger.ZERO;
+        for (ItemInfo itemInfo : typeInfo.getBitmaskValues())
+        {
+            final boolean isZero = itemInfo.getValue().equals(BigInteger.ZERO);
+            if ((!isZero && bitmaskValue.and(itemInfo.getValue()).equals(itemInfo.getValue())) ||
+                    (isZero && bitmaskValue.equals(BigInteger.ZERO)))
+            {
+                valueCheck = valueCheck.or(itemInfo.getValue());
+                if (stringValue.length() > 0)
+                    stringValue.append(" | ");
+                stringValue.append(itemInfo.getSchemaName());
+            }
+        }
+
+        if (stringValue.length() == 0)
+        {
+            // no match
+            stringValue.append(bitmaskValue.toString());
+            stringValue.append(" /* no match */");
+        }
+        else if (!bitmaskValue.equals(valueCheck))
+        {
+            // partial match
+            stringValue = new StringBuilder(bitmaskValue.toString())
+                    .append(" /* partial match: ")
+                    .append(stringValue.toString())
+                    .append(" */");
+        }
+        // else exact match
+
+        JsonEncoder.encodeString(out, stringValue.toString());
+    }
+
+    private static BigInteger numberToBigInteger(Number number)
+    {
+        if (number instanceof BigInteger)
+            return (BigInteger)number;
+        else
+            return BigInteger.valueOf(number.longValue());
+    }
+
     private void flush()
     {
         out.flush();
         if (out.checkError())
-            throw new ZserioError("JsonWriter: Output stream error occured!");
+            throw new ZserioError("JsonWriter: Output stream error occurred!");
     }
 
     /**
@@ -306,10 +420,16 @@ public class JsonWriter implements WalkObserver, AutoCloseable
      */
     public static final String DEFAULT_KEY_SEPARATOR = ": ";
 
+    /**
+     * Default configuration for enumerable types.
+     */
+    public static final EnumerableFormat DEFAULT_ENUMERABLE_FORMAT = EnumerableFormat.STRING;
+
     private final PrintWriter out;
     private final String indent;
     private String itemSeparator;
     private String keySeparator = DEFAULT_KEY_SEPARATOR;
+    private EnumerableFormat enumerableFormat = DEFAULT_ENUMERABLE_FORMAT;
 
     private boolean isFirst = true;
     private int level = 0;

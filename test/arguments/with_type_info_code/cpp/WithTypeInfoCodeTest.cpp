@@ -857,7 +857,8 @@ protected:
         ASSERT_EQ(""_sv, bitmaskArrayField.optionalCondition);
         ASSERT_EQ(""_sv, bitmaskArrayField.constraint);
         ASSERT_EQ(true, bitmaskArrayField.isArray);
-        ASSERT_EQ("::zserio::enumToValue(::with_type_info_code::TestEnum::TWO)"_sv, bitmaskArrayField.arrayLength);
+        ASSERT_EQ("::zserio::enumToValue(::with_type_info_code::TestEnum::_TWO)"_sv,
+                bitmaskArrayField.arrayLength);
         ASSERT_EQ(false, bitmaskArrayField.isPacked);
         ASSERT_EQ(false, bitmaskArrayField.isImplicit);
     }
@@ -1127,17 +1128,17 @@ protected:
         // One
         const ItemInfo& OneItem = items[0];
         ASSERT_EQ("One"_sv, OneItem.schemaName);
-        ASSERT_EQ("UINT16_C(0)"_sv, OneItem.value);
+        ASSERT_EQ(0, OneItem.value);
 
         // TWO
         const ItemInfo& TwoItem = items[1];
-        ASSERT_EQ("TWO"_sv, TwoItem.schemaName);
-        ASSERT_EQ("UINT16_C(5)"_sv, TwoItem.value);
+        ASSERT_EQ("_TWO"_sv, TwoItem.schemaName);
+        ASSERT_EQ(5, TwoItem.value);
 
         // ItemThree
         const ItemInfo& ItemThreeItem = items[2];
         ASSERT_EQ("ItemThree"_sv, ItemThreeItem.schemaName);
-        ASSERT_EQ("UINT16_C(6)"_sv, ItemThreeItem.value);
+        ASSERT_EQ(6, ItemThreeItem.value);
     }
 
     void checkSimpleChoice(const ITypeInfo& typeInfo)
@@ -1222,7 +1223,7 @@ protected:
         // case TWO
         const CaseInfo& case1 = cases[1];
         ASSERT_EQ(1, case1.caseExpressions.size());
-        ASSERT_EQ("::with_type_info_code::TestEnum::TWO"_sv, case1.caseExpressions[0]);
+        ASSERT_EQ("::with_type_info_code::TestEnum::_TWO"_sv, case1.caseExpressions[0]);
         ASSERT_EQ(&fieldTwoField, case1.field);
 
         // default
@@ -1312,17 +1313,17 @@ protected:
         // RED
         const ItemInfo& redValue = values[0];
         ASSERT_EQ("RED"_sv, redValue.schemaName);
-        ASSERT_EQ("UINT16_C(1)"_sv, redValue.value);
+        ASSERT_EQ(1, redValue.value);
 
         // Green
         const ItemInfo& greenValue = values[1];
-        ASSERT_EQ("Green"_sv, greenValue.schemaName);
-        ASSERT_EQ("UINT16_C(2)"_sv, greenValue.value);
+        ASSERT_EQ("_Green"_sv, greenValue.schemaName);
+        ASSERT_EQ(2, greenValue.value);
 
         // ColorBlue
         const ItemInfo& colorBlueValue = values[2];
         ASSERT_EQ("ColorBlue"_sv, colorBlueValue.schemaName);
-        ASSERT_EQ("UINT16_C(4)"_sv, colorBlueValue.value);
+        ASSERT_EQ(4, colorBlueValue.value);
     }
 
     void checkTS32(const ITypeInfo& typeInfo)

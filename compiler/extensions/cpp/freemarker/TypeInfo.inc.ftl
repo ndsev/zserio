@@ -243,7 +243,8 @@ ${I}}
 
 <#macro item_info name value comma indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}::zserio::ItemInfo{ ::zserio::makeStringView("${name}"), ::zserio::makeStringView("${value}") }<#if comma>,</#if>
+${I}::zserio::ItemInfo{ ::zserio::makeStringView("${name}"), <#rt>
+        <#lt>static_cast<uint64_t>(${value}) }<#if comma>,</#if>
 </#macro>
 
 <#macro column_info field comma indent=2>

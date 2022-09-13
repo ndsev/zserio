@@ -8,25 +8,28 @@
 namespace zserio
 {
 
-enum class DummyEnum : uint8_t
+enum class DummyEnum : int8_t
 {
-    ONE = UINT8_C(0),
-    TWO = UINT8_C(1)
+    ONE = INT8_C(0),
+    TWO = INT8_C(1),
+    MinusOne = INT8_C(-1)
 };
 
 template <>
 struct EnumTraits<DummyEnum>
 {
-    static constexpr ::std::array<const char*, 2> names =
+    static constexpr ::std::array<const char*, 3> names =
     {{
         "ONE",
-        "TWO"
+        "TWO",
+        "MinusOne"
     }};
 
-    static constexpr ::std::array<DummyEnum, 2> values =
+    static constexpr ::std::array<DummyEnum, 3> values =
     {{
         DummyEnum::ONE,
-        DummyEnum::TWO
+        DummyEnum::TWO,
+        DummyEnum::MinusOne
     }};
 };
 
@@ -34,7 +37,7 @@ template <>
 size_t enumToOrdinal<DummyEnum>(DummyEnum value);
 
 template <>
-DummyEnum valueToEnum(uint8_t rawValue);
+DummyEnum valueToEnum(int8_t rawValue);
 
 template <>
 const ITypeInfo& enumTypeInfo<DummyEnum, std::allocator<uint8_t>>();
@@ -85,6 +88,12 @@ private:
 inline bool operator==(const DummyBitmask& lhs, const DummyBitmask& rhs)
 {
     return lhs.getValue() == rhs.getValue();
+}
+
+inline DummyBitmask operator|(DummyBitmask::Values lhs, DummyBitmask::Values rhs)
+{
+    return DummyBitmask(static_cast<DummyBitmask::underlying_type>(lhs) |
+            static_cast<DummyBitmask::underlying_type>(rhs));
 }
 
 class DummyNested

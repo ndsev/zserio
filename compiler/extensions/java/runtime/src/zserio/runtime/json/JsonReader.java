@@ -13,6 +13,7 @@ import java.util.Stack;
 import zserio.runtime.ZserioError;
 import zserio.runtime.creator.ZserioTreeCreator;
 import zserio.runtime.io.BitBuffer;
+import zserio.runtime.typeinfo.ItemInfo;
 import zserio.runtime.typeinfo.JavaType;
 import zserio.runtime.typeinfo.TypeInfo;
 
@@ -406,11 +407,15 @@ public class JsonReader implements AutoCloseable
             switch (expectedJavaType)
             {
             case ENUM:
+                if (value instanceof String)
+                    return createEnum((String)value, typeInfo);
                 if (value instanceof BigInteger)
                     return createEnum((BigInteger)value, typeInfo);
                 break;
 
             case BITMASK:
+                if (value instanceof String)
+                    return createBitmask((String)value, typeInfo);
                 if (value instanceof BigInteger)
                     return createBitmask((BigInteger)value, typeInfo);
                 break;
@@ -428,6 +433,25 @@ public class JsonReader implements AutoCloseable
 
             // possible type mismatch => just leave it to creator, it will check and report better message
             return value;
+        }
+
+        private static Object createEnum(String stringValue, TypeInfo typeInfo)
+        {
+            if (!stringValue.isEmpty())
+            {
+                final char firstChar = stringValue.charAt(0);
+                if ((firstChar >= 'A' && firstChar <= 'Z') || (firstChar >= 'a' && firstChar <= 'z') ||
+                        firstChar == '_')
+                {
+                    final BigInteger value = parseEnumStringValue(stringValue, typeInfo);
+                    if (value != null)
+                        return createEnum(value, typeInfo);
+                }
+                // else it's a no match
+            }
+
+            throw new ZserioError("JsonReader: Cannot create enum '" + typeInfo.getSchemaName() +
+                    "' from string value '" + stringValue + "'!");
         }
 
         private static Object createEnum(BigInteger value, TypeInfo typeInfo)
@@ -450,6 +474,30 @@ public class JsonReader implements AutoCloseable
             }
         }
 
+        private static Object createBitmask(String stringValue, TypeInfo typeInfo)
+        {
+            if (!stringValue.isEmpty())
+            {
+                final char firstChar = stringValue.charAt(0);
+                if ((firstChar >= 'A' && firstChar <= 'Z') || (firstChar >= 'a' && firstChar <= 'z') ||
+                        firstChar == '_')
+                {
+                    final BigInteger value = parseBitmaskStringValue(stringValue, typeInfo);
+                    if (value != null)
+                        return createBitmask(value, typeInfo);
+                }
+                else if (firstChar >= '0' && firstChar <= '9') // bitmask can be only unsigned
+                {
+                    final BigInteger value = parseBitmaskNumericStringValue(stringValue);
+                    if (value != null)
+                        return createBitmask(value, typeInfo);
+                }
+            }
+
+            throw new ZserioError("JsonReader: Cannot create bitmask '" + typeInfo.getSchemaName() +
+                    "' from string value '" + stringValue + "'!");
+        }
+
         private static Object createBitmask(BigInteger value, TypeInfo typeInfo)
         {
             try
@@ -468,6 +516,57 @@ public class JsonReader implements AutoCloseable
             {
                 throw new ZserioError("JsonReader: Cannot create bitmask '" + typeInfo.getSchemaName() +
                         "' from value '" + value.toString() + "'!", excpt);
+            }
+        }
+
+        private static BigInteger parseEnumStringValue(String stringValue, TypeInfo typeInfo)
+        {
+            for (ItemInfo itemInfo : typeInfo.getEnumItems())
+            {
+                if (stringValue.equals(itemInfo.getSchemaName()))
+                    return itemInfo.getValue();
+            }
+
+            return null;
+        }
+
+        private static BigInteger parseBitmaskStringValue(String stringValue, TypeInfo typeInfo)
+        {
+            BigInteger value = BigInteger.ZERO;
+            final String[] identifiers = stringValue.split("\\|");
+            for (String identifierWithSpaces : identifiers)
+            {
+                final String identifier = identifierWithSpaces.trim();
+                boolean match = false;
+                for (ItemInfo itemInfo : typeInfo.getBitmaskValues())
+                {
+                    if (identifier.equals(itemInfo.getSchemaName()))
+                    {
+                        match = true;
+                        value = value.or(itemInfo.getValue());
+                        break;
+                    }
+                }
+
+                if (!match)
+                    return null;
+            }
+
+            return value;
+        }
+
+        private static BigInteger parseBitmaskNumericStringValue(String stringValue)
+        {
+            int numberLen = 1;
+            while (stringValue.charAt(numberLen) >= '0' && stringValue.charAt(numberLen) <= '9')
+                numberLen++;
+            try
+            {
+                return new BigInteger(stringValue.substring(0, numberLen));
+            }
+            catch (NumberFormatException excpt)
+            {
+                return null;
             }
         }
 

@@ -2,7 +2,7 @@ import zserio
 
 def createWithTypeInfoCode(api, *, createOptionals = True):
     simpleStruct = _createSimpleStruct(api)
-    testEnum = api.TestEnum.TWO
+    testEnum = api.TestEnum._TWO
     ts32 = _createTS32(api)
     withTypeInfoCode = api.WithTypeInfoCode(
         simpleStruct,
@@ -42,11 +42,11 @@ def _createComplexStruct(api, createOptionals):
         8,
         list(range(1, 65536, 2)),
         api.TestEnum.ITEM_THREE if createOptionals else None,
-        api.TestBitmask.Values.RED if createOptionals else None,
+        api.TestBitmask.Values.RED | api.TestBitmask.Values._GREEN if createOptionals else None,
         _createOptionalExternData() if createOptionals else None,
-        [api.TestEnum.TWO, api.TestEnum.ITEM_THREE],
-        [api.TestBitmask.Values.GREEN, api.TestBitmask.Values.GREEN, api.TestBitmask.Values.GREEN,
-         api.TestBitmask.Values.GREEN, api.TestBitmask.Values.GREEN])
+        [api.TestEnum._TWO, api.TestEnum.ITEM_THREE],
+        [api.TestBitmask.Values._GREEN, api.TestBitmask.Values._GREEN, api.TestBitmask.Values._GREEN,
+         api.TestBitmask.Values._GREEN, api.TestBitmask.Values._GREEN])
 
     return complexStruct
 
@@ -82,13 +82,13 @@ def _createRecursiveChoice(api, param1, param2):
 
 def _createSimpleUnion(api):
     simpleUnion = api.SimpleUnion()
-    simpleUnion.test_bitmask = api.TestBitmask.Values.GREEN
+    simpleUnion.test_bitmask = api.TestBitmask.Values._GREEN
 
     return simpleUnion
 
 def _createSimpleChoice(api, testEnum):
     simpleChoice = api.SimpleChoice(testEnum)
-    if testEnum == api.TestEnum.TWO:
+    if testEnum == api.TestEnum._TWO:
         simpleChoice.field_two = _createSimpleUnion(api)
     else:
         simpleChoice.field_default = "text"

@@ -53,6 +53,11 @@ class AutoOptionalTest(unittest.TestCase):
         container1.reset_auto_optional_int()
         self.assertTrue(hash(container1) != hash(container2))
 
+        # use hardcoded values to check that the hash code is stable
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(3735937536, container1.__hash__())
+        self.assertEqual(3994118383, container2.__hash__())
+
     def testIsAutoOptionalIntSetAndUsed(self):
         container = self.api.Container()
         container.non_optional_int = self.NON_OPTIONAL_INT_VALUE
@@ -126,8 +131,8 @@ class AutoOptionalTest(unittest.TestCase):
             self.assertEqual(True, reader.read_bool())
             self.assertEqual(autoOptionalIntValue, reader.read_signed_bits(32))
 
-    NON_OPTIONAL_INT_VALUE = -0x1EADDEAD
-    AUTO_OPTIONAL_INT_VALUE = -0x1EEFBEEF
+    NON_OPTIONAL_INT_VALUE = 0xDEADDEAD - (1 << 32) # it's negative number in 32-bit signed integer
+    AUTO_OPTIONAL_INT_VALUE = 0xBEEFBEEF - (1 << 32) # it's negative number in 32-bit signed integer
 
     CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL = 32 + 1
     CONTAINER_BIT_SIZE_WITH_OPTIONAL = 32 + 1 + 32

@@ -181,14 +181,30 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     @Override
     public int hashCode()
     {
-        int result = zserio.runtime.Util.HASH_SEED;
+        int result = zserio.runtime.HashCodeUtil.HASH_SEED;
 
-<#list compoundParametersData.list as parameter>
-        <@compound_hashcode_parameter parameter/>
-</#list>
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + choiceTag;
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                ((objectChoice == null) ? 0 : objectChoice.hashCode());
+        <@compound_parameter_hash_code compoundParametersData/>
+        result = zserio.runtime.HashCodeUtil.calcHashCode(result, choiceTag);
+<#if fieldList?has_content>
+        if (objectChoice != null)
+        {
+            switch (choiceTag)
+            {
+    <#list fieldList as field>
+            case <@choice_tag_name field/>:
+                result = zserio.runtime.HashCodeUtil.calcHashCode(result,
+        <#if field.array??>
+                        (${field.array.wrapperJavaTypeName})objectChoice);
+        <#else>
+                        (${field.nullableTypeInfo.typeFullName})objectChoice);
+        </#if>
+                break;
+    </#list>
+            default:
+                break; // UNDEFINED_CHOICE
+            }
+        }
+</#if>
 
         return result;
     }

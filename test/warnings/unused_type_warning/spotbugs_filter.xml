@@ -13,4 +13,10 @@
             <Method name="validate"/>
         </Or>
     </Match>
+    <Match>
+        <!-- Method uses the same code for two switch clauses. -->
+        <Bug code="DB"/>
+        <Class name="unused_type_warning.BoolChoice"/>
+        <Method name="hashCode"/>
+    </Match>
 </FindBugsFilter>

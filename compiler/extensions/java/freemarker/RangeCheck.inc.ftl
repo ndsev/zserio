@@ -5,9 +5,9 @@
         // check range
         <#if rangeData.bitFieldWithExpression??>
         final int length = (int)(${rangeData.bitFieldWithExpression.lengthExpression});
-        final long lowerBound = zserio.runtime.Util.getBitFieldLowerBound(
+        final long lowerBound = zserio.runtime.BitFieldUtil.getBitFieldLowerBound(
                 length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
-        final long upperBound = zserio.runtime.Util.getBitFieldUpperBound(
+        final long upperBound = zserio.runtime.BitFieldUtil.getBitFieldUpperBound(
                 length, ${rangeData.bitFieldWithExpression.isSignedBitFieldStr});
         <#else>
         final ${rangeData.typeInfo.typeFullName} lowerBound = ${rangeData.lowerBound};

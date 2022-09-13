@@ -166,7 +166,8 @@ class DebugStringTest(unittest.TestCase):
         with open(jsonFileName, 'r', encoding="utf-8") as jsonFile:
             jsonData = json.load(jsonFile)
 
-        testEnum = self.api.TestEnum.TWO
+        testEnum = self.api.TestEnum._TWO
+        testEnumStringified = "_TWO"
         ts32 = self.api.TS32(
             0xDEAD
             )
@@ -176,7 +177,7 @@ class DebugStringTest(unittest.TestCase):
         self._checkRecursiveStructJson(jsonData["recursiveStruct"], maxArrayLength)
         self._checkRecursiveUnionJson(jsonData["recursiveUnion"], maxArrayLength)
         self._checkRecursiveChoiceJson(jsonData["recursiveChoice"], True, False, maxArrayLength)
-        self.assertEqual(testEnum.value, jsonData["selector"])
+        self.assertEqual(testEnumStringified, jsonData["selector"])
         self._checkSimpleChoiceJson(jsonData["simpleChoice"], testEnum)
         self._checkTS32Json(jsonData["templatedStruct"])
         self._checkTemplatedParameterizedStruct_TS32Json(jsonData["templatedParameterizedStruct"], ts32,
@@ -197,7 +198,7 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual({}, jsonData["recursiveStruct"])
         self.assertEqual({}, jsonData["recursiveUnion"])
         self.assertEqual({}, jsonData["recursiveChoice"])
-        self.assertEqual(self.api.TestEnum.TWO.value, jsonData["selector"])
+        self.assertEqual("_TWO", jsonData["selector"])
         self.assertEqual({}, jsonData["simpleChoice"])
         self.assertEqual({}, jsonData["templatedStruct"])
         self.assertEqual({}, jsonData["templatedParameterizedStruct"])
@@ -263,25 +264,25 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual(list(range(1, dynamicBitFieldArrayLength, 2)), complexStruct["dynamicBitFieldArray"])
 
         if createdOptionals:
-            self.assertEqual(self.api.TestEnum.ITEM_THREE.value, complexStruct["optionalEnum"])
-            self.assertEqual(self.api.TestBitmask.Values.RED.value, complexStruct["optionalBitmask"])
+            self.assertEqual("ItemThree", complexStruct["optionalEnum"])
+            self.assertEqual("RED | _Green", complexStruct["optionalBitmask"])
             self._checkOptionalExternDataJson(complexStruct["optionalExtern"])
         else:
             self.assertEqual(None, complexStruct["optionalEnum"])
             self.assertEqual(None, complexStruct["optionalBitmask"])
             self.assertEqual(None, complexStruct["optionalExtern"])
 
-        enumArray = [self.api.TestEnum.TWO, self.api.TestEnum.ITEM_THREE]
+        enumArray = ["_TWO", "ItemThree"] # stringified
         enumArrayLength = len(enumArray) if (maxArrayLength is None or
                                              len(enumArray) <= maxArrayLength) else maxArrayLength
         self.assertEqual(enumArrayLength, len(complexStruct["enumArray"]))
         for i, jsonArrayElement in enumerate(complexStruct["enumArray"]):
-            self.assertEqual(enumArray[i].value, jsonArrayElement)
+            self.assertEqual(enumArray[i], jsonArrayElement)
 
         bitmaskArrayLen = 5 if maxArrayLength is None or maxArrayLength > 5 else maxArrayLength
         self.assertEqual(bitmaskArrayLen, len(complexStruct["bitmaskArray"]))
         for jsonArrayElement in complexStruct["bitmaskArray"]:
-            self.assertEqual(self.api.TestBitmask.Values.GREEN.value, jsonArrayElement)
+            self.assertEqual("_Green", jsonArrayElement)
 
         self.assertEqual(13, len(complexStruct.keys()))
 
@@ -321,11 +322,11 @@ class DebugStringTest(unittest.TestCase):
         self.assertEqual(1, len(recursiveChoice.keys()))
 
     def _checkSimpleUnionJson(self, simpleUnion):
-        self.assertEqual(self.api.TestBitmask.Values.GREEN.value, simpleUnion["testBitmask"])
+        self.assertEqual("_Green", simpleUnion["testBitmask"])
         self.assertEqual(1, len(simpleUnion.keys()))
 
     def _checkSimpleChoiceJson(self, simpleChoice, testEnum):
-        if testEnum == self.api.TestEnum.TWO:
+        if testEnum == self.api.TestEnum._TWO:
             self._checkSimpleUnionJson(simpleChoice["fieldTwo"])
         else:
             self.assertEqual("text", simpleChoice["fieldDefault"])

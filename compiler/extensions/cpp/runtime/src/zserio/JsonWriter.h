@@ -3,10 +3,11 @@
 
 #include <ostream>
 
+#include "zserio/AllocatorHolder.h"
 #include "zserio/IWalkObserver.h"
+#include "zserio/JsonEncoder.h"
 #include "zserio/OptionalHolder.h"
 #include "zserio/TypeInfoUtil.h"
-#include "zserio/JsonEncoder.h"
 
 namespace zserio
 {
@@ -15,9 +16,11 @@ namespace zserio
  * Walker observer which dumps zserio objects to JSON format.
  */
 template <typename ALLOC = std::allocator<uint8_t>>
-class BasicJsonWriter : public IBasicWalkObserver<ALLOC>
+class BasicJsonWriter : public IBasicWalkObserver<ALLOC>, public AllocatorHolder<ALLOC>
 {
 public:
+    using AllocatorHolder<ALLOC>::get_allocator;
+
     /**
      * Default item separator used when indent is not set.
      */
@@ -32,6 +35,36 @@ public:
      * Default key separator.
      */
     static constexpr const char* DEFAULT_KEY_SEPARATOR = ": ";
+
+    /**
+     * Configuration for writing of enumerable types.
+     */
+    enum class EnumerableFormat
+    {
+        /** Print as JSON integral value. */
+        NUMBER,
+        /**
+         * Print as JSON string according to the following rules:
+         *
+         * 1. Enums
+         *   * when an exact match with an enumerable item is found, the item name is used - e.g. "FIRST",
+         *   * when no exact match is found, it's an invalid value, the integral value is converted to string
+         *     and an appropriate comment is included - e.g. \"10 /<span>*</span> no match <span>*</span>/\".
+         *
+         * 2. Bitmasks
+         *   * when an exact mach with or-ed bitmask values is found, it's used - e.g. "READ | WRITE",
+         *   * when no exact match is found, but some or-ed values match, the integral value is converted
+         *     to string and the or-ed values are included in a comment - e.g.
+         *     \"127 /<span>*</span> READ | CREATE <span>*</span>/\",
+         *   * when no match is found at all, the integral value is converted to string and an appropriate
+         *     comment is included - e.g. \"13 /<span>*</span> no match <span>*</span>/\".
+         */
+        STRING
+    };
+    /**
+     * Default configuration for enumerable types.
+     */
+    static constexpr EnumerableFormat DEFAULT_ENUMERABLE_FORMAT = EnumerableFormat::STRING;
 
     /**
      * Constructor.
@@ -95,6 +128,13 @@ public:
      */
     void setKeySeparator(const string<ALLOC>& keySeparator);
 
+    /**
+     * Sets preferred formatting for enumerable types.
+     *
+     * @param enumerableFormat Enumerable format to use.
+     */
+    void setEnumerableFormat(EnumerableFormat enumerableFormat);
+
     virtual void beginRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
     virtual void endRoot(const IBasicReflectableConstPtr<ALLOC>& compound) override;
 
@@ -126,11 +166,14 @@ private:
     void writeKey(StringView key);
     void writeValue(const IBasicReflectableConstPtr<ALLOC>& value);
     void writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuffer);
+    void writeStringifiedEnum(const IBasicReflectableConstPtr<ALLOC>& reflectable);
+    void writeStringifiedBitmask(const IBasicReflectableConstPtr<ALLOC>& reflectable);
 
     std::ostream& m_out;
     InplaceOptionalHolder<string<ALLOC>> m_indent;
     string<ALLOC> m_itemSeparator;
     string<ALLOC> m_keySeparator;
+    EnumerableFormat m_enumerableFormat = DEFAULT_ENUMERABLE_FORMAT;
 
     bool m_isFirst = true;
     size_t m_level = 0;
@@ -160,6 +203,7 @@ BasicJsonWriter<ALLOC>::BasicJsonWriter(std::ostream& out, const string<ALLOC>& 
 template <typename ALLOC>
 BasicJsonWriter<ALLOC>::BasicJsonWriter(std::ostream& out,
         InplaceOptionalHolder<string<ALLOC>>&& optionalIndent, const ALLOC& allocator) :
+        AllocatorHolder<ALLOC>(allocator),
         m_out(out), m_indent(optionalIndent),
         m_itemSeparator(m_indent.hasValue() ? DEFAULT_ITEM_SEPARATOR_WITH_INDENT : DEFAULT_ITEM_SEPARATOR,
                 allocator),
@@ -176,6 +220,12 @@ template <typename ALLOC>
 void BasicJsonWriter<ALLOC>::setKeySeparator(const string<ALLOC>& keySeparator)
 {
     m_keySeparator = keySeparator;
+}
+
+template <typename ALLOC>
+void BasicJsonWriter<ALLOC>::setEnumerableFormat(EnumerableFormat enumerableFormat)
+{
+    m_enumerableFormat = enumerableFormat;
 }
 
 template <typename ALLOC>
@@ -369,9 +419,16 @@ void BasicJsonWriter<ALLOC>::writeValue(const IBasicReflectableConstPtr<ALLOC>& 
         writeBitBuffer(reflectable->getBitBuffer());
         break;
     case CppType::ENUM:
-    case CppType::BITMASK:
-        if (TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()))
+        if (m_enumerableFormat == EnumerableFormat::STRING)
+            writeStringifiedEnum(reflectable);
+        else if (TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()))
             JsonEncoder::encodeIntegral(m_out, reflectable->toInt());
+        else
+            JsonEncoder::encodeIntegral(m_out, reflectable->toUInt());
+        break;
+    case CppType::BITMASK:
+        if (m_enumerableFormat == EnumerableFormat::STRING)
+            writeStringifiedBitmask(reflectable);
         else
             JsonEncoder::encodeIntegral(m_out, reflectable->toUInt());
         break;
@@ -404,6 +461,68 @@ void BasicJsonWriter<ALLOC>::writeBitBuffer(const BasicBitBuffer<ALLOC>& bitBuff
     JsonEncoder::encodeIntegral(m_out, bitBuffer.getBitSize());
     endItem();
     endObject();
+}
+
+template <typename ALLOC>
+void BasicJsonWriter<ALLOC>::writeStringifiedEnum(const IBasicReflectableConstPtr<ALLOC>& reflectable)
+{
+    const auto& typeInfo = reflectable->getTypeInfo();
+    const uint64_t enumValue = TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType()) ?
+                static_cast<uint64_t>(reflectable->toInt()) : reflectable->toUInt();
+    for (const auto& itemInfo : typeInfo.getEnumItems())
+    {
+        if (itemInfo.value == enumValue)
+        {
+            // exact match
+            JsonEncoder::encodeString(m_out, itemInfo.schemaName);
+            return;
+        }
+    }
+
+    // no match
+    string<ALLOC> stringValue = TypeInfoUtil::isSigned(typeInfo.getUnderlyingType().getCppType())
+            ? toString(reflectable->toInt(), get_allocator())
+            : toString(reflectable->toUInt(), get_allocator());
+    stringValue.append(" /* no match */");
+    JsonEncoder::encodeString(m_out, stringValue);
+}
+
+template <typename ALLOC>
+void BasicJsonWriter<ALLOC>::writeStringifiedBitmask(const IBasicReflectableConstPtr<ALLOC>& reflectable)
+{
+    string<ALLOC> stringValue(get_allocator());
+    const auto& typeInfo = reflectable->getTypeInfo();
+    const uint64_t bitmaskValue = reflectable->toUInt();
+    uint64_t valueCheck = 0;
+    for (const auto& itemInfo : typeInfo.getBitmaskValues())
+    {
+        if ((itemInfo.value != 0 && (bitmaskValue & itemInfo.value) == itemInfo.value) ||
+                (itemInfo.value == 0 && bitmaskValue == 0))
+        {
+            valueCheck |= itemInfo.value;
+            if (!stringValue.empty())
+                stringValue += " | ";
+            stringValue += toString(itemInfo.schemaName, get_allocator());
+        }
+    }
+
+    if (stringValue.empty())
+    {
+        // no match
+        stringValue.append(toString(bitmaskValue, get_allocator()));
+        stringValue.append(" /* no match */");
+    }
+    else if (bitmaskValue != valueCheck)
+    {
+        // partial match
+        stringValue = toString(bitmaskValue, get_allocator())
+                .append(" /* partial match: ")
+                .append(stringValue)
+                .append(" */");
+    }
+    // else exact match
+
+    JsonEncoder::encodeString(m_out, stringValue);
 }
 
 } // namespace zserio

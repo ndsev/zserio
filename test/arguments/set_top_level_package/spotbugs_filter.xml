@@ -5,6 +5,7 @@
             <Class name="~.*SimpleChoice"/>
         </Or>
         <Or>
+            <Method name="hashCode"/>
             <Method name="bitSizeOf"/>
             <Method name="initializeOffsets"/>
         </Or>

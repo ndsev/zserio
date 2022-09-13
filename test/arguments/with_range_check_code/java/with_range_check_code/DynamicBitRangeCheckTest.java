@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.Util;
+import zserio.runtime.BitFieldUtil;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -75,6 +75,6 @@ public class DynamicBitRangeCheckTest
     }
 
     private static final short NUM_BITS = 10;
-    private static final long DYNAMIC_BIT_LOWER_BOUND = Util.getBitFieldLowerBound(NUM_BITS, false);
-    private static final long DYNAMIC_BIT_UPPER_BOUND = Util.getBitFieldUpperBound(NUM_BITS, false);
+    private static final long DYNAMIC_BIT_LOWER_BOUND = BitFieldUtil.getBitFieldLowerBound(NUM_BITS, false);
+    private static final long DYNAMIC_BIT_UPPER_BOUND = BitFieldUtil.getBitFieldUpperBound(NUM_BITS, false);
 }

@@ -96,6 +96,12 @@ public class UInt8BitmaskTest
         assertEquals(write.hashCode(), new Permission(WRITE_VALUE).hashCode());
         assertFalse(read.hashCode() == write.hashCode());
         assertFalse(read.hashCode() == Permission.Values.NONE.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(851, Permission.Values.NONE.hashCode());
+        assertEquals(853, Permission.Values.READ.hashCode());
+        assertEquals(855, Permission.Values.WRITE.hashCode());
+        assertEquals(858, Permission.Values.CREATE.hashCode());
     }
 
     @Test

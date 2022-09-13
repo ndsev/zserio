@@ -302,6 +302,11 @@ TEST_F(SimpleUnionTest, hashCode)
     ASSERT_NE(simpleUnion1.hashCode(), simpleUnion2.hashCode());
     simpleUnion2.setCase4Field(CASE4_FIELD);
     ASSERT_NE(simpleUnion1.hashCode(), simpleUnion2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(31500, simpleUnion1.hashCode());
+    ASSERT_EQ(31640, simpleUnion2.hashCode());
+
     simpleUnion2.setCase4Field(CASE1_FIELD); // same value as simpleUnion1
     ASSERT_NE(simpleUnion1.hashCode(), simpleUnion2.hashCode());
     simpleUnion1.setCase4Field(CASE1_FIELD); // same value as simpleUnion2

@@ -144,10 +144,24 @@ class ${name}:
 
         return False
 
+<#macro choice_hashcode_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}result = zserio.hashcode.calc_hashcode_${member.compoundField.typeInfo.hashCodeFunc.suffix}(result, self._choice)
+    <#else>
+${I}pass
+    </#if>
+</#macro>
+<#macro choice_hashcode_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+${I}pass
+</#macro>
     def __hash__(self) -> int:
         result = zserio.hashcode.HASH_SEED
         <@compound_hashcode_parameters compoundParametersData/>
-        result = zserio.hashcode.calc_hashcode(result, hash(self._choice))
+<#if fieldList?has_content>
+        <@choice_if "choice_hashcode_member", "choice_hashcode_no_match"/>
+</#if>
 
         return result
 <#list compoundParametersData.list as parameter>

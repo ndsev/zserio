@@ -50,6 +50,11 @@ class OptionalExpressionTest(unittest.TestCase):
         container2.black_color = self._createBlackColor(self.NUM_BLACK_TONES)
         self.assertTrue(hash(container1) != hash(container2))
 
+        # use hardcoded values to check that the hash code is stable
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(1703, container1.__hash__())
+        self.assertEqual(2393199, container2.__hash__())
+
         container2.basic_color = self.api.BasicColor.WHITE
         container2.num_black_tones = None
         container2.black_color = None

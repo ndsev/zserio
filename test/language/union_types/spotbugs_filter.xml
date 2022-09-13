@@ -7,6 +7,7 @@
             <Class name="union_types.union_with_array.TestUnion"/>
         </Or>
         <Or>
+            <Method name="hashCode"/>
             <Method name="bitSizeOf"/>
             <Method name="initializeOffsets"/>
             <Method name="read"/>

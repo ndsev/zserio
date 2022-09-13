@@ -23,6 +23,10 @@ class EmptyStructureTest(unittest.TestCase):
         emptyStructure2 = self.api.EmptyStructure()
         self.assertEqual(hash(emptyStructure1), hash(emptyStructure2))
 
+        # use hardcoded values to check that the hash code is stable
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(23, emptyStructure1.__hash__())
+
     def testBitSizeOf(self):
         bitPosition = 1
         emptyStructure = self.api.EmptyStructure()

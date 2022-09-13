@@ -8,14 +8,16 @@ from zserio.bitbuffer import BitBuffer
 class DummyEnum(enum.Enum):
     ONE = 0
     TWO = 1
+    MINUS_ONE = -1
 
     @staticmethod
     def type_info():
         attribute_list = {
-            TypeAttribute.UNDERLYING_TYPE : TypeInfo('uint8', int),
+            TypeAttribute.UNDERLYING_TYPE : TypeInfo('int8', int),
             TypeAttribute.ENUM_ITEMS: [
                 ItemInfo('ONE', DummyEnum.ONE),
-                ItemInfo('TWO', DummyEnum.TWO)
+                ItemInfo('TWO', DummyEnum.TWO),
+                ItemInfo('MinusOne', DummyEnum.MINUS_ONE)
             ]
         }
 
@@ -45,6 +47,13 @@ class DummyBitmask:
 
     def __eq__(self, other: object) -> bool:
         return self._value == other._value
+
+    def __or__(self, other: object) -> bool:
+        return DummyBitmask.from_value(self._value | other._value)
+
+    @property
+    def value(self):
+        return self._value
 
     class Values:
         READ: 'DummyBitmask' = None

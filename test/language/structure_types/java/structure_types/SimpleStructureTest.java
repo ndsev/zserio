@@ -146,6 +146,10 @@ public class SimpleStructureTest
         simpleStructure2.setNumberC(numberC);
         assertTrue(simpleStructure1.hashCode() != simpleStructure2.hashCode());
 
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(1178167, simpleStructure1.hashCode());
+        assertEquals(1178204, simpleStructure2.hashCode());
+
         simpleStructure2.setNumberB(numberB);
         assertEquals(simpleStructure1.hashCode(), simpleStructure2.hashCode());
     }

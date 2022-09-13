@@ -8,7 +8,7 @@ import with_range_check_code.dynamic_int_range_check.DynamicIntRangeCheckCompoun
 import java.io.IOException;
 
 import zserio.runtime.ZserioError;
-import zserio.runtime.Util;
+import zserio.runtime.BitFieldUtil;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
 
@@ -67,6 +67,6 @@ public class DynamicIntRangeCheckTest
     }
 
     private static final short NUM_BITS = 10;
-    private static final long DYNAMIC_INT_LOWER_BOUND = Util.getBitFieldLowerBound(NUM_BITS, true);
-    private static final long DYNAMIC_INT_UPPER_BOUND = Util.getBitFieldUpperBound(NUM_BITS, true);
+    private static final long DYNAMIC_INT_LOWER_BOUND = BitFieldUtil.getBitFieldLowerBound(NUM_BITS, true);
+    private static final long DYNAMIC_INT_UPPER_BOUND = BitFieldUtil.getBitFieldUpperBound(NUM_BITS, true);
 }

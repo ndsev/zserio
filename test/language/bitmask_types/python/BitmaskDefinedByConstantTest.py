@@ -66,6 +66,12 @@ class BitmaskDefinedByConstantTest(unittest.TestCase):
         self.assertNotEqual(hash(read), hash(write))
         self.assertNotEqual(hash(read), hash(self.api.Permission.Values.NONE))
 
+        # use hardcoded values to check that the hash code is stable
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(851, self.api.Permission.Values.NONE.__hash__())
+        self.assertEqual(853, self.api.Permission.Values.READ.__hash__())
+        self.assertEqual(855, self.api.Permission.Values.WRITE.__hash__())
+
     def testStr(self):
         self.assertEqual("0[NONE]", str(self.api.Permission.Values.NONE))
         self.assertEqual("2[READ]", str(self.api.Permission.Values.READ))

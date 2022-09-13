@@ -76,6 +76,9 @@ public class EmptyStructureTest
         final EmptyStructure emptyStructure1 = new EmptyStructure();
         final EmptyStructure emptyStructure2 = new EmptyStructure();
         assertEquals(emptyStructure1.hashCode(), emptyStructure2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(23, emptyStructure1.hashCode());
     }
 
     @Test

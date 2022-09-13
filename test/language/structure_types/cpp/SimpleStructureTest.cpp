@@ -209,6 +209,10 @@ TEST_F(SimpleStructureTest, hashCode)
     simpleStructure2.setNumberC(numberC);
     ASSERT_NE(simpleStructure1.hashCode(), simpleStructure2.hashCode());
 
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(1178167, simpleStructure1.hashCode());
+    ASSERT_EQ(1178204, simpleStructure2.hashCode());
+
     simpleStructure2.setNumberB(numberB);
     ASSERT_EQ(simpleStructure1.hashCode(), simpleStructure2.hashCode());
 }

@@ -2,7 +2,7 @@ name: build-ubuntu_20_04
 
 on:
   push:
-    branches: [ master, github-ci ]
+    branches: [ master, '*-ci' ]
   pull_request:
     branches: [ master ]
 

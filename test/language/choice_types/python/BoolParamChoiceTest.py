@@ -29,36 +29,40 @@ class BoolParamChoiceTest(unittest.TestCase):
         self.assertEqual(value, boolParamChoice.grey)
 
     def testEq(self):
-        enumParamChoice1 = self.api.BoolParamChoice(True)
-        enumParamChoice2 = self.api.BoolParamChoice(True)
-        self.assertTrue(enumParamChoice1 == enumParamChoice2)
+        boolParamChoice1 = self.api.BoolParamChoice(True)
+        boolParamChoice2 = self.api.BoolParamChoice(True)
+        self.assertTrue(boolParamChoice1 == boolParamChoice2)
 
         value = 99
-        enumParamChoice1.black = value
-        self.assertFalse(enumParamChoice1 == enumParamChoice2)
+        boolParamChoice1.black = value
+        self.assertFalse(boolParamChoice1 == boolParamChoice2)
 
-        enumParamChoice2.black = value
-        self.assertTrue(enumParamChoice1 == enumParamChoice2)
+        boolParamChoice2.black = value
+        self.assertTrue(boolParamChoice1 == boolParamChoice2)
 
         diffValue = value + 1
-        enumParamChoice2.black = diffValue
-        self.assertFalse(enumParamChoice1 == enumParamChoice2)
+        boolParamChoice2.black = diffValue
+        self.assertFalse(boolParamChoice1 == boolParamChoice2)
 
     def testHash(self):
-        enumParamChoice1 = self.api.BoolParamChoice(True)
-        enumParamChoice2 = self.api.BoolParamChoice(True)
-        self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
+        boolParamChoice1 = self.api.BoolParamChoice(True)
+        boolParamChoice2 = self.api.BoolParamChoice(True)
+        self.assertEqual(hash(boolParamChoice1), hash(boolParamChoice2))
 
         value = 99
-        enumParamChoice1.black = value
-        self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
+        boolParamChoice1.black = value
+        self.assertTrue(hash(boolParamChoice1) != hash(boolParamChoice2))
 
-        enumParamChoice2.black = value
-        self.assertEqual(hash(enumParamChoice1), hash(enumParamChoice2))
+        boolParamChoice2.black = value
+        self.assertEqual(hash(boolParamChoice1), hash(boolParamChoice2))
 
         diffValue = value + 1
-        enumParamChoice2.black = diffValue
-        self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
+        boolParamChoice2.black = diffValue
+        self.assertTrue(hash(boolParamChoice1) != hash(boolParamChoice2))
+
+        # use hardcoded values to check that the hash code is stable
+        self.assertEqual(31623, boolParamChoice1.__hash__())
+        self.assertEqual(31624, boolParamChoice2.__hash__())
 
     def testGetSelector(self):
         selector = True

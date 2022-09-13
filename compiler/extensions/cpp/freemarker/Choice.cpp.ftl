@@ -493,11 +493,16 @@ bool ${name}::operator==(const ${name}& other) const
     </#if>
 }
 
+<#macro choice_hash_code_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if canUseNativeSwitch>
+${I}break;
+    </#if>
+</#macro>
 <#macro choice_hash_code_member member packed index indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
     <#if member.compoundField??>
-${I}if (m_objectChoice.hasValue())
-${I}    result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>());
+${I}result = ::zserio::calcHashCode(result, m_objectChoice.get<<@field_cpp_type_name member.compoundField/>>());
     <#else>
 ${I}// empty
     </#if>
@@ -510,9 +515,12 @@ uint32_t ${name}::hashCode() const
     uint32_t result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
-    <#if fieldList?has_content>
-    <@choice_switch "choice_hash_code_member", "choice_no_match", selectorExpression, 1/>
-    </#if>
+<#if fieldList?has_content>
+    if (m_objectChoice.hasValue())
+    {
+        <@choice_switch "choice_hash_code_member", "choice_hash_code_no_match", selectorExpression, 2/>
+    }
+</#if>
 
     return result;
 }

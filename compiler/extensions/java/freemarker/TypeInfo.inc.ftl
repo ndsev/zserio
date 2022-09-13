@@ -171,8 +171,9 @@ ${I}        () -> ${case.expressionForIf}<#if case?has_next>,</#if>
 ${I}),
 </#macro>
 
-<#macro item_info name value>
-    new zserio.runtime.typeinfo.ItemInfo("${name}", "${value?j_string}")<#t>
+<#macro item_info name value isBigInteger>
+    new zserio.runtime.typeinfo.ItemInfo("${name}", <#rt>
+            <#lt><#if isBigInteger>${value}<#else>java.math.BigInteger.valueOf(${value})</#if>)<#t>
 </#macro>
 
 <#macro underlying_type_info_type_arguments bitSize>

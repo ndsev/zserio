@@ -54,8 +54,7 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
         fillParameterizedStruct(parameterizedStruct0, complexStruct.getSimpleStruct());
         ParameterizedStruct parameterizedStruct1;
         fillParameterizedStruct(parameterizedStruct1, complexStruct.getAnotherSimpleStruct());
-        const vector_type<ParameterizedStruct> paramStructArray = {parameterizedStruct0,
-                parameterizedStruct1};
+        const vector_type<ParameterizedStruct> paramStructArray = {parameterizedStruct0, parameterizedStruct1};
         complexStruct.setParamStructArray(paramStructArray);
     }
 
@@ -69,19 +68,19 @@ static void fillComplexStruct(ComplexStruct& complexStruct, bool createOptionals
     if (createOptionals)
     {
         complexStruct.setOptionalEnum(TestEnum::ItemThree);
-        complexStruct.setOptionalBitmask(TestBitmask::Values::RED);
+        complexStruct.setOptionalBitmask(TestBitmask::Values::RED | TestBitmask::Values::_Green);
         const vector_type<uint8_t> buffer = {0xCB, 0xF0};
         complexStruct.setOptionalExtern(BitBuffer(buffer, 12));
     }
 
     vector_type<TestEnum> enumArray;
-    enumArray.push_back(TestEnum::TWO);
+    enumArray.push_back(TestEnum::_TWO);
     enumArray.push_back(TestEnum::ItemThree);
     complexStruct.setEnumArray(enumArray);
 
     vector_type<TestBitmask> bitmaskArray;
-    for (size_t i = 0; i < static_cast<size_t>(TestEnum::TWO); ++i)
-        bitmaskArray.push_back(TestBitmask::Values::Green);
+    for (size_t i = 0; i < static_cast<size_t>(TestEnum::_TWO); ++i)
+        bitmaskArray.push_back(TestBitmask::Values::_Green);
     complexStruct.setBitmaskArray(bitmaskArray);
 }
 
@@ -121,12 +120,12 @@ static void fillRecursiveChoice(RecursiveChoice& recursiveChoice, bool param1, b
 
 static void fillSimpleUnion(SimpleUnion& simpleUnion)
 {
-    simpleUnion.setTestBitmask(TestBitmask::Values::Green);
+    simpleUnion.setTestBitmask(TestBitmask::Values::_Green);
 }
 
 static void fillSimpleChoice(SimpleChoice& simpleChoice, const TestEnum& testEnum)
 {
-    if (testEnum == TestEnum::TWO)
+    if (testEnum == TestEnum::_TWO)
     {
         SimpleUnion simpleUnion;
         fillSimpleUnion(simpleUnion);
@@ -160,7 +159,7 @@ void fillWithTypeInfoCode(WithTypeInfoCode& withTypeInfoCode, bool createOptiona
     fillRecursiveStruct(withTypeInfoCode.getRecursiveStruct());
     fillRecursiveUnion(withTypeInfoCode.getRecursiveUnion());
     fillRecursiveChoice(withTypeInfoCode.getRecursiveChoice(), true, false);
-    withTypeInfoCode.setSelector(TestEnum::TWO);
+    withTypeInfoCode.setSelector(TestEnum::_TWO);
     fillSimpleChoice(withTypeInfoCode.getSimpleChoice(), withTypeInfoCode.getSelector());
     fillTS32(withTypeInfoCode.getTemplatedStruct());
     fillTemplatedParameterizedStruct_TS32(withTypeInfoCode.getTemplatedParameterizedStruct(),

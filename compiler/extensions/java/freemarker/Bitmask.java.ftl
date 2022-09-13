@@ -8,24 +8,25 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
         </#if>
         )<#t>
 </#macro>
+<#assign isBigInteger=!underlyingTypeInfo.isSimple>
 
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
         </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioBitmask
 {
     public ${name}()
     {
-        this(<#if underlyingTypeInfo.isSimple>(${underlyingTypeInfo.typeFullName})0<#else>java.math.BigInteger.ZERO</#if>);
+        this(<#if isBigInteger>java.math.BigInteger.ZERO<#else>(${underlyingTypeInfo.typeFullName})0</#if>);
     }
 
     public ${name}(${underlyingTypeInfo.typeFullName} value)
     {
 <#if lowerBound?? || checkUpperBound>
-    <#if underlyingTypeInfo.isSimple>
-        if (<#if lowerBound??>value < ${lowerBound}</#if><#rt>
-                <#lt><#if checkUpperBound><#if lowerBound??> || </#if>value > ${upperBound}</#if>)
-    <#else>
+    <#if isBigInteger>
         if (<#if lowerBound??>value.compareTo(${lowerBound}) < 0</#if><#rt>
                 <#lt><#if checkUpperBound><#if lowerBound??> || </#if>value.compareTo(${upperBound}) > 0</#if>)
+    <#else>
+        if (<#if lowerBound??>value < ${lowerBound}</#if><#rt>
+                <#lt><#if checkUpperBound><#if lowerBound??> || </#if>value > ${upperBound}</#if>)
     </#if>
         {
             throw new java.lang.IllegalArgumentException(
@@ -59,7 +60,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
                 <@underlying_type_info_type_arguments bitSize!/>,
                 java.util.Arrays.asList(
     <#list values as value>
-                        <@item_info value.name, value.value/><#if value?has_next>,</#if>
+                        <@item_info value.name, value.value, isBigInteger/><#if value?has_next>,</#if>
     </#list>
                 )
         );
@@ -124,27 +125,14 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
             return false;
 
         final ${name} other${name} = (${name})other;
-        return <#if underlyingTypeInfo.isSimple>value == other${name}.value<#else>value.equals(other${name}.value)</#if>;
+        return <#if isBigInteger>value.equals(other${name}.value)<#else>value == other${name}.value</#if>;
     }
 
     @Override
     public int hashCode()
     {
-        int result = zserio.runtime.Util.HASH_SEED;
-
-<#if underlyingTypeInfo.isSimple>
-    <#if underlyingTypeInfo.isLong>
-        <#-- use shifting -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(value ^ (value >>> 32));
-    <#else>
-        <#-- use implicit casting to int -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value;
-    </#if>
-<#else>
-        <#-- big integer - use hashCode() -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value.hashCode();
-</#if>
-
+        int result = zserio.runtime.HashCodeUtil.HASH_SEED;
+        result = zserio.runtime.HashCodeUtil.calcHashCode(result, value);
         return result;
     }
 
@@ -162,7 +150,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     </#if>
 </#list>
 <#if zeroValueName??>
-        if (builder.length() == 0 && <#if underlyingTypeInfo.isSimple>value == 0<#else>value.equals(java.math.BigInteger.ZERO)</#if>)
+        if (builder.length() == 0 && <#if isBigInteger>value.equals(java.math.BigInteger.ZERO)<#else>value == 0</#if>)
             builder.append("${zeroValueName}");
 </#if>
 
@@ -206,41 +194,41 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 
     public ${name} or(${name} other)
     {
-<#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeFullName})(value | other.value));
-<#else>
+<#if isBigInteger>
         <#-- big integer -->
         return new ${name}(value.or(other.value));
+<#else>
+        return new ${name}((${underlyingTypeInfo.typeFullName})(value | other.value));
 </#if>
     }
 
     public ${name} and(${name} other)
     {
-<#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeFullName})(value & other.value));
-<#else>
+<#if isBigInteger>
         <#-- big integer -->
         return new ${name}(value.and(other.value));
+<#else>
+        return new ${name}((${underlyingTypeInfo.typeFullName})(value & other.value));
 </#if>
     }
 
     public ${name} xor(${name} other)
     {
-<#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeFullName})(value ^ other.value));
-<#else>
+<#if isBigInteger>
         <#-- big integer -->
         return new ${name}(value.xor(other.value));
+<#else>
+        return new ${name}((${underlyingTypeInfo.typeFullName})(value ^ other.value));
 </#if>
     }
 
     public ${name} not()
     {
-<#if underlyingTypeInfo.isSimple>
-        return new ${name}((${underlyingTypeInfo.typeFullName})(~value<#if upperBound??> & ${upperBound}</#if>));
-<#else>
+<#if isBigInteger>
         <#-- big integer -->
         return new ${name}(value.not().and(${upperBound}));
+<#else>
+        return new ${name}((${underlyingTypeInfo.typeFullName})(~value<#if upperBound??> & ${upperBound}</#if>));
 </#if>
     }
 

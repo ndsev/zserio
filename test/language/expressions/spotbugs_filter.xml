@@ -1,0 +1,8 @@
+<FindBugsFilter>
+    <Match>
+        <!-- Method uses the same code for two switch clauses. -->
+        <Bug code="DB"/>
+        <Class name="expressions.index_operator.Element"/>
+        <Method name="hashCode"/>
+    </Match>
+</FindBugsFilter>

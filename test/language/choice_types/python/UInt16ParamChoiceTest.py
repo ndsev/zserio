@@ -60,6 +60,11 @@ class UInt16ParamChoiceTest(unittest.TestCase):
         uint16ParamChoice2.a = diffValue
         self.assertTrue(hash(uint16ParamChoice1) != hash(uint16ParamChoice2))
 
+        # use hardcoded values to check that the hash code is stable
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(31623, uint16ParamChoice1.__hash__())
+        self.assertEqual(31624, uint16ParamChoice2.__hash__())
+
     def testGetSelector(self):
         selector = self.EMPTY_SELECTOR2
         uint16ParamChoice = self.api.UInt16ParamChoice(selector)

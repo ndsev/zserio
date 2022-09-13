@@ -177,6 +177,10 @@ TEST_F(OneStringStructureTest, hashCode)
     oneStringStructure1.setOneString(ONE_STRING);
     ASSERT_NE(oneStringStructure1.hashCode(), oneStringStructure2.hashCode());
 
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(1773897624, oneStringStructure1.hashCode());
+    ASSERT_EQ(23, oneStringStructure2.hashCode());
+
     oneStringStructure2.setOneString(ONE_STRING);
     ASSERT_EQ(oneStringStructure1.hashCode(), oneStringStructure2.hashCode());
 }

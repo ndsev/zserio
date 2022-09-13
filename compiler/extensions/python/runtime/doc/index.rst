@@ -25,17 +25,19 @@ Zserio Python runtime library documentation
    :skip: BitBuffer
 .. automodapi:: zserio.builtin
 .. automodapi:: zserio.creator
-    :skip: PythonRuntimeException
-    :skip: MemberAttribute
-    :skip: MemberInfo
-    :skip: TypeAttribute
-    :skip: TypeInfo
-    :skip: RecursiveTypeInfo
+   :skip: PythonRuntimeException
+   :skip: MemberAttribute
+   :skip: MemberInfo
+   :skip: TypeAttribute
+   :skip: TypeInfo
+   :skip: RecursiveTypeInfo
 .. automodapi:: zserio.debugstring
 .. automodapi:: zserio.exception
    :skip: PythonRuntimeException
 .. automodapi:: zserio.float
 .. automodapi:: zserio.hashcode
+   :skip: float_to_uint32
+   :skip: float_to_uint64
 .. automodapi:: zserio.json
    :skip: BitBuffer
    :skip: TypeInfo

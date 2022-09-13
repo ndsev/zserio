@@ -58,6 +58,29 @@ public class UnionWithArrayTest
         }
     }
 
+    @Test
+    public void hashCodeMethod()
+    {
+        TestUnion testUnion1 = new TestUnion();
+        TestUnion testUnion2 = new TestUnion();
+        assertEquals(testUnion1.hashCode(), testUnion2.hashCode());
+        testUnion1.setArray8(createArray8());
+        assertFalse(testUnion1.hashCode() == testUnion2.hashCode());
+        testUnion2.setArray8(createArray8());
+        assertEquals(testUnion1.hashCode(), testUnion2.hashCode());
+        testUnion2.getArray8()[0].setData((byte)0);
+        assertFalse(testUnion1.hashCode() == testUnion2.hashCode());
+        testUnion2.setArray16(createArray16());
+        assertFalse(testUnion1.hashCode() == testUnion2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(87386744, testUnion1.hashCode());
+        assertEquals(1575145265, testUnion2.hashCode());
+
+        testUnion1.setArray16(createArray16());
+        assertEquals(testUnion1.hashCode(), testUnion2.hashCode());
+    }
+
     private static Data8[] createArray8()
     {
         return new Data8[]{new Data8((byte)-1), new Data8((byte)-2), new Data8((byte)-3), new Data8((byte)-4)};

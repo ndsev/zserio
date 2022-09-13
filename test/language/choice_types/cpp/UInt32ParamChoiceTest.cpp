@@ -289,6 +289,10 @@ TEST_F(UInt32ParamChoiceTest, hashCode)
     const VariantA diffValueA = valueA + 1;
     uint32ParamChoice2.setA(diffValueA);
     ASSERT_NE(uint32ParamChoice1.hashCode(), uint32ParamChoice2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(31623, uint32ParamChoice1.hashCode());
+    ASSERT_EQ(31624, uint32ParamChoice2.hashCode());
 }
 
 TEST_F(UInt32ParamChoiceTest, read)

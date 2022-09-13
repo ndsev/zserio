@@ -100,6 +100,12 @@ public class UInt64BitmaskTest
         assertEquals(write.hashCode(), new Permission(WRITE_PERMISSION_VALUE).hashCode());
         assertFalse(read.hashCode() == write.hashCode());
         assertFalse(read.hashCode() == Permission.Values.nonePermission.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(851, Permission.Values.nonePermission.hashCode());
+        assertEquals(853, Permission.Values.READ_PERMISSION.hashCode());
+        assertEquals(855, Permission.Values.write_permission.hashCode());
+        assertEquals(859, Permission.Values.CreatePermission.hashCode());
     }
 
     @Test

@@ -373,7 +373,7 @@ public class WithTypeInfoCodeTest
         final RecursiveChoice recursiveChoice = new RecursiveChoice(true, false);
         final SimpleUnion simpleUnion = new SimpleUnion();
         simpleUnion.setSimpleStruct(simpleStruct);
-        final SimpleChoice simpleChoice = new SimpleChoice(TestEnum.TWO);
+        final SimpleChoice simpleChoice = new SimpleChoice(TestEnum._TWO);
         simpleChoice.setFieldTwo(simpleUnion);
         final TS32 ts32 = new TS32((long)11);
         final TemplatedParameterizedStruct_TS32 templatedParameterizedStruct_TS32 =
@@ -381,7 +381,7 @@ public class WithTypeInfoCodeTest
         final WithTypeInfoCode withTypeInfoCode = new WithTypeInfoCode();
         withTypeInfoCode.setSimpleStruct(simpleStruct);
         withTypeInfoCode.setRecursiveChoice(recursiveChoice);
-        withTypeInfoCode.setSelector(TestEnum.TWO);
+        withTypeInfoCode.setSelector(TestEnum._TWO);
         withTypeInfoCode.setSimpleChoice(simpleChoice);
         withTypeInfoCode.setTemplatedStruct(ts32);
         withTypeInfoCode.setTemplatedParameterizedStruct(templatedParameterizedStruct_TS32);
@@ -1567,17 +1567,17 @@ public class WithTypeInfoCodeTest
         // One
         final ItemInfo OneItem = items.get(0);
         assertEquals("One", OneItem.getSchemaName());
-        assertEquals("0", OneItem.getValue());
+        assertEquals(0, OneItem.getValue().intValue());
 
         // TWO
         final ItemInfo TwoItem = items.get(1);
-        assertEquals("TWO", TwoItem.getSchemaName());
-        assertEquals("5", TwoItem.getValue());
+        assertEquals("_TWO", TwoItem.getSchemaName());
+        assertEquals(5, TwoItem.getValue().intValue());
 
         // ItemThree
         final ItemInfo ItemThreeItem = items.get(2);
         assertEquals("ItemThree", ItemThreeItem.getSchemaName());
-        assertEquals("6", ItemThreeItem.getValue());
+        assertEquals(6, ItemThreeItem.getValue().intValue());
     }
 
     private void checkSimpleChoice(TypeInfo typeInfo)
@@ -1585,7 +1585,7 @@ public class WithTypeInfoCodeTest
         final SimpleStruct simpleStruct = new SimpleStruct((long)0, (long)10, "Text", true, 1.0f, 2.0f, 4.0);
         final SimpleUnion simpleUnion = new SimpleUnion();
         simpleUnion.setSimpleStruct(simpleStruct);
-        final SimpleChoice simpleChoice = new SimpleChoice(TestEnum.TWO);
+        final SimpleChoice simpleChoice = new SimpleChoice(TestEnum._TWO);
         simpleChoice.setFieldTwo(simpleUnion);
 
         assertEquals("with_type_info_code.SimpleChoice", typeInfo.getSchemaName());
@@ -1679,7 +1679,7 @@ public class WithTypeInfoCodeTest
         // case TWO
         final CaseInfo case1 = cases.get(1);
         assertEquals(1, case1.getCaseExpressions().size());
-        assertEquals(TestEnum.TWO, case1.getCaseExpressions().get(0).get());
+        assertEquals(TestEnum._TWO, case1.getCaseExpressions().get(0).get());
         assertEquals(fieldTwoField, case1.getField());
 
         // default
@@ -1784,17 +1784,17 @@ public class WithTypeInfoCodeTest
         // RED
         final ItemInfo redValue = values.get(0);
         assertEquals("RED", redValue.getSchemaName());
-        assertEquals("(short)1", redValue.getValue());
+        assertEquals((short)1, redValue.getValue().shortValue());
 
         // Green
         final ItemInfo greenValue = values.get(1);
-        assertEquals("Green", greenValue.getSchemaName());
-        assertEquals("(short)2", greenValue.getValue());
+        assertEquals("_Green", greenValue.getSchemaName());
+        assertEquals((short)2, greenValue.getValue().shortValue());
 
         // ColorBlue
         final ItemInfo colorBlueValue = values.get(2);
         assertEquals("ColorBlue", colorBlueValue.getSchemaName());
-        assertEquals("(short)4", colorBlueValue.getValue());
+        assertEquals((short)4, colorBlueValue.getValue().shortValue());
     }
 
     private void checkTS32(TypeInfo typeInfo)
