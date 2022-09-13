@@ -57,6 +57,7 @@ public:
             <#list compoundConstructorsData.fieldList as field>
      * \param <@field_argument_name field/> Value of the field \ref ${field.getterName} "${field.name}".
             </#list>
+     * \param allocator Allocator to construct from.
      */
         </#if>
     <@compound_field_constructor_template_arg_list compoundConstructorsData.compoundName,

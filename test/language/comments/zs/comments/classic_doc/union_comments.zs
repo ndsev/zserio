@@ -5,7 +5,8 @@ import comments.classic_doc.enum_comments.Direction;
 /**
  * This is an union which uses constraint in one case.
  *
- * For more information, please have a look to the @see "documentation" Direction page.
+ * For more information, please have a look
+ * to the @see "documentation" comments.classic_doc.enum_comments.Direction page.
  *
  * @see "Direction" comments.classic_doc.enum_comments.Direction
  *

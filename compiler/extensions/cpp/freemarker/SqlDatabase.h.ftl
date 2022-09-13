@@ -101,7 +101,7 @@ public:
      * \param allocator Allocator to construct from.
      */
 </#if>
-    explicit ${name}(const ${types.string.name}& fileName, const allocator_type& allocator);
+    explicit ${name}(const ${types.string.name}& dbFileName, const allocator_type& allocator);
 <#if withCodeComments>
 
     /**
@@ -225,7 +225,9 @@ public:
      * Validates all tables in the database.
      *
      * \param validationObserver Validation observer from which users can obtain validation results.
+        <#if needsParameterProvider>
      * \param parameterProvider Provider of explicit parameters for all tables.
+        </#if>
      */
     </#if>
     void validate(::zserio::IValidationObserver& validationObserver<#rt>
