@@ -107,7 +107,7 @@ class JsonWriterTest(unittest.TestCase):
                          "\"bitmaskField\": \"TWO\", "
                          "\"bitmaskField\": \"One | TWO\", "
                          "\"bitmaskField\": \"4 /* no match */\", "
-                         "\"bitmaskField\": \"7 /* One | TWO */\"",
+                         "\"bitmaskField\": \"7 /* partial match: One | TWO */\"",
                          json_writer.get_io().getvalue())
 
         json_writer = JsonWriter(enumerable_format=JsonEnumerableFormat.NUMBER)

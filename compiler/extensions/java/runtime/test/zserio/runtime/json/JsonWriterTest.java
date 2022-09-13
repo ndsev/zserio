@@ -256,7 +256,7 @@ public class JsonWriterTest
                         "\"bitmaskField\": \"TWO\", " +
                         "\"bitmaskField\": \"One | TWO\", " +
                         "\"bitmaskField\": \"4 /* no match */\", " +
-                        "\"bitmaskField\": \"7 /* One | TWO */\"", stringWriter.toString());
+                        "\"bitmaskField\": \"7 /* partial match: One | TWO */\"", stringWriter.toString());
             }
         }
 

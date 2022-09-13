@@ -238,7 +238,7 @@ class JsonWriter(WalkObserver):
             string_value += str(bitmask_value) + " /* no match */"
         elif bitmask_value != value_check:
             # partial match
-            string_value = str(bitmask_value) + " /* " + string_value + " */"
+            string_value = str(bitmask_value) + " /* partial match: " + string_value + " */"
         # else exact match
 
         self._io.write(self._json_encoder.encode_value(string_value))

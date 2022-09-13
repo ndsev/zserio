@@ -381,7 +381,7 @@ public class JsonWriter implements WalkObserver, AutoCloseable
         {
             // partial match
             stringValue = new StringBuilder(bitmaskValue.toString())
-                    .append(" /* ")
+                    .append(" /* partial match: ")
                     .append(stringValue.toString())
                     .append(" */");
         }
