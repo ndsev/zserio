@@ -33,8 +33,9 @@ class EmptyUnionWithParameterTest(unittest.TestCase):
         self.assertTrue(hash(emptyUnionWithParameter1) != hash(emptyUnionWithParameter3))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(31523, hash(emptyUnionWithParameter1))
-        self.assertEqual(31486, hash(emptyUnionWithParameter3))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(31523, emptyUnionWithParameter1.__hash__())
+        self.assertEqual(31486, emptyUnionWithParameter3.__hash__())
 
     def testChoiceTag(self):
         emptyUnionWithParameter = self.api.EmptyUnionWithParameter(self.PARAM_VALUE1)

@@ -61,8 +61,9 @@ class FullEnumParamChoiceTest(unittest.TestCase):
         self.assertTrue(hash(fullEnumParamChoice1) != hash(fullEnumParamChoice2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(63073, hash(fullEnumParamChoice1))
-        self.assertEqual(63074, hash(fullEnumParamChoice2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(63073, fullEnumParamChoice1.__hash__())
+        self.assertEqual(63074, fullEnumParamChoice2.__hash__())
 
     def testGetSelector(self):
         selector = self.api.Selector.BLACK

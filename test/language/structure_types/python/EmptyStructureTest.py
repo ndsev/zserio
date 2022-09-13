@@ -24,7 +24,8 @@ class EmptyStructureTest(unittest.TestCase):
         self.assertEqual(hash(emptyStructure1), hash(emptyStructure2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(23, hash(emptyStructure1))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(23, emptyStructure1.__hash__())
 
     def testBitSizeOf(self):
         bitPosition = 1

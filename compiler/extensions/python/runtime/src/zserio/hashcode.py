@@ -108,7 +108,8 @@ def calc_hashcode_object(seed_value: int, value: typing.Any) -> int:
     :returns: Calculated hash code.
     """
 
-    return calc_hashcode_int32(seed_value, hash(value) if value else 0)
+    # using __hash__ to prevent 32-bit Python hash() truncation
+    return calc_hashcode_int32(seed_value, value.__hash__() if value else 0)
 
 def calc_hashcode_bool_array(seed_value: int, value: typing.List[bool]) -> int:
     """

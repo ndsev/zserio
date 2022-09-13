@@ -28,7 +28,8 @@ class EmptyUnionTest(unittest.TestCase):
         self.assertEqual(hash(emptyUnion1), hash(emptyUnion2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(850, hash(emptyUnion1))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(850, emptyUnion1.__hash__())
 
     def testChoiceTag(self):
         emptyUnion = self.api.EmptyUnion()

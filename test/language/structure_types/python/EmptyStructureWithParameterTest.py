@@ -34,8 +34,9 @@ class EmptyStructureTest(unittest.TestCase):
         self.assertTrue(hash(emptyStructureWithParameter1) != hash(emptyStructureWithParameter3))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(852, hash(emptyStructureWithParameter1))
-        self.assertEqual(851, hash(emptyStructureWithParameter3))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(852, emptyStructureWithParameter1.__hash__())
+        self.assertEqual(851, emptyStructureWithParameter3.__hash__())
 
     def testGetParam(self):
         param = 1

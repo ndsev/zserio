@@ -60,8 +60,9 @@ class UInt64ParamChoiceTest(unittest.TestCase):
         self.assertTrue(hash(uint64ParamChoice1) != hash(uint64ParamChoice2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(31623, hash(uint64ParamChoice1))
-        self.assertEqual(31624, hash(uint64ParamChoice2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(31623, uint64ParamChoice1.__hash__())
+        self.assertEqual(31624, uint64ParamChoice2.__hash__())
 
     def testGetSelector(self):
         uint64ParamChoice = self.api.UInt64ParamChoice(self.VARIANT_C_SELECTOR)

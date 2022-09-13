@@ -61,8 +61,8 @@ class BoolParamChoiceTest(unittest.TestCase):
         self.assertTrue(hash(boolParamChoice1) != hash(boolParamChoice2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(31623, hash(boolParamChoice1))
-        self.assertEqual(31624, hash(boolParamChoice2))
+        self.assertEqual(31623, boolParamChoice1.__hash__())
+        self.assertEqual(31624, boolParamChoice2.__hash__())
 
     def testGetSelector(self):
         selector = True

@@ -62,8 +62,9 @@ class OptionalRecursionTest(unittest.TestCase):
         self.assertNotEqual(hash(block12_1), hash(block12_2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(6240113, hash(block12_1))
-        self.assertEqual(1846174533, hash(block12_2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(6240113, block12_1.__hash__())
+        self.assertEqual(1846174533, block12_2.__hash__())
 
     def testIsNextDataSetAndUsed(self):
         block1 = self._createBlock(self.BLOCK1_DATA)

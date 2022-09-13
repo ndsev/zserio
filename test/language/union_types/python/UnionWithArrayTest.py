@@ -48,8 +48,9 @@ class UnionWithArrayTest(unittest.TestCase):
         self.assertNotEqual(hash(testUnion1), hash(testUnion2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(87386744, hash(testUnion1))
-        self.assertEqual(1575145265, hash(testUnion2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(87386744, testUnion1.__hash__())
+        self.assertEqual(1575145265, testUnion2.__hash__())
 
         testUnion1.array16 = self._createArray16()
         self.assertEqual(hash(testUnion1), hash(testUnion2))

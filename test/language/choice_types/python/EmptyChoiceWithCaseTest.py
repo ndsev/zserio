@@ -34,8 +34,9 @@ class EmptyChoiceWithCaseTest(unittest.TestCase):
         self.assertTrue(hash(emptyChoiceWithCase1) != hash(emptyChoiceWithCase3))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(852, hash(emptyChoiceWithCase1))
-        self.assertEqual(851, hash(emptyChoiceWithCase3))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(852, emptyChoiceWithCase1.__hash__())
+        self.assertEqual(851, emptyChoiceWithCase3.__hash__())
 
     def testGetSelector(self):
         selector = 1

@@ -61,8 +61,9 @@ class FullBitmaskParamChoiceTest(unittest.TestCase):
         self.assertTrue(hash(fullBitmaskParamChoice1) != hash(fullBitmaskParamChoice2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(63110, hash(fullBitmaskParamChoice1))
-        self.assertEqual(63111, hash(fullBitmaskParamChoice2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(63110, fullBitmaskParamChoice1.__hash__())
+        self.assertEqual(63111, fullBitmaskParamChoice2.__hash__())
 
     def testGetSelector(self):
         selector = self.api.Selector.Values.BLACK

@@ -40,8 +40,9 @@ class UnionWithParameterizedFieldTest(unittest.TestCase):
         self.assertNotEqual(hash(testUnion1), hash(testUnion2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(31520, hash(testUnion1))
-        self.assertEqual(1174142900, hash(testUnion2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(31520, testUnion1.__hash__())
+        self.assertEqual(1174142900, testUnion2.__hash__())
 
         testUnion1.array_holder = self.api.ArrayHolder(10, [0] * 10)
         self.assertEqual(hash(testUnion1), hash(testUnion2))

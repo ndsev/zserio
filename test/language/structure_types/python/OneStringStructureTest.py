@@ -46,9 +46,10 @@ class OneStringStructureTest(unittest.TestCase):
         self.assertTrue(hash(oneStringStructure1) != hash(oneStringStructure2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1773897624, hash(oneStringStructure1))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(1773897624, oneStringStructure1.__hash__())
         oneStringStructure2.one_string = ""
-        self.assertEqual(23, hash(oneStringStructure2))
+        self.assertEqual(23, oneStringStructure2.__hash__())
 
         oneStringStructure2.one_string = self.ONE_STRING
         self.assertEqual(hash(oneStringStructure1), hash(oneStringStructure2))

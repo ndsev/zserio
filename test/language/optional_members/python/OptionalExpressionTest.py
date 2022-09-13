@@ -51,8 +51,9 @@ class OptionalExpressionTest(unittest.TestCase):
         self.assertTrue(hash(container1) != hash(container2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(1703, hash(container1))
-        self.assertEqual(2393199, hash(container2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(1703, container1.__hash__())
+        self.assertEqual(2393199, container2.__hash__())
 
         container2.basic_color = self.api.BasicColor.WHITE
         container2.num_black_tones = None

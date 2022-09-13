@@ -54,8 +54,9 @@ class AutoOptionalTest(unittest.TestCase):
         self.assertTrue(hash(container1) != hash(container2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(3735937536, hash(container1))
-        self.assertEqual(3994118383, hash(container2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(3735937536, container1.__hash__())
+        self.assertEqual(3994118383, container2.__hash__())
 
     def testIsAutoOptionalIntSetAndUsed(self):
         container = self.api.Container()

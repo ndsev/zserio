@@ -89,8 +89,8 @@ class SimpleUnionTest(unittest.TestCase):
         self.assertNotEqual(hash(simpleUnion1), hash(simpleUnion2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(31500, hash(simpleUnion1))
-        self.assertEqual(31640, hash(simpleUnion2))
+        self.assertEqual(31500, simpleUnion1.__hash__())
+        self.assertEqual(31640, simpleUnion2.__hash__())
 
         simpleUnion2.case4_field = self.CASE1_FIELD # same value as simpleUnion1
         self.assertNotEqual(hash(simpleUnion1), hash(simpleUnion2))

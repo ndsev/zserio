@@ -61,8 +61,9 @@ class EnumParamChoiceTest(unittest.TestCase):
         self.assertTrue(hash(enumParamChoice1) != hash(enumParamChoice2))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(63073, hash(enumParamChoice1))
-        self.assertEqual(63074, hash(enumParamChoice2))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(63073, enumParamChoice1.__hash__())
+        self.assertEqual(63074, enumParamChoice2.__hash__())
 
     def testGetSelector(self):
         selector = self.api.Selector.BLACK

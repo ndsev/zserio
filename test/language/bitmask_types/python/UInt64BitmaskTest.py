@@ -68,10 +68,11 @@ class UInt64BitmaskTest(unittest.TestCase):
         self.assertNotEqual(hash(read), hash(self.api.Permission.Values.NONE_PERMISSION))
 
         # use hardcoded values to check that the hash code is stable
-        self.assertEqual(851, hash(self.api.Permission.Values.NONE_PERMISSION))
-        self.assertEqual(853, hash(self.api.Permission.Values.READ_PERMISSION))
-        self.assertEqual(855, hash(self.api.Permission.Values.WRITE_PERMISSION))
-        self.assertEqual(859, hash(self.api.Permission.Values.CREATE_PERMISSION))
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(851, self.api.Permission.Values.NONE_PERMISSION.__hash__())
+        self.assertEqual(853, self.api.Permission.Values.READ_PERMISSION.__hash__())
+        self.assertEqual(855, self.api.Permission.Values.WRITE_PERMISSION.__hash__())
+        self.assertEqual(859, self.api.Permission.Values.CREATE_PERMISSION.__hash__())
 
     def testStr(self):
         self.assertEqual("0[NONE_PERMISSION]", str(self.api.Permission.Values.NONE_PERMISSION))
