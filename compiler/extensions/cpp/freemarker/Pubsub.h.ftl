@@ -18,7 +18,7 @@
 <#if withCodeComments && docComments??>
 <@doc_comments docComments/>
 </#if>
-class ${name} : public zserio::AllocatorHolder<${types.allocator.default}>
+class ${name} : public ::zserio::AllocatorHolder<${types.allocator.default}>
 {
 public:
 <#if withCodeComments>

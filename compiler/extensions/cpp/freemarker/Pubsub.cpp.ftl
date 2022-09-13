@@ -42,7 +42,7 @@ private:
 </#if>
 
 ${name}::${name}(::zserio::IPubsub& pubsub, const allocator_type& allocator) :
-        ::zserio::AllocatorHolder<${types.allocator.default}>(allocator),
+        ::zserio::AllocatorHolder<allocator_type>(allocator),
         m_pubsub(pubsub)
 {
 }
