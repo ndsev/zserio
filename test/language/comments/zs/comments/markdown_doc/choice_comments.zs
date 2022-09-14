@@ -25,11 +25,11 @@ choice TestChoice(Direction direction) on direction
 
     case NEGATIVE:
         /*! Traffic allowed from end to start node. !*/
-        int8 negativeValue;
+        int32 negativeValue;
 
     case BOTH:
         /*! Traffic allowed in both directions. !*/
-        uint16 value;
+        uint64 value;
 
     case NONE:
         /*! No direction at all. !*/
