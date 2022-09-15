@@ -49,6 +49,13 @@ public abstract class DocComment extends AstNodeBase
      */
     public abstract DocComment findParamDoc(String paramName);
 
+    /**
+     * Converts the documentation comment to the classic documentation comment.
+     *
+     * @return Converted classic documentation comment.
+     */
+    public abstract DocCommentClassic toClassic();
+
     private final boolean isSticky;
     private final boolean isOneLiner;
 }

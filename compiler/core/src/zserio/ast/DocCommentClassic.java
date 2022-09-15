@@ -63,6 +63,12 @@ public class DocCommentClassic extends DocComment
         return null;
     }
 
+    @Override
+    public DocCommentClassic toClassic()
+    {
+        return this;
+    }
+
     /**
      * Gets doc comment paragraphs.
      *
