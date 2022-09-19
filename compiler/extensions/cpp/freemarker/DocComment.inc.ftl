@@ -15,9 +15,9 @@
     <#if comment.isOneLiner && comment.paragraphs?size == 1 && comment.paragraphs[0].elements?size == 1>
 ${I}<#if !isInner>/**<#else> *</#if> <@doc_paragraph_element comment.paragraphs[0].elements[0], indent/><#if !isInner> */</#if>
     <#else>
-<#if !isInner>
+        <#if !isInner>
 ${I}/**
-</#if>
+        </#if>
         <#list comment.paragraphs as paragraph>
             <#if !paragraph?is_first>
 ${I} *
@@ -26,9 +26,9 @@ ${I} *
 ${I} * <@doc_paragraph_element element, indent/>
             </#list>
         </#list>
-<#if !isInner>
+        <#if !isInner>
 ${I} */
-</#if>
+        </#if>
     </#if>
 </#macro>
 
