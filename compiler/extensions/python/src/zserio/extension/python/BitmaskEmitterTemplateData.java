@@ -23,7 +23,7 @@ public class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
     {
-        super(context, bitmaskType);
+        super(context, bitmaskType, bitmaskType.getDocComments());
 
         importPackage("typing");
         importPackage("zserio"); // needed at least for hash code calculation

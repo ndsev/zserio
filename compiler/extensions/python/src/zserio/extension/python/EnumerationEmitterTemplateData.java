@@ -20,7 +20,7 @@ public class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType);
+        super(context, enumType, enumType.getDocComments());
 
         importPackage("enum");
         importPackage("typing");

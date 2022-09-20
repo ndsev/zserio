@@ -33,7 +33,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
     public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType sqlTableType)
             throws ZserioExtensionException
     {
-        super(context, sqlTableType);
+        super(context, sqlTableType, sqlTableType.getDocComments());
 
         importPackage("typing");
         importPackage("apsw");

@@ -18,7 +18,7 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     public PubsubEmitterTemplateData(TemplateDataContext context, PubsubType pubsubType)
             throws ZserioExtensionException
     {
-        super(context, pubsubType);
+        super(context, pubsubType, pubsubType.getDocComments());
 
         importPackage("typing");
         importPackage("zserio");
