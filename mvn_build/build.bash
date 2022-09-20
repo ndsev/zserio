@@ -21,7 +21,7 @@ cp -r ../compiler/core/src/* $SOURCE
 cp -r ../compiler/core/test/* $TEST
 
 # extensions
-extensions=(cpp doc java python xml)
+extensions=(cpp doc java python xml json)
 for extension in ${extensions[@]}
 do
     cp -r ../compiler/extensions/${extension}/src/* $SOURCE
