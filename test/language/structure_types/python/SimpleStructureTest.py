@@ -74,6 +74,11 @@ class SimpleStructureTest(unittest.TestCase):
         simpleStructure2.number_c = numberC
         self.assertTrue(hash(simpleStructure1) != hash(simpleStructure2))
 
+        # use hardcoded values to check that the hash code is stable
+        # using __hash__ to prevent 32-bit Python hash() truncation
+        self.assertEqual(1178167, simpleStructure1.__hash__())
+        self.assertEqual(1178204, simpleStructure2.__hash__())
+
         simpleStructure2.number_b = numberB
         self.assertEqual(hash(simpleStructure1), hash(simpleStructure2))
 

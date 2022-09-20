@@ -125,6 +125,10 @@ TEST_F(BitmaskWithoutNoneTest, hashCode)
     ASSERT_NE(readPermission.hashCode(), writePermission.hashCode());
     ASSERT_NE(readPermission.hashCode(), none.hashCode());
     ASSERT_NE(writePermission.hashCode(), none.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(853, Permission(Permission::Values::READ).hashCode());
+    ASSERT_EQ(855, Permission(Permission::Values::WRITE).hashCode());
 }
 
 TEST_F(BitmaskWithoutNoneTest, write)

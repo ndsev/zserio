@@ -101,39 +101,43 @@ public class BoolParamChoiceTest
     @Test
     public void equals()
     {
-        BoolParamChoice enumParamChoice1 = new BoolParamChoice(true);
-        BoolParamChoice enumParamChoice2 = new BoolParamChoice(true);
-        assertTrue(enumParamChoice1.equals(enumParamChoice2));
+        BoolParamChoice boolParamChoice1 = new BoolParamChoice(true);
+        BoolParamChoice boolParamChoice2 = new BoolParamChoice(true);
+        assertTrue(boolParamChoice1.equals(boolParamChoice2));
 
         final byte value = 99;
-        enumParamChoice1.setBlack(value);
-        assertFalse(enumParamChoice1.equals(enumParamChoice2));
+        boolParamChoice1.setBlack(value);
+        assertFalse(boolParamChoice1.equals(boolParamChoice2));
 
-        enumParamChoice2.setBlack(value);
-        assertTrue(enumParamChoice1.equals(enumParamChoice2));
+        boolParamChoice2.setBlack(value);
+        assertTrue(boolParamChoice1.equals(boolParamChoice2));
 
         final byte diffValue = value + 1;
-        enumParamChoice2.setBlack(diffValue);
-        assertFalse(enumParamChoice1.equals(enumParamChoice2));
+        boolParamChoice2.setBlack(diffValue);
+        assertFalse(boolParamChoice1.equals(boolParamChoice2));
     }
 
     @Test
     public void hashCodeMethod()
     {
-        BoolParamChoice enumParamChoice1 = new BoolParamChoice(true);
-        BoolParamChoice enumParamChoice2 = new BoolParamChoice(true);
-        assertEquals(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
+        BoolParamChoice boolParamChoice1 = new BoolParamChoice(true);
+        BoolParamChoice boolParamChoice2 = new BoolParamChoice(true);
+        assertEquals(boolParamChoice1.hashCode(), boolParamChoice2.hashCode());
 
         final byte value = 99;
-        enumParamChoice1.setBlack(value);
-        assertTrue(enumParamChoice1.hashCode() != enumParamChoice2.hashCode());
+        boolParamChoice1.setBlack(value);
+        assertTrue(boolParamChoice1.hashCode() != boolParamChoice2.hashCode());
 
-        enumParamChoice2.setBlack(value);
-        assertEquals(enumParamChoice1.hashCode(), enumParamChoice2.hashCode());
+        boolParamChoice2.setBlack(value);
+        assertEquals(boolParamChoice1.hashCode(), boolParamChoice2.hashCode());
 
         final byte diffValue = value + 1;
-        enumParamChoice2.setBlack(diffValue);
-        assertTrue(enumParamChoice1.hashCode() != enumParamChoice2.hashCode());
+        boolParamChoice2.setBlack(diffValue);
+        assertTrue(boolParamChoice1.hashCode() != boolParamChoice2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(31623, boolParamChoice1.hashCode());
+        assertEquals(31624, boolParamChoice2.hashCode());
     }
 
     @Test

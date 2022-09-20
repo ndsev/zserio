@@ -1,5 +1,7 @@
 package zserio.extension.java.types;
 
+import zserio.ast.PackageName;
+
 /**
  * Native Java string type mapping.
  */
@@ -8,9 +10,9 @@ public class NativeStringType extends NativeArrayableType
     public NativeStringType()
     {
         super(JAVA_LANG_PACKAGE, "String",
-                new NativeObjectRawArray(),
+                new NativeRawArray("StringRawArray"),
                 new NativeArrayTraits("StringArrayTraits"),
-                new NativeArrayElement("StringArrayElement"));
+                new NativeObjectArrayElement(STRING_PACKAGE, "String"));
     }
 
     @Override
@@ -18,4 +20,7 @@ public class NativeStringType extends NativeArrayableType
     {
         return false;
     }
+
+    private static final PackageName STRING_PACKAGE =
+            new PackageName.Builder().addId("java").addId("lang").get();
 }

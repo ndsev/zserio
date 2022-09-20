@@ -334,7 +334,7 @@ TEST(JsonWriterTest, bitmaskValue)
                 "\"bitmaskField\": \"TWO\", "
                 "\"bitmaskField\": \"One | TWO\", "
                 "\"bitmaskField\": \"4 /* no match */\", "
-                "\"bitmaskField\": \"7 /* One | TWO */\"", os.str());
+                "\"bitmaskField\": \"7 /* partial match: One | TWO */\"", os.str());
 
         // just improve coverage
         ASSERT_EQ(0, reflectableZero->bitSizeOf());

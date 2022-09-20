@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <type_traits>
 
+#include "zserio/Types.h"
+
 // This should be implemented in runtime library header.
 namespace zserio
 {
@@ -54,6 +56,16 @@ constexpr typename std::underlying_type<T>::type enumToValue(T value)
 {
     return static_cast<typename std::underlying_type<T>::type>(value);
 }
+
+/**
+ * Gets the hash code of the given enum item.
+ *
+ * \param value Enum item.
+ *
+ * \return Hash code of the enum item.
+ */
+template <typename T>
+uint32_t enumHashCode(T value);
 
 /**
  * Gets the name of the given enum item.

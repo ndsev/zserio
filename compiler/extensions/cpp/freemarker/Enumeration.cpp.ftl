@@ -146,6 +146,14 @@ ${fullName} valueToEnum(
 }
 
 template <>
+uint32_t enumHashCode<${fullName}>(${fullName} value)
+{
+    uint32_t result = ::zserio::HASH_SEED;
+    result = ::zserio::calcHashCode(result, enumToValue(value));
+    return result;
+}
+
+template <>
 void initPackingContext(${types.packingContextNode.name}& contextNode, ${fullName} value)
 {
     contextNode.getContext().init(<@enum_array_traits underlyingTypeInfo.arrayTraits, fullName, bitSize!/>,

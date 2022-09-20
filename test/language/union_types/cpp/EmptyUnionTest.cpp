@@ -100,6 +100,9 @@ TEST(EmptyUnionTest, hashCode)
     EmptyUnion emptyUnion1;
     EmptyUnion emptyUnion2;
     ASSERT_EQ(emptyUnion1.hashCode(), emptyUnion2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(850, emptyUnion1.hashCode());
 }
 
 TEST(EmptyUnionTest, write)

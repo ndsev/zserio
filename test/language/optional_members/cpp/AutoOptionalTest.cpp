@@ -38,8 +38,8 @@ protected:
     zserio::BitBuffer bitBuffer = zserio::BitBuffer(1024 * 8);
 };
 
-const int32_t AutoOptionalTest::NON_OPTIONAL_INT_VALUE = 0x0DEADDED;
-const int32_t AutoOptionalTest::AUTO_OPTIONAL_INT_VALUE = 0x0BEEFBEF;
+const int32_t AutoOptionalTest::NON_OPTIONAL_INT_VALUE = static_cast<int32_t>(0xDEADDEAD);
+const int32_t AutoOptionalTest::AUTO_OPTIONAL_INT_VALUE = static_cast<int32_t>(0xBEEFBEEF);
 
 const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITHOUT_OPTIONAL = 32 + 1;
 const size_t AutoOptionalTest::CONTAINER_BIT_SIZE_WITH_OPTIONAL = 32 + 1 + 32;
@@ -140,6 +140,10 @@ TEST_F(AutoOptionalTest, hashCode)
 
     container1.resetAutoOptionalInt();
     ASSERT_NE(container1.hashCode(), container2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(3735937536, container1.hashCode());
+    ASSERT_EQ(3994118383, container2.hashCode());
 }
 
 TEST_F(AutoOptionalTest, write)

@@ -516,7 +516,7 @@ void BasicJsonWriter<ALLOC>::writeStringifiedBitmask(const IBasicReflectableCons
     {
         // partial match
         stringValue = toString(bitmaskValue, get_allocator())
-                .append(" /* ")
+                .append(" /* partial match: ")
                 .append(stringValue)
                 .append(" */");
     }

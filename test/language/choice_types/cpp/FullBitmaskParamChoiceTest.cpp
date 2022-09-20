@@ -264,6 +264,10 @@ TEST_F(FullBitmaskParamChoiceTest, hashCode)
     const int8_t diffValue = value + 1;
     fullBitmaskParamChoice2.setBlack(diffValue);
     ASSERT_NE(fullBitmaskParamChoice1.hashCode(), fullBitmaskParamChoice2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(63110, fullBitmaskParamChoice1.hashCode());
+    ASSERT_EQ(63111, fullBitmaskParamChoice2.hashCode());
 }
 
 TEST_F(FullBitmaskParamChoiceTest, write)

@@ -264,16 +264,40 @@ ${I}break;
         return false;
     }
 
+<#macro choice_hash_code_no_match name indent>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if isSwitchAllowed>
+${I}break;
+    </#if>
+</#macro>
+<#macro choice_hash_code_member member indent packed index>
+    <#local I>${""?left_pad(indent * 4)}</#local>
+    <#if member.compoundField??>
+${I}result = zserio.runtime.HashCodeUtil.calcHashCode(result, <#rt>
+        <#if member.compoundField.array??>
+        <#lt>(${member.compoundField.array.wrapperJavaTypeName})objectChoice);
+        <#else>
+        <#lt>(${member.compoundField.nullableTypeInfo.typeFullName})objectChoice);
+        </#if>
+    <#else>
+${I}// empty
+    </#if>
+    <#if isSwitchAllowed>
+${I}break;
+    </#if>
+</#macro>
     @Override
     public int hashCode()
     {
-        int result = zserio.runtime.Util.HASH_SEED;
+        int result = zserio.runtime.HashCodeUtil.HASH_SEED;
 
-<#list compoundParametersData.list as parameter>
-        <@compound_hashcode_parameter parameter/>
-</#list>
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                ((objectChoice == null) ? 0 : objectChoice.hashCode());
+        <@compound_parameter_hash_code compoundParametersData/>
+<#if fieldList?has_content>
+        if (objectChoice != null)
+        {
+            <@choice_switch "choice_hash_code_member", "choice_hash_code_no_match", 3/>
+        }
+</#if>
 
         return result;
     }

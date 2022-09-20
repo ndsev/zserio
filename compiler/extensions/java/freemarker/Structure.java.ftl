@@ -198,20 +198,20 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     @Override
     public int hashCode()
     {
-        int result = zserio.runtime.Util.HASH_SEED;
+        int result = zserio.runtime.HashCodeUtil.HASH_SEED;
 
-<#list compoundParametersData.list as parameter>
-        <@compound_hashcode_parameter parameter/>
-</#list>
+        <@compound_parameter_hash_code compoundParametersData/>
 <#list fieldList as field>
     <#if field.optional??>
         if (${field.optional.isUsedIndicatorName}())
-            <@compound_hashcode_field field, 3/>
+            result = zserio.runtime.HashCodeUtil.calcHashCode(result, <@field_member_name field/>);
     <#else>
-        <@compound_hashcode_field field, 2/>
+        result = zserio.runtime.HashCodeUtil.calcHashCode(result, <@field_member_name field/>);
+    </#if>
+    <#if !field?has_next>
+
     </#if>
 </#list>
-
         return result;
     }
 

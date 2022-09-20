@@ -103,6 +103,10 @@ public class EmptyUnionWithParameterTest
                 new EmptyUnionWithParameter((short)0);
         assertEquals(emptyUnionWithParameter1.hashCode(), emptyUnionWithParameter2.hashCode());
         assertTrue(emptyUnionWithParameter1.hashCode() != emptyUnionWithParameter3.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(31523, emptyUnionWithParameter1.hashCode());
+        assertEquals(31486, emptyUnionWithParameter3.hashCode());
     }
 
     @Test

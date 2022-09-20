@@ -150,6 +150,10 @@ public class BitmaskParamChoiceTest
         final byte diffValue = value + 1;
         bitmaskParamChoice2.setBlack(diffValue);
         assertTrue(bitmaskParamChoice1.hashCode() != bitmaskParamChoice2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(63110, bitmaskParamChoice1.hashCode());
+        assertEquals(63111, bitmaskParamChoice2.hashCode());
     }
 
     @Test

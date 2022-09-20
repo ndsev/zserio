@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.File;
 
+import zserio.runtime.HashCodeUtil;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -33,6 +34,16 @@ public class BitfieldEnumTest
     {
         final Color color = Color.GREEN;
         assertEquals(Byte.valueOf(GREEN_VALUE), color.getGenericValue());
+    }
+
+    @Test
+    public void calcHashCode()
+    {
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(1702, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, Color.NONE));
+        assertEquals(1704, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, Color.RED));
+        assertEquals(1705, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, Color.BLUE));
+        assertEquals(1709, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, Color.GREEN));
     }
 
     @Test

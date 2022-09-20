@@ -305,6 +305,11 @@ TEST_F(UnionWithArrayTest, hashCode)
     ASSERT_NE(testUnion1.hashCode(), testUnion2.hashCode());
     testUnion2.setArray16(createArray16());
     ASSERT_NE(testUnion1.hashCode(), testUnion2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(87386744, testUnion1.hashCode());
+    ASSERT_EQ(1575145265, testUnion2.hashCode());
+
     testUnion1.setArray16(createArray16());
     ASSERT_EQ(testUnion1.hashCode(), testUnion2.hashCode());
 }

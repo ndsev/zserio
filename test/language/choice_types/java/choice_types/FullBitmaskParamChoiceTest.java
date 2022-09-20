@@ -150,6 +150,10 @@ public class FullBitmaskParamChoiceTest
         final byte diffValue = value + 1;
         fullBitmaskParamChoice2.setBlack(diffValue);
         assertTrue(fullBitmaskParamChoice1.hashCode() != fullBitmaskParamChoice2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(63110, fullBitmaskParamChoice1.hashCode());
+        assertEquals(63111, fullBitmaskParamChoice2.hashCode());
     }
 
     @Test

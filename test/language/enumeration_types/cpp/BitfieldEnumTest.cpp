@@ -68,6 +68,15 @@ TEST_F(BitfieldEnumTest, valueToEnumFailure)
     ASSERT_THROW(zserio::valueToEnum<Color>(1), zserio::CppRuntimeException);
 }
 
+TEST_F(BitfieldEnumTest, enumHashCode)
+{
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(1702, zserio::calcHashCode(zserio::HASH_SEED, Color::NONE));
+    ASSERT_EQ(1704, zserio::calcHashCode(zserio::HASH_SEED, Color::RED));
+    ASSERT_EQ(1705, zserio::calcHashCode(zserio::HASH_SEED, Color::BLUE));
+    ASSERT_EQ(1709, zserio::calcHashCode(zserio::HASH_SEED, Color::GREEN));
+}
+
 TEST_F(BitfieldEnumTest, bitSizeOf)
 {
     ASSERT_TRUE(zserio::bitSizeOf(Color::NONE) == COLOR_BITSIZEOF);

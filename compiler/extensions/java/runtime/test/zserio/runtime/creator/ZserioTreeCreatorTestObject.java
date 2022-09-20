@@ -2,6 +2,8 @@ package zserio.runtime.creator;
 
 import java.math.BigInteger;
 
+import zserio.runtime.HashCodeUtil;
+
 /**
  * Corresponds to the following schema:
  *
@@ -281,9 +283,9 @@ public class ZserioTreeCreatorTestObject
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + value;
+            result = HashCodeUtil.calcHashCode(result, value);
 
             return result;
         }
@@ -671,19 +673,14 @@ public class ZserioTreeCreatorTestObject
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = zserio.runtime.HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    (int)(this.param_ ^ (this.param_ >>> 32));
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(value_ ^ (value_ >>> 32));
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((text_ == null) ? 0 : text_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((data_ == null) ? 0 : data_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((dummyEnum_ == null) ? 0 : dummyEnum_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((dummyBitmask_ == null) ? 0 : dummyBitmask_.hashCode());
+            result = HashCodeUtil.calcHashCode(result, getParam());
+            result = HashCodeUtil.calcHashCode(result, value_);
+            result = HashCodeUtil.calcHashCode(result, text_);
+            result = HashCodeUtil.calcHashCode(result, data_);
+            result = HashCodeUtil.calcHashCode(result, dummyEnum_);
+            result = HashCodeUtil.calcHashCode(result, dummyBitmask_);
 
             return result;
         }
@@ -1159,7 +1156,7 @@ public class ZserioTreeCreatorTestObject
         public void setTextArray(java.lang.String[] textArray_)
         {
             this.textArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.ObjectRawArray<>(java.lang.String.class, textArray_),
+                    new zserio.runtime.array.RawArray.StringRawArray(textArray_),
                     new zserio.runtime.array.ArrayTraits.StringArrayTraits(),
                     zserio.runtime.array.ArrayType.AUTO);
         }
@@ -1172,7 +1169,7 @@ public class ZserioTreeCreatorTestObject
         public void setExternArray(zserio.runtime.io.BitBuffer[] externArray_)
         {
             this.externArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.ObjectRawArray<>(zserio.runtime.io.BitBuffer.class, externArray_),
+                    new zserio.runtime.array.RawArray.BitBufferRawArray(externArray_),
                     new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
                     zserio.runtime.array.ArrayType.AUTO);
         }
@@ -1253,25 +1250,18 @@ public class ZserioTreeCreatorTestObject
         @Override
         public int hashCode()
         {
-            int result = zserio.runtime.Util.HASH_SEED;
+            int result = zserio.runtime.HashCodeUtil.HASH_SEED;
 
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (int)(value_ ^ (value_ >>> 32));
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((nested_ == null) ? 0 : nested_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((text_ == null) ? 0 : text_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((nestedArray_ == null) ? 0 : nestedArray_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((textArray_ == null) ? 0 : textArray_.hashCode());
-            result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                    ((externArray_ == null) ? 0 : externArray_.hashCode());
+            result = HashCodeUtil.calcHashCode(result, value_);
+            result = HashCodeUtil.calcHashCode(result, nested_);
+            result = HashCodeUtil.calcHashCode(result, text_);
+            result = HashCodeUtil.calcHashCode(result, nestedArray_);
+            result = HashCodeUtil.calcHashCode(result, textArray_);
+            result = HashCodeUtil.calcHashCode(result, externArray_);
             if (isOptionalBoolUsed())
-                result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                        ((optionalBool_ == null) ? 0 : optionalBool_.hashCode());
+                result = HashCodeUtil.calcHashCode(result, optionalBool_);
             if (isOptionalNestedUsed())
-                result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                        ((optionalNested_ == null) ? 0 : optionalNested_.hashCode());
+                result = HashCodeUtil.calcHashCode(result, optionalNested_);
 
             return result;
         }
@@ -1292,13 +1282,13 @@ public class ZserioTreeCreatorTestObject
             nestedArray_.read(in);
 
             textArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.ObjectRawArray<>(java.lang.String.class),
+                    new zserio.runtime.array.RawArray.StringRawArray(),
                     new zserio.runtime.array.ArrayTraits.StringArrayTraits(),
                     zserio.runtime.array.ArrayType.AUTO);
             textArray_.read(in);
 
             externArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.ObjectRawArray<>(zserio.runtime.io.BitBuffer.class),
+                    new zserio.runtime.array.RawArray.BitBufferRawArray(),
                     new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
                     zserio.runtime.array.ArrayType.AUTO);
             externArray_.read(in);
@@ -1332,13 +1322,13 @@ public class ZserioTreeCreatorTestObject
             nestedArray_.readPacked(in);
 
             textArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.ObjectRawArray<>(java.lang.String.class),
+                    new zserio.runtime.array.RawArray.StringRawArray(),
                     new zserio.runtime.array.ArrayTraits.StringArrayTraits(),
                     zserio.runtime.array.ArrayType.AUTO);
             textArray_.read(in);
 
             externArray_ = new zserio.runtime.array.Array(
-                    new zserio.runtime.array.RawArray.ObjectRawArray<>(zserio.runtime.io.BitBuffer.class),
+                    new zserio.runtime.array.RawArray.BitBufferRawArray(),
                     new zserio.runtime.array.ArrayTraits.BitBufferArrayTraits(),
                     zserio.runtime.array.ArrayType.AUTO);
             externArray_.read(in);

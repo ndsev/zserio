@@ -150,6 +150,10 @@ public class EnumParamChoiceTest
         final byte diffValue = value + 1;
         enumParamChoice2.setBlack(diffValue);
         assertTrue(enumParamChoice1.hashCode() != enumParamChoice2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(63073, enumParamChoice1.hashCode());
+        assertEquals(63074, enumParamChoice2.hashCode());
     }
 
     @Test

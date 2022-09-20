@@ -16,7 +16,8 @@
 
 <#macro compound_hashcode_field_inner field indent>
     <#local I>${""?left_pad(indent * 4)}</#local>
-${I}result = zserio.hashcode.calc_hashcode(result, hash(self.<@field_member_name field/>))
+${I}result = zserio.hashcode.calc_hashcode_${field.typeInfo.hashCodeFunc.suffix}(<#rt>
+        <#lt>result, self.<@field_member_name field/>)
 </#macro>
 
 <#macro compound_getter_field field>

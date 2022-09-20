@@ -146,6 +146,10 @@ public class UInt64ParamChoiceTest
         final byte diffValue = value + 1;
         uint64ParamChoice2.setA(diffValue);
         assertTrue(uint64ParamChoice1.hashCode() != uint64ParamChoice2.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(31623, uint64ParamChoice1.hashCode());
+        assertEquals(31624, uint64ParamChoice2.hashCode());
     }
 
     @Test

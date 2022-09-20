@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
+import zserio.runtime.HashCodeUtil;
 import zserio.runtime.io.BitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamReader;
 import zserio.runtime.io.ByteArrayBitStreamWriter;
@@ -30,6 +31,16 @@ public class UInt8EnumTest
     {
         final DarkColor darkColor = DarkColor.DARK_GREEN;
         assertEquals(Short.valueOf(DARK_GREEN_VALUE), darkColor.getGenericValue());
+    }
+
+    @Test
+    public void calcHashCode()
+    {
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(1702, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, DarkColor.NONE));
+        assertEquals(1703, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, DarkColor.DARK_RED));
+        assertEquals(1704, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, DarkColor.DARK_BLUE));
+        assertEquals(1709, HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, DarkColor.DARK_GREEN));
     }
 
     @Test

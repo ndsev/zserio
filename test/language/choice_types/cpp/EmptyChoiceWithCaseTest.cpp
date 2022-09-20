@@ -153,6 +153,10 @@ TEST(EmptyChoiceWithCaseTest, hashCode)
     emptyChoiceWithCase3.initialize(0);
     ASSERT_EQ(emptyChoiceWithCase1.hashCode(), emptyChoiceWithCase2.hashCode());
     ASSERT_NE(emptyChoiceWithCase1.hashCode(), emptyChoiceWithCase3.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(852, emptyChoiceWithCase1.hashCode());
+    ASSERT_EQ(851, emptyChoiceWithCase3.hashCode());
 }
 
 TEST(EmptyChoiceWithCaseTest, write)

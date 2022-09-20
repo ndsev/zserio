@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import zserio.runtime.BitSizeOfCalculator;
 import zserio.runtime.FloatUtil;
-import zserio.runtime.Util;
+import zserio.runtime.BitFieldUtil;
 import zserio.runtime.ZserioError;
 import zserio.runtime.VarSizeUtil;
 
@@ -43,8 +43,8 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
 
         if (numBits != 64)
         {
-            final long lowerBound = Util.getBitFieldLowerBound(numBits, true);
-            final long upperBound = Util.getBitFieldUpperBound(numBits, true);
+            final long lowerBound = BitFieldUtil.getBitFieldLowerBound(numBits, true);
+            final long upperBound = BitFieldUtil.getBitFieldUpperBound(numBits, true);
 
             if (value < lowerBound || value > upperBound)
                 throw new IllegalArgumentException("ByteArrayBitStreamWriter: Value " + value + " does not " +
@@ -64,7 +64,7 @@ public class ByteArrayBitStreamWriter extends ByteArrayBitStreamBase implements 
                     " is out of range [1, 64].");
 
         final long lowerBound = 0;
-        final long upperBound = Util.getBitFieldUpperBound(numBits, false);
+        final long upperBound = BitFieldUtil.getBitFieldUpperBound(numBits, false);
 
         if (value < lowerBound || value > upperBound)
             throw new IllegalArgumentException("ByteArrayBitStreamWriter: Written value " + value +

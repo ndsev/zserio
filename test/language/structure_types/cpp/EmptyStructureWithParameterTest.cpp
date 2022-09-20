@@ -174,8 +174,12 @@ TEST(EmptyStructureWithParameterTest, hashCode)
     emptyStructureWithParameter2.initialize(1);
     ASSERT_EQ(emptyStructureWithParameter1.hashCode(), emptyStructureWithParameter2.hashCode());
 
-    emptyStructureWithParameter2.initialize(2);
+    emptyStructureWithParameter2.initialize(0);
     ASSERT_NE(emptyStructureWithParameter1.hashCode(), emptyStructureWithParameter2.hashCode());
+
+    // use hardcoded values to check that the hash code is stable
+    ASSERT_EQ(852, emptyStructureWithParameter1.hashCode());
+    ASSERT_EQ(851, emptyStructureWithParameter2.hashCode());
 }
 
 TEST(EmptyStructureWithParameterTest, write)

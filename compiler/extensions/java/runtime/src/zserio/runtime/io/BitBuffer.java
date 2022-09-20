@@ -1,6 +1,6 @@
 package zserio.runtime.io;
 
-import zserio.runtime.Util;
+import zserio.runtime.HashCodeUtil;
 
 import java.nio.ByteBuffer;
 
@@ -76,17 +76,17 @@ public class BitBuffer
     @Override
     public int hashCode()
     {
-        int result = Util.HASH_SEED;
+        int result = HashCodeUtil.HASH_SEED;
 
         final int byteSize = getByteSize();
         if (byteSize > 0)
         {
             if (byteSize > 1)
             {
-                final ByteBuffer byteBuffer = ByteBuffer.wrap(buffer, 0, byteSize - 1);
-                result = Util.HASH_PRIME_NUMBER * result + byteBuffer.hashCode();
+                for (int i = 0; i < byteSize - 1; ++i)
+                    result = HashCodeUtil.calcHashCode(result, buffer[i]);
             }
-            result = Util.HASH_PRIME_NUMBER * result + getMaskedLastByte();
+            result = HashCodeUtil.calcHashCode(result, getMaskedLastByte());
         }
 
         return result;

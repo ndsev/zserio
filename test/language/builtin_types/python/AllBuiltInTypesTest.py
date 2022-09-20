@@ -252,8 +252,8 @@ class AllBuiltInTypesTest(unittest.TestCase):
         variableIntfieldTypeMax = (1 << 13) - 1
         allBuiltInTypes.variable_intfield_type = variableIntfieldTypeMax
         allBuiltInTypes.variable_intfield8_type = zserio.limits.INT8_MAX
-        allBuiltInTypes.float16_type = sys.float_info.max
-        allBuiltInTypes.float32_type = sys.float_info.max
+        allBuiltInTypes.float16_type = self.FLOAT32_MAX
+        allBuiltInTypes.float32_type = self.FLOAT32_MAX
         allBuiltInTypes.float64_type = sys.float_info.max
         allBuiltInTypes.varuint16_type = zserio.limits.VARUINT16_MAX
         allBuiltInTypes.varuint32_type = zserio.limits.VARUINT32_MAX

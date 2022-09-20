@@ -520,7 +520,7 @@ uint32_t ${name}::hashCode() const
     uint32_t result = ::zserio::HASH_SEED;
 
     <@compound_parameter_hash_code compoundParametersData/>
-    result = ::zserio::calcHashCode(result, static_cast<uint32_t>(m_choiceTag));
+    result = ::zserio::calcHashCode(result, static_cast<int32_t>(m_choiceTag));
 <#if fieldList?has_content>
     if (m_objectChoice.hasValue())
     {

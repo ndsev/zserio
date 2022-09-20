@@ -3,6 +3,11 @@ package zserio.runtime.array;
 import java.math.BigInteger;
 import java.util.Arrays;
 
+import zserio.runtime.HashCodeUtil;
+import zserio.runtime.SizeOf;
+import zserio.runtime.ZserioEnum;
+import zserio.runtime.io.BitBuffer;
+
 /**
  * Interface for classes which holds raw array.
  *
@@ -84,7 +89,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -153,7 +158,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -221,7 +226,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -290,7 +295,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -359,7 +364,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -428,7 +433,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -497,7 +502,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -566,7 +571,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override
@@ -604,9 +609,228 @@ public interface RawArray
     }
 
     /**
+     * Raw array for Java native array of Strings.
+     */
+    public static class StringRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public StringRawArray()
+        {
+        }
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public StringRawArray(String[] rawArray)
+        {
+            this.rawArray = rawArray;
+        }
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof StringRawArray) ? Arrays.equals(rawArray, ((StringRawArray)obj).rawArray) :
+                false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
+        }
+
+        @Override
+        public int size()
+        {
+            return (rawArray == null) ? 0 : rawArray.length;
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+            rawArray = new String[capacity];
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T getRawArray()
+        {
+            return (T)rawArray;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.ObjectArrayElement<String>)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            return new ArrayElement.ObjectArrayElement<>(rawArray[index]);
+        }
+
+        private String[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of BitBuffer.
+     */
+    public static class BitBufferRawArray implements RawArray
+    {
+        /**
+         * Empty constructor.
+         */
+        public BitBufferRawArray()
+        {
+        }
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param rawArray Raw array to construct from.
+         */
+        public BitBufferRawArray(BitBuffer[] rawArray)
+        {
+            this.rawArray = rawArray;
+        }
+
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof BitBufferRawArray)
+                    ? Arrays.equals(rawArray, ((BitBufferRawArray)obj).rawArray)
+                    : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
+        }
+
+        @Override
+        public int size()
+        {
+            return (rawArray == null) ? 0 : rawArray.length;
+        }
+
+        @Override
+        public void reset(int capacity)
+        {
+            rawArray = new BitBuffer[capacity];
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T getRawArray()
+        {
+            return (T)rawArray;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.ObjectArrayElement<BitBuffer>)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            return new ArrayElement.ObjectArrayElement<>(rawArray[index]);
+        }
+
+        private BitBuffer[] rawArray;
+    }
+
+    /**
+     * Raw array for Java native array of enums.
+     */
+    public static class EnumRawArray<E extends ZserioEnum & SizeOf> implements RawArray
+    {
+        /**
+         * Constructor from element class object.
+         *
+         * @param elementClass Element class object.
+         */
+        public EnumRawArray(Class<E> elementClass)
+        {
+            this.elementClass = elementClass;
+        }
+
+        /**
+         * Constructor from raw array.
+         *
+         * @param elementClass Element class object.
+         * @param rawArray     Raw array to construct from.
+         */
+        public EnumRawArray(Class<E> elementClass, E[] rawArray)
+        {
+            this.elementClass = elementClass;
+            this.rawArray = rawArray;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean equals(java.lang.Object obj)
+        {
+            return (obj instanceof EnumRawArray) ?
+                    Arrays.equals(rawArray, ((EnumRawArray<E>)obj).rawArray) : false;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
+        }
+
+        @Override
+        public int size()
+        {
+            return (rawArray == null) ? 0 : rawArray.length;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void reset(int capacity)
+        {
+            rawArray = (E[])java.lang.reflect.Array.newInstance(elementClass, capacity);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T> T getRawArray()
+        {
+            return (T)rawArray;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void setElement(ArrayElement element, int index)
+        {
+            rawArray[index] = ((ArrayElement.ObjectArrayElement<E>)element).get();
+        }
+
+        @Override
+        public ArrayElement getElement(int index)
+        {
+            return new ArrayElement.ObjectArrayElement<>(rawArray[index]);
+        }
+
+        private final Class<E> elementClass;
+        private E[] rawArray;
+    }
+
+    /**
      * Raw array for Java native array of objects.
      */
-    public static class ObjectRawArray<E> implements RawArray
+    public static class ObjectRawArray<E extends SizeOf> implements RawArray
     {
         /**
          * Constructor from element class object.
@@ -641,7 +865,7 @@ public interface RawArray
         @Override
         public int hashCode()
         {
-            return (rawArray == null) ? 0 : Arrays.hashCode(rawArray);
+            return HashCodeUtil.calcHashCode(HashCodeUtil.HASH_SEED, rawArray);
         }
 
         @Override

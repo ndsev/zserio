@@ -43,31 +43,8 @@ this.<@parameter_member_name parameter/> == that.<@parameter_member_name paramet
     </#if>
 </#macro>
 
-<#macro compound_hashcode_parameter parameter>
-    <#if parameter.typeInfo.isSimple>
-        <#if parameter.typeInfo.isLong>
-            <#-- long type: use shifting -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                (int)(this.<@parameter_member_name parameter/> ^ (this.<@parameter_member_name parameter/> >>> 32));
-        <#elseif parameter.typeInfo.isFloat>
-            <#-- float type: use floatToIntBits() -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                java.lang.Float.floatToIntBits(this.<@parameter_member_name parameter/>);
-        <#elseif parameter.typeInfo.isDouble>
-            <#-- double type: use doubleToLongBits() -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                (int)(java.lang.Double.doubleToLongBits(this.<@parameter_member_name parameter/>) ^
-                        (java.lang.Double.doubleToLongBits(this.<@parameter_member_name parameter/>) >>> 32));
-        <#elseif parameter.typeInfo.isBoolean>
-            <#-- bool type: convert it to int -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + (this.<@parameter_member_name parameter/> ? 1 : 0);
-        <#else>
-            <#-- others: use implicit casting to int -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result + this.<@parameter_member_name parameter/>;
-        </#if>
-    <#else>
-        <#-- complex type: use hashCode() but account for possible null -->
-        result = zserio.runtime.Util.HASH_PRIME_NUMBER * result +
-                ((this.<@parameter_member_name parameter/> == null) ? 0 : this.<@parameter_member_name parameter/>.hashCode());
-    </#if>
+<#macro compound_parameter_hash_code compoundParameterList>
+    <#list compoundParametersData.list as compoundParameter>
+        result = zserio.runtime.HashCodeUtil.calcHashCode(result, ${compoundParameter.getterName}());
+    </#list>
 </#macro>

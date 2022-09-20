@@ -36,6 +36,8 @@ Zserio Python runtime library documentation
    :skip: PythonRuntimeException
 .. automodapi:: zserio.float
 .. automodapi:: zserio.hashcode
+   :skip: float_to_uint32
+   :skip: float_to_uint64
 .. automodapi:: zserio.json
    :skip: BitBuffer
    :skip: TypeInfo

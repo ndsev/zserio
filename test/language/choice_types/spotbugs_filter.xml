@@ -10,6 +10,7 @@
         <Bug code="DB"/>
         <Class name="choice_types.choice_with_array.TestChoice"/>
         <Or>
+            <Method name="hashCode"/>
             <Method name="bitSizeOf"/>
             <Method name="initializeOffsets"/>
             <Method name="write"/>

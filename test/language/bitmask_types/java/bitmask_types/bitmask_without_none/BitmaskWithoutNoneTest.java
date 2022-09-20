@@ -99,6 +99,10 @@ public class BitmaskWithoutNoneTest
         assertEquals(write.hashCode(), new Permission(WRITE_VALUE).hashCode());
         assertFalse(read.hashCode() == write.hashCode());
         assertFalse(read.hashCode() == none.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(853, Permission.Values.READ.hashCode());
+        assertEquals(855, Permission.Values.WRITE.hashCode());
     }
 
     @Test

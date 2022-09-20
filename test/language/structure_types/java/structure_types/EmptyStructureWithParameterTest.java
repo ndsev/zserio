@@ -103,6 +103,10 @@ public class EmptyStructureWithParameterTest
                 new EmptyStructureWithParameter((short)0);
         assertEquals(emptyStructureWithParameter1.hashCode(), emptyStructureWithParameter2.hashCode());
         assertTrue(emptyStructureWithParameter1.hashCode() != emptyStructureWithParameter3.hashCode());
+
+        // use hardcoded values to check that the hash code is stable
+        assertEquals(852, emptyStructureWithParameter1.hashCode());
+        assertEquals(851, emptyStructureWithParameter3.hashCode());
     }
 
     @Test
