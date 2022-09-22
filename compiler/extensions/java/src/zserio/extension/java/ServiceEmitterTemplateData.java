@@ -17,7 +17,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
     public ServiceEmitterTemplateData(TemplateDataContext context, ServiceType serviceType)
             throws ZserioExtensionException
     {
-        super(context, serviceType);
+        super(context, serviceType, serviceType.getDocComments());
 
         final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
 

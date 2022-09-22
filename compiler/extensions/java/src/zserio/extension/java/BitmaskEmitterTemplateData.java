@@ -22,7 +22,7 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
     public BitmaskEmitterTemplateData(TemplateDataContext context, BitmaskType bitmaskType)
             throws ZserioExtensionException
     {
-        super(context, bitmaskType);
+        super(context, bitmaskType, bitmaskType.getDocComments());
 
         final TypeInstantiation bitmaskTypeInstantiation = bitmaskType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();

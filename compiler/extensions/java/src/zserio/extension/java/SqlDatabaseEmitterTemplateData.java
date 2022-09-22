@@ -21,7 +21,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
     public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, databaseType);
+        super(context, databaseType, databaseType.getDocComments());
 
         rootPackageName = context.getJavaRootPackageName();
         this.withValidationCode = context.getWithValidationCode();

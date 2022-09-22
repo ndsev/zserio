@@ -18,7 +18,7 @@ public final class EnumerationEmitterTemplateData extends UserTypeTemplateData
     public EnumerationEmitterTemplateData(TemplateDataContext context, EnumType enumType)
             throws ZserioExtensionException
     {
-        super(context, enumType);
+        super(context, enumType, enumType.getDocComments());
 
         final TypeInstantiation enumTypeInstantiation = enumType.getTypeInstantiation();
         final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();

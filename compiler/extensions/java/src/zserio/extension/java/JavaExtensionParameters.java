@@ -25,6 +25,7 @@ public class JavaExtensionParameters
         withValidationCode = parameters.getWithValidationCode();
         withRangeCheckCode = parameters.getWithRangeCheckCode();
         withTypeInfoCode = parameters.getWithTypeInfoCode();
+        withCodeComments = parameters.getWithCodeComments();
 
         final StringJoiner description = new StringJoiner(", ");
         if (withWriterCode)
@@ -41,6 +42,8 @@ public class JavaExtensionParameters
             description.add("rangeCheckCode");
         if (withTypeInfoCode)
             description.add("typeInfoCode");
+        if (withCodeComments)
+            description.add("codeComments");
         parametersDescription = description.toString();
     }
 
@@ -84,6 +87,11 @@ public class JavaExtensionParameters
         return withTypeInfoCode;
     }
 
+    public boolean getWithCodeComments()
+    {
+        return withCodeComments;
+    }
+
     public String getParametersDescription()
     {
         return parametersDescription;
@@ -112,5 +120,6 @@ public class JavaExtensionParameters
     private final boolean withValidationCode;
     private final boolean withRangeCheckCode;
     private final boolean withTypeInfoCode;
+    private final boolean withCodeComments;
     private final String parametersDescription;
 }
