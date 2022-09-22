@@ -30,29 +30,29 @@ import zserio.tools.HashUtil;
  */
 public class SqlTableEmitterTemplateData extends UserTypeTemplateData
 {
-    public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType sqlTableType)
+    public SqlTableEmitterTemplateData(TemplateDataContext context, SqlTableType tableType)
             throws ZserioExtensionException
     {
-        super(context, sqlTableType, sqlTableType.getDocComments());
+        super(context, tableType, tableType.getDocComments());
 
         importPackage("typing");
         importPackage("apsw");
 
-        final SqlConstraint tableSqlConstraint = sqlTableType.getSqlConstraint();
+        final SqlConstraint tableSqlConstraint = tableType.getSqlConstraint();
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         sqlConstraint = (tableSqlConstraint == null) ? null :
             pythonExpressionFormatter.formatGetter(tableSqlConstraint.getConstraintExpr());
-        virtualTableUsing = sqlTableType.getVirtualTableUsingString();
-        needsTypesInSchema = sqlTableType.needsTypesInSchema();
-        isWithoutRowId = sqlTableType.isWithoutRowId();
+        virtualTableUsing = tableType.getVirtualTableUsingString();
+        needsTypesInSchema = tableType.needsTypesInSchema();
+        isWithoutRowId = tableType.isWithoutRowId();
 
         final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
         final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
-        for (Field field: sqlTableType.getFields())
+        for (Field field: tableType.getFields())
         {
             final FieldTemplateData fieldData = new FieldTemplateData(pythonNativeMapper,
                     pythonExpressionFormatter, context.getPythonSqlIndirectExpressionFormatter(this),
-                    sqlNativeTypeMapper, sqlTableType, field, this);
+                    sqlNativeTypeMapper, tableType, field, this);
             fields.add(fieldData);
             for (FieldTemplateData.ParameterTemplateData parameterTemplateData : fieldData.getParameters())
             {
@@ -63,7 +63,7 @@ public class SqlTableEmitterTemplateData extends UserTypeTemplateData
             }
         }
 
-        templateInstantiation = TemplateInstantiationTemplateData.create(context, sqlTableType, this);
+        templateInstantiation = TemplateInstantiationTemplateData.create(context, tableType, this);
     }
 
     public String getSqlConstraint()

@@ -16,16 +16,16 @@ import zserio.extension.python.types.PythonNativeType;
  */
 public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 {
-    public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType sqlDatabaseType)
+    public SqlDatabaseEmitterTemplateData(TemplateDataContext context, SqlDatabaseType databaseType)
             throws ZserioExtensionException
     {
-        super(context, sqlDatabaseType, sqlDatabaseType.getDocComments());
+        super(context, databaseType, databaseType.getDocComments());
 
         importPackage("typing");
         importPackage("apsw");
 
         fields = new ArrayList<DatabaseFieldData>();
-        for (Field field: sqlDatabaseType.getFields())
+        for (Field field: databaseType.getFields())
             fields.add(new DatabaseFieldData(context, field, this));
     }
 

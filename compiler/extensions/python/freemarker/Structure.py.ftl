@@ -453,7 +453,7 @@ ${I}<#rt>
         """
         Deserializes this Zserio object from the bit stream.
 
-        :param zserio_reader Bit stream reader to use.
+        :param zserio_reader: Bit stream reader to use.
         """
 
 </#if>
@@ -476,7 +476,8 @@ ${I}<#rt>
 
         Called only internally if packed arrays are used.
 
-        :param zserio_reader Bit stream reader to use.
+        :param zserio_context_node: Context for packed arrays.
+        :param zserio_reader: Bit stream reader to use.
         """
 
 </#if>

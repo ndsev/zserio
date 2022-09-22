@@ -13,8 +13,8 @@ import zserio.extension.python.types.PythonNativeType;
  */
 public class UserTypeTemplateData extends PythonTemplateData
 {
-    public UserTypeTemplateData(TemplateDataContext context, ZserioType type,
-            List<DocComment> docComments) throws ZserioExtensionException
+    public UserTypeTemplateData(TemplateDataContext context, ZserioType type, List<DocComment> docComments)
+            throws ZserioExtensionException
     {
         super(context);
 
