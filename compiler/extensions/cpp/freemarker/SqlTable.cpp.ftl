@@ -151,7 +151,7 @@ ${name}::Reader::Reader(::zserio::SqliteConnection& db, <#rt>
         <#lt><#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
         <#lt>const ${types.string.name}& sqlQuery, const allocator_type& allocator) :
         ::zserio::AllocatorHolder<allocator_type>(allocator),
-        <#if needsParameterProvider>m_parameterProvider(parameterProvider),</#if>
+        <#lt><#if needsParameterProvider>m_parameterProvider(parameterProvider),</#if><#rt>
         m_stmt(db.prepareStatement(sqlQuery))
 {
     makeStep();
