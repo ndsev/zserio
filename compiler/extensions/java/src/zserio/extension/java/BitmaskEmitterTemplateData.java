@@ -6,6 +6,7 @@ import java.util.List;
 
 import zserio.ast.BitmaskType;
 import zserio.ast.BitmaskValue;
+import zserio.ast.DocComment;
 import zserio.ast.DynamicBitFieldInstantiation;
 import zserio.ast.IntegerType;
 import zserio.ast.TypeInstantiation;
@@ -114,6 +115,8 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
             name = bitmaskValue.getName();
             value = nativeBaseType.formatLiteral(bitmaskValue.getValue());
             isZero = bitmaskValue.getValue().equals(BigInteger.ZERO);
+            final List<DocComment> valueDocComments = bitmaskValue.getDocComments();
+            docComments = valueDocComments.isEmpty() ? null : new DocCommentsTemplateData(valueDocComments);
         }
 
         public String getName()
@@ -131,9 +134,15 @@ public final class BitmaskEmitterTemplateData extends UserTypeTemplateData
             return isZero;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final String value;
         private final boolean isZero;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final NativeTypeInfoTemplateData underlyingTypeInfo;

@@ -1,5 +1,6 @@
 <#include "FileHeader.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 <#macro bitmask_array_traits arrayableInfo bitSize>
 new ${arrayableInfo.arrayTraits.name}(<#rt>
@@ -10,14 +11,27 @@ new ${arrayableInfo.arrayTraits.name}(<#rt>
 </#macro>
 <#assign isBigInteger=!underlyingTypeInfo.isSimple>
 
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public class ${name} implements <#if withWriterCode>zserio.runtime.io.InitializeOffsetsWriter,
         </#if>zserio.runtime.SizeOf, zserio.runtime.ZserioBitmask
 {
+<#if withCodeComments>
+    /** Default constructor. */
+</#if>
     public ${name}()
     {
         this(<#if isBigInteger>java.math.BigInteger.ZERO<#else>(${underlyingTypeInfo.typeFullName})0</#if>);
     }
 
+<#if withCodeComments>
+    /**
+     * Bitmask value constructor.
+     *
+     * @param value Bitmask value to construct from.
+     */
+</#if>
     public ${name}(${underlyingTypeInfo.typeFullName} value)
     {
 <#if lowerBound?? || checkUpperBound>
@@ -36,12 +50,33 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         this.value = value;
     }
 
+<#if withCodeComments>
+    /**
+     * Read constructor.
+     *
+     * @param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public ${name}(zserio.runtime.io.BitStreamReader in) throws java.io.IOException
     {
         value = <#if runtimeFunction.javaReadTypeName??>(${runtimeFunction.javaReadTypeName})</#if><#rt>
                 <#lt>in.read${runtimeFunction.suffix}(${runtimeFunction.arg!});
     }
 
+<#if withCodeComments>
+    /**
+     * Read constructor.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * \param contextNode Context for packed arrays.
+     * \param in Bit stream reader to use.
+     *
+     * @throws IOException If the reading from the bit stream failed.
+     */
+</#if>
     public ${name}(zserio.runtime.array.PackingContextNode contextNode, zserio.runtime.io.BitStreamReader in)
             throws java.io.IOException
     {
@@ -51,6 +86,13 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 <#if withTypeInfoCode>
 
+    <#if withCodeComments>
+    /**
+     * Gets static information about this bitmask useful for generic introspection.
+     *
+     * @return Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         return new zserio.runtime.typeinfo.TypeInfo.BitmaskTypeInfo(
@@ -67,6 +109,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 </#if>
 
+<#if withCodeComments>
+    /**
+     * Creates context for packed arrays.
+     * <p>
+     * Called only internally if packed arrays are used.
+     *
+     * @param contextNode Context for packed arrays.
+     */
+</#if>
     public static void createPackingContext(zserio.runtime.array.PackingContextNode contextNode)
     {
         contextNode.createContext();
@@ -181,6 +232,13 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     }
 </#if>
 
+<#if withCodeComments>
+    /**
+     * Gets the bitmask raw value.
+     *
+     * @return Raw value which holds this bitmask.
+     */
+</#if>
     public ${underlyingTypeInfo.typeFullName} getValue()
     {
         return value;
@@ -192,6 +250,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
         return value;
     }
 
+<#if withCodeComments>
+    /**
+     * Defines operator 'or' for the bitmask '${name}'.
+     *
+     * @param other Bitmask to be or'ed with this bitmask.
+     *
+     * \return Bitmask which contains result after applying the operator 'or' on this and other.
+     */
+</#if>
     public ${name} or(${name} other)
     {
 <#if isBigInteger>
@@ -202,6 +269,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#if>
     }
 
+<#if withCodeComments>
+    /**
+     * Defines operator 'and' for the bitmask '${name}'.
+     *
+     * @param other Bitmask to be and'ed with this bitmask.
+     *
+     * \return Bitmask which contains result after applying the operator 'and' on this and other.
+     */
+</#if>
     public ${name} and(${name} other)
     {
 <#if isBigInteger>
@@ -212,6 +288,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#if>
     }
 
+<#if withCodeComments>
+    /**
+     * Defines operator 'xor' for the bitmask '${name}'.
+     *
+     * @param other Bitmask to be xor'ed with this bitmask.
+     *
+     * \return Bitmask which contains result after applying the operator 'xor' on this and other.
+     */
+</#if>
     public ${name} xor(${name} other)
     {
 <#if isBigInteger>
@@ -222,6 +307,13 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#if>
     }
 
+<#if withCodeComments>
+    /**
+     * Defines operator 'not' for the bitmask '${name}'.
+     *
+     * \return Bitmask whose value is ~this.
+     */
+</#if>
     public ${name} not()
     {
 <#if isBigInteger>
@@ -232,9 +324,15 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
 </#if>
     }
 
+<#if withCodeComments>
+    /** Definition of all bitmask values. */
+</#if>
     public static final class Values
     {
 <#list values as value>
+    <#if withCodeComments && value.docComments??>
+        <@doc_comments value.docComments, 2/>
+    </#if>
         public static final ${name} ${value.name} = new ${name}(${value.value});
 </#list>
     }
