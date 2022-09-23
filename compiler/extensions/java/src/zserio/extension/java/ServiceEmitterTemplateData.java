@@ -3,6 +3,7 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.DocComment;
 import zserio.ast.ServiceMethod;
 import zserio.ast.ServiceType;
 import zserio.ast.TypeReference;
@@ -46,18 +47,21 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(JavaNativeMapper typeMapper, ServiceMethod serviceMethod)
+        public MethodTemplateData(JavaNativeMapper typeMapper, ServiceMethod method)
                 throws ZserioExtensionException
         {
-            name = serviceMethod.getName();
+            name = method.getName();
 
-            final TypeReference responseTypeReference = serviceMethod.getResponseTypeReference();
+            final TypeReference responseTypeReference = method.getResponseTypeReference();
             final JavaNativeType responseNativeType = typeMapper.getJavaType(responseTypeReference);
             responseTypeInfo = new NativeTypeInfoTemplateData(responseNativeType, responseTypeReference);
 
-            final TypeReference requestTypeReference = serviceMethod.getRequestTypeReference();
+            final TypeReference requestTypeReference = method.getRequestTypeReference();
             final JavaNativeType requestNativeType = typeMapper.getJavaType(requestTypeReference);
             requestTypeInfo = new NativeTypeInfoTemplateData(requestNativeType, requestTypeReference);
+
+            final List<DocComment> methodDocComments = method.getDocComments();
+            docComments = methodDocComments.isEmpty() ? null : new DocCommentsTemplateData(methodDocComments);
         }
 
         public String getName()
@@ -75,9 +79,15 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
             return requestTypeInfo;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData responseTypeInfo;
         private final NativeTypeInfoTemplateData requestTypeInfo;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<MethodTemplateData> methodList = new ArrayList<MethodTemplateData>();
