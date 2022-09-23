@@ -25,7 +25,7 @@ public class ${name}
     /**
      * Gets static information about this Pub/Sub useful for generic introspection.
      *
-     * @return Const reference to Zserio type information.
+     * @return Zserio type information.
      */
     </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
