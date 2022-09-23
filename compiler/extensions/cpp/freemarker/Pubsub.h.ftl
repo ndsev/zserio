@@ -94,20 +94,20 @@ public:
 <#list messageList as message>
     <#if message.isPublished>
 
-    <#if withCodeComments>
+        <#if withCodeComments>
     /**
      * Publishes given message as a topic '${message.name}'.
      *
-        <#if message.docComments??>
+            <#if message.docComments??>
      * \b Description
      *
      <@doc_comments_inner message.docComments, 1/>
      *
-        </#if>
+            </#if>
      * \param message Message to publish.
      * \param context Context specific for a particular Pub/Sub implementation.
      */
-    </#if>
+        </#if>
     void publish${message.name?cap_first}(${message.typeInfo.typeFullName}& message, void* context = nullptr);
     </#if>
     <#if message.isSubscribed>
@@ -116,12 +116,12 @@ public:
     /**
      * Subscribes a topic '${message.name}'.
      *
-        <#if message.docComments??>
+            <#if message.docComments??>
      * \b Description
      *
      <@doc_comments_inner message.docComments, 1/>
      *
-        </#if>
+            </#if>
      * \param callback Callback to be called when a message with the specified topic arrives.
      * \param context Context specific for a particular Pub/Sub implementation.
      *
