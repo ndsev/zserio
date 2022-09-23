@@ -71,8 +71,8 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
      * <p>
      * Called only internally if packed arrays are used.
      *
-     * \param contextNode Context for packed arrays.
-     * \param in Bit stream reader to use.
+     * @param contextNode Context for packed arrays.
+     * @param in Bit stream reader to use.
      *
      * @throws IOException If the reading from the bit stream failed.
      */
