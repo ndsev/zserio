@@ -4,7 +4,7 @@
     /**
      * Implementation of the function ${compoundFunction.name}.
      *
-     * \return Result of the function ${compoundFunction.name}.
+     * @return Result of the function ${compoundFunction.name}.
      */
         </#if>
     public ${compoundFunction.returnTypeInfo.typeFullName} ${compoundFunction.name}()

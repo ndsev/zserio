@@ -256,7 +256,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
      *
      * @param other Bitmask to be or'ed with this bitmask.
      *
-     * \return Bitmask which contains result after applying the operator 'or' on this and other.
+     * @return Bitmask which contains result after applying the operator 'or' on this and other.
      */
 </#if>
     public ${name} or(${name} other)
@@ -275,7 +275,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
      *
      * @param other Bitmask to be and'ed with this bitmask.
      *
-     * \return Bitmask which contains result after applying the operator 'and' on this and other.
+     * @return Bitmask which contains result after applying the operator 'and' on this and other.
      */
 </#if>
     public ${name} and(${name} other)
@@ -294,7 +294,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
      *
      * @param other Bitmask to be xor'ed with this bitmask.
      *
-     * \return Bitmask which contains result after applying the operator 'xor' on this and other.
+     * @return Bitmask which contains result after applying the operator 'xor' on this and other.
      */
 </#if>
     public ${name} xor(${name} other)
@@ -311,7 +311,7 @@ public class ${name} implements <#if withWriterCode>zserio.runtime.io.Initialize
     /**
      * Defines operator 'not' for the bitmask '${name}'.
      *
-     * \return Bitmask whose value is ~this.
+     * @return Bitmask whose value is ~this.
      */
 </#if>
     public ${name} not()
