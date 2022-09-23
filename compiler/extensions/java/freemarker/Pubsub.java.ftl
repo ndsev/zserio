@@ -1,15 +1,33 @@
 <#include "FileHeader.inc.ftl">
 <#include "TypeInfo.inc.ftl">
+<#include "DocComment.inc.ftl">
 <@standard_header generatorDescription, packageName/>
 
+<#if withCodeComments && docComments??>
+<@doc_comments docComments/>
+</#if>
 public class ${name}
 {
+<#if withCodeComments>
+    /**
+     * Constructor from the Pub/Sub client backend.
+     *
+     * @param pubsub Interface for Pub/Sub client backend.
+     */
+</#if>
     public ${name}(zserio.runtime.pubsub.PubsubInterface pubsub)
     {
         this.pubsub = pubsub;
     }
 <#if withTypeInfoCode>
 
+    <#if withCodeComments>
+    /**
+     * Gets static information about this Pub/Sub useful for generic introspection.
+     *
+     * @return Const reference to Zserio type information.
+     */
+    </#if>
     public static zserio.runtime.typeinfo.TypeInfo typeInfo()
     {
         return new zserio.runtime.typeinfo.TypeInfo.PubsubTypeInfo(
@@ -22,11 +40,42 @@ public class ${name}
 <#list messageList as message>
     <#if message.isPublished>
 
+        <#if withCodeComments>
+    /**
+     * Publishes given message as a topic '${message.name}'.
+            <#if message.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner message.docComments, 1/>
+     *
+            <#else>
+     *
+            </#if>
+     * @param message Message to publish.
+     */
+        </#if>
     public void publish${message.name?cap_first}(${message.typeInfo.typeFullName} message)
     {
         publish${message.name?cap_first}(message, null);
     }
 
+        <#if withCodeComments>
+    /**
+     * Publishes given message as a topic '${message.name}'.
+            <#if message.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner message.docComments, 1/>
+     *
+            <#else>
+     *
+            </#if>
+     * @param message Message to publish.
+     * @param context Context specific for a particular Pub/Sub implementation.
+     */
+        </#if>
     public void publish${message.name?cap_first}(${message.typeInfo.typeFullName} message,
             java.lang.Object context)
     {
@@ -35,12 +84,47 @@ public class ${name}
     </#if>
     <#if message.isSubscribed>
 
+        <#if withCodeComments>
+    /**
+     * Subscribes a topic '${message.name}'.
+            <#if message.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner message.docComments, 1/>
+     *
+            <#else>
+     *
+            </#if>
+     * @param callback Callback to be called when a message with the specified topic arrives.
+     *
+     * @return Subscription ID.
+     */
+        </#if>
     public int subscribe${message.name?cap_first}(
             zserio.runtime.pubsub.PubsubCallback<${message.typeInfo.typeFullName}> callback)
     {
         return subscribe${message.name?cap_first}(callback, null);
     }
 
+        <#if withCodeComments>
+    /**
+     * Subscribes a topic '${message.name}'.
+            <#if message.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner message.docComments, 1/>
+     *
+            <#else>
+     *
+            </#if>
+     * @param callback Callback to be called when a message with the specified topic arrives.
+     * @param context Context specific for a particular Pub/Sub implementation.
+     *
+     * @return Subscription ID.
+     */
+        </#if>
     public int subscribe${message.name?cap_first}(
             zserio.runtime.pubsub.PubsubCallback<${message.typeInfo.typeFullName}> callback,
             java.lang.Object context)
@@ -60,6 +144,13 @@ public class ${name}
 </#list>
 <#if hasSubscribing>
 
+    <#if withCodeComments>
+    /**
+     * Unsubscribes the subscription with the given ID.
+     *
+     * @param subscriptionId ID of the subscription to be unsubscribed.
+     */
+    </#if>
     public void unsubscribe(int subscriptionId)
     {
         pubsub.unsubscribe(subscriptionId);
