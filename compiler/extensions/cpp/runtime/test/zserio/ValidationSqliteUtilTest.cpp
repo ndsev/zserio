@@ -22,7 +22,7 @@ protected:
 
     void insertRows(const std::string& tableName, uint32_t startId, uint32_t numRows)
     {
-        std::unique_ptr<sqlite3_stmt, SqliteFinalizer> statement(
+        Util::Statement statement(
                 connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?, ?)"));
 
         for (uint32_t i = 0; i < numRows; ++i)
@@ -155,6 +155,76 @@ TEST_F(ValidationSqliteUtilTest, isColumnInTable)
     connection.executeUpdate("CREATE TABLE test2(id INTEGER PRIMARY KEY NOT NULL, text HIDDEN TEXT)");
     ASSERT_TRUE(Util::isColumnInTable(connection, ""_sv, "test2"_sv, "id"_sv, allocator_type()));
     ASSERT_TRUE(Util::isColumnInTable(connection, ""_sv, "test2"_sv, "text"_sv, allocator_type()));
+}
+
+TEST_F(ValidationSqliteUtilTest, sqliteColumnTypeName)
+{
+    // this test also verifies that sqlite3_column_type works as we except since we need to use it
+    // in validateType* in generated sources for zserio SqlTables
+
+    const char* tableName = "sqliteColumnTypeTable";
+    connection.executeUpdate(std::string("CREATE TABLE ") + tableName + "(id INTEGER PRIMARY KEY, "
+            "integerCol INTEGER, realCol REAL, textCol TEXT, blobCol BLOB)");
+
+    connection.executeUpdate(std::string("INSERT INTO ") + tableName + " VALUES (0, NULL, NULL, NULL, NULL)");
+    connection.executeUpdate(std::string("INSERT INTO ") + tableName + " VALUES (1, 13, 1.3, 'STRING', x'00')");
+    connection.executeUpdate(std::string("INSERT INTO ") + tableName + " VALUES (2, 1.3, 'STRING', x'00', 13)");
+
+    Util::Statement stmt(connection.prepareStatement(std::string("SELECT * from ") + tableName));
+
+    // first row check NULL values
+    ASSERT_EQ(SQLITE_ROW, sqlite3_step(stmt.get()));
+    int type = sqlite3_column_type(stmt.get(), 0);
+    ASSERT_EQ(SQLITE_INTEGER, type);
+    ASSERT_STREQ("INTEGER", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 1);
+    ASSERT_EQ(SQLITE_NULL, type);
+    ASSERT_STREQ("NULL", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 2);
+    ASSERT_EQ(SQLITE_NULL, type);
+    ASSERT_STREQ("NULL", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 3);
+    ASSERT_EQ(SQLITE_NULL, type);
+    ASSERT_STREQ("NULL", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 4);
+    ASSERT_EQ(SQLITE_NULL, type);
+    ASSERT_STREQ("NULL", Util::sqliteColumnTypeName(type));
+
+    // second row checks correct values
+    ASSERT_EQ(SQLITE_ROW, sqlite3_step(stmt.get()));
+    type = sqlite3_column_type(stmt.get(), 0);
+    ASSERT_EQ(SQLITE_INTEGER, type);
+    ASSERT_STREQ("INTEGER", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 1);
+    ASSERT_EQ(SQLITE_INTEGER, type);
+    ASSERT_STREQ("INTEGER", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 2);
+    ASSERT_EQ(SQLITE_FLOAT, type);
+    ASSERT_STREQ("REAL", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 3);
+    ASSERT_EQ(SQLITE_TEXT, type);
+    ASSERT_STREQ("TEXT", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 4);
+    ASSERT_EQ(SQLITE_BLOB, type);
+    ASSERT_STREQ("BLOB", Util::sqliteColumnTypeName(type));
+
+    // third row checks types mismatch - i.e. checks dynamic typing in SQLite
+    ASSERT_EQ(SQLITE_ROW, sqlite3_step(stmt.get()));
+    type = sqlite3_column_type(stmt.get(), 0);
+    ASSERT_EQ(SQLITE_INTEGER, type);
+    ASSERT_STREQ("INTEGER", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 1);
+    ASSERT_EQ(SQLITE_FLOAT, type);
+    ASSERT_STREQ("REAL", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 2);
+    ASSERT_EQ(SQLITE_TEXT, type);
+    ASSERT_STREQ("TEXT", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 3);
+    ASSERT_EQ(SQLITE_BLOB, type);
+    ASSERT_STREQ("BLOB", Util::sqliteColumnTypeName(type));
+    type = sqlite3_column_type(stmt.get(), 4);
+    ASSERT_EQ(SQLITE_INTEGER, type);
+    ASSERT_STREQ("INTEGER", Util::sqliteColumnTypeName(type));
 }
 
 } // namespace zserio

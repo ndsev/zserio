@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -159,6 +160,78 @@ public class ValidationSqliteUtil
         catch (SQLException exception)
         {
             return false;
+        }
+    }
+
+    /**
+     * Converts SQL type returned by ResultSetMetaData.getColumnType to SQLite type which is one of
+     * Types.INTEGER, Types.REAL, Types.VARCHAR, Types.BLOB or Types.NULL.
+     *
+     * @param columnType SQL column type returned by ResultSetMetaData.getColumnType().
+     *
+     * @return SQLite column type.
+     */
+    public static int sqlTypeToSqliteType(int columnType)
+    {
+        // Zserio supports only INTEGER, READ, VARCHAR and BLOB,
+        // however we check also other cases in order to support different versions of Xerial JDBC driver
+        switch (columnType)
+        {
+        case Types.BOOLEAN:
+        case Types.TINYINT:
+        case Types.SMALLINT:
+        case Types.BIGINT: // returned only by older versions of Xerial
+        case Types.INTEGER:
+            return Types.INTEGER;
+        case Types.DECIMAL:
+        case Types.DOUBLE:
+        case Types.REAL:
+        case Types.FLOAT:
+            return Types.REAL;
+        case Types.CHAR:
+        case Types.CLOB:
+        case Types.VARCHAR:
+            return Types.VARCHAR;
+        case Types.BINARY:
+        case Types.BLOB:
+            return Types.BLOB;
+        // note that this is returned only by older versions of Xerial JDBC driver,
+        // in newer versions the concrete types are returned
+        case Types.NULL:
+            return Types.NULL;
+        default:
+            return Types.NUMERIC;
+        }
+    }
+
+    /**
+     * Gets name of the given SQLite column type.
+     *
+     * Note that Zserio supports only INTEGER, REAL, VARCHAR ("TEXT") and BLOB.
+     *
+     * Latest Xerial JDBC driver uses sqlite3_column_decltype in ResultSetMetaData.getColumnTypeName
+     * and thus doesn't reflect current dynamic type and therefore we cannon use it.
+     *
+     * @param columnType SQLite column type returned from sqlTypeToSqliteType.
+     *
+     * @return SQLite column type name.
+     */
+    public static String sqliteColumnTypeName(int columnType)
+    {
+        switch (columnType)
+        {
+        case Types.INTEGER:
+            return "INTEGER";
+        case Types.REAL:
+            return "REAL";
+        case Types.VARCHAR:
+            return "TEXT";
+        case Types.BLOB:
+            return "BLOB";
+        case Types.NULL:
+            return "NULL";
+        default:
+            return "UNKNOWN";
         }
     }
 }
