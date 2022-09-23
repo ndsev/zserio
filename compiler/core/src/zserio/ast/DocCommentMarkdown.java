@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import zserio.tools.StringJoinUtil;
-
 /**
  * Class representing a single documentation comment in markdown style.
  */
