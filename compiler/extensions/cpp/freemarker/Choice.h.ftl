@@ -34,19 +34,25 @@ class ${name}
 {
 <@top_private_section_declarations name, fieldList/>
 public:
-    <#if withCodeComments>
+<#if withCodeComments>
     /** Definition for allocator type. */
-    </#if>
+</#if>
     using allocator_type = ${types.allocator.default};
 
-    <#if withCodeComments>
+<#if withCodeComments>
     /** Choice tag enumeration which denotes chosen field. */
-    </#if>
+</#if>
     enum ChoiceTag : int32_t
     {
 <#list fieldList as field>
+    <#if withCodeComments>
+        /** Choice tag which denotes chosen field ${field.name}. */
+    </#if>
         <@choice_tag_name field/> = ${field?index},
 </#list>
+<#if withCodeComments>
+        /** Choice tag which is used if no field has been set yet. */
+</#if>
         UNDEFINED_CHOICE = -1
     };
 <#if withWriterCode>
