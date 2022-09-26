@@ -7,6 +7,7 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.TypeInstantiation;
 import zserio.ast.ZserioType;
+import zserio.ast.DocComment;
 import zserio.ast.Field;
 import zserio.ast.SqlDatabaseType;
 import zserio.ast.SqlTableType;
@@ -70,6 +71,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
                 isWithoutRowIdTable = false;
                 hasExplicitParameters = false;
             }
+
+            final List<DocComment> fieldDocComments = field.getDocComments();
+            docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
         }
 
         public String getName()
@@ -95,6 +99,11 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         public boolean getHasExplicitParameters()
         {
             return hasExplicitParameters;
+        }
+
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
         }
 
         private static boolean hasTableExplicitParameters(SqlTableType tableType)
@@ -124,6 +133,7 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         private final String getterName;
         private final boolean isWithoutRowIdTable;
         private final boolean hasExplicitParameters;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String rootPackageName;
