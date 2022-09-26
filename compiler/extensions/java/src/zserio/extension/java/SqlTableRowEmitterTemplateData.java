@@ -3,6 +3,7 @@ package zserio.extension.java;
 import java.util.ArrayList;
 import java.util.List;
 
+import zserio.ast.DocComment;
 import zserio.ast.Field;
 import zserio.ast.SqlTableType;
 import zserio.ast.TypeInstantiation;
@@ -58,6 +59,9 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
             final JavaNativeType nullableNativeType = javaNativeMapper.getNullableJavaType(fieldTypeInstantiation);
             nullableTypeInfo = new NativeTypeInfoTemplateData(nullableNativeType, fieldTypeInstantiation);
             typeInfo = new NativeTypeInfoTemplateData(nativeType, fieldTypeInstantiation);
+
+            final List<DocComment> fieldDocComments = field.getDocComments();
+            docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
         }
 
         public String getName()
@@ -75,9 +79,15 @@ public final class SqlTableRowEmitterTemplateData extends JavaTemplateData
             return typeInfo;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String name;
         private final NativeTypeInfoTemplateData nullableTypeInfo;
         private final NativeTypeInfoTemplateData typeInfo;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String packageName;

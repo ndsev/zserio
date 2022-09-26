@@ -10,6 +10,7 @@ import zserio.ast.ParameterizedTypeInstantiation;
 import zserio.ast.ParameterizedTypeInstantiation.InstantiatedParameter;
 import zserio.ast.ZserioType;
 import zserio.ast.BitmaskType;
+import zserio.ast.DocComment;
 import zserio.ast.EnumType;
 import zserio.ast.Expression;
 import zserio.ast.Field;
@@ -216,6 +217,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             rangeCheckData = createRangeCheckTemplateData(javaNativeMapper, fieldBaseType,
                     javaExpressionFormatter, fieldTypeInstantiation);
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
+
+            final List<DocComment> fieldDocComments = field.getDocComments();
+            docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
         }
 
         public String getName()
@@ -271,6 +275,11 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         public SqlTypeTemplateData getSqlTypeData()
         {
             return sqlTypeData;
+        }
+
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
         }
 
         public static class ParameterTemplateData
@@ -403,6 +412,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         private final NativeTypeInfoTemplateData underlyingTypeInfo;
         private final RangeCheckTemplateData rangeCheckData;
         private final SqlTypeTemplateData sqlTypeData;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final String rootPackageName;
