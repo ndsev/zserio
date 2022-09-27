@@ -1,5 +1,7 @@
 package comments.markdown_doc.struct_comments;
 
+import comments.markdown_doc.union_comments.*;
+
 /*!
 
 **Direction**
@@ -27,6 +29,11 @@ enum bit:2 Direction
 **DirectionStructure**
 
 This is a structure which uses Direction enumeration type.
+
+See [Union comments](union_comments.zs#TestUnion).
+See [Union comments relative](../markdown_doc/union_comments.zs#TestUnion).
+See [Union comments package](union_comments.zs).
+See [Union comments relative package](../markdown_doc/union_comments.zs).
 
 Parameter     | Description
 ------------- | -----------

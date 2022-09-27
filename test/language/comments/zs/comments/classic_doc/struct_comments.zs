@@ -1,5 +1,7 @@
 package comments.classic_doc.struct_comments;
 
+import comments.classic_doc.union_comments.*;
+
 /**
  * Traffic flow on links.
  */
@@ -25,6 +27,16 @@ enum bit:2 Direction
  * @see "documentation" Direction page.
  *
  * @see Direction
+ *
+ * @see "Union comments via type name" TestUnion
+ *
+ * @see "Union comments via full name" comments.classic_doc.union_comments.TestUnion
+ *
+ * @see "Union field comment via type name" TestUnion.case1Field
+ *
+ * @see "Union field comment via full name" comments.classic_doc.union_comments.TestUnion.case1Field
+ *
+ * @see "Union comments package" comments.classic_doc.union_comments
  *
  * @param hasExtraValue True if the structure has extra value.
  *        This parameter is not optional.

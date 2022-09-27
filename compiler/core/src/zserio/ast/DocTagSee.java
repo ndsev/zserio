@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.Map;
+
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -63,14 +65,15 @@ public class DocTagSee extends AstNodeBase
     /**
      * Resolves the link symbol reference.
      *
+     * @param packageNameMap Map of all registered packages.
      * @param ownerPackage Zserio package in which the symbol reference is defined.
      * @param ownerType ZserioType which is owner of the symbol reference or null.
      */
-    void resolve(Package ownerPackage, ZserioScopedType ownerType)
+    void resolve(Map<PackageName, Package> packageNameMap, Package ownerPackage, ZserioScopedType ownerType)
     {
         try
         {
-            linkSymbolReference.resolve(ownerPackage, ownerType);
+            linkSymbolReference.resolve(packageNameMap, ownerPackage, ownerType);
         }
         catch (ParserException e)
         {

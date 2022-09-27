@@ -1,10 +1,22 @@
 package zserio.ast;
 
+import java.util.Map;
+
 /**
  * Implementation of ZserioAstVisitor which resolves symbols for see documentation tags.
  */
 public class ZserioAstSymbolResolver extends ZserioAstWalker
 {
+    @Override
+    public void visitRoot(Root root)
+    {
+        this.packageNameMap = root.getPackageNameMap();
+
+        root.visitChildren(this);
+
+        this.packageNameMap = null;
+    }
+
     @Override
     public void visitPackage(Package pkg)
     {
@@ -64,10 +76,17 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
     }
 
     @Override
+    public void visitDocCommentMarkdown(DocCommentMarkdown docComment)
+    {
+        docComment.visitChildren(this);
+        docComment.resolve(currentPackage, this);
+    }
+
+    @Override
     public void visitDocTagSee(DocTagSee docTagSee)
     {
-        docTagSee.resolve(currentPackage, currentScopedType);
         docTagSee.visitChildren(this);
+        docTagSee.resolve(packageNameMap, currentPackage, currentScopedType);
     }
 
     private void visitType(CompoundType compoundType)
@@ -108,6 +127,7 @@ public class ZserioAstSymbolResolver extends ZserioAstWalker
         }
     }
 
+    private Map<PackageName, Package> packageNameMap = null;
     private Package currentPackage = null;
     private ZserioScopedType currentScopedType = null;
 };

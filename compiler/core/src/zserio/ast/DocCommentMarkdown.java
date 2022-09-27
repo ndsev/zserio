@@ -1,7 +1,6 @@
 package zserio.ast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,6 +55,21 @@ public class DocCommentMarkdown extends DocComment
     @Override
     public DocCommentClassic toClassic()
     {
+        return classic;
+    }
+
+    /**
+     * Gets markdown documentation.
+     *
+     * @return Markdown documentation.
+     */
+    public String getMarkdown()
+    {
+        return markdown;
+    }
+
+    void resolve(Package ownerPackage, ZserioAstSymbolResolver currentResolver)
+    {
         final String[] markdownLines = markdown.split("\r?\n|\r");
 
         final ArrayList<ArrayList<MarkdownLine>> markdownParagraphs = new ArrayList<ArrayList<MarkdownLine>>();
@@ -67,7 +81,7 @@ public class DocCommentMarkdown extends DocComment
         {
             if (!markdownLine.isEmpty())
             {
-                final AstLocation location = new AstLocation(fileName, line, column);
+                final AstLocation location = new AstLocation(fileName, line, column - 1);
                 markdownParagraphLines.add(new MarkdownLine(location, markdownLine.trim()));
             }
             else
@@ -87,19 +101,11 @@ public class DocCommentMarkdown extends DocComment
 
         final List<DocParagraph> docParagraphs = new ArrayList<DocParagraph>();
         for (ArrayList<MarkdownLine> markdownParagraph : markdownParagraphs)
-            docParagraphs.add(markdownToClassicParagraph(markdownParagraph));
+            docParagraphs.add(markdownToClassicParagraph(ownerPackage, markdownParagraph));
 
-        return new DocCommentClassic(getLocation(), docParagraphs, isSticky(), isOneLiner());
-    }
+        classic = new DocCommentClassic(getLocation(), docParagraphs, isSticky(), isOneLiner());
 
-    /**
-     * Gets markdown documentation.
-     *
-     * @return Markdown documentation.
-     */
-    public String getMarkdown()
-    {
-        return markdown;
+        classic.accept(currentResolver);
     }
 
     private static class MarkdownLine
@@ -124,15 +130,15 @@ public class DocCommentMarkdown extends DocComment
         private String text;
     }
 
-    private static DocParagraph markdownToClassicParagraph(List<MarkdownLine> markdownLines)
+    private static DocParagraph markdownToClassicParagraph(Package pkg, List<MarkdownLine> markdownLines)
     {
         final MarkdownLine firstMarkdownLine = markdownLines.get(0);
         final AstLocation firstLineLocation = firstMarkdownLine.getLocation();
-        final DocLine firstDocLine = markdownToClassicLine(firstMarkdownLine);
+        final DocLine firstDocLine = markdownToClassicLine(pkg, firstMarkdownLine);
         final DocMultiline docMultiline = new DocMultiline(firstLineLocation, firstDocLine);
         for (int i = 1; i < markdownLines.size(); ++i)
         {
-            final DocLine docLine = markdownToClassicLine(markdownLines.get(i));
+            final DocLine docLine = markdownToClassicLine(pkg, markdownLines.get(i));
             docMultiline.addLine(docLine);
         }
 
@@ -143,15 +149,15 @@ public class DocCommentMarkdown extends DocComment
         return docParagraph;
     }
 
-    private static DocLine markdownToClassicLine(MarkdownLine markdownLine)
+    private static DocLine markdownToClassicLine(Package pkg, MarkdownLine markdownLine)
     {
         final List<DocLineElement> docLineElements = new ArrayList<DocLineElement>();
-        addMarkdownToDocLineElements(docLineElements, markdownLine);
+        addMarkdownToDocLineElements(pkg, docLineElements, markdownLine);
 
         return new DocLine(markdownLine.getLocation(), docLineElements);
     }
 
-    private static void addMarkdownToDocLineElements(List<DocLineElement> docLineElements,
+    private static void addMarkdownToDocLineElements(Package pkg, List<DocLineElement> docLineElements,
             MarkdownLine markdownLine)
     {
         final AstLocation lineLocation = markdownLine.getLocation();
@@ -167,14 +173,19 @@ public class DocCommentMarkdown extends DocComment
         else
         {
             final Pattern zsFileRegex =
-                    Pattern.compile("^(\\.\\.\\/)*([a-zA-Z_0-9\\/]+)\\.zs(#([a-zA-Z_0-9]+))?");
+                    Pattern.compile("^([a-zA-Z_0-9\\.\\/]+)\\.zs(?:#([a-zA-Z_0-9]+))?");
             final String linkName = linkMatcher.group(3);
             final Matcher zsFileMatcher = zsFileRegex.matcher(linkName);
 
-            if (!zsFileMatcher.matches())
+            final String seeTagLink = zsFileMatcher.matches()
+                    ? createSeeTagLink(pkg, zsFileMatcher.group(1), zsFileMatcher.group(2))
+                    : null;
+
+            if (seeTagLink == null)
             {
-                final DocText docText = new DocText(markdownLine.getLocation(), markdownLine.getText());
-                docLineElements.add(new DocLineElement(markdownLine.getLocation(), docText));
+                final String linePrefix = markdownLine.getText().substring(0, linkMatcher.start(4)).trim();
+                final DocText docText = new DocText(lineLocation, linePrefix);
+                docLineElements.add(new DocLineElement(lineLocation, docText));
             }
             else
             {
@@ -186,23 +197,47 @@ public class DocCommentMarkdown extends DocComment
                 }
 
                 final String seeTagAlias = linkMatcher.group(2);
-                final String seeTagLink = createSeeTagLink(zsFileMatcher.group(2),
-                        zsFileMatcher.group(4));
-                final DocTagSee docTagSee = new DocTagSee(lineLocation, seeTagAlias, seeTagLink);
-                docLineElements.add(new DocLineElement(lineLocation, docTagSee));
+                final AstLocation seeTagLocation = new AstLocation(
+                        lineLocation.getFileName(), lineLocation.getLine(),
+                        lineLocation.getColumn() - 1 + linkMatcher.end(1)); // '[' is not in any group
+                final DocTagSee docTagSee = new DocTagSee(seeTagLocation, seeTagAlias, seeTagLink);
+                docLineElements.add(new DocLineElement(seeTagLocation, docTagSee));
+            }
 
-                final String lineSuffix = linkMatcher.group(4).trim();
-                if (!lineSuffix.isEmpty())
-                    addMarkdownToDocLineElements(docLineElements, new MarkdownLine(lineLocation, lineSuffix));
+            final String lineSuffix = linkMatcher.group(4).trim();
+            if (!lineSuffix.isEmpty())
+            {
+                final AstLocation suffixLocation = new AstLocation(
+                        lineLocation.getFileName(), lineLocation.getLine(),
+                        lineLocation.getColumn() - 1 + linkMatcher.start(4));
+                addMarkdownToDocLineElements(pkg, docLineElements,
+                        new MarkdownLine(suffixLocation, lineSuffix));
             }
         }
     }
 
-    private static String createSeeTagLink(String zsFile, String zsTypeName)
+    private static String createSeeTagLink(Package pkg, String zsFile, String zsTypeName)
     {
         final PackageName.Builder packageNameBuilder = new PackageName.Builder();
+        packageNameBuilder.append(pkg.getPackageName());
+        packageNameBuilder.removeLastId(); // go to parent directory (from markdown point of view)
         final String[] packageIds = zsFile.split("/");
-        packageNameBuilder.addIds(Arrays.asList(packageIds));
+        for (String id : packageIds)
+        {
+            if (id.equals("."))
+            {
+                continue;
+            }
+            else if (id.equals(".."))
+            {
+                if (packageNameBuilder.removeLastId() == null)
+                    return null;
+            }
+            else
+            {
+                packageNameBuilder.addId(id);
+            }
+        }
 
         final String seeTagLink = (zsTypeName == null) ? packageNameBuilder.get().toString() :
                 ZserioTypeUtil.getFullName(packageNameBuilder.get(), zsTypeName);
@@ -211,4 +246,5 @@ public class DocCommentMarkdown extends DocComment
     }
 
     final String markdown;
+    DocCommentClassic classic = null;
 }

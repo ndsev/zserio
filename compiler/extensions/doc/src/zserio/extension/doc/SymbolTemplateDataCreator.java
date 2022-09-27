@@ -153,19 +153,27 @@ class SymbolTemplateDataCreator
     {
         final String alias = docTagSee.getLinkAlias();
         final SymbolReference linkSymbolReference = docTagSee.getLinkSymbolReference();
+        final Package referencedPackage = linkSymbolReference.getReferencedPackage();
         final PackageSymbol referencedPackageSymbol = linkSymbolReference.getReferencedPackageSymbol();
         final ScopeSymbol referencedScopeSymbol = linkSymbolReference.getReferencedScopeSymbol();
-        if (referencedPackageSymbol == null)
+        if (referencedPackage == null)
         {
             // this can happen if see tag link is invalid
             return new SymbolTemplateData(alias, "UnknownTypeName", "Unknown link");
         }
+        else if (referencedPackageSymbol == null)
+        {
+            // link to package
+            return SymbolTemplateDataCreator.createData(context, referencedPackage, alias);
+        }
         else if (referencedScopeSymbol == null)
         {
+            // link to package symbol
             return SymbolTemplateDataCreator.createData(context, referencedPackageSymbol, alias);
         }
         else
         {
+            // link to scope symbol
             return SymbolTemplateDataCreator.createData(context, (ZserioType)referencedPackageSymbol,
                     referencedScopeSymbol, AstNodeNameMapper.getName(referencedScopeSymbol), alias);
         }

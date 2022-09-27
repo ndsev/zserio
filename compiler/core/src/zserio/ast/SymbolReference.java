@@ -1,5 +1,7 @@
 package zserio.ast;
 
+import java.util.Map;
+
 import zserio.ast.Scope.FoundSymbol;
 
 /**
@@ -8,8 +10,9 @@ import zserio.ast.Scope.FoundSymbol;
  * Symbol reference can be for example
  *
  * - reference to constant ('packageName.FooConstant')
- * - reference to enumeration item ('packageName.FooEnumeration.BAR_ENUM_ITEM')
- * - reference to compound field ('packageName.FooCompoundType.field')
+ * - reference to enumeration item ('package_name.FooEnumeration.BAR_ENUM_ITEM')
+ * - reference to compound field ('package_name.FooCompoundType.field')
+ * - reference to package ('root_package.sub_package')
  *
  * Symbol reference is not AST node because it is used by unparsed texts in the following situation:
  *
@@ -30,9 +33,19 @@ public class SymbolReference
     }
 
     /**
+     * Gets referenced package.
+     *
+     * @return Referenced package or null if the reference cannot be resolved.
+     */
+    public Package getReferencedPackage()
+    {
+        return referencedPackage;
+    }
+
+    /**
      * Gets referenced package symbol.
      *
-     * @return Referenced package symbol.
+     * @return Referenced package symbol or null if the reference is a package.
      */
     public PackageSymbol getReferencedPackageSymbol()
     {
@@ -42,7 +55,7 @@ public class SymbolReference
     /**
      * Gets referenced scope symbol.
      *
-     * @return Referenced scope symbol or null if the reference is a package symbol.
+     * @return Referenced scope symbol or null if the reference is a package or a package symbol.
      */
     public ScopeSymbol getReferencedScopeSymbol()
     {
@@ -52,10 +65,11 @@ public class SymbolReference
     /**
      * Resolves the symbol reference.
      *
+     * @param packageNameMap Map of all registered packages.
      * @param ownerPackage Zserio package in which the symbol reference is defined.
      * @param ownerType ZserioType which is owner of the symbol reference or null.
      */
-    void resolve(Package ownerPackage, ZserioScopedType ownerType)
+    void resolve(Map<PackageName, Package> packageNameMap, Package ownerPackage, ZserioScopedType ownerType)
     {
         if (resolveCalled)
             return;
@@ -71,6 +85,13 @@ public class SymbolReference
                 referencedName);
         if (referencedPackageSymbol == null)
         {
+            // try if its reference to a package
+            referencedPackageNameBuilder.addId(referencedName);
+            referencedPackage = packageNameMap.get(referencedPackageNameBuilder.get());
+            if (referencedPackage != null)
+                return;
+            referencedPackageNameBuilder.removeLastId();
+
             // try if the last link component was not a package symbol (can be a field name or enumeration item)
             final String symbolName = ZserioTypeUtil.getFullName(referencedPackageName, referencedName);
             final String referencedScopeSymbolName = referencedName;
@@ -101,6 +122,7 @@ public class SymbolReference
             }
             referencedScopeSymbol = foundSymbol.getSymbol();
         }
+        referencedPackage = referencedPackageSymbol.getPackage();
     }
 
     private PackageName getReferencedPackageName(Package ownerPackage,
@@ -150,6 +172,7 @@ public class SymbolReference
     private final String symbolReferenceText;
 
     private boolean resolveCalled = false; // even unsuccessful resolve means that the symbol has been resolved
+    private Package referencedPackage = null;
     private PackageSymbol referencedPackageSymbol = null;
     private ScopeSymbol referencedScopeSymbol = null;
 }

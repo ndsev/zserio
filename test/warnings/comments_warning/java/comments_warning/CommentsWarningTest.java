@@ -36,6 +36,13 @@ public class CommentsWarningTest
     }
 
     @Test
+    public void unresolvedMarkdownSeeTagReference()
+    {
+        assertTrue(zserioWarnings.isPresent("unresolved_markdown_see_tag_reference.zs:7:5: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unknown.Unknown'!"));
+    }
+
+    @Test
     public void unresolvedSeeTagInTemplatedStruct()
     {
         assertTrue(zserioWarnings.isPresent("unresolved_see_tag_in_templated_struct.zs:3:5: " +
@@ -48,8 +55,15 @@ public class CommentsWarningTest
         assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:8:4: " +
                 "Documentation: Unresolved referenced symbol 'Unexisting'!"));
 
-        assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:15:4: " +
-                "Documentation: Unresolved referenced symbol 'Unexisting' for type 'Table'!"));
+        assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:9:4: " +
+                "Documentation: Unresolved referenced symbol 'comments_warning.unexisting_package'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:16:4: " +
+                "Documentation: Unresolved referenced symbol 'unexisting' for type 'Table'!"));
+
+        assertTrue(zserioWarnings.isPresent("unresolved_see_tag_reference.zs:17:4: " +
+                "Documentation: Unresolved referenced symbol 'unexisting' for type 'Table'!"));
+
     }
 
     @Test
