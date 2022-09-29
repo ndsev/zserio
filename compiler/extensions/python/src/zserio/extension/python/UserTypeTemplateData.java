@@ -21,7 +21,7 @@ public class UserTypeTemplateData extends PythonTemplateData
         final PythonNativeType nativeType = context.getPythonNativeMapper().getPythonType(type);
         name = nativeType.getName();
         schemaTypeFullName = ZserioTypeUtil.getFullName(type);
-        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(docComments);
+        this.docComments = docComments.isEmpty() ? null : new DocCommentsTemplateData(context, docComments);
     }
 
     public String getName()

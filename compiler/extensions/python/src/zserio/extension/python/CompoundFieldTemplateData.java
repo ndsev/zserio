@@ -63,7 +63,8 @@ public final class CompoundFieldTemplateData
                 pythonExpressionFormatter);
         compound = createCompound(context, fieldTypeInstantiation, importCollector);
         final List<DocComment> fieldDocComments = field.getDocComments();
-        docComments = fieldDocComments.isEmpty() ? null : new DocCommentsTemplateData(fieldDocComments);
+        docComments = fieldDocComments.isEmpty() ?
+                null : new DocCommentsTemplateData(context, fieldDocComments);
     }
 
     public String getName()

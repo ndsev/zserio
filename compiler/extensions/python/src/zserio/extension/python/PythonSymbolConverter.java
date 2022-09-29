@@ -3,6 +3,14 @@ package zserio.extension.python;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import zserio.ast.BitmaskValue;
+import zserio.ast.EnumItem;
+import zserio.ast.Field;
+import zserio.ast.Function;
+import zserio.ast.Parameter;
+import zserio.ast.ScopeSymbol;
+import zserio.ast.ServiceMethod;
+
 /**
  * Python symbol converter.
  *
@@ -13,6 +21,38 @@ public class PythonSymbolConverter
     public static String symbolToModule(String pythonSymbolName)
     {
         return toLowerSnakeCase(pythonSymbolName);
+    }
+
+    public static String convertScopeSymbol(ScopeSymbol scopeSymbol)
+    {
+        if (scopeSymbol instanceof EnumItem)
+        {
+            return PythonSymbolConverter.enumItemToSymbol(scopeSymbol.getName());
+        }
+        else if (scopeSymbol instanceof BitmaskValue)
+        {
+            return PythonSymbolConverter.bitmaskValueToSymbol(scopeSymbol.getName());
+        }
+        else if (scopeSymbol instanceof Field)
+        {
+            return AccessorNameFormatter.getPropertyName((Field)scopeSymbol);
+        }
+        else if (scopeSymbol instanceof Parameter)
+        {
+            return AccessorNameFormatter.getPropertyName((Parameter)scopeSymbol);
+        }
+        else if (scopeSymbol instanceof Function)
+        {
+            return AccessorNameFormatter.getFunctionName((Function)scopeSymbol);
+        }
+        else if (scopeSymbol instanceof ServiceMethod)
+        {
+            return AccessorNameFormatter.getServiceClientMethodName((ServiceMethod)scopeSymbol);
+        }
+        else // no special handling for other symbols
+        {
+            return PythonSymbolConverter.toLowerSnakeCase(scopeSymbol.getName());
+        }
     }
 
     public static String enumItemToSymbol(String enumItemName)

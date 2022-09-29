@@ -16,13 +16,20 @@ import zserio.ast.DocTagParam;
 import zserio.ast.DocTagSee;
 import zserio.ast.DocTagTodo;
 import zserio.ast.DocText;
+import zserio.ast.SymbolReference;
+import zserio.extension.common.ZserioExtensionException;
+import zserio.extension.python.symbols.PythonNativeSymbol;
+import zserio.ast.Package;
+import zserio.ast.PackageSymbol;
+import zserio.ast.ScopeSymbol;
 
 /**
  * FreeMarker template data for documentation comments.
  */
 public class DocCommentsTemplateData
 {
-    public DocCommentsTemplateData(List<DocComment> docComments)
+    public DocCommentsTemplateData(TemplateDataContext context, List<DocComment> docComments)
+            throws ZserioExtensionException
     {
         int stickyCommentsIndex = docComments.size();
         final ListIterator<DocComment> iterator = docComments.listIterator(docComments.size());
@@ -34,7 +41,7 @@ public class DocCommentsTemplateData
             if (i >= stickyCommentsIndex)
             {
                 final DocComment docComment = docComments.get(i);
-                comments.add(new DocCommentTemplateData(docComment.toClassic()));
+                comments.add(new DocCommentTemplateData(context, docComment.toClassic()));
             }
         }
     }
@@ -46,10 +53,11 @@ public class DocCommentsTemplateData
 
     public static class DocCommentTemplateData
     {
-        public DocCommentTemplateData(DocCommentClassic docCommentClassic)
+        public DocCommentTemplateData(TemplateDataContext context, DocCommentClassic docCommentClassic)
+                throws ZserioExtensionException
         {
             for (DocParagraph docParagraph : docCommentClassic.getParagraphs())
-                docParagraphs.add(new DocParagraphData(docParagraph));
+                docParagraphs.add(new DocParagraphData(context, docParagraph));
 
             isOneLiner = docCommentClassic.isOneLiner();
         }
@@ -66,10 +74,11 @@ public class DocCommentsTemplateData
 
         public static class DocParagraphData
         {
-            public DocParagraphData(DocParagraph docParagraph)
+            public DocParagraphData(TemplateDataContext context, DocParagraph docParagraph)
+                    throws ZserioExtensionException
             {
                 for (DocElement docElement : docParagraph.getDocElements())
-                    docElements.add(new DocElementData(docElement));
+                    docElements.add(new DocElementData(context, docElement));
             }
 
             public Iterable<DocElementData> getElements()
@@ -79,19 +88,20 @@ public class DocCommentsTemplateData
 
             public static class DocElementData
             {
-                public DocElementData(DocElement docElement)
+                public DocElementData(TemplateDataContext context, DocElement docElement)
+                        throws ZserioExtensionException
                 {
                     final DocMultiline multiline = docElement.getDocMultiline();
-                    this.multiline = (multiline != null) ? new DocMultilineData(multiline) : null;
+                    this.multiline = (multiline != null) ? new DocMultilineData(context, multiline) : null;
 
                     final DocTagSee seeTag = docElement.getSeeTag();
-                    this.seeTag = (seeTag != null) ? new DocTagSeeData(seeTag) : null;
+                    this.seeTag = (seeTag != null) ? new DocTagSeeData(context, seeTag) : null;
 
                     final DocTagTodo todoTag = docElement.getTodoTag();
-                    this.todoTag = (todoTag != null) ? new DocMultilineData(todoTag) : null;
+                    this.todoTag = (todoTag != null) ? new DocMultilineData(context, todoTag) : null;
 
                     final DocTagParam paramTag = docElement.getParamTag();
-                    this.paramTag = (paramTag != null) ? new DocTagParamData(paramTag) : null;
+                    this.paramTag = (paramTag != null) ? new DocTagParamData(context, paramTag) : null;
 
                     final DocTagDeprecated deprecatedTag = docElement.getDeprecatedTag();
                     this.isDeprecated = deprecatedTag != null;
@@ -134,10 +144,11 @@ public class DocCommentsTemplateData
 
         public static class DocMultilineData
         {
-            public DocMultilineData(DocMultiline docMultiline)
+            public DocMultilineData(TemplateDataContext context, DocMultiline docMultiline)
+                    throws ZserioExtensionException
             {
                 for (DocLine docLine : docMultiline.getLines())
-                    lines.add(new DocLineData(docLine));
+                    lines.add(new DocLineData(context, docLine));
             }
 
             public Iterable<DocLineData> getLines()
@@ -147,11 +158,11 @@ public class DocCommentsTemplateData
 
             public static class DocLineData
             {
-                public DocLineData(DocLine docLine)
+                public DocLineData(TemplateDataContext context, DocLine docLine) throws ZserioExtensionException
                 {
                     for (DocLineElement docLineElement : docLine.getLineElements())
                     {
-                        lineElements.add(new DocLineElementData(docLineElement));
+                        lineElements.add(new DocLineElementData(context, docLineElement));
                     }
                 }
 
@@ -165,13 +176,14 @@ public class DocCommentsTemplateData
 
             public static class DocLineElementData
             {
-                public DocLineElementData(DocLineElement docLineElement)
+                public DocLineElementData(TemplateDataContext context, DocLineElement docLineElement)
+                        throws ZserioExtensionException
                 {
                     final DocText docText = docLineElement.getDocText();
                     docString = (docText != null) ? docText.getText() : null;
 
                     final DocTagSee docTagSee = docLineElement.getSeeTag();
-                    seeTag = (docTagSee != null) ? new DocTagSeeData(docTagSee) : null;
+                    seeTag = (docTagSee != null) ? new DocTagSeeData(context, docTagSee) : null;
                 }
 
                 public String getDocString()
@@ -193,10 +205,41 @@ public class DocCommentsTemplateData
 
         public static class DocTagSeeData
         {
-            public DocTagSeeData(DocTagSee docTagSee)
+            public DocTagSeeData(TemplateDataContext context, DocTagSee docTagSee)
+                    throws ZserioExtensionException
             {
                 alias = docTagSee.getLinkAlias();
-                link = docTagSee.getLinkName();
+
+                final PythonNativeMapper pythonNativeMapper = context.getPythonNativeMapper();
+                final SymbolReference symbolReference = docTagSee.getLinkSymbolReference();
+                final Package referencedPackage = symbolReference.getReferencedPackage();
+                final PackageSymbol referencedPackageSymbol = symbolReference.getReferencedPackageSymbol();
+                final ScopeSymbol referencedScopeSymbol = symbolReference.getReferencedScopeSymbol();
+                if (referencedPackage == null)
+                {
+                    // link cannot be resolved
+                    link = docTagSee.getLinkName();
+                }
+                else if (referencedPackageSymbol == null)
+                {
+                    // link is a package
+                    link = PythonFullNameFormatter.getFullName(referencedPackage.getPackageName());
+                }
+                else if (referencedScopeSymbol == null)
+                {
+                    // link is a package symbol
+                    final PythonNativeSymbol nativeSymbol =
+                            pythonNativeMapper.getPythonSymbol(referencedPackageSymbol);
+                    link = PythonFullNameFormatter.getFullName(nativeSymbol);
+                }
+                else
+                {
+                    // link is a scope symbol
+                    final PythonNativeSymbol nativeSymbol =
+                            pythonNativeMapper.getPythonSymbol(referencedPackageSymbol);
+                    link = PythonFullNameFormatter.getFullName(nativeSymbol) + "." +
+                            PythonSymbolConverter.convertScopeSymbol(referencedScopeSymbol);
+                }
             }
 
             public String getAlias()
@@ -215,10 +258,11 @@ public class DocCommentsTemplateData
 
         public static class DocTagParamData
         {
-            public DocTagParamData(DocTagParam docTagParam)
+            public DocTagParamData(TemplateDataContext context, DocTagParam docTagParam)
+                    throws ZserioExtensionException
             {
                 name = docTagParam.getParamName();
-                description = new DocMultilineData(docTagParam);
+                description = new DocMultilineData(context, docTagParam);
             }
 
             public String getName()

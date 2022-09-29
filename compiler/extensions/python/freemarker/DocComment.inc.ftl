@@ -36,8 +36,7 @@ ${I}"""
 .. todo:: <@doc_multiline paragraphElement.todoTag, indent, 10/><#rt>
     </#if>
     <#if paragraphElement.seeTag??>
-        <#-- '.' before link is a must to set resolution of partial link, e.g. type without package -->
-.. seealso:: :obj:`${paragraphElement.seeTag.alias} <.${paragraphElement.seeTag.link}>`<#rt>
+.. seealso:: :obj:`${paragraphElement.seeTag.alias} <${paragraphElement.seeTag.link}>`<#rt>
     </#if>
     <#if paragraphElement.paramTag??>
 :param ${paragraphElement.paramTag.name}: <@doc_multiline paragraphElement.paramTag.description, indent, 7/><#rt>
@@ -60,8 +59,7 @@ ${I}${M}<#rt>
 <#if !lineElement?is_first> </#if>${lineElement.docString}<#rt>
             </#if>
             <#if lineElement.seeTag??>
-                <#-- '.' before link is a must to set resolution of partial link, e.g. type without package -->
-<#if !lineElement?is_first> </#if>:obj:`${lineElement.seeTag.alias} <.${lineElement.seeTag.link}>`<#rt>
+<#if !lineElement?is_first> </#if>:obj:`${lineElement.seeTag.alias} <${lineElement.seeTag.link}>`<#rt>
             </#if>
         </#list>
         <#if !line?is_last>
