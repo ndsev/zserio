@@ -1,6 +1,9 @@
 package zserio.extension.python;
 
+import java.util.List;
+
 import zserio.ast.Constant;
+import zserio.ast.DocComment;
 import zserio.extension.common.ExpressionFormatter;
 import zserio.extension.common.ZserioExtensionException;
 import zserio.extension.python.symbols.PythonNativeSymbol;
@@ -20,6 +23,8 @@ public class ConstEmitterTemplateData extends PythonTemplateData
 
         final ExpressionFormatter pythonExpressionFormatter = context.getPythonExpressionFormatter(this);
         value = pythonExpressionFormatter.formatGetter(constant.getValueExpression());
+        final List<DocComment> itemDocComments = constant.getDocComments();
+        docComments = itemDocComments.isEmpty() ? null : new DocCommentsTemplateData(context, itemDocComments);
     }
 
     public String getName()
@@ -32,6 +37,12 @@ public class ConstEmitterTemplateData extends PythonTemplateData
         return value;
     }
 
+    public DocCommentsTemplateData getDocComments()
+    {
+        return docComments;
+    }
+
     private final String name;
     private final String value;
+    private final DocCommentsTemplateData docComments;
 }
