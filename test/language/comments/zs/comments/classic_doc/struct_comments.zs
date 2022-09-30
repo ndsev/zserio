@@ -4,6 +4,10 @@ import comments.classic_doc.union_comments.*;
 
 /**
  * Traffic flow on links.
+ *
+ * @see "Struct field via full name" comments.classic_doc.struct_comments.DirectionStructure.direction
+ *
+ * @see "Struct field via type name" DirectionStructure.direction
  */
 enum bit:2 Direction
 {
@@ -37,6 +41,8 @@ enum bit:2 Direction
  * @see "Union field comment via full name" comments.classic_doc.union_comments.TestUnion.case1Field
  *
  * @see "Union comments package" comments.classic_doc.union_comments
+ *
+ * @see "Struct field via field name" direction
  *
  * @param hasExtraValue True if the structure has extra value.
  *        This parameter is not optional.
