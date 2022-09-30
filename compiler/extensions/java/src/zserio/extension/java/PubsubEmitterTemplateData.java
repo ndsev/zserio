@@ -21,16 +21,12 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
     {
         super(context, pubsubType, pubsubType.getDocComments());
 
-        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
-        final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
-
         Iterable<PubsubMessage> messageList = pubsubType.getMessageList();
         boolean hasPublishing = false;
         boolean hasSubscribing = false;
         for (PubsubMessage message : messageList)
         {
-            final MessageTemplateData templateData = new MessageTemplateData(javaNativeMapper,
-                    javaExpressionFormatter, message);
+            final MessageTemplateData templateData = new MessageTemplateData(context, message);
             hasPublishing |= templateData.getIsPublished();
             hasSubscribing |= templateData.getIsSubscribed();
             this.messageList.add(templateData);
@@ -56,10 +52,11 @@ public class PubsubEmitterTemplateData extends UserTypeTemplateData
 
     public static class MessageTemplateData
     {
-        public MessageTemplateData(JavaNativeMapper javaNativeMapper,
-                ExpressionFormatter javaExpressionFormatter, PubsubMessage message)
-                        throws ZserioExtensionException
+        public MessageTemplateData(TemplateDataContext context, PubsubMessage message)
+                throws ZserioExtensionException
         {
+            final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
+            final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
             name = message.getName();
             final TypeReference referencedType = message.getTypeReference();
             final JavaNativeType javaType = javaNativeMapper.getJavaType(referencedType);
