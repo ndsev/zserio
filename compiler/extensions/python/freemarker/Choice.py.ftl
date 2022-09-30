@@ -441,6 +441,8 @@ ${I}pass
         This method sets offsets in this Zserio object and in all fields recursively.
 
         :param bitposition: Bit stream position calculated from zero where the object will be serialized.
+
+        :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
         """
 
     </#if>
@@ -465,6 +467,8 @@ ${I}pass
 
         :param zserio_context_node: Context for packed arrays.
         :param bitposition: Bit stream position calculated from zero where the object will be serialized.
+
+        :returns: Bit stream position calculated from zero updated to the first byte after serialized object.
         """
 
     </#if>
@@ -547,7 +551,7 @@ ${I}pass
 
         :param zserio_writer: Bit stream writer where to serialize this Zserio object.
         :param zserio_call_initialize_offsets: True to call automatically initialize_offsets method before
-               writing, otherwise false.
+               writing, otherwise False.
         """
 
     </#if>
@@ -573,9 +577,8 @@ ${I}pass
 
         Called only internally if packed arrays are used.
 
+        :param zserio_context_node: Context for packed arrays.
         :param zserio_writer: Bit stream writer where to serialize this Zserio object.
-        :param zserio_call_initialize_offsets: True to call automatically initialize_offsets method before
-               writing, otherwise false.
         """
 
     </#if>
