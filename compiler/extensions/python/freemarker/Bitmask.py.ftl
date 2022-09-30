@@ -216,7 +216,7 @@ class ${name}:
         """
 
     </#if>
-        return bit_position + self.bitsizeof(bit_position)
+        return bitposition + self.bitsizeof(bitposition)
 
     def initialize_offsets_packed(self, context_node: zserio.array.PackingContextNode,
                                   bitposition: int) -> int:
