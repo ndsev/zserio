@@ -42,7 +42,7 @@ TEST_F(CommentsWarningTest, unresolvedMarkdownSeeTagReference)
 TEST_F(CommentsWarningTest, unresolvedSeeTagInTemplatedStruct)
 {
     ASSERT_TRUE(zserioWarnings.isPresent("unresolved_see_tag_in_templated_struct.zs:3:5: "
-            "Documentation: Unresolved referenced symbol 'unknown' for type 'TemplatedStruct'!"));
+            "Documentation: Unresolved referenced symbol 'unknown'!"));
 }
 
 TEST_F(CommentsWarningTest, unresolvedSeeTagReference)
