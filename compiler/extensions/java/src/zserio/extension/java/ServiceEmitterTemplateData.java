@@ -30,7 +30,7 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
         final Iterable<ServiceMethod> methodList = serviceType.getMethodList();
         for (ServiceMethod method : methodList)
         {
-            MethodTemplateData templateData = new MethodTemplateData(javaTypeMapper, method);
+            MethodTemplateData templateData = new MethodTemplateData(context, method);
             this.methodList.add(templateData);
         }
     }
@@ -47,17 +47,18 @@ public final class ServiceEmitterTemplateData extends UserTypeTemplateData
 
     public static class MethodTemplateData
     {
-        public MethodTemplateData(JavaNativeMapper typeMapper, ServiceMethod method)
+        public MethodTemplateData(TemplateDataContext context, ServiceMethod method)
                 throws ZserioExtensionException
         {
             name = method.getName();
 
             final TypeReference responseTypeReference = method.getResponseTypeReference();
-            final JavaNativeType responseNativeType = typeMapper.getJavaType(responseTypeReference);
+            final JavaNativeMapper javaTypeMapper = context.getJavaNativeMapper();
+            final JavaNativeType responseNativeType = javaTypeMapper.getJavaType(responseTypeReference);
             responseTypeInfo = new NativeTypeInfoTemplateData(responseNativeType, responseTypeReference);
 
             final TypeReference requestTypeReference = method.getRequestTypeReference();
-            final JavaNativeType requestNativeType = typeMapper.getJavaType(requestTypeReference);
+            final JavaNativeType requestNativeType = javaTypeMapper.getJavaType(requestTypeReference);
             requestTypeInfo = new NativeTypeInfoTemplateData(requestNativeType, requestTypeReference);
 
             final List<DocComment> methodDocComments = method.getDocComments();
