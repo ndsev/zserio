@@ -49,13 +49,9 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
         needsTypesInSchema = tableType.needsTypesInSchema();
         isWithoutRowId = tableType.isWithoutRowId();
 
-        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
-        final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
         for (Field field: tableType.getFields())
         {
-            final FieldTemplateData fieldData = new FieldTemplateData(javaNativeMapper, javaExpressionFormatter,
-                    context.getJavaSqlExpressionFormatter(), context.getJavaSqlLambdaExpressionFormatter(),
-                    sqlNativeTypeMapper, tableType, field);
+            final FieldTemplateData fieldData = new FieldTemplateData(context, tableType, field);
             fields.add(fieldData);
             for (FieldTemplateData.ParameterTemplateData parameterTemplateData : fieldData.getTypeParameters())
             {
@@ -178,13 +174,12 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
     public static class FieldTemplateData
     {
-        public FieldTemplateData(JavaNativeMapper javaNativeMapper,
-                ExpressionFormatter javaExpressionFormatter, ExpressionFormatter javaSqlExpressionFormatter,
-                ExpressionFormatter javaSqlLambdaExpressionFormatter, SqlNativeTypeMapper sqlNativeTypeMapper,
-                SqlTableType parentType, Field field) throws ZserioExtensionException
+        public FieldTemplateData(TemplateDataContext context, SqlTableType parentType, Field field)
+                throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
             final JavaNativeType nativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
 
             name = field.getName();
@@ -201,13 +196,13 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
                         (ParameterizedTypeInstantiation)fieldTypeInstantiation;
                 for (InstantiatedParameter parameter : parameterizedInstantiation.getInstantiatedParameters())
                 {
-                    typeParameters.add(new ParameterTemplateData(javaNativeMapper, javaSqlExpressionFormatter,
-                            javaSqlLambdaExpressionFormatter, parentType, parameter));
+                    typeParameters.add(new ParameterTemplateData(context, parentType, parameter));
                 }
             }
 
             isVirtual = field.isVirtual();
             final SqlConstraint fieldSqlConstraint = field.getSqlConstraint();
+            final ExpressionFormatter javaExpressionFormatter = context.getJavaExpressionFormatter();
             sqlConstraint = (fieldSqlConstraint == null) ? null :
                 javaExpressionFormatter.formatGetter(fieldSqlConstraint.getConstraintExpr());
             isNotNull = !SqlConstraint.isNullAllowed(fieldSqlConstraint);
@@ -216,6 +211,7 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
             underlyingTypeInfo = createUnderlyingTypeInfo(javaNativeMapper, fieldBaseType);
             rangeCheckData = createRangeCheckTemplateData(javaNativeMapper, fieldBaseType,
                     javaExpressionFormatter, fieldTypeInstantiation);
+            final SqlNativeTypeMapper sqlNativeTypeMapper = new SqlNativeTypeMapper();
             sqlTypeData = new SqlTypeTemplateData(sqlNativeTypeMapper, field);
 
             final List<DocComment> fieldDocComments = field.getDocComments();
@@ -284,18 +280,20 @@ public final class SqlTableEmitterTemplateData extends UserTypeTemplateData
 
         public static class ParameterTemplateData
         {
-            public ParameterTemplateData(JavaNativeMapper javaNativeMapper,
-                    ExpressionFormatter javaSqlExpressionFormatter,
-                    ExpressionFormatter javaSqlLambdaExpressionFormatter, SqlTableType tableType,
+            public ParameterTemplateData(TemplateDataContext context, SqlTableType tableType,
                     InstantiatedParameter instantiatedParameter) throws ZserioExtensionException
             {
                 final Expression argumentExpression = instantiatedParameter.getArgumentExpression();
                 isExplicit = argumentExpression.isExplicitVariable();
+                final ExpressionFormatter javaSqlExpressionFormatter = context.getJavaSqlExpressionFormatter();
                 expression = javaSqlExpressionFormatter.formatGetter(argumentExpression);
+                final ExpressionFormatter javaSqlLambdaExpressionFormatter =
+                        context.getJavaSqlLambdaExpressionFormatter();
                 lambdaExpression = javaSqlLambdaExpressionFormatter.formatGetter(argumentExpression);
                 final Parameter parameter = instantiatedParameter.getParameter();
                 name = parameter.getName();
                 final TypeReference parameterTypeReference = parameter.getTypeReference();
+                final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
                 final JavaNativeType parameterNativeType = javaNativeMapper.getJavaType(parameterTypeReference);
                 typeInfo = new NativeTypeInfoTemplateData(parameterNativeType, parameterTypeReference);
             }

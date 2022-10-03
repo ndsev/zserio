@@ -150,10 +150,10 @@ public class ${name}
     /**
      * Reads all rows from the table.
      *
-        <#if needsParameterProvider>
+    <#if needsParameterProvider>
      * @param parameterProvider Explicit parameter provider to be used during reading.
      *
-        </#if>
+    </#if>
      * @throws SQLException In case of any failure during reading from the database.
      * @throws IOException In case of any failure during reading from the database file.
      */
@@ -172,6 +172,8 @@ public class ${name}
      * @param parameterProvider Explicit parameter provider to be used during reading.
         </#if>
      * @param condition SQL condition to use.
+     *
+     * @return Read rows.
      *
      * @throws SQLException In case of any failure during reading from the database.
      * @throws IOException In case of any failure during reading from the database file.

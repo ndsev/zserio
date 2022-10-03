@@ -410,6 +410,8 @@ public:
      * \param parameterProvider Explicit parameter provider to be used during reading.
         </#if>
      * \param condition SQL condition to use.
+     *
+     * \return Created table reader.
      */
 </#if>
     Reader createReader(<#if needsParameterProvider>IParameterProvider& parameterProvider, </#if><#rt>
