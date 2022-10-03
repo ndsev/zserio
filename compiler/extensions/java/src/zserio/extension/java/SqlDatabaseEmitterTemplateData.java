@@ -27,10 +27,9 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
         rootPackageName = context.getJavaRootPackageName();
         this.withValidationCode = context.getWithValidationCode();
 
-        final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
         fields = new ArrayList<DatabaseFieldData>();
         for (Field field: databaseType.getFields())
-            fields.add(new DatabaseFieldData(javaNativeMapper, field));
+            fields.add(new DatabaseFieldData(context, field));
     }
 
     public String getRootPackageName()
@@ -50,11 +49,12 @@ public final  class SqlDatabaseEmitterTemplateData extends UserTypeTemplateData
 
     public static class DatabaseFieldData
     {
-        public DatabaseFieldData(JavaNativeMapper javaNativeMapper, Field field)
+        public DatabaseFieldData(TemplateDataContext context, Field field)
                 throws ZserioExtensionException
         {
             final TypeInstantiation fieldTypeInstantiation = field.getTypeInstantiation();
             final ZserioType fieldBaseType = fieldTypeInstantiation.getBaseType();
+            final JavaNativeMapper javaNativeMapper = context.getJavaNativeMapper();
             final JavaNativeType fieldNativeType = javaNativeMapper.getJavaType(fieldTypeInstantiation);
             typeInfo = new NativeTypeInfoTemplateData(fieldNativeType, fieldTypeInstantiation);
 

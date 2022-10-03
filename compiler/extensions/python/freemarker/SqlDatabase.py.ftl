@@ -1,4 +1,5 @@
 <#include "FileHeader.inc.ftl"/>
+<#include "DocComment.inc.ftl">
 <#if withTypeInfoCode>
     <#include "TypeInfo.inc.ftl"/>
 </#if>
@@ -22,7 +23,23 @@
 </#macro>
 
 class ${name}:
+<#if withCodeComments && docComments??>
+<@doc_comments docComments, 1/>
+
+</#if>
     def __init__(self, connection: apsw.Connection, table_to_attached_db_name_relocation_map: typing.Dict[str, str] = None) -> None:
+<#if withCodeComments>
+        """
+        Constructor from external connection and table relocation map.
+
+        The method uses given external connection if database is already open and for each relocated table uses
+        provided already attached database names.
+
+        :param connection: Database connection of already open database.
+        :param table_to_attached_db_name_relocation_map Mapping of relocated table name to attached database file name.
+        """
+
+</#if>
         self._connection: apsw.Connection = connection
         self._attached_db_name_list: typing.Union[typing.List[str], typing.ValuesView[str]] = []
         self._is_external: bool = True
@@ -30,6 +47,18 @@ class ${name}:
 
     @classmethod
     def from_file(cls: typing.Type['${name}'], filename: str, table_to_db_filename_relocation_map: typing.Dict[str, str] = None) -> '${name}':
+<#if withCodeComments>
+        """
+        Returns new object instance constructed from database file name and table relocation map.
+
+        The method opens the database of given file name and for each relocated table attaches database to
+        which relocated table should be mapped.
+
+        :param filename: Database file name to use.
+        :param table_to_db_filename_relocation_map: Mapping of relocated table name to database file name.
+        """
+
+</#if>
         connection = apsw.Connection(filename, apsw.SQLITE_OPEN_URI | <#rt>
             <#lt><#if withWriterCode>apsw.SQLITE_OPEN_READWRITE | apsw.SQLITE_OPEN_CREATE<#else>apsw.SQLITE_OPEN_READONLY</#if>)
 
@@ -55,6 +84,14 @@ class ${name}:
 
     @staticmethod
     def type_info() -> zserio.typeinfo.TypeInfo:
+    <#if withCodeComments>
+        """
+        Gets static information about the database type useful for generic introspection.
+
+        :returns: Zserio type information.
+        """
+
+    </#if>
         table_list: typing.List[zserio.typeinfo.MemberInfo] = [
     <#list fields as field>
             <@member_info_database_field field field?has_next/>
@@ -68,6 +105,12 @@ class ${name}:
 </#if>
 
     def close(self) -> None:
+<#if withCodeComments>
+        """
+        Closes the database if it was constructed using file name (not using external connection).
+        """
+
+</#if>
         if not self._is_external:
             try:
                 self._detach_databases()
@@ -81,15 +124,47 @@ class ${name}:
     </#macro>
     @property
     def ${field.propertyName}(self) -> ${field.typeInfo.typeFullName}:
+    <#if withCodeComments>
+        """
+        Gets the table ${field.name}.
+
+        <#if field.docComments??>
+        **Description:**
+
+        <@doc_comments_inner field.docComments, 2/>
+
+        </#if>
+        :returns: Reference to the table ${field.name}.
+        """
+
+    </#if>
         return self.<@field_member_name field/>
 </#list>
 
     @property
     def connection(self) -> apsw.Connection:
+<#if withCodeComments>
+        """
+        Gets the connection of underlying database.
+
+        :returns: Database connection.
+        """
+
+</#if>
         return self._connection
 <#if withWriterCode>
 
     def create_schema(self<#if hasWithoutRowIdTable>, without_rowid_table_names_blacklist: typing.List[str] = None</#if>) -> None:
+    <#if withCodeComments>
+        """
+        Creates all tables in the database.
+        <#if hasWithoutRowIdTable>
+
+        :param without_rowid_table_names_blacklist: Set of rowid table names which should not be created.
+        </#if>
+        """
+
+    </#if>
         has_autocommit = self._connection.getautocommit()
         if has_autocommit:
             cursor = self._connection.cursor()
@@ -115,6 +190,12 @@ class ${name}:
             cursor.execute("COMMIT")
 
     def delete_schema(self) -> None:
+    <#if withCodeComments>
+        """
+        Deletes all tables from the database.
+        """
+
+    </#if>
         has_autocommit = self._connection.getautocommit()
         if has_autocommit:
             cursor = self._connection.cursor()
