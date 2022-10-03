@@ -1,9 +1,14 @@
 package zserio.tools;
 
 import java.io.File;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -12,6 +17,7 @@ import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 
 import zserio.ast.IdentifierValidator;
 
@@ -54,10 +60,29 @@ class CommandLineArguments
      */
     public void parse(String[] args) throws ParseException
     {
-        CommandLineParser cliParser = new DefaultParser();
-        parsedCommandLine = cliParser.parse(options, args, false);
-        readArguments();
-        readOptions();
+        try
+        {
+            CommandLineParser cliParser = new DefaultParser();
+            parsedCommandLine = cliParser.parse(options, args, false);
+            readArguments();
+            readOptions();
+        }
+        catch (UnrecognizedOptionException e)
+        {
+            // TODO[Mi-L@]: Should be removed after release 2.8!
+            if (e.getOption().equals("-withUnusedWarnings"))
+            {
+                throw new ParseException("Option '-withUnusedWarnings' was removed, use " +
+                        "'-withWarnings unused' instead! See '--help warnings' for more info.");
+            }
+            else if (e.getOption().equals("-withoutUnusedWarnings"))
+            {
+                throw new ParseException("Option '-withoutUnusedWarnings' was removed, use " +
+                        "'-withoutWarnings unused' instead! See '--help warnings' for more info.");
+            }
+
+            throw e; // rethrow
+        }
     }
 
     /**
@@ -171,13 +196,13 @@ class CommandLineArguments
     }
 
     /**
-     * Gets whether warnings for unused types are enabled.
+     * Gets configuration of warnings.
      *
-     * @return True if command line arguments enable unused warnings option.
+     * @return Warnings config.
      */
-    public boolean getWithUnusedWarnings()
+    public WarningsConfig getWarningsConfig()
     {
-        return withUnusedWarningsOption;
+        return warningsConfig;
     }
 
     /**
@@ -255,10 +280,29 @@ class CommandLineArguments
     }
 
     /**
+     * Gets list of arguments of the given option.
+     *
+     * @param optionName Option name of which arguments to get.
+     *
+     * @return List of option arguments.
+     */
+    public List<String> getOptionValues(String optionName)
+    {
+        final String[] values = parsedCommandLine.getOptionValues(optionName);
+        return values != null ? Arrays.asList(values) : new ArrayList<String>();
+    }
+
+    /**
      * Prints help.
      */
-    public void printHelp()
+    public void printHelp(List<Extension> extensions)
     {
+        if (HelpTopicWarnings.equals(helpTopic))
+        {
+            printHelpWarnings();
+            return;
+        }
+
         final String command = (executor == ZserioTool.Executor.PYTHON_MAIN) ? "zserio" :
             "java -jar zserio.jar";
 
@@ -268,12 +312,18 @@ class CommandLineArguments
         hf.setOptionComparator(null);
         hf.printHelp(command + " <options> zserioInputFile\n", "Options:", options, null, false);
         ZserioToolPrinter.printMessage("");
+
+        printExtensions(extensions);
     }
 
     private void addOptions()
     {
-        Option option = new Option(OptionNameHelpShort, "help", false, "print this help text and exit");
+        Option option = new Option(OptionNameHelpShort, "help", true,
+                "print this help text and exit, " +
+                "specify one of the following topics for detailed description: warnings");
         option.setRequired(false);
+        option.setOptionalArg(true);
+        option.setArgName("[topic]");
         options.addOption(option);
 
         option = new Option(OptionNameVersionShort, "version", false, "print Zserio version info");
@@ -346,13 +396,18 @@ class CommandLineArguments
         writerCodeGroup.setRequired(false);
         options.addOptionGroup(writerCodeGroup);
 
-        final OptionGroup unusedWarningsGroup = new OptionGroup();
-        option = new Option(OptionNameWithUnusedWarnings, false, "enable unused warnings");
-        unusedWarningsGroup.addOption(option);
-        option = new Option(OptionNameWithoutUnusedWarnings, false, "disable unused warnings (default)");
-        unusedWarningsGroup.addOption(option);
-        unusedWarningsGroup.setRequired(false);
-        options.addOptionGroup(unusedWarningsGroup);
+        option = new Option(OptionNameWithWarnings, true,
+                "enable specified warnings, use '--help warnings' for more info");
+        option.setArgName("warning[,warning]*");
+        option.setValueSeparator(WarningsConfig.WARNINGS_OPTIONS_SEPARATOR);
+        option.setRequired(false);
+        options.addOption(option);
+        option = new Option(OptionNameWithoutWarnings, true,
+                "disable specified warnings, use '--help warnings' for more info");
+        option.setArgName("warning[,warning]*");
+        option.setValueSeparator(WarningsConfig.WARNINGS_OPTIONS_SEPARATOR);
+        option.setRequired(false);
+        options.addOption(option);
 
         final OptionGroup crossExtensionCheckGroup = new OptionGroup();
         option = new Option(OptionNameWithCrossExtensionCheck, false, "enable cross extension check (default)");
@@ -391,6 +446,7 @@ class CommandLineArguments
     {
         srcPathName = getOptionValue(OptionNameSource);
         helpOption = hasOption(OptionNameHelpShort);
+        helpTopic = getOptionValue(OptionNameHelpShort);
         versionOption = hasOption(OptionNameVersionShort);
         withPubsubCodeOption = !hasOption(OptionNameWithoutPubsubCode);
         withRangeCheckCodeOption = hasOption(OptionNameWithRangeCheckCode);
@@ -399,12 +455,15 @@ class CommandLineArguments
         withTypeInfoCodeOption = hasOption(OptionNameWithTypeInfoCode);
         withValidationCodeOption = hasOption(OptionNameWithValidationCode);
         withWriterCodeOption = !hasOption(OptionNameWithoutWriterCode);
-        withUnusedWarningsOption = hasOption(OptionNameWithUnusedWarnings);
+        warningsConfig = new WarningsConfig(
+                getOptionValues(OptionNameWithWarnings),
+                getOptionValues(OptionNameWithoutWarnings));
         withCrossExtensionCheckOption = !hasOption(OptionNameWithoutCrossExtensionCheck);
         withGlobalRuleIdCheckOption = hasOption(OptionNameWithGlobalRuleIdCheck);
         final String topLevelPackageName = getOptionValue(OptionNameSetTopLevelPackage);
-        topLevelPackageNameIds = (topLevelPackageName == null) ? new ArrayList<String>() :
-            java.util.Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
+        topLevelPackageNameIds = topLevelPackageName == null
+                ? new ArrayList<String>()
+                : Arrays.asList(topLevelPackageName.split("\\" + TOP_LEVEL_PACKAGE_NAME_SEPARATOR));
         ignoreTimestampsOption = hasOption(OptionNameIgnoreTimestamps);
         allowImplicitArraysOption = hasOption(OptionNameAllowImplicitArrays);
 
@@ -460,6 +519,12 @@ class CommandLineArguments
                         "'withoutWriterCode'");
             }
         }
+
+        if (helpTopic != null && !HelpTopicWarnings.equals(helpTopic))
+        {
+            throw new ParseException(
+                    "The specified help topic '" + helpTopic + "' does not exist!");
+        }
     }
 
     private void validateTopLevelPackageNameIds() throws ParseException
@@ -499,6 +564,65 @@ class CommandLineArguments
         }
     }
 
+    private void printHelpWarnings()
+    {
+        final HelpFormatter hf = new HelpFormatter();
+
+        final PrintWriter printWriter = new PrintWriter(
+                new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
+        hf.printWrapped(printWriter, HelpFormatter.DEFAULT_WIDTH, 2,
+                "Zserio Warnings Subsystem:\n" +
+                "  Zserio provides possibility to configure warnings on command line. Each warning has " +
+                "it's own specifier (i.e. tag) which can be used to either enable or disable the particular " +
+                "warning.\n" +
+                "\n" +
+                "  Options -" + OptionNameWithWarnings + " and -" + OptionNameWithoutWarnings +
+                " can be combined. When warnings options groups are used, more generic groups are applied " +
+                "first so that it is possible to enable all warnings in a group and then disable some " +
+                "smaller set of warnings or just a single warning.\n" +
+                "\n");
+
+        final WarningsConfig defaultWarningsConfig = new WarningsConfig();
+        final StringBuilder warningsList = new StringBuilder("List of Warnings:\n");
+        for (Map.Entry<String, WarningsConfig.WarningDefinition> entry :
+                defaultWarningsConfig.getWarningsDefinition().entrySet())
+        {
+            warningsList.append("  ");
+            warningsList.append(entry.getKey());
+            warningsList.append("\n");
+            warningsList.append("    " + entry.getValue().getDescription());
+            if (entry.getValue().getPriority() == Integer.MAX_VALUE)
+            {
+                // do not print it for warnings groups
+                warningsList.append(defaultWarningsConfig.isEnabled(entry.getKey()) ? " Enabled" : " Disabled");
+                warningsList.append(" by default.\n");
+            }
+            else
+            {
+                warningsList.append("\n");
+            }
+        }
+
+        hf.printWrapped(printWriter, HelpFormatter.DEFAULT_WIDTH, 4, warningsList.toString());
+        printWriter.flush();
+    }
+
+    private void printExtensions(List<Extension> extensions)
+    {
+        if (extensions.isEmpty())
+        {
+            ZserioToolPrinter.printMessage("No extensions found!");
+        }
+        else
+        {
+            ZserioToolPrinter.printMessage("Available extensions:");
+            for (Extension extension : extensions)
+            {
+                ZserioToolPrinter.printMessage("  " + extension.getName());
+            }
+        }
+    }
+
     private static final String OptionNameHelpShort = "h";
     private static final String OptionNameSource = "src";
     private static final String OptionNameVersionShort = "v";
@@ -516,8 +640,8 @@ class CommandLineArguments
     private static final String OptionNameWithoutValidationCode = "withoutValidationCode";
     private static final String OptionNameWithWriterCode = "withWriterCode";
     private static final String OptionNameWithoutWriterCode = "withoutWriterCode";
-    private static final String OptionNameWithUnusedWarnings = "withUnusedWarnings";
-    private static final String OptionNameWithoutUnusedWarnings = "withoutUnusedWarnings";
+    private static final String OptionNameWithWarnings = "withWarnings";
+    private static final String OptionNameWithoutWarnings = "withoutWarnings";
     private static final String OptionNameWithCrossExtensionCheck = "withCrossExtensionCheck";
     private static final String OptionNameWithoutCrossExtensionCheck = "withoutCrossExtensionCheck";
     private static final String OptionNameWithGlobalRuleIdCheck = "withGlobalRuleIdCheck";
@@ -526,6 +650,8 @@ class CommandLineArguments
     private static final String OptionNameIgnoreTimestamps = "ignoreTimestamps";
     private static final String OptionNameAllowImplicitArrays = "allowImplicitArrays";
 
+    private static final String HelpTopicWarnings = "warnings";
+
     private static final String TOP_LEVEL_PACKAGE_NAME_SEPARATOR = ".";
 
     private final ZserioTool.Executor executor;
@@ -533,9 +659,10 @@ class CommandLineArguments
 
     private CommandLine parsedCommandLine;
 
-    private String  inputFileName;
+    private String inputFileName;
     private boolean helpOption;
-    private String  srcPathName;
+    private String helpTopic;
+    private String srcPathName;
     private boolean versionOption;
     private boolean withPubsubCodeOption;
     private boolean withRangeCheckCodeOption;
@@ -544,7 +671,7 @@ class CommandLineArguments
     private boolean withTypeInfoCodeOption;
     private boolean withValidationCodeOption;
     private boolean withWriterCodeOption;
-    private boolean withUnusedWarningsOption;
+    private WarningsConfig warningsConfig;
     private boolean withCrossExtensionCheckOption;
     private boolean withGlobalRuleIdCheckOption;
     private List<String> topLevelPackageNameIds;

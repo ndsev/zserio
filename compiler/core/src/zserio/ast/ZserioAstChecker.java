@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import zserio.tools.WarningsConfig;
 import zserio.tools.ZserioToolPrinter;
 
 /**
@@ -15,12 +16,12 @@ public class ZserioAstChecker extends ZserioAstWalker
     /**
      * Constructor.
      *
-     * @param checkUnusedTypes Whether to check for unused types.
+     * @param warningsConfig Warnings config.
      * @param withGlobalRuleIdCheck Whether to check of rule id uniqueness between all packages.
      */
-    public ZserioAstChecker(boolean checkUnusedTypes, boolean withGlobalRuleIdCheck)
+    public ZserioAstChecker(WarningsConfig warningsConfig, boolean withGlobalRuleIdCheck)
     {
-        this.checkUnusedTypes = checkUnusedTypes;
+        this.warningsConfig = warningsConfig;
         this.withGlobalRuleIdCheck = withGlobalRuleIdCheck;
     }
 
@@ -29,13 +30,17 @@ public class ZserioAstChecker extends ZserioAstWalker
     {
         root.visitChildren(this);
         root.check(withGlobalRuleIdCheck);
-        if (checkUnusedTypes)
+        if (warningsConfig.isEnabled(WarningsConfig.UNUSED_OPTION))
         {
             for (ZserioType definedType : definedTypes)
             {
                 final String definedTypeName = ZserioTypeUtil.getFullName(definedType);
                 if (!usedTypeNames.contains(definedTypeName))
-                    ZserioToolPrinter.printWarning(definedType, "Type '" + definedTypeName + "' is not used.");
+                {
+                    ZserioToolPrinter.printWarning(definedType,
+                            "Type '" + definedTypeName + "' is not used!" +
+                            " [" + WarningsConfig.UNUSED_OPTION +  "]");
+                }
             }
         }
     }
@@ -226,7 +231,7 @@ public class ZserioAstChecker extends ZserioAstWalker
             usedTypeNames.add(ZserioTypeUtil.getFullName(usedType));
     }
 
-    private final boolean checkUnusedTypes;
+    private final WarningsConfig warningsConfig;
     private final boolean withGlobalRuleIdCheck;
 
     private final Set<String> usedTypeNames = new HashSet<String>();

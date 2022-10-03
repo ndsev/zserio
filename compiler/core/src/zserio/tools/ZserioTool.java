@@ -137,8 +137,7 @@ public class ZserioTool
         commandLineArguments.parse(args);
         if (commandLineArguments.hasHelpOption())
         {
-            commandLineArguments.printHelp();
-            extensionManager.printExtensions();
+            commandLineArguments.printHelp(extensionManager.getExtensions());
         }
         else if (commandLineArguments.hasVersionOption())
         {
@@ -181,7 +180,8 @@ public class ZserioTool
         final ZserioAstTypeResolver typeResolver = new ZserioAstTypeResolver();
         rootNode.accept(typeResolver);
 
-        final ZserioAstTemplator templator = new ZserioAstTemplator(typeResolver);
+        final ZserioAstTemplator templator = new ZserioAstTemplator(typeResolver,
+                commandLineArguments.getWarningsConfig());
         rootNode.accept(templator);
 
         final ZserioAstScopeSetter scopeSetter = new ZserioAstScopeSetter();
@@ -193,7 +193,8 @@ public class ZserioTool
         final ZserioAstEvaluator evaluator = new ZserioAstEvaluator();
         rootNode.accept(evaluator);
 
-        final ZserioAstChecker checker = new ZserioAstChecker(commandLineArguments.getWithUnusedWarnings(),
+        final ZserioAstChecker checker = new ZserioAstChecker(
+                commandLineArguments.getWarningsConfig(),
                 commandLineArguments.getWithGlobalRuleIdCheck());
         rootNode.accept(checker);
 
