@@ -3,7 +3,15 @@
         <#if withCodeComments>
     /**
      * Implementation of the function ${compoundFunction.name}.
+            <#if compoundFunction.docComments??>
+     * <p>
+     * <b>Description:</b>
+     * <br>
+     <@doc_comments_inner compoundFunction.docComments, 1/>
      *
+        <#else>
+     *
+        </#if>
      * @return Result of the function ${compoundFunction.name}.
      */
         </#if>

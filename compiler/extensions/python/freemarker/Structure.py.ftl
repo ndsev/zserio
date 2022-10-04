@@ -284,6 +284,12 @@ ${I}<#rt>
         """
         Implementation of the function ${function.schemaName}.
 
+        <#if function.docComments??>
+        **Description:**
+
+        <@doc_comments_inner function.docComments, 2/>
+
+        </#if>
         :returns: Result of the function ${function.schemaName}.
         """
 

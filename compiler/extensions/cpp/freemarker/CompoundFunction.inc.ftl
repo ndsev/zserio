@@ -7,6 +7,12 @@
     /**
      * Implementation of the function ${compoundFunction.name}.
      *
+                    <#if compoundFunction.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner compoundFunction.docComments, 1/>
+     *
+                    </#if>
      * \return Result of the function ${compoundFunction.name}.
      */
                 </#if>
@@ -16,6 +22,12 @@
     /**
      * Implementation of the function ${compoundFunction.name} using const reference.
      *
+                    <#if compoundFunction.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner compoundFunction.docComments, 1/>
+     *
+                    </#if>
      * \return Const reference to the result of the function ${compoundFunction.name}.
      */
                 </#if>
@@ -28,6 +40,12 @@
      *
      * This method can be called internally during setting of offsets.
      *
+                        <#if compoundFunction.docComments??>
+     * \b Description
+     *
+     <@doc_comments_inner compoundFunction.docComments, 1/>
+     *
+                        </#if>
      * \return Reference to the result of the function ${compoundFunction.name}.
      */
                     </#if>

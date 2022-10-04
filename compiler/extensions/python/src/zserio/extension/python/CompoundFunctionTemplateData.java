@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import zserio.ast.CompoundType;
+import zserio.ast.DocComment;
 import zserio.ast.Function;
 import zserio.ast.TypeReference;
 import zserio.extension.common.ExpressionFormatter;
@@ -47,6 +48,10 @@ public final class CompoundFunctionTemplateData
             final ExpressionFormatter pythonExpressionFormatter =
                     context.getPythonExpressionFormatter(importCollector);
             resultExpression = pythonExpressionFormatter.formatGetter(function.getResultExpression());
+
+            final List<DocComment> functionDocComments = function.getDocComments();
+            docComments = functionDocComments.isEmpty() ? null :
+                    new DocCommentsTemplateData(context, functionDocComments);
         }
 
         public String getSchemaName()
@@ -69,10 +74,16 @@ public final class CompoundFunctionTemplateData
             return resultExpression;
         }
 
+        public DocCommentsTemplateData getDocComments()
+        {
+            return docComments;
+        }
+
         private final String schemaName;
         private final String functionName;
         private final NativeTypeInfoTemplateData returnTypeInfo;
         private final String resultExpression;
+        private final DocCommentsTemplateData docComments;
     }
 
     private final List<CompoundFunction> compoundFunctionList;
