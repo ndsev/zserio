@@ -226,6 +226,8 @@ public:
      * This method sets offsets in this Zserio object and in all fields recursively.
      *
      * \param bitPosition Bit stream position calculated from zero where the object will be serialized.
+     *
+     * \return Bit stream position calculated from zero updated to the first byte after serialized object.
      */
     </#if>
     size_t initializeOffsets(size_t bitPosition = 0) const;
@@ -239,6 +241,8 @@ public:
      *
      * \param contextNode Context for packed arrays.
      * \param bitPosition Bit stream position calculated from zero where the object will be serialized.
+     *
+     * \return Bit stream position calculated from zero updated to the first byte after serialized object.
      */
     </#if>
     size_t initializeOffsets(${types.packingContextNode.name}& contextNode, size_t bitPosition) const;
